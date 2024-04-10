@@ -1,0 +1,356 @@
+import java.util.ArrayList;
+import javax.swing.JOptionPane; 
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+/**
+ * ##### # ########### ## ##### ######### ####.
+ * 
+ * @###### ##### ##### #### ########
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Evolution
+{
+   private Rectangle mundo;
+   private Fosil organismo;
+   private ArrayList<Fosil> fosiles= new ArrayList<Fosil>();
+   private ArrayList<Path> caminos= new ArrayList<Path>();
+   private int[] posiciones;
+   private int y;
+   private int diam;
+   private boolean ok;
+   JFrame frame = new JFrame("JOptionPane showMessageDialog example");
+    /**
+     * Constructor for objects of class Evolution
+     */
+    public Evolution(String sequence)
+    { 
+        diam=30;
+        mundo = new Rectangle();
+        organismo=new Fosil(sequence,0,0,diam);
+        y=700;
+        ok=true;
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     *
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y
+     */
+    public  Evolution(String sequence,String[] fossils)
+    {
+        diam=30;
+        mundo = new Rectangle();
+        organismo=new Fosil(sequence,0,0,diam);
+        y=700;
+        for(int i=0;i<fossils.length;i++){
+            Fosil nuevoIntegrante = new Fosil(fossils[i],0,y,diam);
+            fosiles.add(nuevoIntegrante);
+            if(nuevoIntegrante.tamaño()>5)y-=30;
+            else{ y-=60;}
+        }
+        ok=true;
+    }
+
+    /**
+     * An example of a method - replace this comment with your own
+     *
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y
+     */
+    public void addFossil(String sequence)
+    {
+        Fosil nuevoIntegrante = new Fosil(sequence,0,y,diam);
+        fosiles.add(nuevoIntegrante);
+        y-=40;
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     *
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y
+     */
+    public void addPath(){
+        caminos.add(new Path());
+        posiciones= new int[caminos.size()];
+        for(int i=0;i<caminos.size();i++){
+            posiciones[i]=(i+1)*100;
+        }
+    }
+   
+    /**
+     * An example of a method - replace this comment with your own
+     *
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y
+     */
+    private boolean ValidaPrimeraOpcion(Fosil Actual, Fosil Nuevo)
+    {
+        boolean can=false;
+        int j=0;
+        int veces=0;
+        for(int i=0;i<Actual.tamaño();i++){
+            while(j<Nuevo.tamaño()&& i!=Actual.tamaño()){
+                if(Actual.getColor(i) == Nuevo.getColor(j)){
+                    veces++;
+                    j++;
+                    i++;
+                }
+                else{
+                    i++;
+                }
+            }
+        }
+        if(Nuevo.tamaño()==veces)can=true;
+        return can;
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     *
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y
+     */
+    private boolean ValidaSegundaOpcion(Fosil Nuevo, Fosil Actual)
+    {
+        boolean can=false;
+        int j=0;
+        int veces=0;
+        for(int i=0;i<Nuevo.tamaño();i++){
+            while(j<Actual.tamaño()&& i!=Nuevo.tamaño()){
+                if(Nuevo.getColor(i) == Actual.getColor(j)){
+                    veces++;
+                    j++;
+                    i++;
+                }
+                else{
+                    i++;
+                }
+            }
+        }
+        if(Actual.tamaño()==veces)can=true;
+        return can;
+    }
+
+    /**
+     * Verifica si el fosil a ingresar a la linea de evolución con el anterior a ingresar
+     * @param Fosil a ingresar
+     * @param posicion en donde se quiere situar el Fosil
+     * @return si es posible ingresar en dicha posicion el Fosil.
+     */
+    private boolean verificarLinea(Fosil fosil,int path,int evolucion){
+        boolean also=false;
+        Fosil Actual =caminos.get(path).getFosil(evolucion);
+        if(Actual.tamaño()>fosil.tamaño()){
+            also=ValidaPrimeraOpcion(Actual,fosil);
+        }else if(fosil.tamaño()>Actual.tamaño()){
+            also=ValidaSegundaOpcion(fosil,Actual);
+        }
+        return also;
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     *
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y
+     */
+    public void situate(int fosil,int path, int pos){
+        if(caminos.size()==0)JOptionPane.showMessageDialog(frame,"No hay caminos","Advertencia",JOptionPane.ERROR_MESSAGE);
+        if(caminos.get(path-1).Size()==0)caminos.get(path-1).adicionarFosil(0,fosiles.get(fosil-1));
+        else if(verificarLinea(fosiles.get(fosil-1),path,pos)){
+            caminos.get(path-1).adicionarFosil(pos-1,fosiles.get(fosil-1));
+        }else{
+            JOptionPane.showMessageDialog(frame,"No se puede","Advertencia",JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+        /**
+         * Verifica si es posible combinar dos caminos
+         * @param indice del primer camino
+         * @param indice del segundo camino a combinar
+         */
+    public void mergePaths(int first, int second){
+        if(validaCombinar(first,second)){
+            for(int i=0;i<caminos.get(second-1).Size();i++){
+                int newPos= caminos.get(first-1).getPos(caminos.get(second-1).getFosil(i).tamaño());
+                if(newPos+1==caminos.get(second-1).Size() && verificarLinea(caminos.get(second-1).getFosil(i),first-1,newPos)){
+                    selectPos(newPos,i,first-1,second-1);
+                }
+                else if(verificarLinea(caminos.get(second-1).getFosil(i),first-1,newPos)){
+                    selectPos(newPos,i,first-1,second-1);
+                }
+            }
+            caminos.remove(second-1);
+        }else{
+            JOptionPane.showMessageDialog(frame,"No se puede","Advertencia",JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     *
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y
+     */
+    private boolean validaCombinar(int first, int second)
+    {
+        boolean puede=false;
+        for(int i=0;i<caminos.get(second-1).Size();i++){
+           int newPos= caminos.get(first-1).getPos(caminos.get(second-1).getFosil(i).tamaño());
+           if(newPos+1==caminos.get(second-1).Size() && verificarLinea(caminos.get(second-1).getFosil(i),first-1,newPos)){
+               puede=true;
+            }
+           else if(verificarLinea(caminos.get(second-1).getFosil(i),first-1,newPos)){
+               puede=true;
+            }
+        }
+        return puede;
+    }
+
+    /**
+     * Ubica el Fosil en la linea de evolucion deseada y en el orden que desee ponerla, pero debe cumplir con las reglas de evolucion
+     * @param  un entero el cual indica la posicion del fosil a situar.
+     * @param un entero el cual indica la linea de evolución en donde se va a situar el fosil.
+     */
+    public void situate(int fosil, int path)
+    {
+        int pos = fosiles.size();
+        if(caminos.size()==0)JOptionPane.showMessageDialog(frame,"No hay lineas de evolucion creadas","Advertencia",JOptionPane.ERROR_MESSAGE);
+        if(caminos.get(path-1).Size()==0){
+            caminos.get(path-1).adicionarFosil(0,fosiles.get(fosil-1));
+            System.out.println(posiciones[path-1]+"pos");
+            caminos.get(path-1).añadidos(posiciones[path-1]);
+            caminos.get(path-1).makeVisible();
+        }else if (caminos.get(path-1).Size()>0){
+            int newPos= caminos.get(path-1).getPos(fosiles.get(fosil-1).tamaño());
+            if(newPos+1==caminos.get(path-1).Size() && verificarLinea(fosiles.get(fosil-1),path-1,newPos)){
+                posfosiles(newPos,fosil-1, path-1);
+                System.out.println(posiciones[path-1]+"pos");
+                caminos.get(path-1).añadidos(posiciones[path-1]);
+                caminos.get(path-1).makeVisible();
+            }else if(){
+                
+            }else if(verificarLinea(fosiles.get(fosil-1),path-1,newPos)){
+                posfosiles(newPos,fosil-1, path-1);
+                System.out.println(posiciones[path-1]+"pos");
+                caminos.get(path-1).añadidos(posiciones[path-1]);
+                caminos.get(path-1).makeVisible();
+            }else{
+                JOptionPane.showMessageDialog(frame,"No se puede","Advertencia",JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    } 
+   
+    /**
+     * An example of a method - replace this comment with your own
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y
+     */
+    private void posfosiles(int pos,int newPos, int primer)
+    {
+        if(caminos.get(primer).getFosil(pos).tamaño()>fosiles.get(newPos).tamaño()){
+            caminos.get(primer).adicionarFosil(pos, fosiles.get(newPos));
+            caminos.get(primer).añadidos(posiciones[primer]);
+        }else{
+            caminos.get(primer).adicionarFosil(pos+1,fosiles.get(newPos));
+            caminos.get(primer).añadidos(posiciones[primer]);
+        }
+    }
+    
+     /**
+     * An example of a method - replace this comment with your own
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y
+     */
+    private void selectPos(int pos,int newPos, int primer, int segundo){
+        if(caminos.get(primer).getFosil(pos).tamaño()>caminos.get(segundo).getFosil(newPos).tamaño()){
+            caminos.get(primer).adicionarFosil(pos,caminos.get(segundo).getFosil(newPos));
+        }else{
+            caminos.get(primer).adicionarFosil(pos+1,caminos.get(segundo).getFosil(newPos));
+        }
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     *
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y
+     */
+    public String[][] consult() {
+        String imprime[][]= new String[caminos.size()][10];
+        for(int i=0;i<caminos.size();i++){
+            for(int j=0;j<caminos.get(i).Size();j++){
+                imprime[i][j]=caminos.get(i).toString(j);
+            }
+        }
+        return imprime;
+    }   
+    
+    /**
+     * An example of a method - replace this comment with your own
+     *
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y
+     */
+    public void zoom(char signo)
+    {
+        if(signo=='+'){
+            makeInvisible();            
+            diam+=20;
+            organismo.changeAll(0,0,diam);
+            y=700;
+            for(int i=0;i<fosiles.size();i++){
+                fosiles.get(i).changeAll(0,y,diam);
+                y-=diam*2;
+            }
+            makeVisible();
+        }else if(signo=='-'){
+            makeInvisible();            
+            diam-=20;
+            organismo.changeAll(0,0,diam);
+            y=700;
+            for(int i=0;i<fosiles.size();i++){
+                fosiles.get(i).changeAll(0,y,diam);
+                y-=diam*2;
+            }
+            makeVisible();
+        }
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     */
+    public void makeVisible()
+    {
+        mundo.makeVisible();
+        organismo.makeVisible();
+        for(int i=0;i<fosiles.size();i++){
+            fosiles.get(i).makeVisible();
+        }
+        
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     *
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y
+     */
+    public void makeInvisible()
+    {
+        mundo.makeInvisible();
+        organismo.makeInvisible();
+        for(int i=0;i<fosiles.size();i++){
+            fosiles.get(i).makeInvisible();
+        }
+    }
+
+    /** 
+    * Termina el simulador
+    */
+   public void finish(){
+       System.exit(0);
+    }
+}

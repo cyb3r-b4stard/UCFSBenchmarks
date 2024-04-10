@@ -1,0 +1,56 @@
+import java.util.Scanner;
+public class BenytBilletautomat
+{
+    public static void main(String[] arg)
+    {
+        Billetautomat automat = new Billetautomat(24);
+
+        Scanner scanner = new Scanner(System.in); 
+
+        System.out.println("Hvor mange biletter skal du bruge?");
+        int antalBilletter = scanner.nextInt();
+        int antalBilletterSolgt = 0;
+        int beløb = 0;
+        int balance = 0;
+        int total = 0;     
+
+        if (antalBilletter == 0){
+            System.out.println("Du skal minimum vælge en (1) billet for at fortsætte");
+        }     
+
+        if(antalBilletter>0)
+        {
+
+            int pris = automat.getBilletpris();
+            int totalPris = pris * antalBilletter;
+            System.out.println("Billetprisen er: " + totalPris + " kroner");
+
+            System.out.println("Indkast venligst penge i automaten - OBS: Maskinen modtager ikke 50-øre");
+            beløb = scanner.nextInt();                  
+
+            if (beløb == totalPris){
+                automat.indsætPenge(beløb);
+                automat.udskrivBillet();
+
+            }else if (beløb >totalPris){ 
+                automat.indsætPenge(beløb);
+                System.out.println("Du har indsat " + beløb + " kr i automaten. Returnere overskyndene beløb");
+                System.out.println("Balancen er på " + automat.getBalance() +" kr");
+                automat.udskrivBillet();
+                System.out.println("Du får " + balance +" kr tilbage");
+                
+            } else {
+                int automatBalance = automat.getBalance();
+                while (automatBalance < totalPris){
+                    System.out.println(beløb+ "kr sat ind, total balance nu: " + automatBalance)
+                    System.out.println("Indsæt resterende beløb: ");
+                    beløb = scanner.nextInt();
+                    automat.indsætPenge(beløb);
+                    System.out.println("Der er indbetalt " + beløb + " kroner i automaten");
+                    System.out.println("Balancen er nu på " + automat.getBalance() + " kr");
+                }
+            }
+
+        }
+    }
+}

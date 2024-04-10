@@ -1,0 +1,103 @@
+import chn.util.*;
+import apcslib.*;
+public class IRS
+{
+    ConsoleIO console = new ConsoleIO();
+    private String status;
+    private double income;
+    IRS(String mOs, double ammount)
+    {
+        status = mOs;
+        income = ammount;
+    }
+
+
+    public String getStatus()
+    {
+        return status;
+    }
+
+    public double getIncome()
+    {
+        return income;
+    }
+
+    public double calculateTax()
+    {
+        double finalTax = 0.0;
+        char mOs = status.charAt(0);
+        if (mOs == 'S' || mOs == 's')
+        {
+            finalTax = calculateTaxSingle();
+        }
+        else if (mOs == 'M' || mOs == 'm')
+        {
+            finalTax = calculateTaxMarried();
+        }
+        else
+        {
+            System.out.print("You need to say \"Single\" or \"Married\"");
+        }
+        return finalTax;
+    }
+    private double calculateTaxSingle()
+    {
+        double tax = income;
+        if ((tax >= 0) && (tax <= 27050))
+        {
+            tax = (.15)*(tax);
+        }
+        else if ((tax >= 27051) && (tax <= 65550))
+        {
+            tax = 4057.50 + ((.275)*(tax-27050));
+        }
+        else if ((tax >= 65551) && (tax <= 136750))
+        {
+            tax = 14645 + ((0.305)*(tax-65550));
+        }
+        else if ((tax >= 136751) && (tax <= 297350))
+        {
+            tax = 36361 + ((.355)*(tax-136750));
+        }
+        else if (tax > 297350)
+        {
+            tax = 93374 + ((.391)*(tax-297350));
+        }
+        else 
+        {
+            System.out.print("WHAT DO YOU MEAN NEGATIVE MONEY");
+            break
+        }
+        return tax;
+    }
+
+    private double calculateTaxMarried()
+    {
+        double tax = income;
+        if ((tax >= 0) && (tax <= 45200))
+        {
+            tax = (.15)*(tax);
+        }
+        else if ((tax >= 45201) && (tax <= 109250))
+        {
+            tax = 6780 + ((.275)*(tax-45200));
+        }
+        else if ((tax >= 109251) && (tax <= 166500))
+        {
+            tax = 24393.75 + ((.305)*(tax-109250));
+        }
+        else if ((tax >= 166501) && (tax <= 297350))
+        {
+            tax = 41855 + ((.355)*(tax-166500));
+        }
+        else if (tax > 297350)
+        {
+            tax = 88306 + ((.391)*(tax-297350));
+        }
+        else 
+        {
+            System.out.print("WHAT DO YOU MEAN NEGATIVE MONEY");
+        }
+        return tax;
+    }
+}

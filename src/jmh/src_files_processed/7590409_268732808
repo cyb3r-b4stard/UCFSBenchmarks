@@ -1,0 +1,200 @@
+
+/* #### ### ####### ##########
+ * ####:
+ * ########:
+ * ##:
+ */
+
+import ecs100.*;
+import java.awt.Color;
+import java.util.*;
+import java.io.*;
+
+/**
+ * # #### ## ##### ### ###### ### ## ##### ##### ###### ### #### # ######## #####.
+ * ### ### ## ##### ## # ########## #### ##### ### ######## #####, ### ###### #######.
+ * ### ###### ### #### ### ### ######## ##### ### #### ### ##### ##### ####, ###
+ * ### #### ### ### #### ### ##### ###.
+ * #### #### #### #### # #### #### ###### ## #### ####.
+ * #### # #### ### # #### ###### ###### #####, ## #### ####### ### #########.
+ * #### ## ######## ## #### #### ###### ### ##### ###### ## #### ### ##### ######.
+ * ### ###### ### # ####### ###### ## #####, (### ######### ########## ## ######### ##
+ * ### #### ## ### ######).
+ * #### ### #### ## #### (###### ### ###### ### ### ### ## ########## ## ### ###
+ * ##### #### ########), ### ##### ## ########. ### ##### ## #### #### ####### ##
+ * ### ###### - ### ####### ### ######, ### ####### ### #####.
+ */
+
+
+
+public class DiskGame implements UIKeyListener, UIButtonListener {
+    private static final double GAME_WIDTH = 500;
+    private static final double SHOOTING_RANGE_Y = 150; 
+    private static final double GUN_Y = 300;
+
+    private static final int INITIAL_SHOTS = 30;
+    private static final int NUMBER_OF_DISKS = 30;
+
+    private double gunPosition = GAME_WIDTH/2;  
+    private double score = 0;                        
+    private int shotsRemaining = INITIAL_SHOTS; 
+
+    private Disk[] disks;                       
+
+
+    /**
+     * Constructor:
+     * Set up the buttons and the keylistener
+     * Start the game
+     */
+    public DiskGame() {
+        UI.setKeyListener(this);
+        UI.addButton("Restart", this);
+        UI.addButton("Quit", this);
+        this.startGame();
+    }
+
+    /**
+     * Respond to the buttons
+     */
+    public void buttonPerformed(String button) {
+        if (button.equals("Restart")) {
+            startGame();
+            UI.println("Click in Graphics Pane");
+            UI.println("Then use Arrow keys and space to control gun");
+        }
+        else if (button.equals("Quit")) {
+            UI.quit();
+        }
+    }
+
+    /**
+     * Respond to the key presses.
+     * Left and Right arrows change the gun position;
+     * Space fires a shot
+     */
+    public void keyPerformed(String key) {
+        if (key.equals("Right")) {
+
+        }
+        else if (key.equals("Left")) {
+
+        }
+        else if (key.equals("Space")) {
+
+        }
+    }
+
+    /**
+     * Set the fields of the game to their initial values,
+     * Create a new set of disks
+     * redraw the game
+     */
+    private void startGame() { 
+        /*# YOUR CODE HERE */
+
+    }
+
+    /**
+     * Make a new array of disks with new disks at random positions
+     * within the shooting range.
+     * Completion: ensure than none of them are overlapping.
+     */
+    private void initialiseDisks() {
+        Disk[] = new Disk(Math.Random, Math.Random); 
+
+
+    }
+
+    /**
+     * The core mechanic of the game is to fire a shot.
+     * - Check that there is a shot remaining.
+     * - Move the shot up the screen from the gun, step by step, until 
+     *   it either goes off the screen or hits a disk.
+     *   The shot is constantly redrawn as a line from the gun to its current position.
+     * - If the shot hits a disk, it damages the disk, 
+     * - If the disk is now broken, then it will damage its neighbours
+     *  (ie, all the other disks within range will be damaged also)
+     * - If it hit a disk, exit the loop.
+     * - Finally, update the score,
+     * - If the game is now over,  print out the score 
+     * (You should define additional methods - don't do it all in one big method!)
+     */
+    private void fireShot() {
+        if (shotsRemaining < 1 ) { return; }
+        shotsRemaining--; 
+        double shotPosX = gunPosition; 
+        double shotPosY = GUN_Y; 
+        UI.setColor(Color.black);
+        while (shotPosY > 0) { 
+            shotPosY -= 1;
+            UI.drawLine(shotPosX, GUN_Y, shotPosX, shotPosY);
+            if(
+            ){
+            }
+
+
+
+            UI.sleep(1);
+        }
+        redraw();
+        this.updateScore();
+        if ((this.allDisksExploded() || this.shotsRemaining < 1)) {
+            UI.println("You have a score of " + score);
+        }
+    }
+    
+
+
+
+
+
+    /**
+     * Are all the disks exploded?
+     * Useful for telling whether the game is over.
+     */
+    private boolean allDisksExploded() {
+        /*# YOUR CODE HERE */
+
+
+    }
+
+    /**
+     * Update the score field, by summing the scores of each disk
+     * Score is 150 for exploded disks, 50 for disks with 2 hits, and 20 for disks with 1 hit.
+     */
+    private void updateScore() {
+        /*# YOUR CODE HERE */
+
+
+    }
+
+    /**
+     *  Redraws the game:
+     *  - Redraws the disks
+     *  - Redraws the gun
+     *  - Redraws the pile of remaining shot (Completion)
+     *  - Displays the current score (Completion)
+     *  - calls repaintGraphics to make them visible
+     * 
+     */
+    private void redraw() {
+        UI.setImmediateRepaint(false);
+        UI.clearGraphics();
+        UI.setColor(Color.black);
+        UI.drawRect(0,0, GAME_WIDTH, GUN_Y);
+        UI.setColor(Color.gray);
+        UI.drawLine(0, SHOOTING_RANGE_Y, GAME_WIDTH, SHOOTING_RANGE_Y);
+
+        /*# YOUR CODE HERE */
+
+    
+        UI.repaintGraphics();
+        UI.setImmediateRepaint(true);
+    }
+
+    public static void main(String[] args) {
+        new DiskGame();
+    }
+
+}

@@ -1,0 +1,61 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.File;
+
+public class MyFile {
+
+  public String readTextFile(String fileName) {
+    String returnValue = "";
+    FileReader fileReader = null;
+    String line = "";
+    try {
+      fileReader = new FileReader(fileName);
+      BufferedReader reader = new BufferedReader(fileReader);
+      while ((line = reader.readLine()) != null) {
+        if (line.contains("\t")) {
+            String testing[] = returnValue.split("\t");
+            System.out.println(testing[2]);
+        } else {
+            throw new IllegalArgumentException("String " + line + " does not contain tab.");
+        }
+        returnValue += line + "\n";
+    } catch (FileNotFoundException e) {
+      throw new RuntimeException("File not found");
+    } catch (IOException e) {
+      throw new RuntimeException("IO Error occured");
+    } finally {
+      if (fileReader != null) {
+        try {
+          fileReader.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+    return returnValue;
+  }
+
+  public void writeTextFile(String fileName, String s) {
+      try {
+          File file = new File("voteResult.txt");
+ 
+          if (!file.exists()) {
+              file.createNewFile();
+          }
+ 
+          FileWriter fw = new FileWriter(file.getAbsoluteFile());
+          BufferedWriter bw = new BufferedWriter(fw);
+          bw.write(s);
+          bw.close();
+ 
+          System.out.println("\nVote result has been generated to a file.");
+ 
+      } catch (IOException e) {
+          e.printStackTrace();
+      }
+  }
+} 

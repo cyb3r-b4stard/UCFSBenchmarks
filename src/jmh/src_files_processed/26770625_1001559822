@@ -1,0 +1,468 @@
+import java.util.*;
+/**
+ *  #### #####:
+ *  
+ *  ##### ###### ## ##### #### ##### # "##### ## ####" #######. 
+ *  ### ## ######, #### ## ####### ## ####-###### ## ##### ####### "####".
+ * 
+ *  ##### #### ##### ######## ## ############# #### ##### #######: ### ###### #######, ## ####, 
+ *  ########## ## #######, ### ###### # #######, #### ###### ##### "######" ## ####### #######. 
+ *  ######### ######## ## ####### ### ## ##########, ### ######## ##########. 
+ * 
+ * @######  ####### ####### ### ##### #. ######, ###### ## ######, #### #####, ##### & ######
+ * @####### #### #
+ */
+
+public class Game {
+    private Parser parser;
+    private Room currentRoom;
+    private Item items;
+    private Player player;
+    private People people;
+    private Monster monster;
+    private Random random;
+    private Dog dog;
+    private Room outside, cave, lake, village, forest, road, house, meadow, church, teleporterroom, swamp;
+    Item shovel, shield, armor, sword, bagofgold, fishingrod, axe, coffin, skeleton;
+
+    ArrayList<Item> itemsToDefeatAzog = new ArrayList<Item> ();
+    ArrayList<Characters> charactersMove = new ArrayList<Characters> ();
+
+
+    /**
+     * Opretter spillet og initialiserer dets indre kort, samtidig med at den opretter parser og spiller.
+     */
+    public Game() {
+        createRooms();
+        player = new Player();
+        parser = new Parser();
+        player.enterRoom(currentRoom);
+    }
+
+    /**
+     * Opretter alle rum samt definerer deres udgange og indhold. 
+     * Indholdet i rummene er ting, karakterer og monstre.
+     */
+    private void createRooms() {
+        outside = new Room("outside the cave, the earth is scattered with the remains of those stupid enough to challenge Azog...");
+        cave = new Room("inside the cave, there are skeletons of fallen warriors everywhere...");
+        lake = new Room("at the lake and spot something shiny beneath the surface...");
+        village = new Room("in the village and walk up to the black smith...");
+        forest = new Room("at Boromir's grave in the haunted forest, the legend has it that he was buried with his armor...");
+        road = new Room("on the road...");
+        house = new Room("walking towards the haunted forest, when you spot a small house with a tool shed...");
+        meadow = new Room("walking in the meadow leading down to the lake, the meadow is covered in fog and you hear ravens screeching...");
+        church = new Room ("a few miles from the meadow when you stumble upon the ruins of an abandoned church,\n perhaps there is a weapon in one of the mausoleums...");
+        swamp = new Room ("walking into the Swamp of Sorrows, looking for a weapon...");
+        teleporterroom = new Room ("jumping into the lake, but there are something pulling you down under! You start to faint...");
+
+        outside.setExit("north", cave);
+        outside.setExit("south", meadow);
+        outside.setExit("west", forest);
+        outside.setExit("east", road);
+
+        cave.setExit("south", outside);
+
+        meadow.setExit("south", lake);
+        meadow.setExit("west", church);
+        meadow.setExit("east", swamp);
+        meadow.setExit("north", outside);
+
+        swamp.setExit("west", meadow);
+
+        church.setExit("east", meadow);
+
+        lake.setExit("north", meadow);
+        lake.setExit("south", teleporterroom);
+
+        road.setExit("east", house);
+        road.setExit("west", outside);
+
+        village.setExit("east", forest);
+
+        house.setExit("west", road);
+
+        forest.setExit("west", village);
+        forest.setExit("east", outside);
+
+        currentRoom = outside;  
+
+
+        Item sword = new Item("Sword", 1);
+        lake.setItem(sword);
+        itemsToDefeatAzog.add(sword);
+
+        Item armor = new Item("Armor", 1);
+        village.setItem(armor);
+        itemsToDefeatAzog.add(armor);
+
+        Item shield = new Item("Shield", 1);
+        house.setItem(shield);
+        itemsToDefeatAzog.add(shield);
+
+        meadow.setItem( new Item("Fishing_Rod", 1) );
+
+        road.setItem( new Item("Bag_of_gold", 1) );
+        forest.setItem ( new Item ("Corpse", 1) );
+        forest.setItem ( new Item ("Helmet", 10) );
+        house.setItem ( new Item( "Shovel", 1) );
+        house.setItem ( new Item( "Corpse", 10) ); 
+        swamp.setItem ( new Item( "Axe", 1) );
+        church.setItem (new Item( "Pointed_cross", 10) );
+        church.setItem (new Item( "Key", 1) );
+        outside.setItem (new Item( "Skeleton", 10) );
+
+        People John = new People ("John the Blacksmith", "Greetings peasant. Please, help us! Feel free to take any items, you'd like!", village);
+        People Azog = new People ("Azog the Defiler", " Ha ha ha. First, I will kill you and then I will kill everyone in Hogwarts!", outside);
+        People Bandit = new People ("Benny the Bandit", "Ha ha ha, I've hidden the weapon! You better start looking. It'll get dark soon!", swamp);
+        People Man = new People ("An old man", "Greetings Peter the Peasant. I have been awaiting you...\nThe road ahead is split into three, at the end  of each road you will find a weapon but only one of them,\n will help you kill Azog the Defiler. Choose wisely.", meadow);
+        People Prisoner = new People ("Prisoner", "Please, save the others! I'm badly injured and a won't make it through the night! Hurry!", cave);
+        People Squire = new People ("Squire", "", village);
+        Dog dog = new Dog ("Dog", "Digging dirt", road);
+        village.addPeople(Squire);
+        cave.addPeople(Prisoner);
+        meadow.addPeople(Man);
+        village.addPeople(John);        
+        outside.addPeople(Azog);        
+        swamp.addPeople(Bandit);
+        road.addDog(dog);
+
+        charactersMove.add(Squire);
+
+        
+        outside.setMonster (new Monster("Azog") );
+        currentRoom = outside;
+    }
+
+    /**
+     *  Dette er metoden, som starter spillet og det looper, 
+     *  indtil spilleren stopper spillet gennem kommandoen "quit".
+     */
+    public void play() {            
+        printWelcome();
+        house.lock();
+        boolean finished = false;
+        while (! finished) {
+            Command command = parser.getCommand();
+            finished = processCommand(command);
+            if(player.azogWon()){
+                youLose();
+                finished = true;
+            }
+        }
+        System.out.println("Thank you for playing. Good bye.");
+    }
+
+    private void youLose() {
+        System.out.println("\nYou are out of moves. Azog is attacking the village.\nYou have lost the game.");
+    }
+
+    /**
+     * Der printes en introducerende besked til spilleren.
+     */
+    private void printWelcome() {
+        System.out.println();
+        System.out.println("Welcome to The Adventures of Peter the Peasant");
+        System.out.println();
+        System.out.println("Hogwarts is being attacked by the evil ogre, Azog.");
+        System.out.println("In order to liberate Hogwarts, you must defeat Azog.");
+        System.out.println("To help you defeat Azog, you need a weapon, armor and a defensive item.");
+        System.out.println("You can obtain the items by exploring the lands of Hogwarts ."); 
+        System.out.println("Type 'help' if you need help.");
+        System.out.println();
+        System.out.println(currentRoom.getLongDescription());
+    }
+
+    /**
+     * Når der gives en kommando i spillet, vil den undersøges her først. 
+     * Parameteren command the Command vil undersøges, 
+     * og der vil returneres "true", hvis kommandoen stopper spillet, 
+     * ellers returneres "false". 
+     * Hvis der returneres false, vil der køre en if-loop igennem, for at tjekke,
+     * om kommandoen er kendt af spillet. Hvis ikke, den kender kommandoen returnerer den false, 
+     * samt teksten "I don't know what you mean...", og hvis den kender den, 
+     * køres en if-loop igennem, til den har fundet den og udfører den.
+     */
+    private boolean processCommand(Command command) {
+        boolean wantToQuit = false;
+        if(command.isUnknown()) {
+            System.out.println("I don't know what you mean...");
+            return false;
+        }
+        String commandWord = command.getCommandWord();
+        if (commandWord.equals("help")) {
+            printHelp();
+        }
+        else if (commandWord.equals("go")) {
+            goRoom(command);
+        }
+        else if (commandWord.equals("quit")) {
+            wantToQuit = quit(command);
+        }
+        else if (commandWord.equals("inventory")) {
+            printInventory();
+        }
+        else if  (commandWord.equals ("search")) {
+            System.out.println (currentRoom.getRoomItems() + currentRoom.getRoomMonster());
+        }
+        else if (commandWord.equals("take")) {
+            takeItem(command);
+        }
+        else if (commandWord.equals("drop")) {
+            dropItem(command);
+        }
+        else if (commandWord.equals("attack")){
+            return attack(command);
+        }
+        return wantToQuit;      
+    }
+
+    /**
+     * Printer hjælpe informationer til spilleren, 
+     * samt en liste over de kommandoer, som spilleren kan give i spillet.
+     */
+
+    private void printHelp() {
+        System.out.println();
+        System.out.println("To defeat Azog the defiler you will need to collect a series of items. ");
+        System.out.println("Only the right combination of items will help you in the battle against the blood thirsty ogre");
+        System.out.println("A little hint: You will only need one weapon and some defensive items");
+        System.out.println();
+        System.out.println("You currently have the following items:");
+        System.out.println();
+        System.out.println("Your command words are:");
+        parser.showCommands();
+    }
+
+    /**
+     * Printer inventory. 
+     * Der printes hvilke(n) item(s), hvis nogen, spilleren har i inventory.
+     */
+    private void printInventory() {
+        if (player.inventory.isEmpty()) {
+            System.out.println("You do not have anything in your inventory. It is empty");
+        } 
+        else {
+            System.out.println("You have the following items in your inventory:");
+            for (Item item : player.inventory) {
+                System.out.println(item.getLongDescription());
+            }
+        }
+    }
+
+    private void printMoves (Player p) {
+        System.out.println(player.printMoves());
+    }
+
+    /** 
+     * Prøv at gå i en retning. Hvis der er en udgang, vil du indtræde et nyt rum, 
+     * hvor du vil få en beskrivelse af rummet og eventuelt møde en karakter. 
+     * Hvis ikke der er en udgang, vil der printes en fejlbesked.
+     */
+    private void goRoom(Command command) {
+        if(!command.hasSecondWord()) {
+            System.out.println("Go where?");
+            return;
+        }
+        String direction = command.getSecondWord();
+        Room nextRoom = currentRoom.getExit(direction);
+        if (nextRoom == null) 
+            System.out.println("You can't go that way!");
+
+        else if(nextRoom.getLock() == true) {
+            if (unlockDoor() == true) {
+                house.unlock();
+                System.out.println("You unlocked the door.");
+            }
+            else {
+                System.out.println("The room is locked. You will need to find a key, to open the door.\n The house once belonged to the local pastor, perhaps the key is at the abandoned church.");
+                return;
+            }
+        }
+        else {
+            player.enterRoom(nextRoom);
+            currentRoom = nextRoom;
+            System.out.println(currentRoom.getLongDescription());
+            People people = currentRoom.getPeople();
+            Dog dog = currentRoom.getDog();
+
+            for(Characters People : charactersMove){
+                People.performMove();
+                System.out.println("Your obnoxious squire yells, you have taken" + " " + player.printMoves () + " " + "steps");
+            }
+
+            if(people != null && !people.hasSpoken()) {
+                System.out.println("\n" + "Something is appearing from the shadows");
+                System.out.println("\n"+ people.getName() + " " + "is saying: " + people.getDialogue());
+                people.setHasSpoken(true);
+            }
+            if(dog != null) {
+                System.out.println (dog.getdogDialogue();
+            }
+        }
+
+        if (currentRoom == teleporterroom) {
+            System.out.println("Suddenly, you wake up! Gasping for air, you realize that you are not at the lake anymore...");
+            currentRoom = outside;
+            System.out.println(currentRoom.getLongDescription() );
+        }
+    }
+
+    /** 
+     * "Quit" blev indtastet. Tjek resten af kommandoen, for at se om vi rent faktisk slutter spillet.
+     * Returner "true", hvis kommandoen slutter spillet, ellers returnér "false".
+     */
+    private boolean quit(Command command) {
+        if(command.hasSecondWord()) {
+            System.out.println("Quit what?");
+            return false;
+        }
+        else {
+            return true;  
+        }
+    }
+
+    /**
+     * Metoden fortæller om spilleren har præcis de tre ting, 
+     * der skal til for at kunne vinde spillet, i hans inventory.
+     * Der returneres "false", hvis inventory ikke indeholder de tre ting, 
+     * og "true", hvis den gør.
+     */    
+    private boolean canDefeatAzog() {
+        boolean canDefeatAzog = false;                   
+        if(player.inventory.containsAll(itemsToDefeatAzog)){
+            return true;
+        }
+        return canDefeatAzog;
+    }
+
+    /**
+     * Returnerer en bolsk værdi om hvorvidt døren kan åbnes.
+     * Døren åbnes hvis spilleren har "key" i sit inventory.
+     */
+    private boolean unlockDoor() {
+        boolean door = false;
+        for (int i = 0; i < player.inventory.size(); i++) {
+            if (player.inventory.get(i).getDescription().equals("Key")){
+                door = true;
+            }
+        }
+        return door; 
+    }
+
+    /**
+     * Vi undersøger om playeren er outside.
+     */
+
+    private boolean location() {
+        if (currentRoom == outside) {
+            return true;    
+        }
+
+        else {
+            return false;
+        } 
+    }
+
+    /**
+     * Attack kommando. 
+     * Vil undersøge, hvem spilleren vil angribe, da det kun er monstre der kan angribes. 
+     * På baggrund af canDefeatAzog metoden vil der printes, om spilleren dræber Azog og vinder, 
+     * eller om spilleren ikke er stærk nok til at angribe og skal finde de tre bestemte ting, før han kan vinde.
+     */
+    private boolean attack(Command command) {
+        if(!command.hasSecondWord()) {
+            System.out.println("Attack who?");
+            return false;
+        }
+        String monster = command.getSecondWord();
+        Monster newMonster = currentRoom.getMonster(monster);
+
+        if (newMonster == null) {
+            System.out.println("There is no one here by that name");
+            return false;
+        }
+
+        if (canDefeatAzog () && location() ) {
+            System.out.println();
+            System.out.println();
+            System.out.println("You have killed Azog the Defiler and thus saved the innocent people of Hogwarts!");
+            System.out.println();
+            System.out.println("The adventures of Peter the Peasant has just begun, but for now. You have won.");
+            return true;
+        }
+        else if (canDefeatAzog() != true) {
+            System.out.println("You are not strong enough to defeat Azog.");
+            System.out.println("Gather the proper items to defeat him!");
+        }
+        return false;
+    }
+
+    /**
+     * Take kommando. 
+     * Spilleren kan tage ting ud af rummet og putte dem i hans inventory. 
+     * For at spilleren kan tage ting, undersøges tingenes vægt i forhold til spillerens nuværende vægt samt max vægt. 
+     * Hvis vægten af en ting er for tung, vil han ikke kunne samle den op.
+     * Spilleren skal i spillet finde tre bestemte ting, og der vil her også printes en besked, 
+     * når spilleren har disse ting i hans inventory.
+     */
+    private void takeItem(Command command) {
+        String item = command.getSecondWord();
+        Item newItem = currentRoom.getItem(item);
+        if(!command.hasSecondWord()) {
+            System.out.println("take what?");
+            return;
+        }
+
+        if (newItem == null) {
+            System.out.println("That item is not here");
+        }
+        else if(player.getWeight() + newItem.getWeight() > player.getMaxWeight()) {
+            System.out.println("This item is too heavy for you to carry!");
+        }
+        else {           
+            player.inventory.add(newItem);
+            currentRoom.removeItem(item);
+            System.out.println("You have picked up:" + item);
+        }
+
+        if (canDefeatAzog()){
+            System.out.println("You now have the right items to defeat Azog!");
+            System.out.println("Go to the area outside of the cave and use the command: "+ "attack Azog");
+        }
+
+    }
+
+    /**
+     * Drop kommando.
+     * Spilleren kan tage ting fra hans inventory og ligge dem i et rum.
+     * Spillerens inventory og vægt vil justeres efter dette.
+     */
+    private void dropItem(Command command) {
+        if(!command.hasSecondWord()) {
+            System.out.println("drop what?");
+            return;
+        }
+        String item = command.getSecondWord();
+        Item newItem = null;
+        int index = 0;
+        for (int i = 0; i < player.inventory.size(); i++) {
+            if (player.inventory.get(i).getDescription().equals(item)){
+                newItem = player.inventory.get(i);
+                index = i;
+            }
+        }
+
+        if (newItem == null) {
+            System.out.println("You do not have that item in your inventory");
+        }
+        else {
+            player.inventory.remove(index);
+            currentRoom.setItem(newItem);
+            System.out.println("You have dropped " + item);
+        }
+    }
+
+  
+
+}

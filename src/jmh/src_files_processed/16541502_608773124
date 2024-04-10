@@ -1,0 +1,539 @@
+import java.util.*;
+import java.io.*;
+
+/**
+ * ##### # ########### ## ##### ####### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Admiral implements WAM
+{
+
+    private HashMap<String,Ship> fleet = new HashMap<String,Ship>();
+    private HashMap<String,Ship> reserves = new HashMap<String,Ship>();
+    private HashMap<Integer,Encounter> encounters = new HashMap<Integer,Encounter>();
+
+    private String name;
+    private double warChest = 1000;
+
+    public Admiral(String nm)
+    {
+        name = nm;
+        setupShips();
+        setupEncounters();
+    }
+
+    public Admiral(String nm, String file)
+    {
+        name = nm;
+        readShips(file);
+        setupEncounters();
+    }
+
+    public void setupShips()
+    {
+        Ship Victory = new ManOWar("Victory","Alan Aikin",3,3,30);  
+        Ship Sophie = new Frigate("Sophie","Ben Baggins",8,16,true);
+        Ship Endeavour = new ManOWar("Endeavour","Col Cannon",4,2,20);
+        Ship Arrow = new Sloop("Arrow","Dan Dare",5,150,true);
+        Ship Belerophon = new ManOWar("Belerophon","Ed Evans",8,3,50);
+        Ship Surprise = new Frigate("Surprise","Fred Fox",6,10,false);
+        Ship Jupiter = new Frigate("Jupiter","Gil Gamage",7,20,false);
+        Ship Paris = new Sloop("Paris","Hal Henry",5,200,true);
+        Ship Beast = new Sloop("Beast","Ian Idle",5,400,false);
+
+        reserves.put(Victory.getName(),Victory);
+        reserves.put(Sophie.getName(),Sophie);
+        reserves.put(Endeavour.getName(),Endeavour);
+        reserves.put(Arrow.getName(),Arrow);
+        reserves.put(Paris.getName(),Paris);
+        reserves.put(Belerophon.getName(),Belerophon);
+        reserves.put(Surprise.getName(),Surprise);
+        reserves.put(Jupiter.getName(),Jupiter);
+        reserves.put(Beast.getName(),Beast);
+    }
+
+    public void setupEncounters()
+    {
+        Encounter e1 = new Encounter(1,"BATTLE",3,300);
+        Encounter e2 = new Encounter(2,"SKIRMISH",3,120);
+        Encounter e3 = new Encounter(3,"BLOCKADE",3,150);
+        Encounter e4 = new Encounter(4,"BATTLE",9,200);
+        Encounter e5 = new Encounter(5,"BLOCKADE",7,90);
+        Encounter e6 = new Encounter(6,"SKIRMISH",8,45);
+        Encounter e7 = new Encounter(7,"BLOCKADE",6,130);
+        Encounter e8 = new Encounter(8,"BATTLE",4,100);
+        Encounter e9 = new Encounter(9,"SKIRMISH",5,200);
+
+        encounters.put(e1.getEncounterNo(),e1);
+        encounters.put(e2.getEncounterNo(),e2);
+        encounters.put(e3.getEncounterNo(),e3);
+        encounters.put(e4.getEncounterNo(),e4);
+        encounters.put(e5.getEncounterNo(),e5);
+        encounters.put(e6.getEncounterNo(),e6);
+        encounters.put(e7.getEncounterNo(),e7);
+        encounters.put(e8.getEncounterNo(),e8);
+        encounters.put(e9.getEncounterNo(),e9);
+
+    }
+
+    /**Returns a String representation of the state of the game,
+     * including the name of the admiral, state of the warChest,
+     * whether defeated or not, and the ships currently in the 
+     * fleet,(or, "No ships" if fleet is empty)
+     * @return a String representation of the state of the game,
+     * including the name of the admiral, state of the warChest,
+     * whether defeated or not, and the ships currently in the 
+     * fleet,(or, "No ships" if fleet is empty)
+     **/
+    public String toString()
+    {
+        return "Name: " + name + ", Warchest: " + warChest + ", Is defeated: " + isDefeated() + getFleet();
+    }
+
+    /** returns true if War Chest <=0 and the admiral's fleet has no 
+     * ships which can be decommissioned. 
+     * @returns true if War Chest <=0 and the admiral's fleet has no 
+     * ships which can be decommissioned.
+     **/
+    public boolean isDefeated()
+    {
+        Collection<Ship> col = fleet.values();
+        boolean noShips = true;
+        for (Ship temp : col)
+        {           
+            if (temp.getState() == ShipState.ACTIVE || temp.getState() == ShipState.RESTING) 
+            {   
+                noShips = false;
+            }
+        }
+        return (warChest <= 0) && noShips;
+    }
+
+    /** returns the amount of money in the War Chest
+     * @returns the amount of money in the War Chest
+     */
+    public double getMoney()
+    {
+        return warChest;
+    }
+
+    /**Returns a String representation of all ships in the reserves
+     * @return a String representation of all ships in the reserves
+     **/
+    public String getReserves()
+    {
+        Collection<Ship> col = reserves.values();
+        String stringTemp = "\nAll Ships In Reserves: ";
+        for (Ship temp : col)
+        {           
+            stringTemp = stringTemp + temp.toString();
+        }
+        return stringTemp;
+    }
+
+    /** Returns details of a reserve ship with the given name
+     * @return details of a reserve ship with the given name
+     **/
+    public String findShipInReserve(String nme)
+    {
+        if (reserves.containsKey(nme))
+        {
+            return reserves.get(nme).toString();
+        }
+        else
+        {
+            return "Ship not in reserves";
+        }
+    }
+
+    /** Returns details of any ship with the given name
+     * @return details of any ship with the given name
+     **/
+    public String getShip(String nme)
+    {
+        if (isInAdmiralsFleet(nme))
+        {
+            return fleet.get(nme).toString();
+        }
+        if (reserves.containsKey(nme))
+        {
+            return reserves.get(nme).toString();
+        }
+        else
+        {
+            return "Ship does not exist";
+        }
+    }
+
+    /** Allows a ship to be comissioned to the admiral's fleet, if there 
+     * is enough money in the War Chest for the commission fee.The ship's 
+     * state is set to "active"
+     * @param nme represents the name of the ship
+     * @return "Ship commissioned" if ship is commissioned, "Not found" 
+     * if ship not found, "Not available" if ship is not in the reserve, 
+     * "Not enough money" if not enough money in the warChest
+     **/        
+    public String commissionShip(String nme)
+    {
+        if (reserves.containsKey(nme))
+        {
+            if(getMoney() >= reserves.get(nme).getFee())
+            {
+                if (isInAdmiralsFleet(nme) || reserves.containsKey(nme))
+                {
+                    if (!isInAdmiralsFleet(nme))
+                    {
+                        warChest = warChest - reserves.get(nme).getFee();
+                        Ship temp = reserves.get(nme);
+                        temp.setStateActive();
+                        reserves.remove(nme);
+                        fleet.put(temp.getName(),temp);
+                        return "Successfully commissioned ship";
+                    }
+                    else
+                    {
+                        return "Ship comissioned";
+                    }   
+                }
+                else
+                {
+                    return "Not found";
+                }
+            }
+            else
+            {
+                return "Not enough money";
+            }
+        }
+        else
+        {
+            return "Not available";
+        }
+    }
+
+    /** Returns true if the ship with the name is in 
+     * the admiral's fleet, false otherwise.
+     * @param nme is the name of the ship
+     * @return returns true if the ship with the name
+     * is in the admiral's fleet, false otherwise.
+     **/
+    public boolean isInAdmiralsFleet(String nme)
+    {
+        return fleet.containsKey(nme);
+    }
+
+    /** Removes a ship from the fleet to the reserves, if they are in the fleet
+     * pre-condition: isInAdmiralsFleet(nme)
+     * @param nme is the name of the ship
+     **/
+    public void decommissionShip(String nme)
+    {
+        if (isInAdmiralsFleet(nme))
+        {
+            if (fleet.get(nme).getState() == ShipState.ACTIVE || fleet.get(nme).getState() == ShipState.RESTING)
+            {
+                Ship temp = fleet.get(nme);
+                temp.setStateResting();
+                reserves.put(fleet.get(nme).getName(),fleet.get(nme));
+                fleet.remove(nme);
+                warChest = warChest + (0.5 * temp.getFee());
+                System.out.println("Successfully decomissioned ship: " + nme);
+            }
+        }
+        else
+        {
+            System.out.println("Ship is not in Admirals fleet");
+        }
+    }
+
+    /**Returns a String representation of the ships in the admiral's fleet
+     * or the message "No ships hired"
+     * @return a String representation of the ships in the admiral's fleet
+     **/
+    public String getFleet()
+    {
+        String stringTemp;
+        if (!(fleet.isEmpty()))
+        {
+            Collection<Ship> col = fleet.values();
+            stringTemp = "\nAll Ships In Fleet: ";
+            for (Ship temp : col)
+            {           
+                stringTemp = stringTemp + temp.toString();
+            }
+        }
+        else
+        {
+            stringTemp = "\nNo ships hired";
+        }
+        return stringTemp;
+    }
+
+    /**Restores a ship to the fleet by setting their state to AVAILABLE 
+     * @param the name of the ship to be restored
+     */
+    public void recommissionShip(String nme)
+    {
+        if (isInAdmiralsFleet(nme))
+        {
+            if (fleet.get(nme).getState() == ShipState.RESTING)
+            {
+                fleet.get(nme).setStateActive();
+                System.out.println("Successfully recomissioned ship: "+ fleet.get(nme).getName();;
+            }
+
+            else
+            {
+                System.out.println("Ship state not resting");
+            }
+        }
+        else
+        {
+            System.out.println("Ship not in admirals fleet");
+        }
+    }
+
+    /** returns true if the number represents a encounter
+     * @param num is the number of the encounter
+     * @returns true if the number represents a encounter
+     **/
+    public boolean isEncounter(int num)
+    {
+        return encounters.containsKey(num);
+    }
+
+    /** Retrieves the encounter represented by the encounter 
+     * number.Finds a ship from the fleet which can fight the 
+     * encounter. The results of fighting an encounter will be 
+     * one of the following: “Encounter won by...(ship reference and name)“ 
+     * – add plunder to War Chest and ship's state is set to RESTING,  “Encounter 
+     * lost as no ship available” – deduct plunder from the War Chest,“Encounter 
+     * lost on battle skill level and (ship name) sunk/lost" - deduct plunder from 
+     * War Chest and ship state set to sunk. If an encounter is lost and admiral 
+     * is completely defeated, add “You have been defeated ” to the output.
+     * Ensure that the state of the war chest is also included in the return message.
+     * @param encNo is the number of the encounter
+     * @return a String showing the result of fighting the encounter
+     */ 
+    public String fightEncounter(int encNo)
+    {
+        if (isEncounter(encNo))
+        {
+            Encounter eTemp = encounters.get(encNo);
+            if (eTemp.getType() == EncounterType.BLOCKADE)
+            {
+                Collection<Ship> col = fleet.values();
+                for (Ship temp : col)
+                {           
+                    if ((temp instanceof ManOWar || (temp instanceof Frigate && ((Frigate)temp).isPinnace())) && (temp.getBattleSkill() >= eTemp.getBattleSkill()) && (temp.getState() == ShipState.ACTIVE))
+                    {
+                        warChest = warChest + eTemp.getPlunder();
+                        temp.setStateResting();
+                        return "Encounter won by: " + temp.getName();
+                    }
+                }
+
+                for (Ship temp : col)
+                {           
+                    if ((temp instanceof ManOWar || (temp instanceof Frigate && ((Frigate)temp).isPinnace())) && (temp.getState() == ShipState.ACTIVE))
+                    {
+                        warChest = warChest - eTemp.getPlunder();
+                        temp.setStateSunk();
+                        if (isDefeated())
+                        {
+                            return "Encounter lost on battle skill level: " + temp.getName() + ". You have been defeated.";
+                        }
+                        else
+                        {
+                            return "Encounter lost on battle skill level: " + temp.getName();
+                        }
+                    }
+                }
+                warChest = warChest - eTemp.getPlunder();
+                return "Encounter blockade lost as no ship available";
+            }
+
+            if (eTemp.getType() == EncounterType.BATTLE)
+            {
+                Collection<Ship> col = fleet.values();
+                for (Ship temp : col)
+                {           
+                    if (temp.getBattleSkill() >= eTemp.getBattleSkill() && (temp.getState() == ShipState.ACTIVE) )
+                    {
+                        warChest = warChest + eTemp.getPlunder();
+                        temp.setStateResting();
+                        return "Encounter won by: " + temp.getName();
+                    }
+                }
+
+                for (Ship temp : col)
+                {           
+                    if  (temp.getState() == ShipState.ACTIVE)
+                    {
+                        warChest = warChest - eTemp.getPlunder();
+                        temp.setStateSunk();
+                        if (isDefeated())
+                        {
+                            return "Encounter lost on battle skill level: " + temp.getName() + ". You have been defeated.";
+                        }
+                        else
+                        {
+                            return "Encounter lost on battle skill level: " + temp.getName();
+                        }
+                    }
+                }
+
+                warChest = warChest - eTemp.getPlunder();
+                return "Encounter battle lost as no ship available";
+            }
+
+            if (eTemp.getType() == EncounterType.SKIRMISH)
+            {
+                Collection<Ship> col = fleet.values();
+                for (Ship temp : col)
+                {           
+                    if ((temp instanceof Frigate || temp instanceof Sloop) && (temp.getBattleSkill() >= eTemp.getBattleSkill()) && (temp.getState() == ShipState.ACTIVE))
+                    {
+                        warChest = warChest + eTemp.getPlunder();
+                        temp.setStateResting();
+                        return "Encounter won by: " + temp.getName();
+                    }
+                }
+
+                for (Ship temp : col)
+                {           
+                    if ((temp instanceof Frigate || temp instanceof Sloop) && (temp.getState() == ShipState.ACTIVE))
+                    {
+                        warChest = warChest - eTemp.getPlunder();
+                        temp.setStateSunk();
+                        if (isDefeated())
+                        {
+                            return "Encounter lost on battle skill level: " + temp.getName() + ". You have been defeated.";
+                        }
+                        else
+                        {
+                            return "Encounter lost on battle skill level: " + temp.getName();
+                        }
+                    }
+                }
+                warChest = warChest - eTemp.getPlunder();
+                return "Encounter skirmish lost as no ship available";
+            }
+            warChest = warChest - eTemp.getPlunder();
+            return "Encounter lost as no ship available";
+        }
+        else
+        {
+            return "Encounter does not exist, please try another encounter number";
+        }
+    }
+
+    /** Provides a String representation of an encounter given by 
+     * the encounter number
+     * @param num the number of the encounter
+     * @return returns a String representation of a encounter given by 
+     * the encounter number
+     **/
+    public String getEncounter(int num)
+    {
+        if (isEncounter(num))
+        {
+            return encounters.get(num).toString();
+        }
+        else
+        {
+            return "Encounter dosen't with that number does not exist";
+        }
+    }
+
+    /** Provides a String representation of all encounters 
+     * @return returns a String representation of all encounters
+     **/
+    public String getAllEncounters()
+    {
+        Collection<Encounter> col = encounters.values();
+        String stringTemp = "\nAll Encounters: ";
+        for (Encounter temp : col)
+        {           
+            stringTemp = stringTemp + temp.toString();
+        }
+        return stringTemp;
+    }
+
+    private void readShips(String file)
+    {
+        BufferedReader reader;
+
+        try
+        {       
+            reader = new BufferedReader (new FileReader (file));
+            String line = reader.readLine();
+
+            while (line != null)
+            {
+                StringTokenizer st = new StringTokenizer (line, ",");
+                while (st.hasMoreTokens())
+                {
+                    String type = st.nextToken();
+
+                    if (type.equals("ManOWar"))
+                    {
+                        String sName = st.nextToken();
+                        String sCaptain = st.nextToken();
+                        int sBSkill = Integer.parseInt(st.nextToken());
+                        int sLev = Integer.parseInt(st.nextToken());
+                        int sMar = Integer.parseInt(st.nextToken());
+
+                        Ship ship = new ManOWar(sName,sCaptain,sBSkill,sLev,sMar);
+                        reserves.put(ship.getName(),ship);
+                    }
+
+                    if (type.equals("Frigate"))
+                    {
+                        String sName = st.nextToken();
+                        String sCaptain = st.nextToken();
+                        int sBSkill = Integer.parseInt(st.nextToken());
+                        int sCan = Integer.parseInt(st.nextToken());
+                        boolean sPin = Boolean.parseBoolean(st.nextToken());
+
+                        Ship ship = new Frigate(sName,sCaptain,sBSkill,sCan,sPin);
+                        reserves.put(ship.getName(),ship);
+                    }
+
+                    if (type.equals("Sloop"))
+                    {
+                        String sName = st.nextToken();
+                        String sCaptain = st.nextToken();
+                        int sBSkill = Integer.parseInt(st.nextToken());
+                        int sFee = Integer.parseInt(st.nextToken());
+                        boolean sDoc = Boolean.parseBoolean(st.nextToken());
+
+                        Ship ship = new Sloop(sName,sCaptain,sBSkill,sFee,sDoc);
+                        reserves.put(ship.getName(),ship);
+                    }
+                }
+
+                line = reader.readLine();
+            }                   
+        }
+        catch (Exception e) {System.out.println (e);}
+    }
+
+    /** Writes whole game to the specified file
+     * @param fname name of file storing requests
+     */
+    public void saveGame(String fname){};
+
+    /** reads all information about the game from the specified file 
+     * and returns an Admiral object
+     * @param fname name of file storing the game
+     * @return the game (as a Admiral object)
+     */
+    public Admiral loadGame(String fname)
+    {
+        return null;
+    }
+
+}

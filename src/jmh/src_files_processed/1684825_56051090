@@ -1,0 +1,164 @@
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Scanner;
+import java.lang.Math;
+import java.util.*;
+
+/**
+ * ##### # ########### ## ##### ################ ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class IntrusionControl
+{
+    
+    private Response response;
+    protected ArrayList<Response> responses;
+    private int intrusionLevel;
+    
+
+    /**
+     * Constructor for objects of class IntrusionControl
+     */
+    public IntrusionControl()
+    {
+        response = new Response();
+        responses = new ArrayList<Response>();
+        
+        
+    }
+    
+    
+    public int getIntrusionLevel()
+      {
+       return intrusionLevel;
+    }
+       
+    public boolean isThereIntrusion()
+      {
+       boolean thereIsIntrusion = false;
+        if (intrusionLevel > 0)
+        {
+        thereIsIntrusion = true;
+        }
+        return thereIsIntrusion;
+    }
+    
+    public void checkForIntrusion()
+    {
+    if (isThereIntrusion() != false)
+    {
+    takeAction();
+    }
+     else
+     {
+         System.out.println("No intrusion detected " + response.dateTimeNow().toString());
+         System.out.println();
+     }    
+    }
+    
+    public void takeAction()
+    {
+          switch(getIntrusionLevel())
+              {               
+               case 1: 
+                    response.levelOneResponse();
+                    break;
+               case 2: 
+                    response.levelTwoResponse();
+                    break;
+               case 3:  
+                    response.levelThreeResponse();
+                    break;
+               case 4:  
+                    response.levelFourResponse();
+                    break;
+               case 5: 
+                    response.levelFiveResponse();
+                    break;
+                }
+                intrusionLevel = 0;
+    }
+   
+    
+    public void intrusionHasStopped()
+    {
+        if (intrusionLevel == 0) 
+        {
+        System.out.println("All intrusions have been stopped. Further monitoring will continue.");
+        System.out.println();
+        } 
+        else{
+        System.out.println("It is likely there is some intrusion. Investigation is on");
+        System.out.println();
+        }
+    }
+        
+    public void safeMode()
+    {
+        
+    }
+    
+    public void getEffectivenessReport()
+    {
+        
+    }
+   
+    public static int randInt(int min, int max) 
+     {
+
+     Random rand = new Random();
+
+     int randomNum = rand.nextInt((max - min) + 1) + min;
+
+     return randomNum;
+     }
+    
+   public void escalateIntrusion()
+   {
+       intrusionLevel = randInt(1,5);
+       System.out.println("Intrusion escalated to level: " +intrusionLevel);
+       System.out.println();
+    }
+   
+    
+     public void guardSystem()
+   {
+       intrusionHasStopped();
+       escalateIntrusion();
+       checkForIntrusion();
+    }
+    
+    public void continuousGuard()
+    {
+    int counter = 0;
+    while (counter <= 6){
+    guardSystem();
+    counter++;
+    }
+    
+   }
+   
+   public void newTask()
+      {
+        
+        int delay = 5000; 
+        int period = 3000; 
+
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask()
+          int counter = 0;
+          while (counter <= 8){
+        public void run()
+        {
+            guardSystem();
+            System.out.println("done");
+            counter++;
+        }
+      }
+      }, delay, period);
+        
+        }
+   
+}

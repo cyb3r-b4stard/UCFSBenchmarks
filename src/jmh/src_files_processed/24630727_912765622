@@ -1,0 +1,82 @@
+
+
+/**
+ * ##### # ########### ## ##### ########################## ####.
+ * 
+ * @###### ######### #. ###### 
+ * @####### ##/#/####
+ * 
+ * #### ##### ## ## ########### ##### #### ### #### ##### #### #### # #### ##### ######## #######.
+ */
+
+import java.util.*; 
+import java.io.*;  
+public class PayrollWhileLoopReadFileMethodsKAM
+{
+    public static void main(String[] args) throws IOException 
+    {
+        int lineCounterKAM = 1, hoursWorkedKAM;
+        String fileNameKAM, nameKAM="";
+        double payRateKAM=0, grossPayKAM, totalGrossPayKAM=0;
+        
+        fileNameKAM = getInputFileKAM();
+        
+        File file = new File(fileNameKAM);
+        
+        checkFileKAM(file, fileNameKAM);
+        
+        Scanner inputFile = new Scanner(file);
+        
+        while (inputFile.hasNext())
+        {
+            switch (lineCounterKAM)
+            {
+                case 1:  
+                    nameKAM = inputFile.nextLine();
+                    System.out.println("\nName: \t\t" + nameKAM);
+                    break;
+                case 2:  
+                    payRateKAM = inputFile.nextDouble();
+                    System.out.println("Pay Rate: \t" + payRateKAM + "\n\nWeek \t Hours Worked\t Gross Pay");
+                    break;
+                default: 
+                    hoursWorkedKAM = inputFile.nextInt(); 
+                    grossPayKAM = hoursWorkedKAM * payRateKAM; 
+                    totalGrossPayKAM += grossPayKAM; 
+                    System.out.printf("%d \t\t %d \t\t $%.2f\n", (lineCounterKAM-2), hoursWorkedKAM,grossPayKAM);
+        }
+        
+        lineCounterKAM++;
+    }
+    
+    System.out.printf("\nThe grand total of %s's %d-week pay is $%.2f.\n", nameKAM, (lineCounterKAM-3), totalGrossPayKAM);
+    
+    inputFile.close();
+}
+/*
+ * The getInputFileKAM method returns the input file name entered bythe user.
+ */
+public static String getInputFileKAM()
+{
+        String inputFileNameKAM; 
+    
+        Scanner keyboard = new Scanner(System.in);
+        
+        System.out.print("This program reads input from a text file.\nEnter the file name: ");
+        inputFileNameKAM = keyboard.nextLine();
+        
+        return inputFileNameKAM;
+}
+/*
+ * The checkfileKAM method accepts the two arguments. If the inputfile doesn't exist, the method will print the inputFileName to the cosole 
+ * window and terminate the program.
+ * @param inputFile: the File object
+ * @param inputFileName: the name of the input file
+ */ 
+public static void checkFileKAM(File inputFile, String inputFileName);
+        if (!inputFile.exists())
+        {
+             System.out.print("This file " + inputFileName + " does not exist in this folder.");
+             System.exit(0);
+        }
+}

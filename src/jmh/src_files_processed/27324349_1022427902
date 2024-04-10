@@ -1,0 +1,74 @@
+import java.util.*;
+import edu.duke.*;
+
+public class EarthQuakeClient2
+{
+    public EarthQuakeClient2() {
+    }
+
+    public ArrayList<QuakeEntry> filter(ArrayList<QuakeEntry> quakeData, Filter f) { 
+        ArrayList<QuakeEntry> answer = new ArrayList<QuakeEntry>();
+        for(QuakeEntry qe : quakeData) { 
+            if (f.satisfies(qe)) { 
+                answer.add(qe); 
+            } 
+        } 
+        return answer;
+    } 
+
+    public void quakesWithFilter() { 
+        EarthQuakeParser parser = new EarthQuakeParser(); 
+        String source = "data/nov20quakedatasmall.atom";
+        ArrayList<QuakeEntry> list  = parser.read(source);         
+        System.out.println("read data for "+list.size()+" quakes");
+
+        /*EarthQuakeClient2 eqc = new EarthQuakeClient2(); 
+        Filter f = new MinMagFilter(4.0); 
+        ArrayList<QuakeEntry> m7  = eqc.filter(list, f); 
+        for (QuakeEntry qe: m7) { 
+            System.out.println(qe);
+        } */
+        
+        /*EarthQuakeClient2 eqc2 = new EarthQuakeClient2(); 
+        Filter f1 = new MagnitudeFilter(4.0, 5.0); 
+        ArrayList<QuakeEntry> m8  = eqc2.filter(list, f1); 
+        
+        Filter f2 = new DepthFilter(-35000,-12000);
+        ArrayList<QuakeEntry> m9  = eqc2.filter(m8, f2);
+        for (QuakeEntry qe: m9) { 
+            System.out.println(qe);
+        } */
+        
+        EarthQuakeClient2 eqc3 = new EarthQuakeClient2(); 
+        Location City = new Location();
+        City = (35.42, 139.43);
+        Filter f3 = new DistanceFilter(10000000.00, City); 
+        ArrayList<QuakeEntry> m3  = eqc3.filter(list, f3); 
+        for (QuakeEntry qe: m3) { 
+            System.out.println(qe);
+        }
+        
+        
+    }
+
+    public void createCSV(){
+        EarthQuakeParser parser = new EarthQuakeParser();
+        String source = "data/nov20quakedatasmall.atom";
+        ArrayList<QuakeEntry> list  = parser.read(source);
+        dumpCSV(list);
+        System.out.println("# quakes read: "+list.size());
+    }
+
+    public void dumpCSV(ArrayList<QuakeEntry> list){
+        System.out.println("Latitude,Longitude,Magnitude,Info");
+        for(QuakeEntry qe : list){
+            System.out.printf("%4.2f,%4.2f,%4.2f,%s\n",
+                qe.getLocation().getLatitude(),
+                qe.getLocation().getLongitude(),
+                qe.getMagnitude(),
+                qe.getInfo());
+        }
+
+    }
+
+}

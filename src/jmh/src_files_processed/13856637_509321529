@@ -1,0 +1,494 @@
+
+/**
+ * # # # # # # # #
+ *
+ * #�###### ##### ###### ####### ###.
+ * #### ### ## #### #### ## ######### #######-### #######, ### ###### ## #########, ######### ## ######## ## ##### #### #'##########.
+ * 
+ * @###### (##### ###) ####### #######
+ * @####### (### ####) ## ######## ####
+ *
+ * (##### #### #########)############
+ * (##### ####### ## ########)##############@#####.###
+ */
+
+import java.io.*;
+ 
+public class Tp3Gr41 {
+
+    public static void presentation (){
+        System.out.println("Bienvenue dans la beta du Systeme Informatique de la Compagnie Couvres-Sol Couture!");
+        System.out.println("Ce systeme vous permet de modifier l'inventaire des stocks.");
+        System.out.println(" ");
+     }
+    public static void menuPrincipal(){
+        System.out.println("N-Ajouter un nouveau revetement de plancher en stock.");
+        System.out.println("I-Afficher toutes les informations sur le revêtement de plancher possédant le numéro specifie.");
+        System.out.println("L- Afficher toutes les informations sur tous les revetements de plancher en stock.(Afficher contenu du stocks).");
+        System.out.println("T- Afficher uniquement le nom, le type et la couleur du revetement de plancher possédant le numero specifie.");
+        System.out.println("S- Supprime le revêtement de plancher dont le numéro est spécifié.");
+        System.out.println("E- Changer l'essence du revetement de plancher ayant le numero specifier par nouvelle essence fournie.");
+        System.out.println("G- Changer le nom du manufacturier du revetement ayant le numero specifie, par le nouveau nom fourni.");
+        System.out.println("P- Modifier le prix du revetement de plancher dont le numero est specifie.");
+        System.out.println("D- Modifier le commentaire du revetement de plancher ayant le numero specifie par le commentaire fourni.");
+        System.out.println("Q- Quitter le programme");
+     }
+    public static char choixMenu (String message, String msgErreur, char choix1, char choix2, char choix3, char choix4,char choix5, char choix6, char choix7,char choix8, 
+    char choix9, char choix10){
+        char choix;
+        choix1= Character.toUpperCase(choix1);
+        choix2= Character.toUpperCase(choix2);
+        choix3= Character.toUpperCase(choix3);
+        choix4= Character.toUpperCase(choix4);
+        choix5= Character.toUpperCase(choix5);
+        choix6= Character.toUpperCase(choix6);
+        choix7= Character.toUpperCase(choix7);
+        choix8= Character.toUpperCase(choix8);
+        choix9= Character.toUpperCase(choix9);
+        choix10= Character.toUpperCase(choix10);
+        
+        System.out.println(message);
+        
+        choix = Clavier.lireCharLn();
+        choix = Character.toUpperCase(choix);
+        while( choix != choix1 && choix != choix2 && choix != choix3 && choix != choix4 && choix != choix5 && choix != choix6 && choix != choix7 && choix !=choix8 
+             && choix != choix9 && choix != choix10){
+                 System.out.println(msgErreur);
+                 System.out.println(message);
+                 choix = Clavier.lireCharLn();
+                 choix = Character.toUpperCase(choix);
+        }
+        return choix;
+    }
+    public static void sousMenu (){
+        System.out.println("*- Afficher toute les informations sur tous les revetements de plancher en stock.");
+        System.out.println("C- Afficher toutes les informations sur les revetements de plancher dont la couleur correspond a celle entree.");
+        System.out.println("F- Afficher toutes les informations sur les revetements de plancher qui sont en fin de ligne.");
+        System.out.println("A- Affiche toutes les informations sur les revetements de plancher dont l'annee de fabrication est celle fournie.");
+        System.out.println("R- Affiche toutes les informations sur les revetements de plancher ayant 'chaine' comme sous-chaine dans leur nom de produit.");
+        System.out.println("M-Afficher toutes les informations sur les revetements ayant comme manufacturier celui entree.");
+        
+    }
+    public static char choixSousMenu (String message, String msgErreur, char choix1, char choix2, char choix3, char choix4,char choix5, char choix6){
+        char choix;
+        choix1= Character.toUpperCase(choix1);
+        choix2= Character.toUpperCase(choix2);
+        choix3= Character.toUpperCase(choix3);
+        choix4= Character.toUpperCase(choix4);
+        choix5= Character.toUpperCase(choix5);
+        choix6= Character.toUpperCase(choix6);
+        
+        System.out.println(message);
+        
+        choix = Clavier.lireCharLn();
+        choix = Character.toUpperCase(choix);
+        while( choix != choix1 && choix != choix2 && choix != choix3 && choix != choix4 && choix != choix5 && choix != choix6){
+                 System.out.println(msgErreur);
+                 System.out.println(message);
+                 choix = Clavier.lireCharLn();
+                 choix = Character.toUpperCase(choix);
+        }
+        return choix;
+    }
+    public static Plancher [] ajouterPlancher (Plancher [] Stock){
+        boolean encoreEspace;
+        String nomM;
+        String nomP;
+        int type;
+        int couleur;
+        int essence;
+        boolean finLigne;
+        int annee;
+        double prix;
+        String commentaire;
+        
+        encoreEspace = encorePlace(Stock);
+        if(encoreEspace == true){
+            nomM= saisirValiderString ("Veuillez entrer le nom du manufacturier:", "Veuillez ne pas entrer une chaine nulle");
+            nomP= saisirValiderString ("Veuillez entrer le nom du produit:", "Veuillez ne pas entrer une chaine nulle");
+            type = saisirValiderEntier("Veuillez entrer le type de revetement: 0-Bois Franc, 1- Flottant Stratifie, 2-Bois d'ingenerie, 3- Parquetterie",
+                                        "Ce choix n'est pas valide", Plancher.REVETEMENT_MIN, Plancher.REVETEMENT_MAX);
+            couleur = saisirValiderEntier("Veuillez entrer la couleur:0-Inconnu, 1- Baie Sauvage,2- Cannelle, 3- Amaretto, 4-Cafe, 5- Cacao, 6-Bleu Minuit, 7- Bordeau, 8- Ebene,"+
+                                           "9-Cerise, 10- Truffe, 11-Vert, 12- Caramel, 13-Rhum, 14- Amande, 15- Terre de Sienne, 16-Moca, 17-Chataigne, 18-Vison.",
+                                           "Ce choix n'est pas valide.", Plancher.COULEUR_MIN, Plancher.COULEUR_MAX);
+            essence = saisirValiderEntier("Veuillez entrer l'essence: 0-Inconnu, 1- Chene, 2- Erable, 3- Merisier, 4- Pin, 5- Acajou, 6- Meleze, 7-Noyer", "Ce choix n'est pas valide.",
+                                            Plancher.ESSENCES_MIN, Plancher.ESSENCES_MAX);
+            finLigne = saisirValiderBool("Est-ce que le produit est en fin de ligne?(oui/non)?","Ceci n'est pas une réponse valide.", "OUI", "NON");
+            annee = saisirValiderEntier("Veuillez entrer l'annee:", "Ceci n'est pas une annee valide", Plancher.ANNEE_MIN, Plancher.ANNEE_MAX);
+            prix = saisirValiderDouble("Veuillez entrer le prix:", "Ceci n'est pas un prix valide", Plancher.PRIX_MIN, Plancher.PRIX_MAX);
+            commentaire = saisirValiderString("Veuillez entrer un commentaire:", "Veuillez ne pas entrer de chaine nulle");
+            
+            
+            Stock [placeTableau (Stock)] = new Plancher (nomP, nomM, annee, type, finLigne, prix,commentaire,couleur,essence);
+            System.out.println("Plancher bien entré");
+            
+        }
+        if(!encoreEspace){
+            System.out.println("L'inventaire est plein!");
+        }
+       return Stock;
+    }
+    public static boolean saisirValiderBool(String s, String msgErreur, String a, String b){
+        String reponse;
+        boolean rep = Plancher.FIN_DE_LIGNE_DEFAUT;
+        System.out.println(s);
+        reponse = Clavier.lireString();
+        
+        for(int i = 0; i < reponse.length() ; i++){
+                char x = reponse.charAt(i);
+                x = Character.toUpperCase(x);
+        }
+        while(reponse != a || reponse != b){
+            System.out.println(msgErreur);
+            System.out.println(s);
+            reponse = Clavier.lireString();
+            for(int i = 0; i < reponse.length(); i++){
+                char x = reponse.charAt(i);
+                x = Character.toUpperCase(x);
+            }
+        }
+        if (reponse == a){
+            rep = true;
+        }
+        if (reponse == b){
+            rep = false;
+        }
+        return rep;
+    }
+    public static String saisirValiderString(String s, String msgErreur){
+        String st;
+        System.out.println(s);
+        st = Clavier.lireString();
+        while (st != ""){
+            System.out.println(msgErreur);
+            System.out.println(s);
+            st = Clavier.lireString();
+        }
+        return st;
+    }
+    public static boolean encorePlace( Plancher [] Stock){
+        boolean encoreDeLaPlace = false;
+        for (int i = 0; i < Stock.length ; i++){
+            if (Stock[i] == null){
+                encoreDeLaPlace = true;
+            }
+        }
+        return encoreDeLaPlace;
+    }
+    public static int placeTableau( Plancher [] Stock){
+        int place = 0;
+        boolean trouve = false;
+        for (int i = 0; i < Stock.length ; i++){
+            if(Stock[i] == null && trouve == false){
+                place = i;
+            }
+        }
+        return place;
+    }
+    public static int saisirValiderEntier(String s, String msgErreur, int min, int max){
+        int e= 0 ;
+        
+        System.out.println(s);
+        e= Clavier.lireInt();
+        while (e > max || e < min){
+            System.out.println(msgErreur);
+            System.out.println(s);
+            e=Clavier.lireInt();
+        }
+        return e;
+    }
+    public static double saisirValiderDouble(String s, String msgErreur, double min, double max){
+        double e = 0;
+        System.out.println(s);
+        e = Clavier.lireDouble();
+        while (e>max || e<min){
+            System.out.println(msgErreur);
+            System.out.println(s);
+            e= Clavier.lireDouble();
+        }
+        return e;
+    }
+    public static void afficherSelonId(Plancher [] Stock){
+        int id = saisirValiderEntier("Veuillez entrer le ID du plancher recherche.","Erreur, entrer un nombre valide", 0,11);
+        id = rechercherId(Stock,id);
+        if(id == -1){
+            System.out.println("Plancher inexistant.");
+        }else{
+            System.out.println(Stock[id]);
+       }
+    }
+    public static int rechercherId (Plancher [] Stock, int id){
+         int idTrouve = -1;
+         for(int i = 0 ; i < 10; i++){
+            if (Stock[i].getId() == id){
+                idTrouve = i;
+            }
+        }
+        return idTrouve;
+    }
+    public static void afficherNomTypeCouleur(Plancher [] Stock){
+            int id = saisirValiderEntier("Veuillez entrer le id:", "Veuillez entrer un ID valide.",1, 11);
+            id = rechercherId(Stock, id);
+            if (id == -1){
+                System.out.println("ID Inexistant.");
+            }else {
+                System.out.println("Nom:" + Stock [id].getNomProduit());
+                System.out.println("Type:" + Stock [id].getTypeRevetement());
+                System.out.println("Couleur:" + Stock [id].getCouleur());
+                
+            }
+           
+    }
+    public static Plancher [] supprimer (Plancher [] Stock, int numeroPlancher){
+        boolean sur=false;
+        char reponse;
+        
+        if(Stock[numeroPlancher] == null){
+            System.out.println("Aucun stock ne possede ce numero en inventaire.");
+        }else{
+            System.out.println("Etes-vous sur de vouloir supprimer cet article?(o/O pour oui, n/N pour non)");
+            System.out.println("Nom Produit:"+Stock [numeroPlancher].getNomProduit()+"Couleur:"+Stock [numeroPlancher].getCouleur()+"Annee:"+Stock [numeroPlancher].getAnnee()+"Type de Revetement:"+Stock [numeroPlancher].getTypeRevetement()+
+                                                "Fin de Ligne:"+Stock [numeroPlancher].getFinLigne()+"Prix:"+Stock [numeroPlancher].getPrix()+"Commentaire:"+Stock [numeroPlancher].getCommentaire()+"ID:"+Stock [numeroPlancher].getId()+"Essence:"+Stock [numeroPlancher].getEssence());
+            reponse = Clavier.lireChar();
+            reponse = Character.toUpperCase(reponse);
+            while(reponse != 'O' && reponse !='N'){
+                System.out.println("Veuillez entrer une valeur valide.(O ou N)");
+                reponse = Clavier.lireChar();
+                reponse = Character.toUpperCase(reponse);
+            }
+            if(reponse == 'O'){
+            Stock [numeroPlancher] = null;
+            }
+        }
+        return Stock;
+    }
+    
+    public static Plancher [] modifierEssence(Plancher [] Stock){
+        
+        int id = saisirValiderEntier("Veuillez entrer le numero de l'article.", "Entrer un numero valide", 1, 11);
+        
+        int place = rechercherId(Stock, id);
+        
+        if(place == -1){
+            System.out.println("Article inexistant.");
+            
+        }else{
+            int choixEssence = saisirValiderEntier("Veuillez entrer le numero de l'essence voulu.", "Entrer une essence valide!", Plancher.ESSENCES_MIN, Plancher.ESSENCES_MAX);
+            Stock [place].setEssence(choixEssence);
+            System.out.println("Essence change!");
+        }
+        
+        return Stock;
+    }
+    
+    public static Plancher [] modifierManufacturier(Plancher [] Stock){
+        int id = saisirValiderEntier ("Veuillez entrer le numero de l'article.", "Entrez un numero valide!", 1,11);
+        int place = rechercherId(Stock, id);
+        
+        if (place == -1){
+            System.out.println("Article inexistant.");
+        }else {
+            String manuf = saisirValiderString("Veuillez entrer le nom du manufacturier.", "Entrez quelque chose!");
+            Stock [place].setNomManuf(manuf);
+            System.out.println("Nom de manufacturier change!");
+            
+        }
+        return Stock;
+    }
+    
+    public static Plancher [] modifierCommentaire(Plancher [] Stock){
+        int id = saisirValiderEntier ("Veuillez entrer le numero de l'article.", "Entrez un numero valide!", 1,11);
+        int place = rechercherId(Stock, id);
+        
+        if (place == -1){
+            System.out.println("Article inexistant.");
+        }else {
+            String com = saisirValiderString("Veuillez entrer le commentaire.", "Entrez quelque chose!");
+            Stock [place].setCommentaire(com);
+            System.out.println("Commentaire change!");
+            
+        }
+        return Stock;
+    }
+    
+    public static Plancher [] modifierPrix(Plancher [] Stock){
+        
+        int id = saisirValiderEntier("Veuillez entrer le numero de l'article.", "Entrer un numero valide", 1, 11);
+        
+        int place = rechercherId(Stock, id);
+        
+        if(place == -1){
+            System.out.println("Article inexistant.");
+            
+        }else{
+            double prix = saisirValiderDouble("Veuillez entrer le nouveau prix.", "Entrer un prix valide!!", Plancher.PRIX_MIN, Plancher.PRIX_MAX);
+            Stock [place].setPrix(prix);
+            System.out.println("Prix Change!!");
+        }
+        
+        return Stock;
+    }
+    
+    public static void sauverFichier (Plancher [] Stock){
+        try{
+            FileWriter fichierPlancher;
+            PrintWriter ecrivainPlancher;
+            
+            fichierPlancher = new FileWriter("planchers.txt");
+            ecrivainPlancher = new PrintWriter(fichierPlancher);
+            
+            for(int i = 0; i < Stock.length; i++){
+                if(Stock [i] != null){
+                ecrivainPlancher.println("Nom Produit:"+Stock [i].getNomProduit()+"Couleur:"+Stock [i].getCouleur()+"Annee:"+Stock [i].getAnnee()+"Type de Revetement:"+Stock [i].getTypeRevetement()+
+                                                "Fin de Ligne:"+Stock [i].getFinLigne()+"Prix:"+Stock [i].getPrix()+"Commentaire:"+Stock [i].getCommentaire()+"ID:"+Stock [i].getId()+"Essence:"+Stock [i].getEssence());
+                
+            }
+           }
+            
+            
+            
+        }
+    }
+    
+   
+    
+    public static void main (String[] params) {
+        presentation();
+        
+        final int longueurTableau = 10;
+        Plancher [] Stock = new Plancher [longueurTableau];
+        char choixSousMenu;
+        
+        
+        
+        
+        menuPrincipal();
+        
+        char choix = choixMenu("Veuillez entrer une commande.", "Erreur, Choix invalide.", 'N', 'I', 'L', 'T', 'S', 'E', 'G', 'P', 'D', 'Q');
+        
+        while (choix != 'Q'){
+            if (choix == 'N'){
+                Stock = ajouterPlancher (Stock);
+            }
+            
+            if (choix == 'I'){
+                afficherSelonId(Stock);
+                
+            }
+            
+            if (choix == 'T'){
+                afficherNomTypeCouleur(Stock);
+            }
+            
+            if (choix == 'L'){
+                sousMenu();
+                choixSousMenu = choixSousMenu("Veuillez entrer une Commande.", "Erreur, choix invalide.", '*','C','F','A','R','M');
+                
+                 if(choixSousMenu == '*'){
+                    for (int i= 0; i < 11;i++){
+                        String x = Stock [i].getNomProduit();
+                        System.out.println(x+",");
+                    }
+                 }
+                
+                 if (choixSousMenu == 'C'){
+                    int couleur = saisirValiderEntier("Veuillez entrer le numero associe à la couleur recherche:0-Inconnu, 1- Baie Sauvage,2- Cannelle, 3- Amaretto, 4-Cafe, 5- Cacao, 6-Bleu Minuit, 7- Bordeau, 8- Ebene,"+
+                                                       "9-Cerise, 10- Truffe, 11-Vert, 12- Caramel, 13-Rhum, 14- Amande, 15- Terre de Sienne, 16-Moca, 17-Chataigne, 18-Vison.","Erreur, cette couleur n'existe pas.",
+                                                       Plancher.COULEUR_MIN,Plancher.COULEUR_MAX);
+                                                       
+                    for (int i = 0; i < Stock.length; i++){
+                        int couleurTrouve = Stock [i].getCouleur();
+                        if (couleur == couleurTrouve){
+                            System.out.println("Nom Produit:"+Stock [i].getNomProduit()+"Nom Manufacturier:"+Stock [i].getNomManuf()+"Annee:"+Stock [i].getAnnee()+"Type de Revetement:"+Stock [i].getTypeRevetement()+
+                                                "Fin de Ligne:"+Stock [i].getFinLigne()+"Prix:"+Stock [i].getPrix()+"Commentaire:"+Stock [i].getCommentaire()+"ID:"+Stock [i].getId()+"Essence:"+Stock [i].getEssence());
+                        }
+                    }
+                 }
+                
+                 if (choixSousMenu == 'F'){
+                    boolean finLigne = saisirValiderBool("Veuillez entrer si le produit est en fin de ligne(Oui/Non)","Valeur Invalide(Oui/Non)","OUI","NON");
+                                                       
+                    for (int i = 0; i < Stock.length; i++){
+                        boolean finLigneTrouve = Stock [i].getFinLigne();
+                        if (finLigne == finLigneTrouve){
+                            System.out.println("Nom Produit:"+Stock [i].getNomProduit()+"Nom Manufacturier:"+Stock [i].getNomManuf()+"Annee:"+Stock [i].getAnnee()+"Type de Revetement:"+Stock [i].getTypeRevetement()+
+                                                "Couleur:"+Stock [i].getCouleur()+"Prix:"+Stock [i].getPrix()+"Commentaire:"+Stock [i].getCommentaire()+"ID:"+Stock [i].getId()+"Essence:"+Stock [i].getEssence());
+                        }
+                    }
+                    
+                 }
+                
+                 if(choixSousMenu == 'A'){
+                    int annee = saisirValiderEntier("Veuillez entrer l'annee du produit","Annee invalide.",Plancher.ANNEE_MIN,Plancher.ANNEE_MAX);
+                                                       
+                    for (int i = 0; i < Stock.length; i++){
+                        int anneeTrouve = Stock [i].getAnnee();
+                        if (anneeTrouve == annee){
+                            System.out.println("Nom Produit:"+Stock [i].getNomProduit()+"Nom Manufacturier:"+Stock [i].getNomManuf()+"Fin de Ligne:"+Stock [i].getFinLigne()+"Type de Revetement:"+Stock [i].getTypeRevetement()+
+                                                "Couleur:"+Stock [i].getCouleur()+"Prix:"+Stock [i].getPrix()+"Commentaire:"+Stock [i].getCommentaire()+"ID:"+Stock [i].getId()+"Essence:"+Stock [i].getEssence());
+                        }
+                    }
+                 }
+                 
+                 if (choixSousMenu == 'R'){
+                     String sousChaine = saisirValiderString("Veuillez entrer le sujet de votre recherche.", "Erreur, entrez quelque chose!");
+                     
+                     for (int i = 0; i < Stock.length;i++){
+                        String sousChaineTrouve = Stock[i].getNomProduit();
+                        
+                        for (int u = 0; u< sousChaineTrouve.length() ; u++){
+                            if(sousChaine.charAt(u) == sousChaineTrouve.charAt(u)){
+                                System.out.println("Nom Produit:"+Stock [i].getNomProduit()+"Nom Manufacturier:"+Stock [i].getNomManuf()+"Fin de Ligne:"+Stock [i].getFinLigne()+"Type de Revetement:"+Stock [i].getTypeRevetement()+
+                                                "Couleur:"+Stock [i].getCouleur()+"Prix:"+Stock [i].getPrix()+"Commentaire:"+Stock [i].getCommentaire()+"ID:"+Stock [i].getId()+"Essence:"+Stock [i].getEssence());
+                            }  
+                        }
+                     }
+                    
+                    
+                    }
+                    
+                  if(choixSousMenu == 'M'){
+                      String manuf = saisirValiderString("Veuillez entrer le nom du manufacturier.","Entrez quelquechose!");
+                    for (int i = 0; i < Stock.length; i++){
+                        String manufTrouve = Stock [i].getNomManuf();
+                        if (manuf == manufTrouve){
+                            System.out.println("Nom Produit:"+Stock [i].getNomProduit()+"Couleur:"+Stock [i].getCouleur()+"Annee:"+Stock [i].getAnnee()+"Type de Revetement:"+Stock [i].getTypeRevetement()+
+                                                "Fin de Ligne:"+Stock [i].getFinLigne()+"Prix:"+Stock [i].getPrix()+"Commentaire:"+Stock [i].getCommentaire()+"ID:"+Stock [i].getId()+"Essence:"+Stock [i].getEssence());
+                        }
+                    }
+                      
+                  }
+                    
+                }
+                
+            if (choix == 'S'){
+                int numeroASupprimer = saisirValiderEntier("Veuillez entrer le numero de l'article a supprimer.", "Ce numero d'article n'est pas valide!(Entre 1 et 10)",1,10);
+                Stock = supprimer(Stock, numeroASupprimer);
+            }
+            
+            if (choix == 'E'){
+                
+               Stock = modifierEssence(Stock);
+            }
+            
+            if(choix == 'G'){
+               Stock = modifierManufacturier(Stock);
+            }
+            
+            if (choix == 'D'){
+                Stock = modifierCommentaire(Stock);
+            }
+            
+            if (choix == 'P'){
+                Stock = modifierPrix(Stock);
+            }
+            
+            
+            
+            }
+            
+            
+        }
+    
+    } 
+

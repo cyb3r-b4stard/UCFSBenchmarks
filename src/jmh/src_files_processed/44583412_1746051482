@@ -1,0 +1,82 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+ 
+public class PantsOnFire {
+    private Hero h;
+    private Water[] w;
+    private ArrayList<Pants> pantList;
+     
+    private Random randGen;
+    private ArrayList<Fireball> fireballList;
+    private ArrayList<Fire> fireList;
+     
+ 
+    public PantsOnFire(String level, Random randGen) {
+        h=new Hero(Engine.getWidth()/2, Engine.getHeight()/2,3);
+        w=new Water[8];
+        pantsList= new ArrayList<Pants>(20);
+        for (int i = 0; i < 20; i++)
+        {
+            pantsList.add(new Pants(-1, -1, randGen));
+        }
+        fireballList = new ArrayList<Fireball>(6);
+        fireList=new ArrayList<Fire>(6);
+        for (int i=0; i<6;i++){
+            fireList.add(new Fire(Engine.getWidth()*randGen.nextFloat(), Engine.getHeight()*randGen.nextFloat(), randGen));
+        }
+    }
+ 
+    public String update(int time) {
+        h.update(time,w);
+        if(h.handleFireballCollisions(fireballList)){
+            return "QUIT";
+        }
+        for (int i=0;i<w.length;i++){
+            if(w[i]!=null){
+                w[i]=w[i].update(time);
+            }
+        }
+        for (Pants p:pantsList;){
+            p.handleFireballCollisions(fireballList);
+            if (p!=null){
+                p.update(time);
+            }
+             
+        }
+        for (Fireball f: fireballList){
+            f.handleWaterCollisions(w);
+            if (f!=null){
+                f.update(time);
+            }
+             
+        }
+        for(Fire f:fireList){
+            f.handleWaterCollisions(w);
+            if (f!=null){
+                Fireball f2 = f.update(time, fireballList);
+                if( f2!=null){
+                    fireballList.add(f2);
+                }
+            }
+        }
+        return "CONTINUE";
+    }
+ 
+    public String getHUDMessage() {
+        return "";
+    }
+ 
+    public void createRandomLevel() {
+ 
+    }
+ 
+    public void loadLevel(String level) {
+ 
+    }
+ 
+    public static void main(String[] args) {
+        Launcher.startEngineAndGame(args);
+    }
+ 
+}

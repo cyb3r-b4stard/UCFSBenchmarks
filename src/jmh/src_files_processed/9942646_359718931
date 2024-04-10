@@ -1,0 +1,165 @@
+import java.awt.*;
+import java.applet.*;
+import java.net.*;
+import java.awt.event.*;
+
+public class CarGame extends Applet implements Runnable
+{
+    Thread runner;
+    Image Buffer;
+    Graphics gBuffer;
+
+    boolean startGame;
+    boolean moveRight;
+    boolean moveLeft;
+  
+    Image myCar;
+    Image enemyCar;
+    int counter;
+    int carW;
+    int carH;
+    Car c;
+    ComputerCar cc;
+    int score;
+
+
+    public void init()
+    {
+           Buffer=createImage(size().width,size().height);
+           gBuffer=Buffer.getGraphics();
+           counter=0;
+           URL codeBase = getCodeBase();
+
+           startGame=false;
+           moveRight=false;
+           moveLeft=false;
+           carW=88;
+           carH=190;
+           score=0;
+           
+           enemyCar = getImage(codeBase, "carover2.png");
+           myCar = getImage(codeBase, "carover1.png");
+           c = new Car();
+           cc = new ComputerCar();
+           c.speed=5;
+           resize(500, 700);
+          
+    }
+    
+    public void carScore(){
+        if(cc.yValue > 700){
+            score++; 
+        }
+    }
+    
+    public boolean keyDown(Event e, int key)
+    {
+        if(key == Event.RIGHT){
+            moveRight=true;
+           }
+        
+        if(key == Event.LEFT){
+            moveLeft=true;  
+        }
+        return true;
+    }
+    
+    
+     public boolean keyUp(Event e, int key)
+    {
+        if(key == Event.RIGHT){
+            moveRight=false;
+           }
+        
+        if(key == Event.LEFT){
+            moveLeft=false;
+        }
+        return true;
+    }
+
+    public void start()
+    {
+            if (runner == null)
+            {
+                    runner = new Thread (this);
+                    runner.start();
+            }
+    }
+
+    public void stop()
+    {
+            if (runner != null)
+            {
+                    runner.stop();
+                    runner = null;
+            }
+    }
+
+    public void run()
+    {
+            while(true)
+            {
+                  
+                    try {runner.sleep(15);}
+                    catch (Exception e) { }
+        
+
+                    repaint();
+            }
+    }
+    
+    public void update(Graphics g)
+    {
+        paint(g);
+    }
+    
+     public void carsCollide(){
+        int carY=500;
+        if( ((c.xValue>cc.xValue && c.xValue<cc.xValue+carW) || (cc.xValue>c.xValue && cc.xValue<c.xValue+carW)) && carY<cc.yValue+carH){
+            runner.stop();
+            score=0;
+        }
+    }
+    
+    public void paint(Graphics g)
+    {
+        
+           
+           if(moveRight)
+           c.xValue+=c.speed;
+           
+           if(moveLeft)
+           c.xValue-=c.speed;
+           
+           cc.yValue+=c.speed;
+           if(cc.yValue>700){
+               carScore();
+               cc.yValue=-100;
+               cc.setXValue();
+               c.speed+=1;
+               if(c.speed>20)
+                    c.speed=20;
+            }
+           
+            g.setColor(Color.black);
+            g.fillRect(0,0,500,700);
+       
+             int width = myCar.getWidth(this);
+             int height = myCar.getHeight(this);
+             int width2 = enemyCar.getWidth(this);
+             int height2 = enemyCar.getHeight(this);
+              g.setColor(Color.white);
+              
+              Font font = new Font("Arial",Font.BOLD,30);
+              g.setFont(font);
+              g.setColor(Color.white);
+              g.drawString("Score: " + score, 10, 40);
+
+              
+            g.drawImage(enemyCar, cc.xValue, cc.yValue, width2, height2, this);
+            g.drawImage(myCar, c.xValue, 500, width, height, this);
+            
+            carsCollide();
+        }
+           g.drawString("You Lose!" , 250,350);
+}

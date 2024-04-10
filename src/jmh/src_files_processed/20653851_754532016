@@ -1,0 +1,283 @@
+public class DoublyLinkedList
+{
+    private Element first, last;
+    private int size;
+
+    public DoublyLinkedList()
+    {
+        first = last = null;
+        size = 0;
+    }
+
+    public int size()
+    {
+        return size;
+    }
+
+    public boolean isEmpty()
+    {
+        return size == 0;
+    }
+
+    public void add( Object content ) 
+    {
+        Element e = new Element( content );
+        if ( isEmpty() ) 
+        {
+            first = last = e;
+        }
+        else 
+        {
+            last.connectAsNext( e );
+            last = e;
+        }
+        size++;
+    }
+
+    public void showAll()
+    {
+        Element current = first;
+        while ( current != null )
+        {
+            if ( current.getContent() != null )
+            {
+                System.out.print( current.getContent().toString() );
+                if ( current != last )
+                {
+                    System.out.print(", ");
+                }
+            }
+            current = current.getNext();
+        }
+        System.out.println();
+    }
+    
+    
+    public void inspect() 
+    {
+        System.out.println( "list\nsize = " + size() );
+        if ( first != null ) {
+            System.out.println( "first = " + first.toString().substring(first.toString().indexOf('@')) );
+        } else {
+            System.out.println( "first = null" );
+        }
+        if ( last != null ) {
+            System.out.println( "last = " + last.toString().substring(last.toString().indexOf('@')) );
+        } else {
+            System.out.println( "last = null" );
+        }
+        System.out.println( "\nelements" );
+        if (last != null) {
+            Element current = first;
+            int i = 0;
+            while (current != null) {
+                inspectElement( current, i );
+                current = current.getNext();
+                i++;
+            }
+        } else {
+            System.out.println("none");
+        }
+        System.out.println();
+    }
+    
+    private void inspectElement( Element e, int index ) 
+    {
+        String info = "Element " + index + ": " 
+                      + e.toString().substring(e.toString().indexOf('@'));
+        info += " [ content = ";
+        if ( e.getContent() != null ) { 
+            info += e.getContent().toString(); 
+        } else {
+            info += "null";
+        }
+        info += ", previous = ";
+        if ( e.getPrevious() != null ) { 
+            info += e.getPrevious().toString().substring(e.getPrevious().toString().indexOf('@')); 
+        } else {
+            info += "null";
+        }
+        info += ", next = ";
+        if ( e.getNext() != null ) { 
+            info += e.getNext().toString().substring(e.getNext().toString().indexOf('@')); 
+        } else {
+            info += "null";
+        }
+        
+        info += " ]";
+        System.out.println( info );
+    }
+
+    private static class Element
+    {
+        private Object content;
+        private Element previous, next;
+
+        public Element( Object c )
+        {
+            content = c;
+            previous = next = null;
+        }
+
+        public Object getContent()
+        {
+            return content;
+        }
+
+        public void setContent( Object c )
+        {
+            content = c;
+        }
+
+        public boolean hasNext()
+        {
+            return next != null;
+        }
+
+        public Element getNext()
+        {
+            return next;
+        }
+
+        public void disconnectNext()
+        {
+            if ( hasNext() ) 
+            {
+                next.previous = null;
+                next = null;
+            }
+        }
+
+        public void connectAsNext( Element e)
+        {
+            disconnectNext();
+            next = e;
+            if ( e != null ) 
+            {
+                e.disconnectPrevious();
+                e.previous = this;
+            }
+        }
+
+        public boolean hasPrevious()
+        {
+            return previous != null;
+        }
+
+        public Element getPrevious()
+        {
+            return previous;
+        }
+
+        public void disconnectPrevious()
+        {
+            if ( hasPrevious() )
+            {
+                previous.next = null;
+                previous = null;
+
+            }
+        }
+
+        public void connectAsPrevious( Element e )
+        {
+            disconnectPrevious();
+            previous = e;
+            if ( e != null )
+            {
+                e.disconnectNext();
+                e.next = this;
+            }
+        }
+    }
+
+    public void clear()
+    {
+        first = last = null;
+    }
+    
+    public Object getLast()
+    {
+        if(!isEmpty())
+        {
+            return last.getContent();
+        }
+        else
+        {
+            throw new RuntimeException();
+        }
+    }
+    
+    public boolean contains(Object o)
+    {
+        Element current = first;
+        while(current != null)
+        {
+            if((o==null && current.getContent()==null) || (o!=null && o.equals(current.getContent())))
+            {
+                return true;
+            }
+            current = current.getNext();
+        }
+        return false;
+    }
+    
+    public int count(Object o)
+    {
+        Element current = first;
+        int count=0;
+        
+        while(current !=null)
+        {
+            if((o == null && current.getContent()== null) || (o!=null && o.equals(current.getContent())))
+            {
+                count++;
+            }
+            current = current.getNext();
+        }
+        return count;
+    }
+    
+    public boolean allEqual()
+    {
+        if(!isEmpty)
+        {
+            Object o = first.getContent();
+            Element current = first.getNext();
+            
+            while(current != null)
+            {
+                if((o == null && current.getContent() != null) || (o!=null && !o.equals(current.getContent())))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    
+    public boolean containsDouble()
+    {
+        if(!isEmpty)
+        {
+            Element current = first
+            
+            while(current!=null)
+            {   
+                if(contains(current.getNext(), current.getContent()))
+                {
+                    return true;
+                }
+                else
+                {
+                    current = current.getNext();
+                }
+            }
+        }
+        return false;
+    }
+}

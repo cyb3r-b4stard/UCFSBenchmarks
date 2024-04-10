@@ -1,0 +1,92 @@
+import java.util.Random;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.HashSet;
+/**
+ * ### ######### ##### ########## # ######## ######### ######.
+ * ## ## #### ## ######## ## ######### ######## ## ## ##### ######.
+ * 
+ * @######     ####### ####### ### ##### #. ######
+ * @#######    #.# (####.##.##)
+ */
+public class Responder
+{
+    Random random;
+    HashMap<String, String> responseMap;
+    ArrayList<String> defaultResponses;
+    String lastDefaultResponse;
+    /**
+     * Construct a Responder - nothing to do
+     */
+    public Responder()
+    {
+        random = new Random();
+        responseMap = new HashMap<String, String>();
+        defaultResponses = new ArrayList<String>();
+        fill();
+        lastDefaultResponse = "";
+    }  
+
+    /**
+     * Generate a response.
+     * @return   A string that should be displayed as the response
+     */
+    public String generateResponse(HashSet<String> words)
+    {
+        for (String word : words) {
+            String response = responseMap.get(word);
+        }
+        if (response != null) {
+            return response;
+        }
+        }
+        return pickDefaultResponse();
+    }
+    
+    private void fill()
+    {
+        responseMap.put("slow",
+                        "I think this has to do with your hardware. \n" +
+                        "Upgrading your processor should solve all " +
+                        "performance problems. \n" +
+                        "Have you got a problem with our software?");
+        responseMap.put("bug",
+                        "Well, you know, all software has some bugs. \n" +
+                        "But our software engineers are working very " +
+                        "hard to fix them. \n" +
+                        "Can you describe the problem a bit further?");
+        responseMap.put("expensive",
+                        "The cost of our product is quite competitive. \n" +
+                        "Have you looked around and " +
+                        "really compared our features?");
+                        
+        defaultResponses.add("That sounds odd. Could you describe \n" +
+                      "that problem in more detail?");
+        defaultResponses.add("No other customer has ever \n" +
+                      "complained about this before. \n" +
+                      "What is your system configuration?");
+        defaultResponses.add("That’s a known problem with Vista." +
+                      "Windows 7 is much better.");
+        defaultResponses.add("I need a bit more information on that.");
+        defaultResponses.add("Have you checked that you do not \n" +
+                      "have a dll conflict?");
+        defaultResponses.add("That is explained in the manual. \n" +
+                      "Have you read the manual?");
+        defaultResponses.add("Your description is a bit \n" +
+                      "wishy-washy. Have you got an expert \n" +
+                      "there with you who could describe \n" +
+                      "this more precisely?");
+        defaultResponses.add("That’s not a bug, it’s a feature!");
+        defaultResponses.add("Could you elaborate on that?");
+    }
+    
+    private String pickDefaultResponse()
+    {
+        String response = defaultResponses.get(random.nextInt(defaultResponses.size()));
+        if (response.equals(lastDefaultResponse)) {
+            response = pickDefaultResponse();
+        }
+        lastDefaultResponse = response;
+        return response;
+    }
+}

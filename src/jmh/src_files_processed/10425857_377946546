@@ -1,0 +1,186 @@
+/*
+####### ####### 
+   ##### ## 
+   #######
+   #/##/##
+
+   ########### ## #### ### ####### ####.
+
+*/
+
+import objectdraw.*;
+import java.awt.*;
+import java.util.Random;
+
+ 
+
+
+public class Events extends FrameWindowController {
+
+    private static final int RECT_LENGTH = 70;
+    private static final int LAUNDRY_LENGTH = 40;
+    private static final int RECT_COORD_Y = 350;
+    
+    private static final int RECT_ONE_X = 200; 
+    private static final int RECT_TWO_X = 300;
+    private static final int RECT_THREE_X = 400;
+    private static final int RECT_FOUR_X = 250;
+    private static final int COLORED_RECT_COORD_Y = 30; 
+    private static final int MAX_COLOR_LEVEL = 256;
+    private static final int CORRECT_DARKS= 230;
+    private static final int CORRECT_WHITES= 600;
+    
+    
+    private FramedRect whitesSquare, darksSquare, colorsSquare, randoLaundry;
+    private FilledRect randoLaundryColor;
+    private int redLevel, blueLevel, greenLevel, colorSum;
+    private Random rand = new Random();
+    
+    
+     
+    
+    
+    
+        private static final int TEXT_X = 160;
+        private static final int TEXT_Y = 500;
+        private static final int TEXT_SIZE = 10;
+        private Text display;
+         private int correct, wrong;
+         
+         private Location lastMouse;
+         
+          private boolean squareGrabbed;
+    
+    
+    public void begin() {
+        
+        
+        redLevel =rand.nextInt(MAX_COLOR_LEVEL);
+        greenLevel=rand.nextInt(MAX_COLOR_LEVEL);
+        blueLevel=rand.nextInt(MAX_COLOR_LEVEL);
+        
+
+
+        resize(600,650); 
+        whitesSquare = new FramedRect(RECT_ONE_X, RECT_COORD_Y, RECT_LENGTH, RECT_LENGTH, canvas);  
+        darksSquare = new FramedRect(RECT_TWO_X, RECT_COORD_Y, RECT_LENGTH, RECT_LENGTH, canvas);
+        colorsSquare = new FramedRect(RECT_THREE_X, RECT_COORD_Y, RECT_LENGTH, RECT_LENGTH, canvas);
+        
+        new Text("whites", RECT_ONE_X+5, RECT_COORD_Y, canvas);
+        new Text("darks", RECT_TWO_X+5, RECT_COORD_Y, canvas);
+        new Text("colors", RECT_THREE_X+5, RECT_COORD_Y, canvas);
+        
+
+        
+        randoLaundryColor = new FilledRect(RECT_FOUR_X, COLORED_RECT_COORD_Y, LAUNDRY_LENGTH, LAUNDRY_LENGTH, canvas);
+        randoLaundry = new FramedRect(RECT_FOUR_X, COLORED_RECT_COORD_Y, LAUNDRY_LENGTH, LAUNDRY_LENGTH, canvas);
+                
+        Color randomColor = new Color(redLevel, greenLevel, blueLevel);
+        randoLaundryColor.setColor(randomColor); 
+        
+       
+        correct = 0;
+        wrong = 0;
+        display = new Text("Correct = "+ correct + "         Incorrect =" + wrong, TEXT_X, TEXT_Y, canvas);
+        display.setFontSize(TEXT_SIZE);
+        squareGrabbed = false;
+        
+    }
+        
+    public void onMousePress(Location point) {
+        squareGrabbed = randoLaundryColor.contains(point);
+        squareGrabbed= randoLaundry.contains(point); 
+        lastMouse = point;
+        
+         
+        
+      
+    }
+
+    public void onMouseRelease(Location point) {
+          colorSum=redLevel+blueLevel+greenLevel;
+        
+        if (colorSum < CORRECT_DARKS && darksSquare.contains(point) && squareGrabbed){   
+            redLevel = rand.nextInt(MAX_COLOR_LEVEL);
+            greenLevel = rand.nextInt(MAX_COLOR_LEVEL);
+            blueLevel = rand.nextInt(MAX_COLOR_LEVEL);
+            
+            Color randomColor = new Color(redLevel, greenLevel, blueLevel);
+            randoLaundryColor.setColor(randomColor);
+            
+            correct = correct + 1;  
+            display.setText("Correct = "+ correct + "         Incorrect =" + wrong);
+           
+        }
+        if (colorSum > CORRECT_WHITES && whitesSquare.contains(point) && squareGrabbed ){
+            redLevel = rand.nextInt(MAX_COLOR_LEVEL);
+            greenLevel = rand.nextInt(MAX_COLOR_LEVEL);
+            blueLevel = rand.nextInt(MAX_COLOR_LEVEL);
+            
+            Color randomColor = new Color(redLevel, greenLevel, blueLevel);
+            randoLaundryColor.setColor(randomColor); 
+            
+            correct = correct + 1;  
+            display.setText("Correct = "+ correct + "         Incorrect =" + wrong);
+            
+        }if(CORRECT_DARKS < colorSum && colorSum < CORRECT_WHITES && colorsSquare.contains(point) && squareGrabbed){
+            redLevel = rand.nextInt(MAX_COLOR_LEVEL);
+            greenLevel = rand.nextInt(MAX_COLOR_LEVEL);
+            blueLevel = rand.nextInt(MAX_COLOR_LEVEL);
+            
+            Color randomColor = new Color(redLevel, greenLevel, blueLevel);
+            randoLaundryColor.setColor(randomColor); 
+            
+            correct = correct + 1;  
+            display.setText("Correct = "+ correct + "         Incorrect =" + wrong);
+        } else {
+             wrong = wrong + 1;
+             display.setText("Correct = "+ correct + "         Incorrect =" + wrong);
+             new Text ("Color = " + redLevel + " , " + greenLevel + "," + blueLevel, ); 
+             new Text ("Darks:0-229   Colors:230-600   Whites:601-765", );
+                
+            
+            }
+
+       
+         randoLaundryColor.moveTo(RECT_FOUR_X, COLORED_RECT_COORD_Y);
+         randoLaundry.moveTo(RECT_FOUR_X, COLORED_RECT_COORD_Y);
+        
+        
+    }
+
+    
+    public void onMouseClick(Location point) {
+        
+      
+
+        
+    }
+
+    public void onMouseEnter(Location point) {
+    }
+
+    public void onMouseExit(Location point) {
+    }
+
+
+    public void onMouseDrag(Location point) {
+        
+     if (squareGrabbed) {
+            randoLaundryColor.move(point.getX()-lastMouse.getX(), point.getY()-lastMouse.getY());
+            randoLaundry.move(point.getX()-lastMouse.getX(), point.getY()-lastMouse.getY());
+            lastMouse = point;
+           
+           }
+
+
+        
+           
+        
+
+        
+        
+        
+    }
+
+}

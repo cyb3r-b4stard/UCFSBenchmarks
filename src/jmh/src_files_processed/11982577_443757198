@@ -1,0 +1,294 @@
+/**
+ * #####: #### ####### #### #########
+ * ####: ##/##/####
+ * #########: ###### ## ###### #### ########## ## ########### ## ########### ##
+ * #######: #### ###### ##### # ##### # ##### # ####### ###, ########## ## 
+ *          ####:
+ *          ## ####### #####, #### # ##### ### ##### # ### ######, ### #### 
+ *          ########### ### ## ######## ### ####### #########.
+ */
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import javax.imageio.*;
+
+public class Desenhista extends JFrame
+{
+    /**
+     * O construtor do aplicativo Desenhista. É aqui que todos os elementos da interface gráfica são
+     * construídos, configurados e posicionados. Por enquanto, aqui também é feito o tratamento de 
+     * eventos (input de usuário através de mouse e teclado), utilizando classes anônimas.
+     * Provavelmente vamos separar esta funcionalidade no futuro.
+     * 
+     * @see javax.swing.JFrame
+     */
+    public Desenhista() {
+        tela = new Tela(); 
+        indice = -1;
+        estaDesenhando = false;
+
+        btnAdicionarVertice = criaBotao("+V");
+        btnAdicionarVertice.setBackground(Color.RED);
+
+        btnAdicionarArestas = criaBotao("+A");
+        btnAdicionarArestas.setBackground(Color.RED);
+        
+        btnRemoverVertice = criaBotao("-V");
+        btnRemoverVertice.setBackground(Color.RED);
+
+        btnRemoverArestas = criaBotao("-A");
+        btnRemoverArestas.setBackground(Color.RED);
+
+        btnMoverVertice = criaBotao("M");
+
+        btnLimparCanvas = criaBotao("LIMPAR");
+        btnSalvarImagem = criaBotao("Salvar");
+
+        btnProfundidade = criaBotao("Profundidade");
+        btnLargura = criaBotao("Largura");
+        campoTexto = criaCampoDeTexto(20);
+
+        JPanel pnlBotoes = criaPanel(btnAdicionarVertice, btnAdicionarArestas, btnRemoverVertice, btnRemoverArestas, btnMoverVertice, btnLimparCanvas, btnSalvarImagem, btnProfundidade, btnLargura);
+        pnlBotoes.add(campoTexto);
+
+        tela.setPreferredSize(new Dimension(LARGURA, ALTURA));        
+    }
+        tela.addMouseListener(new MouseAdapter(){
+                public void mousePressed(MouseEvent e){   
+                    Ponto2D cordenadas = new Ponto2D();
+                    cordenadas = new Ponto2D(e.getX(), e.getY());
+
+                    if(estaMovendo){
+                        indice = tela.encontrarPonto(cordenadas);
+
+                        if (indice >  -1) {
+                            estaMovendo = false;
+                            new Listener().actionPerformedAdicionarVertice(false);
+                        }
+                    } else {
+                        
+                        if (estaDesenhandoAresta && verticeAresta < 0) {
+                            verticeAresta = tela.encontrarPonto(cordenadas);
+                        } else if (estaDesenhandoAresta && verticeAresta > -1) {
+                            int outroVertice = tela.encontrarPonto(cordenadas);
+                            if (outroVertice > -1) {
+                                boolean temp = tela.addAresta(new Aresta(tela.getVertice(verticeAresta), tela.getVertice(outroVertice)));
+                                if (temp) {
+                                    tela.desenhar();
+                                    tela.repaint();
+                                    new Listener().actionPerformedLigarVertice();
+                                }
+                            }
+                        }
+                        
+                        if (estaRemovendoAresta) {
+                        
+                        if (estaRemovendoVertice) {
+                            int ponto = tela.encontrarPonto(cordenadas);
+                            tela.removerVertice(ponto);
+                            new Listener().actionPerformedRemoverVertice();
+                        }
+
+                        if(estaDesenhando){
+                            desenhar(cordenadas);
+                        }
+                        tela.repaint();
+
+                    }
+
+                } 
+            });
+
+        Container organizacao = getContentPane();
+        organizacao.setLayout(new BorderLayout());
+        organizacao.add(tela, BorderLayout.CENTER);       
+        organizacao.add(pnlBotoes, BorderLayout.SOUTH);
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("Desenhista de Grafos - Lab. Comp. II");
+        pack();
+        setVisible(VISIBILIDADE);
+        requestFocus();
+    }
+
+    public void desenhar(Ponto2D cordenadas){        
+        boolean moveu = false;
+
+        if(indice > -1){
+            Vertice removido = tela.removerVertice(indice);
+            String nome = removido.getNome();
+            tela.addVertice(cordenadas, nome);
+            tela.atualizaAresta(removido);
+            indice = -1;
+            moveu = true;
+        } else {
+            tela.addVertice(cordenadas, campoTexto.getText());
+
+        }                   
+
+        campoTexto.setText("");
+        repaint();
+        tela.desenhar();
+        tela.repaint();
+        new Listener().actionPerformedAdicionarVertice(moveu);
+    }
+
+    public static JPanel criaPanel(JButton ... btns){
+        JPanel pnlBotoes = new JPanel(new FlowLayout());
+
+        for(int i = 0 ; i < btns.length ; i++){
+            pnlBotoes.add(btns[i]);
+        }
+
+        return pnlBotoes;
+    }
+
+    public JButton criaBotao(String btnNome){
+        JButton btn = new JButton(btnNome);
+        btn.addActionListener(new Listener());      
+        return btn;
+    }
+
+    public static JTextField criaCampoDeTexto(int tamanho){
+        JTextField campoTexto = new JTextField(tamanho);
+        campoTexto.setToolTipText("Entre com o nome desejado para o vertice");
+        return campoTexto;
+    }
+
+    /****************************** CAMPOS PRIVADOS ***************************************/
+
+    private Tela tela;
+    private JButton btnAdicionarVertice, btnMoverVertice, btnCriarAresta, btnLimparCanvas, btnSalvarImagem,btnAdicionarArestas,btnProfundidade, btnLargura, btnRemoverVertice, btnRemoverArestas;
+    private JTextField campoTexto;
+    private boolean estaDesenhando, estaMovendo, estaDesenhandoAresta, estaRemovendoAresta, estaRemovendoVertice;
+    private int indice, verticeAresta;
+
+    private static final int LARGURA = 800;
+    private static final int ALTURA = 600;
+    private static final int TAMANHO_CAMPO = 20;
+    private static final boolean VISIBILIDADE = true;    
+
+    /** Classe privada que irá tratar as ações dos botões '+' e 'Habilitar desenho'  
+     * 
+     */
+    private class Listener implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent e){
+
+            if(e.getActionCommand().equals("LIMPAR")){                
+                actionPerformedLimparCanvas();
+            }
+
+            if(e.getActionCommand().equals("M")){
+
+                if(tela.getVertices().size() < 1){
+                    JOptionPane.showMessageDialog(null, "Primeiramente desenhe um vertice");
+                    return;
+                }
+
+                actionPerformedMoverVertice();
+            }
+
+            if(e.getActionCommand().equals("Salvar")){
+                String title = JOptionPane.showInputDialog(null, "choose the name of the file", "file name", JOptionPane.QUESTION_MESSAGE);
+                try{  
+                    BufferedImage image=new BufferedImage(tela.getWidth(), 
+                            tela.getHeight(),BufferedImage.TYPE_INT_ARGB);
+
+                    Graphics2D g2= (Graphics2D)image.getGraphics();
+                    SwingUtilities.paintComponent(g2, tela, new JFrame(), 0, 0,
+                        tela.getWidth(), tela.getHeight());
+
+                    ImageIO.write(image, "png", new File(title+ ".png"));
+                } catch (IOException i) {  
+                } 
+            }
+
+            if(e.getActionCommand().equals("+V")){
+                actionPerformedAdicionarVertice(false);
+            }
+
+            if(e.getActionCommand().equals("+A")){
+                actionPerformedLigarVertice();
+            }
+            
+            if(e.getActionCommand().equals("-V")){
+                actionPerformedRemoverVertice();
+            }
+            
+            if(e.getActionCommand().equals("-A")){
+                actionPerformedRemoverAresta();
+            }
+
+        }  
+
+        public void actionPerformedLimparCanvas(){
+            tela.removerTodos();
+            tela.repaint();
+            requestFocusInWindow();
+        }
+
+        public void actionPerformedMoverVertice() {
+            if(estaDesenhando){
+                JOptionPane.showMessageDialog(null, "É preciso desabilitar o botão '+' para mover um vertice");
+                btnAdicionarVertice.requestFocusInWindow();
+            } else {                
+                btnAdicionarArestas.setBackground(Color.RED);
+                estaDesenhandoAresta = false;
+                verticeAresta = -1;
+                estaMovendo = true;
+            }
+        }
+
+        public void actionPerformedAdicionarVertice(boolean moveu) {
+
+            if(btnAdicionarVertice.getBackground().equals(Color.GREEN)){
+                btnAdicionarVertice.setBackground(Color.RED);
+                btnAdicionarVertice.requestFocusInWindow();
+                estaDesenhando = false;
+            } else {
+
+                if(!moveu){
+                    btnAdicionarVertice.setBackground(Color.GREEN);
+                    estaDesenhando = true;
+                    campoTexto.requestFocusInWindow();
+                } else {
+                    estaDesenhando = false;
+                }
+            }
+        }
+
+        public void actionPerformedLigarVertice() {
+            if(btnAdicionarArestas.getBackground().equals(Color.GREEN)){
+                btnAdicionarArestas.setBackground(Color.RED);
+                verticeAresta = -1;
+            } else {
+                btnAdicionarArestas.setBackground(Color.GREEN);
+                btnAdicionarVertice.setBackground(Color.RED);
+                estaMovendo = false;
+                estaDesenhando = false;
+                estaRemovendoAresta = false;
+                estaRemovendoVertice = false;
+                estaDesenhandoAresta = true;
+            }
+
+        }
+        public void actionPerformedRemoverVertice() {
+            if(btnRemoverArestas.getBackground().equals(Color.GREEN)){
+                btnRemoverArestas.setBackground(Color.RED);
+            } else { 
+                btnRemoverArestas.setBackground(Color.GREEN);
+                estaRemovendoVertice = true;
+
+            }
+        }
+        public void actionPerformedRemoverAresta () {
+        }
+
+    }
+}

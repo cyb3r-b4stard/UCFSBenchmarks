@@ -1,0 +1,943 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*; 
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class Spiel extends JFrame implements ActionListener 
+{
+    private JTextField name;
+    private JTextArea taEingabe, taAusgabe;
+    private JLabel notification, LabelOne, aktion, anzeige, zahl1, zahl2;
+    private JButton neuesBt, start, del, sel, stats, aktion1, aktion2, aktion3, statsOption;
+    private JButton[] auswahl = new JButton[21];
+    private int[] werte={21,31,66,55,44,33,22,11,65,64,63,62,61,54,53,52,51,43,42,41,32};
+    private static int speed=8;
+     Color greenly = new Color (10, 225, 110);
+     Color blue = new Color(20, 20, 240);
+     Color blue2 = new Color(45, 45, 190);
+     Color blue3 = new Color(80, 80, 210);
+     Color grayly = new Color (170, 170, 170);
+     Color gray = new Color (120, 120, 120);
+     Color green = new Color (29, 248, 29);
+     Color red = new Color (248, 29, 29);
+     Color purple = new Color (214, 50, 226);
+     private boolean isAnimating=false;
+     private static int num=29;
+     private JCheckBox[] c=new JCheckBox[21];
+     private JButton[] up=new JButton[21];
+     private JButton[] down=new JButton[21];
+     private String[] a1=new String[21];
+     private int count=0;
+     private int num2=0;
+     private int cou=0;
+     private int showList=0;
+     private int position=0;
+     private int removeViews1=0;
+     private int addViews1=0;
+     private int notificationCount=0;
+     private boolean amWuerfeln=false;
+     private boolean zeigeStrafpunkte=true;
+     private String[] history=new String[21];
+     private String[] r1=new String[21];
+     private Spiel sp;
+     private Spieler[] list;
+     private int aktuelleZahl=0;
+     private int zug=0;
+     private int[] zahlen=new int[3];
+     private boolean ersterZug=true;
+     private int combineNumbers=0;
+     
+              Timer myTimer = new Timer();
+              
+     public Spiel()   
+     {    
+          super("Meiern");
+          this.getContentPane().setBackground(greenly);
+          this.getContentPane().setLayout(null);
+          
+          sp=this;
+          
+          myTimer.schedule(action, 0, 25);
+          
+          LabelOne=new JLabel("Spieloptionen");
+          LabelOne.setBounds (25, 0, 400, 60);
+          LabelOne.setFont(LabelOne.getFont().deriveFont(22f));
+          LabelOne.setForeground(Color.white);
+          this.getContentPane().add(LabelOne);
+          name=new JTextField("");
+          name.setBounds (420, 85, 250, 45);
+          name.setBackground(blue3);
+          name.setForeground(Color.white);
+          name.setFont(name.getFont().deriveFont(20f));
+          this.getContentPane().add(name);
+          neuesBt = new JButton("Spieler hinzufügen");
+          neuesBt.setBounds (420, 145, 250, 45);
+          neuesBt.setBackground(blue2);
+          neuesBt.setForeground(Color.white);
+          neuesBt.setFont(neuesBt.getFont().deriveFont(16f));
+          neuesBt.addActionListener(new ActionListener()
+          {
+              public void actionPerformed(ActionEvent e)
+              {
+                  try{
+                  if(!isAnimating){
+                  if(cou!=21){
+                      if(name.getText().isEmpty())
+                      err("Ungültiger Name!");
+                      else{
+                      taEingabe.setText(taEingabe.getText()+name.getText()+"\n");
+                      name.setText("");
+                      del.setIcon(new ImageIcon ("trash.png"));
+                      sel.setIcon(new ImageIcon ("sort.png"));
+                  cou++;
+                }
+                }else
+                    err("Maximale Spielerzahl erreicht!");
+              }
+              }catch(Exception error){
+                    err("Error: " + error);
+                }
+            }
+          });
+          this.getContentPane().add(neuesBt);
+          start = new JButton("Spiel starten");
+          start.setBounds (420, 245, 250, 45);
+          start.setBackground(blue3);
+          start.setForeground(Color.white);
+          start.setFont(neuesBt.getFont().deriveFont(16f));
+          start.addActionListener(new ActionListener()
+          {
+              public void actionPerformed(ActionEvent e)
+              {
+                  try{
+                  if(!isAnimating){
+                      if(cou>1){
+                      removeViews1=120;
+                      isAnimating=true;
+                      list=new Spieler[cou];
+                      String con=taEingabe.getText();
+                      r1=con.split("\n");
+                      for(int i=0; i<cou; i++){
+                          list[i]=new Spieler(r1[i]);
+                        }
+                    }else
+                        err("Zu wenig Spieler!");
+                    }
+                }catch(Exception error){
+                    err("Error: " + error);
+                }
+              }
+          });
+          this.getContentPane().add(start);
+          taEingabe = new JTextArea();
+          taEingabe.setText ("");
+          taEingabe.setBounds (700, 85, 650, 609);
+          taEingabe.setFont(taEingabe.getFont().deriveFont(22f));
+          taEingabe.setBackground(grayly);
+          taEingabe.setEditable(false);
+          this.getContentPane().add (taEingabe);
+          notification=new JLabel("");
+          notification.setBounds (300, 10, 700, 60);
+          notification.setFont(notification.getFont().deriveFont(30f));
+          notification.setForeground(Color.white);
+          this.getContentPane().add(notification);
+          int pos=85;
+          for(int i=0; i<21; i++, pos=pos+num){
+              /*JCheckBox*/  c[i]= new JCheckBox("");
+              c[i].setBounds(1350, pos, num, num);
+              c[i].setBackground(gray);
+              this.getContentPane().add(c[i]);
+          }
+          del = new JButton(new ImageIcon ("trashsw.png"));
+          del.setBounds(1300, 20, 40, 40);
+          del.setBackground(blue);
+          del.setForeground(Color.black);
+          del.addActionListener(new ActionListener()
+          {
+              public void actionPerformed(ActionEvent e)
+              {
+                  try{
+                  if(!isAnimating){
+                  String con=taEingabe.getText();
+                  r1=con.split("\n");
+                  count=0;
+                  cou=0;
+                  for(int i=0; i<r1.length; i++){
+                      if(!c[i].isSelected()){
+                          a1[count]=r1[i];
+                          count++;
+                          cou++;
+                      }else {
+                      num2--;    
+                      }
+                  }
+                  putIn(0);
+                  if(cou==0){
+                      del.setIcon(new ImageIcon ("trashsw.png"));
+                      sel.setIcon(new ImageIcon ("sortsw.png"));
+                    }
+                }
+                }catch(Exception error){
+                    err("Error: " + error);
+                }
+              }
+          });
+          this.getContentPane().add(del);
+          sel = new JButton(new ImageIcon ("sortsw.png"));
+          sel.setBounds(1350, 20, 40, 40);
+          sel.setBackground(blue);
+          sel.setForeground(Color.black);
+          sel.addActionListener(new ActionListener()
+          {
+              public void actionPerformed(ActionEvent e)
+              {
+                  try{
+                  if(!isAnimating){
+                  boolean notAll=false;
+                 for(int i=0; i<cou; i++){
+                      if(!c[i].isSelected()){
+                          notAll=true;
+                      }
+                  }
+                  if(notAll)
+                  for(int i=0; i<cou; i++){
+                     c[i].setSelected(true);
+                  }
+                  else
+                  for(int i=0; i<cou; i++){
+                     c[i].setSelected(false);
+                  }
+              }
+              }catch(Exception error){
+                    err("Error: " + error);
+                }
+            }
+          });
+          this.getContentPane().add(sel);
+          
+          pos=85;
+          for(int i=0; i<21; i++, pos=pos+num){
+          up[i] = new JButton("up"+i,new ImageIcon ("up.png"));
+          up[i].setBounds(1379, pos, num, num);
+          up[i].setFont(up[i].getFont().deriveFont(0f));
+          up[i].addActionListener(this);
+          this.getContentPane().add(up[i]);
+        }
+        
+        pos=85;
+          for(int i=0; i<21; i++, pos=pos+num){
+          down[i] = new JButton("down"+i,new ImageIcon ("down.png"));
+          down[i].setBounds(1408, pos, num, num);
+          down[i].setFont(up[i].getFont().deriveFont(0f));
+          down[i].addActionListener(this);
+          this.getContentPane().add(down[i]);
+        }
+        
+        JButton info = new JButton(new ImageIcon ("info.png"));
+          info.setBounds(150, 800, 40, 40);
+          info.setBackground(blue);
+          info.setForeground(Color.black);
+          info.addActionListener(new ActionListener()
+          {
+              public void actionPerformed(ActionEvent e)
+              {
+                  try{
+                      Info wnd = new Info();
+                      wnd.setBounds(480, 270, 800, 520);
+                      wnd.setVisible(true);
+                    }catch(Exception error){
+                    err("Error: " + error);
+                }
+            }
+          });
+          this.getContentPane().add(info);
+          
+          JButton leave = new JButton(new ImageIcon ("leave.png"));
+          leave.setBounds(90, 800, 40, 40);
+          leave.setBackground(blue);
+          leave.setForeground(Color.black);
+          leave.addActionListener(new ActionListener()
+          {
+              public void actionPerformed(ActionEvent e)
+              {
+                  try{
+                  setVisible(false);
+                  dispose();
+                  System.exit(0);
+                }catch(Exception error){
+                    err("Error: " + error);
+                }
+            }
+          });
+          this.getContentPane().add(leave);
+        
+        
+        stats = new JButton(new ImageIcon ("listUp.png"));
+          stats.setBounds(1300, 800+120*speed, 40, 40);
+          stats.setBackground(blue);
+          stats.setForeground(Color.black);
+          stats.addActionListener(new ActionListener()
+          {
+              public void actionPerformed(ActionEvent e)
+              {
+                  try{
+                  if(!isAnimating){
+                      if(showList!=0){
+                      if(showList==79)
+                      showList=78;
+                    }else{
+                      if(showList!=79)
+                      if(showList==0){
+                      showList=157;
+                    }
+                    }
+              }
+            }catch(Exception error){
+                    err("Error: " + error);
+                }
+            }
+          });
+          
+          statsOption = new JButton(new ImageIcon ("on.png"));
+          statsOption.setBounds(1370, 800+120*speed, 40, 40);
+          statsOption.setBackground(blue);
+          statsOption.setForeground(Color.black);
+          statsOption.addActionListener(new ActionListener()
+          {
+              public void actionPerformed(ActionEvent e)
+              {
+                  try{
+                  if(!isAnimating){
+                      if(zeigeStrafpunkte){
+                        zeigeStrafpunkte=false;
+                        statsOption.setIcon(new ImageIcon ("off.png"));
+                    }else{
+                        zeigeStrafpunkte=true;
+                        statsOption.setIcon(new ImageIcon ("on.png"));
+                    }
+              }
+              }catch(Exception error){
+                    err("Error: " + error);
+                }
+            }
+          });
+          
+          taAusgabe = new JTextArea();
+          taAusgabe.setText ("");
+          taAusgabe.setBounds (1050, 240+78*speed, 500, 615);
+          taAusgabe.setFont(taAusgabe.getFont().deriveFont(21f));
+          taAusgabe.setBackground(grayly);
+          taAusgabe.setEditable(false);
+          
+          aktion=new JLabel("Spieler", SwingConstants.CENTER);
+          aktion.setBounds (400, 300-120*speed, 800, 60);
+          aktion.setFont(aktion.getFont().deriveFont(35f));
+          aktion.setForeground(Color.white);
+          
+          aktion1 = new JButton("Zug durchführen");
+          aktion1.setBounds(600, 380+120*speed, 200, 50);
+          aktion1.setBackground(blue2);
+          aktion1.setForeground(Color.white);
+          aktion1.setFont(aktion1.getFont().deriveFont(18f));
+          aktion1.addActionListener(this);
+          
+          aktion2 = new JButton("Computerzug");
+          aktion2.setBounds(850, 380+120*speed, 200, 50);
+          aktion2.setBackground(blue2);
+          aktion2.setForeground(Color.white);
+          aktion2.setFont(aktion1.getFont().deriveFont(18f));
+          aktion2.addActionListener(this);
+          
+          anzeige=new JLabel("Neues Spiel!", SwingConstants.CENTER);
+          anzeige.setBounds (200, 220-120*speed, 1200, 60);
+          anzeige.setFont(anzeige.getFont().deriveFont(33f));
+          anzeige.setForeground(Color.white);
+          
+          zahl1 = new JLabel("", SwingConstants.CENTER);
+          zahl1.setBounds(600, 340, 120, 120);
+          zahl1.setFont(zahl1.getFont().deriveFont(50f));
+          zahl1.setForeground(Color.white);
+          
+          zahl2 = new JLabel("", SwingConstants.CENTER);
+          zahl2.setBounds(800, 340, 120, 120);
+          zahl2.setFont(zahl2.getFont().deriveFont(50f));
+          zahl2.setForeground(Color.white);
+          
+          aktion3 = new JButton("Stopp");
+          aktion3.setBounds(670, 580, 200, 50);
+          aktion3.setBackground(blue2);
+          aktion3.setForeground(Color.white);
+          aktion3.setFont(aktion1.getFont().deriveFont(18f));
+          aktion3.addActionListener(this);
+          
+          pos=1380;
+          for(int i=0; i<21; i++, pos=pos-60){
+          auswahl[i] = new JButton(""+werte[i]);
+          auswahl[i].setBounds(pos, 480, 50, 50);
+          auswahl[i].setForeground(Color.white);
+          auswahl[i].setFont(up[i].getFont().deriveFont(15f));
+          auswahl[i].addActionListener(this);
+        }
+          }
+
+          
+         TimerTask action = new TimerTask(){
+public void run() {
+    if(notificationCount!=0){
+        notificationCount--;
+        if(notificationCount<60){
+        notification.setBounds (300, 10, notificationCount*10, 60);
+        repaint();
+        revalidate();
+    }
+    }
+    if(removeViews1!=0){
+        removeViews1--;
+        LabelOne.setBounds(LabelOne.getX()-speed, 0, 400, 60);
+        name.setBounds (420, name.getY()-speed, 250, 45);
+        neuesBt.setBounds (420, neuesBt.getY()-speed, 250, 45);
+        start.setBounds (420, start.getY()-speed, 250, 45);
+        del.setBounds(1300, del.getY()-speed, 40, 40);
+        sel.setBounds(1350, sel.getY()-speed, 40, 40);
+        taEingabe.setBounds (taEingabe.getX()+speed, 85, 650, 609);
+        int pos=85;
+        for(int i=0; i<21; i++, pos=pos+num){
+            c[i].setBounds(c[i].getX()+speed, pos, num, num);
+            up[i].setBounds(up[i].getX()+speed, pos, num, num);
+            down[i].setBounds(down[i].getX()+speed, pos, num, num);
+        }
+        if(removeViews1==0){
+            sp.getContentPane().remove(LabelOne);
+            sp.getContentPane().remove(name);
+            sp.getContentPane().remove(neuesBt);
+            sp.getContentPane().remove(start);
+            sp.getContentPane().remove(del);
+            sp.getContentPane().remove(sel);
+            sp.getContentPane().remove(taEingabe);
+            pos=85;
+            for(int i=0; i<21; i++, pos=pos+num){
+                sp.getContentPane().remove(c[i]);
+                sp.getContentPane().remove(up[i]);
+                sp.getContentPane().remove(down[i]);
+            }
+            sp.getContentPane().add(stats);
+            sp.getContentPane().add(taAusgabe);
+            sp.getContentPane().add(aktion);
+            sp.getContentPane().add(aktion1);
+            sp.getContentPane().add(aktion2);
+            sp.getContentPane().add(statsOption);
+            sp.getContentPane().add(anzeige);
+            aktion.setText("Spieler " + list[0].getName() + " ist am Zug");
+            addViews1=120;
+        }
+    }
+    if(addViews1!=0){
+            addViews1--;
+            stats.setBounds(1300, stats.getY()-speed, 40, 40);
+            aktion.setBounds(400, aktion.getY()+speed, 800, 60);
+            aktion1.setBounds(600, aktion1.getY()-speed, 200, 50);
+            aktion2.setBounds(850, aktion2.getY()-speed, 200, 50);
+            statsOption.setBounds(1370, statsOption.getY()-speed, 40, 40);
+            anzeige.setBounds(200, anzeige.getY()+speed, 1200, 60);
+            if(addViews1==0)
+            isAnimating=false;
+        }
+        if(showList!=0 && showList!=79){
+            if(showList>79){
+                taAusgabe.setBounds (1050, taAusgabe.getY()-speed, 500, 615);
+                stats.setBounds(1300, stats.getY()-speed, 40, 40);
+                statsOption.setBounds(1370, statsOption.getY()-speed, 40, 40);
+            }else{
+                taAusgabe.setBounds (1050, taAusgabe.getY()+speed, 500, 615);
+                stats.setBounds(1300, stats.getY()+speed, 40, 40);
+                statsOption.setBounds(1370, statsOption.getY()+speed, 40, 40);
+            }
+                showList--;
+                if(showList==79)
+                    stats.setIcon(new ImageIcon ("listDown.png"));
+                if(showList==0)
+                    stats.setIcon(new ImageIcon ("listUp.png"));
+        }
+        if(list!=null){
+            if(zeigeStrafpunkte){
+                String text1="Strafpunkte:\n";
+                      for(int i=0; i<cou; i++){
+                          text1=text1+list[i].getName()+": "+list[i].getStrafpunkte()+"\n";
+                        }
+                      taAusgabe.setText(text1);
+                    }else{
+                        String text1="Spielverlauf:\n";
+                        for(int i=0; i<history.length; i++){
+                            if(history[i]==null){
+                            }else
+                                text1=text1+history[i]+"\n";
+                        }
+                      taAusgabe.setText(text1);
+                    }
+                    }
+                    if(amWuerfeln){
+                        zahlen=list[zug%cou].wuerfeln();
+                        zahl1.setText(zahlen[0]+"");
+                        zahl2.setText(zahlen[1]+"");
+                    }
+                    if(combineNumbers!=0){
+                        combineNumbers--;
+                        zahl1.setBounds(zahl1.getX()+2, 340, 120, 120);
+                        zahl2.setBounds(zahl2.getX()-2, 340, 120, 120);
+                        if(combineNumbers<21){
+                            sp.getContentPane().add(auswahl[combineNumbers]);
+                            if(wertigkeit(aktuelleZahl)>combineNumbers)
+                                auswahl[combineNumbers].setBackground(green);
+                            else
+                                auswahl[combineNumbers].setBackground(red);
+                            if(aktuelleZahl==0)
+                                auswahl[combineNumbers].setBackground(green);
+                            if(wertigkeit(zahlen[2])==combineNumbers)
+                                auswahl[combineNumbers].setBackground(purple);
+                        }
+                        if(combineNumbers==0){
+                            isAnimating=false;
+                            aktion.setText("Welche Zahl gibst du an?");
+                        }
+                    }
+}
+
+};
+          
+        private void putIn(int mode){
+         String text1="";
+         for(int i=0; i<cou; i++){
+             text1=text1+a1[i]+"\n";
+         }
+         taEingabe.setText(text1+"");
+         if(mode==0)
+         for(int i=0; i<21; i++){
+             c[i].setSelected(false);
+         }
+        }
+        
+        private void addToHistory(String pText){
+            if(history[20]==null){
+            for(int i=0; i<21; i++){
+                if(history[i]==null){
+                    history[i]=pText;
+                    break;
+                }
+            }
+        }else{
+            for(int i=0; i<20; i++){
+                history[i]=history[i+1];
+            }
+            history[20]=pText;
+        }
+        }
+        
+        public void moveUp(int pNum){
+            if(pNum<cou){
+                String con=taEingabe.getText();
+                a1=con.split("\n");
+                String temp=a1[pNum];
+                if(pNum==0){
+                    a1[0]=a1[a1.length-1];
+                    a1[a1.length-1]=temp;
+                }else{
+                    if(pNum==cou){
+                        a1[pNum]=a1[0];
+                        a1[0]=temp;
+                    }else{
+                        a1[pNum]=a1[pNum-1];
+                        a1[pNum-1]=temp;
+                    }
+                }
+                putIn(1);
+            }
+        }
+        
+        public void moveDown(int pNum){
+            if(pNum<cou){
+                String con=taEingabe.getText();
+                a1=con.split("\n");
+                String temp=a1[pNum];
+                if(pNum==cou-1){
+                    temp=a1[0];
+                    a1[0]=a1[pNum];
+                    a1[pNum]=temp;
+                }else{
+                    a1[pNum]=a1[pNum+1];
+                    a1[pNum+1]=temp;
+                }
+                putIn(1);
+            }
+        }
+
+        private boolean isSame(char pChar, String pString){
+            char charTwo=pString.charAt(0);
+            if(charTwo==pChar)
+            return true;
+            else
+            return false;
+        }
+        
+     public void actionPerformed(ActionEvent event)   
+     {    
+         try{
+         int ausgabe;
+         int spielerIndex;
+         if(!isAnimating){
+          String cmd = event.getActionCommand();
+          if(isSame(cmd.charAt(0), "u") && isSame(cmd.charAt(1), "p")){
+          String[] cmd2=cmd.split("p");
+          moveUp(Integer.parseInt(cmd2[1]));
+        }
+        if(isSame(cmd.charAt(0), "d") && isSame(cmd.charAt(1), "o") && isSame(cmd.charAt(2), "w") && isSame(cmd.charAt(3), "n")){
+          String[] cmd2=cmd.split("n");
+          moveDown(Integer.parseInt(cmd2[1]));
+        }
+        if(cmd.equals("Computerzug")){
+            if(zug==0){
+                list[0].gebeWuerfelbecher(new wuerfelbecher());
+                ausgabe=list[zug%cou].computerzug(0);
+                addToHistory(list[0].getName()+" gibt an, eine " + ausgabe + " gewürfelt zu haben.");
+                anzeige.setText(list[0].getName()+" gibt an, eine " + ausgabe + " gewürfelt zu haben.");
+                addToHistory(list[1].getName() + " ist nun am Zug.");
+                aktion.setText(list[1].getName() + " ist nun am Zug.");
+                aktuelleZahl=ausgabe;
+                ersterZug=false;
+            }else{
+                if((zug%cou)==0)
+                    spielerIndex=cou-1;
+                else
+                    spielerIndex=(zug%cou)-1;
+                    list[zug%cou].gebeWuerfelbecher(list[spielerIndex].nehmeWuerfelbecher());
+                    if(ersterZug){
+                        ausgabe = list[zug%cou].computerzug(0);
+                        aktuelleZahl=ausgabe;
+                        ersterZug=false;
+                    }else{
+                        ausgabe = list[zug%cou].computerzug(aktuelleZahl);
+                    }
+                if(ausgabe==100){
+                    addToHistory(list[zug%cou].getName() + " glaubt " + list[spielerIndex].getName() + " nicht.");
+                    anzeige.setText(anzeige.getText() + " " + list[zug%cou].getName() + " glaubt " + list[spielerIndex].getName() + " nicht.");
+                    if(list[spielerIndex].echteZahl()==aktuelleZahl){
+                        if(aktuelleZahl==21){
+                            addToHistory(list[spielerIndex].getName() + " hat nicht gelogen.");
+                            addToHistory(list[zug%cou].getName() + " erhält zwei Strafpunkte!");
+                            list[zug%cou].gebeStrafpunkt();
+                            list[zug%cou].gebeStrafpunkt();
+                            spielende(list[zug%cou].getName());
+                        }else{
+                            addToHistory(list[spielerIndex].getName() + " hat nicht gelogen.");
+                            addToHistory(list[zug%cou].getName() + " erhält einen Strafpunkt!");
+                            list[zug%cou].gebeStrafpunkt();
+                            spielende(list[zug%cou].getName());
+                        }
+                    }else{
+                        addToHistory(list[spielerIndex].getName() + " hat gelogen.");
+                        addToHistory(list[spielerIndex].getName() + " hatte eine " + list[spielerIndex].echteZahl() + " gewürfelt.");
+                        addToHistory(list[spielerIndex].getName() + " erhält einen Strafpunkt!");
+                        list[spielerIndex].gebeStrafpunkt();
+                        spielende(list[spielerIndex].getName());
+                    }
+                }else{
+                    addToHistory(list[zug%cou].getName()+" gibt an, eine " + ausgabe + " gewürfelt zu haben.");
+                    anzeige.setText(list[zug%cou].getName()+" gibt an, eine " + ausgabe + " gewürfelt zu haben.");
+                    if((zug%cou)==cou)
+                        addToHistory(list[0].getName() + " ist nun am Zug.");
+                    else{
+                        try{
+                        addToHistory(list[(zug%cou)+1].getName() + " ist nun am Zug.");
+                    }catch(Exception e){
+                        addToHistory(list[0].getName() + " ist nun am Zug.");
+                    }
+                    }
+                    aktuelleZahl=ausgabe;
+                }
+            }
+            zug++;
+            if(!ersterZug)
+                aktion.setText("Spieler " + list[zug%cou].getName() + " ist am Zug");
+        }
+        if(cmd.equals("Beenden")){
+            setVisible(false);
+            dispose();
+            System.exit(0);
+        }
+        if(cmd.equals("neue Runde")){
+            aktion.setText("Spieler " + list[zug%cou].getName() + " ist am Zug");
+            aktion1.setText("Zug durchführen");
+            aktion2.setText("Computerzug");
+            anzeige.setText("Neue Runde!");
+        }
+        if(cmd.equals("Zug durchführen")){
+            if((zug%cou)==0)
+                    spielerIndex=cou-1;
+                else
+                    spielerIndex=(zug%cou)-1;
+                    list[zug%cou].gebeWuerfelbecher(list[spielerIndex].nehmeWuerfelbecher());
+            if(ersterZug){
+                if((zug%cou)==0)
+                    spielerIndex=cou-1;
+                else
+                    spielerIndex=(zug%cou)-1;
+                    aktion.setText("");
+                    if(zug==0)
+                        list[0].gebeWuerfelbecher(new wuerfelbecher());
+                    else
+                        list[zug%cou].gebeWuerfelbecher(list[spielerIndex].nehmeWuerfelbecher());
+            sp.getContentPane().remove(aktion1);
+            sp.getContentPane().remove(aktion2);
+            sp.getContentPane().add(aktion3);
+            sp.getContentPane().add(zahl1);
+            sp.getContentPane().add(zahl2);
+            zahl1.setBounds(600, 340, 120, 120);
+            zahl2.setBounds(800, 340, 120, 120);
+            amWuerfeln=true;
+            repaint();
+            revalidate();
+            }else{
+                aktion.setText("Glaubst du das?");
+                aktion1.setText("Ja");
+                aktion2.setText("Nein");
+            }
+        }
+        if(cmd.equals("Nein")){
+            if((zug%cou)==0)
+                    spielerIndex=cou-1;
+                else
+                    spielerIndex=(zug%cou)-1;
+                    addToHistory(list[zug%cou].getName() + " glaubt " + list[spielerIndex].getName() + " nicht.");
+                    anzeige.setText(anzeige.getText() + " " + list[zug%cou].getName() + " glaubt " + list[spielerIndex].getName() + " nicht.");
+                    if(list[spielerIndex].echteZahl()==aktuelleZahl){
+                        if(aktuelleZahl==21){
+                            addToHistory(list[spielerIndex].getName() + " hat nicht gelogen.");
+                            addToHistory(list[zug%cou].getName() + " erhält zwei Strafpunkte!");
+                            list[zug%cou].gebeStrafpunkt();
+                            list[zug%cou].gebeStrafpunkt();
+                            spielende(list[zug%cou].getName());
+                        }else{
+                            addToHistory(list[spielerIndex].getName() + " hat nicht gelogen.");
+                            addToHistory(list[zug%cou].getName() + " erhält einen Strafpunkt!");
+                            list[zug%cou].gebeStrafpunkt();
+                            spielende(list[zug%cou].getName());
+                        }
+                    }else{
+                        addToHistory(list[spielerIndex].getName() + " hat gelogen.");
+                        addToHistory(list[spielerIndex].getName() + " hatte eine " + list[spielerIndex].echteZahl() + " gewürfelt.");
+                        addToHistory(list[spielerIndex].getName() + " erhält einen Strafpunkt!");
+                        list[spielerIndex].gebeStrafpunkt();
+                        spielende(list[spielerIndex].getName());
+                    }
+        }
+        if(cmd.equals("Ja")){
+            if(aktuelleZahl==21){
+                err("Unkluge und ungültige Eingabe.");
+            }else{
+            if((zug%cou)==0)
+                    spielerIndex=cou-1;
+                else
+                    spielerIndex=(zug%cou)-1;
+                    aktion.setText("");
+                    list[zug%cou].gebeWuerfelbecher(list[spielerIndex].nehmeWuerfelbecher());
+            sp.getContentPane().remove(aktion1);
+            sp.getContentPane().remove(aktion2);
+            sp.getContentPane().add(aktion3);
+            sp.getContentPane().add(zahl1);
+            sp.getContentPane().add(zahl2);
+            zahl1.setBounds(600, 340, 120, 120);
+            zahl2.setBounds(800, 340, 120, 120);
+            amWuerfeln=true;
+            repaint();
+            revalidate();
+        }
+        }
+        if(cmd.equals("Stopp")){
+            amWuerfeln=false;
+            sp.getContentPane().remove(aktion3);
+            repaint();
+            revalidate();
+            ersterZug=false;
+            isAnimating=true;
+            if(Integer.parseInt(zahl1.getText())<Integer.parseInt(zahl2.getText()))
+                combineNumbers=60;
+            else
+                combineNumbers=40;
+        }
+        if(cmd.equals("21")){
+            if(wertigkeit(aktuelleZahl)>wertigkeit(Integer.parseInt(cmd))){
+                ausgabe=Integer.parseInt(cmd);
+                aktuelleZahl=ausgabe;
+                zahlAngegeben();
+            }else
+                if(aktuelleZahl==0){
+                    ausgabe=Integer.parseInt(cmd);
+                    aktuelleZahl=ausgabe;
+                    zahlAngegeben();
+                }else
+                    err("Sie können diese Zahl nicht auswählen.");
+        }
+        if(cmd.equals("31")){
+            if(wertigkeit(aktuelleZahl)>wertigkeit(Integer.parseInt(cmd))){
+                ausgabe=Integer.parseInt(cmd);
+                aktuelleZahl=ausgabe;
+                zahlAngegeben();
+            }else
+                if(aktuelleZahl==0){
+                    ausgabe=Integer.parseInt(cmd);
+                    aktuelleZahl=ausgabe;
+                    zahlAngegeben();
+                }else
+                    err("Sie können diese Zahl nicht auswählen.");
+        }
+        if(cmd.equals("21")){
+            if(wertigkeit(aktuelleZahl)>wertigkeit(Integer.parseInt(cmd))){
+                ausgabe=Integer.parseInt(cmd);
+                aktuelleZahl=ausgabe;
+                zahlAngegeben();
+            }else
+                if(aktuelleZahl==0){
+                    ausgabe=Integer.parseInt(cmd);
+                    aktuelleZahl=ausgabe;
+                    zahlAngegeben();
+                }else
+                    err("Sie können diese Zahl nicht auswählen.");
+        }
+        if(cmd.equals("21")){
+            if(wertigkeit(aktuelleZahl)>wertigkeit(Integer.parseInt(cmd))){
+                ausgabe=Integer.parseInt(cmd);
+                aktuelleZahl=ausgabe;
+                zahlAngegeben();
+            }else
+                if(aktuelleZahl==0){
+                    ausgabe=Integer.parseInt(cmd);
+                    aktuelleZahl=ausgabe;
+                    zahlAngegeben();
+                }else
+                    err("Sie können diese Zahl nicht auswählen.");
+        }
+        if(cmd.equals("21")){
+            if(wertigkeit(aktuelleZahl)>wertigkeit(Integer.parseInt(cmd))){
+                ausgabe=Integer.parseInt(cmd);
+                aktuelleZahl=ausgabe;
+                zahlAngegeben();
+            }else
+                if(aktuelleZahl==0){
+                    ausgabe=Integer.parseInt(cmd);
+                    aktuelleZahl=ausgabe;
+                    zahlAngegeben();
+                }else
+                    err("Sie können diese Zahl nicht auswählen.");
+        }
+        if(cmd.equals("21")){
+            if(wertigkeit(aktuelleZahl)>wertigkeit(Integer.parseInt(cmd))){
+                ausgabe=Integer.parseInt(cmd);
+                aktuelleZahl=ausgabe;
+                zahlAngegeben();
+            }else
+                if(aktuelleZahl==0){
+                    ausgabe=Integer.parseInt(cmd);
+                    aktuelleZahl=ausgabe;
+                    zahlAngegeben();
+                }else
+                    err("Sie können diese Zahl nicht auswählen.");
+        }
+        if(cmd.equals("21")){
+            if(wertigkeit(aktuelleZahl)>wertigkeit(Integer.parseInt(cmd))){
+                ausgabe=Integer.parseInt(cmd);
+                aktuelleZahl=ausgabe;
+                zahlAngegeben();
+            }else
+                if(aktuelleZahl==0){
+                    ausgabe=Integer.parseInt(cmd);
+                    aktuelleZahl=ausgabe;
+                    zahlAngegeben();
+                }else
+                    err("Sie können diese Zahl nicht auswählen.");
+        }
+        if(cmd.equals("21")){
+            if(wertigkeit(aktuelleZahl)>wertigkeit(Integer.parseInt(cmd))){
+                ausgabe=Integer.parseInt(cmd);
+                aktuelleZahl=ausgabe;
+                zahlAngegeben();
+            }else
+                if(aktuelleZahl==0){
+                    ausgabe=Integer.parseInt(cmd);
+                    aktuelleZahl=ausgabe;
+                    zahlAngegeben();
+                }else
+                    err("Sie können diese Zahl nicht auswählen.");
+        }
+        if(cmd.equals("21") || cmd.equals("31") || cmd.equals("66") || cmd.equals("55") || cmd.equals("44") || cmd.equals("33") || cmd.equals("22") || cmd.equals("11") || cmd.equals("65") || cmd.equals("64") || cmd.equals("63") || cmd.equals("62") ||  cmd.equals("61") || cmd.equals("54") || cmd.equals("53") || cmd.equals("52") || cmd.equals("51") || cmd.equals("43") ||cmd.equals("42") || cmd.equals("41") || cmd.equals("32")){
+            if(wertigkeit(aktuelleZahl)>wertigkeit(Integer.parseInt(cmd))){
+                ausgabe=Integer.parseInt(cmd);
+                aktuelleZahl=ausgabe;
+                zahlAngegeben();
+            }else
+                if(aktuelleZahl==0){
+                    ausgabe=Integer.parseInt(cmd);
+                    aktuelleZahl=ausgabe;
+                    zahlAngegeben();
+                }else
+                    err("Sie können diese Zahl nicht auswählen.");
+        }
+        }catch(Exception error){
+                    err("Error: " + error);
+                }
+    }
+     }
+     
+    private void zahlAngegeben(){
+         addToHistory(list[zug%cou].getName()+" gibt an, eine " + aktuelleZahl + " gewürfelt zu haben.");
+                    anzeige.setText(list[zug%cou].getName()+" gibt an, eine " + aktuelleZahl + " gewürfelt zu haben.");
+                    if((zug%cou)==cou)
+                        addToHistory(list[0].getName() + " ist nun am Zug.");
+                    else{
+                        try{
+                        addToHistory(list[(zug%cou)+1].getName() + " ist nun am Zug.");
+                    }catch(Exception e){
+                        addToHistory(list[0].getName() + " ist nun am Zug.");
+                    }
+                    }
+                    sp.getContentPane().add(aktion1);
+            sp.getContentPane().add(aktion2);
+            sp.getContentPane().remove(aktion3);
+            sp.getContentPane().remove(zahl1);
+            sp.getContentPane().remove(zahl2);
+            zug++;
+            aktion.setText("Spieler " + list[zug%cou].getName() + " ist am Zug");
+            for(int i=0; i<21; i++){
+                sp.getContentPane().remove(auswahl[i]);
+            }
+            repaint();
+            revalidate();
+        }
+     
+     private int wertigkeit(int pZahl){
+        int index=0;
+        for(int i=0; i<21; i++){
+            if(werte[i]==pZahl)
+            index = i;
+        }
+        return index;
+    }
+    
+    private int zuZahl(int pIndex){
+        return werte[pIndex];
+    }
+     
+     public void spielende(String pName){
+         ersterZug=true;
+         aktion.setText(pName + " hat verloren!");
+         aktion1.setText("neue Runde");
+         aktion1.setBounds(600, 380, 200, 50);
+         aktion2.setText("Beenden");
+         aktion2.setBounds(850, 380, 200, 50);
+        }
+     
+     public void err(String myText){
+         notification.setText(myText);
+         notificationCount=100;
+         notification.setBounds (300, 10, 700, 60);
+     }
+ }

@@ -1,0 +1,631 @@
+package SpaceSmasherInBlueJ;
+
+import java.awt.event.KeyEvent;
+import SpaceSmasher.Ball;
+import SpaceSmasher.Block;
+import SpaceSmasher.Block.BlockState;
+import SpaceSmasher.Block.BlockType;
+import SpaceSmasher.Paddle.PaddleState;
+import SpaceSmasher.SpaceSmasher;
+import SpaceSmasher.Paddle;
+import SpaceSmasher.Trap;
+import Engine.Vector2;
+import Engine.World;
+import Engine.World.BoundCollidedStatus;
+
+
+/*
+ * ##################### - ############ ### ######## #####
+ *  
+ * #######:  ## ##### # ###### ##### ### ###### ### #### ## ### ####
+ * ######## #### ### ########. 
+ * 
+ * ######### #######:
+ *  
+ * -##########(): #### ## ###### # "#####" ### ### 
+ * #####-########, ##### ######## ####. 
+ *
+ * -######(): ##### #############, ######### ## ##########, 
+ *  #### ########, ### ##### #### ##### #### ##. 
+ * 
+ * 
+ * #######: ###### ####, #### ######, ### ####
+ */
+
+public class MySpaceSmasherGameLab extends SpaceSmasher {
+    
+    
+    protected void initialize() {
+        lifeSet.add(5);
+        paddleSet.add(1);
+        ballSet.add(1);
+        ballSet.get(0).setToInvisible();
+        blockSet.setBlocksPerRow(6);
+        
+        for (int i = 0; i < 2; i++) {
+            blockSet.addNormalBlock(1);
+            blockSet.addFireBlock(1);
+            blockSet.addNormalBlock(1);
+            blockSet.addFireBlock(1);
+            blockSet.addActiveCageBlock(1);
+            blockSet.addFreezingBlock(1);
+        }
+        
+        for (int iRow = 0; iRow < blockSet.getNumRows(); iRow++) {
+            for (int iCol = 0; iCol < blockSet.getNumColumns(); iCol++) {
+                Block nextBlock = blockSet.getBlockAt(iRow, iCol);
+                nextBlock.revealPower();
+            }
+        } 
+        
+    }
+
+    private boolean areAllBlocksRemoved() {      
+         boolean retVal = true;
+         
+         for(int nextRow = 0; nextRow < blockSet.getNumRows(); nextRow++) {
+             for(int nextColumn = 0; nextColumn < blockSet.getNumColumns(); nextColumn++) {
+                 Block nextBlock = blockSet.getBlockAt(nextRow, nextColumn);
+                 if (nextBlock != null && nextBlock.getType() != Block.BlockType.EMPTY) { 
+                     retVal = false;
+                     break;
+                 }       
+             }
+         }
+         return retVal;
+    }
+    
+    
+    protected void update() {
+        Paddle paddle = paddleSet.get(0);
+        Ball ball = ballSet.get(0);
+
+        /* EXAMPLE 0
+         * Single IF Statement  
+         * 
+         * if( <someBooleanQuestion> ) {
+         *  
+         * } 
+         * 
+         * This if statement seeks to determine if the game logic 
+         * should continue or if we should jump to the game over screen
+         * defined in gameWin()
+         * 
+         * In pseudocode, the IF asks: "If we've won, call the gameWin() function"
+         * Notice that the IF says nothing about what to do if we haven't won; 
+         * to make such a structure we'd need to introduce an IF/ELSE.  
+         * 
+         * If we removed this if statement...
+         * before: The game continues to play if one or more blocks are on the screen
+         * after: The game transitions to the winning screen immediately, even if blocks are left
+         * 
+         * TODO 0a: Draw a flowchart of the Single IF statement.
+         * TODO 0b: Draw a flowchart of the basic IF/ELSE statement, with only one else clause.
+         */
+        boolean playerWonGame = areAllBlocksRemoved();
+        if (playerWonGame) {  
+            gameWin();        
+        } 
+        /* TODO 99:
+         * Transform the above and below Single IF statements into a Single IF/ELSE statement
+         * 
+         * Notice how the two code bodies inside the IF statement above and below are 
+         * mutually exclusive; we seek to capture this relationship more precisely in code.  
+         * 
+         * Combine the two Sequential, Single IF statements together into one Single IF/ELSE statement.
+         * Use the pseudocode below as a guide.
+         * 
+         * No before or after - the game should operate the same after this transformation is complete.
+         *
+         * if(<questionA>) {                            
+         * }
+         * if(!<questionA>) {
+         * } 
+          
+         * if(<questionA>) {                            
+          
+         * } else {  
+         
+         * }
+          
+         */
+        
+        
+        /* EXAMPLE 2
+         * Sequential, Single IF Statement Demonstration
+         * 
+         * The above if statement is followed by a 
+         * second if statement in sequential order.
+         * Since there is no "else" statement here
+         * these two ifs are unrelated to one another
+         * and their code blocks are not mutually exclusive.
+         * We'll improve this code once we reach the if/else
+         * structure in the lab
+         * 
+         * Note that these two will be joined as an if-else statement in TODO 99
+         */
+        if(!playerWonGame) {
+            
+            /* TODO 5
+             * Compound Boolean Expressions using Logical AND and Logical OR 
+             * 
+             * Here, we'll combine the mouse and keyboard if statements into one 
+             * longer, compound if statement using OR.
+             * 
+             * The if statement below should ask: "Is the spacebar pressed
+             * OR is the left mouse button clicked?"
+             * 
+             * If either of these (or both) are true, then this will execute the 
+             * code you already wrote in a previous TODO section.
+             * 
+             * Q)How is this question change if we swapped all ANDs and ORs? 
+             * A)This would produce the question: "Is the spacebar pressed
+             * AND the left mouse button is clicked?" 
+             * 
+             * Before and after are the same, however:
+             * If you removed the code done in TODO 4 to spawn balls via the mouse, then:
+             *  before with no TODO 4: Only the space key spawns balls
+             *  after with no TODO 4: The mouse's left click and space spawns balls
+             * 
+             */
+            boolean mouseLeftClicked = mouse.MouseOnScreen() && mouse.isButtonTapped(1);
+             if (keyboard.isButtonTapped(KeyEvent.VK_SPACE) || (mouse.isButtonTapped(1)))
+             {      
+            
+                /*  TODO 0
+                 *  Single IF Statement 
+                 * 
+                 *   Write a single If statement here that asks:
+                 * 
+                 *  "Is the ball invisible?".  If it is invisible, then  
+                 *   put it on the screen near the paddle by calling "ball.spawn(paddle)".
+                 *  
+                 *  See the EXAMPLE1 and EXAMPLE1B for a sample single IF statement.
+                 *  
+                 *  Transform this pseuducode into the if statement below:
+                 *
+                   Step 1: if the ball is invisible, then tell the ball to spawn near the paddle.
+                 *  Step 2: fill in the code gaps below to obtain working Java code
+                 *  
+                 *
+                 *   Note that when you finish this TODO, you can comment out the && code in TODO 4 
+                 *   if you like for the same results.
+                 *   
+                 *   before: hitting space does nothing in our game
+                 *   after: hitting space spawns a ball and starts the game
+                 */
+                if (ball.isVisible()== false) 
+                    {
+                       ball.spawn(paddle);
+                    }
+                 
+            }
+            
+            /* TODO 4
+             * Use Logical AND to Enable Mouse Support for Ball Spawning
+             * 
+             * Rewrite the three IF statements below as one compound IF statement using Java's logical
+             * AND operator "&&".  Start by commenting out the 3 if statements, and build your own in 
+             * its place.
+             * 
+             * Notice the IF statements and what they accomplish; in order, they ask the following:
+             * (1) Is the mouse is onscreen? (i.e. connected to your computer)
+             * (2) Is the mouse's left-button is pressed?
+             * (3) Is the ball already spawned? (i.e. is the ball already visible?)
+             *  
+             * before: Three if statements, with one nested inside the other.
+             * after: One compound if statement to rule the spawning of the ball.
+             * 
+             * Note that when you finish TODO 5, you can comment out this code
+             */
+            if(mouse.MouseOnScreen()) {  
+                if(mouse.isButtonTapped(1)) {   
+                    if (ball.isVisible() == false) {  
+                        ball.spawn(paddle);
+                    }
+                }
+            }
+            
+            
+            /*  TODO 2
+             *  Sequential, Single If statements. 
+             * 
+             *  These will have the form as outlined in the lab, and will ask:
+             * 
+             *  "Is the user pressing the left key? If so, move the paddle left."
+             *  "Is the user pressing the right key? If so, move the paddle right."
+             *  "Is the user pressing the up key? If so, move the paddle up."
+             *  "Is the user pressing the down key? If so, move the paddle down."  
+             *  
+             *  Transform this pseuducode above into the if statement below:
+             *  by replacing "LEFT button" with "KeyEvent.VK_LEFT" and
+             *  by replacing "keyboard is pressing down" with "keyboard.isButtonDown()"
+             *  by replacing "Tell the paddle to move left" with "paddle.moveLeft()"
+             */
+             if (keyboard.isButtonDown(KeyEvent.VK_LEFT) == true)
+                {
+                    paddle.moveLeft();
+                }
+     
+             if (keyboard.isButtonDown(KeyEvent.VK_RIGHT) == true )
+                {
+                    paddle.moveRight();
+                }
+             if (keyboard.isButtonDown(KeyEvent.VK_UP) == true)
+                {
+                    paddle.moveUp();
+                }
+     
+             if (keyboard.isButtonDown(KeyEvent.VK_DOWN) == true )
+                {
+                    paddle.moveDown();
+                }
+               
+                }
+            /*   
+              *   before: Pressing left and right on the keyboard does nothing
+              *   after: Pressing left and right moves the paddle onscreen 
+              *   
+              *   Take a look at the animated gif in the lab for a pictorial example of the before and after.
+              *   
+              *   Note that these single, sequential if statements could be chained together using
+              *   the IF/ELSEIF structure, but we choose not to here since the right key
+              *   could be pressed AND the left key could be pressed at the same time, and so
+              *   these events are not truly mutually exclusive.  
+              */
+            
+            
+            
+            /* TODO 3
+             * Single, Sequential IF Statements
+             * 
+             * In this section, we want to ask if the user has a mouse connected
+             * using an if statement.  Start by uncommenting the pseudocode if
+             * statement below and change the pseudocode into working code.
+             * 
+             * Note that the code *inside* the if statement is actual code and
+             * you don't need to make any modifications to the two lines that start
+             * with "paddle.".
+             * 
+             * before: Moving the mouse left and right doesn't affect the game
+             * after: Moving the mouse inside the game window also moves the paddle
+             *
+             * if( the mouse.is on the screen ) {
+             *      paddle.setCenterX(mouse.getWorldX());  
+             *      paddle.clampPaddle();                   
+             * }
+             */
+            if (mouse.MouseOnScreen() == true)
+                {
+                   paddle.setCenterX(mouse.getWorldX());  
+                   paddle.clampPaddle();                   
+                }
+           
+            /* EXAMPLE 4
+             * Compound Boolean Expressions using Logical AND
+             * 
+             * Notice how we check the ball first for null before we try to use it.
+             * By ordering the null check first and using the double '&', we perform a short-circuit 
+             * evaluation of the clauses in the if statement.  This means that the && will
+             * block execution of the second Boolean expression if the first expression is false.
+             *
+             * This is based on the following observations (laws of logic):
+             * FALSE AND X is always FALSE, regardless of X.
+             * TRUE OR Y is always TRUE, regardless of Y.
+             * 
+             * Also observe how reversing the expressions
+             * is a logic error and could result in NullPointerExceptions being thrown.
+             * So we can see order of boolean expressions is important inside an 
+             * if statement, just like the order of the statements in an if/else chain matters as well.
+             * 
+             * If we removed this if statement:
+             * before:  No null pointer exceptions and losing one life works just fine.
+             * after: When you lose one life, you lose them all!
+             */
+            if ( ball != null && ball.isVisible()) {  
+                BoundCollidedStatus status = ball.collideWorldBound();
+               
+                /* EXAMPLE Z
+                 * Switch and empty default demonstration
+                 *  
+                 *  All if statements can be rewritten as switch statements and vice-versa.
+                 *  Below is an example of a switch statement that determines what the ball
+                 *  collided with and how to handle the collisions: should we bounce? should
+                 *  we lose a life?
+                 *  
+                 *  if we removed this switch:
+                 *  before: If the game hits the top, we bounce off.  Collide with the ground
+                 *  and we lose one life
+                 *  after: The ball doesn't know how to determine what it collided with and
+                 *  so simply reflects about the top of the screen, even if that's the wrong
+                 *  thing to do.
+                 * 
+                 */
+                switch (status) {
+                    case TOP: {
+                        ball.reflectTop();
+                        ball.playBounceSound();
+                        break;
+                    }
+
+                    case BOTTOM: {
+                        ball.setToInvisible();
+                        ball.playDieSound();
+
+                        lifeSet.remove();
+
+                        if (lifeSet.getCount() < 1) {
+                            gameLost();
+                        }
+
+                        break;
+                    }
+
+                    case LEFT: {
+                        ball.reflectLeft();
+                        ball.playBounceSound();
+                        break;
+                    }
+
+                    case RIGHT: {
+                        ball.reflectRight();
+                        ball.playBounceSound();
+                        break;
+                    }
+                    default:
+                        break;
+                }
+
+               /* TODO 1
+                * Single IF 
+                * 
+                * This if should ask if the paddle and ball have collided; if they have
+                * we should bounce the ball off and play a sound.
+                * 
+                * before: The ball goes right through the paddle!
+                * after: The ball reflects off the paddle and plays a bounce sound
+                * 
+                * Take a look at the animated gif in the lab for a pictorial example of the before and after.
+                */
+                if (paddle.collided(ball) == true)
+                { 
+                    paddle.reflect(ball);
+                    ball.playBounceSound();  
+                 }
+              
+               
+
+                /* TODO 6 - ROB ADD THIS TO THE LAB
+                 * Multi-Way IF/ELSE Chain With No Default Else 
+                 * (ie, a fully-qualified "else if" at the end of the structure)
+                 * 
+                 * Write a chain of 2 IF statements joined by an ELSE clause to determine if 
+                 * the ball needs to be transformed into a fireball or iceball, respectively, based
+                 * on the current state of the paddle.
+                 * 
+                 * See the example above for how this is done for the NORMAL state and NORMAL ball type
+                 * 
+                 * before: Balls don't change to fire or ice as they should when they collide with such blocks
+                 * after: Balls will visibly change appearance to match the paddle's fire or ice state.
+                 * 
+                 * Take a look at the screenshots in the lab for a pictorial example of the before and after.
+                 * TODO 6 code goes here   
+                 */
+                  if( paddle.getState() == PaddleState.NORMAL){
+                   
+                      ball.setType(Ball.BallType.NORMAL);
+                  }
+                  else if( paddle.getState() == PaddleState.FIRE){ 
+                  
+                      ball.setType(Ball.BallType.FIRE);
+                  }
+                  else{
+                  
+                      ball.setType(Ball.BallType.ICE);
+                  }    
+                
+                  if (blockSet.isBallCollidingWithABlock(ball)) {
+                      handleBlockBallCollision(ball, paddle);
+                 
+                    }
+                  
+                 
+                  if (keyboard.isButtonDown(KeyEvent.VK_P)){
+                      paddle.setImage("Paddle_Normal.png");
+                    }
+                  else if 
+                     (keyboard.isButtonDown(KeyEvent.VK_D)){
+                      paddle.setImage("P2.png");
+                    }
+                     
+                  if (keyboard.isButtonDown(KeyEvent.VK_1)) {
+                      Ball foo = new Ball();
+                      paddle.spawn(Ball foo);
+                      ballset.add (foo);
+                      
+                    }
+                }
+        }
+    
+    
+    private void removeNeighboringBlocks(int row, int col, Block.BlockType type) { 
+      
+        for (int iRow = row - 2; iRow < row + 2; iRow++) {
+            if (iRow < 0 || iRow >= blockSet.getNumRows()) continue;  
+
+            for (int iCol = col - 2; iCol < col+2; iCol++) {
+                if (iCol < 0 || iCol >= blockSet.getNumColumns()) continue;  
+
+                Block nextBlock = blockSet.getBlockAt(iRow, iCol);
+                
+                /* TODO X 
+                 * Compound IF statements using logical AND (&&)
+                 * 
+                 * To get started, if you have yet to see an example of a compound AND statement, 
+                 * see EXAMPLE4 above. 
+                 * 
+                 * Below, we need to remove a block from the set of blocks onscreen depending on 
+                 * two conditions:
+                 * (1) Does the next block exist? (i.e., is the nextBlock == null or not?)
+                 * (2) Does the block match the type (FIRE, ICE) we're looking for?
+                 * If both of these conditions are true, then we need to remove the nextBlock from
+                 * the blockSet using the .remove() function
+                 * 
+                 * before: No fire or ice block chain reactions to neighboring fire or ice blocks
+                 * after: A destroyed fire or ice block will also destroy neighboring fire and ice blocks
+                 *
+                 * Take a look at the animated gif in the lab for a pictorial example of the before and after.
+                 *
+                 * if( the next block is not null AND the next block's type is equal to the target "type" variable )
+                 */
+                if (nextBlock != null && nextBlock.getType() == type) /** SOLN */
+                    blockSet.remove(nextBlock);
+                
+            }
+
+        }
+      }
+
+    private void handleBlockBallCollision(Ball ball, Paddle paddle) {
+         Block block = blockSet.getCollidedBlock(ball); 
+         block.reflect(ball);                           
+        
+        int row = block.getRow();
+        int col = block.getColumn();
+        
+        /* TODO X
+         * Single IF Statement
+         * Write a single if statement that will determine whether to remove a block that 
+         * collided with our ball.  Some blocks, called CAGES, should be indestructable
+         * but currently, all blocks are removed when they are crashed into with the ball.
+         *  
+         * Write a single if statement that will guard the "blockSet.remove(block);" statement below.
+         * This if statement makes sure the block is NOT an active CAGE block, 
+         * and only then does the block get removed from the blockSet.
+         *  
+         *  before: All blocks, including CAGES are removed when hit in our game
+         *  after: CAGE blocks are now unbreakable
+         *  
+         *  Take a look at the animated gif in the lab for a pictorial example of the before and after.
+         */
+        if(block.getType() != Block.BlockType.CAGE_ACTIVE)  /** SOLN */ 
+            blockSet.remove(block);
+    
+        
+        ball.playBounceSound(); 
+        
+        switch(block.getType()) {
+            case FIRE:
+                removeNeighboringBlocks(row, col, Block.BlockType.FIRE);  
+                paddle.startFire(); 
+                break;
+            
+            case FREEZING:
+                removeNeighboringBlocks(row, col, Block.BlockType.FREEZING);
+                paddle.startIce(); 
+                
+            case NORMAL:  
+            default:      
+        }
+     }
+    
+    
+    /*
+     * TODO 7
+     * Nested If Statements
+     * 
+     * In this section, we'll be concerned with determining the smallest score out of three
+     * scores in our game.  Two of the scores will be already saved, and the third will be 
+     * checked against those two to see if it's a new top score.
+     * For any nonzero set of scores, one of them is the smallest.  If we have three scores 
+     * and only want to save the top two, we need to find the smallest of the bunch and 
+     * toss it.
+     * 
+     * In this section, we'll complete a function very similar to Math.min() to help us determine
+     * which of three integer scores is the smallest and should be discarded.  In our game, we'll
+     * only need to track two top scores:
+     * Todays Top Score      
+     * Overall Top Score     
+     * 
+     * Finish the "minimum" function below by uncommenting out the if pseudocode 
+     * and turning the <questionA> and <questionB> tags into real java code.
+     * 
+     * before: Calling this function, your new score "c" will never be a high score
+     * after: This function now will return the smallest value of a,b, or c, and if c
+     * is NOT the smallest, then this is a new high score (either for Today or Overall) 
+     * 
+     * 
+     */
+      public int minimum(int a, int b, int c) {
+           
+            /* TODO 8 & TODO 9 Code goes here
+             * if(a is less than or equal to b) {
+             *      if(a is less than or equal to c) {
+             *          return a; 
+             *      }
+             * }
+             * 
+             * if(b is less than or equal to a) {
+             *      if(b is less than or equal to c) {
+             *          return b;
+             *      }
+             * }
+             * 
+             * 
+             * return c;  
+             */
+         return c;
+     
+     
+     
+      /* TODO 9
+      * Rewriting Nested Ifs Using AND
+      * 
+      * Rewrite the above if statements in the minimum function so that you condense 
+      * two ifs into one by joining the boolean expressions using &&
+      * Check out the following example of two logically equivalent if statements first, and
+      * then rewrite the code above so that it functions the same but has all inner nested if
+      * statements removed.
+      * 
+      * if( <questionA> ) {               
+      *     if( <questionB> ) {
+      *         
+      *     }
+      * }
+      * 
+      * if(<questionA> && <questionB>) {   
+      *     
+      * }
+      * 
+      * The before and after behavior should be identical
+      * 
+      */
+    
+     
+      /* TODO 8
+      * If-Elses Inside of If-Elses
+      *
+      * In this section, we'll want to put an if-else inside another if-else to determine
+      * the largest of three integers a,b and c.
+      * 
+      * Consider the following pseudocode that you should transform into actual java code
+      * found inside the maximum function below.
+      * 
+      */
+         /* TODO 8 code goes here
+          * if( a is greater than or equal to b ) {         
+          *     if( a is greater than or equal to c )       
+          *         return a;      
+          *     else
+          *         return c;
+          * } else if( b is greater than or equal to a ) {  
+          *     if( b is greater than or equal to c)        
+          *         return b;
+          *     else
+          *         return c;
+          * } else {                                        
+          *     return c;
+          * }
+          */ 
+     }
+}

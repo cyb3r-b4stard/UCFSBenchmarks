@@ -1,0 +1,218 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*; 
+
+class GPanel extends JPanel implements MouseListener 
+{
+    Board board;
+    int gameLevel;
+    ImageIcon button_black, button_white;
+    JLabel score_black, score_white;
+    boolean inputEnabled, active;
+
+    public GPanel (Board board, JLabel score_black, JLabel score_white) 
+    {
+        super();
+        this.board = board;
+        this.score_black = score_black;
+        this.score_white = score_white;
+        setLevel();
+        setTheme();
+        addMouseListener(this);
+        inputEnabled = true;
+        active = true;
+    }
+
+    public void setTheme()  
+    {
+        setBackground(Color.green);
+        repaint();
+    }
+
+    public void setLevel() 
+    {
+        Object[] choices = {1, 2, 3};
+        int response;
+        if (JOptionPane.showOptionDialog(null, "Please choose a difficulty", "Othello", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.DEFAULT_OPTION, null, choices, choices[1]) == JOptionPane.YES_OPTION)
+        {
+            gameLevel = JOptionPane.YES_OPTION;
+        }
+        else if if (JOptionPane.showOptionDialog(null, "Please choose a difficulty", "Othello", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.DEFAULT_OPTION, null, choices, choices[1]) == JOptionPane.NO_OPTION)
+    }
+
+    public void drawPanel(Graphics g) 
+    {
+        for (int x = 1 ; x < 8 ; x++) 
+        {
+            g.drawLine(x * Othello.Square_L, 0, x * Othello.Square_L, Othello.Height);
+        }
+        g.drawLine(Othello.Width, 0, Othello.Width, Othello.Height);
+        for (int x = 1 ; x < 8 ; x++) 
+        {
+            g.drawLine(0, x * Othello.Square_L, Othello.Width, x * Othello.Square_L);
+        }
+        g.drawLine(0, Othello.Height, Othello.Width, Othello.Height);
+        for (int x = 0 ; x < 8 ; x++)
+        {
+            for (int y = 0 ; y < 8 ; y++)
+            {
+                switch (board.get(x, y)) 
+                {
+                    case white:  
+                            g.setColor(Color.white);
+                            g.fillOval(1 + x * Othello.Square_L, 1 + y * Othello.Square_L, Othello.Square_L-1, Othello.Square_L-1);
+                            break;
+                    case black:
+                            g.setColor(Color.black);
+                            g.fillOval(1 + x * Othello.Square_L, 1 + y * Othello.Square_L, Othello.Square_L-1, Othello.Square_L-1);
+                            break;
+                }
+            }
+        }
+    }   
+    
+    public void paintComponent(Graphics g) 
+    {
+        super.paintComponent(g);
+        drawPanel(g);
+    }
+
+    public Dimension getPreferredSize() 
+    {
+        return new Dimension(Othello.Width, Othello.Height);
+    }
+
+    public int showBlackScore()
+    {
+        return Board.disc[0];
+    }
+    
+    public int showWhiteScore()
+    {
+        return Board.disc[1];
+    }
+    
+    public void showWinner() 
+    {
+        inputEnabled = false;
+        active = false;
+        if (board.disc[0] > board.disc[1])
+        {
+            JOptionPane.showMessageDialog(this, "You win!\n" + showBlackScore() + " - " + showWhiteScore(),"Othello", JOptionPane.INFORMATION_MESSAGE);
+        }
+        else if (board.disc[0] < board.disc[1])
+        {
+            JOptionPane.showMessageDialog(this, "You lose!\n" + showBlackScore() + " - " + showWhiteScore(),"Othello", JOptionPane.INFORMATION_MESSAGE);
+        }
+        else 
+        {
+            JOptionPane.showMessageDialog(this, "Drawn!\n" + showBlackScore() + " - " + showWhiteScore(),"Othello", JOptionPane.INFORMATION_MESSAGE);
+        }
+        
+        if(JOptionPane.showConfirmDialog(this, "Play Again?", "Othello", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+        {
+            Othello o = new Othello();
+        }
+        else
+        {
+            System.exit(0);
+        }
+    }
+    
+    public void clear() 
+    {
+        board.clear();
+        score_black.setText(Integer.toString(board.getDisc(SquareColour.black)));
+        score_white.setText(Integer.toString(board.getDisc(SquareColour.white)));
+        inputEnabled = true;
+        active = true;
+    }
+
+    public void computerMove() 
+    {
+        if (board.gameFinished()) 
+        {
+            showWinner();
+            return;
+        }
+        Move move = new Move();
+        if (board.findMove(SquareColour.white, gameLevel, move)) 
+        {
+            board.checkBoard(move,SquareColour.white);
+            score_black.setText(Integer.toString(board.getDisc(SquareColour.black)));
+            score_white.setText(Integer.toString(board.getDisc(SquareColour.white)));
+            repaint();
+            if (board.gameFinished() == true) 
+            {
+                showWinner();
+            }
+            else if (!board.userCanMove(SquareColour.black)) 
+            {
+                   JOptionPane.showMessageDialog(this, "You pass...","Othello",JOptionPane.INFORMATION_MESSAGE);
+                   javax.swing.SwingUtilities.invokeLater(new Runnable() 
+                   {
+                        public void run() 
+                        {
+                            computerMove();
+                        }
+                   });
+                }
+        }
+        else if (board.userCanMove(SquareColour.black))
+        {
+           JOptionPane.showMessageDialog(this, "I pass...","Othello",JOptionPane.INFORMATION_MESSAGE);
+        }
+        else
+        {
+            showWinner();
+        }
+    }
+
+    public void mouseClicked(MouseEvent e) 
+    {
+        if (inputEnabled == true) 
+        {
+            int i = e.getX() / Othello.Square_L;
+            int j = e.getY() / Othello.Square_L;
+            if ((i < 8) && (j < 8) && (board.get(i,j) == SquareColour.empty) && (board.checkBoard(new Move(i, j),SquareColour.black) != 0)) {
+                score_black.setText(Integer.toString(board.getDisc(SquareColour.black)));
+                score_white.setText(Integer.toString(board.getDisc(SquareColour.white)));
+                repaint();
+                javax.swing.SwingUtilities.invokeLater(new Runnable() 
+                {
+                    public void run() 
+                    {   
+                        Cursor savedCursor = getCursor();
+                        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                        computerMove();
+                        setCursor(savedCursor);     
+                    }
+                });
+            }
+            else 
+            {
+                JOptionPane.showMessageDialog(this, "Move illegal\nPlease choose another move", "Othello", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    public void mouseEntered(MouseEvent e) 
+    {
+        
+    }
+
+    public void mouseExited(MouseEvent e) 
+    {
+        
+    }
+
+    public void mousePressed(MouseEvent e) 
+    {
+        
+    }
+
+    public void mouseReleased(MouseEvent e) 
+    {
+        
+    }
+}

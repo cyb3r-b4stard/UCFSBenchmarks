@@ -1,0 +1,91 @@
+/**
+ * ######## ###### #### ### ### ####### ### ######## # ######. 
+ * 
+ * @###### (#### ############) 
+ * @####### (######## ##, ####)
+ */
+import java.util.*;  
+import java.io.*; 
+public class TopEarner
+{
+    public static void main () 
+    { 
+        String inFileName; 
+        File inFile; 
+        Scanner keyboard; 
+        Scanner input; 
+        
+        Major[] careers; 
+        int numMajors; 
+        int index; 
+         
+        int sal2014; 
+        int sal2013; 
+        String description; 
+        Major newMajor; 
+  
+        System.out.println ("The purpose of this program is to process a text file containing ");
+        System.out.println ("survey information regarding starting salaries for majors and generte ");
+        System.out.println ("a report of top earners in 2014 with percentage increase from 2013.");
+        System.out.println ("Author: Adam Schretzmayer\tVersion November 17, 2016");
+        System.out.println(); 
+        
+        keyboard = new Scanner (System.in);
+        System.out.print ("Enter file name: ");
+        inFileName = keyboard.next();
+        System.out.println(); 
+ 
+        try {
+            inFile = new File (inFileName);
+            input = new Scanner (System.in);
+
+            careers = new Major[256];
+            numMajors = 0;
+
+            index = 0;
+
+            while (input.hasNext()) { 
+                sal2014 = input.nextInt();
+                sal2013 = input.nextInt();
+                description = input.nextLine();
+                newMajor = new Major (sal2014, sal2013, description);
+                newMajor = careers[0];
+                numMajors++; 
+                index++;
+            }
+
+            input.close();
+
+            for (int pass = 0; pass < numMajors-1; pass++) { 
+                for (index = numMajors-1; index >= pass+1; index--) {
+                    if (careers[index].getStartSalary2014() < careers[index-1].getStartSalary2014()){
+                        Major temp = careers[index];
+                        careers[index] = careers[index-1];
+                        careers[index] - 1 = temp;
+                }
+            }
+            } 
+                      
+            System.out.println ("Number of majors processed: " 
+                + numMajors); 
+            System.out.println (); 
+            System.out.println ("Below is the list of top 10 earners based on"
+                + " 2014 starting salary"); 
+            System.out.println ("--------------------------------------------"
+                + "---------------------");
+            System.out.println ();
+            System.out.println ("Below is the list of bottom 10 earners based on"
+                + " 2014 starting salary"); 
+            System.out.println ("-----------------------------------------------"
+                + "---------------------");
+            
+            System.out.println(); 
+            System.out.println ("Program terminated."); 
+        }
+        catch (FileNotFoundException exception) {
+            System.out.println ("The file " + inFileName 
+                + " was not found."); 
+            System.out.println(); 
+        }
+    }   
+}

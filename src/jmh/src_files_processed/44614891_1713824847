@@ -1,0 +1,133 @@
+import java.awt.*;
+import javax.swing.*;
+import java.awt.event.*;
+import java.text.*;
+
+public class MotionWithKeys extends JApplet implements KeyListener
+{
+    private int x, y, dir;
+    private int step;
+    private Image[][] walk;
+    private Image[] walkLeft = new Image[2];
+    private Image[] walkRight = new Image[2];
+    private Image[] walkForward = new Image[2];
+    private Image[] walkBack = new Image[2];
+    private Image[] stand = new Image[4];
+    
+    public void init()
+    {
+        setSize(500,500);
+        x = y = 200;
+        setBackground(Color.white);
+        walk = new Image[4][2];
+        walk[0][0] = getImage(getCodeBase(), "p_b_walk1.png");
+        walk[0][1] = getImage(getCodeBase(), "p_b_walk2.png");
+        walk[1][0] = getImage(getCodeBase(), "p_r_walk1.png");
+        walk[1][1] = getImage(getCodeBase(), "p_r_walk2.png");
+        walk[2][0] = getImage(getCodeBase(), "p_f_walk1.png");
+        walk[2][1] = getImage(getCodeBase(), "p_f_walk2.png");
+        walk[3][0] = getImage(getCodeBase(), "p_l_walk1.png");
+        walk[3][1] = getImage(getCodeBase(), "p_l_walk2.png");
+        stand[0] = getImage(getCodeBase(), "p_f_stand.png");
+        stand[1] = getImage(getCodeBase(), "p_b_stand.png");
+        stand[2] = getImage(getCodeBase(), "p_l_stand.png");
+        stand[3] = getImage(getCodeBase(), "p_r_stand.png");
+        step = 0;
+        addKeyListener(this);
+        setFocusable(true);
+    }
+    
+    public void keyPressed(KeyEvent ke)
+    {
+        int key = ke.getKeyCode();
+        
+        switch(key)
+        {
+            case KeyEvent.VK_LEFT:
+            case KeyEvent.VK_A:
+            if(x >= 0)
+            {
+                x -= ;
+                if(step == 0)
+                {
+                    step = 1;
+                } 
+                else 
+                {
+                    step = 0;
+                }
+                dir = 3;
+            }
+            break;
+            
+            case KeyEvent.VK_RIGHT:
+            case KeyEvent.VK_D:
+            if(x <= 479)
+            {
+                x += 5;
+                if(step == 0)
+                {
+                    step = 1;
+                } 
+                else 
+                {
+                    step = 0;
+                }
+                dir = 1;
+            }
+            break;
+            
+            case KeyEvent.VK_UP:
+            case KeyEvent.VK_W:
+            if(y >= 0)
+            {
+                y -= 5;
+                if(step == 0)
+                {
+                    step = 1;
+                } 
+                else 
+                {
+                    step = 0;
+                }
+                dir = 0;
+            }
+            break;
+            
+            case KeyEvent.VK_DOWN:
+            case KeyEvent.VK_S:
+            if(y >= 0)
+            {
+                y += 5;
+                if(step == 0)
+                {
+                    step = 1;
+                }
+                else
+                {
+                    step = 0;
+                }
+                dir = 2;
+            }
+            break;
+        }
+        
+        repaint();
+    }
+    
+    public void keyReleased(KeyEvent ke)
+    {
+        
+    }
+    
+    public void keyTyped(KeyEvent ke)
+    {
+        
+    }
+    
+    public void paint(Graphics g)
+    {
+        super.paint(g);
+        g.drawImage(walk[dir][step], x, y, 42, 42 this);
+    }
+}

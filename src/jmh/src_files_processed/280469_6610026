@@ -1,0 +1,125 @@
+import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
+
+/**
+ * #####, ## ### ###### ### ###### ##### ####
+ * ################ #######-###### ###########
+ * ######.
+ * 
+ * @###### ######### ###### (######)
+ * @####### ####-##-##
+ */
+public class MatrixGraph implements Graph 
+{
+
+    private boolean[][] adjMatrix;
+    private List<String> knoten;
+    
+    /**
+     * Erzeugt einen neuen Matrixgraphen mit gegebener
+     * Maximalanzahl der Knoten.
+     * 
+     * @param groesse Maximalanzahl der Knoten
+     */
+    public MatrixGraph(int groesse) {
+        this.adjMatrix = new boolean[groesse][groesse];
+        this.knoten = new ArrayList<String>();
+    }
+    
+    /** {@inheritDoc} */
+    public Iterable<String> knoten() {
+        return this.knoten;
+    }
+    
+    private int knotenIndex(String v) {
+        return this.knoten.indexOf(v);
+    }
+    
+    /** {@inheritDoc} */
+    public int anzahlKnoten() {
+        return this.knoten.size();
+    }    
+    
+    /** {@inheritDoc} */
+    public void knotenHinzufuegen(String v) {
+        this.knoten.add(v);
+    }
+    
+    /** {@inheritDoc} */
+    public boolean hatKnoten(String v) {
+        return this.knoten.contains(v);
+    }
+    
+    /** {@inheritDoc} */
+    public boolean hatKante(String v, String w) {
+        if(hatKnoten(v) && hatKnoten(w))
+            return this.adjMatrix[knotenIndex(v)][knotenIndex(w)];
+            
+        return false;
+    }
+    
+    public void kanteHinzufuegen(String v, String w) {
+        if(!hatKnoten(w)) knotenHinzufuegen(w);
+        if(!hatKnoten(v)) knotenHinzufuegen(v);
+        this.adjMatrix[knotenIndex(w)][knotenIndex(v)] = true;
+    }
+
+    public int grad(String v) {
+        int grad = 0;
+        for(String w : this.knoten){
+           if(hatKante(v, w) && w != v) grad++;
+        }
+        return grad;
+    }
+    
+    public int anzahlKanten() {
+        int anzahl = 0;
+        for(String w : this.knoten){
+            anzahl += grad;
+            }
+        }
+        return anzahl/2;
+    }
+    
+    public Iterable<String> benachbart(String v) {
+        ArrayList<String> nachbarn = new ArrayList<String>();
+        for(String w : this.knoten){
+            if(hatKante(v, w)) nachbarn.add(w);
+        }
+        return nachbarn;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,289 @@
+public class Wettkampf 
+{
+
+    int Klasse;
+    double kPunkt;
+    double wf;
+    char geschlecht;
+    boolean wbb;
+    String titel;
+    String gender;
+    Veranstaltung veranstaltung;
+    Teilnehmer teilnehme;
+    TeilnehmerListe teilnehmer = new TeilnehmerListe();
+    ErgebnisListe ergebnisse = new ErgebnisListe();
+
+    public Wettkampf(String titel,int klasse, char geschlecht,double kPunkt,double wf,Veranstaltung veranstaltung) 
+    {
+        this.titel=titel;
+        this.veranstaltung=veranstaltung;
+        Klasse=klasse;
+        this.geschlecht=geschlecht;
+        this.kPunkt=kPunkt;
+        this.wf=wf;
+        if (geschlecht=='m')
+        {
+            gender= "männlich";
+        }
+        else
+        {
+            gender="weiblich";
+        }
+
+    }
+
+    public Wettkampf(Veranstaltung veranstaltung) 
+    {
+        titel="Herren";
+        this.veranstaltung=veranstaltung;
+        Klasse=1993;
+        geschlecht='m';
+        kPunkt=60;
+        wf=2.4;
+        if (geschlecht=='m')
+        {
+            gender= "männlich";
+        }
+        else
+        {
+            gender="weiblich";
+        }
+
+    }
+
+    public String toString()
+    {
+        if (geschlecht=='m')
+        {
+            gender= "männlich";
+        }
+        else
+        {
+            gender="weiblich";
+        }
+
+        return Klasse+" "+gender;
+    }
+
+    public void teilnehmerHinzufügen(Teilnehmer t1)
+    {
+        if (t1.geschlecht==geschlecht)
+        {
+            teilnehmer.add(t1);
+            teilnehmer.sortieren();
+
+            ergebnisAnlegen((int)(t1.startnummer));
+        }
+    }
+
+    public void teilnehmerEntfernen(int startnummer)
+    {
+
+        teilnehmer.teilnehmerEntfernen(startnummer);
+    }
+
+    public void startlisteAusgeben()
+    {
+        System.out.println("______________________________________________________________________________________________________________________");
+        System.out.println(veranstaltung.name);
+        System.out.println(veranstaltung.datum);
+        System.out.println("______________________________________________________________________________________________________________________");
+        System.out.println("STARTLISTE");
+        System.out.println("______________________________________________________________________________________________________________________");
+        System.out.println("");
+        System.out.println("Ort: "+veranstaltung.ort+"        Wetter: "+veranstaltung.wetter);
+        System.out.println("");
+        System.out.println("Jury: "+veranstaltung.jury);
+        System.out.println("");
+        System.out.println("Haltungsrichter-A: "+veranstaltung.haltungsrichter1+"   Haltungsrichter-B: "+veranstaltung.haltungsrichter2+"   Haltungsrichter-C: "+veranstaltung.haltungsrichter3);
+        System.out.println("Haltungsrichter-D: "+veranstaltung.haltungsrichter4+"   Haltungsrichter-E: "+veranstaltung.haltungsrichter5);
+        System.out.println("");
+        System.out.println("______________________________________________________________________________________________________________________");
+        System.out.println("");
+        System.out.println("K-Punkt: "+kPunkt);
+        System.out.println(titel+"("+Klasse+")"+" "+gender);
+        System.out.println("");
+        System.out.println("Nr.    Name                 Verein             Jahr   Nation");
+        System.out.println("______________________________________________________________________________________________________________________");
+        for (int i=0;i<teilnehmer.size(); i++)
+        {
+            System.out.println(teilnehmer.get(i));
+        }
+        System.out.println("______________________________________________________________________________________________________________________");
+        System.out.println("______________________________________________________________________________________________________________________");
+        System.out.println("");
+        System.out.println("");
+        System.out.println("");
+    }
+
+    public void ergebnisAnlegen(int startnummer)
+    {
+        Ergebnisse e = new Ergebnisse (startnummer, this);
+        e.setkPunkt(kPunkt);
+        e.setWf(wf);
+        e.wbb=wbb;
+        ergebnisse.add(e);
+
+    }
+
+    public Ergebnisse ergebnisSuchen(int startnummer)
+    {
+        for (Ergebnisse e: ergebnisse.ergebnis)
+        {if ((int)(e.teilnehmer.startnummer) ==startnummer)
+            {
+                return e;
+            }
+        }
+        return null;
+    }
+
+    public void ergebnisseAusgeben()
+    {
+        System.out.println("______________________________________________________________________________________________________________________");
+        System.out.println(veranstaltung.name);
+        System.out.println(veranstaltung.datum);
+        System.out.println("______________________________________________________________________________________________________________________");
+        System.out.println("ERGEBNISLISTE");
+        System.out.println("______________________________________________________________________________________________________________________");
+        System.out.println("");
+        System.out.println("Ort: "+veranstaltung.ort+"        Wetter: "+veranstaltung.wetter);
+        System.out.println("");
+        System.out.println("Jury: "+veranstaltung.jury);
+        System.out.println("");
+        System.out.println("Haltungsrichter-A: "+veranstaltung.haltungsrichter1+"   Haltungsrichter-B: "+veranstaltung.haltungsrichter2+"   Haltungsrichter-C: "+veranstaltung.haltungsrichter3);
+        System.out.println("Haltungsrichter-D: "+veranstaltung.haltungsrichter4+"   Haltungsrichter-E: "+veranstaltung.haltungsrichter5);
+        System.out.println("");
+        System.out.println("______________________________________________________________________________________________________________________");
+        System.out.println("");
+        System.out.println("K-Punkt: "+kPunkt);
+        System.out.println(titel+"("+Klasse+")"+" "+gender);
+        System.out.println("");
+        System.out.println("Platz     Nr.        Name                 Weite    W-Note     A      B      C      D      E    H-Note   Pkt.   Gesamt ");
+        System.out.println("______________________________________________________________________________________________________________________");
+        for (int i=0; i<ergebnisse.size();i++)
+        {
+            ergebnisse.get(i).gesamtBerechnen();
+        }
+        ergebnisse.sortieren();
+        for (int i=0; i<ergebnisse.size();i++)
+        {
+            System.out.println(ergebnisse.get(i));
+        }
+        System.out.println("______________________________________________________________________________________________________________________");
+        System.out.println("______________________________________________________________________________________________________________________");
+        System.out.println("");
+        System.out.println("");
+        System.out.println("");
+    }
+
+    public void startlisteAusgebenInhalt()
+    {
+        System.out.println("");
+        System.out.println("K-Punkt: "+kPunkt);
+        System.out.println("Klasse: "+titel+"("+Klasse+")"+" "+gender);
+        System.out.println("Nr.    Name                 Verein          Jahrgang   Nation");
+        System.out.println("______________________________________________________________________________________________________________________");
+        for (int i=0;i<teilnehmer.size(); i++)
+        {
+
+            Teilnehmer teilnehme= teilnehmer.get(i); 
+            
+            String name=teilnehme.nachname+", "+teilnehme.vorname;
+           
+            System.out.printf("%2d  %20s  %15s  %4d  %3s \n", (int)teilnehme.startnummer,name, teilnehme.verein, teilnehme.jahrgang,teilnehme.nation);
+
+        }
+        System.out.println("______________________________________________________________________________________________________________________");
+
+    }
+    
+    public void startlisteAusgebenInhaltT()
+    {
+        System.out.println("");
+        System.out.println("K-Punkt: "+kPunkt);
+        System.out.println("Klasse: "+titel+"("+Klasse+")"+" "+gender);
+        System.out.println("Nr.    Name                 Verein          Jahrgang   Nation");
+        System.out.println("______________________________________________________________________________________________________________________");
+
+        {
+            double startnummer=1;
+            String nachname = "Burghardt";
+            String vorname="Max";
+            String verein="VfL Pfullingen";
+            int jahrgang=1995;
+            String nation="GER";
+            String name=nachname+", "+vorname;
+            System.out.printf("%2d  %20s  %15s  %4d  %3s \n",(int)startnummer, name, verein,jahrgang,nation);
+        }
+        System.out.println("______________________________________________________________________________________________________________________");
+
+    }
+
+    public  void ergebnislisteAusgebenInhalt()
+    {
+        System.out.println("");
+        System.out.println("K-Punkt: "+kPunkt);
+        System.out.println("Klasse: "+titel+"("+Klasse+")"+" "+gender);
+        System.out.println("Platz     Nr.        Name                 Weite    W-Note     A      B      C      D      E    H-Note   Pkt.   Gesamt ");
+        System.out.println("______________________________________________________________________________________________________________________");
+        for (int i=0; i<ergebnisse.size();i++)
+        {
+            ergebnisse.get(i).gesamtBerechnen();
+        }
+        ergebnisse.sortieren();
+        for (int i=0; i<ergebnisse.size();i++)
+        {
+            
+            
+            Teilnehmer teilnehme= teilnehmer.get(i);
+            Ergebnisse ergebnisl= ergebnisse.get(i);
+            String name=teilnehme.nachname+", "+teilnehme.vorname;
+            System.out.printf("%2d       %2d  %20s          %4.1fm   %4.1f     %3.1f   %3.1f   %3.1f   %3.1f   %3.1f    %4.1f    %4.1f   %4.1f \n             %20s    %4.1fm   %4.1f     %3.1f   %3.1f   %3.1f   %3.1f   %3.1f    %4.1f    %4.1f \n",ergebnisl.platzierung, (int)teilnehme.startnummer, name,ergebnisl.w1,ergebnisl.weite1,ergebnisl.A1,ergebnisl.B1,ergebnisl.C1,ergebnisl.D1,ergebnisl.E1,ergebnisl.haltung1,ergebnisl.sprung1,ergebnisl.gesamt,teilnehme.verein,ergebnisl.w2,ergebnisl.weite2,ergebnisl.A2,ergebnisl.B2,ergebnisl.C2,ergebnisl.D2,ergebnisl.E2,ergebnisl.haltung2,ergebnisl.sprung2);
+        
+        }
+        System.out.println("______________________________________________________________________________________________________________________");
+
+    }
+
+    public  void ergebnislisteAusgebenInhaltT()
+    {
+        System.out.println("");
+        System.out.println("K-Punkt: "+kPunkt);
+        System.out.println("Klasse: "+titel+"("+Klasse+")"+" "+gender);
+        System.out.println("Platz     Nr.        Name            Weite   W-Note    A     B     C     D     E   H-Note   Pkt.   Gesamt ");
+        System.out.println("______________________________________________________________________________________________________________________");
+
+        {
+            int platzierung=1;
+            double startnummer=1;
+            String nachname = "Burghardt";
+            String vorname="Max";
+            String verein="VfL Pfullingen";
+
+            double w1=60.0;
+            double weite1=60.0;
+            double A1=20.0;
+            double B1=20.0;
+            double C1=20.0;
+            double D1=20.0;
+            double E1=20.0;
+            double haltung1=60.0;
+            double sprung1= 120.0;
+            double w2=60.0;
+            double weite2=60.0;
+            double A2=20.0;
+            double B2=20.0;
+            double C2=20.0;
+            double D2=20.0;
+            double E2=20.0;
+            double haltung2=60.0;
+            double sprung2= 120.0;
+            double gesamt=240.0;
+            String name=nachname+", "+vorname;
+            System.out.printf(System.out.printf("%2d       %2d  %20s          %4.1fm   %4.1f     %3.1f   %3.1f   %3.1f   %3.1f   %3.1f    %4.1f    %4.1f   %4.1f \n             %20s    %4.1fm   %4.1f     %3.1f   %3.1f   %3.1f   %3.1f   %3.1f    %4.1f    %4.1f \n",platzierung, (int)startnummer, name,w1,weite1,A1,B1,C1,D1,E1,haltung1,sprung1,gesamt,verein,w2,weite2,A2,B2,C2,D2,E2,haltung2,sprung2);
+        }
+        System.out.println("______________________________________________________________________________________________________________________");
+
+    }
+
+}

@@ -1,0 +1,215 @@
+
+
+import java.util.ArrayList;
+import java.lang.String;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+
+
+    
+
+
+
+public class  Banco
+{ 
+    
+    String nombreB="";
+     int numero=0;
+     private String f;
+    String nombre;
+     String cuenta; 
+     double saldo;
+     
+    ArrayList<Cuenta> c;
+    Cuenta s = new Cuenta();
+
+    public Banco(String x){
+      x=nombreB;
+        c= new ArrayList<Cuenta>();
+    }
+      
+   
+   
+   
+   private void cliente(){
+    
+     BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+         
+        Cuenta l;
+         
+         try{
+            System.out.println("-Ingrese su nombre: ");
+            nombre=in.readLine();
+            
+            System.out.println("-Ingrese numero de cuenta: ");
+            numero=Integer.parseInt(in.readLine());
+            cuenta=Integer.toString(numero);
+            
+            System.out.println("-Ingrese saldo inicial de su cuenta:" );
+            saldo= Integer.parseInt(in.readLine());
+            f=Integer.toString((int) saldo);
+            l= new Cuenta(nombre,cuenta,saldo);
+            c.add(l);
+            
+            }catch(Exception e){}
+    
+    }
+   private  void datoscliente(){
+      if(c.size()>0){
+        
+      for(int i=0;i<c.size();i++){
+          System.out.println("\n\n\t\tCLIENTE NUMERO: "+(i+1));
+          System.out.println("\n\n-El nombre del cliente es: "+c.get(i).getNombre());
+         System.out.println("-Numero de cuenta : "+c.get(i).getCuenta());
+         System.out.println("-Su saldo es: "+c.get(i).getSaldo());
+          
+     
+         
+    
+         }
+        }else
+        
+        System.out.println("NO TENEMOS CLIENTES REGISTRADOS");
+        
+        
+
+
+       }
+       private void deposito() throws IOException {
+         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+            System.out.println("-Ingrese su numero de cuenta: ");
+            String p;
+            p=in.readLine();
+            
+            for(int i=0;i<c.size();i++){
+            if(c.get(i).getCuenta().compareTo(p)==0){
+                     System.out.println("-Ingrese monto a depositar: ");
+                     saldo+= Integer.parseInt(in.readLine());
+            
+                            
+            System.out.println("Transaccion exitosa su saldo actual es: "+saldo+" Bs");
+                
+            }
+        
+            else {System.out.println("Numero de cuenta incorrecto");
+            }
+            
+            
+            
+        }
+     
+        
+           
+         
+        
+        
+       }
+        
+        
+       
+        private void retiro() throws IOException{
+        
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+      String retir;
+       System.out.println("-Ingrese su numero de cuenta: ");
+      retir=in.readLine();
+      double reti=0;
+      boolean ñ;
+        for(int i=0;i<c.size();i++){
+            if(c.get(i).getCuenta().compareTo(retir)==0){
+                     
+                        System.out.println("-Ingrese monto a retirar: ");
+                        retir= in.readLine();
+                        reti=Double.parseDouble(retir);
+                       
+            if(saldo>reti){
+                                reti=saldo-reti;
+              
+                                System.out.println("-Su retiro a sido exitoso su saldo es: "+reti+" Bs");
+              
+        
+                                }
+            
+                                    if(saldo<reti){
+                      System.out.println("-Saldo insuficiente para realizar su retiro");
+
+                    }   
+            
+                            
+            
+                
+                } 
+        
+           else {System.out.println("Numero de cuenta incorrecto");
+            }
+            
+           
+           
+        
+        
+            
+          
+        
+        }}
+    
+    public boolean getMenu() throws IOException{
+     int opc=0;
+     String cuenta;
+     Cuenta m;
+     boolean y;
+     Cuenta h = new Cuenta();
+     BufferedReader in= new BufferedReader(new InputStreamReader(System.in));
+    
+     do{
+     try{
+    
+     System.out.println("\n\n1.Abrir Cuenta");
+     System.out.println("2.Consultar estado de cuenta");
+     System.out.println("3.Realizar deposito");
+     System.out.println("4.Realizar retiro");
+       System.out.println("5.Salir");
+     opc= Integer.parseInt(in.readLine());
+    }catch(Exception e){}
+     
+       
+        switch(opc) {
+           
+         case 1: cliente();break;
+         
+         
+        
+            
+            
+            
+                  
+         case 2: datoscliente();break;
+               
+                 
+          
+                
+         case 3: deposito();break;
+                
+         
+                 
+        
+          case 4: retiro(); break;
+           
+          case 5:return false;
+                    
+        }
+       
+      return true;
+     
+              
+        
+    }while(opc!=5);
+
+}
+
+
+
+
+  
+   

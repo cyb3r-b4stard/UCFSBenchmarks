@@ -1,0 +1,106 @@
+import java.util.*;
+import java.io.*;
+public class Quiz 
+{
+    public Quiz(String fNIn)
+    {
+        fileName = fNIn;
+        count = 0;
+        first = 0;
+        FileReader readerCheck;
+        FileReader reader;
+        difficulty = new ArrayList<Character>();
+        correct = new ArrayList<Character>();
+    }
+    public int isValid() throws IOException 
+    {
+        try
+        {
+            readerCheck = new FileReader(fileName);
+        }
+        catch(Exception e)
+        {
+            System.out.println("The Quiz does not exist or it is not usable.");
+            return 0;
+        }
+        reader = new FileReader(fileName);
+        inFile = new Scanner(reader);
+        return 1;
+    }
+    public int conclusion()
+    {
+        if(inFile.hasNext() == false)
+        {
+            System.out.println("        *****************************");
+            System.out.println("       Thank you for playing " + fileName.toUpperCase());
+            System.out.println("         There are no more questions");
+            System.out.println("        *****************************");
+            System.out.println("  Questions difficulty and Answers correct:");
+            for(int k = 0;k < count;k++)
+            {
+                int chI = Integer.parseInt(Character.toString(difficulty.get(k)));
+                System.out.println("  " + (k+1) + ")  Difficulty:    " + (chI + 1) + "    correct:   " + correct.get(k));
+            }
+            System.out.println("        *****************************");
+            return 0;
+        }
+        return 1;
+    }
+    public void askQuestion()
+    {
+        Scanner inHum = new Scanner(System.in);
+        String ques = null;
+        char ans = ' ';
+        int length = 0;
+        for(int i = 0;i < 6;i++)
+        {
+            ques = inFile.nextLine();
+            if(first == 2)
+            {
+                length = ques.length();
+                if(ques.substring(1,length)
+                {
+                    
+                }
+                ques = ques.substring(1,length);
+            }
+            System.out.println(ques);
+            first = 2;
+        }
+        ans = inFile.nextLine().charAt(1);
+        if(inHum.next().toUpperCase().charAt(0) == ans)
+        {
+            System.out.println("Good Guess");
+            correct.add('Y');
+        }
+        else
+        {
+            System.out.println("Wrong Answer");
+            correct.add('N');
+        }
+        inHum.reset();
+        count++;
+    }
+    public void setDifficulty()
+    {
+        difficulty.add(inFile.nextLine().charAt(1));
+    }
+    public void intro()
+    {
+        System.out.println("        ****************************");
+        System.out.println("           Welcome to " + fileName.toUpperCase());
+        System.out.println("To answer a question, type a letter and hit enter");
+        System.out.println("        ****************************");
+    }
+    private String fileName;
+    private FileReader readerCheck;
+    private FileReader reader; 
+    private Scanner inFile;
+    private int first;
+    private int count;
+    private ArrayList<Character> difficulty;
+    private ArrayList<Character> correct;
+    
+    
+    
+}

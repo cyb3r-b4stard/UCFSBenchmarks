@@ -1,0 +1,181 @@
+import java.awt.*;
+import java.io.*;
+import java.util.*;
+
+public class DataPlotter
+{
+   
+    public static void main(String[] args) throws Exception{
+        
+            
+        DrawingPanel panel = new DrawingPanel(500,1000);
+        Graphics G = panel.getGraphics();
+       
+         /**
+         * Make a Scanner to read the a smaller data set, just the first 10 lines of the big
+         * file to help keep the results sane during testing.  Change this to the big data 
+         * set when you're ready.
+         */ 
+         Scanner S = new Scanner(new File("BBallStats.csv"));
+        
+        
+        /**
+         * BELOW are the three steps you need to go through.
+         * You may want to add code or other things for testing purposes.
+         * For example, you could put in println statements
+         * or break points to check the return value of readColumn is correct.
+         * Call other methods and check their return values or print them out.
+         */  
+                ArrayList<Double> data = readColumn(S, 2); 
+         
+         /**
+          * Plot the data you've extracted, with the Graphics object you've gotten from
+          * the drawing panel.
+          */
+         plotVertBars(G, data, "foo foo");
+        
+    }
+    
+    /**
+     * Read a column of data from the given Scanner.
+     * Assume Scanner points at a valid input stream, and that
+     * col is a valid column of data to be read as a double.
+     * @return an ArrayList of all the doubles read from the given column from the Scanner
+     */
+    public static ArrayList<Double> readColumn(Scanner S, int col){
+        S.nextLine(); 
+        
+        ArrayList<Double> list = new ArrayList<Double>(); 
+        
+        int i = 0;
+ 
+        while(S.hasNextLine()){ 
+            String [] line = S.nextLine().split(","); 
+            double val = Double.parseDouble(line[col]);
+            list.add(i, val);
+            i++;
+        }
+        
+        return list;
+    
+    }
+    
+    /**
+     * Overloaded readColumn method that only fills the array with data from the given column
+     * IF the player has played more than (or equals to) a given number of games.
+     * This will help us filter out players who only played for a few games and might be
+     * skewing the statistics.
+     */
+    public static ArrayList<Double> readColumn(Scanner S, int col, int gamesThreshold){
+        S.nextLine(); 
+        
+        ArrayList<Double> list = new ArrayList<Double>(); 
+        
+        int i = 0;
+ 
+        while(S.hasNextLine()){ 
+            String [] line = S.nextLine().split(","); 
+            double gp = Double.parseDouble(line[4]); 
+            
+            if (gp >= gamesThreshold){ 
+                double val = Double.parseDouble(line[col]);
+                list.add(i, val);
+                i++;
+            }
+        }
+        
+        return list;
+    
+    }
+    
+    /**
+     * Find the largest value in the ArrayList of doubles.
+     */
+    public static double findMax(ArrayList<Double> A){
+        double max = 0;
+        
+        for (int i = 0; i < A.size(); i++){
+            
+            double temp = A.get(i);
+            
+            if (temp > max){
+                max = temp;
+            }
+
+        }
+        
+        return max;
+    }
+    
+    /**
+     * Find the lowest value in the ArrayList of doubles.
+     */
+    public static double findMin(ArrayList<Double> A){
+        double min = 100;
+        
+        for (int i = 0; i < A.size(); i++){
+            
+            double temp = A.get(i);
+            
+            if (temp < min){
+                min = temp;
+            }
+
+        }
+        
+        return min;
+    }
+    
+    /**
+     * Compute the average value of all the doubles in the ArrayList
+     */
+    public static double average(ArrayList<Double> A){
+        
+        double sum = 0;
+        int count = 0;
+        
+        for (int i = 0; i < A.size(); i++){
+            
+            double temp = A.get(i);
+            sum += temp;
+            count++;
+            
+        }
+        
+        double avg = (sum/count);
+
+        return avg;
+    }
+    
+    /**
+     * Given a graphics object to draw with, and ArrayList of doubles
+     * draw a vertical line for each value in the ArrayList.  The x-coordinate
+     * of the line should be equal to the position in the list, and the height
+     * of the line should be scaled using the max and min values within the array
+     * to ensure it fits within whatever size window you have chosen.
+     */
+    public static void plotVertBars(Graphics G, ArrayList<Double> A, String title)
+    { 
+        int max = (int) findMax(A);
+        double min = findMin(A);
+        double avg = average(A);
+        
+        
+        
+        for (int i = 0; i< A.size(); i++){
+           
+            double val = A.get(i);
+            int y = (int) val;
+            
+            y = (
+            
+            
+            G.drawLine(i,1000,i,y*10);
+            
+        }
+    
+    
+   }
+    
+
+}

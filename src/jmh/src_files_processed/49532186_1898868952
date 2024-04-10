@@ -1,0 +1,336 @@
+
+/* #### ### ####### - ######
+ * ####:######## ####### 
+ * ########:############
+ * ##:#########
+ */
+
+import ecs100.*;
+import java.awt.Color;
+import java.io.*;
+import java.util.*;
+import javax.swing.JColorChooser;
+
+/** ### ######## ####### ###### ### #### ## ######, ####, ### ###### #####
+ *    ########## ######## ########## ## # #### ## ###### ######.
+ *    ### ####### ###### ### #### ##
+ *      - ### # ### ##### ## ### #######
+ *      - ###### # ##### #### ### #######
+ *      - #### # ##### ## # ######### ########
+ *      - ### ### ###### ### ### #### #####
+ *      - #### ### ####### ####### ## # ####
+ *      - #### # ######## ####### #### # ####.
+ *    ### ###### ####### #####, ##########, #####, ### ####
+ *        
+ *    #######
+ *      ### ######## ##### ####### ### ### #### ###########:
+ *        #######, ##### #######, #### ####### ### #######.
+ *        ## ###### ### ####### ####### ## ## ######### ## ##### .
+ *
+ *      ### ##### ######### ######### ### ##### ####
+ *      ### ##### ####### ### ######### ##### ### ######### ######### ##### ## ######.
+ *
+ *    #####:
+ *      # ####### ## ###### ## # #### ########## ### #### ### #### #####,
+ *        #### #### #### ##### #### ### #### ## ### #### ## #####,
+ *         ######## ## # ############# ## ### #####,
+ *         ##### ### ###### (##### ######## ### ###, ####, ### #####)
+ *         #### ### ######## (# ### #)
+ *         ### ##### ###### #### ###### ## ### #####.
+ *        
+ *    #### #########:
+ *        ##### ### ####### ### ####### #### ### ##### ####### (###, ####, ####),
+ *         ####### ### ########## ### #### ##### ## ####, ###
+ *         ###### ### ####### ### #####,
+ *         ####### ### ###### ### ######## ######.
+ */
+
+public class MiniDraw {
+    private ArrayList<Shape> shapes = new ArrayList<Shape>();    
+
+
+    private double pressedX;                 
+    private double pressedY;  
+    private double releasedX;                 
+    private double releasedY;  
+    private String currentAction = "Line";   
+    private Color currentColor = Color.blue;
+    private double left;  
+    private double top; 
+    private double width;
+    private double height;
+    private double x1;
+    private double y1;
+    private double x2;
+    private double y2;
+    private double maxX = 1400; 
+    private double maxY = 700; 
+
+    /** Constructor sets up the GUI:
+     *  sets the mouse listener and adds all the buttons
+     *  For New, Open, Save, and Color, call the appropriate method (see below)
+     *   to perform the action immediately.
+     *  For other buttons, store the button name in the currentAction field
+     */
+    public MiniDraw(){
+
+        UI.setMouseListener(this::doMouse);
+        UI.addButton("New", this::doNewDrawing);   
+        UI.addButton("Open", this::doOpenDrawing); 
+        UI.addButton("Save", this::doSaveDrawing);
+        UI.addButton("Line", this::doLine);
+        UI.addButton("Rectangle", this::doRect);
+        UI.addButton("Oval", this::doOval);
+        UI.addButton("Dot", this::doDot);
+        UI.addButton("Colour", this::doSelectColor);
+        UI.addButton("Move", this::moveShape);
+        UI.addButton("Delete", this::deleteShape);
+        UI.addButton("Quit", UI::quit);
+        UI.setDivider(0.0);
+
+    }
+
+    public void doLine(){this.currentAction = "Line";
+    }
+
+    public void doRect(){this.currentAction = "Rectangle";
+    }
+
+    public void doOval(){this.currentAction = "Oval";
+    }
+
+    public void doDot(){this.currentAction = "Dot";
+    }
+
+    public void moveShape(){this.currentAction = "Move";
+    }
+
+    public void deleteShape(){this.currentAction = "Delete";
+    }
+
+    /** When mouse is pressed, remember the position in fields
+     *  and also find the shape it is on (if any), and store
+     *  the shape in a field (use the findShape(..) method)
+     *  When the Mouse is released, depending on the currentAction,
+     *  - perform the action (move or delete).
+     *    move is done on the shape where the mouse was pressed,
+     *    delete is done on the shape where the mouse was released 
+     *  - construct the shape and add to the shapes ArrayList,
+     *    (though the polygon is more complicated)
+     *  - redraw the drawing.
+     *  It is easiest to call other methods (see below) to actually do the work,
+     *  otherwise this method gets too big!
+     */
+    public void doMouse(String mouseAction, double x, double y) {
+        if (mouseAction.equals("pressed")){
+            this.pressedX = x;
+            this.pressedY = y;
+        }
+        if (mouseAction.equals("released")){
+            if (this.currentAction.equals("Line")){
+                this.addALine(pressedX,pressedY, x, y) ;
+            }
+            else if(this.currentAction.equals("Rectangle")){
+                this.addARectangle(pressedX, pressedY, x , y);
+            }
+            else if(this.currentAction.equals("Oval")){
+                this.addAnOval(pressedX, pressedY, x , y);
+            }
+            else if(this.currentAction.equals("Dot")){
+                this.addADot(pressedX, pressedY,x,y);
+            }
+            else if(this.currentAction.equals("Move")){
+                this.moveShape(x,y);
+            }
+            else if(this.currentAction.equals("Delete")){
+                this.deleteShape(x,y);
+            }
+            else if(this.currentAction.equals("Save")){
+                this.doSaveDrawing();
+            }
+            else if(this.currentAction.equals("Open")){
+                this.doOpenDrawing();
+            }
+            this.drawDrawing();
+        }
+
+    }
+
+    /** Draws all the shapes in the list on the graphics pane
+     *  First clears the graphics pane, then draws each shape,
+     */
+    public void drawDrawing(){
+        UI.clearGraphics();
+        for(Shape shapeVariable : shapes ){  
+            if (shapeVariable!=null){
+                shapeVariable.redraw(); 
+            }       
+
+        }
+
+    }   
+
+    /** Add a line
+     *    Creates a new Line object in the current color and adds it to the drawing
+     */
+    public void addALine(double x1, double y1, double x2, double y2){
+        shapes.add(new Line (x1,y1,x2,y2,currentColor));
+
+    }
+
+    /**
+     * Add a rectangle.
+     * left,y1 is one corner, and x2,y2 is the diagonally opposite corner
+     * Works out the left, top, width, and height 
+     * Then creates a new Rectangle in the current colour and adds it to the drawing.
+     */
+    public void addARectangle(double x1, double y1, double x2, double y2){
+        this.left = x1;
+        this.top = y1;
+        this.width= x2 - left;
+        this.height = y2 - top;
+
+        shapes.add(new Rectangle (left,top,width,height,currentColor));
+    }
+
+    /**
+     * Add an oval.
+     * x1,y1 is one corner, and x2,y2 is the diagonally opposite corner
+     * Works out the left, top, width, and height 
+     * Then creates an Oval in the current color, and adds to the drawing
+     */
+    public void addAnOval(double x1, double y1, double x2, double y2){
+        this.left = x1;
+        this.top = y1;
+        this.width= x2 - left;
+        this.height = y2 - top;
+
+        shapes.add(new Oval(left,top,width,height,currentColor));  
+
+    }
+
+    /**
+     * Add a dot.
+     *    Creates a new Dot object in the current color and adds it to the drawing
+     */
+    public void addADot(double x, double y, double x2, double y2){
+        this.width= x2;
+        this.height = y2;
+
+        shapes.add(new Dot(x,y,width, height,currentColor)); 
+
+    }
+
+    /** Checks each shape in the list to see if the point (x,y) is on the shape.
+     *  It returns the topmost shape for which this is true.
+     *   (Be careful about the order you search through the list)
+     *  Returns null if there is no such shape.
+     */
+    public Shape findShape(double x, double y){
+        for( int i=shapes.size()-1;i >=0;i--){
+            Shape shapesVariable = shapes.get(i);
+            if(shapesVariable!=null){ 
+                if(shapesVariable.on(x,y)){ 
+                    return shapesVariable; 
+                }
+            }
+        }
+        return null;  
+    }
+
+    /** Sets the current color.
+     * Asks user for a new color using a JColorChooser 
+     * As long as the color is not null, it remembers the color 
+     */
+    private void doSelectColor(){
+        Color newColor=JColorChooser.showDialog(null,"Select a color",currentColor);
+        currentColor = newColor;
+        UI.setColor(currentColor);
+
+    }
+
+    /** Start a new drawing -
+     *  initialise the shapes ArrayList and clear the graphics pane. 
+     */
+    public void doNewDrawing(){
+        shapes.clear();
+        UI.clearGraphics();
+    }
+
+    /** Moves the current shape (if there is one)
+     *    to where the mouse was released.
+     *    Ie, change its position by (toX-fromX) and (toY-fromY)
+     */
+    public void moveShape(double changeX, double changeY){
+        double x = changeX;
+        double y = changeY;
+        Shape shapeVariable = this.findShape(pressedX,pressedY); 
+        this.left = x-left;
+        this.top = y-top;
+
+        if(left < 0 ){left = 0;}
+        if(top < 0 ){top = 0;}
+        if(left > maxX ){left = maxX - width;}
+        if(top < 0 ){top = maxY - height;}
+        else{shapeVariable.moveBy(left,top);}
+
+        this.drawDrawing();
+
+    }
+
+    /** Finds the shape that was under the mouseReleased position (x, y)
+     *    and then removes it from the ArrayList of shapes. 
+     *  If not pressed on any shape, then do nothing.
+     */
+    public void deleteShape(double x, double y){
+        Shape shapeVariable = this.findShape(pressedX,pressedY); 
+        int shapeIndex =0;
+        if ((shapeIndex = shapes.indexOf(shapeVariable))>=0 || ((shapeIndex = shapes.indexOf(shapeVariable))<=shapes.size()-1 ));
+        {shapes.remove(shapeIndex);  
+        }
+
+        this.drawDrawing();
+
+    }
+
+    /** Ask the user to select a file and save the current drawing to the file. */
+    public void doSaveDrawing(){
+        try{
+            File f = new File("data");
+            f.createNewFile(); 
+            PrintStream p = new PrintStream(new File(UIFileChooser.save())); 
+            p.println("data");
+            p.close();
+        }
+        catch(IOException e){UI.println("File open failed:" +e);}
+    }
+
+
+
+    /**
+     * Ask the user for a file to open,
+     * then read all the shape descriptions into the current drawing.
+     * For each line of the file, it will read the first token to find out which
+     * kind of shape and read the rest of the line into a string.
+     * It will then call the appropriate constructor, passing the string as an argument.
+     */
+    public void doOpenDrawing(){
+        try{
+            Scanner sc = new Scanner(new File(UIFileChooser.open())); 
+            while(sc.hasNext()){
+                if(shapes.equals("Line")){ this.addALine(r,g,b ,x1,y1,x2,y2,currentColor); }
+                else if(shapes.equals("Rectangle")){ this.addARectangle(left,top,width,height,currentColor); }
+                else if(shapes.equals("Oval")){ this.addAnOval(left,top,width,height,currentColor);}
+                else if(shapes.equals("Dot")){ this.addAnDot(left,top,width, height,currentColor);}
+
+            }
+
+        }
+        catch(IOException e){UI.println("File open failed:" +e);}
+        this.drawDrawing();
+    }
+
+    public static void main(String args[]){
+        new MiniDraw();
+    }
+}

@@ -1,0 +1,616 @@
+import java.awt.*;
+
+public class Jeopardy extends GUI
+{
+    public static void main(String[] args)
+    {  new Jeopardy(); }
+
+    Label lJeopardy = addLabel("Jeopardy",60,30,200,60,this);
+    Label lScore = addLabel("Score",300,50,50,30,this);
+    TextField tScore = addTextField("0",350,50,80,30,this);
+
+    Button bBonus = addButton("Q x2",50,350,100,50,this);
+    Button bBonus2 = addButton("Bonus Q",150,350,100,50,this);
+    Button bBonus3 = addButton("Score x2",250,350,100,50,this);
+    Button bBonus4 = addButton("Bet",350,350,100,50,this);
+    Button hint = addButton("Hint",300,50,80,30,this);
+
+    Button bScience = addButton("Sci 100",50,100,100,50,this);
+    Button bSports = addButton("Sports 100",150,100,100,50,this);
+    Button bHistory = addButton("Hist 100",250,100,100,50,this);
+    Button bMath = addButton("Math 100",350,100,100,50,this);
+
+    Button bSports2 = addButton("200",150,150,100,50,this);
+    Button bSports3 = addButton("300",150,200,100,50,this);
+    Button bSports4 = addButton("400",150,250,100,50,this);
+    Button bSports5 = addButton("500",150,300,100,50,this);
+
+    Button bScience2 = addButton("200",50,150,100,50,this);
+    Button bScience3 = addButton("300",50,200,100,50,this);
+    Button bScience4 = addButton("400",50,250,100,50,this);
+    Button bScience5 = addButton("500",50,300,100,50,this);
+
+    Button bHistory2 = addButton("200",250,150,100,50,this);
+    Button bHistory3 = addButton("300",250,200,100,50,this);
+    Button bHistory4 = addButton("400",250,250,100,50,this);
+    Button bHistory5 = addButton("500",250,300,100,50,this);
+
+    Button bMath2 = addButton("200",350,150,100,50,this);
+    Button bMath3 = addButton("300",350,200,100,50,this);
+    Button bMath4 = addButton("400",350,250,100,50,this);
+    Button bMath5 = addButton("500",350,300,100,50,this);
+
+    Button bPlayAgain = addButton("Play again",50,400,400,50,this);
+    Label lBackground = addLabel("",10,10,480,480,this);
+    double score = 0;
+
+    int dp = 1;
+
+    public Jeopardy()   
+    {
+        super(500,500);
+        setTitle("Jeopardy - (c) 200*dp5 Dave Mulkey, Germany");
+        lJeopardy.setFont(new Font("Arial",1,36));
+        lJeopardy.setBackground(new Color(255,255,180));
+        lJeopardy.setForeground(Color.blue);
+        lScore.setBackground(new Color(255,255,180));
+        setBackground(new Color(255,255,180));
+
+        bScience.setFont(new Font("Arial",1,16));
+        bScience2.setFont(new Font("Arial",1,16));
+        bScience3.setFont(new Font("Arial",1,16));
+        bScience4.setFont(new Font("Arial",1,16));
+        bScience5.setFont(new Font("Arial",1,16));
+
+        bScience.setBackground(Color.green);
+        bScience2.setBackground(Color.green);
+        bScience3.setBackground(Color.green);
+        bScience4.setBackground(Color.green);
+        bScience5.setBackground(Color.green);
+
+        bMath.setFont(new Font("Arial",1,16));  
+        bMath2.setFont(new Font("Arial",1,16)); 
+        bMath3.setFont(new Font("Arial",1,16)); 
+        bMath4.setFont(new Font("Arial",1,16)); 
+        bMath5.setFont(new Font("Arial",1,16)); 
+
+        bMath.setBackground(Color.blue);
+        bMath2.setBackground(Color.blue);
+        bMath3.setBackground(Color.blue);
+        bMath4.setBackground(Color.blue);
+        bMath5.setBackground(Color.blue);
+
+        bHistory.setFont(new Font("Arial",1,16));
+        bHistory2.setFont(new Font("Arial",1,16));
+        bHistory3.setFont(new Font("Arial",1,16));
+        bHistory4.setFont(new Font("Arial",1,16));
+        bHistory5.setFont(new Font("Arial",1,16));
+
+        bHistory.setBackground(Color.orange);
+        bHistory2.setBackground(Color.orange);
+        bHistory3.setBackground(Color.orange);
+        bHistory4.setBackground(Color.orange);
+        bHistory5.setBackground(Color.orange);
+
+        bSports.setFont(new Font("Arial",1,16));  
+        bSports2.setFont(new Font("Arial",1,16));
+        bSports3.setFont(new Font("Arial",1,16));
+        bSports4.setFont(new Font("Arial",1,16));
+        bSports5.setFont(new Font("Arial",1,16));
+
+        bSports.setBackground(Color.red);
+        bSports2.setBackground(Color.red);
+        bSports3.setBackground(Color.red);
+        bSports4.setBackground(Color.red);
+        bSports5.setBackground(Color.red);
+
+        bBonus.setFont(new Font("Arial",1,16));
+        bBonus.setForeground(Color.blue);
+
+        bBonus2.setFont(new Font("Arial",1,16));
+        bBonus2.setForeground(Color.blue);
+
+        bBonus3.setFont(new Font("Arial",1,16));
+        bBonus3.setForeground(Color.blue);
+
+        bBonus4.setFont(new Font("Arial",1,16));
+        bBonus4.setForeground(Color.blue);
+
+        bPlayAgain.setFont(new Font("Arial",1,16));   
+        lBackground.setBackground(new Color(255,255,180));
+        repaint();
+    }
+
+    public void actions(Object source,String command)
+    {
+        if (source == bScience)
+        {   science(); }
+        if (source == bScience2)
+        {   science2(); }
+        if (source == bScience3)
+        {   science3(); }
+        if (source == bScience4)
+        {   science4(); }
+        if (source == bScience5)
+        {   science5(); }
+
+        if (source == bHistory)
+        {  history();  }
+        if (source == bHistory2)
+        {  history2();  }
+        if (source == bHistory3)
+        {  history3();  }
+        if (source == bHistory4)
+        {  history4();  }
+        if (source == bHistory5)
+        {  history5();  }
+
+        if (source == bMath)
+        {  math();  }
+        if (source == bMath2)
+        {  math2();  }
+        if (source == bMath3)
+        {  math3();  }
+        if (source == bMath4)
+        {  math4();  }
+        if (source == bMath5)
+        {  math5();  }
+
+        if (source == bSports)
+        {  sports();   }
+        if (source == bSports2)
+        {  sports2(); }
+        if (source == bSports3)
+        {  sports3(); }
+        if (source == bSports4)
+        {  sports4(); }
+        if (source == bSports5)
+        {  sports5(); }
+
+        if (source == bBonus)
+        {  bBonus(); }
+
+        if (source == bBonus2)
+        {  bBonus2(); }
+
+        if (source == bBonus3)
+        {  bBonus3(); }
+
+
+        if (source == bPlayAgain)
+        {  
+            bScience.setVisible(true);
+            bScience2.setVisible(true);
+            bScience3.setVisible(true);
+            bScience4.setVisible(true);
+            bScience5.setVisible(true);
+
+            bHistory.setVisible(true);
+            bHistory2.setVisible(true);
+            bHistory3.setVisible(true);
+            bHistory4.setVisible(true);
+            bHistory5.setVisible(true);
+
+            bSports.setVisible(true);
+            bSports2.setVisible(true);
+            bSports3.setVisible(true);
+            bSports4.setVisible(true);
+            bSports5.setVisible(true);
+
+            bMath.setVisible(true);
+            bMath2.setVisible(true);
+            bMath3.setVisible(true);
+            bMath4.setVisible(true);
+            bMath5.setVisible(true);
+
+            bBonus.setVisible(true);
+            bBonus2.setVisible(true);
+            bBonus3.setVisible(true);
+            bBonus4.setVisible(true);
+
+            score = 0;
+        }   
+        tScore.setText(score + "");
+    }
+
+    public void science()
+    {
+        String guess = inputString("f = ma is a ________ law");
+        if (guess.equals("physics") || guess.substring(0,2).equals("phy"))
+        {
+            score = score + 100*dp;
+            output("Right!");  
+        }
+        else
+        {  
+            score = score - 100*dp;         
+            output("Wrong..." ); 
+        }      
+
+        bScience.setVisible(false);
+        dp = 1;
+    }
+
+    public void science2()
+    {
+        String guess = inputString("How many planets are in the solar system?");
+        if (guess.equals("8") || (guess.equalsIgnoreCase("Eight")))
+        {
+            score = score + 200*dp;
+            output("Right!");  
+        }
+        else
+        {  
+            score = score - 200*dp;         
+            output("Wrong..." ); 
+        }      
+
+        bScience2.setVisible(false);
+        dp = 1;
+    }
+
+    public void science3()
+    {
+        String guess = inputString("How many oxygen atoms does one molecule of water have?");
+        if (guess.equals("1") || guess.equalsIgnoreCase("One"))
+        {
+            score = score + 300*dp;
+            output("Right!");  
+        }
+        else
+        {  
+            score = score - 300*dp;         
+            output("Wrong..." ); 
+        }      
+
+        bScience3.setVisible(false);
+        dp = 1;
+    }
+
+    public void science4()
+    {
+        String guess = inputString("What is made from dissolving sugar in water?");
+        if (guess.equalsIgnoreCase("Solution"))
+        {
+            score = score + 400*dp;
+            output("Right!");  
+        }
+        else
+        {  
+            score = score - 400*dp;         
+            output("Wrong..." ); 
+        }      
+
+        bScience4.setVisible(false);
+        dp = 1;
+    }
+
+    public void science5()
+    {
+        String guess = inputString("What is the state of Mercury (Hg) at room temperature?");
+        if (guess.equalsIgnoreCase("Liquid"))
+        {
+            score = score + 500*dp;
+            output("Right!");  
+        }
+        else
+        {  
+            score = score - 500*dp;         
+            output("Wrong..." ); 
+        }      
+
+        bScience5.setVisible(false);
+        dp = 1;
+    }
+
+    public void history()
+    {
+        int guess = inputInt("What year did WW II end?");
+        if (guess == 1945)
+        {
+            score = score + 100*dp;
+            output("Right!");  
+        }
+        else
+        {  
+            score = score - 100*dp;         
+            output("Wrong... "); 
+        }      
+        bHistory.setVisible(false);
+        dp = 1;
+    }
+
+    public void history2()
+    {
+        String guess = inputString("Who was the first president of the United States?");
+        if (guess.equalsIgnoreCase("George Washington"))
+        {
+            score = score + 200*dp;
+            output("Right!");  
+        }
+        else
+        {  
+            score = score - 200*dp;         
+            output("Wrong... "); 
+        }      
+        bHistory2.setVisible(false);
+        dp = 1;
+    }
+
+    public void history3()
+    {
+        String guess = inputString("Where were the first Olympics?");
+        if (guess.equalsIgnoreCase("Greece"))
+        {
+            score = score + 300*dp;
+            output("Right!");  
+        }
+        else
+        {  
+            score = score - 300*dp;         
+            output("Wrong... "); 
+        }      
+        bHistory3.setVisible(false);
+        dp = 1;
+    }
+
+    public void history4()
+    {
+        String guess = inputString("What was the first living thing to ever go into space?");
+        if (guess.equalsIgnoreCase("Dog"))
+        {
+            score = score + 400*dp;
+            output("Right!");  
+        }
+        else
+        {  
+            score = score - 400*dp;         
+            output("Wrong... "); 
+        }      
+        bHistory4.setVisible(false);
+        dp = 1;
+    }
+
+    public void history5()
+    {
+        String guess = inputString("Who was a prisoner in South Africa before becoming the president?");
+        if (guess.equalsIgnoreCase("Nelson Mandela"))
+        {
+            score = score + 500*dp;
+            output("Right!");  
+        }
+        else
+        {  
+            score = score - 500*dp;         
+            output("Wrong... "); 
+        }      
+        bHistory5.setVisible(false);
+        dp = 1;
+    }
+
+    public void math()
+    {
+        int guess = inputInt("What is 5! ?");
+        if (guess == 120)
+        {
+            score = score + 100*dp;
+            output("Right!");  
+        }
+        else
+        {  
+            score = score - 100*dp;         
+            output("Wrong..."); 
+        }      
+        bMath.setVisible(false);
+        dp = 1;
+    }
+
+    public void math2()
+    {
+        String guess = inputString("How many sides does a pentagon have?");
+        if (guess.equals("5") || (guess.equalsIgnoreCase("Five")))
+
+        {
+            score = score + 200*dp;
+            output("Right!");  
+        }
+        else
+        {  
+            score = score - 200*dp;         
+            output("Wrong..."); 
+        }      
+        bMath2.setVisible(false);
+        dp = 1;
+    }
+
+    public void math3()
+    {
+        output("Sorry, it was a trap! You lose all your points.");
+        score = score- score;
+        bMath3.setVisible(false);
+        dp = 1;
+    }
+
+    public void math4()
+    {
+        Double guess = inputDouble("What is the only even prime number?");
+        if (guess.equals("Two") || (guess == (2)))
+        {
+            score = score + 400*dp;
+            output("Right!");  
+        }
+        else
+        {  
+            score = score - 400*dp;         
+            output("Wrong..."); 
+        }      
+        bMath4.setVisible(false);
+        dp = 1;
+    }
+
+    public void math5()
+    {
+        String guess = inputString("Which number doesn't have a Roman Numeral?");
+        if (guess.equals("0") || (guess.equalsIgnoreCase("Zero")))
+
+        {
+            score = score + 500*dp;
+            output("Right!");  
+        }
+        else
+        {  
+            score = score - 500*dp;         
+            output("Wrong..."); 
+        }      
+        bMath5.setVisible(false);
+        dp = 1;
+    }
+
+    public void sports()
+    {
+        String guess = inputString("What sport did Pele play?");
+        if (
+        guess.equalsIgnoreCase("soccer") 
+        || guess.equalsIgnoreCase("football")
+        || guess.equalsIgnoreCase("fussball")
+        )   
+        {
+            score = score + 100*dp;
+            output("Right!");  
+        }
+        else
+        {  
+            score = score - 100*dp;         
+            output("Wrong..."); 
+        }      
+        bSports.setVisible(false);
+        dp = 1;
+    }
+
+    public void sports2()
+    {
+        int guess = inputInt("What is a perfect score in bowling?");
+        if ( guess == 300 )
+        {
+            score = score + 200*dp;
+            output("Right!");  
+        }
+        else
+        {  
+            score = score - 200*dp;         
+            output("Wrong... " ); 
+        }      
+        bSports2.setVisible(false);
+        dp = 1;
+    }
+
+    public void sports3()
+    {
+        String guess = inputString("What sport uses a zamboni?");
+        if (guess.equalsIgnoreCase("Hockey"))
+        {
+            score = score + 300*dp;
+            output("Right!");  
+        }
+        else
+        {  
+            score = score - 300*dp;         
+            output("Wrong... " ); 
+        }      
+        bSports3.setVisible(false);
+        dp = 1;
+    }
+
+    public void sports4()
+    {
+        String guess = inputString("Which sport just recieved the right to be a part of the Olympics?");
+        if (guess.equalsIgnoreCase("Basketball"))
+        {
+            score = score + 400*dp;
+            output("Right!");  
+        }
+        else
+        {  
+            score = score - 400*dp;         
+            output("Wrong... " ); 
+        }      
+        bSports4.setVisible(false);
+        dp = 1;
+    }
+
+    public void sports5()
+    {
+        String guess = inputString("Which team won the first world cup in 1930?");
+        if (guess.equalsIgnoreCase("Uruguay"))
+        {
+            score = score + 500*dp;
+            output("Right!");  
+        }
+        else
+        {  
+            score = score - 500*dp;         
+            output("Wrong... " ); 
+        }      
+        bSports5.setVisible(false);
+        dp = 1;
+    }
+
+    public void bBonus()
+    {
+        bBonus.setBackground(Color.pink);
+        bBonus.setForeground(Color.red);
+
+        String guess = inputString("Would you like to use your bonus on one question?");
+        if (guess.equalsIgnoreCase("Yes"))
+        {
+            dp = 2;
+        }
+        else {
+            output("Okay :(");
+        }
+        bBonus.setVisible(false);
+    }
+
+    public void bBonus2()
+    {
+        String guess = inputString("In which year was GEMS Education established?");
+        if (guess.equalsIgnoreCase("2000"))
+        {
+            score = score + 1000;
+            output("Right!"); 
+        }
+        else
+        {  
+            score = score - 1000;         
+            output("Wrong... " ); 
+        }    
+        bBonus2.setVisible(false);
+        dp = 1;
+    }
+
+    public void bBonus3()
+    {
+        String guess = inputString("Final Jeopardy Question to double your score: What is the process of 'splitting a single parent cell into two identical daughter cells'?");
+        if (guess.equalsIgnoreCase("Fission"))
+        { score = score * 2;
+            output("Right! Congrats!");
+        }   
+        else 
+        { output("Wrong... You keep the same score.");
+        }
+        bBonus3.setVisible(false);
+        dp = 1;
+    }
+
+    public void hint()
+    {
+    }
+
+    public void bBonus4()
+    { int bet = inputInt("How many points do you want to bet?");
+        bet != (<=< score)
+    
+    }
+
+
+}

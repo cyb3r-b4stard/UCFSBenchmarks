@@ -1,0 +1,86 @@
+
+/**
+ * ####### # ######### ## ###### ########## ####.
+ * 
+ * @###### (### ####) 
+ * @####### (###### ## ###### ## ####)
+ */
+import java.util.Map;
+import java.util.HashMap;
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
+
+public class MapRevisao
+{
+    private Map<Long, Revisao> revisoes;
+    
+    public MapRevisao(){
+        this.revisoes = new HashMap<>();
+    }
+    
+    public MapRevisao(MapRevisao ma){
+        for(Revisao a: ma.getRevisoes().values()){
+            this.revisoes.put(a.getId(), a.clone());
+        }
+    }
+    
+    public Map<Long, Revisao> getRevisoes(){
+        return this.revisoes.entrySet().stream()
+                                      .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().clone()));
+    }
+    
+    public boolean insereRevisao(Revisao a){
+        boolean res = !this.revisoes.containsKey(a.getId());
+        
+        if(res) {this.revisoes.put(a.getId(), a.clone());}
+        
+        return res;
+    }
+    
+    public boolean existeRevisao(Revisao a){
+        return this.revisoes.containsKey(a.getId());
+    }
+    
+    public String timestampRevisao(long id){
+        String res = null;
+        
+        Revisao r = this.revisoes.get(id);
+        
+        if(r != null){
+            res = r.getTimestamp();
+        }
+        
+        return res;
+    }
+    
+    public boolean equals(Object o){
+        if(o == this) return true;
+        
+        if((o == null) || (o.getClass() != this.getClass())) return false;
+        
+        MapRevisao ma = (MapRevisao) o;
+        
+        return this.revisoes.equals(ma.getRevisoes());
+    }
+    
+    /*public int compareTo(MapRevisao ma){
+        return this.Revisaos.compareTo(ma.getRevisaos());
+    }
+    */
+   
+   public int hashCode(){
+       return this.revisoes.hashCode();
+   }
+   
+   public String toString(){
+       StringBuilder sb = new StringBuilder();
+       sb = sb.append("Revisões\n");
+       sb = sb.append(this.revisoes.toString());
+       
+       return sb.toString();
+   }
+   
+   public MapRevisao clone(){
+       return new MapRevisao(this);
+   }
+}

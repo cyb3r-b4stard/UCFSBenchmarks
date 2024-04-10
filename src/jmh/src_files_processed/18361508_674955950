@@ -1,0 +1,388 @@
+
+
+/* #### ### #### ### ##########
+ * ####:
+ * ########:
+ * ##:
+ */
+
+import ecs100.*;
+import java.util.*;
+import java.io.*;
+import java.awt.Color;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import javax.swing.JColorChooser;
+
+/** ############## ###### ### #### ## ####, #######, ######, ### #### ## ##### ## # ###### ## ####.
+### ####### ###### #######
+- ####, ######, ####. (####)
+- ########## ########## (####)
+- ########## #### ### ## ###### ########. (####)
+- #####  (####)
+- ####&####  (####)
+- #### (### ######)  (####)
+
+- ###### ######### ##### (##########)
+- #### (######-####)  (##########)
+- ####### ########### ######  (##########)
+
+- ###-### ######### ### ####### (#########)
+- ###### ##### (#########)
+ */
+public class ImageProcessor {
+    private static double  pixelSize = 1;
+    private double pixelWidth = 1;
+    private double pixelLength = 1;
+    private double left = 10;
+    private double top = 10;
+
+    private Color[][] image;
+    private Color[][] tempImage;
+    private Color[][] toMerge;
+    private double x1;
+    private double y1;
+    private double x2;
+    private double y2;
+
+    public ImageProcessor(){
+        UI.addButton("Load", this::doLoad);
+        UI.addButton("Save", this::doSave);
+        UI.addButton("Commit", this::doCommit);
+        UI.addSlider("Brightness", 1, 100, 50, this::doBright);
+        UI.addButton("Horizontal flip", this::doFlip);
+        UI.addButton("Rotate 90 degrees left", this::doRotate);
+        UI.addButton("Merge", this::doMerge);
+        UI.addButton("Crop and Zoom", this::doCrop);
+        UI.addButton("Blur", this::doBlur);
+        UI.addButton("Rotate", this::doAdvRotate);
+    }
+    public void doAdvRotate(){
+        UI.setMouseMotionListener();
+        
+    }
+    public void doBlur(){
+        tempImage = new Color[image.length][image[0].length];
+        for(int i = 1; i < image.length-1; i++){
+            for(int j = 1; j < image[0].length -1; j++){
+                int r = (int)(0.4*image[i][j].getRed()+0.05*(image[i+1][j+1].getRed() + image[i+1][j-1].getRed() + image[i-1][j+1].getRed() + image[i-1][j-1].getRed()) + 0.1*(image[i][j+1].getRed() + image[i][j-1].getRed() + image[i+1][j].getRed() + image[i-1][j].getRed()));
+                int g = (int)(0.4*image[i][j].getGreen()+0.05*(image[i+1][j+1].getGreen() + image[i+1][j-1].getGreen() + image[i-1][j+1].getGreen() + image[i-1][j-1].getGreen()) + 0.1*(image[i][j+1].getGreen() + image[i][j-1].getGreen() + image[i+1][j].getGreen() + image[i-1][j].getGreen()));;
+                int b = (int)(0.4*image[i][j].getBlue()+0.05*(image[i+1][j+1].getBlue() + image[i+1][j-1].getBlue() + image[i-1][j+1].getBlue() + image[i-1][j-1].getBlue()) + 0.1*(image[i][j+1].getBlue() + image[i][j-1].getBlue() + image[i+1][j].getBlue() + image[i-1][j].getBlue()));
+
+                tempImage[i][j] = new Color(r,g,b);
+            }
+
+        }
+        for(int i = 0; i < image.length; i++){
+            for(int j = 0; j <image[0].length; j++){
+                if (i == 0 || i == image.length -1 || j == 0 || j == image[0].length -1){
+                    tempImage[i][j] = image[i][j];
+                    
+                }
+            }
+        }
+
+        draw();
+    }
+
+    public void doLoad(){
+        image = loadImage();
+
+        draw();
+    }
+
+    public void doSave(){
+        saveImage();
+    }
+
+    public void doCommit(){
+        image = new Color[tempImage.length][tempImage[0].length];
+
+        image= new Color[tempImage.length][tempImage[0].length];
+        for(int i = 0; i <tempImage.length; i++){
+            for(int j = 0; j < tempImage[0].length; i++){
+                image[i][j] = tempImage[i][j];
+            }
+        }
+        draw();
+
+    }
+
+    public void doBright(double slideValue){
+        pixelWidth = 1;
+        pixelLength = 1;
+        tempImage = setTemp();
+        int cols = tempImage[0].length;
+        int rows = tempImage.length;
+        for (int row = 0; row < rows; row++){
+            for (int col = 0; col < cols; col++){                 
+                Color c = image[row][col];
+                int[]adjCol = adjustBright(c, slideValue);
+                tempImage[row][col] = new Color (adjCol[0], adjCol[1], adjCol[2]);
+            }
+        }
+
+        draw();
+    }
+
+    public void doFlip(){
+        pixelWidth = 1;
+        pixelLength = 1;
+        tempImage = setTemp();
+        int cols = image[0].length;
+        int rows = image.length;
+        for (int row = 0; row < rows; row++){
+            for (int col = 0; col < cols; col++){                 
+                Color c = image[row][col];
+
+                tempImage[rows-1-row][col] = c;
+            }
+
+        }
+        draw();
+    }
+
+    public void doRotate(){
+        pixelWidth = 1;
+        pixelLength = 1;
+
+        int rows = image.length;
+        int cols = image[0].length;
+
+        tempImage = new Color[cols][rows];
+        for (int row = 0; row < rows; row++){
+            for (int col = 0; col < cols; col++){                 
+                Color c = image[row][col];
+                tempImage[cols -1 -col][row] = c;
+            }
+
+        }
+        draw();
+    }
+
+    public void doMerge(){
+        pixelWidth = 1;
+        pixelLength = 1;
+
+        UI.addSlider("Merge Slider",0, 100, 50,  this::doMergeSlide);
+        toMerge = loadImage();
+        doMergeSlide(50);
+    }
+
+    public void doCrop(){
+        pixelWidth = 1;
+        pixelLength = 1;
+        UI.setMouseMotionListener(this::doMouse);
+
+    }
+
+    public void doMouse(String action, double x, double y){
+
+        if(action.equals("released")){
+            x2 = x;
+            y2 = y;
+            UI.setColor(Color.black);
+            UI.drawLine(x1, y1, x2, y1);
+            UI.drawLine(x1, y2, x2, y2);
+            UI.drawLine(x1, y1, x1, y2);
+            UI.drawLine(x2, y1, x2, y2);
+            UI.sleep(800);
+
+            tempImage = new Color[(int)(y2-y1)][(int)(x2-x1)];
+
+            for(int i = (int)y1; i<(int)y2; i++){
+                for(int j = (int)x1; j<(int)x2; j++){
+                    tempImage[i-(int)y1][j-(int)x1] = image[i][j];   
+                }
+            }
+            pixelWidth*=image[0].length/(x2-x1);
+            pixelLength*=image.length/(y2-y1);
+            draw();
+
+        }
+
+        if(action.equals("pressed")){
+            x1 = x;
+            y1 = y;
+        }
+        if(x2>x1){
+            double h =x1;
+            x1 =x2;
+            x2 = h;
+        }
+        if(y2>y1){
+            double h =y1;
+            y1 =y2;
+            y2 = h;
+        }
+    }
+
+    public void doMergeSlide(double sliderValue){
+        pixelWidth = 1;
+        pixelLength = 1;
+        float alpha = ((float)sliderValue)/100;
+
+        int iR = image.length;
+        int iC = image[0].length;
+        int mR = toMerge.length;
+        int mC = toMerge[0].length;
+        int LR;
+        int SR;
+
+        if(iR >mR){
+            LR = iR;
+            SR = mR;
+        }
+        else{
+            LR = mR;
+            SR = iR;
+        }
+
+        int LC;
+        int SC;
+
+        if(iC > mC){
+            LC = iC;
+            SC = mC;
+        }
+        else{ 
+            LC = mC;
+            SC = iC;
+        }
+        tempImage = new Color[LR][LC];
+        for(int i = 0; i<LR; i++){
+            for(int j =0; j<LC; j++){
+                float imageRed =1;
+                float imageGreen =1;
+                float imageBlue = 1;
+                float mergeRed = 1;
+                float mergeGreen = 1;
+                float mergeBlue = 1;
+                if(i < iR && j < iC){
+                    imageRed= image[i][j].getRed();
+
+                    imageGreen =image[i][j].getGreen();
+                    imageBlue = image[i][j].getBlue();
+                }
+
+                if(i < mR && j < mC){
+                    mergeRed= toMerge[i][j].getRed();
+                    mergeGreen= toMerge[i][j].getGreen();
+                    mergeBlue = toMerge[i][j].getBlue();
+                }
+                float resultRed = (imageRed*alpha + mergeRed*(1-alpha))/255;
+                float resultBlue =(imageBlue*alpha + mergeBlue*(1-alpha))/255;
+                float resultGreen =(imageGreen*alpha + mergeGreen*(1-alpha))/255;
+
+                tempImage[i][j] = new Color(resultRed, resultGreen, resultBlue);
+            }
+
+        }
+        draw();
+    }
+
+    public int[] adjustBright(Color c, double a){
+        int r= c.getRed();
+        r= adjBri(r, a);
+        int g = c.getGreen();
+        g = adjBri(g, a);
+        int b = c.getBlue();
+        b = adjBri(b, a);
+
+        int[] toReturn = {r, g, b};
+        return toReturn;
+    }
+
+    public int adjBri(int a,double b){
+        a = a*50/(int)b;
+        if(a>255){
+            a= 255;
+        }
+        if(a <=0){
+            a = 1;
+        }
+        return a;
+    }
+
+    public Color[][]loadImage() { 
+        String imageName = UI.askString("enter file name >");
+        if (imageName==null) return null;
+        try {
+            BufferedImage img = ImageIO.read(new File(imageName));
+            int rows = img.getHeight();
+            int cols = img.getWidth();
+            Color[][] ans = new Color[rows][cols];
+            for (int row = 0; row < rows; row++){
+                for (int col = 0; col < cols; col++){                 
+                    Color c = new Color(img.getRGB(col, row));
+                    ans[row][col] = c;
+                }
+            }
+            UI.printMessage("Loaded "+ imageName);
+            return ans;
+        } catch(IOException e){UI.println("Image reading failed: "+e);}
+        return null;
+    }
+
+    public  void saveImage() { 
+        int rows = image.length;
+        int cols = image[0].length;
+        BufferedImage img = new BufferedImage(cols, rows, BufferedImage.TYPE_INT_RGB);
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                Color c =this.image[row][col];
+                img.setRGB(col, row, c.getRGB());
+            }
+        }
+        try {
+            String fname = UI.askString("save to png image file");
+            if (fname==null) return;
+            File imageFile = new File(fname);
+            ImageIO.write(img, "png", new File(fname));
+        } catch(IOException e){UI.println("Image reading failed: "+e);}
+    }
+
+    public void drawImage(){
+        for(int row = 0; row < image.length; row++){
+            for(int col = 0; col < image[0].length; col++){
+                UI.setColor(image[row][col]);
+                UI.fillRect( left+col*pixelSize,top+row*pixelSize ,pixelWidth, pixelLength);
+            }
+        }
+    }
+
+    public void drawShadowImage(){
+        for(int row = 0; row < tempImage.length; row++){
+            for(int col = 0; col < tempImage[0].length; col++){
+                UI.setColor(tempImage[row][col]);
+                UI.fillRect(image[0].length +col*pixelWidth + 20,top+row*pixelLength,pixelWidth, pixelLength);
+            }
+        }
+
+    }
+
+    public void draw(){
+        UI.clearGraphics();
+        if(image != null){
+            drawImage();
+        }
+        if(tempImage != null){
+            drawShadowImage();
+        }
+    }
+
+    public Color[][] setTemp(){
+        Color[][] t = new Color[image.length][image[0].length];
+
+        for(int i = 0; i <image.length; i++){
+            for(int j = 0; j < image[0].length; j++){
+                t[i][j] = image[i][j];
+            }
+        }
+        return t;
+    }
+
+    public static void main(String[] args){
+        ImageProcessor iP = new ImageProcessor();
+    }
+}

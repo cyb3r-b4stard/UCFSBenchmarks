@@ -1,0 +1,138 @@
+
+/**
+ * ############## ## # ############ #### ### # ####,
+ * #######, ##### ###### ### ### ######## (######## 
+ * ### #######).
+ * 
+ * @###### ### #####
+ * @####### #/##/####
+ */
+public class BankCustomer
+{
+    private String name; 
+    private String address; 
+    private String phoneNum;
+    private Account checking;  
+    private Account savings;   
+    
+    /**
+     * Constructor for objects of class BankCustomer
+     * @param initName the name of the customer
+     * @param initAddress the address of the customer
+     * @param initPhoneNum the telephone number of the customer
+     * @param initChecking the customer's checking account
+     * @param initSavings the customer's savings account
+     */
+    public BankCustomer(String initName, String initAddress, String initPhoneNum,
+                        Account initChecking, Account initSavings)
+    {
+        name = initName;
+        address = initAddress;
+        phoneNum = initPhoneNum;
+        checking = initChecking;
+        savings = initSavings;
+    }
+
+    /**
+     * return the customer's name
+     * @return the customer's name
+     */
+    public String getName() {
+        return name;
+    }
+    
+    /**
+     * return the customer's address
+     * @return the customer's address
+     */
+    public String getAddress() {
+        return address;
+    }
+     
+    /** 
+     * return the customer's telephone number
+     * @return the customer's telephone number
+     */
+    public String getPhoneNumber() {
+        return phoneNum;
+    }
+   
+    /**
+     * print all customer info
+     */
+    public void print()
+    {
+        System.out.println("Account information for customer: " + name);
+        System.out.println("Address: " + address);
+        System.out.println("Telephone number: " + phoneNum);
+        System.out.println("Checking account:");
+        checking.print();
+        System.out.println("Savings account:");
+        savings.print();
+    }
+    
+    /**
+     * deposit into checking account 
+     * @param depCheckAmount the amount to deposit
+     */
+    public void depositChecking(int depCheckAmount) {
+        checking.deposit(depCheckAmount);
+    }
+    
+    /**
+     * deposit into savings account 
+     * @param depSaveAmount the amount to deposit
+     */
+    public void depositSavings(int depSaveAmount) {
+        savings.deposit(depSaveAmount);
+    }
+     
+    /** 
+     * withdraw from checking account 
+     * @param withCheckAmount the amount to withdraw
+     */
+    public void withdrawChecking(int withCheckAmount) {
+        int checkBal = checking.getBalance();
+        int saveBal = savings.getBalance();
+        if (withCheckAmount <= checkBal) {
+            checking.withdraw(withCheckAmount);  }
+            else if (withCheckAmount <= ( checkBal & saveBal) {
+                checking.withdraw(checkBal);
+                savings.withdraw((withCheckAmount-checkBal)); }
+                else {
+                System.out.println("Error: Insufficent funds in checking and savings accounts.");
+            }
+    }
+    
+    /**
+     * withdraw from savings account 
+     * @param withSaveAmount the amount to withdraw
+     */
+    public void withdrawSavings(int withSaveAmount) {
+        savings.withdraw(withSaveAmount);
+    }
+    
+    /**
+     * get the total balance (both checking and savings accounts)
+     * @return the total balance of the customer's checking and savings accounts
+     */
+    public int getTotalBalance() {
+        int saveBal = savings.getBalance();
+        int checkBal = checking.getBalance();
+        return saveBal + checkBal;
+    }
+    
+    /** 
+     * transfer from savings to checking (for this customer)
+     * @param transSCAmount the amount to transfer
+     */
+    public void savingsToChecking(int transSCAmount) {
+        if (savings.getBalance() >= transSCAmount) {
+            this.withdrawSavings(transSCAmount);
+            this.depositChecking(transSCAmount);
+         } else {
+            System.out.println("Error: insufficient funds for transfer!");
+        }
+    }
+
+}

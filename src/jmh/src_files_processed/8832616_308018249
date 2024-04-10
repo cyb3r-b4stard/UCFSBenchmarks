@@ -1,0 +1,118 @@
+
+import java.awt.*;
+import javax.swing.*;
+import java.awt.event.*;
+import javax.swing.event.*;
+
+/**
+ * ##### ########## ##### - ##### # ########### ## ### ##### ####
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ######)
+ */
+public class KioskPizza extends JApplet implements ItemListener, ActionListener 
+{
+            static double[] yourChoicesPrices = {5.00, 3.00, 7.00, 8.00, 9.00, 10.00, .50, 3.50, 2.90};
+            private JList yourChoices;
+            private JTextArea bill;
+            private Container pane;
+            
+    /**
+     * Called by the browser or applet viewer to inform this JApplet that it * has been loaded into the system. It is always called before the first 
+     * time that the start method is called.
+     */
+    public void init()
+    {
+        Container pane = new getContentPane();
+        pane.setLayout(null);
+         String[] yourChoicesItems =
+            {"Salad                      $5.00",
+            "Bread Sticks               $3.00",
+            "Small pizza                $7.00",
+            "Medium pizza               $8.00",
+            "Large pizza                $9.00",
+            "Extra large pizza          $10.00",
+            "Extra toppings             $.50 apiece",
+            "Bottomless Soda            $3.50",
+            "Bottomless Hot beverage    $2.90"};
+            
+            
+            double[] yourChoicesPrices = {5.00, 3.00, 7.00, 8.00, 9.00, 10.00, 0.50, 3.50, 2.90};
+
+                pane.setBackgroundColor(0,220,220);
+
+                
+                JLabel yourChoicesJLabel = new JLabel (":A LA CARTE MENU");
+                pane.add(yourChoicesJLabel,BorderLayout.NORTH);
+                yourChoicesJLabel.setFont(new Font("Dialog", Font.BOLD, 25));
+                yourChoices = new JList(yourChoicesItems);
+                pane.add(new JScrollPane (yourChoices),BorderLayout.WEST);
+                yourChoices.setFont(new Font("Courier",Font.BOLD, 16));
+                bill = new JTextArea();
+                pane.add(bill,BorderLayout.EAST);
+                bill.setFont(new Font("Courier",Font.PLAIN, 14));
+                JButton button = newButton("Selection Completed");
+                pane.add(button,BorderLayout.SOUTH);
+                button.addActionListener(this); 
+                
+
+            
+            
+            int[] listArray = yourChoices.getSelectedIndices();
+            double localTax = 0.11;
+          
+            double subTotal = 0;
+            double total;
+            bill.setEditable(false);
+            bill.setText("");
+            
+            for( int index = 0; index< listArray.length; index ++)
+            subTotal = subTotal + yourChoicesPrices[listArray[index]];
+            
+            tax = localTax * subTotal;
+            total = subTotal + tax;
+            bill.append("          YOUR PIZZA PLACE A LA CARTE\n\n");
+            bill.append("-----------------------------------Welcome-----------------------------------");
+            for (int index = 0; index < listArray.length; index ++)
+            {
+                bill.append(yourChoicesItems[listArray[index]] + "\n");
+            }
+            bill.append ( "\n");
+            bill.append("SUB TOTAL \t\t$" String.format("%.2f", subTotal) + "\n");
+            bill.append("TAX       \t\t$" String.format("%.2f", tax) + "\n");
+            bill.append("TOTAL     \t\t$" String.format("%.2f", total) + "\n\n");
+            bill.append("Thank you -- Have a nice day! \n\n");
+            yourChoices.clearSelection();
+            repaint();
+        }
+            public void actionPerformed(ActionEvent event)
+            {
+                if (event.getActionCommand().equals("Selection Completed"))
+                displayBill();
+            }
+        
+            
+                
+          
+    public void itemStateChanged(ItemEvent e){
+        
+    }
+
+    /**
+     * Paint method for applet.
+     * 
+     * @param  g   the Graphics object for this applet
+     */
+    public void paint(Graphics g)
+    {
+        g.setColor(Color.white);
+        g.fillRect(0, 0, 200, 100);
+        g.setColor(Color.black);
+        g.drawString("Pizza Selections", 20, 20);
+        g.setColor(Color.blue);
+        g.drawString("What would you like?", 20, 40);
+    }
+
+
+  
+}

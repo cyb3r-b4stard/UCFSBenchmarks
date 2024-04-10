@@ -1,0 +1,115 @@
+
+import cha.*;
+import cha.action.*;
+import java.awt.*;
+import javax.swing.*;
+import java.util.*;
+
+import static java.awt.Color.*;
+
+public class GuessingGame
+extends CHApplet {
+    Random gen;
+    int secretX;
+    int maximum;
+    int secretY;
+   
+ 
+    
+    CHField inputX;
+    CHLabel labelX;
+    CHLabel message;
+    CHLabel label1;
+    CHLabel labelY;
+    CHField inputY;
+   
+    
+    
+        
+    private class Guess
+    extends CHAction {
+        public void step() {
+            int guessX;
+            guessX = inputX.getInt();
+            int guessY;
+            guessY = inputY.getInt();
+            
+            String response;
+            response = "";
+            
+            if(guessX > secretX) {
+                response += "X is too large, ";
+            }
+            if(guessX < secretX) {
+                response += "X is too small, ";
+            }
+            if(guessX == secretX) {
+                response += "X is just right, ";
+            }
+             if(guessY > secretY) {
+                response += "Y is too large, ";
+            }
+            if(guessY < secretY) {
+                response += "Y is too small, ";
+            }
+            if(guessY == secretY) {
+                response += "Y is just right, ";
+            message.setText(response);
+        }
+    }
+
+      private class Reset
+    extends CHAction {
+        public void step() {
+       
+    }}    public void init() {
+        gen = new Random();
+        maximum = 100;
+        
+        
+        message = new CHLabel();
+        add(message);
+        message.setBounds(25, 430, 450, 16);
+        
+        labelX = new CHLabel();
+        add(labelX);
+        labelX.setText(" X");      
+        labelX.setBounds(25, 470, 12, 16);
+        
+        inputX = new CHField();
+        add(inputX);
+        inputX.setText("");
+        inputX.setBounds(37, 464, 46, 28);
+        
+        Guess guess;
+        guess = new Guess();
+        add(guess);
+        guess.setText("Guess");
+        
+        CHButton gButton;
+        gButton = new CHButton();
+        add(gButton);
+        gButton.setAction(guess);
+        gButton.setBounds(141, 464, 82, 29);
+        
+        secretX = gen.nextInt(maximum);
+        message.setText("Guess two numbers less than " + maximum);
+        
+        labelY = new CHLabel();
+        add(labelY);
+        labelY.setText(" Y");      
+        labelY.setBounds(80, 470, 12, 16);
+        
+        inputY = new CHField();
+        add(inputY);
+        inputY.setText(" ");
+        inputY.setBounds(90, 464, 46, 28)
+       
+       
+        label1 = new CHLabel();
+        add(label1);
+        label1.setText("Alex Westlein and Stephanie Niles");      
+        label1.setBounds(250, 430, 300, 100);
+    }
+   }
+}

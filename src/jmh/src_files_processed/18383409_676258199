@@ -1,0 +1,172 @@
+import java.util.Scanner;
+public class Game
+{
+    int option;
+    int input;
+    int playerGuess;
+    int guess1;
+    int guess2;
+    String availablePrizes;
+    Player newplayer;
+    String N;
+    Scanner scanner;
+    public Game()
+    {
+        option = 0;
+        guess1 = 0;
+        guess2 = 0;
+        Player newplayer;
+
+    }
+
+    public void mainProgram()
+    {     
+        scanner = new Scanner(System.in);
+        do {
+            displayMenu();
+            errorInputHandling();
+            option = input;           
+            errorDetection(option);     
+            if ( option == 1) {
+                System.out.println("Enter your name:");
+                newplayer = new Player();
+                scanner.nextLine();
+                newplayer.addPlayerName(scanner.nextLine());           
+                System.out.println("Your Name:" + newplayer.getPlayerName());
+
+            }else if (option == 2){
+
+                errorInputHandling();
+                playerGuess = input;                   
+                newplayer.addTotalAmountSpent(playerGuess);
+                LuckyNumberGenerator luckyNumber = new LuckyNumberGenerator();
+                System.out.println("Your Guess: "+ playerGuess);
+                System.out.println("Machine Guess: "+ luckyNumber.generateRandomNumber(5));
+                compareGuesses(playerGuess,luckyNumber.generateRandomNumber(5));
+
+            }else if (option == 3){
+                if(newplayer.getPrizesValue() == 0){ System.out.println("Player " + newplayer.getPlayerName()+" has not won prizes. Please try again!");
+                }else{
+                    System.out.println("Player " + newplayer.getPlayerName() + " has won these prizes:\n" + newplayer.getPrizes());
+                    System.out.println("worth a total $" + newplayer.getPrizesValue());
+                    System.out.println("Total amount spent is " + newplayer.getTotalAmountSpent()); }         
+            }else if (option == 4){
+                displayHelp();
+            }else if (option == 5){
+                System.out.println("\n Thank you for playing!");
+                option ++;
+            }
+
+        }while(1 <= option && option <= 5);
+    }
+
+    public void compareGuesses(int guess1, int guess2)
+    {
+
+        if (guess1 == guess2)
+        {                                        
+
+            switch (guess1)
+            {             
+                case 1:
+                System.out.println("Congratulations! You have won a Pen!");
+                newplayer.addPrizes(availablePrizes(1));
+                newplayer.addPrizesValue(10);
+                break;
+                case 2:
+                System.out.println("Congratulations! You have won a Book!");
+                newplayer.addPrizes(availablePrizes(2));
+                newplayer.addPrizesValue(20);
+                break;
+                case 3:
+                System.out.println("Congratulations! You have won a DVD!");
+                newplayer.addPrizes(availablePrizes(3));
+                newplayer.addPrizesValue(30);
+                break;
+                case 4:
+                System.out.println("Congratulations! You have won a Mouse!");
+                newplayer.addPrizes(availablePrizes(4));
+                newplayer.addPrizesValue(40);
+                break;
+                case 5:
+                System.out.println("Congratulations! You have won a Keyboard!");
+                newplayer.addPrizes(availablePrizes(5));
+                newplayer.addPrizesValue(50);
+                break;
+
+            }
+        }
+        else {
+            System.out.println("Nothing. What a pity! Try again!");
+        }
+    }
+
+    public String availablePrizes(int guess )
+    {
+        if (guess == 1){ availablePrizes = "Pen";
+        }else if(guess ==2 ){availablePrizes = "Book";
+        }else if (guess == 3){availablePrizes = "DVD";
+        }else if (guess == 4) {availablePrizes = "Mouse";
+        }else if (guess == 5) {availablePrizes = "Keyboard";
+        }
+
+        return availablePrizes;
+    }
+
+    /**
+     * The errorInputHandling method is used to get int input from the keyboard. Then check if the input is between 1 and 5. Finally return an int input.
+     */
+
+    public  int errorInputHandling()
+    {
+
+        do{
+            if (option == 0 || option == 1 || option == 3 || option == 4){
+            System.out.println("Please enter a number between 1 and 5:");}
+            else if (option == 2){
+            System.out.println("Please enter a number between 1 and 5:");}
+            while(!scanner.hasNextInt()){
+                System.out.println("Your input is not a number. Please enter a number between 1 and 5:");
+                scanner.next();
+            }
+            input = scanner.nextInt();
+        }while(input<1 || input >5);
+
+        return input;
+    }
+
+    public void errorDetection(int a )
+    {   
+
+        while(newplayer == null && (a == 2 || a == 3))
+        {
+            System.out.println("Error! Please enter your name fisrt before you go to Option 2 and Option 3");
+            newplayer = new Player();
+            System.out.println("Please Enter Your Name:");
+            scanner.nextLine();
+            newplayer.addPlayerName(scanner.nextLine());
+            System.out.println("Your name: "newplayer.getPlayerName());
+        }                           
+    }
+
+    public void displayMenu()
+    {
+        System.out.println("Welcome to the Lucky Vending Machine");
+        System.out.println("====================================");
+        System.out.println("(1)Set up New Player");
+        System.out.println("(2)Guess A Prize");
+        System.out.println("(3)What Have I Won So Far");
+        System.out.println("(4)Display Game Help");
+        System.out.println("(5)Exit Game");
+    }
+
+    public void displayHelp()
+    {
+        System.out.println("Number  Price Won   Price Worth     Cost to Player");
+        System.out.println("1          Pen          $10              $1     ");
+        System.out.println("2          Book         $20              $2     ");       
+        System.out.println("3          DVD          $30              $3     ");
+        System.out.println("4          Mouse        $40              $4     ");    
+        System.out.println("5          Keyboard     $50              $5     ");
+    }
+}

@@ -1,0 +1,211 @@
+import acm.program.*;
+import acm.graphics.*;
+import acm.util.*;
+import java.awt.*;
+import java.util.*;
+/**
+ * ##### # ########### ## ##### ############ ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class BirdGameReal extends GraphicsProgram
+{
+    public static int 
+    APPLICATION_WIDTH = 800,
+    APPLICATION_HEIGHT = 800;
+
+    private static final double
+    TOP_GAP = 40, 
+    TOTAL_GAP = 600,
+    GAP = 4, 
+    BIRD_SIZE = 60,
+    BRICK_WIDTH = 66,
+    BRICK_HEIGHT = 20;
+    WALL_WIDTH = 10
+    private static final int
+    ROW = 5, 
+    COL = 10, 
+    numberOfAirplanes = 5;
+    
+    
+
+    
+    private GImage bird;
+    private GLabel startGame, youLose, youWin, starsCollected;
+    private GLine line; 
+    private GPoint mousePoint;
+    private int stars;
+    private int obstace = 10;
+    private boolean isAlive = true;
+    private boolean gameOver= false;
+    private ObstacleClassReal[] airplane = new ObstacleClassReal[numberOfAirplanes];
+    
+    private GRect[][] brick = new GRect[ROW][COL]; 
+    private GRect[][] brick2 = new GRect[ROW][COL]; 
+    private double 
+    width,
+    height,
+    speed, 
+    angle,
+    size = 50;
+
+    /**
+     * run method controlls the innitial actions that occur when the game is 
+     * opened
+     */
+    public void run() 
+    {
+        drawGraphics();
+
+        waitForClick();
+
+        startGame.setVisible(false);
+        
+        addAirplane();
+        
+      
+
+        while(!gameOver) {
+            oneTimeStep();
+            pause(20);
+        }
+
+    }
+
+    
+    private void oneTimeStep() {
+        double x = bird.getX();
+        double y = bird.getY();
+        bird.movePolar(speed, angle);
+        updateLinePoints();
+
+    
+    }
+    private void updateLinePoints() {
+        double x = bird.getX();
+        double y = bird.getY();
+        line.setEndPoint(mousePoint.getX(), mousePoint.getY());
+        line.setStartPoint(x+size/2, y+size/2);
+
+        GPoint startPoint = line.getStartPoint();
+        GPoint endPoint = line.getEndPoint();
+
+        double lineLen=GMath.distance(startPoint.getX(), startPoint.getY(),
+                endPoint.getX(), endPoint.getY());
+        double lineAngle=GMath.angle(startPoint.getX(), startPoint.getY(),
+                endPoint.getX(), endPoint.getY());
+
+        speed=lineLen/15;
+        angle=lineAngle;
+
+    }
+
+    /** change the points of the line when mosue is moved */
+    public void mouseMoved(GPoint point) {
+        mousePoint = point;
+        updateLinePoints();
+    }
+    
+     public void checkCollision(ObstacleClassReal airplane) {
+    double x = airplane.getX(); 
+    double y = airplane.getY();
+    double size = airplane.getWidth(); 
+    double angle = airplane.getAngle(); 
+    
+    if (x-size/2 < WALL_W) {
+      airplane.setLocation(WALL_W + size/2, y); 
+      airplane.setAngle(180-angle); 
+    }
+    
+    if (x+size/2 > width-WALL_W) {
+      airplane.setLocation(width - WALL_W - size/2, y); 
+      airplane.setAngle(180-angle); 
+    }
+    
+    if (y-size/2 < WALL_W) {
+      airplane.setLocation(x, WALL_W + size/2); 
+      airplane.setAngle(-angle); 
+    }
+    
+    if (y+size/2 > height-WALL_W) {
+      airplane.setLocation(x, height - WALL_W - size/2); 
+      airplane.setAngle(-angle); 
+    }
+  }
+
+
+
+    /**
+     *drawGraphics sets innitial graphics called to screen when the program is opened
+     */
+    private void drawGraphics() 
+    {
+
+        setBackground(Color.CYAN);
+        
+        GRect border = new GRect(WALL_WIDTH, WALL_WIDTH, 
+                            width-2*WALL_WIDTH, height-2*WALL_WIDTH);
+        border.setFilled(true);
+        border.setColor(Color.YELLOW);
+        add(border);
+
+
+        bird = new GImage ("bird.jpg");
+        bird.setSize(50, 50);
+        add(bird, APPLICATION_WIDTH/2, APPLICATION_HEIGHT/2);
+
+        startGame = new GLabel ("Click to Start!", 200, 200);
+        startGame.setFont(new Font("Sanserif", Font.BOLD, 35));
+        add(startGame, 250, 250);
+
+        line = new GLine(width/2, height/2, width/2, height/2);
+        add(line);
+        line.setColor(Color.YELLOW);
+        line.setVisible(false);
+
+
+        drawBricks(); 
+    }
+    
+    private void addAirplane() {
+        for (int i = 0; i < numberOfAirplanes; i++) {
+            ObstacleClassReal airplane = new ObstacleClassReal (size, speed, this);
+            airplane.setLocation(200, 200);
+            add(airplane, 800, 525);
+            new Thread(airplane).start();
+        }
+    }
+
+    private void drawBricks() {
+        for (int i = 0; i < ROW; i++) {
+            for (int j = 0; j < COL; j++) { 
+                double x = GAP + j*(BRICK_WIDTH+GAP);
+                double y = TOP_GAP + i*(BRICK_HEIGHT+GAP);        
+                if (i%2 == 0) x += BRICK_WIDTH/2; 
+
+                brick[i][j] = new GRect(BRICK_WIDTH, BRICK_HEIGHT);
+
+                add(brick[i][j], x, y);
+                brick[i][j].setFilled(true);
+                brick[i][j].setFillColor(Color.lightGray);
+            }
+        }
+
+        for (int i = 0; i < ROW; i++) {
+            for (int j = 0; j < COL; j++) { 
+                double x = GAP + j*(BRICK_WIDTH+GAP);
+                double y = TOTAL_GAP + i*(BRICK_HEIGHT+GAP);        
+                if (i%2 == 0) x += BRICK_WIDTH/2; 
+
+                brick2[i][j] = new GRect(BRICK_WIDTH, BRICK_HEIGHT);
+
+                add(brick2[i][j], x, y);
+                brick2[i][j].setFilled(true);
+                brick2[i][j].setFillColor(Color.lightGray);
+
+            }
+        }
+    }
+    
+    }

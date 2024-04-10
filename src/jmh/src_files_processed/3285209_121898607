@@ -1,0 +1,92 @@
+java.io.*;
+/**
+ * Die Klasse Wechselkurs stellt die aktuellen Wechselkurse zur Verfügung. Desweiteren werden Methoden zur Verfügung 
+ * gestellt, Wechselkurse flexibel anzupassen. Angeboten werden die Währungen CHF, EUR und USD. Die einzelnen Methoden
+ * und deren Funktionalität werden jeweils direkt im Code erklärt und dokumentiert.
+ * 
+ * @author Valentin Akçag
+ * @version 1.0, 16.11.2013
+ */
+public class Wechselkurs implements Serializable
+{
+    
+    private double EURCHF;
+    private double USDCHF;
+    private double EURUSD;
+
+    /**
+     * Konstruktor der Klasse Wechselkurs
+     * 
+     * Mit diesem Konstruktor werden die drei Variablen respektive die drei Währungspaare mit einem
+     * vordefinierten Wert initialisiert. Die Wechselkurse können später jedoch flexibel angepasst werden.
+     */
+    public Wechselkurs()
+    {
+        EURCHF = 1.20;
+        USDCHF = 0.90;
+        EURUSD = 1.35;
+    }
+
+    /**
+     * Umrechnungskurs anpassen
+     * 
+     * Anhand dieser Methode können die Umrechnungskurse zwischen den drei Währungen CHF, EUR und USD angepasst werden.
+     * Die Anpassung gilt in beide Richtungen:
+     * 
+     * - EUR / CHF, Eingabe: EURCHF
+     * - CHF / EUR, Eingabe: CHFEUR
+     * - USD / CHF, Eingabe: USDCHF
+     * - CHF / USD, Eingabe: CHFUSD
+     * - EUR / USD, Eingabe: EURUSD
+     * - USD / EUR, Eingabe: USDEUR
+     */
+    public void setzeUmrechnungskurs(String waehrungspaar, double neuerkurs)
+    {
+        if (waehrungspaar.equals("EURCHF")){
+            EURCHF = neuerkurs;
+        } else if (waehrungspaar.equals("CHFEUR")) {
+            EURCHF = 1/neuerkurs;
+        } else if (waehrungspaar.equals("USDCHF")) {
+            USDCHF = neuerkurs;
+        } else if (waehrungspaar.equals("CHFUSD")) {
+            USDCHF = 1/neuerkurs;
+        } else if (waehrungspaar.equals("EURUSD")) {
+            EURUSD = neuerkurs;
+        } else if (waehrungspaar.equals("USDEUR")) {
+            EURUSD = 1/neuerkurs;
+        } 
+        else {
+            System.out.println("___________________________________________");
+            System.out.println("Dieses Währungspaar wird nicht unterstützt.");
+            System.out.println("___________________________________________");
+        } 
+            
+    }
+    
+    /**
+     * Umrechnungskurs geben
+     * 
+     * Diese Methode gibt den aktuellen Wechselkurs aus.
+     * 
+     */
+    public double gibUmrechnungskurs(String waehrungspaar)
+    {
+        if (waehrungspaar.equals("EURCHF")){
+            return EURCHF;
+        } else if (waehrungspaar.equals("CHFEUR")) {
+            return 1/EURCHF;
+        } else if (waehrungspaar.equals("USDCHF")) {
+            return USDCHF;
+        } else if (waehrungspaar.equals("CHFUSD")) {
+            return 1/USDCHF;
+        } else if (waehrungspaar.equals("EURUSD")) {
+            return EURUSD;
+        } else if (waehrungspaar.equals("USDEUR")) {
+            return 1/EURUSD;
+        } 
+        else {
+            return 1;
+        } 
+            
+    }
+}

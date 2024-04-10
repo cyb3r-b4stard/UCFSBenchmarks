@@ -1,0 +1,287 @@
+/*
+ ########### ### ######## ## ######## ### # ########## ########## #### ######## ####### ###. ######### ### #### ######## ## ########
+######### ## ######### ########## # #### #######. #### #### ######## #### ### ###### ######## ##########, # ######## #### ###
+###### ## ########### #### ############### ##### ######### # ########. ✓
+ ####### ##### ######## ### ##### ######### # ######## ##########. ✓
+ ########## # ##### ## ######## ######### # ## ########. ✓
+ ########## # ##### ##### ## ######## ########### ### ## ########### #######. ✓
+ ########## # ##### ## ########. ✓
+ ########## ##### ## ######### ########## # ## #######. ✓
+ ###### ### ####### ############ ### ####### # ### ######## #### ## #### ####### (### ######## # ##### ## ### – #### ## #### #####).✓
+ ####### ###### ## ######## ## ###### ## ######. #
+ ######### ## #### ##### #### ## ####### ## ####. #
+ ######### ## ####### ## ## ##### ### ####### ############. #
+ ######### ##### ######## # ## ########. ✓
+ ########### # ####### ### #### ###### ### # ####### “##### ## ######” # ########## ##### #####. 
+ ##### ### ##### ## ######### ### ######## ############ #.#. ######## ### ### ######### ## ##### ## ########## ## ########### (########: ### ##########!) 
+ ##### ### ##### ## ###### ### ######## ### ######## ## ######## ####. #### ##### # ##### #### ###### ##### ######### # ##### ######## (####:#### ### ## ######## ## ###### – ### ##########!)✓
+ ###### ## ######## # ###### ##### ## ####### (########) ###### # ########## ####### # ###### ## ######## # ######### ##### ######## # ###### ######## ###### # ########## ###### ### #### ######.✓
+ */
+
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.io.*;
+import java.util.*;
+import static java.lang.Integer.MIN_VALUE;
+
+public class Teo 
+{
+    /** Variáveis de instância */ 
+    private TabelaValores tabela;
+    private TreeMap<Cliente,Contracto> teo = new TreeMap<Cliente,Contracto>(new ClienteComparator());
+    private String nome;
+
+    /** Construtores */
+    /** Construtor base */ 
+    public Teo(){
+        nome = "";
+    }
+
+    /** Construtor completo */
+    public Teo(String nome, TreeMap<Cliente,Contracto> aux){
+        this.nome = nome;
+        for(Cliente c : aux.keySet())
+        {
+            teo.put(c.clone(),aux.get(c));            
+        }
+    }
+
+    /** Construtor de cópia */
+    public Teo(Teo t){
+        teo = t.listaContractos();
+    }
+
+    /** Métodos de instância */
+    /** Devolve o nome da classe Teo */  
+    public String getNome()     {return nome;}
+
+    /** Define o nome da classe Teo */  
+    public void setNome(String nome)     {this.nome = nome;}
+
+    /** Insere um cliente novo com um contracto associado */
+    public void insereEntrada(Cliente c, Contracto co){
+        teo.put(c, co);
+    }    
+
+    /** Remove um contracto dado o seu nome */
+    public void removerContracto(String nome){
+        Contracto aux = null;
+        aux = getContractoDadoNome(nome);
+        teo.remove(aux);
+    }
+
+    /** Devolve contracto caso exista */
+    public Contracto getContractoDadoNome(String s){
+        Contracto contracto = null;
+        for(Contracto c : teo.values()){
+            if (c.getNome().equals(s))
+                contracto = c.clone();
+        }
+        return contracto;
+    }
+
+    /** Devolve um contracto dado o nome do seu cliente */
+    public Contracto getContracto(String nome){
+        Contracto contracto = null;
+        for(Cliente c : teo.keySet()){
+            if(c.getNome().equals(nome)){
+                contracto = teo.get(c).clone();
+            }
+        }
+        return contracto;
+    }
+
+    /** Devolve a lista de serviços dado o nome de um contracto */
+    public TreeSet<Servicos> getListaServicosDadoContracto(String nome){
+        TreeSet<Servicos> temp = new TreeSet<Servicos>(new ServicosComparator());
+        for(Contracto c : teo.values()){
+            if(c.getNome().equals(nome)){
+                for(Servicos s : c.SetServicos()){
+                    temp.add(s.clone());
+                }
+            }
+        }
+        return temp;
+    }
+
+    /** Devolve a lista dos nomes dos serviços dado o nome de um contracto */
+    public TreeSet<String> getListaNomesServicosDadoContracto(String nome){
+        TreeSet<String> temp = new TreeSet<String>();
+        for(Contracto c : teo.values()){
+            if(c.getNome().equals(nome)){
+                for(Servicos s : c.SetServicos()){
+                    temp.add(s.getNome());
+                }
+            }
+        }
+        return temp;
+    }
+
+    /** Devolve a lista de serviços dado o nome de um cliente */
+    public TreeSet<Servicos> getListaServicosDadoCliente(String nome){
+        TreeSet<Servicos> temp = new TreeSet<Servicos>(new ServicosComparator());
+        for(Cliente c : teo.keySet()){
+            if(c.getNome().equals(nome)){
+                for(Servicos s : teo.get(c).SetServicos()){
+                    temp.add(s.clone());
+                }
+            }
+        }
+        return temp;
+    }
+
+    /** Devolve a lista total de clientes */
+    public TreeSet<Cliente> getListaClientes(){
+        TreeSet<Cliente> temp = new TreeSet<Cliente>(new ClienteComparator());
+        for(Cliente c : teo.keySet()){
+            temp.add(c.clone());
+        }
+        return temp;
+    }
+
+    /** Devolve a lista de contractos dado nome do cliente */
+    public TreeSet<Contracto> getListaContractosDadoCliente(String nome){
+        TreeSet<Contracto> temp = new TreeSet<Contracto>(new ContractoComparator());
+        for(Cliente c : teo.keySet()){
+            if(c.getNome().equals(nome)){
+                temp.add(teo.get(c));
+            }
+        }
+        return temp;
+    }
+
+    /** Insere serviço num contracto */
+    public void insereServico(String nome, Servicos s){
+        for(Contracto c : teo.values()){
+            if(c.getNome().equals(nome)){
+                c.insereServico(s);
+            }
+        }
+    }
+
+    /** Remove serviço num contracto */
+    public void removeServico(String nomeContracto, String nomeServico){
+        for(Contracto c : teo.values()){
+            if (c.getNome().equals(nomeContracto)){
+                c.removeServico(nomeServico);
+            }
+        }
+    }    
+
+    /** Devolve o total de Contractos no TreeMap */
+    public int totalContractos() {return teo.values().size();}
+
+    /** Método que auxilia o construtor de cópia */
+    public TreeMap<Cliente,Contracto> listaContractos(){
+        TreeMap<Cliente,Contracto> temp = new TreeMap<Cliente,Contracto>(new ClienteComparator());
+        for(Cliente c : teo.keySet()){
+            temp.put(c.clone(),teo.get(c).clone());
+        }
+        return temp;
+    } 
+
+    /** Insere canal num serviço do tipo CaboTV */
+    /*public void insereCanalFilme(String contracto, String canal){
+    for(Contracto c : teo.values()){
+    if(c.getNome().equals(contracto)){
+    for(Servicos s: c.SetServicos()){
+    if(s instanceof CaboTV){
+    s.adicionaLista(canal);
+    }
+    }
+    }
+    }
+    }*/
+
+    /** Insere filme num serviço do tipo VideoOnDemand */
+    /*public void insereCanalFilme(String contracto, String video){
+    for(Contracto c : teo.values()){
+    if(c.getNome().equals(contracto)){
+    for(Servicos s: c.SetServicos()){
+    if(s instanceof VideoOnDemand){
+    s.adicionaLista(canal);
+    }
+    }
+    }
+    }
+    }*/
+
+    /** Método que altera o valor da tabela */
+    /*public void alteraValorTabela(String var, int valorAlterar, int valorNovo, int precoNovo){
+    if(var.equals("limiteChamadas")){
+    tabela.getListaLimiteChamadas().remove(valorAlterar);
+    tabela.getListaLimiteChamadas().put(valorNovo, precoNovo);
+    }
+
+    if(var.equals("larguraBanda")){
+    tabela.getListaLarguraBanda().remove(valorAlterar);
+    tabela.getListaLarguraBanda().put(valorNovo, precoNovo);
+    }
+
+    if(var.equals("limiteTrafego")){
+    tabela.getListaLimiteTrafego().remove(valorAlterar);
+    tabela.getListaLimiteTrafego().put(valorNovo, precoNovo);
+    }
+
+    if(var.equals("velocidade")){
+    tabela.getListaVelocidade().remove(valorAlterar);
+    tabela.getListaVelocidade().put(valorNovo, precoNovo);
+    }
+    }*/
+
+    /** Método que devolve o cliente que gastou mais com o serviço VideoOnDemand e o respectivo valor gasto */
+    public TreeMap<Cliente,Integer> getClienteMaiorValorVDO(){
+        TreeMap<Cliente,Integer> temp = new TreeMap<Cliente,Integer>();
+        double maior = MIN_VALUE;
+        Cliente cliente = null;
+        for(Cliente c : teo.keySet()){
+            for(Contracto co : teo.values()){
+                for(Servicos s : co.SetServicos()){
+                    if(s instanceof VideoOnDemand){
+                        VideoOnDemand vod = (VideoOnDemand) s;
+                        if (vod.getMensalidade()>maior)
+                            maior = vod.getMensalidade();
+                            cliente = c;
+                    }
+                }
+            }
+        }
+        temp.put(cliente,int(maior));
+    }
+
+    /** Devolve a factura do contracto dado nome do Cliente */
+    public String facturaContractoDadoCliente(String nome){
+        double total = 0.0;
+        StringBuilder txt = new StringBuilder();
+        txt.append("Factura Cliente " + nome + "\n");            
+        for(Cliente c : teo.keySet()){
+            if(c.getNome().equals(nome)){
+                for(Servicos s : teo.get(c).SetServicos()){
+                    txt.append(s.getNome() + ": " + s.getMensalidade() + "\n");
+                    total+=s.getMensalidade();
+                }
+            }
+        }
+        txt.append("Total: " + total + "\n"); 
+        return txt.toString();
+    }
+
+    /** Método que grava em ficheiro de texto */
+    public void gravaTxt(String fich)throws IOException{
+        PrintWriter pw=new PrintWriter(fich);
+        pw.println(this);
+        pw.flush(); 
+        pw.close();
+    }
+
+    /** Método que guarda o projecto */
+    public void gravaObj(String fich) throws IOException {
+        ObjectOutputStream oout = new ObjectOutputStream( new FileOutputStream(fich));
+        oout.writeObject(this);
+        oout.flush(); 
+        oout.close();
+    }
+
+    /** Método clone */
+    public Teo clone()  {return new Teo(this);}
+}

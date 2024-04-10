@@ -1,0 +1,70 @@
+
+import javafx.application.*;
+import javafx.event.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.*;
+import javafx.scene.shape.*;
+import javafx.embed.swing.*;
+import javafx.application.*;
+import javafx.scene.text.*;
+import java.util.*;
+
+public class GUITextApp  {
+    private TextArea textArea;
+    
+    private void print(String text)
+    {
+        this.textArea.appendText(text);
+    }
+    
+    private void println(String text)
+    {
+        this.print(text + "\n");
+    }
+    
+    public void launch()
+    {
+        new JFXPanel();
+        Platform.setImplicitExit(false);
+        Platform.runLater(() -> start(new Stage()));
+    }
+    
+    public void start(Stage primaryStage) 
+    {
+        primaryStage.setOnCloseRequest(e -> Platform.runLater( () -> Platform.exit(); System.exit(); ));
+        this.textArea = new TextArea();
+        this.textArea.setEditable(false); 
+        this.textArea.setFont(new Font(10));
+        Scene scene = new Scene(textArea);
+        
+        primaryStage.setTitle("Minimal Text App"); 
+        primaryStage.setScene(scene); 
+        primaryStage.sizeToScene(); 
+        primaryStage.show();
+
+        
+        print("hello");
+        println(" world");
+        
+        TextInputDialog dialog = new TextInputDialog("default text");
+        dialog.setTitle("Title of the Input Dialog");
+        dialog.setHeaderText("Look, a Text Input Dialog");
+        dialog.setContentText("Please enter your name:");
+
+        Optional<String> result = dialog.showAndWait();
+
+        if (result.isPresent())
+        {
+            println("Your name: " + result.get());
+        }
+    }
+    
+  
+    
+    
+    
+    
+ 
+}

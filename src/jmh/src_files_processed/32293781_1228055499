@@ -1,0 +1,116 @@
+import java.util.*;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+public class Driver extends JFrame implements Runnable
+{
+    Container con = getContentPane();
+    Thread t = new Thread(this);
+    Star myStars[] = new Star[58];
+    Rectangle rightBox, leftBox;
+    Missile leftMissiles[] = new Missile[100];
+    Missile rightMissiles[] = new Missile[100];
+    public Driver ()
+    {
+        for (int x = 0; x< myStars.length; x++)
+        {
+            myStars[x] = new Star();
+        }
+        rightBox = new Rectangle(167, 458, 20, 20);
+        leftBox = new Rectangle(333, 458, 20, 20);
+        for (int x=0; x<leftMissiles.length; x++)
+        {
+            leftMissiles[x] = new Missile();
+        }
+        for (int x=0; x<rightMissiles.length; x++)
+        {
+            rightMissiles[x] = new Missile();
+        }
+        con.setLayout(new FlowLayout());
+        t.start();
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+    }
+
+    public void run()
+    {
+        try{
+            while(true)
+            {
+                t.sleep(67);
+                for (int x = 0; x< myStars.length; x++)
+                {
+                    myStars[x].move();
+                    myStars[x].bounce();
+                }
+                for (int x = 0; x < leftMissiles.length; x++)
+                {
+                    leftMissiles[x].move();
+                }
+                for (int x = 0; x< rightMissiles.length; x++)
+                {
+                    rightMissiles[x].move();
+                }
+                
+                /*9.check collision detection between stars and redboxes here (should kill program).
+                 * with System.exit(0);*/
+                collide(leftMissiles[].returnr(), myStars[].returnr);
+                repaint();
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void paint(Graphics gr)
+    {
+        Image i=createImage(getSize().width, getSize().height);
+        Graphics2D g2 = (Graphics2D)i.getGraphics();
+
+        g2.fillRect(0,0, 500, 500);
+        g2.setColor(Color.gray);
+        g2.fill(rightBox);
+        g2.fill(leftBox);
+        for (int x = 0; x< myStars.length; x++)
+        {
+            myStars[x].draw(g2);
+        }
+        for (int x=0; x < leftMissiles.length; x++)
+        {
+
+           leftMissiles[x].draw(g2);
+        }
+        for (int x=0; x < rightMissiles.length; x++)
+        {
+            rightMissiles[x].draw(g2);
+        }
+        g2.setColor(Color.GREEN);
+        g2.fillRect(0, 478, 500, 22);
+
+        g2.dispose();
+        
+        gr.drawImage(i, 0, 0, this);
+    }
+    
+    public void collide(Rectangle a, Rectangle b)
+    {
+        if(a.intersects(b))
+        {
+            System.exit(0);
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        Driver frame = new Driver();
+        frame.setSize(500, 500);
+        frame.setVisible(true);
+    }
+
+    public void update(Graphics g)
+    {
+        paint(g);
+    }
+
+}

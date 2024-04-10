@@ -1,0 +1,46 @@
+
+/**
+ * ##### # ########### ## ##### ####### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import Sprites.*;
+import java.awt.Color;
+public class PopStar
+{   PopStarView psView;
+    Mouse maus;
+  
+    /**
+     * Constructor for objects of class PopStar
+     */
+    public PopStar()
+    {  View view = new View("Popstars",600,600);
+       psView = new PopStarView(view );
+       maus = new Mouse();
+       fuehreAus();
+    }
+
+    public void fuehreAus(){
+        int spfx;
+        int spfy;
+          if (maus.isPressed()){
+             psView.setXYSmileyClick(maus.xPos(),maus.yPos());
+             spfx = psView.getSmileyX();
+             spfy = psView.getSmileyY();
+             if (spfx!=-1) {
+                int nachbarn = psView.nachbarn(spfx,spfy,psView.getFarbe(spfx,spfy));
+                if (nachbarn==0) {
+                    psView.setMarkierung(spfx,spfy,false);
+                } else {
+                     psView.loesche();
+                     Tools.warten(300);
+                     psView.verschiebe();
+                  }
+                   
+            }
+           }   
+        }
+    }
+   }
+       

@@ -1,0 +1,324 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class Tablet extends JPanel implements KeyListener, Runnable
+{
+    private boolean[] keys;
+    private Point knightpos = new Point(300,300);
+    private Point goblinpos = new Point(200,200);
+    private Image[] knight;
+    private Image goblinidle;
+    private Image goblindead;
+    private int framecounter = 0;
+    private int goblinframes = 0;
+    Timer timer;
+    boolean facingLeft;
+    boolean standingstill;
+    private Image knightdead;
+    private Image knightattack
+    private int attackframes;
+    private int deadframes;
+    private boolean isDead;
+    private int end;
+    private int goblindeadframes;
+    private boolean attack;
+    
+
+    public Tablet(JFrame par)
+    {
+        timer = new Timer(50, new ActionListener()
+        {
+              @Override
+              public void actionPerformed(ActionEvent e)
+              {
+                   framecounter++;
+                   if(facingLeft == true && standingstill == false && framecounter > 5 && isDead == false)
+                   {
+                       framecounter = 0;
+                   }
+                   else if(facingLeft == false && standingstill == false && (framecounter > 11 || framecounter < 6) && isDead == false)
+                   {
+                       framecounter = 6;
+                   }
+                   else if(facingLeft == true && standingstill == true && (framecounter > 19 || framecounter < 12) && isDead == false)
+                   {
+                       framecounter = 12;
+                   }
+                   else if(standingstill == true && facingLeft == false && (framecounter > 27 || framecounter < 20) && isDead == false)
+                   {
+                       framecounter = 20;
+                   }
+                   
+                   deadframes ++;
+                   if(isDead == true && deadframes > 7)
+                   {
+                       deadframes = 7;
+                       end ++;
+                   }
+                   else if(isDead == true && end >= 50)
+                   {
+                       System.exit(0);
+                   }
+                   
+                   goblindeadframes ++;
+                   if(attack == true && goblindeadframes > 1)
+                   {
+                       goblindeadframes = 1;
+                   }
+                   
+                   attackframes ++;
+                   if(attackframes > 5)
+                   {
+                       framecounter 0;
+                   }
+                   
+                   goblinframes ++;
+                   if(goblinframes > 7)
+                   {
+                       goblinframes = 0;
+                   }
+              }
+        });
+        timer.start();
+        knight = new Image[29];
+        Toolkit tk = Toolkit.getDefaultToolkit();
+        knight[0] = tk.getImage("moveL1.png");
+        knight[1] = tk.getImage("moveL2.png");
+        knight[2] = tk.getImage("moveL3.png");
+        knight[3] = tk.getImage("moveL4.png");
+        knight[4] = tk.getImage("moveL5.png");
+        knight[5] = tk.getImage("moveL6.png");
+        knight[6] = tk.getImage("moveR1.png");
+        knight[7] = tk.getImage("moveR2.png");
+        knight[8] = tk.getImage("moveR3.png");
+        knight[9] = tk.getImage("moveR4.png");
+        knight[10] = tk.getImage("moveR5.png");
+        knight[11] = tk.getImage("moveR6.png");
+        knight[12] = tk.getImage("idleL1.png");
+        knight[13] = tk.getImage("idleL2.png");
+        knight[14] = tk.getImage("idleL3.png");
+        knight[15] = tk.getImage("idleL4.png");
+        knight[16] = tk.getImage("idleL5.png");
+        knight[17] = tk.getImage("idleL6.png");
+        knight[18] = tk.getImage("idleL7.png");
+        knight[19] = tk.getImage("idleL8.png");
+        knight[20] = tk.getImage("idleR1.png");
+        knight[21] = tk.getImage("idleR2.png");
+        knight[22] = tk.getImage("idleR3.png");
+        knight[23] = tk.getImage("idleR4.png");
+        knight[24] = tk.getImage("idleR5.png");
+        knight[25] = tk.getImage("idleR6.png");
+        knight[26] = tk.getImage("idleR7.png");
+        knight[27] = tk.getImage("idleR8.png");
+        
+        knightdead = tk.getImage("knight_dieL_strip9.png");
+        
+        knightattack = tk.getImage("knight_attackL_strip5.png");
+        
+        goblinidle = tk.getImage("gobby_idleL_strip8.png");
+        
+        goblindead = tk.getImage("gobby_dead.png");
+
+        keys = new boolean[7];
+
+        setBackground(Color.BLACK);
+
+        knightpos.x = DrawIt.WIDTH/2;
+        knightpos.y = DrawIt.HEIGHT/2;
+
+        this.addKeyListener(this);
+        new Thread(this).start();
+
+        setVisible(true);
+    }
+
+    public void update(Graphics window)
+    {
+        paint(window);
+    }
+
+    public void paint( Graphics window )
+    {
+        window.setColor( Color.WHITE );
+        window.setFont(new Font("TAHOMA",Font.BOLD,18));
+        window.drawString("A+ Draw a Shape", 20,20);
+        window.drawString("Use the arrow keys to draw.", 20,40);
+        window.drawString("Use the space bar to clear the screen.", 20,60);
+
+        if(keys[2] && isDead == false)
+        {
+            knightpos.y--;
+        }
+
+        if(keys[3] && isDead == false)
+        {
+            knightpos.y++;
+        }
+
+        if(keys[0] && isDead == false)
+        {
+            knightpos.x--;
+        }
+
+        if(keys[1] && isDead == false)
+        {
+            knightpos.x++;
+        }
+
+        if(keys[4])
+        {
+
+            knightpos.x = DrawIt.WIDTH/2;
+            knightpos.y = DrawIt.HEIGHT/2;
+            window.setColor( Color.BLACK );
+            window.fillRect(0,0,DrawIt.WIDTH,DrawIt.HEIGHT);
+        }
+        
+        
+
+        if(!keys[5])
+        {
+            window.setColor( Color.BLACK );
+            window.fillRect(0,0,DrawIt.WIDTH,DrawIt.HEIGHT);
+            
+            if(Math.abs(knightpos.x - goblinpos.x) < 20 && Math.abs(knightpos.y - goblinpos.y) < 20)
+            {
+                window.setColor(Color.RED);
+                window.fillRect(0,0,DrawIt.WIDTH, DrawIt.HEIGHT);
+                isDead = true;
+            }
+            window.setColor( Color.WHITE );
+            
+            if(isDead == false)
+            {
+                window.drawImage(knight[framecounter], knightpos.x, knightpos.y, this);
+            }
+            else
+            {
+                drawFrame(knightdead, window, knightpos.x, knightpos.y, deadframes, 9, 32, 32);
+            }
+            if(!keys[6])
+            {
+                 drawFrame(goblinidle, window, goblinpos.x, goblinpos.y, goblinframes, 8, 32, 32);
+            }
+
+        }
+        else if(!keys[6])
+        {
+            window.setColor(Color.BLACK);
+        }
+        
+        if(keys[6])
+        {
+             if(Math.abs(knightpos.x - goblinpos.x) < 80 && Math.abs(knightpos.y - goblinpos.y) < 80)
+             {
+                 attack = true;
+                 drawFrame(goblindead, window, goblinpos.x, goblinpos.y, goblinframes, 1, 32, 33);
+                 goblindeadframes = 1;
+             }
+        }
+        
+    }
+    
+    public void drawFrame(Image source, Graphics window, int x, int y, int frame, int framesperrow, int height, int width)
+    {
+        int framex = (frame % framesperrow) * width;
+        int framey = (frame / framesperrow) * height;
+        window.drawImage(source, x, y, x+width, y+height, framex, framey, framex+width, framey+height, this);
+    }
+
+    public void keyPressed(KeyEvent e)
+    {
+        if (e.getKeyCode() == KeyEvent.VK_LEFT)
+        {
+            keys[0] = true;
+            facingLeft = true;
+            standingstill = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT)
+        {
+            keys[1] = true;
+            facingLeft = false;
+            standingstill = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_UP)
+        {
+            keys[2] = true;
+            standingstill = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_DOWN)
+        {
+            keys[3] = true;
+            standingstill = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_SPACE)
+        {
+            keys[4] = true;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_X)
+        {
+            keys[5] = true;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_Z)
+        {
+            keys[6] = true;
+        }
+    }
+
+    public void keyReleased(KeyEvent e)
+    {
+        if (e.getKeyCode() == KeyEvent.VK_LEFT)
+        {
+            keys[0] = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT)
+        {
+            keys[1] = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_UP)
+        {
+            keys[2] = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_DOWN)
+        {
+            keys[3] = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_SPACE)
+        {
+            keys[4] = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_X)
+        {
+            keys[5] = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_Z)
+        {
+            keys[6] = false;
+        }
+        
+        if(!(keys[0] && keys[1] && keys[2] && keys[3]))
+        {
+            standingstill = true;
+        }
+    }
+
+    public void keyTyped(KeyEvent e)
+    {
+        
+    }
+
+    public void run()
+    {
+        try
+        {
+            while(true)
+            {
+                Thread.currentThread().sleep(5);
+                repaint();
+            }
+        }catch(Exception e)
+        {
+        }
+    }
+}

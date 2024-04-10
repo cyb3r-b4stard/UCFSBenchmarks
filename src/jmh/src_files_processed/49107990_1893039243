@@ -1,0 +1,191 @@
+import java.util.Arrays;
+/**
+ * ############# ######## ####### ## ##### # ######### ########### ## ### ######.
+ * ### ## ##### # ###### ## ### #########.  
+ * 
+ * @###### ####### ######### 
+ * 
+ * @####### #-##-##
+ */
+public class CamelotCensus
+{
+    private CamelotResident [] census; 
+    private static final int MAX_PER_CENSUS_TAKER = 1000; 
+    private int size;  
+
+    /**
+     * Constructor for objects of class CamelotCensus
+     */
+    public CamelotCensus()
+    {
+        census = new CamelotResident [MAX_PER_CENSUS_TAKER];
+
+        size= 0; 
+    }
+
+    /**
+     * Prints the current census.
+     */
+    public void printAllInfo()
+    {
+        for (int i = 0 ; i <size; i ++)
+        {
+            System.out.println(census[i]);
+        }
+    }
+
+    /**
+     * Interviews a resident and store their information.  
+     */
+    public void collectInfo ()
+    {
+        CamelotResident person = new CamelotResident ();
+        if (!isResidentDataStored(person.getFirstName(), person.getLastName()))
+        census [ size ] = person; 
+        size ++;
+    }
+
+    /**
+     * stores the given resident
+     */
+    public void collectInfo (CamelotResident person)
+    {
+        if (!isResidentDataStored(person.getFirstName(), person.getLastName()))
+        {
+            census [size] = person; 
+            size ++;
+        }
+
+    }
+
+    /**
+     * Indicates if the name is already found in the database.
+     * 
+     * @param firstName     the first name of the resident to search for
+     * @param lastName      the last name of the resident to search for
+     * 
+     * @return true  if the name is in the database; otherwise,
+     *         false
+     */
+    private boolean isResidentDataStored (String firstName, String lastName)
+    {
+        for (int i=0; i < census.length; i++)
+        {
+            CamelotResident person = census [i];
+            String f = person.getFirstName();
+            String l= person.getLastName();
+
+
+            if(f.equalsIgnoreCase(firstName) && l.equalsIgnoreCase(lastName))
+            {
+                return true; 
+            }
+
+        }
+        return false;
+    }
+    /**
+     * returns the count of number of residents with the last initial P
+     * @return the number of resdients with the last initial "P" 
+     */
+    public int countP ()
+    {
+        
+        int count= 0;
+        for (int i=0; i < size ;i++)
+        {
+            CamelotResident person = census [i];
+            String name =  person.getLastName();
+            String letter  = name.substring(0,1);
+            if (letter.equals("P"))
+            {
+                count++;
+            }
+            }
+            return count; 
+        }
+        
+    
+
+    /**
+     * returns the average age of all the residents
+     */
+    public double averageAge()
+    {
+       int sum=0 ;
+       for(int i = 0 ; i <  size ; i ++ )
+       {
+           CamelotResident person = census [i];
+           int age = person.getAge();
+           sum += age;
+           
+        }
+        return sum/(double)size;
+       
+    }
+    public double [] kidsAdultsAverageAges()
+    {
+        int kidCount=0;
+        int adultCount=0;
+        
+        for(int i =0; i < size; i ++)
+        {
+            
+        }
+        
+        double [] averages = new double [2];
+        averages[0] = 
+        averages [1] = 
+        return averages;
+    }
+    /**
+     * 
+     */
+    public static void main (String [] args)
+    {
+        CamelotCensus residents = new CamelotCensus();
+        residents.printAllInfo();
+
+        CamelotResident arthur = new CamelotResident("Arthur", "Pendragon", 
+                25, "Camelot", "Britain","12345" );
+        CamelotResident lancelot = new CamelotResident("Lancelot", "du Lac", 
+                22, "Camelot", "Britain","12345" );
+        CamelotResident guinevere = new CamelotResident("Guinevere", "Pendragon", 
+                24, "Camelot", "Britain","12345" );
+        System.out.println("Input data for Merlin!");
+        CamelotResident merlin = new CamelotResident("Merlin", "Ambrose", 
+                2233, "Camelot","Britain", "12345");
+
+        residents.collectInfo(arthur);
+        residents.collectInfo(lancelot);
+        residents.collectInfo(guinevere);
+        residents.collectInfo(merlin);
+        residents.collectInfo(new CamelotResident("Andy", "K", 
+                15, "Camelot", "Britain", "12345"));
+        residents.collectInfo(new CamelotResident("Anthony", "C", 
+                5, "Camelot", "Britain", "12345"));
+        residents.collectInfo(new CamelotResident("Jennifer", "H", 
+                35, "Camelot", "Britain", "12345"));
+        residents.collectInfo(new CamelotResident("Matthew ", "H", 
+                500, "Camelot", "Britain", "12345"));
+        residents.collectInfo(new CamelotResident("Ishany", "C", 
+                15, "Camelot", "Britain", "12345"));
+        residents.collectInfo(new CamelotResident("Rithi", "J", 
+                15, "Camelot", "Britain", "12345"));
+        residents.collectInfo(new CamelotResident("Kristen", "L", 
+                15, "Camelot", "Britain", "12345"));
+        residents.collectInfo(new CamelotResident("Karel", "Robot", 
+                15, "Camelot", "Britain", "12345"));
+        residents.printAllInfo();
+        if (residents.isResidentDataStored("Merlin", "Ambrose") 
+        || residents.isResidentDataStored("Merlin", "Emrys"))
+        {
+            System.out.println("Hello Merlin!");
+        }
+         System.out.println("the number of residents witht he last intitial P is " + residents.countP());
+         System.out.println("The average of all the ages is " + 
+         residents.averageAge());
+          System.out.println("the averages of kids, and adults is "+ 
+         java.util.Arrays.toString(residents.kidsAdultsAverageAges())
+    }
+}

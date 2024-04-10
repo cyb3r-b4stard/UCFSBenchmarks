@@ -1,0 +1,114 @@
+import java.awt.Color;
+import java.util.HashMap;
+
+/**
+ * ##### ###### ####### ### ####### ############ ##### #### ###
+ * ####### ##### ######. ### #### ######## #####: ## #### ###
+ * ###### ######## ### ######## ### #### ############, ### ##
+ * #### ######## ####.
+ * 
+ * @###### ##### #. ###### ### ####### #######
+ * @####### ##.##.####
+ */
+public class FeldStatistik
+{
+    private boolean zaehlerAktuell;
+
+    /**
+     * Erzeuge ein FeldStatistik-Objekt.
+     */
+    public FeldStatistik()
+    {
+        zaehlerAktuell = true;
+    }
+
+    /**
+     * Liefere Informationen über die Steine im Feld.
+     * @return Eine Beschreibung, welche Steine auf einem Feld liegen.
+     */
+    public String gibSteinInfo(Spielbrett brett, String name1, String name2)
+    {
+        StringBuffer buffer = new StringBuffer();
+        if(!zaehlerAktuell) {
+            ermittleZaehlerstaende(brett);
+        }
+            Zaehler erstername = new Zaehler(name1);
+            Zaehler zweitername = new Zaehler(name2);
+            buffer.append(erstername.gibName());
+            buffer.append(": ");
+            buffer.append(erstername.gibStand());
+            buffer.append(' ');
+            buffer.append(zweitername.gibName());
+            buffer.append(": ");
+            buffer.append(zweitername.gibStand());
+            buffer.append(' ');
+        }
+        return buffer.toString(); 
+    }
+    
+    /**
+     * Verwerfe alle bisher gesammelten Daten; setze alle Zähler
+     * auf null zurück.
+     */
+    public void zuruecksetzen()
+    {
+        zaehlerAktuell = false;
+        for(Spielerfarbe schluessel : zaehler.keySet()) {
+            Zaehler einzelZaehler = zaehler.get(schluessel);
+            einzelZaehler.zuruecksetzen();
+        }
+    }
+
+    /**
+     * Erhöhe den Zähler für eine Steinfarbe.
+     * @param steinfarbe Farbe der Steine, für die erhöht werden soll.
+     */
+    public void erhoeheZaehler(Spielerfarbe steine)
+    {
+        Zaehler einzelZaehler = zaehler.get(steine);
+        Zaehler einzelZaehler2 = zaehler.get(steine);
+        if(einzelZaehler == null) {
+            switch (steine)  {
+                case SCHWARZ: einzelZaehler = new Zaehler("SCHWARZ");
+                case WEISS: einzelZaehler2 = new Zaehler("WEISS");
+                case KEINE: einzelZaehler = new Zaehler("");
+            }
+            zaehler.put(steine, einzelZaehler);
+        }
+        einzelZaehler.erhoehen();
+    }
+
+    /**
+     * Signalisiere, dass eine Spielsteinzählung beendet ist.
+     */
+    public void zaehlungBeendet()
+    {
+        zaehlerAktuell = true;
+    }
+    
+    /**
+     * Erzeuge Zähler für die Anzahl der weißen und schwarzen Steine.
+     * Diese werden nicht ständig aktuell gehalten, während
+     * Steine in das Feld gesetzt werden, sondern
+     * jeweils bei der Abfrage der Zählerstände berechnet.
+     * @param feld das Feld, für das die Statistik erstellt
+     *             werden soll.
+     */
+    private void ermittleZaehlerstaende(Spielbrett brett)
+    {
+        zuruecksetzen();
+        for(int zeile = 0; zeile < brett.gibZeilenzahl(); zeile++) {
+            for(int spalte = 0; spalte < brett.gibSpaltenzahl(); spalte++) {
+                Spielerfarbe stein = brett.gibSpielfeldwert(zeile, spalte);
+                if(stein != null) { 
+                    switch (stein)  {
+                        case SCHWARZ: erhoeheZaehler(Spielerfarbe.SCHWARZ);
+                        case WEISS: erhoeheZaehler(Spielerfarbe.WEISS);
+                        case KEINE: erhoeheZaehler(Spielerfarbe.KEINE);
+                    }
+                }
+            }
+        }
+        zaehlerAktuell = true;
+    }
+}

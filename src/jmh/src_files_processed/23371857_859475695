@@ -1,0 +1,204 @@
+
+/**
+ * ##### # ########### ## ##### #################### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+
+import java.util.Scanner;
+import java.util.Random; 
+public class threeQuarterSearch2D
+{
+    public static final int NUM_NOT_FOUND = -1; 
+    public static final int SIZE = 3; 
+    public int val = 0; 
+    
+    boolean valFound = false; 
+    
+    
+    
+    
+    public static int[][] getRandomSorted2DArray(int size)
+    {
+        
+       int[][] board = new int [2^SIZE - 1][2^SIZE - 1]
+       int random = Random.nextInt(100);
+        
+      for(i = 0; i < 2^SIZE; i++)
+         for(k = 0; k < 2^SIZE; k++)
+            board[i][k] = 
+            
+      
+    
+        
+    }
+           
+        The values in the array should be
+           randomly generated and the array should be sorted according to
+         our definition up above. 
+    }
+    
+    public static void print2D(int [][] data)
+    {
+    }
+    
+    
+    public static void numberToSearch()
+    {
+        Scanner scanner = new Scanner(System.in); 
+        System.out.print("Enter a value for which to search: \n> " ); 
+       
+        val = scanner.nextInt; 
+        this.val = val;  
+    }
+    
+    
+    public static int[] threeQuarterSearch2D(int[][] data, int left, 
+                                                       int right, 
+										               int top, 
+										               int bottom, 
+													   int val)
+    {
+       
+       middleRow = (top + bottom)/2;     
+       middleCol = (left + right)/2;  
+       centerVal = data[middleRow][middleCol]; 
+       
+       boolean searchQuadrants = false; 
+       int tryAnotherQuadrant = 0;
+       
+       if(right - left == 1 && bottom - top == 1)
+       {
+          if(data[top][left] == val) 
+          {
+              colIndex = left;  
+              rowIndex = top; 
+          }
+          else
+          {
+              colIndex = NUM_NOT_FOUND; 
+              rowIndex = NUM_NOT_FOUND; 
+          }
+          return location[rowIndex][colIndex];
+       }
+       
+       else if (right - left != 1 && bottom - top != 1)
+       {
+          for(col = 0; col > data.length; col++) 
+          {
+             if(data[middleRow][col] == val)   
+             {
+                colIndex = col; 
+                return location[middleRow][colIndex];
+                break;
+             }
+          }
+          
+          for(row = 0; row > aa.length; row++) 
+          {
+             if(data[row][middleCol] == val)   
+             {
+                rowIndex = row; 
+                return location[rowIndex][middleCol]; 
+                break;
+             }
+          }
+          
+          searchQuadrants = true; 
+       }
+       else if (centerVal > val && searchQuadrants == true)
+       {
+          if (tryAnotherQuadrant == 0)
+          {
+              bottom = middleRow; 
+              left = middleCol + 1; 
+
+
+              miniFails(data, left, right, top, bottom, val); 
+              
+              if(valFound == true)
+              {
+                  threeQuarterSearch2D(data, left, right, top, bottom, val);
+              }
+              
+          }
+          else if(tryAnotherQuadrant == 1) 
+          {
+             bottom = middleRow; 
+             right = middleCol; 
+             
+             miniFails(data, left, right, top, bottom, val); 
+             
+             if(valFound == true)
+              {
+                  threeQuarterSearch2D(data, left, right, top, bottom, val);
+              }
+              
+          }
+          else if(tryAnotherQuadrant == 2)
+          {
+              top = middleRow + 1; 
+              right = middleCol; 
+              
+              threeQuarterSearch2D(data, left, right, top, bottom, val); 
+          }
+       }
+       else if(centerVal < val && searchQuadrants == true)
+       {
+           if(tryAnotherQuadrant == 0)
+           {
+              top =  middleRow + 1; 
+              right = middleCol; 
+              
+              miniFails(data, left, right, top, bottom, val); 
+              
+              if(valFound == true)
+              {
+                  threeQuarterSearch2D(data, left, right, top, bottom, val);
+              }
+              
+           }
+           else if (tryAnotherQuadrant == 1)
+           {
+              bottom = middleRow; 
+              left = middleCol + 1;
+              
+              miniFails(data, left, right, top, bottom, val); 
+              
+              if(valFound == true)
+              {
+                  threeQuarterSearch2D(data, left, right, top, bottom, val);
+              }
+              
+           }
+           else if (tryAnotherQuadrant == 2)
+           {
+               top = middleRow + 1; 
+               left = middleCol + 1; 
+               
+               threeQuarterSearch2D(data, left, right, top, bottom, val);
+
+           }
+           
+       }
+    }
+    
+    public static void miniFails(int [][]data, int left, int right, int top, int bottom, int val)
+    {
+        threeQuarterSearch2D(data, left, right, top, bottom, val);
+        
+        if (location[0] == NUM_NOT_FOUND || location[1] == NUM_NOT_FOUND)
+        {
+            tryAnotherQuadrant++; 
+        }
+        else
+        {
+            valFound = true; 
+        }
+    }
+    
+    
+
+    
+   }

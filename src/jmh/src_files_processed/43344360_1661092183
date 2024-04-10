@@ -1,0 +1,107 @@
+import sum.ereignis.*;
+import sum.komponenten.*;
+
+public class CDStapelAnwendung extends Ereignisanwendung
+{
+
+    Etikett hatEtikettStacktyp;
+    Etikett hatEtikettInterpretE;
+    Etikett hatEtikettTitelE;
+    Textfeld hatEingabeInterpret;
+    Textfeld hatEingabeTitel;
+    Knopf hatKnopfPush;
+    Knopf hatKnopfPop;
+    Etikett hatEtikettInterpretA;
+    Etikett hatEtikettTitelA;
+    Etikett hatAusgabeInterpret;
+    Etikett hatAusgabeTitel;
+    Etikett hatEtikettStackinhalt;
+    Zeilenbereich hatStackAnzeige;
+
+    Stack<CD> hatStack;
+    Stack<CD> hatHilfsStack;
+
+    public CDStapelAnwendung()
+    {
+        super(800, 600);
+
+        hatEtikettStacktyp = new Etikett(10, 50, 250, 25, "DUMMY");
+
+        hatEtikettInterpretE = new Etikett(10, 80, 75, 55, "Interpret");
+        hatEtikettInterpretE.setzeAusrichtung(Ausrichtung.LINKS);
+        hatEtikettTitelE = new Etikett(10, 145, 75, 25, "Titel");
+        hatEtikettTitelE.setzeAusrichtung(Ausrichtung.LINKS);
+        hatEingabeInterpret = new Textfeld(95, 100, 120, 25, "");
+        hatEingabeTitel = new Textfeld(95, 145, 120, 25, "");
+
+        hatKnopfPush = new Knopf(10, 190, 100, 25, "Push");
+        hatKnopfPush.setzeBearbeiterGeklickt("hatKnopfPushGeklickt");
+
+        hatKnopfPop = new Knopf(10, 240, 100, 25, "Pop");
+        hatKnopfPop.setzeBearbeiterGeklickt("hatKnopfPopGeklickt");
+
+        hatEtikettInterpretA = new Etikett(10, 275, 150, 25, "Akt. Interpret: ");
+        hatEtikettInterpretA.setzeAusrichtung(Ausrichtung.LINKS);
+        hatEtikettTitelA = new Etikett(10, 320, 150, 25, "Akt. Titel: ");
+        hatEtikettTitelA.setzeAusrichtung(Ausrichtung.LINKS);
+
+        hatAusgabeInterpret = new Etikett(160, 275, 120, 25, "< leer >");
+        hatAusgabeInterpret.setzeAusrichtung(Ausrichtung.LINKS);
+        hatAusgabeTitel = new Etikett(160, 320, 120, 25, "< leer >");
+        hatAusgabeTitel.setzeAusrichtung(Ausrichtung.LINKS);
+
+        hatEtikettStackinhalt = new Etikett(290, 100, 140, 25,
+            "CD-Stapel: ");
+        hatEtikettStackinhalt.setzeAusrichtung(Ausrichtung.LINKS);
+        hatStackAnzeige = new Zeilenbereich(430, 100, 200, 250, "< Stackende >");
+
+        hatStack = new Stack<CD>();
+        hatHilfsStack = new Stack<CD>();
+
+        aktualisiereStackAnzeige();
+    }
+
+    public void hatKnopfPushGeklickt()
+    {
+      CD newCD = new CD (hatEingabeInterpret.inhaltAlsText());
+      hatEingabeInterpret.setzeInhalt("");
+      hatEingabeTitel.setzeInhalt("");
+      this.aktualisiereStackAnzeige();
+      this.setzeAusgabe();
+    
+    }
+
+    public void hatKnopfPopGeklickt()
+    {
+     hatStack.pop();
+     this.aktualisiereStackAnzeige();
+     this.setzeAusgabe();
+    
+    }
+
+    private void setzeAusgabe()
+    {
+     CD aktuelleCD = hatStack.top();
+     if (aktuelleCD != null){
+         hatAusgabeInterpret.setzeInhalt(aktuelleCD.Interpret());
+         hatAusgabeTitel.setzeTitel(aktuelleCD.Interpret());
+        }
+        else{
+            hatAusgabeInterpret.setzeInhalt("leer");
+            hatAusgabeTitel.setzeTitel("leer");
+        }
+    }
+
+    private void aktualisiereStackAnzeige()
+    {
+      CD hatHilfsCD;
+      hatStackAnzeige.loescheAlles();
+      Stack <CD> hatHilfsStack= hatStack;
+      for (int i = 0 <hatHilfsStacksize(); i++)
+      hat HilfsCD = hatHilfsStack.top();
+      hatStackAnzeige.haengeAn ("Interpret:" + hatHilfsCD.Interpret() + "Titel" hatHilfsCD.Titel());
+      hatHilfsStack.pop();
+      hatStackAnzeige.haengeAn("<Stackende>");
+    }
+
+}

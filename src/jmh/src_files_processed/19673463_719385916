@@ -1,0 +1,152 @@
+import javax.swing.*;
+
+public class CiudadesPresentacion
+{
+    
+    public CiudadesPresentacion()
+    {
+    }
+    
+    public Ciudades capturarCiudades()
+    {
+        Ciudades rCiudades;
+        rCiudades=new Ciudades();
+        rCiudades.setNombre(JOptionPane.showInputDialog("Nombre de la Ciudad: "));
+        rCiudades.setPIB(Integer.parseInt(JOptionPane.showInputDialog("Precio Interno Bruto de "+rCiudades.getNombre()+": ")));
+        rCiudades.setHabitantes(Integer.parseInt(JOptionPane.showInputDialog("Total Habitantes en "+rCiudades.getNombre()+": ")));
+        return rCiudades;
+    }
+    
+    public void presentarCiudades(Ciudades pCiudades)
+    {
+        String ficha;
+        ficha="P.I.B de la Ciudad de: "+pCiudades.getNombre()+"\n\n";
+        ficha=ficha+"Precio Interno Bruto: "+pCiudades.getPIB()+"\n";
+        ficha=ficha+"Total de Habitantes: "+pCiudades.getHabitantes()+"\n";
+        ficha=ficha+"\n";
+        ficha=ficha+"Precio Interno Bruto Per Capita: "+pCiudades.getPIBPerCapita()+"  - "+pCiudades.getCategoriaPIBPerCapita()+"\n";
+        JOptionPane.showMessageDialog(null, ficha);
+    }
+    
+    public int capturarOpcion()
+    {
+        String menu;
+        int rOpcion;
+        menu="Aplicación para el registro y consulta de Ciudades Su P.I.B / y su PIB Per Capita\n\n";
+        menu=menu+"1. Registrar Ciudad\n";
+        menu=menu+"2. Consultar Ciudad por Nombre\n";
+        menu=menu+"3. Consultar Ciudad por Número\n";
+        menu=menu+"4. Consultar archivo de Ciudades\n";
+        menu=menu+"5. Comparar dos Ciudades por P.I.B Per Capita\n";
+        menu=menu+"6. Consultar la Ciudades de Mayor P.I.B Per Capita\n";
+        menu=menu+"7. Comparar dos Ciudades por Habitantes\n";
+        menu=menu+"8. Consultar la Ciudades de mayor Cantidad de Habitantes\n";
+        menu=menu+"9. Comparar dos Ciudades por Precio Interno Bruto\n";
+        menu=menu+"10. Consultar la Ciudades de mayor Precio Interno Bruto\n";
+        menu=menu+"11. Salir\n\n";
+        rOpcion=Integer.parseInt(JOptionPane.showInputDialog(menu));
+        return rOpcion;
+    }
+
+    public String capturarNombreBusqueda()
+    {
+        String rNombreBusqueda;
+        rNombreBusqueda=JOptionPane.showInputDialog("Digite el Nombre de la Ciudad a Buscar");
+        return rNombreBusqueda;
+    }
+
+    public int capturarNumeroBusqueda()
+    {
+        int rNumeroBusqueda;
+        rNumeroBusqueda=Integer.parseInt(JOptionPane.showInputDialog("Digite el Número de la Ciudad a Buscar"));
+        return rNumeroBusqueda;
+    }
+
+    public void presentarListaCiudad(String pListaCiudad)
+    {
+        String ficha;
+        ficha="Archivo de ciudad\n\n";
+        ficha=ficha+pListaCiudad;
+        JOptionPane.showMessageDialog(null, ficha);
+    }
+    
+    public void presentarComparacionPIBPerCapita(Ciudades pCiudades1,Ciudades pCiudades2)
+    {
+        Ciudades ciudadesMayorPIBPerCapita,ciudadesMenorPIBPerCapita;
+        String ficha;
+        if (pCiudades1.getMayorPIBPerCapitaQue(pCiudades2))
+        {
+            ciudadesMayorPIBPerCapita=pCiudades1;
+            ciudadesMenorPIBPerCapita=pCiudades2;
+        }
+        else
+        {
+            ciudadesMayorPIBPerCapita=pCiudades2;
+            ciudadesMenorPIBPerCapita=pCiudades1;
+        }
+        ficha="Comparación entre ciudades por P.I.B. Per Capita\n\n";
+        ficha=ficha+"Ciudad de Mayor Precio Interno Bruto Per Capita: "+ciudadesMayorPIBPerCapita.getNombre()+"\n";
+        ficha=ficha+"Precio Interno Bruto Per Capita: "+ciudadesMayorPIBPerCapita.getPIBPerCapita()+" [&] - "+ciudadesMayorPIBPerCapita.getCategoriaPIBPerCapita()+"\n";
+        ficha=ficha+"\n";
+        ficha=ficha+"Ciudad de Menor Precio Interno Bruto Per Capita: "+ciudadesMenorPIBPerCapita.getNombre()+"\n";
+        ficha=ficha+"Precio Interno Bruto Per Capita: "+ciudadesMenorPIBPerCapita.getPIBPerCapita()+" [%] - "+ciudadesMenorPIBPerCapita.getCategoriaPIBPerCapita()+"\n";
+        ficha=ficha+"\n";
+        ficha=ficha+"Diferencia en Precio Interno Bruto Per Capita: "+ciudadesMayorPIBPerCapita.getDiferenciaPIBPerCapita(ciudadesMenorPIBPerCapita)+"\n\n";
+        JOptionPane.showMessageDialog(null, ficha);
+    }
+    
+    
+    
+     public void presentarComparacionHabitantes(Ciudades pCiudades1,Ciudades pCiudades2)
+    {
+        Ciudades ciudadesMayorHabitantes,ciudadesMenorHabitantes;
+        String ficha;
+        if (pCiudades1.getMasHabitantesQue(pCiudades2))
+        {
+            ciudadesMasHabitantes=pCIudades1;
+            ciudadesMenorHabitantes=pCiudades2;
+        }
+        else
+        {
+            ciudadesMasHabitantes=pCiudades2;
+            ciudadesMenorHabitantes=pCiudades1;
+        }
+        ficha="Comparación entre ciudades por Habitantes\n\n";
+        ficha=ficha+"Ciudad de Mayor Numero de Habitantes: "+ciudadesMasHabitantes.getNombre()+"\n";
++
+        ficha=ficha+"\n";
+        ficha=ficha+"Ciudad de Menor Numero de Habitantes: "+ciudadesMenorHabitantes.getNombre()+"\n";
+        ficha=ficha+"Numero de Habitantes: "+ciudadesMenorHabitantes.getPIBPerCapita()+"\n";
+        ficha=ficha+"\n";
+        ficha=ficha+"Diferencia de Habitantes: "+ciudadesMasHabitantes.getDiferenciaHabitantes(ciudadesMenorHabitantes)+"\n\n";
+        JOptionPane.showMessageDialog(null, ficha);
+    }
+    
+    
+    
+    public void presentarComparacionPIB(Ciudades pCiudades1,Ciudades pCiudades2)
+    {
+        Ciudades ciudadesMayorPIB,ciudadesMenorPIB;
+        String ficha;
+        if (pCiudades1.getMayorPIBQue(pCiudades2))
+        {
+            ciudadesMayorPIB=pCIudades1;
+            ciudadesMenorPIB=pCiudades2;
+        }
+        else
+        {
+            ciudadesMayorPIB=pCiudades2;
+            ciudadesMenorPIB=pCiudades1;
+        }
+        ficha="Comparación entre ciudades por P.I.B\n\n";
+        ficha=ficha+"Ciudad de Mayor Precio Interno Bruto : "+ciudadesMayorPIB.getNombre()+"\n";
+        ficha=ficha+"Precio Interno Bruto: "+ciudadesMayorPIB.getPIB()+" [&] - "+ciudadesMayorPIB.getCategoriaPIB()+"\n";
+        ficha=ficha+"\n";
+        ficha=ficha+"Ciudad de Menor Precio Interno Bruto: "+ciudadesMenorPIB.getNombre()+"\n";
+        ficha=ficha+"Precio Interno Bruto: "+ciudadesMenorPIB.getPIB()+" [%] - "+ciudadesMenorPIB.getCategoriaPIB()+"\n";
+        ficha=ficha+"\n";
+        ficha=ficha+"Diferencia en Precio Interno Bruto: "+ciudadesMayorPIB.getDiferenciaPIB(ciudadesMenorPIB)+"\n\n";
+        JOptionPane.showMessageDialog(null, ficha);
+    }
+    
+}

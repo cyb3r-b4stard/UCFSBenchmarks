@@ -1,0 +1,146 @@
+
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import java.util.Scanner;
+public class TresMatrix
+{
+    public void print(Treasure[][] tresArray)
+    {
+        for(Treasure[] treses : tresArray)
+        {
+            for (Treasure tres : treses)
+            {
+                System.out.println(tres);
+            }
+        }
+    }
+    
+    public int sum(Treasure[] treses)
+    {
+        int sum = 0;
+        if (treses.length > 0)
+        {
+            for (Treasure tres : treses)
+            {
+                sum += tres.getValue();
+            }
+        }
+        return sum;
+    }
+    
+    public int sum(Treasure[][] tresArray)
+    {
+        int sum = 0;
+        if (tresArray.length >0)
+        {
+            for (Treasure[] treses : tresArray)
+            {
+                sum += sum(treses);
+            }
+        }
+        return sum;
+    }
+    
+    public int[] sumRows(Treasure[][] tresArray)
+    {
+        int[] sumRows = new int[tresArray.length];
+        if (tresArray.length > 0)
+        {
+            for (int i = 0; i < tresArray.length; ++i)
+            {
+                sumRows[i] = sum(tresArray[i]);
+            }
+        }
+        return sumRows;
+    }
+    
+    public int min(Treasure[][] tresArray)
+    {
+        int min = -1;
+        if (tresArray.length > 0)
+        {
+            int k = 0;
+            boolean foundNum = false;
+            while (!foundNum && k < tresArray.length)
+            {
+                if (tresArray[k].length > 0)
+                {
+                    min = tresArray[k][0].getValue();
+                    foundNum = true;
+                }
+                ++k;
+            }
+            if (foundNum)
+            {
+                for (int i = 0; i < tresArray.length; ++i)
+                {
+                    for (int j = 0; j < tresArray[i].length; ++j)
+                    {
+                        if (tresArray[i][j].getValue() < min)
+                        {
+                            min = tresArray[i][j].getValue();
+                        }
+                    }
+                }
+            }
+        }
+        return min;
+    }
+    
+    public int max(Treasure[][] tresArray)
+    {
+        int max = -1;
+        if (tresArray.length > 0)
+        {
+            int k = 0;
+            boolean foundNum = false;
+            while (!foundNum && k < tresArray.length)
+            {
+                if (tresArray[k].length > 0)
+                {
+                    max = tresArray[k][0].getValue();
+                    foundNum = true;
+                }
+                ++k;
+            }
+            if (foundNum)
+            {
+                for (int i = 0; i < tresArray.length; ++i)
+                {
+                    for (int j = 0; j < tresArray[i].length; ++j)
+                    {
+                        if (tresArray[i][j].getValue() > max)
+                        {
+                            max = tresArray[i][j].getValue();
+                        }
+                    }
+                }
+            }
+        }
+        return max;
+    }
+    
+    public int range(Treasure[][] tresArray)
+    {
+        int max = max(tresArray);
+        int min = min(tresArray);
+        int range = max - min;
+        return range;
+    }
+    
+    public boolean isFound(Treasure[] treses, Treasure want)
+    {
+        boolean isFound = false;
+        for (Treasure tres : treses)
+        {
+            if (tres.equals(want))
+            {
+                isFound = true;
+            }
+        }
+        return isFound;
+}

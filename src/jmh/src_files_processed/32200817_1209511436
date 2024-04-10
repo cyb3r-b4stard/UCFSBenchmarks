@@ -1,0 +1,189 @@
+
+/* #### ### ####### ########## #
+ * ####:
+ * ########:
+ * ##:
+ */
+
+import ecs100.*;
+import java.util.*;
+import java.io.*;
+import java.awt.Color;
+
+/** ####### ##### ### ###### #### ### ######## #####
+ *  ### ###### ### ### ######## ######## ###### ##### ######.
+ */
+
+public class ImageRenderer{
+    public static final int top = 20;   
+    public static final int left = 20;  
+    public static final int pixelSize = 2;  
+
+    /** Core:
+     * Renders a ppm image file.
+     * Asks for the name of the file, then calls renderImageHelper.
+     */
+    public void renderImageCore(){
+        try {Scanner scan = new Scanner(new File(UIFileChooser.open()));
+            this.renderImageHelper(scan);
+            
+      }
+       
+       
+      catch (IOException e) {UI.println("File failure: " + e);}
+    }
+    
+    
+        
+        
+
+    /** Core:
+     * Renders a ppm image file.
+     * Renders the image at position (left, top).
+     * Each pixel of the image  is rendered by a square of size pixelSize
+     * Assumes that
+     * - the colour depth is 255,
+     * - there is just one image in the file (not "animated"), and
+     * - there are no comments in the file.
+     * The first four tokens are "P3", number of columns, number of rows, 255
+     * The remaining tokens are the pixel values (red, green, blue for each pixel)
+     */
+    public void renderImageHelper(Scanner scan){
+            if(scan.nextLine().startsWith("P3")){
+             double width = scan.nextInt();
+             double height = scan.nextInt();
+             scan.nextLine();
+             int colordepth = scan.nextInt();
+             scan.nextLine();
+            for(int count=1;count<=height;count++){
+             for(int count1=1;count1<=(width);count1++){   
+             int red = scan.nextInt();
+             int blue = scan.nextInt();
+             int green = scan.nextInt();
+             UI.setColor(new Color(red,blue,green));
+             UI.fillRect(left+count1,top+count,pixelSize,pixelSize);
+            }
+            
+            
+          }
+             
+        }
+      
+       
+       }
+
+    
+
+    /** Completion
+     * Renders a ppm image file which may be animated (multiple images in the file)
+     * Asks for the name of the file, then renders the image at position (left, top).
+     * Each pixel of the image  is rendered by a square of size pixelSize
+     * Renders each image in the file in turn with 200 mSec delay.
+     * Repeats the sequence 3 times.
+     */
+    public void renderAnimatedImage(){
+       String filetype1 = ("P3");
+       String filetype2 = ("P2");
+       int c = 0;
+       int rows = 0;
+       int red = 0;
+       int green = 0; 
+       int blue = 0;
+       int range = 255;
+       int value = 0;
+       String filename = UIFileChooser.open("Choose a file");
+        try {
+        Scanner scan = new Scanner(new File(filename));
+        while (scan.hasNext()){
+       UI.setImmediateRepaint(false);
+       String pass = scan.next();
+       scan.nextLine();
+       
+            if (pass.equals(filetype1)){
+            int count = 1;
+            double width = scan.nextInt();
+            double height = scan.nextInt();
+            scan.nextLine();
+            int colordepth = scan.nextInt();
+            scan.nextLine();
+             for (int i=1; i <= rows; i++){
+                  for (int e=1; e <= columns; e++){
+                   int red = scan.nextInt();
+                   int blue = scan.nextInt();
+                   int green = scan.nextInt();
+                   UI.setColor(new Color(red,blue,green));
+                   UI.fillRect(left + + (pixelSize * e), top + (pixelSize * i), pixelSize, pixelSize);
+                   
+                } 
+                
+                
+             }
+             UI.repaintGraphics();
+            
+       }
+       else if(pass.equals(filetype2)){
+           
+            UI.setImmediateRepaint(false);
+            int count = 0;
+            count += 1;
+             while (count < 4){
+                 value = scan.nextInt();
+                 
+                  if (count == 1){
+                    columns = value;
+                  }
+                  if (count == 2){
+                    rows = value;
+                  }
+                  if (count == 3){
+                    range = value;
+                  }
+                  count += 1;   
+                }       
+             
+               
+             for (int i=1; i <= rows; i++){
+                  for (int e=1; e <= columns; e++){
+                   value = scan.nextInt();
+                   value = (255/range) * value;
+ 
+                   red = value;
+                   
+                   green = value;
+                   
+                   blue = value;
+                   
+                
+                   Color c = new Color (red, green, blue);
+                   UI.setColor(c);
+                   UI.fillRect(left + +(pixelSize*e),top+(pixelSize*i),pixelSize,pixelSize);
+                   
+                } 
+                
+                
+             }
+             UI.repaintGraphics();
+        }
+      
+      
+     }
+    }
+       catch(IOException e){UI.println("File reading failed");
+        
+        }
+   }
+
+    /** ---------- The code below is already written for you ---------- **/
+
+    public ImageRenderer() {
+        UI.initialise();
+        UI.addButton("Clear", UI::clearGraphics );
+        UI.addButton("Render (core)", this::renderImageCore );
+        UI.addButton("Render (compl)", this::renderAnimatedImage );
+        UI.addButton("Quit", UI::quit );
+        UI.setWindowSize(850, 700);
+        UI.setDivider(0.0);
+    }
+
+
+}

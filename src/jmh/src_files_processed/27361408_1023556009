@@ -1,0 +1,59 @@
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.IOException;
+import java.util.Scanner;
+public class devintas
+{
+    private double[] aMasyvas() throws IOException
+    {
+        FileReader fin=new FileReader("09_MASYVAS_A_D.txt");
+        Scanner src=new Scanner(fin);
+        double[] a=new double[5];
+        for (int i=0;i<a.length;i++)
+        {
+            a[i]=src.nextDouble();
+        }
+        fin.close();
+        return a;
+    }
+    private double[] bMasyvas() throws IOException
+    {
+        FileReader fin=new FileReader("09_MASYVAS_B_D.txt");
+        Scanner src=new Scanner(fin);
+        double[] b=new double[5];
+        for (int i=0;i<b.length;i++)
+        {
+            b[i]=src.nextDouble();
+        }
+        fin.close();
+        return b;
+    }
+    public void skaiciavimas() throws IOException
+    {
+        PrintWriter pw=new PrintWriter("09_MASYVAS_R.txt");
+        double[] a=aMasyvas();
+        double[] b=bMasyvas();
+        double[] y=new double[5];
+        double[] z=new double[5];
+        for (int i=0;i<y.length;i++)
+        {
+            if (a[i]<b[i])
+            {
+                y[i]=(a[i]*a[i])+b[i];
+            }
+            if (a[i]>b[i])
+            {
+                y[i]=Math.sin(a[i]+b[i]);
+            }
+            if (a[i]==b[i])
+            {
+                y[i]=1;
+            }
+            z[i]=a[i]*b[i]*Math.lg(y[i]);
+            pw.println("y["+i+"]="+y[i]);
+            pw.println("z["+i+"]="+z[i]);
+        }
+        pw.close()
+    }
+}

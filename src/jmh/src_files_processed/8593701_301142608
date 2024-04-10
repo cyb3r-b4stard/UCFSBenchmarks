@@ -1,0 +1,284 @@
+import java.util.*;
+import java.awt.*;
+public class Model
+{
+
+    private ArrayList<Buizen> buizen;
+    private ArrayList<Buizen> beginToestandSpel;
+    private int breedte, hoogte;
+    private Buizen selectedBuis;
+    private Buizen wisselBuis;
+    private int aantalZetten = 0;
+
+    private ArrayList<Integer> indexKanVullen;
+    private ArrayList<Integer> indexGaatVullen
+
+    public Model()
+    {
+        breedte = 8;
+        hoogte = 5;
+        buizen = new ArrayList<Buizen>();
+        beginToestandSpel = new ArrayList<Buizen>();
+        index = new ArrayList<Integer>();
+        index.add(-1);
+        maakRooster();
+
+    }
+
+    public Iterator<Buizen> getBuizen()
+    {
+        return buizen.iterator();
+    }
+
+    public void maakRooster()
+    {
+        int randomGetal=0;
+
+        for(int x=0; x<breedte; x++)
+        {
+            for(int y=0; y<hoogte; y++)
+            {
+                randomGetal = (int)(Math.random()*100);
+                Type type = null;
+                int richting  = (int)(Math.random()*4);
+
+                if(randomGetal<35)
+                {
+                    type = Type.BOCHT;
+                }
+
+                if(randomGetal>=35 && randomGetal<65)
+                {
+                    type = Type.RECHT;
+                }
+
+                if(randomGetal>=65 && randomGetal<85)
+                {
+                    type = Type.TKRUIS;
+                }
+
+                if(randomGetal>=85 && randomGetal<95 )
+                {
+                    type = Type.KRUIS;
+                    richting = 1;
+                }
+
+                if(randomGetal>=95)
+                {
+                    type = Type.STOP;
+                    richting = 1;
+                }
+
+                buizen.add(new Buizen(x, y, type, richting, false));
+                beginToestandSpel.add(new Buizen(x, y, type, richting, false));
+
+            }
+        }
+
+    }
+
+    public void draaiBuis(int typeX, int typeY)
+    {
+        int index = typeX*hoogte + typeY;
+
+        try
+        {
+            Buizen buis = buizen.get(index);
+
+            if(buis.getGevuld()==true){return;}
+
+            int richting = buis.getRichting();
+            if(buis.getType() != Type.KRUIS)
+            {
+                richting++;
+
+                if(richting == 4){richting = 0;}
+
+                aantalZetten++;
+            }
+
+            buizen.set(index, new Buizen(buis.getX(), buis.getY(), buis.getType(), richting, buis.getGevuld()));
+        }
+        catch(Exception e){}
+    }
+
+    public void verplaatsBuis(int typeX, int typeY)
+    {
+        int index = typeX*hoogte + typeY;
+
+        try
+        {
+            if(selectedBuis == null)
+            {
+
+                selectedBuis = buizen.get(index);
+
+                if(selectedBuis.getGevuld()==true)
+                {
+                    selectedBuis = null;
+                    return;
+                }
+
+            }
+            else
+            {
+
+
+                wisselBuis = buizen.get(index);
+
+                if(wisselBuis.getGevuld()==true)
+                {
+                    wisselBuis = null;
+                    return;
+                }
+
+                int x1 = selectedBuis.getX();
+                int y1 = selectedBuis.getY();
+                int index1 = x1*hoogte + y1;
+                Type type1 = selectedBuis.getType();
+                int richting1 = selectedBuis.getRichting();
+                boolean gevuld1 = selectedBuis.getGevuld();
+
+                int x2 = wisselBuis.getX();
+                int y2 = wisselBuis.getY();
+                int index2 = x2*hoogte + y2;
+                Type type2 = wisselBuis.getType();
+                int richting2 = wisselBuis.getRichting();
+                boolean gevuld2 = wisselBuis.getGevuld();
+
+                if(x1 == x2 && y1 == y2)
+                {
+                    selectedBuis = null;
+                }           
+                else
+                {
+
+                    buizen.set(index1, new Buizen(x1, y1, type2, richting2, gevuld2));
+                    buizen.set(index2, new Buizen(x2, y2, type1, richting1, gevuld1));
+
+                    selectedBuis = null;
+
+                    aantalZetten = aantalZetten + 3;
+                }
+
+            }
+        }
+        catch(Exception e){}
+
+    }
+
+    public void herstarten()
+    {
+        buizen = new ArrayList<Buizen>();
+
+        for(int i = 0; i < beginToestandSpel.size();i++)
+        {
+            Buizen buis = beginToestandSpel.get(i);
+
+            int x = buis.getX();
+            int y = buis.getY();
+            Type type = buis.getType();
+            int richting = buis.getRichting();
+
+            buizen.add(new Buizen(x, y, type, richting, false));
+        }
+
+        selectedBuis = null;
+        wisselBuis = null;
+        aantalZetten = 0;
+
+    }
+
+    public void nieuwSpel()
+    {
+        buizen = new ArrayList<Buizen>();
+        beginToestandSpel = new ArrayList<Buizen>();
+        maakRooster();
+
+        selectedBuis = null;
+        wisselBuis = null;
+        aantalZetten = 0;
+    }
+
+    public void vullen()
+    {
+        selectedBuis = null;
+
+
+
+        int grootte = indexKanVullen.size(); 
+
+        for(int i=0;i<grootte;i++)
+        {
+            int indexBuis = index.get(i);
+            index.remove(i);
+
+            boolean[] richting = new boolean[4];
+
+            if(indexBuis == -1)
+            {
+                richting[0] = false;
+                richting[1] = false;
+                richting[2] = false;
+                richting[3] = true;
+
+                stroming(indexBuis, richting, type);
+
+            }
+            else
+            {
+                Buizen buis = buizen.get(indexBuis);
+                Type type = buis.getType();
+                
+                stroming(indexBuis, richting, type);
+
+            }
+
+        }
+
+    }
+
+    public void stroming(int indexBuis, boolean[] richting, Type type)
+    {
+
+        boolean[] richting2 = new boolean[4]; 
+
+
+        if(richting[0] == true)
+        {
+            index.add(indexBuis-hoogte);
+        }
+        if(richting[1] == true)
+        {
+            index.add(indexBuis-1);
+        }
+        if(richting[2] == true)
+        {
+            index.add(indexBuis+hoogte);
+        }
+        if(richting[3] == true)
+        {
+            index.add(indexBuis+1);
+        }
+
+    }
+    public int getAantalZetten()
+    {
+        return aantalZetten;
+    }
+
+    public Buizen getSelectedBuis()
+    {
+        return selectedBuis;
+    }
+
+    public int getHoogte()
+    {
+        return hoogte;
+    }
+
+    public int getBreedte()
+    {
+        return breedte;
+    }
+}

@@ -1,0 +1,159 @@
+/**
+ * ###########: ######## # ## ###.
+ * 
+ * @###### (########## ### - ###) 
+ * @####### (#### ####-##)
+ */
+public class PRGParseNum {
+    
+    /*************************** CODI INICIAL  ***************************/    
+    public static final char PUNT = '.';  
+    public static final char COMA = ',';  
+    public static final char EXP1 = 'e';  
+    public static final char EXP2 = 'E';  
+    public static final int  BASE = 10;   
+    
+    /**
+     * Torna l'enter associat al caràcter - dígit en c.
+     * @param c char.
+     * @return int, valor del dígit.
+     * PRECONDICIÓ: '9' >= c >= '0'
+     */
+    public static int parseDig(char c) {
+        return c - '0';
+    }
+    
+    
+    /************************* EXEMPLES INICIALS *************************/    
+       
+    /** Torna la suma dels dígits continguts en la String que rep.
+     *  @param s String, cadena de caràcters sobre els quals s'opera.
+     *  @return int. 
+     */
+    public static int sumaDigits(String s) {
+        if (s.length() == 0) { return 0; }
+        else {
+            char c = s.charAt(0);
+            if (c >= '0' && c <= '9') {
+                return (c - '0') + sumaDigits(s.substring(1));
+            }
+            else { return sumaDigits(s.substring(1)); }
+        }
+    }
+        
+    /** Torna la suma dels dígits en la String s des de la posició pos.
+     *  PRECONDICIÓ: pos >= 0.
+     *  @param s String, cadena de caràcters sobre els quals s'opera.
+     *  @param pos int, posició en s des d'on es treballa.
+     *  @return int. 
+     */
+    public static int sumaDigits(String s, int pos) {
+        if (pos >= s.length()) { return 0; }
+        else {
+            char c = s.charAt(pos);
+            if (c >= '0' && c <= '9') {
+                return (c - '0') + sumaDigits(s, pos + 1);
+            }
+            else { return sumaDigits(s, pos + 1); }
+        }
+    } 
+    
+    /** Torna la suma dels dígits continguts en la String que rep.
+     *  @param s String, cadena de caràcters sobre els quals s'opera.
+     *  @return int. 
+     */
+    public static int sumaDigits2(String s) {
+        if (s.length() == 0) { return 0; }
+        else {
+            int len = s.length();
+            char c = s.charAt(len - 1);
+            if (c >= '0' && c <= '9') {
+                return (c - '0') + sumaDigits(s.substring(0, len - 1));
+            }
+            else { return sumaDigits(s.substring(0, len - 1)); }
+        }
+    }  
+    
+    /****************** PROBLEMA A: parseInt(String s) ******************/
+        
+    /** 
+     * EXEMPLE, "1234", amb anàlisi DESCENDENT:
+     *   s                    s.charAt(s.length() - 1) - '0'   
+     * "1234"      123*10   +        4                      = 1234 
+     * "123"       12*10    +        3                      =  123 
+     * "12"        1*10     +        2                      =   12 
+     * "1"         1                                        =    1  
+     * 
+     * EXEMPLE, "1234", amb anàlisi ASCENDENT:
+     *   s    s.charAt(0) - '0'   Math.pow(10, s.length() - 1)
+     * "1234"       1         *         10^3                = 1000 +
+     *  "234"       2         *         10^2                =  200 +
+     *   "34"       3         *         10^1                =   30 +
+     *    "4"       4                                       =    4 
+     *                                                       _____
+     *                                                        1234    
+     * PRECONDICIÓ: s conté un enter, >= 0, ben format. 
+     */
+    public static int parseUnsignedInt(String s) {
+        int i = 0;
+        if (s.length() == 1) {
+            char a = s.charAt(0);
+            return parseDig(a);
+        }
+        else {
+            i = parseDig(s.charAt(s.length()-1));
+            return  parseUnsignedInt(s.substring(0,s.length()-1)) * 10 + i;         
+        }
+    }  
+    
+    /** 
+     * PRECONDICIÓ: s conté un enter, pot ser amb signe, ben format. 
+     */    
+    public static int parseInt(String s) {
+        if (s.length() == 1) {
+            char a = s.charAt(0);
+            return parseDig(a);
+        }
+        else {
+            char c = s.charAt(0)
+            if(c >= '0' && c <= '9') return parseUnsignedInt(s);
+            else {
+                String h = s.substring(1);
+                return parseUnsignedInt(h);
+            }
+        }
+    }    
+    
+    /**************** PROBLEMA B: parseDouble(String s) *****************/    
+    
+    /** 
+     * PRECONDICIÓ: s conté un nombre en coma flotant ben format. 
+     */
+    public static int posFracSep(String s) {
+        return 0;
+    }
+    
+    /** 
+     * PRECONDICIÓ: s, conté els dìgits de la part fraccionària
+     * d'un valor double ben format. 
+     */
+    public static double parseFrac(String s) {
+        return 0;
+    }
+    
+    /** 
+     * PRECONDICIÓ: s conté un double, ben format, pot ser amb signe, 
+     * que pot tenir (o no) part fraccionària. No conté part exponencial.
+     */  
+    public static double parseDouble(String s)   {
+        return 0;
+    }
+    
+    
+    /*******************  AMPLIACIONS RECOMANADES  ********************/
+    
+    
+    
+    
+    
+}

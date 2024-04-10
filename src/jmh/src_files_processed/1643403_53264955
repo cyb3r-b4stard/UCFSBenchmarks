@@ -1,0 +1,79 @@
+import java.util.*;
+
+/**
+ * # ###### ##### ## ## #######.
+ * ### ####### ######### # #### ## #### ## ######### ######.
+ * @###### ##### #. ###### ### ####### #######.
+ * @####### ####.##.##
+ */
+public class Auction
+{
+    private ArrayList<Lot>lots;
+    private int nextLotNumber;
+
+    /**
+     * Create a new auction.
+     */
+    public Auction()
+    {
+        lots = new ArrayList<Lot>();
+        nextLotNumber = 1;
+    }
+
+    /**
+     * Enter a new lot into the auction.
+     * Lots can only by entered into the auction by an
+     * Auction object.
+     * @param description A description of the lot.
+     */
+    public void enterLot(String description)
+    {
+        lots.add(new Lot(nextLotNumber, description));
+        nextLotNumber++;
+    }
+
+    /**
+     * Show the full list of lot numbers and lot descriptions in
+     * this auction. Include any details of the highest bids.
+     */
+    public void showLots()
+    {
+        Iterator(Lot) it = lots.iterator();
+        while(it.hasNext()) {
+            Lot lot = it.next();
+            System.out.println(lot.getNumber() + ": " +
+                               lot.getDescription());
+            Bid highestBid = lot.getHighestBid();
+            if(highestBid != null) {
+                System.out.println("    Bid: " + 
+                                   highestBid.getValue());
+            }
+            else {
+                System.out.println("    (No bid)");
+            }
+        }
+    }
+
+    /**
+     * Return the lot with the given number. Return null
+     * if a lot with this number does not exist.
+     * @param number The number of the lot to return.
+     */
+    public Lot getLot(int number)
+    {
+        if((number >= 1) && (number < nextLotNumber)) {
+            Lot selectedLot = lots.get(number-1);
+            if(selectedLot.getNumber() != number) {
+                System.out.println("Internal error: " +
+                                   "Wrong lot returned. " +
+                                   "Number: " + number);
+            }
+            return selectedLot;
+        }
+        else {
+            System.out.println("Lot number: " + number +
+                               " does not exist.");
+            return null;
+        }
+    }
+}

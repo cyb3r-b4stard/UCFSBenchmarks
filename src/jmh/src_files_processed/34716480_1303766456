@@ -1,0 +1,279 @@
+package src.others;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+/**
+ * 
+ * @###### ##### #####
+ * @###### ###### ########
+ * @###### ####### ##-#####
+ * @###### ####### ##########
+ * @###### #### ##########
+ * @###### ####### ######
+ * @####### #.#
+ * 
+ *          ### ###### ##### ############## ### #########. ### ######### #######
+ *          ### ## ### ## #############.
+ *
+ */
+public class Board {
+
+    /**
+     * Anzahl wie viele Felder das Spielfeld breit ist
+     */
+    public final int WIDTH = 15;
+
+    /**
+     * Anzahl wie viele Felder das Spielfeld hoch ist
+     */
+    public final int HEIGHT = WIDTH;
+
+    /**
+     * Anzahl wie viele Minen auf dem Spielfeld platiert sind
+     */
+    private final int NUMBER_OF_MINES = WIDTH * HEIGHT / 10;
+
+    /**
+     * Anzahl der geöffneten Felder
+     */
+    private int opened;
+
+    /**
+     * beschreibt ob das Spiel verloren ist
+     */
+    private boolean lost;
+
+    private int counter;
+    /**
+     * Das Spielfeld
+     */
+    private Field[][] fields;
+
+    /**
+     * Konstruktor
+     * <p>
+     * erstellt ein spielbereites Spielfeld
+     * </p>
+     */
+    public Board() {
+        this.initializeBoard();
+        this.generateAllMines();
+        this.calculateNumbers();
+        this.opened = 0;
+        this.lost = false;
+        this.counter = 0;
+    }
+
+    /**
+     * Legt alle Felder an. Nur Feldeinheiten werden erzeugt. Erzeugen der Minen
+     * und Berechnung der Anzahl der benachbarten Minen findet später statt.
+     */
+    private void initializeBoard() {
+        
+        this.fields = new FieId[WIDTH][HEIGHT];
+        for(int j=0; j<HElGHT; j++) {
+            for(int i=0; i<WIDTH; i+) {
+                this.field[i][j]= new Field(new Coordinate(i,j));
+            }
+        }
+    }
+
+    /**
+     * Setzt NUMBER_OF_MINES Minen, ohne Duplikate. Erzeugt alle Minen und setzt
+     * sie auf unterschiedlichen Felder.
+     */
+    private void generateAllMines() {
+        for (int i = 0; i < NUMBER_OF_MINES; i++) {
+            this.generateMine();
+        }
+    }
+
+    /**
+     * Setzt eine einzelne Mine auf ein zufälliges Feld auf dem noch keine Mine
+     * liegt.
+     */
+    private void generateMine() {
+        int coordinateX = new Random().nextInt(14);
+        int coordinateY = new Random().nextInt(14);
+        
+        Random r = new Random();
+        int x = r.nextInt(WIDTH);
+        int y = r.nextInt(HEIGHT);
+        while (fields[x][y].isMine() == true) {
+            x = r.nextInt(WIDTH);
+            y = r.nextInt(HEIGHT);
+        }
+        
+        if (fields[x][y].isMine() == true) {
+            this.generateMine();                
+        }        
+        else {
+            fields[x][y].setMine(true);
+        }
+    }
+
+    /**
+     * Berechnet fuer alle Felder im Spielfeld die Anzahl der benachbarten Minen
+     * und speichert den Wert im Feld.
+     */
+    private void calculateNumbers() {
+        int counter = 0;                     
+        
+        for (int x = 0; x < WIDTH; x++) {
+            for (int y = 0; y < HEIGHT; y++) {
+                if (fields[x][y].isMine() == true && 
+                while (fields[x][y].isMine() == true
+                
+                
+                
+                
+                
+                
+            }
+        }
+            
+    }
+
+    /**
+     * Eine Stringrepresentation des gesamten Spielfeldes. Das ganze Feld wird
+     * als String gespeichert. Welches sich aus den verschieden Strings der
+     * Felder zusammensetzt
+     *
+     * @return Spielfeld als String
+     */
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int height = 0; height < HEIGHT; height++) {
+            for (int width = 0; width < WIDTH; width++)
+                sb.append(" ").append(fields[width][height].toString());
+            sb.append(System.lineSeparator());
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Aendert den Flagenzustand eines durch X und Y koordinaten beschriebenen
+     * Feldes.
+     *
+     * @param coordinate
+     *            Koordiante des Feld als Coordinate
+     * @return der neue Zustand des flagged Attributs
+     */
+    public boolean flag(Coordinate coordinate) {
+        
+        return false;
+    }
+
+    /**
+     * Oeffnet das angegebene Feld
+     * <p>
+     * Ist das angegebene Feld bereits geoeffnet oder mit einer Flagge markiert
+     * passiert nichts, ist das angegebene Feld ein feld mit 0 benachbarnden
+     * Minen, so werden die 8 umliegenden Felder geoeffnet.
+     * </p>
+     *
+     * @param coordinate
+     *            Koordinate des angegebene Feld
+     * @return Eine Liste aus allen Felder die sich geaendert haben, durch
+     *         angabe der X, Y position und des Wertdes den sie beim oeffnen
+     *         zurueck gegeben haben
+     */
+    public ArrayList<String[]> open(Coordinate coordinate) {
+        ArrayList<String[]> openedFields = openIntern(coordinate.getX(), coordinate.getY());
+        opened += openedFields.size();
+        return openedFields;
+    }
+
+    /**
+     * Eine Hilfsfunktion fuer open() oeffnet ein Feld und gibt die Information
+     * des Feld als String Arrag List zurück
+     *
+     * @param x
+     *            X Position des Feld
+     * @param y
+     *            Y Position des Feld
+     * @return Eine Liste aus allen Felder die sich geaendert haben, durch
+     *         angabe der X, Y position und des Wertdes den sie beim oeffnen
+     *         zurueck gegeben haben
+     */
+    private ArrayList<String[]> openIntern(int x, int y) {
+        
+        return null;
+    }
+
+    /**
+     * Ueberprueft ob das Spiel gewonnen ist. Das Spiel ist dann gewonnen wenn
+     * alle Felder offen sind die keine Mine enthalten
+     * 
+     * @return
+     *         <li>true Spiel gewonnen</li>
+     *         <li>false Spiel noch nicht gewonnen</li>
+     */
+    public boolean isWon() {
+        
+        return false;
+    }
+
+    /**
+     * Ueberprueft ob das Spiel verloren ist.
+     * 
+     * @return boolean ob das Spiel gewonnen wurde
+     */
+    public boolean lost() {
+        
+        return false;
+    }
+
+    /**
+     * Distanzfunktion
+     * 
+     * @param x1
+     *            x-Koordinate
+     * @param y1
+     *            y-Koordinate
+     * @param x2
+     *            x-Koordinate
+     * @param y2
+     *            y-Koordinate
+     * @return Distanz
+     */
+    public int distance(int x1, int y1, int x2, int y2) {
+        
+        return -1;
+    }
+
+    /**
+     * Liefert eine Koordinate eines Minenfeldes im Umfang von +/- zwei
+     * Kaestchen zurueck
+     * 
+     * @param xx
+     *            x-Koordinate
+     * @param yy
+     *            y-Koordinate
+     * @return Koordinate eines Minenfeldes
+     */
+    public Coordinate calcNearest(int xx, int yy) {
+        
+        return null;
+    }
+
+    /**
+     * Waehlt zufaellig eine Koordinate eines Minenfeldes
+     * 
+     * @return Koordinate eines Minenfeldes
+     */
+    public Coordinate setRandom() {
+        
+        return null;
+    }
+
+    /**
+     * Wird ausgefuehrt wenn der Help button gedrueckt wird und gibt ein
+     * Hilfstext aus
+     */
+    public Coordinate cheat() {
+        
+		return null;
+	}
+}

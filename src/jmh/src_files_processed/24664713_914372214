@@ -1,0 +1,92 @@
+
+/**
+ *  ##### #######. 
+ *  ######## # - ### - ######-###.
+ *  
+ *  @######
+ *  @####### ##### ####/##
+ */
+public class Entrada {
+    
+    public static final double PRECIO_BASE = 7.60;
+    public static final int SENIOR = 65;
+    public static final double DTO_SENIOR = 0.3;
+    
+    public static final double DTO_DIA_ESPECTADOR = 0.8;
+    
+    public static final double INCR_FESTIVO = 1.2;    
+    
+    public static final double INCR_VISPERA = 1.1;
+    
+    public static final double DTO_CLIENTE = 0.8;
+    
+    private String titulo;
+    private String cine;
+    private Hora horaSesion;
+
+   /** Crea una Entrada con titulo t, cine c, horas hs,
+   *  y minutos ms de la sesion.
+   */
+    public Entrada(String t, String c, int hs, int ms) {
+       /* A COMPLETAR */
+       titulo=t;
+       cine=c;
+       hora=hs;
+       minutos=ms;
+    }
+
+    /** Devuelve el <b>titulo</b> de la pelicula de la Entrada. */
+    public String getTitulo() { return titulo; }
+ 
+     /** Devuelve el <b>cine</b> de la entrada. */
+    public String getCine() { return cine; }
+
+     /** Devuelve la <b>hora</b> de la sesion de la Entrada. */
+    public Hora getHoraSesion() { return horaSesion; }
+
+    /** Actualiza a <b>t</b> el titulo de la pelicula de la Entrada. */
+    public void setTitulo(String t) { titulo = t; }
+
+    /** Actualiza a <b>c</b> el cine de la Entrada. */
+    public void setCine(String c) { cine = c; }
+
+    /** Actualiza a <b>hs</b> la hora de la sesion de la Entrada. */
+    public void setHoraSesion(Hora hs) { horaSesion = hs; }
+
+    /** Devuelve un String con los datos de la Entrada.
+     * El formato de la salida sigue el siguente ejemplo: 
+     *   "Anochece en La India", proyectada en Cines Babel, a las 22:30
+     *   Precio base: 7.60 euros
+     */
+    public String toString() {
+        return "\"" + titulo + "\", proyectada en " + cine + ", a las " 
+            + horaSesion + "\nPrecio base: " + PRECIO_BASE + " euros";
+    }
+
+    /** Comprueba si o es una Entrada con los mismos datos que la Entrada actual. */
+    public boolean equals(Object o) {
+        if (o instanceof Entrada) {
+            Entrada otra = (Entrada) o;
+            return otra.titulo.equals(this.titulo)
+                   && otra.cine.equals(this.cine)
+                   && otra.horaSesion.equals(this.horaSesion);
+            
+    }
+    else { return false; }
+}
+  
+     /** Calcula el precio final de la Entrada aplicando al precio base los 
+      *  descuentos segun la edad del espectador, el dia de la sesion 
+      *  (espectador, festivo o vispera) y si tiene tarjeta de cliente o no.
+      */
+    public double precioFinal(int edad, boolean diaEspec, boolean festivo, 
+                              boolean visp, boolean tjtaCliente) {
+        if(edad >= SENIOR) { precio = precio * DTO_SENIOR; }
+        else if (diaEspec) { precio = precio * DTO_DIA_ESPECTADOR; }
+        else {
+             if (festivo) { precio = precio * INCR_FESTIVO; }
+             else if (visp) { precio = precio * INCR_VISPERA; }
+             
+             if (tjtaCliente) { precio = precio * DTO_CLIENTE; }        
+    }
+    return precio; }

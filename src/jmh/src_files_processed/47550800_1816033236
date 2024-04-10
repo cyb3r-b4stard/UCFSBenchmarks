@@ -1,0 +1,41 @@
+import java.io.*;
+import java.sql.*;
+import javax.swing.*;
+import java.awt.event.*;
+import java.awt.*;
+public class DisplayEmployees extends JFrame
+{
+    JTable table;
+    JButton b;
+    String[] columns;
+    DisplayEmployees()
+    {
+        b=new JButton("Back");
+        String columns[]={"ID","Name"};
+        DefaultTableModel model = new DefaultTableModel();
+        model.setColumnIdentifiers(columns);
+        table = new JTable();
+        table.setModel(model); 
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        table.setFillsViewportHeight(true);
+        JScrollPane scroll = new JScrollPane(table);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED); 
+        Connector cn=new Connector();
+        PreparedStatement ps = cn.con.prepareStatement("select * from employee");
+        ResultSet rs = ps.executeQuery();
+        while(rs.next())
+            model.addRow(new Object[]{rs.getInt(1),rs.getString(2)});
+        add(scroll,BorderLayout.NORTH);
+        b.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent ae)
+            {
+                dispose();
+                new Home();
+            }
+        });
+        add(b,BorderLayout.SOUTH);
+        setSize(400,400);
+        setResizable(false);
+        setLocationRelativeTo(null);
+        setVisible(true);

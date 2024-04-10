@@ -1,0 +1,162 @@
+import java.awt.EventQueue;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class GUI {
+    private JFrame frmPiano;
+    private Player[] key;
+
+    /**
+     * Main metóda - spustí aplikáciu.
+     */
+    public static void main(String[] args) {       
+        EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    try {
+                        GUI window = new GUI();
+                        window.frmPiano.setVisible(true);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+    }
+
+    /**
+     * Metóda konštruktor triedy GUI. Vytvorí nám 24 inštancií triedy Player, ktoré sa budú ďalej používať v programe.
+     * Zároveň vyvolá metódu initialize, ktorá vytvorí a zobrazí grafické rozhranie.
+     */
+    public GUI() {
+        String[] pole = {"C5","C#5","D5","D#5","E5","F5","F#5","G5","G#5","A5","A#5","B5",
+                "C6","C#6","D6","D#6","E6","F6","F#6","G6","G#6","A6","A#6","B6"};
+        this.key = new Player[24];
+        for (int i = 0; i < this.key.length; i++){
+            this.key[i] = new Player(pole[i]);
+        }
+        initialize();
+    }
+
+    /**
+     * Metóda initialize. Slúži prevažne na vytvorenie grafického rozhrania pomocou objektu JFrame.
+     * Ďalej obsahuje metódu addKeyListener, to je KeyEvent, ktorý blok vo svojom tele vykoná vždy, keď používateľ stlačí kláves.
+     */
+    private void initialize() {
+        frmPiano = new JFrame();
+        try {
+            frmPiano.setContentPane(new JLabel(new ImageIcon("Pictures/piano.jpg")));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }       
+        frmPiano.setResizable(false);
+        frmPiano.setTitle("Piano");
+        frmPiano.setBounds(100, 100, 1000, 500);
+        frmPiano.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JButton button1 = new JButton("Free style");
+        button1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				button1.setVisible(false);
+				keypressed(KeyEvent pressedKey);
+			}
+		});
+		button1.setBounds(440,195,450,200);
+        frmPiano.getContentPane().add(button1);
+        
+        frmPiano.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent pressedKey) {
+                condition(pressedKey);
+            }
+        });
+        
+        
+    }
+    
+    /**
+     * Metóda condition. Jej parametrom je objekt KeyEvent, na základe ktorého hodnote sa vykoná konkrétna časť vetvenia switch.
+     * Každý case vyvoláva metódu konkrétnej inštancie triedy Player (tj. playSound) na základe hodnoty vstupu z klávesnice.
+     */
+    private void condition(KeyEvent pressedKey) {
+        switch(pressedKey.getKeyChar()) {
+            case 'y': 
+                key[0].playSound();
+                break;
+            case 's':
+                key[1].playSound();
+                break;
+            case 'x':
+                key[2].playSound();
+                break;
+            case 'd':
+                key[3].playSound();
+                break;
+            case 'c':
+                key[4].playSound();
+                break;
+            case 'v':
+                key[5].playSound();
+                break;
+            case 'g':
+                key[6].playSound();
+                break;
+            case 'b':
+                key[7].playSound();
+                break;
+            case 'h':
+                key[8].playSound();
+                break;
+            case 'n':
+                key[9].playSound();
+                break;
+            case 'j':
+                key[10].playSound();
+                break;
+            case 'm':
+                key[11].playSound();
+                break;   
+            case 'q': 
+                key[12].playSound();
+                break;
+            case 'ľ':
+                key[13].playSound();
+                break;
+            case 'w':
+                key[14].playSound();
+                break;
+            case 'š':
+                key[15].playSound();
+                break;
+            case 'e':
+                key[16].playSound();
+                break;
+            case 'r':
+                key[17].playSound();
+                break;
+            case 'ť':
+                key[18].playSound();
+                break;
+            case 't':
+                key[19].playSound();
+                break;
+            case 'ž':
+                key[20].playSound();
+                break;
+            case 'z':
+                key[21].playSound();
+                break;
+            case 'ý':
+                key[22].playSound();
+                break;
+            case 'u':
+                key[23].playSound();
+                break;
+            default :
+                break;    
+        }
+    }
+}

@@ -1,0 +1,149 @@
+
+/**
+ * ##### # ########### ## ##### ####### ####.
+ * 
+ * ##### #####
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Country
+{
+    
+     
+    private int indexcity1;
+    private int indexcity2;
+    private int newCityNumOfNeighborhoods;
+    private long newCityNumOfResidents;
+    private Point newCentralStation;
+    private Point newCityCenter;
+    public String _countryName;
+    private int _noOfCities;
+    private final int MAXCITIES = 1000;
+    City[]_cities;
+    
+/**
+* Constructor for objects of class Country
+*/
+public Country(String CountryName){
+     if (CountryName != null){
+        _countryName = new String (CountryName);
+    }   
+     _noOfCities = 0;  
+   _cities = new City[MAXCITIES] ;   
+}
+  
+    /**
+     * 
+     */
+public boolean addCity(String CityName,int X,int Y,int X1,int Y1,int NumOfResidents,int NumOfNeighborhoods ){
+    City _cityName = new City(CityName,X,Y,X1,Y1,NumOfResidents,NumOfNeighborhoods);
+    if(_noOfCities < MAXCITIES){
+        _cities[_noOfCities]=_cityName;
+       _noOfCities++;
+       return true;
+    }
+    return false ;    
+}
+
+public City unifyCities(String city1,String city2){  
+    for (int i = 0 ; _cities[i]!=null ; i++){
+        if(_cities[i].getCityName().equals(city1)){
+            indexcity1= i ;
+            break;
+        }
+   }
+    for (int j = 0; _cities[j]!= null ; j++){
+        if (_cities[j].getCityName().equals(city2)){
+            indexcity2 = j;
+            break;
+        }
+   } 
+    
+     newCityNumOfResidents = _cities[indexcity1].getNumOfResidents()+_cities[indexcity2].getNumOfResidents() ;
+     newCityNumOfNeighborhoods = _cities[indexcity1].getNoOfNeighborhoods()+_cities[indexcity2].getNoOfNeighborhoods();
+     Point newCityCenter =_cities[indexcity1].getCityCenter().middle(_cities[indexcity2].getCityCenter()) ;
+        if (_cities[indexcity1].getCentralStation().getX() >_cities[indexcity2].getCentralStation().getX()){
+         newCentralStation = new Point (_cities[indexcity2].getCentralStation().getX(),_cities[indexcity2].getCentralStation().getY());
+   }
+        else{
+          newCentralStation = new Point (_cities[indexcity1].getCentralStation().getX(),_cities[indexcity1].getCentralStation().getY());
+        }
+    City newCity = new City(city1+"-"+city2,newCityCenter.getX(),newCityCenter.getY(),newCentralStation.getX(),newCentralStation.getY()
+     ,newCityNumOfResidents,newCityNumOfNeighborhoods);
+        if (_cities[indexcity1].getNumOfResidents() > _cities[indexcity2].getNumOfResidents()){
+           _cities[indexcity1]=newCity;
+           _cities[indexcity2]= _cities[_noOfCities-1];
+            _cities[_noOfCities-1]= null;
+   }            
+        else {
+           _cities[indexcity2]=newCity;
+           _cities[indexcity1]= _cities[_noOfCities-1];
+           _cities[_noOfCities-1]= null;
+   }
+ 
+        _noOfCities--;
+        return  newCity;
+ 
+ }
+ 
+public long getNumOfResidents(){
+    long totalNumOfResidents=0;
+    for (int i=0; _cities[i]!=null && i <MAXCITIES ; i++ ){
+        totalNumOfResidents = totalNumOfResidents + _cities[i].getNumOfResidents();
+    
+}
+    return totalNumOfResidents;
+}
+
+public double longestDistance(){
+       double maxDistance = 0;
+       double tmp_distance = 0;
+       for (int i =0 ; _cities[i]!=null && i <MAXCITIES ; i++ ){
+           for (int j=1; _cities[j]!=null && j <MAXCITIES ; j++ ){
+             tmp_distance = Math.sqrt((Math.pow((_cities[i].getCityCenter().getX()-_cities[j].getCityCenter().getX()),2)+(Math.pow((_cities[i].getCityCenter().getY()-_cities[j].getCityCenter().getY()),2))));
+             if (tmp_distance > maxDistance){
+                  maxDistance = tmp_distance; 
+            }
+}
+}
+    return maxDistance;
+}
+
+public String citiesNorthOf(String name){ 
+     String str = ""    
+    int indexcity3 = -1;
+    for (int f = 0 ; _cities[f]!=null ; f++){
+        if(_cities[f].getCityName().equals(name)){
+             indexcity3 = f ;
+            break;
+        }     
+   }
+        if (indexcity3 == -1 ){
+            System.out.println("There is no city with the name "+ name) ;
+   }
+   for (int i=0 ;_cities[i]!=null && i <_noOfCities; i++ )
+        if (_cities[i].getCityCenter().isAbove(_cities[indexcity3].getCityCenter()) ){
+         str += "City Name:"+_cities[i].getCityName()+"\tCity Center:"+_cities[i].getCityCenter()+"\tCentral Station:"+_cities[i].getCentralStation()+"Number of Residents:"+_cities[i].getNumOfResidents()+
+         "Number of Neighborhoods:"+_cities[i].getNumOfNeighborhoods;
+        }
+}
+
+public String getCountryName(){
+    return (_countryName);
+}
+
+public int getNumOfCities(){
+    return (_noOfCities);
+        
+}
+
+public String toString (){
+        String str = "Cities of "+ getCountryName()+" :\n";   
+    for(int i=0 ;i <_noOfCities; i++ ){
+               str += "\n"+_cities[i].toString()+"\n";
+            }
+       
+return str;
+
+}
+
+}

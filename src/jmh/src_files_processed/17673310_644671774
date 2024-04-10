@@ -1,0 +1,71 @@
+ package librerias.estructurasDeDatos.jerarquicos;
+ import librerias.estructurasDeDatos.modelos.*;
+
+
+ /**
+ * ##### # ########### ## ##### #### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Heap<E extends Comparable<E>> implements ColaPrioridad<E>{
+    E [] elArray;
+    int talla;
+    
+    @SuppressWarnings("unchecked")
+    public Heap(int tamanyMax){
+     talla=0;
+     elArray=(E[]) new Comparable[tamanyMax];
+    }
+    /** atendiendo a su prioridad, inserta el Elemento e en una Cola de Prioridad **/
+    public void  inserir(E e){
+     if(talla==elArray.length-1)return;
+     talla++;
+     int hueco=talla;
+     while(hueco>1 && e.compareTo(elArray[talla/2])<0){
+         elArray[hueco]=elArray[hueco/2];
+         elArray[hueco/2]=e;
+        }
+     elArray[hueco]=e;
+    }
+    
+    public E eliminarMin(){
+     E aTornar=elArray[1];
+     elArray[1]=elArray[talla];
+     talla--;
+     heapify(1);
+     return aTornar;
+    }
+    
+    /** SII !esVacia(): obtiene y elimina el Elemento con maxima prioridad de una CP **/
+    public void heapify(int pos){
+     int hueco=pos;
+     E valorHueco=elArray[hueco];
+     int fill=hueco*2;
+     boolean esHeap=false;
+     while(fill<=talla && !esHeap){
+      if(fill+1<=talla && elArray[fill].compareTo(elArray[fill+1])>0){
+         fill++;
+      }
+      if(valorHueco.compareTo(elArray[fill])>0){
+        elArray[hueco]=elArray[fill];
+        hueco=fill;
+        fill=hueco*2;
+      }else{
+        esHeap=true;
+      }
+      elArray[hueco]=valorHueco;
+     }
+    }
+
+    /** SII !esVacia(): obtiene el Elemento con maxima prioridad de una CP **/
+    public E  recuperarMin(){return elArray[1];}
+    
+    /** comprueba si una CP esta vacia **/
+    public boolean esBuida(){return talla==0;}
+    
+    public static LlistaAmbPI fusion(Heap qP1, Heap qP2){
+     LlistaAmbPI sol=new LlistaAmbPI;
+     return sol;
+    }
+}

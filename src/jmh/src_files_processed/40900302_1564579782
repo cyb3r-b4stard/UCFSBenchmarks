@@ -1,0 +1,174 @@
+import java.util.Scanner;
+import java.io.File;
+/**
+ * #####################: # ####### #### ######### #### ######## #### # #### ### ######## #### #### ##### ##### #######.
+ * 
+ * @###### #### #######
+ * @####### #.#
+ * 
+ * ##########: ##
+ * ######: ####-####
+ * #######: #
+ * #### #######: ##.##.####
+ * #### #######: ##.##.####
+ * 
+ */
+public class BankAccountProcessing
+{
+    public static void main(String[] args) throws Exception
+    {
+        final String DIRECTORY = ".";
+        final String FILE_SEPARATOR = File.separator;
+        final String ACCOUNT_FILE = "accounts.txt";
+        final String ERROR_FILE = "error.txt";
+        final String TRANSACTIONS_DIRECTORY = "transactions";
+        final String ACCOUNT_FILE_PATH = String.format("%s%s%s", DIRECTORY, FILE_SEPARATOR, ACCOUNT_FILE);
+        final String ERROR_FILE_PATH = String.format("%s%s%s", DIRECTORY, FILE_SEPARATOR, ERROR_FILE);
+        
+        File accountFile = new File(ACCOUNT_FILE_PATH);
+        File errorFile = new File(ERROR_FILE_PATH);
+        
+        if(doesFileExist(accountFile))
+        {
+            
+            if(isFileNotEmpty(accountFile))
+            {
+                System.out.printf("%s%s%s", "Account ID", "Account Holder", "Balance");
+                System.out.println("-------------------------------------------------------------------");
+                
+                Scanner accountInfo = new Scanner(accountFile);
+                double total = 0;
+                
+                while(accountInfo.hasNext())
+                {
+                    String[] customerInfo = createTempArray(accountInfo);
+                    
+                    BankAccount customer = createCustomer(customerInfo);
+                    
+                    String accountTransactionsFile = String.format("%sid_transations.txt", customer.getAccountIdentification());
+                    String accountTransactionsPath = String.format("%s%s%s%s%s", DIRECTORY, FILE_SEPARATOR,
+                                                    TRANSACTIONS_DIRECTORY, FILE_SEPARATOR, accountTransactionsFile);
+                                                    
+                    File accountTransactions = new File(accountTransactionsPath);
+                    if(!doesFileExist(accountTransactions))
+                    {
+                        AssignmentHelper.writeToLogFile(errorFile, String.format("Account %s transaction file does not exist.", 
+                                                                                customer.getAccountIdentification()));
+                    } 
+                    else if(!isFileNotEmpty(accountTransactions))
+                    {
+                        AssignmentHelper.writeToLogFile(errorFile, String.format("Account %s transaction file is empty.", 
+                                                                                    customer.getAccountIdentification()));
+                    } 
+                    else
+                    {
+                        Scanner transactionInfo = new Scanner(accountTransactions);
+                        
+                        String[] depositOrWithdraw = createTempArray(transactionInfo);
+                        
+                        while(transactionInfo.hasNext())
+                        {
+                            
+                            if(Double.parseDouble(depositOrWithdraw[0]) == 1)
+                            {
+                                customer.deposit(Double.parseDouble(depositOrWithdraw[1]));
+                            }
+                            else if(Double.parseDouble(depositOrWithdraw[0] == 2)
+                            {
+                                customer.withdraw(Double.parseDouble(depositOrWithdraw[1]));
+                            }
+                            
+                        }
+                    }
+                    
+                    
+                    
+                    
+                    
+                    
+                    System.out.println(customer.toString());
+                    total += customer.getBalance();
+                }                
+                
+                System.out.println("-------------------------------------------------------------------");
+                System.out.printf("%s", total);
+            }
+            else 
+            {
+                System.out.printf("%s is empty", ACCOUNT_FILE);
+            }
+        }
+        else 
+        {
+            System.out.printf("%s does not exist.", ACCOUNT_FILE);
+        }
+    }
+    
+    /**
+     * Returns true or false if the specific file exists.
+     * 
+     * returns true if file exists, otherwise false if it doesn't.
+     */
+    public static boolean doesFileExist(File accountFile) throws Exception
+    {
+        boolean doesExist = true;
+        
+        if(!accountFile.exists())
+        {
+            doesExist = false;
+        }
+        
+        return doesExist;
+    }
+    
+    /**
+     * Returns true or false if the specific file is empty.
+     * 
+     * return true if the file is not empty, false is empty.
+     */
+    public static boolean isFileNotEmpty(File accountFile) throws Exception
+    {
+        boolean isNotEmpty = true;
+        
+        Scanner file = new Scanner(accountFile);
+            
+        if(!file.hasNext())
+        {
+            isNotEmpty = false;
+        }
+        
+        return isNotEmpty;
+    }
+    
+    /**
+     * Creates an array of the information from the file
+     * 
+     * @param input: Scans the file for any inputs.
+     * return a String array of the information from the file.
+     */
+    public static String[] createTempArray(Scanner input)
+    {
+        String accountInfo = input.nextLine();
+        String[] tempArray = accountInfo.split(",");
+        
+        return tempArray;
+    }
+    
+    /**
+     * Creates a bank account with the customer information.
+     * 
+     * returns a bank account with customer information.
+     */
+    public static BankAccount createCustomer(String[] customerInfo)
+    {
+        BankAccount customer = new BankAccount();
+        
+        customer.setAccountIdentification(customerInfo[0]);
+        customer.setAccountHolder(customerInfo[1]);
+        customer.deposit(Double.parseDouble(customerInfo[2]));
+        customer.setAnnualInterestRate(Double.parseDouble(customerInfo[3]));
+        
+        return customer;
+    }
+    
+}

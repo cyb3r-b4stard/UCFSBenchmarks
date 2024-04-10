@@ -1,0 +1,126 @@
+import java.io.*;
+import javax.sound.sampled.*;
+import java.lang.Math.*;
+
+/**
+ * ############ ### ######### ### ############ ### ##### ######## ######
+ * 
+ * @###### #### ######
+ * @####### #.#
+ */
+public class MusicPlayer
+{
+    private String testPfad = "E:/";
+    private boolean shouldPlay;
+    private Playlist playlist;
+    private int trackOld = 0;
+    private int trackNew = 0;
+
+    private static final int MENUE_PLAY        = 1;
+    private static final int MENUE_STOP        = 2;
+    private static final int MENUE_ADD_TO_LIST = 3;
+    private static final int MENUE_TO_STRING         = 4;
+    private static final int MENUE_ENDE        = 0;
+
+    public static void main(String[] args){
+        MusicPlayer m = new MusicPlayer();       
+        m.head();
+    }
+
+    public void head(){
+        String[] format = {".+\\.wav"};
+        playlist = new Playlist(format);
+
+        try{
+            int auswahl = -1;
+
+            while (auswahl != 0){
+                auswahl = auswahlMenue();
+                startMenue(auswahl);
+            }
+
+        } catch(Exception e){
+            System.out.println(e);
+        }
+    }
+
+    private int auswahlMenue(){
+        System.out.print("--------------------\nHauptmenue:\n"
+            + MENUE_PLAY +        " - Play\n"
+            + MENUE_STOP +        " - Stop\n"
+            + MENUE_ADD_TO_LIST + " - Zur Liste hinzufuegen\n"
+            + MENUE_TO_STRING +   " - Liste ausgeben\n"
+            + MENUE_ENDE +        " - Ende\n"
+        );
+        int auswahl = Stdin.readlnInt("-> ");
+        System.out.println();
+        return auswahl;
+    }
+
+    private void startMenue(int auswahl) throws Exception{
+        switch (auswahl){
+            case MENUE_PLAY:        play(); break;
+            case MENUE_STOP:        stop(); break;
+            case MENUE_ADD_TO_LIST: addToPlaylist(); break;
+            case MENUE_TO_STRING:   playlistToString(); break;
+            case MENUE_ENDE:        System.out.println("Beendet"); break;
+            default:                System.out.println("Falsche Nummer");
+        }
+    }
+
+    private void play() throws Exception implements Runable{
+        AudioInputStream audioInputStream;
+        AudioFormat audioFormat;
+        int size;
+        byte[] audio;
+        DataLine.Info info;
+        Clip clip;
+        
+        shouldPlay = true;
+
+        while(shouldPlay){
+            while(trackOld == trackNew){
+                trackNew = (int) (Math.random() * playlist.getSize());
+            }
+            trackOld = trackNew;
+         
+            audioInputStream = AudioSystem.getAudioInputStream(playlist.getTrack(trackNew));
+            audioFormat = audioInputStream.getFormat();
+            size = (int) (audioFormat.getFrameSize() * audioInputStream.getFrameLength());
+            audio = new byte[size];
+            info = new DataLine.Info(Clip.class, audioFormat, size);
+            audioInputStream.read(audio, 0, size);
+
+            clip = (Clip) AudioSystem.getLine(info);
+            clip.open(audioFormat, audio, 0, size);
+            clip.start();
+
+            Thread.sleep(5000);
+            clip.stop();
+            clip.close();
+        }
+    }
+
+    private void stop(){
+
+    }
+
+    private void addToPlaylist(){
+        System.out.println("--------------------\nDatei zur Playlist hinzufuegen:");
+        File f = new File(Stdin.readlnString("-> "));
+        playlist.addToList(f);
+        System.out.println();
+    }
+
+    private void playlistToString(){
+        System.out.println(playlist.toString());
+    }
+}
+
+
+
+
+
+
+
+

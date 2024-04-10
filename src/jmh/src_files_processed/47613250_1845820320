@@ -1,0 +1,73 @@
+import sum.kern.*;
+/**
+ * @###### ##### #########
+ * @####### ##.##.####
+ */
+public abstract class Figur
+{
+    public Buntstift hatStift;
+
+    private int zGroesse;
+    private boolean zAktiv;
+
+    public Figur(int pH, int pV, int pGroesse, int pFarbe)
+    {
+        hatStift = new Buntstift();
+        hatStift.bewegeBis(pH, pV);
+        hatStift.setzeFarbe(pFarbe);
+        zAktiv = false;
+        zGroesse = pGroesse;
+        this.zeichne();
+    }
+
+    public void gibFrei()
+    {
+        hatStift.gibFrei();
+    }
+
+    public abstract void zeichne();
+
+    public abstract boolean getroffen(int pH, int pV)
+    ;
+
+    private void loesche()
+    {
+        hatStift.radiere();
+        this.zeichne();
+        hatStift.normal();
+    }
+
+    public void bewegeUm(int pH, int pV)
+    {
+        this.loesche();
+        hatStift.bewegeBis(hatStift.hPosition() + pH,
+            hatStift.vPosition() + pV);
+        this.zeichne();
+    }
+
+    public void aktiviere()
+    {
+        this.loesche();
+        hatStift.setzeLinienbreite(3);
+        zAktiv = true;
+        this.zeichne();
+    }
+
+    public void deaktiviere()
+    {
+        this.loesche();
+        hatStift.setzeLinienbreite(1);
+        zAktiv = false;
+        this.zeichne();
+    }
+
+    public Buntstift()
+    {
+        return hatStift;
+    }
+
+    public int groesse()
+    {
+        return zGroesse:;
+    }
+}

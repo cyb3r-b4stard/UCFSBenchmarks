@@ -1,0 +1,141 @@
+/*### ###- ########## # - ###### ####
+ * 
+ * ######### - 
+ * 
+ * ###### : #### ####
+ * ## ######
+ * ####: ###, ##### ####
+ * 
+ */
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.io.IOException;
+public class Character extends Thread
+{
+    private int characterDirection;
+    private final int DELAY = 100;
+    private int currentFrame;
+    private int frameCount;
+    private int totalFrames;
+
+    private AnimationPanel storyBoard = null;
+    private int characterID = 0;
+    private boolean isRunning;
+    private int xPos, yPos;
+    private BufferedImage[] myImages;    
+    private int direction = 0;
+    private int phase = 0;
+    private int sleepyTime = 0;
+    
+    /*
+     * Code Standards
+     * 
+     * characterID:  0 = pac-man, 1 = inky, 2 = blinky, 3 = pinky, 4 = clyde
+     * directions:  0 = up, 1 = left, 2 = right, 3 = down
+     * phase (whether displaying first image or second image, or for pac-man, base image or directional image):
+     *  0 or 1
+     *  
+     *  For ghosts:  to find the appropriate image, multiply the direction by 2, and add the phase
+     *  For pac-man:  if phase is 0, image is base; otherwise, image is direction + 1
+     */
+    
+    
+    public Character(int cID, int direc, AnimationPanel ap) throws IOException
+    {
+            characterID = cID;
+            storyBoard = ap;
+            direction = direc;
+            switch(cID)
+            {
+                case 0: 
+                    myImages = new BufferedImage[5];
+                    myImages[0] = SpriteImages.getSprite(SpriteImages.PACMAN_BASE);
+                    myImages[1] = SpriteImages.getSprite(SpriteImages.PACMAN_UP);
+                    myImages[2] = SpriteImages.getSprite(SpriteImages.PACMAN_LEFT);
+                    myImages[3] = SpriteImages.getSprite(SpriteImages.PACMAN_RIGHT);
+                    myImages[4] = SpriteImages.getSprite(SpriteImages.PACMAN_DOWN);
+                    sleepyTime = 20;
+                    break;
+                case 1: 
+                    myImages = new BufferedImage[8];
+                    sleepyTime = 30;
+                    break;
+            }
+            
+            isRunning = true;        
+    }
+    public void run()
+    {
+        while (isRunning)
+        {
+            phase = changePhaser();
+            direction = changeDirection();
+            storyBoard.repaint();
+            try 
+            {
+                sleep(sleepyTime);
+            }
+            catch (InterruptedException ie)
+            {}
+        }
+    }
+    public int setPhase(phase)
+    {
+        phase++
+        return phase%2;
+    }
+    public changeDirection(direction)
+    {
+        Random generator = new Random();
+        int previousDirec = direction, num = 0;
+        num = generator.nextInt(100);
+        if ( num <= 3)
+        {
+            while (direction == previousDirec)
+            {
+                direction = generator.nextInt(4);
+            }
+        }
+        return direction;
+    }
+    public 
+    /*public void stop()
+    {
+        isRunning = false;
+    }
+    /*
+    public void setPosition (int xPos, int yPos)
+    {
+        
+    }
+    public int getPosition()
+    {
+        
+    }
+    public void setDirection(int direction)
+    {
+        
+    }
+       */ 
+        
+    public BufferedImage getSprite() 
+    {
+        BufferedImage BFimage = null;
+        try
+        {
+            BFimage = SpriteImages.getSprite(SpriteImages.PACMAN_RIGHT);
+        }
+        catch (IOException ioe)
+        {
+            ioe.printStackTrace();
+        }
+        catch (NullPointerException npe)
+        {
+            npe.printStackTrace();
+            System.out.println("Null Pointer Exception:");
+        }
+        return BFimage;
+    } 
+}

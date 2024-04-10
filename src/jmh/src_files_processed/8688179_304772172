@@ -1,0 +1,103 @@
+
+import java.io.*;     
+import java.util.*;   
+import java.net.URL;
+
+public class GrammarApp {
+    public static void main(String[] args) throws FileNotFoundException {
+        System.out.println("Welcome to the CSE 143 random sentence generator!");
+        System.out.println();
+        System.out.print("What is the name/website of the grammar file? ");
+        Scanner console = new Scanner(System.in);
+        String fileName = console.nextLine();
+
+        List<String> lines = new ArrayList<String>();
+        try {
+            if(fileName.length() > 4 && fileName.substring(0,3).equals("http")){
+
+                try{
+                    URL website = new URL(fileName);
+                    BufferedReader address = new BufferedReader(
+                            new InputStreamReader(website.openStream()));
+                    String inputLine;
+                    while ((inputLine = address.readLine()) != null){
+                        lines.add(inputline);
+                    address.close();
+                }
+                }catch(Exception e3){
+                    System.out.println("Error Http address:")
+                    return null
+                }else{
+
+                    lines = readLines(fileName);
+                }
+
+            }catch(FileNotFoundException e) {
+                boolean worked = false;
+                while(!worked) {
+                    try{
+                        worked = true;
+                        System.out.print("Please enter another file name/website");
+                        lines = readLines(console.nextLine());
+                    } catch(FileNotFoundException e2) {
+                        worked = false;
+                    }
+                }
+            }
+            GrammarSolver solver = new GrammarSolver(Collections.unmodifiableList(lines));
+
+            String symbol = getSymbol(console, solver);
+            while (symbol.length() > 0) {
+                if (solver.grammarContains(symbol)) {
+                    doGenerate(console, solver, symbol);
+                } else {
+                    System.out.println("Illegal symbol.");
+                }
+
+                symbol = getSymbol(console, solver);
+            }
+        }
+
+        public static String getSymbol(Scanner console, GrammarSolver solver) {
+            System.out.println();
+            System.out.println("Available symbols to generate are:");
+            Set<String> symbols = solver.getSymbols();
+            System.out.println(symbols);
+
+            System.out.print("What do you want to generate (Enter to quit)? ");
+            String target = console.nextLine().trim();
+            return target;
+        }
+
+        public static void doGenerate(Scanner console, GrammarSolver solver, String symbol) {
+            System.out.print("How many do you want me to generate? ");
+            if (console.hasNextInt()) {
+                int number = console.nextInt();
+                if (number < 0) {
+                    System.out.println("No negatives allowed.");
+                } else {
+                    System.out.println();
+                    for (int i = 0; i < number; i++) {
+                        String[] result = solver.generate(symbol, number);
+                        System.out.println(result[i]);
+                    }
+                }
+            } else {
+                System.out.println("That is not a valid integer.");
+            }
+            console.nextLine();   
+        }
+
+        public static List<String> readLines(String fileName) throws FileNotFoundException {
+            List<String> lines = new ArrayList<String>();
+            Scanner input = new Scanner(new File(fileName));
+            while (input.hasNextLine()) {
+                String line = input.nextLine().trim();
+                if (line.length() > 0) {
+                    lines.add(line);
+                }
+            }
+            return lines;
+
+        }
+    }

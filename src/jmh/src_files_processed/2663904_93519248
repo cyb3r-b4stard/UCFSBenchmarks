@@ -1,0 +1,50 @@
+import java.util.*;
+import java.io.*;
+
+public class MyMode
+{
+    TreeMap<Integer, Integer> frequency;
+    
+    public void readFile(TreeMap<Integer, Integer> frequency){
+        Scanner numberFile;
+        int number;
+        int count;
+        
+        try {
+            numberFile = new Scanner(new FileReader("numbers.txt"));
+        }
+        catch (FileNotFoundException e){
+            System.err.println("File not found");
+            System.err.println(e);
+            return;
+        }
+        
+        while (numberFile.hasNext()){
+            number = numberFile.nextInt();
+            count = getCount(number, frequency)+1;
+            frequency.put(number,count);
+        }
+    }
+    
+    public int getCount(int number, TreeMap<Integer, Integer> frequency){
+        if (frequency.containsKey(number)){
+            return frequency.get(number);
+        } else {
+            return 0;
+        }
+    }    
+    
+    public void printCounts(TreeMap<Integer, Integer> frequency){
+        String str1 = "Number";
+        String str2 = "Frequency";
+        System.out.printf("%10s %10s\n", str1, str2);
+        int y = 0;
+        
+        for (int number : frequency.keySet()){
+            if (y<frequency.get(number)){
+                y = frequency.get(number));
+            }
+            System.out.printf("%10d %6d\n", number, frequency.get(number));
+        }
+    }
+}

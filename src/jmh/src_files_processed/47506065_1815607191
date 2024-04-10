@@ -1,0 +1,104 @@
+
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class LinkedList
+{
+    private Node list;
+
+    public LinkedList()
+    {
+        list = null;
+    }
+
+    public Node getList()
+    {
+        return list;
+    }
+
+    public void addFront(Student s)
+    {
+        Node newNode = new Node(s);
+        newNode.next = list;
+        list = newNode;
+    }
+
+    public void addTail(Student s)
+    {
+        Node newNode = new Node(s);
+        Node current;
+
+        if(list==null)
+            list = newNode;
+        else
+        {
+            current = list;
+
+            while(current.next != null)
+                current = current.next;
+
+            current.next = newNode;    
+        }
+    }
+
+    public Student bestStudent()
+    {
+        Student best = list.data;
+
+        Node current = list;
+
+        while(current != null)
+        {
+            if(current.data.getGPA() > best.getGPA())
+                best = current.data;
+            current = current.next;            
+        }
+
+        return best;
+    }
+
+    public void printLinkedList()
+    {
+        Node current = list;
+        while(current!=null)
+        {
+            System.out.println(current.data);
+            current = current.next;
+        }
+    }
+
+    public int countNodesRec(Node list)
+    {
+        if(list==null)
+            return 0;
+        else
+            return 1 + countNodesRec(list.next);
+    }
+
+    public Student worstStudentRec(Node list)
+    {
+        Student worst = list.data;
+        if(list!=null)
+
+        {
+            worst = worstStudentRec(list.next)
+            if(list.data.getGPA() < worst.getGPA())
+                worst = list.data;
+        }
+        return worst;
+    }
+    private class Node
+    {
+        public Student data;
+        public Node next;
+
+        public Node (Student s)
+        {
+            data = s;
+            next = null;
+        }
+    }
+}

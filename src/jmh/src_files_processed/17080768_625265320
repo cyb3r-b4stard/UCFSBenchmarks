@@ -1,0 +1,202 @@
+import java.io.*;
+import java.util.*;
+
+public class cCesarKrypt
+{
+ 
+  public static String eingabeStr = "DIES IST EIN EINGABESTRING"; 
+  public static String ausgabeStr = "xyz ist ein Ausgabestring";
+  
+  public static int [][] kryptarr = new int [27][2];
+  public static int vMov = 0;
+  
+  public static boolean MenueAuswahl () 
+  {
+     boolean lslk = true;
+     System.out.println ();
+     System.out.println ("*************************************");
+     System.out.println ("*      Caesar-Verschlüsselung       *");
+     System.out.println ("* Textzeile eingeben (original)  e  *");
+     System.out.println ("* Originaltext anzeigen          o  *");
+     System.out.println ("* Schlüssel eingeben             k  *");
+     System.out.println ("* Eingabe verschlüsseln (Cesar)  v  *");
+     System.out.println ("* Ausgabe entschlüsseln (Decode) s  *");
+     System.out.println ("* verschlüsselt ausgeben         a  *");
+     System.out.println ("* Beenden                        q  *");
+     System.out.println ("*************************************");
+     System.out.print ("  Wahl (Enter):    ");
+     return lslk; 
+  }
+    
+  public static String EingabeString () throws IOException
+  {
+    String Zeile = "";
+    Scanner sceg = new Scanner (System.in);
+    System.out.print("Eingabetext (Enter): ");
+    Zeile = sceg.nextLine();
+    return Zeile;
+    
+    
+  }
+  
+  public static String OriginalZeileEingeben (String arg) throws IOException
+  {
+    String NeuEingabe = arg;
+    System.out.println ("------< Modul EingabeZeile >------");
+    System.out.println ("Aktuelle Eingabe: "+NeuEingabe);
+    NeuEingabe = EingabeString();
+    return NeuEingabe;
+  }
+
+  public static Boolean OriginalZeileAnzeigen ()
+  {
+    Boolean okOutZ = true;
+    System.out.println ("------< Modul Originalzeile ausgeben >------");
+    System.out.println ("***[" + eingabeStr + "]***");
+    return okOutZ;
+  }
+      
+  public static String ZeileVerschluesseln (String arg)
+  {
+    System.out.println ();
+    System.out.println ("------< Modul Verschlüsselung >------");
+    System.out.print ("***[");
+    for (int s1=0;s1<arg.length (); s1++)
+      {
+        System.out.print (arg.charAt (s1));   
+      }
+    System.out.println ("] wird verschlüsselt!");
+    String hlp = "";
+    for (int s1=0;s1<arg.length (); s1++)
+    {
+      for (int s2=0;s2<27;s2++)
+      {
+        if (arg.charAt (s1) == (char) kryptarr [s2][0])
+        {
+          hlp = hlp + (char) kryptarr [s2][1];
+        }
+      }
+    }
+    System.out.println("***["+hlp + "] ist die Verschlüsselung."); 
+    System.out.println ();
+    return hlp;
+  }
+  
+  public static String RueckEntSchluesseln (String arg)
+  {
+    System.out.println ("------< Modul Entschlüsselung >------");
+    System.out.print ("***[");
+    for (int s1=0;s1<arg.length (); s1++)
+      {
+        System.out.print (arg.charAt (s1));   
+      }
+    System.out.println ("] wird entschlüsselt!");
+    String hlp2 = "";
+    for (int s1=0;s1<arg.length (); s1++)
+    {
+      for (int s2=0;s2<27;s2++)
+      {
+        if (arg.charAt (s1) == (char) kryptarr [s2][1])
+        {
+          hlp2 = hlp2 + (char) kryptarr [s2][0];
+        }
+      }
+    }
+    System.out.println("***["+hlp2 + "] ist die Rückentschlüsselung."); 
+    System.out.println ();
+    return hlp2;
+  }
+    
+  public static Boolean DoAllInits ()
+  {
+      System.out.println ("------ Modul Initialisierungen ------");
+      vMov = 0;
+      for (int s1=0;s1<26; s1++)
+      {
+        kryptarr [s1][0] = 65 + s1;   
+        kryptarr [s1][0] = 65 + s1;
+      }
+      kryptarr [26][0] = 32;
+      kryptarr [26][1] = 32;
+      for (int z2=0; z2<2; z2++)
+      {
+        for (int s2=0;s2<27; s2++)
+        {
+          System.out.print ((char) kryptarr [s2][z2]);   
+        }
+        System.out.println ("===");
+      }
+      System.out.println ();
+      return true;
+  }
+  
+  public static Boolean CodiertAnzeigen (String arg)
+  {    
+    Boolean okAnz = true;
+    System.out.println (arg);
+    return okAnz;
+  }
+  
+  public static int KeyDefine (int kdm) throws IOException
+  {
+     System.out.println ("------< Modul Schlüsseleingabe >------"); 
+     System.out.println ("akt Schlüssel: " + kdm);
+     int ihp = 0;
+      for (int s3=0;s3<27; s3++)
+      {
+         If (ihp > 27)
+         { 
+           ihp = ihp - 28;  
+         }
+         kryptarr [ihp][1] = kryptarr [s3][0];   
+      }
+     return kdm;    
+  }
+  
+  public static void main (String[] args) throws IOException
+  {
+     boolean okDone = false;
+     String inpTxt = "";
+     String outTxt = "-X-";
+     System.out.println ();
+     System.out.println (" --------- Kryptologie Caesar Verschlüsselung -------");
+     Scanner sc = new Scanner (System.in);
+     String slkold ="x";
+     okDone = DoAllInits();
+     okDone = MenueAuswahl();
+     String slk = sc.next();
+     while ( !(slk.equals("q")) )
+     {
+       slkold = slk;
+       System.out.println ();
+       if (slk.equals("e"))
+       {
+         eingabeStr = OriginalZeileEingeben(eingabeStr);
+       }
+       if (slk.equals("o"))
+       {
+         okDone = OriginalZeileAnzeigen();
+       }
+       if (slk.equals("v"))
+       {
+         ausgabeStr = ZeileVerschluesseln (eingabeStr);
+       }  
+       if (slk.equals("s"))
+       {
+         eingabeStr = RueckEntSchluesseln (ausgabeStr);
+       }  
+       if (slk.equals("a"))
+       {
+         okDone = CodiertAnzeigen (ausgabeStr);
+       }
+       if (slk.equals("k"))
+       {
+         vMov = KeyDefine (10);
+       }
+       okDone = MenueAuswahl();
+       slk = sc.next();
+     }
+     System.out.println ("Programm beendet ...");
+}
+
+}

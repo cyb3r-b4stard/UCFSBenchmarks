@@ -1,0 +1,183 @@
+import java.util.*;
+import java.awt.*; 
+import org.daw1.*;
+
+/**
+ * ##### ## ######## ########
+ */
+
+public class AppAdivinarPalabras {
+
+    public static final String[] PALABRAS = {
+            "TEGUCIGALPA",
+            "CAMELIA",
+            "CYCLAMEN",
+            "RECESVINTA",
+            "PIET MONDRIAN"
+        };
+    public static final String[] DEFINICIONES = {
+            "Nombre de ciudad",
+            "Nombre de flor",
+            "Nombre de flor",
+            "Nombre de persona",
+            "Un pintor"
+        };
+
+    String palabraElegida; 
+    String definicionElegida; 
+    int intentos; 
+
+    String enPantalla; 
+
+    /**
+     * Este método acepta una letra y cambia la cadena que se ve en pantalla
+     * 
+     * @param c la letra a probar
+     * @return true si la letra forma parte de la palabra, y false en caso contrario
+     */
+    public boolean pruebaLetra(char c) {
+        boolean encontrada = false;
+        String nuevaEnPantalla = ""; 
+        
+        for (int i = 0; i < palabraElegida.length(); i++) {
+            
+                
+            if (c == palabraElegida.charAt(i)){
+                nuevaPantalla += c;
+                encontrada = true;
+            } else if (palabraElegida.charAt(i) == ' '){
+                nuevaPantalla += ' ';    
+            } else {
+                nuevaPalabra += '_';
+            }
+        }
+        enPantalla = nuevaPantalla;
+       
+        return encontrada;
+    }
+
+    /** 
+     * Cuenta el número de guiones en la palabra en pantalla.
+     * Lo necesitaremos para saber si hemos ganado
+     */
+    public int cuentaGuiones() {
+        int cuenta = 0;
+        for (int i = 0; i < enPantalla.length(); i++) {
+            if (enPantalla.charAt(i) == '_') {
+                cuenta++;
+            }
+        }
+        return cuenta;
+    }
+
+    /**
+     * Inicializa un juego. Escoge la palabra secreta y su definición,
+     * 
+     */
+    public void inicializaJuego() {
+        Random miRandom = new Random();
+        int elegida;
+
+        elegida = miRandom.nextInt(PALABRAS.length);
+        palabraElegida = PALABRAS[elegida].toUpperCase();
+        definicionElegida = DEFINICIONES[elegida];
+        intentos = 7;
+        enPantalla = "";
+        for (int i = 0; i < palabraElegida.length(); i++) {
+            enPantalla += palabraElegida.charAt(i) != ' ' ? "_" : " ";
+        }
+    }
+
+    /**
+     * Lee una tecla del teclado
+     */
+    public char leeTecla() {
+        char c;
+        while (!StdDraw.hasNextKeyTyped()) {
+            StdDraw.sleep(20); 
+        }
+        c = StdDraw.nextKeyTyped();
+        return c;
+    }
+
+    /**
+     * Dibuja la pantalla de presentación.
+     */
+    public void presentacion() {
+        /*
+         * Por hacer: ponerla un poco más bonita.
+         */
+        char c;
+        StdDraw.text(250, 200, "Palabra oculta");
+        StdDraw.text(250, 180, "Pulsa espacio para continuar");
+        do {
+            c = leeTecla();
+        } while (c != ' ');
+
+    }
+
+    /**
+     * juega un juego completo.
+     */
+    public void juega() {
+        char caracter;
+        boolean terminado = false;
+
+        inicializaJuego();
+
+        do {
+            StdDraw.clear();
+            StdDraw.picture(250, 200, "fondo.jpg");
+
+            StdDraw.setFont(new Font("Arial", Font.PLAIN, 12));
+            StdDraw.setPenColor(StdDraw.BLACK);
+            StdDraw.textLeft(5, 180, definicionElegida);
+
+            StdDraw.setFont(new Font("Lucida console", Font.BOLD, 35));
+            StdDraw.setPenColor(new Color(41, 21, 132));
+            StdDraw.textLeft(5, 100, enPantalla);
+
+            StdDraw.setPenColor(StdDraw.MAGENTA);
+            StdDraw.text(470, 300, String.format("%d", intentos));
+
+            /*
+             * Por hacer:
+             * -Hacer que el juego termine, y me diga si he ganado o he perdido los intentos.
+             * -Hacer que el programa me indique las letras que ya he probado y que no estaban en la palabra
+             */
+            do {  
+                caracter = leeTecla(); 
+                Character.toUpperCase(caracter);
+                
+                if (caracter != (Character.isLetter(caracter)) ){ 
+                    StdSound.beep();
+                }
+            } while (caracter != (Character.isLetter(caracter)); 
+
+            if (!pruebaLetra(caracter)) { 
+                intentos--;
+            }
+              
+        } while (!terminado);
+    }
+
+    /**
+     * El programa principal
+     */
+    public void run() {
+        char caracter;
+
+        StdDraw.setCanvasSize(500, 400);
+        StdDraw.setXScale(0, 500);
+        StdDraw.setYScale(0, 400);
+
+        presentacion();
+        juega();
+
+        System.exit(0); 
+    }
+
+    public static void main(String[] args) {
+        new AppAdivinarPalabras().run();
+    }
+}

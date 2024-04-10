@@ -1,0 +1,99 @@
+
+/**
+ * ##### # ########### ## ##### #### ####.
+ * 
+ * @###### (###### #########) 
+ * @####### (#/##/####)
+ */
+public class DotP extends Entity implements Physics
+{
+    private static final ptr<Bitmap> DOT_R=Main.STAR;
+    private static final int MAX_DOTS=2;
+    private static int CUR_DOTS=0;
+    private static final DotP[]DOTS=new DotP[MAX_DOTS];
+    private java.util.Random _R;
+    private int _ID;
+    
+    private Vec3f _Velocity=new Vec3f(0,0,0);
+    private Vec3f _Force=new Vec3f(0,0,0);
+    private float _OneOverM=1f/05.25f;
+    
+    public ptr<Bitmap> getAppearance(){return _Appearance;}
+    public float getX(){return _X;}
+    public float getY(){return _Y;}
+    public static DotP get(){return DOTS[0];}
+    private int id(){return _ID;}
+    public DotP(float x, float y)
+    {
+        _R=new java.util.Random(System.currentTimeMillis());
+        _Appearance=DOT_R;
+        _Speed=0.25f;
+        _X=x;
+        _Y=y;
+        if(CUR_DOTS==MAX_DOTS)
+        {
+            shiftDown();
+            DOTS[MAX_DOTS-1]=null;
+            DOTS[MAX_DOTS-1]=this;
+            _ID=MAX_DOTS-1;
+        }
+        else
+        {
+            DOTS[CUR_DOTS]=this;
+            _ID=CUR_DOTS;
+            CUR_DOTS++;
+        }
+    }
+    private static void shiftDown()
+    {
+        for(int i=1;i<MAX_DOTS;i++)
+        {
+            DOTS[i-1]=DOTS[i];
+        }
+    }
+    public boolean update(float delta)
+    {
+        /*
+        byte a=(byte)55;
+        byte b=(byte)((int)(_R.nextFloat()*255));
+        byte g=(byte)((int)(_R.nextFloat()*255));
+        byte r=(byte)((int)(_R.nextFloat()*255));
+        _Appearance.dref().fill(a,b,g,r);*/
+        if(Player.GRAVITY_ENABLED)
+        {
+            float gx=GRAVITY.getX();
+            float gy=GRAVITY.getY();
+            float gz=GRAVITY.getZ();
+            float fx=gx-_X;
+            float fy=gy-_Y;
+            float fg=(float)Math.sqrt(fx*fx+fy*fy)/gz;
+            Vec3f gravity=new Vec3f(fx/fg,fy/fg,0);
+            
+            _Force=_Force.add(gravity.scale(delta));
+        }
+        _Velocity=_Velocity.add(_Force.scale(_OneOverM));
+        _Force=_Force.scale(0);
+        accelerate(delta);
+        
+        return true;
+    }
+    public void accelerate(float delta)
+    {
+        Vec3f vel=_Velocity.scale(delta);
+        this._X+=vel.getX();
+        this._Y+=vel.getY();
+        collision(delta);
+    }
+    public void collision(float delta)
+    {
+        return;
+    }
+    public void finalize()
+    {
+        super.super.finalize();
+    }
+    public void draw(float x, float y)
+    {
+        _Appearance.dref().blendTo((int)(_X+x+0.5f),(int)(_Y+y+0.5f),1);
+    }
+}

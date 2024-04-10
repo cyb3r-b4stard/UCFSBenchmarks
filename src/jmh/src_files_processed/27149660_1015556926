@@ -1,0 +1,150 @@
+public class WordStoreImp implements WordStore
+
+{ 
+
+    private int n; 
+    private Cell<String> root; 
+
+    public WordStoreImp(int n){ 
+        this.n = n;
+    }
+
+    public void add(String word){
+        Cell<String> newCell = new Cell(word); 
+        if(root == null){ 
+            root = newCell; 
+            root.count++; 
+        }else{
+
+            Cell<String> focusCell = root; 
+
+            Cell<String> parent; 
+
+            while(true){ 
+                parent = focusCell; 
+                if(word.compareTo(focusCell.word)<0){ 
+                    focusCell = focusCell.left; 
+
+                    if(focusCell == null){ 
+
+                        parent.left = newCell; 
+                        parent.left.count++; 
+
+                        return; 
+
+                    } 
+
+                }else if(word.compareTo(focusCell.word)==0){
+                    focusCell.count++; 
+                    return; 
+                } 
+                else{ 
+                    focusCell = focusCell.right;
+                    if(focusCell == null){ 
+                        parent.right = newCell; 
+                        parent.right.count++; 
+                        return; 
+                    } 
+                }
+            }
+        }
+    }
+
+    public int count(String word){ 
+
+        Cell<String> c = find(word); 
+
+        if(c == null) return 0; 
+        return c.count; 
+    }
+
+    public void remove(String word){ 
+
+
+        if(count(word)>1){ 
+            Cell<String> c = find(word); 
+
+            c.count=c.count-1; 
+
+            return; 
+
+
+            Cell<String> focusCell = root; 
+
+            Cell<String> parent = root; 
+
+            boolean isLeft = true; 
+
+
+            while(focusCell.word !=word){ 
+
+                parent = focusCell; 
+
+                if(word.compareTo(focusCell.word) < 0){ 
+
+                    focusCell = focusCell.left; 
+
+                    isLeft = true; 
+
+                }else { 
+
+                    focusCell = focusCell.right; 
+
+                    isLeft = false; 
+
+                    if(focusCell == null) return; 
+
+                    if(focusCell == null) return; 
+
+                    else if(focusCell.right == null && focusCell.left == null){ 
+
+                        if(focusCell == root){ 
+
+                            root = null; 
+
+                        }else if(isLeft){ 
+
+                            parent.left = null; 
+
+                        }else{ 
+
+                            parent.right = null; 
+
+                        }else if(focusCell.right == null){ 
+
+                            if(focusCell == root)root = focusCell.left; 
+
+                            else if(isLeft) parent.left = focusCell.left; 
+
+                            else parent.right = focusCell.left;
+
+                        }else if(focusCell.left == null){
+
+                            if(focusCell == root)root = focusCell.right; 
+
+                            else if(isLeft) parent.left = focusCell.right; 
+
+                            else parent.left = focusCell.right; 
+
+                        }else{ 
+
+                            Cell<String> replacement = getReplacement(focusCell); 
+
+                            if(focusCell == root) root = replacement; 
+
+                            else if(isLeft) parent.left = replacement; 
+
+                            else parent.right = replacement; 
+
+                            replacement.left = focusCell.left; 
+
+                        } 
+
+                        return; 
+
+                    }
+                }
+            }
+        }
+    }
+}

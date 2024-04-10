@@ -1,0 +1,250 @@
+import java.util.*;
+
+/**
+ * #### ## #### ##### ### ##### ####### ####### #######. ## #### ####### # #### ##### ###### ### ###### ## ###### ####### ####### ## ########
+ * ### ####### ####### ####### ##########. ### "######" ### ####### ## ### ######## ## ########## # ###### ###### ####### #-# (################### ######),
+ * #### #### ###### ############ # ########## #####. ## ### ######'# ##### ####### ### ########'# ###### ### ##### #### ####### ### ###### ### ### ##### #####.
+ * 
+ * ######: ######## ##### #### 
+ */
+
+
+public class Game
+{
+    
+    private LuckyGuessGenerator number;  
+    private Players player;
+    private Prizes prize;
+    private int playerIndex;
+    private int prizeWorth;
+    private int prizeIndex
+    private int price;
+    private int i;
+    Scanner console;
+    
+    
+    /**
+     * Constructor for objects of class Game
+     */
+    
+    public Game()
+    {
+        
+        console = new Scanner(System.in);
+        number = new LuckyGuessGenerator(); 
+        player = new Players();
+        playerIndex = -1 ;
+        prizeWorth = 0;
+        prizeIndex = 0;
+        i = 0;      
+        price = 0;
+        
+    }
+        
+    
+  
+    /**
+     * Method for starting the game. It will display the menu and ask user to enter options.
+     */
+    
+    public void startGame()
+    {
+     
+      String option;
+      
+      do{ 
+          System.out.print('\u000C');
+          System.out.println(" Welcome to the Lucky Vending Machine ");
+          System.out.println(" ==================================== ");
+          System.out.println(" (1) Setup New Player ");
+          System.out.println(" (2) Guess a Prize ");
+          System.out.println(" (3) What have I won so far ");
+          System.out.println(" (4) Display Game Help ");
+          System.out.println(" (5) Exit Game ");
+          System.out.println("Choose an Option: ");
+           
+          option = console.nextLine();
+            
+           switch (option)
+           {
+             case "1":
+             {
+               prize.setPrizeWorth(prizeWorth);
+               prize.setPrice(price);
+
+
+               player.setName();
+               prizeIndex = i;
+               price = 0;
+               prizeWorth = 0;
+               playerIndex++;
+              
+               break;
+             }           
+             
+             case "2":
+             guessPrize(); break;   
+                       
+             case "3":
+             getPrizeWon(); break;
+             
+             case "4":
+             getHelp(); break;
+            
+             case "5": 
+             break;
+              
+             default:
+             
+             {  
+                System.out.println ("\nERROR! Please enter number between 1-5 ");
+                System.out.println ("Press Enter to continue ... ");
+                console.nextLine(); 
+                
+                break;
+              }
+             
+           }
+           
+      } while (!option.equals("5") );   
+        
+        
+     System.exit(0);
+         
+    }
+   
+   
+    /**
+     * This method will let the player guess a number between 1-5 and display results if player won anything or not.
+     */
+   
+    private void guessPrize()
+   
+    {      
+     
+     if ((player.getName()).size() == 0)  
+     {
+        System.out.print ('\u000C');
+        System.out.println ("\n \n ERROR! Please setup a new player first.");
+        System.out.println ("\n \n Press Enter to return to main menu. ");
+        console.nextLine();
+     }
+      
+     else
+     {
+       int guess = 0;
+    
+       while(guess == 0)   
+       {  
+       
+         number.setRandomNumber(5);    
+         int randomNumber = number.getRandomNumber();   
+         System.out.print ('\u000C');
+         System.out.println ("Guess a number between 1-5 : ");    
+         String a = console.nextLine();
+                        
+                       
+         if (a.equals("1") || a.equals("2") || a.equals("3") || a.equals("4") || a.equals("5"))
+         {
+                            
+            guess = Integer.parseInt(a);         
+            System.out.println ("Your Guess : " + guess);
+            System.out.println ("My Guess : " + randomNumber); 
+            price = price + guess;  
+            
+             if (randomNumber == guess)  
+             {     
+                prizeWorth = prizeWorth + ( guess * 10 ); 
+                prize.setPrizeWon(guess);
+                                            
+                System.out.println ("Congrats! You have won a "+ prize.getPrizeWon(i) +" of worth $ " + guess*10 );
+                i++;
+                System.out.println ("\n Press Enter to continue to return to main menu. ");
+                console.nextLine();
+             } 
+                       
+             else
+                     
+             {
+                System.out.println ("\n What a shame! You have won  absolutely NOTHING!");
+                System.out.println ("\n Please try again. ");
+                System.out.println (" Press Enter to return to main menu. ");
+                console.nextLine();
+             }
+                
+         }
+         else
+         {
+            System.out.print ('\u000C');
+            System.out.println ("ERROR! Please select number between 1-5 only.  ");
+            System.out.println ("\n \n Press Enter to try again.");
+            console.nextLine();
+            guess = 0;
+         }
+       }
+     }
+    }
+   
+   
+   
+    
+    
+    /**
+     * This method will display the total stats, the money spent, prizes won and their worth by calling methods from Players
+     */
+   
+    private void getPrizeWon()
+    {
+      if ((player.getName()).size() == 0)
+      {
+         System.out.print('\u000C');
+         System.out.println ("\n \n ERROR! Please setup a new player first.");
+         System.out.println ("\n \n Press Enter to continue to return to main menu. ");
+         console.nextLine();
+      }
+      else 
+      {
+        
+          if (i == 0)
+        {
+         System.out.print('\u000C');
+         System.out.println ( player.getName(playerIndex) + " has spent $ "+ price + " and won Nothing");
+         System.out.println ("\n Press Enter to return to main menu. ");
+         console.nextLine();
+        }
+        else
+        {
+         System.out.print('\u000C');
+         System.out.println ( player.getName(playerIndex) + " has spent $ "+ price + " and won "+ prize.getTotalPrizeWon(i, prizeIndex) + " of worth $" + prizeWorth);
+         System.out.println ("\n Press Enter to return to main menu. ");
+         console.nextLine();
+        }
+        
+      }
+      
+    }
+   
+   
+    /**
+     * This method will display game rules/help
+     */
+   
+    private void getHelp()
+    {  
+     System.out.print ('\u000C');
+     System.out.println ("The rules are: \n");
+     System.out.println ("--------------------------------------------------------------");
+     System.out.println ("| Number Generated | Prize Won | Prize Worth | Cost to Player |");
+     System.out.println ("--------------------------------------------------------------");
+     System.out.println ("|        1         |   Pen     |    $10      |      $1        |");
+     System.out.println ("|        2         |   Book    |    $20      |      $2        |");
+     System.out.println ("|        3         |   DVD     |    $30      |      $3        |");
+     System.out.println ("|        4         |   Mouse   |    $40      |      $4        |");
+     System.out.println ("|        5         |   Keyboard|    $50      |      $5        |");
+     System.out.println ("--------------------------------------------------------------");
+               
+     System.out.println ("\n Press Enter to return to main menu ");
+     console.nextLine(); 
+    }
+    
+}

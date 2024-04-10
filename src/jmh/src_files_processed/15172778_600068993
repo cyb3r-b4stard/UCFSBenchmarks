@@ -1,0 +1,176 @@
+
+/**
+ * ########### ### #### ### ###### #####_######.
+ * 
+ * @###### (##### ######) 
+ * @####### (#.#)
+ */
+public class GRAPH_MATRIX
+{
+   int anzahlKnoten;
+   KNOTEN[] knoten;
+   int [][] matrix;
+   boolean [] besucht;
+   
+   public GRAPH_MATRIX(int groesse)
+   {
+       knoten = new KNOTEN[groesse];
+       matrix = new int[30][30];
+       besucht = new boolean[groesse];
+   }
+   
+   public void KnotenEinfuegen(String bezeichner)
+   {
+       if (anzahlKnoten < knoten.length)
+       {
+           if (BezeichnerVorhanden(bezeichner) == false)
+           {
+               knoten[anzahlKnoten] = new KNOTEN(bezeichner);
+               matrix[anzahlKnoten][anzahlKnoten] = 0;
+               for (int i = 0; i < anzahlKnoten;i++)
+               {
+                   matrix[anzahlKnoten][i] = -1;
+                   matrix[i][anzahlKnoten] = -1;
+               }
+               anzahlKnoten = anzahlKnoten + 1;
+           }
+       }
+   }
+    
+   public void KnotenHinzufügen (KNOTEN k)
+   {
+     if (anzahlKnoten < knoten.length)
+        {
+           if (BezeichnerVorhanden(k.BezeichnerGeben()) == false)
+            {
+               knoten[anzahlKnoten] = k;
+               matrix[anzahlKnoten][anzahlKnoten] = 0;
+               for (int i = 0; i < anzahlKnoten;i++)
+               {
+                   matrix[anzahlKnoten][i] = -1;
+                   matrix[i][anzahlKnoten] = -1;
+               }
+               anzahlKnoten = anzahlKnoten + 1;
+            }
+       }  
+   }
+   
+   public boolean BezeichnerVorhanden(String bezeichner)
+   {
+       for (int i = 0; i < anzahlKnoten; i = i + 1)
+           {
+               if (bezeichner.equals(knoten[i].BezeichnerGeben()) == true)
+               {
+                   System.out.println("Der Knoten existiert schon!");
+                   return true;
+               }
+           }
+       return false;
+   }
+
+   public void KanteEinfuegen(KNOTEN von, KNOTEN nach, int gewichtung)
+   {
+       int vonNummer;
+       int nachNummer;
+       
+       vonNummer = KnotenNummer(von.BezeichnerGeben());
+       nachNummer = KnotenNummer(nach.BezeichnerGeben());
+       if (vonNummer != -1 && nachNummer!= -1 && vonNummer != nachNummer)
+       {
+           matrix[vonNummer][nachNummer] = gewichtung;
+           matrix[nachNummer][vonNummer] = gewichtung;
+       }
+   }
+   
+   public int KnotenNummer(String bezeichner)
+   {
+     for(int i=0; i < knoten.length; i++)
+     {
+         if(bezeichner.equals(knoten[i].BezeichnerGeben()) == true)
+        {
+            return i;
+        }
+     }
+     return -1; 
+    }
+   
+   public void Ausgeben()
+   {
+       System.out.print('\u000c');
+       System.out.print("Die Adjazenzmatrix");
+       for(int i=0; i < anzahlKnoten; i++)
+       {
+         System.out.println("");
+           for(int k=0; k < anzahlKnoten; k++)
+         {
+           System.out.print(matrix[i][k]+"|");   
+         }
+       }
+   }
+   
+   public int KnotenAnzahlGeben()
+   {
+     return anzahlKnoten; 
+   }
+   
+   int KanteGewichtGeben(String von, String nach)
+   {
+     return matrix[KnotenNummer(von)][KnotenNummer(nach)]; 
+   }
+   
+   public void Besuchen(int knotenNummer)
+   {
+       
+       besucht[knotenNummer] = true;
+       System.out.print(knoten[knotenNummer].BezeichnerGeben() + ";");
+       for(int i = 0; i < anzahlKnoten; i++)
+       {
+           if(matrix[knotenNummer][i] > 0 && besucht[i] == false)
+           {
+             Besuchen(i); 
+           }
+       }
+       System.out.println("          " + knoten[knotenNummer].BezeichnerGeben() + "(fertig);");
+   } 
+
+   public void Tiefensuche(String startKnoten)
+   {
+     
+      int startNummer;
+      startNummer = KnotenNummer(startKnoten);
+      if(startNummer != -1)
+      {
+          for(int i = 0; i < anzahlKnoten; i++)
+          {
+            besucht[i] = false;  
+          }
+          Besuchen(startNummer);
+      }
+          
+    }
+
+   public void WegeSuchen(String starKnoten, String zielKnoten)
+   {
+     int startNummer = KnotenNummer(startKnoten);
+     int zielNummer = KnotenNummer (zielKnoten);
+     
+     if(startNummer != -1 && zielNummer != -1 && starNummer != zielNummer)
+     {
+       for(int i; i < anzahlKnoten; i++)
+       {
+         besucht[i] = false 
+       }
+     }
+     Ablaufen(startNummern zielNummer, startKnoten, 0)
+   }
+   
+   public void Ablaufen(int knotenNummer, int zielKnotenNummer, String pfad, int laenge)
+   {
+    int neueLaenge
+    String neuerPfad
+    
+    besucht[knotenNummer] = true;
+    
+    if(knotenNummer
+   }
+  }

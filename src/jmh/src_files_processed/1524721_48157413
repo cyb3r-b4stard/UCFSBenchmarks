@@ -1,0 +1,174 @@
+/**
+ * @######  <#### #### ####>
+ * @####### <####>
+ * ##### ########## #.
+ *
+ * ## ## #####, <####>, #### ########### ########## ## ## ### #### ### # ####
+ * ### ###### ## ######## #### ### ##### ####### ## ### #####.
+ *
+ *
+ * # ####### ## ##### # ##### ###### ## #### #######
+ * ####### ### ########.
+ *
+ *  ##### #######:
+ *  #####:
+ *  ####### # ##### ##:
+ *  ###### ####:
+ *  ###### ## #### #### #### ## #### ##########:
+ */
+
+import java.util.Scanner;
+
+public class Hangman {
+
+
+    public static void main(String[] args) {
+        intro();
+        PhraseBank phrases = new PhraseBank();
+        Scanner keyboard = new Scanner(System.in);
+        PhraseBook(keyboard, phrases);
+
+    }
+
+    public static void intro() {
+        System.out.println("This program plays the game of hangman.");
+        System.out.println("When the window opens select the file");
+        System.out.println("with the phrases you want to use.\n");
+        System.out.println("The computer will pick a random phrase.");
+        System.out.println("Enter capital letters as your guesses.");
+        System.out.println("After 5 wrong guesses you lose.");
+    }
+    public static void output(String topic)
+    {
+        System.out.print("I am thinking of a " + topic);
+        System.out.println(" ...");
+        System.out.println("");
+    }
+    
+    public static void PhraseBook(Scanner keyboard, PhraseBank phrases)
+    {
+
+        boolean yesNo;
+        boolean play = true;
+        while (play == true)
+        {
+            String topic = phrases.getTopic();
+            String answer = phrases.getNextPhrase();
+            output(topic);
+            int i = 0;
+            String letters = "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z";
+            String currentGuess = blankOut(answer);
+            while((i < 5) && (!currentGuess.equals(answer)))
+            {
+                System.out.println("the current phrase is " +currentGuess);
+                System.out.println("The letters you have not guessed yet are:");
+                System.out.println(letters);
+                System.out.print("Enter your next guess: ");
+                String guess = keyboard.next();
+                guess = guess.toUpperCase();
+                char input = guess.charAt(0);
+                
+                letters = lettersLeft(letters, input);
+                currentGuess = outputGuess(currentGuess, input, answer);
+                
+                System.out.println("");
+                System.out.println("You guesssed " + guess + ".");
+                
+                if (!answer.contains(guess))
+                {
+                    i++;
+                    yesNo = false
+                }
+                else
+                {
+                    yesNo = true
+                }
+                extra(int i, boolean yesNo)
+                System.out.println("");
+            }
+
+            play = end(i, answer, keyboard);
+
+        }
+    }
+    
+    public static void extra(int i, boolean yesNo)
+    {
+        if (yesNo == false)
+        {
+            String no = "no";
+        }
+        else
+        {
+            String yes = "";
+        }
+        System.out.println("That is "+no+ " present in the secret phrase.");
+        System.out.println("You have made " +i+ " wrong guesses.");
+        
+    }
+    
+    public static boolean end(int i, String answer, Scanner keyboard)
+    {
+        if(i != 5)
+        {
+            System.out.println("The phrase is "+answer);
+            System.out.println("YOU WIN!!!!");
+        }
+        else
+            System.out.println("You lose. The secret phrase was "+answer);
+        System.out.println("");
+        System.out.println("Do you want to play again?");
+        System.out.println("Enter 'Y' or 'y' to play again: ");
+        String playAgain = keyboard.next();
+        if ((playAgain.equals("y")) || (playAgain.equals("Y")))
+            return true;
+        else
+            return false;
+    }
+    public static String blankOut(String answer)
+    {
+        int i = 0;
+        String hidden = "";
+        while(i != answer.length())
+        {
+            if (answer.charAt(i) == '_')
+                hidden = hidden + "_";
+            else
+                hidden = hidden + "*";
+            i++;
+        }
+        return hidden;
+    }
+    public static String outputGuess(String currentGuess, char input, String answer)
+    {
+        int i = 0;
+        String hidden = "";
+        while(i != currentGuess.length())
+        {
+            if (answer.charAt(i) == input)
+                hidden = hidden + input;
+            else
+                hidden = hidden + currentGuess.charAt(i);
+            i++;
+        }
+        return hidden;
+    }
+    public static String lettersLeft(String letters, char input)
+    {
+        int i = 0;
+        String hidden = "";
+        while(i < letters.length())
+        {
+            if (letters.charAt(i) == input)
+            {
+                hidden = hidden + "";
+                i++;
+            }
+            else
+                hidden = hidden + letters.charAt(i);
+            i++;
+        }
+        return hidden;
+    }
+    
+}

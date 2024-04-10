@@ -1,0 +1,75 @@
+import info.gridworld.grid.Location;
+import info.gridworld.actor.Actor;
+import info.gridworld.actor.Critter;
+import java.util.ArrayList;
+
+public class TimidCritter extends Critter
+   {
+   private int ctr = 0;
+   private ArrayList<Location> previousLocs = new ArrayList<Location>();
+   public void act()
+      {
+      super.act();   
+          
+      } 
+   public ArrayList<Actor> getActors()
+      {
+      return super.getActors();    
+          
+      } 
+   public ArrayList<Location> getMoveLocations()
+      {
+      return super.getMoveLocations();   
+          
+      } 
+   public Location selectMoveLocation( ArrayList<Location> locs )
+      {
+      if( ctr < 10 )
+         {
+         for( int row = 0; row < getGrid().getNumRows(); row++ )
+            {
+            for( int col = 0; col < getGrid().getNumCols(); col++ )
+               {
+               Location a = new Location( row, col );
+               if( getGrid().get(a) instanceof TimidCritter )
+                  {
+                  previousLocs.add( a ); 
+                  System.out.println( "Current Location: " + a );
+                  
+                  break;
+                  } 
+               } 
+                
+            } 
+         
+         return super.selectMoveLocation();  
+         
+         } 
+      else if( ctr >= 10 )
+         {
+         System.out.println( "Critter move: 10" );    
+         for( int index = previousLocs.size() - 1; index > 0; index-- )
+            {
+            Location loc = previousLocs.get(index);
+            System.out.println( "Projected Location: " + loc );
+            super.makeMove( loc ) ;    
+            System.out.println( "Location moved to: " + loc );
+            index--;
+            return loc; 
+            break;
+            
+                
+            } 
+         } 
+          
+      } 
+   public void makeMove( Location loc )
+      {
+      
+       super.makeMove( loc );  
+       System.out.println( "New Location: " + loc );
+       ctr++;
+         } 
+      
+      } 
+   } 

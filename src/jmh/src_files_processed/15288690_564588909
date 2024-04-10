@@ -1,0 +1,577 @@
+/**
+ * ###### ######### ###########, ##### #### ######### #####
+ * ### ### #### ## ########## ## ##### ## ######### ####. 
+ *
+ * @###### ##### #### 
+ * @###### ###### ##########
+ * @####### ####### ##, ####
+ */
+import java.io.*;
+import java.util.*;
+
+public class HurricaneOrganizerArrayList
+{
+    private ArrayList <Hurricane> hurricanes;
+
+    /**
+     * Comment this constructor even though you did not write it.
+     */
+    public HurricaneOrganizerArrayList(String filename)throws IOException
+    {
+        readFile(filename);   
+    }
+
+    /**
+     * Comment this method even though you did not write it.
+     */
+    public void readFile(String filename) throws IOException
+    {
+        hurricanes = new ArrayList <Hurricane> ();
+        int hurYear, hurPressure, hurSpeed;
+        String hurName, hurMonth;
+        Scanner inFile = new Scanner(new File(filename));
+
+        while (inFile.hasNextLine())
+        {
+            hurYear = inFile.nextInt();
+            hurMonth = inFile.next();
+            hurPressure = inFile.nextInt();
+            hurSpeed = inFile.nextInt();
+            String tempName = inFile.nextLine();
+            hurName = "";
+            for(int k = 0; k < tempName.length(); k++)
+            {
+                char c = tempName.charAt(k);
+                if(('a' <= c && c <= 'z') || ('A' <= c && c <='Z'))
+                    hurName += c;
+                Hurricane h = new Hurricane(hurYear, hurMonth, hurPressure, hurSpeed, hurName);
+                hurricanes.add(h);
+            }
+            inFile.close();
+        }
+    } 
+
+    /**
+     * Comment this method.
+     */
+    public int findMaxWindSpeed( )
+    {
+
+        int max = hurricanes.get(0).getSpeed();
+        for (int i = 0; i < hurricanes.size(); i++)
+        {
+            if (hurricanes.size() > 0)
+            {
+                if (hurricanes.get(i).getSpeed() > max)
+                    max = hurricanes.get(i).getSpeed();
+            }
+            else
+                max = Integer.MIN_VALUE;
+        }
+        return max;
+    }
+
+    /**
+     * Comment this method.
+     */
+    public int findMaxPressure( )
+    {
+        int max = hurricanes.get(0).getPressure();
+        for (int i = 0; i < hurricanes.size(); i++)
+        {
+            if (hurricanes.size() > 0)
+            {
+                if (hurricanes.get(i).getPressure() > max)
+                    max = hurricanes.get(i).getPressure();
+            }
+            else
+                max = Integer.MIN_VALUE;
+        }
+        return max;
+    }
+
+    /**
+     * Comment this method.
+     */
+    public int findMinWindSpeed( )
+    {
+        int min = hurricanes.get(0).getSpeed();
+        for (int i = 0; i < hurricanes.size(); i++)
+        {
+            if (hurricanes.size() > 0)
+            {
+                if (hurricanes.get(i).getSpeed() < min)
+                    min = hurricanes.get(i).getSpeed();
+            }
+            else
+                min = Integer.MAX_VALUE;
+        }
+        return min;
+    }
+
+    /**
+     * Comment this method.
+     */
+    public int findMinPressure( )
+    {
+        int min = hurricanes.get(0).getPressure();
+        for (int i = 0; i < hurricanes.size(); i++)
+        {
+            if (hurricanes.size() > 0)
+            {
+                if (hurricanes.get(i).getPressure() < min)
+                    min = hurricanes.get(i).getPressure();
+            }
+            else
+                min = Integer.MAX_VALUE;
+        }
+        return min;
+    }
+
+    /**
+     * Comment this method.
+     */
+    public double calculateAverageWindSpeed( )
+    {
+        int sum = 0;
+        for (int i = 0; i < hurricanes.size(); i++)
+        {
+            sum += hurricanes.get(i).getSpeed();
+        }
+        double average = (double)sum/hurricanes.size(); 
+        return average; 
+    }
+
+    /**
+     * Comment this method.
+     */
+    public double calculateAveragePressure( )
+    {
+        int sum = 0;
+        for (int i = 0; i < hurricanes.size(); i++)
+        {
+            sum += hurricanes.get(i).getPressure();
+        }
+        double average = (double)sum/hurricanes.size(); 
+        return average; 
+    }
+
+    /**
+     * Comment this method.
+     */
+    public double calculateAverageCategory( )
+    {
+        int sum = 0;
+        for (int i = 0; i < hurricanes.size(); i++)
+        {
+            sum += hurricanes.get(i).getCategory();
+        }
+        double average = (double)sum/hurricanes.size(); 
+        return average; 
+    }
+
+    /**
+     * Selection sort, sorts the years ascending.
+     */
+    public void sortYears()
+    {
+        int minYear = 0; 
+        for (int outer = 0; outer < hurricanes.size() - 1; outer++)
+        {
+            minYear = outer; 
+            for (int inner = outer + 1; inner < hurricanes.size(); inner++)
+            {
+                if (hurricanes.get(inner).compareYearTo(hurricanes.get(minYear)) < 0)
+                {
+                    minYear= inner;
+                }
+            }
+            Hurricane temp = hurricanes.get(outer); 
+            hurricanes.set(outer, hurricanes.get(minYear)); 
+            hurricanes.set(minYear, temp); 
+        }
+    }
+
+    /**
+     * Insertion sort, sorts the names lexicographically.
+     */
+    public void sortNames()
+    {
+        int index; 
+        for (int outer = 1; outer <hurricanes.size(); outer++)
+        {
+            Hurricane temp = hurricanes.remove(outer);
+            index = outer - 1; 
+            while(index >=0 && temp.compareNameTo(hurricanes.get(index) < 0 )
+            {
+                index--;
+            }
+            hurricanes.add(index+1, temp);
+        }
+    }
+
+    /**
+     * Selection sort, sorts the categories descending.
+     * */
+    public void sortCategories()
+    {
+        int minCategory = 0;
+        for (int outer = hurricanes.size()-1; outer > 0; outer--)
+        {
+            minCategory = outer;
+            for (int inner = outer - 1; inner >=0; inner--)
+            {
+                if (hurricanes[minCategory].compareCategoryTo(hurricanes[inner]) > 0)
+                    minCategory = inner;
+            }
+            Hurricane temp = hurricanes[outer];
+            hurricanes[outer] = hurricanes[minCategory];
+            hurricanes[minCategory] = temp;
+        }
+    }  
+
+    /**
+     * Use selection sort for portion of array descendingly.
+     * 
+     * @param   start   the first index to start the sort
+     * @param   end     one past the last index to sort.
+     */
+    public void selectionSortPressure (int start, int end)
+    {
+        for (int outer = start; outer< end-1; outer++) 
+        {
+            Hurricane max = hurricanes[outer];
+            int index = outer;
+            for (int inner = outer +1; inner <end; inner++) 
+            {
+                if (hurricanes[inner].comparePressureTo(max) > 0 )
+                {
+                    max = hurricanes[inner];
+                    index = inner; 
+                }
+            }
+            hurricanes[index] = hurricanes[outer] ; 
+            hurricanes[outer] = max ; 
+        }
+    }
+
+    /**
+     * Merge sort (not recursive), sorts the pressures descending.
+     */
+    public void sortPressures()
+    {
+        int len = hurricanes.size(); 
+        int mid = hurricanes.size()/2; 
+        selectionSortPressure(0,mid); 
+        selectionSortPressure(mid,len); 
+        Hurricane [] merged = new Hurricane[len]; 
+        int findex = 0; 
+        int sindex = mid; 
+        for (int i = 0; i< len; i++) 
+        {
+            if (findex >= mid)
+            {
+                merged[i] = hurricanes[sindex]; 
+                sindex++;
+            }
+            else if (sindex >= len) 
+            {
+                merged[i] = hurricanes[findex]; 
+                findex++; 
+            }
+            else if (hurricanes[findex].comparePressureTo(hurricanes[sindex]) >= 0) 
+            {
+                merged[i] = hurricanes[findex];
+                findex++;
+            }
+            else
+            {
+                merged[i] = hurricanes[sindex]; 
+                sindex++; 
+            }
+        }
+        hurricanes = merged;
+    }
+
+    /**
+     * Merge sort (recursive), sorts wind speeds ascending. 
+     */
+    public void sortWindSpeeds(int low, int high){
+        if(low == high)
+            return;
+        else
+        {
+            int mid = (low + high)/2;
+            sortWindSpeeds(low, mid);
+            sortWindSpeeds(mid + 1, high);
+            merge(low, mid + 1, high);
+        }
+    }
+
+    /**
+     * Merge two parts of an array, using a temporary array.
+     */
+    public void merge(int low, int mid, int high)
+    {
+        int findex = low; 
+        int sindex = mid; 
+        Hurricane [] temp = new Hurricane [high-low +1]; 
+        for (int i = 0; i < temp.length; i++) 
+        {
+            if (findex >= mid) 
+            {
+                temp[i] = hurricanes[sindex]; 
+                sindex++;
+            }
+            else if (sindex > high) 
+            {
+                temp[i] = hurricanes[findex]; 
+                findex++; 
+            }
+            else if (hurricanes[findex].compareSpeedTo(hurricanes[sindex]) > 0) 
+            {
+                temp[i] = hurricanes[sindex]; 
+                sindex++; 
+            }
+            else 
+            {
+                temp[i] = hurricanes[findex]; 
+                findex++; 
+            }
+        }
+        for (int j = 0; j < temp.length; j++) 
+        {
+            hurricanes[j+low] = temp[j]; 
+        }
+
+    }
+
+    /**
+     * Sequential search for all the hurricanes in a given year.
+     * 
+     * @param   year
+     * @return  an array of objects in Hurricane that occured in
+     *          the parameter year
+     */
+    public Hurricane [] searchYear(int year)
+    {
+        int counter = 0;
+
+        Hurricane[] h = new Hurricane[counter];
+        return h;
+    }     
+
+    /**
+     * Binary search for a hurricane name.
+     * 
+     * @param  name   hurricane name being search
+     * @return a Hurricane array of all objects in hurricanes with specified name. 
+     *         Returns null if there are no matches
+     */
+    public Hurricane[ ] searchHurricaneName(String name)
+    {
+        sortNames();
+        return searchHurricaneNameHelper(name, 0, hurricanes.length - 1);
+    }
+
+    /**
+     * Recursive Binary Search for a hurricane name.  This is the helper
+     * for searchHurricaneName.
+     * 
+     * Precondition:  the array must be presorted by the hurricane names
+     * 
+     * @param   name  hurricane name to search for
+     * @param   low   the smallest index that needs to be checked
+     * @param   high  the highest index that needs to be checked
+     * @return  a Hurricane array of all Hurricane objects with a specified name. 
+     *          Returns null if there are no matches
+     */
+    public Hurricane[ ] searchHurricaneNameHelper(String name, int low , int high)
+    {
+        return null;
+
+
+
+
+    }
+
+    /**
+     * Supports Binary Search method to get the full range of matches.
+     * 
+     * Precondition:  the array must be presorted by the hurricane names
+     * 
+     * @param   name hurricane name being search for
+     * @param   match  the index where a match was found
+     * @return  a Hurricane array with objects from hurricanes with specified name. 
+     *          Returns null if there are no matches
+     */
+    public Hurricane[ ] retrieveMatchedNames (String name, int match)
+    {
+
+
+
+        return null;  
+    }
+
+    /**
+     * Comment this method even though you did not write it.
+     */
+    public void printHeader()
+    {
+        System.out.println("\n\n");
+        System.out.printf("%-4s, %-5s %-15s %-5s %-5s %-5s \n", 
+            "Year", "Mon.", "Name", "Cat.", "Knots", "Pressure");
+    }
+
+    /**
+     * Comment this method even though you did not write it.
+     */
+    public void printHurricanes()
+    {
+        printHurricanes(hurricanes);
+    }
+
+    /**
+     * Add comments here even though you did not write the method.
+     */
+    public void printHurricanes(Hurricane [] hurs)
+    {
+        if(hurs.length == 0)
+        {
+            System.out.println("\nVoid of hurricane data.");
+            return;
+        }
+        printHeader();
+        for(Hurricane h: hurs)
+        {
+            System.out.println(h);
+        }
+    }
+
+    /**
+     * Add comments here even though you did not write the method.
+     */
+    public void printMenu()
+    {
+        System.out.println("\n\nEnter option: ");
+        System.out.println("\t 1 - Print all hurricane data \n" +
+            "\t 2 - Print maximum and minimum data \n" +
+            "\t 3 - Print averages \n" +
+            "\t 4 - Sort hurricanes by year \n" +
+            "\t 5 - Sort hurricanes by name \n" +
+            "\t 6 - Sort hurricanes by category, descending \n" +
+            "\t 7 - Sort hurricanes by pressure, descending \n" +
+            "\t 8 - Sort hurricanes by speed \n" + 
+            "\t 9 - Search for hurricanes for a given year \n" +
+            "\t10 - Search for a given hurricane by name \n" +
+            "\t11 - Quit \n");
+    }
+
+    /**
+     * Add comments here even though you did not write the method.
+     */
+    public void printMaxAndMin( )
+    {
+        System.out.println("Maximum wind speed is " + 
+            findMaxWindSpeed( ) +
+            " knots and minimum wind speed is " + 
+            findMinWindSpeed( ) + " knots.");
+        System.out.println("Maximum pressure is " + 
+            findMaxPressure( ) +
+            " and minimum pressure is " + 
+            findMinPressure( ) + ".");
+    }
+
+    /**
+     * Add comments here even though you did not write the method.
+     */
+    public void printAverages( )
+    {
+        System.out.printf("Average wind speed is %5.2f knots. \n" , 
+            calculateAverageWindSpeed( ));
+        System.out.printf("Average pressure is %5.2f. \n" , 
+            calculateAveragePressure( ));
+        System.out.printf("Average category is %5.2f. \n" , 
+            calculateAverageCategory( ));
+    }
+
+    /**
+     * Add comments here even though you did not write the method.
+     */
+    public boolean interactWithUser( )
+    {
+        Scanner in = new Scanner(System.in);
+        boolean done = false;
+        printMenu();
+        int choice = in.nextInt();
+        in.nextLine();
+
+        if(choice == 1)
+        {
+            printHurricanes( ); 
+        }
+        else if (choice == 2)
+        {
+            printMaxAndMin( );
+        }
+        else if (choice == 3)
+        {
+            printAverages( );
+        }
+        else if(choice == 4)
+        {
+            sortYears();
+            printHurricanes( );
+        }
+        else if(choice == 5)
+        {
+            sortNames();
+            printHurricanes( );
+        }
+        else if(choice == 6)
+        {
+            sortCategories();
+            printHurricanes( );
+        }
+        else if(choice == 7)
+        {
+            sortPressures();
+            printHurricanes( );
+        }
+        else if(choice == 8)
+        {
+            sortWindSpeeds(0, hurricanes.length - 1);
+            printHurricanes( );
+        }
+        else if(choice == 9)
+        {
+            System.out.print("\n\tWhich year do you want to search for?\n\t");
+            int year = in.nextInt();
+            printHurricanes(searchYear(year));
+        }
+        else if(choice == 10)
+        {
+            System.out.print("\n\tWhich name do you want to search for?\n\t");
+            String name = in.next();
+            printHurricanes(searchHurricaneName(name));
+        }
+        else if (choice == 11)
+        {
+            done = true;
+        }  
+        return done;
+    }
+
+    /**
+     * Comment the method even though you did not write it.
+     */
+    public static void main (String [] args) throws IOException
+    {
+        HurricaneOrganizerArrayName cane = new HurricaneOrganizerArrayName("hurricanedata.txt");
+        boolean areWeDoneYet = false;
+        while( areWeDoneYet == false)
+        {
+            areWeDoneYet = cane.interactWithUser( );    
+        }
+    }
+}

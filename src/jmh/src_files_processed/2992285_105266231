@@ -1,0 +1,44 @@
+import java.util.Scanner; 
+public class BlackJackGamePlay
+{
+    public static void main(String[]args)
+    {
+        Scanner input = new Scanner(System.in); 
+        BlackJackMethods game = new BlackJackMethods(); 
+        final int MAX_DEALER_SUM = 17; 
+        int playerCard1 = game.drawCard(); 
+        int playerCard2 = game.drawCard();
+        int dealerCard1 = game.drawCard();
+        int dealerCard2 = game.drawCard();
+        int playerSum = playerCard1 + playerCard2; 
+        int dealerSum = dealerCard1 + dealerCard2; 
+        System.out.println("Your cards: " + playerCard1 + " and " + playerCard2 + "\nYour total: " + playerSum + "\nDealer shows " + dealerCard1 + " and hides the other.");
+        String nextMove = ""; 
+        do 
+        {
+            System.out.print("\nInput \"stay\" to stay or \"hit\" to take another card: ");  
+            nextMove = input.next().toUpperCase(); 
+        }
+        while (!(nextMove.equals("STAY")|| nextMove.equals("HIT"))); 
+        while (nextMove.equals("HIT"))
+        {
+            int playerNextCard = game.drawCard();
+            playerSum += playerNextCard; 
+            System.out.println("\nYou received: " + playerNextCard + "\nYour total is: " + playerSum); 
+            do 
+            {
+                System.out.print("Input \"stay\" to stay or \"hit\" to take another card: ");  
+                nextMove = input.next().toUpperCase(); 
+            }
+            while (!(nextMove.equals("STAY")|| nextMove.equals("HIT"))); 
+        }
+        System.out.println("Dealer reveals second card: " + dealerCard2); 
+        if (dealerSum < MAX_DEALER_SUM)
+        {
+            int dealerNextCard = game.drawCard(); 
+            dealerSum += dealerNextCard; 
+            System.out.println("\nDealer hits. Recieves: " + dealerNextCard); 
+        }
+        if (playerSum <= 21 && dealerSum 
+    }
+}

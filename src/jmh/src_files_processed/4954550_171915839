@@ -1,0 +1,425 @@
+import java.io.*;
+public class Univ_AI
+{
+    DataInputStream in=new DataInputStream(System.in);
+    int age=0,input=0,wins=0,draws=0,losses=0,length=0,mistake=0,count=0,ch=0;
+    boolean winner=false,checker=false,choices=false,valuecheck=false,loaded=false;
+    String p[]={"1","2","3","4","5","6","7","8","9"},nm="PLAYER",code="",hangword[],hangans[],word="",os="",filepath="";
+    void artificial()throws IOException
+    {
+        valuecheck=false; 
+        os=System.getProperty("os.name").toUpperCase();
+        System.out.print("\fOS: "+os+"\t\t----APPS v2.0----\n");
+        if(os.startsWith("MAC"))filepath="/Users/Shared/savfile";
+        else filepath="C:/Users/Public/savfile";
+        System.out.println("\n\t1. TIC-TAC-TOE\n\t2. HANGMAN\n\t3. VIEW/LOAD PROFILE\n\t4. CREATE PROFILE\n\t5. DELETE PROFILE\n\t6. EXIT\n");
+        System.out.print("\n\tChoice: ");
+        try
+        {
+            ch=Integer.parseInt(in.readLine());
+        }
+        catch(NumberFormatException e)
+        {
+            System.out.print("\nINVALID INPUT. Press Enter to Proceed.");
+            valuecheck=true;
+            in.read();
+        }
+        if(valuecheck==false)
+        {
+            switch(ch)
+            {
+                case 1:playtictactoe();
+                break;
+                case 2:hangman();
+                break;
+                case 3:fileload();
+                filesave();
+                System.out.print("\nPROFILE LOADED!");
+                artificial();
+                break;
+                case 4:filecreate();
+                System.out.print("\nPROFILE CREATED AND SAVED!");
+                in.read();
+                artificial();
+                break;
+                case 5:filedelete();
+                artificial();
+                break;
+                case 6:System.out.print("\f\t\t----THANK YOU----");
+                break;
+                default: invalid();
+                artificial();
+            }
+        }
+        else artificial();
+    }
+
+    void invalid()throws IOException
+    {
+        System.out.println("\f\t\t\t----INVALID INPUT----");
+        System.out.print("\nPress Enter To Reset:");
+        in.readLine();
+        System.out.print("\f");
+    }
+
+    void fileload()throws IOException
+    {
+        System.out.print("\f----LOAD YOUR PROFILE----");
+        System.out.print("\nInput Your Profile Code: ");
+        code=in.readLine();
+        try
+        {
+            FileReader fr=new FileReader(filepath+code+".txt");
+            BufferedReader br=new BufferedReader(fr);
+            loaded=true;
+            nm=br.readLine();
+            age=Integer.parseInt(br.readLine());
+            wins=Integer.parseInt(br.readLine());
+            losses=Integer.parseInt(br.readLine());
+            draws=Integer.parseInt(br.readLine());
+            br.close();
+            fr.close();
+        }
+        catch(FileNotFoundException e)
+        {
+            System.out.print("\nFile Could Not Be Found. Press Enter to retry. Press 'C' to cancel.\n");
+            if(!in.readLine().equalsIgnoreCase("C"))fileload();
+        }
+    }
+
+    void filesave()throws IOException
+    {
+        if(loaded==true)
+        {
+            System.out.print("\f\t\t\t----YOUR LATEST PROFILE DETAILS----\n\n");
+            FileWriter fr=new FileWriter(filepath+code+".txt");
+            BufferedWriter br=new BufferedWriter(fr);
+            PrintWriter pw=new PrintWriter(br);
+            pw.print(nm+"\n"+age+"\n"+wins+"\n"+losses+"\n"+draws);
+            br.close();
+            fr.close();
+            pw.close();
+            System.out.print("NAME: " + nm.toUpperCase() + "\tAGE: " + age);
+            System.out.print("\n\nWINS: " +wins+" LOSSES: "+losses+" DRAWS: "+draws);
+            System.out.print("\nPress Enter To Proceed--");
+            in.read();
+        }
+    }
+
+    void filecreate()throws IOException
+    {
+        loaded=true;
+        System.out.print("\f----CREATE YOUR PROFILE----");
+        System.out.print("\nCreate Your Profile Code (Anything You Like, Just Remember It!): ");
+        String code=in.readLine();
+        FileWriter fw=new FileWriter(filepath+code+".txt");
+        BufferedWriter bw=new BufferedWriter(fw);
+        PrintWriter pw=new PrintWriter(bw);
+        System.out.println("\f\t---PROFILE DETAILS---");
+        System.out.print("\nNAME: ");
+        nm=in.readLine();
+        pw.println(nm);
+        System.out.print("\nAGE: ");
+        age=Integer.parseInt(in.readLine());
+        pw.print(age+"\n"+wins+"\n"+losses+"\n"+draws);
+        bw.close();
+        fw.close();
+        pw.close();
+    }
+
+    void filedelete()throws IOException
+    {
+        System.out.print("\fInput Your Profile Code: ");
+        File fl=new File(filepath+in.readLine()+".txt");
+        if(!fl.delete())System.out.print("File Delete Unsuccessful. Try Again!");
+        else System.out.print("File Delete Successful. Press Enter to Continue:");
+        in.readLine();
+    }
+
+    void playtictactoe()throws IOException
+    {
+        System.out.println("\f\t-----WELCOME TO TIC-TAC-TOE v1.1-----");
+        System.out.println("AI: You have been assigned to 'X'. I'll be 'O'.\n Good Luck, because you'll need it!");
+        System.out.print("\nPress Enter To Begin:");
+        in.readLine();
+        gameplay();
+    }
+
+    void gameplay()throws IOException
+    {
+        valuecheck=false;
+        do
+        {
+            grid();
+            System.out.print("\n"+nm+", Choose Your Spot For 'X': ");
+            try
+            {
+                input=Integer.parseInt(in.readLine())-1;
+                if(p[input].equals("X")||p[input].equals("O"))
+                {
+                    System.out.print("\nSpace Already Occupied. Pls Press Enter To Retry.");
+                    in.read();
+                }
+            }
+            catch(NumberFormatException e)
+            {
+                System.out.print("\nINVALID INPUT. Press Enter to Proceed.");
+                valuecheck=true;
+                in.read();
+                break;
+            }
+        }
+        while(p[input].equals("X")||p[input].equals("O"));
+        if(valuecheck==false)
+        {
+            p[input]="X";
+            steveplays();
+            if((p[2].equals("X")&&p[5].equals("X")&&p[8].equals("X"))||(p[3].equals("X")&&p[4].equals("X")&&p[5].equals("X"))||(p[0].equals("X")&&p[4].equals("X")&&p[8].equals("X"))||(p[2].equals("X")&&p[4].equals("X")&&p[6].equals("X"))||(p[0].equals("X")&&p[3].equals("X")&&p[6].equals("X"))||(p[0].equals("X")&&p[1].equals("X")&&p[2].equals("X"))||(p[3].equals("X")&&p[4].equals("X")&&p[5].equals("X"))||(p[6].equals("X")&&p[7].equals("X")&&p[8].equals("X"))||(p[1].equals("X")&&p[4].equals("X")&&p[7].equals("X"))||(p[3].equals("X")&&p[5].equals("X")&&p[8].equals("X")))win();
+            else if((p[2].equals("O")&&p[5].equals("O")&&p[8].equals("O"))||(p[3].equals("O")&&p[4].equals("O")&&p[5].equals("O"))||(p[0].equals("O")&&p[4].equals("O")&&p[8].equals("O"))||(p[2].equals("O")&&p[4].equals("O")&&p[6].equals("O"))||(p[0].equals("O")&&p[3].equals("O")&&p[6].equals("O"))||(p[0].equals("O")&&p[1].equals("O")&&p[2].equals("O"))||(p[3].equals("O")&&p[4].equals("O")&&p[5].equals("O"))||(p[6].equals("O")&&p[7].equals("O")&&p[8].equals("O"))||(p[1].equals("O")&&p[4].equals("O")&&p[7].equals("O"))||(p[3].equals("O")&&p[5].equals("O")&&p[8].equals("O")))aiwins();
+            else 
+            {
+                int cnt=0;
+                for(int x=0;x<9;x++)if(p[x].equals("X")||p[x].equals("O"))cnt++;
+                if(cnt==9)
+                {
+                    System.out.print("Draw Game!\n");
+                    draws++;
+                    cleargrid();
+                    again();
+                    if(choices==true) 
+                    {
+                        choices=false;
+                        gameplay();
+                    }
+                    else artificial();
+                }
+                else
+                    gameplay();
+            }
+        }
+        else gameplay();
+    }
+
+    void steveplays()
+    {
+        if(((p[1].equals("O")&&p[2].equals("O"))||(p[3].equals("O")&&p[6].equals("O"))||(p[4].equals("O")&&p[8].equals("O")))&&p[0].equals("1")) p[0]="O";
+        else if(((p[0].equals("O")&&p[2].equals("O"))||(p[4].equals("O")&&p[7].equals("O")))&&p[1].equals("2")) p[1]="O";
+        else if(((p[0].equals("O")&&p[1].equals("O"))||(p[4].equals("O")&&p[6].equals("O"))||(p[5].equals("O")&&p[8].equals("O")))&&p[2].equals("3")) p[2]="O";
+        else if(((p[0].equals("O")&&p[6].equals("O"))||(p[4].equals("O")&&p[5].equals("O")))&&p[3].equals("4")) p[3]="O";
+        else if(((p[0].equals("O")&&p[8].equals("O"))||(p[1].equals("O")&&p[7].equals("O"))||(p[2].equals("O")&&p[6].equals("O"))||(p[3].equals("O")&&p[5].equals("O")))&&p[4].equals("5")) p[4]="O";
+        else if(((p[2].equals("O")&&p[8].equals("O"))||(p[3].equals("O")&&p[4].equals("O")))&&p[5].equals("6")) p[5]="O";   
+        else if(((p[0].equals("O")&&p[3].equals("O"))||(p[2].equals("O")&&p[4].equals("O"))||(p[7].equals("O")&&p[8].equals("O")))&&p[6].equals("7"))p[6]="O";
+        else if(((p[1].equals("O")&&p[4].equals("O"))||(p[8].equals("O")&&p[6].equals("O")))&&p[7].equals("8"))p[7]="O";
+        else if(((p[0].equals("O")&&p[4].equals("O"))||(p[2].equals("O")&&p[5].equals("O"))||(p[6].equals("O")&&p[7].equals("O")))&&p[8].equals("9"))p[8]="O";  
+        else if(((p[1].equals("X")&&p[2].equals("X"))||(p[3].equals("X")&&p[6].equals("X"))||(p[4].equals("X")&&p[8].equals("X")))&&p[0].equals("1")) p[0]="O";
+        else if(((p[0].equals("X")&&p[2].equals("X"))||(p[4].equals("X")&&p[7].equals("X")))&&p[1].equals("2"))p[1]="O";
+        else if(((p[0].equals("X")&&p[1].equals("X"))||(p[4].equals("X")&&p[6].equals("X"))||(p[5].equals("X")&&p[8].equals("X")))&&p[2].equals("3")) p[2]="O";
+        else if(((p[0].equals("X")&&p[6].equals("X"))||(p[4].equals("X")&&p[5].equals("X")))&&p[3].equals("4"))p[3]="O";
+        else if(((p[0].equals("X")&&p[8].equals("X"))||(p[1].equals("X")&&p[7].equals("X"))||(p[2].equals("X")&&p[6].equals("X"))||(p[3].equals("X")&&p[5].equals("X")))&&p[4].equals("5"))p[4]="O";
+        else if(((p[2].equals("X")&&p[8].equals("X"))||(p[3].equals("X")&&p[4].equals("X")))&&p[5].equals("6")) p[5]="O";   
+        else if(((p[0].equals("X")&&p[3].equals("X"))||(p[2].equals("X")&&p[4].equals("X"))||(p[7].equals("X")&&p[8].equals("X")))&&p[6].equals("7")) p[6]="O";
+        else if(((p[1].equals("X")&&p[4].equals("X"))||(p[8].equals("X")&&p[6].equals("X")))&&p[7].equals("8"))p[7]="O";
+        else if(((p[0].equals("X")&&p[4].equals("X"))||(p[2].equals("X")&&p[5].equals("X"))||(p[6].equals("X")&&p[7].equals("X")))&&p[8].equals("9")) p[8]="O";
+        else random();
+    }
+
+    void random()
+    {
+        if(p[0].equals("X")&&p[8].equals("X")&&p[4].equals("O"))
+        {
+            if(p[1].equals("2"))p[1]="O";
+            else if(p[3].equals("4"))p[3]="O";
+            else if(p[5].equals("6"))p[5]="O";
+            else if(p[7].equals("8"))p[7]="O";
+        }
+        else if(p[4].equals("5"))p[4]="O";
+        else if(p[0].equals("1"))p[0]="O";
+        else if(p[2].equals("3"))p[2]="O";
+        else if(p[6].equals("7"))p[6]="O";
+        else if(p[8].equals("9"))p[8]="O";
+        else if(p[1].equals("2"))p[1]="O";
+        else if(p[3].equals("4"))p[3]="O";
+        else if(p[5].equals("6"))p[5]="O";
+        else if(p[7].equals("8"))p[7]="O";
+    }
+
+    void win()throws IOException
+    {
+        wins++;
+        grid();
+        System.out.println("\n"+nm+ " Wins!");
+        cleargrid();
+        again();
+        if(choices==true) 
+        {
+            choices=false;
+            gameplay();
+        }
+        else artificial();        
+    }
+
+    void again()throws IOException
+    {
+        winner=false;
+        count=0;
+        mistake=0;
+        System.out.println("Play again(Y/N)?");
+        switch(in.readLine().toUpperCase())
+        {
+            case "Y":choices=true;
+            break;
+            case "N":filesave();
+            break;
+            default:invalid();
+            again();
+        }
+    }
+
+    void aiwins()throws IOException
+    {
+        losses++;
+        grid();
+        System.out.println("\nAI Wins");
+        cleargrid();
+        again();
+        if(choices==true) 
+        {
+            choices=false;
+            gameplay();
+        }
+        else artificial();
+    }
+
+    void grid()
+    {
+        System.out.println("\fGRID:\n");
+        for(int x=0;x<9;x++)
+        {
+            System.out.print(" "+p[x]+" ");
+            if(x!=2&&x!=5&&x!=8) System.out.print("|");
+            if(x==2||x==5)System.out.println("\n===========");
+        }
+    }
+
+    void cleargrid()
+    {
+        for(int x=0;x<9;x++) p[x]=Integer.toString(x+1); 
+    }
+
+    void hangman()throws IOException
+    {
+        System.out.print("\f\t\t-----WELCOME TO HANGMAN-----\n\nThe AI will select from over 250 movies randomly and you'll have 7\nchances to guess all the letters correctly. Press Enter.");
+        in.read();
+        hangmanfiles();
+    }
+
+    void hangmanfiles()throws IOException
+    {
+        try
+        {
+            if(os.startsWith("MAC") FileReader fr=new FileReader("/Hangman Movie List.txt");
+            BufferedReader br=new BufferedReader(fr);
+            int x=(int) (Math.random()*250);
+            for(int i=1;i<x;i++)br.readLine();
+            word=br.readLine();
+            fr.close();
+            br.close();
+            length=word.length();
+            hangword=new String[length];
+            hangans=new String[length];
+            for(int i=0;i<length;i++) hangword[i]=word.substring(i,i+1);
+            for(int i=0;i<length;i++)
+            {
+                int c=(int) hangword[i].charAt(0);
+                if(c>64&&c<91) hangans[i]="_";
+                if(hangword[i].equals("A"))hangans[i]="A";
+                if(hangword[i].equals("E"))hangans[i]="E";
+                if(hangword[i].equals("I"))hangans[i]="I";
+                if(hangword[i].equals("O"))hangans[i]="O";
+                if(hangword[i].equals("U"))hangans[i]="U";
+                if(c<65||c>90)hangans[i]=hangword[i];
+            }
+            System.out.print("\fWord has been selected. Do you wish to begin guessing(Y/N)?\n"+nm+": ");
+            playhangman();
+        }
+        catch(FileNotFoundException e)
+        {
+            Fil
+        }
+    }
+
+    void playhangman()throws IOException
+    {
+        System.out.print("\f");
+        for(int i=0;i<length;i++) 
+        {
+            int s=(int) hangans[i].charAt(0);
+            if(hangans[i].equals("_")||(s>64&&s<91))System.out.print(hangans[i]+" ");
+            else System.out.print(hangans[i]);
+        }
+        System.out.print("\n\nYOUR GUESS: ");
+        String guess=in.readLine().substring(0,1).toUpperCase();
+        for(int i=0;i<length;i++)
+        {
+            if(guess.equals(hangword[i]))
+            {
+                hangans[i]=guess;
+                checker=true;
+            }
+        }
+        if(checker==false) 
+        {
+            mistake++;
+            System.out.print("\nBAD LUCK!");
+            System.out.print("\nMISTAKES: "+mistake);
+            in.read();
+        }
+        else
+        {
+            System.out.print("\nGOOD GUESS!");
+            System.out.print("\nMISTAKES: "+mistake);
+            in.read();
+        }
+        checker=false;
+        for(int i=0;i<length;i++)if(hangword[i].equals(hangans[i]))count++;        
+        if(count==length) winner=true;
+        else count=0;
+        if(mistake<7&&winner==false) playhangman();
+        else if(winner==true) hangwin();
+        else hanglose();
+    }
+
+    void hangwin()throws IOException
+    {
+        wins++;
+        System.out.println("\f\nWINNER!\n\nYOU GUESSED IT: "+word);
+        again();
+        if(choices==true) 
+        {
+            choices=false;
+            hangmanfiles();
+        }
+        else 
+        {
+            filesave();
+            artificial();
+        }
+    }
+
+    void hanglose()throws IOException
+    {
+        losses++;
+        System.out.println("\f\nLOSER!\n\nYOU FAILED TO GUESS IT: "+word);
+        again();
+        if(choices==true) 
+        {
+            choices=false;
+            hangmanfiles();
+        }
+        else 
+        {
+            filesave();
+            artificial();
+        }
+    }
+}

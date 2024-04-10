@@ -1,0 +1,89 @@
+
+public class Arr
+{
+   public static void main(String[]Args){
+       int[]a={7,1,2,9,7,2,1};
+       int[]b ={1,2,1,4};
+       int[]c={9,4,1,1,11,4,9,1,4,9,8};
+       System.out.println(what(a)+" 
+       System.out.println(what(b)+" 
+       System.out.println(what(c)+" 
+       int[][]d={{3,13,15,28,30},{40,51,52,29,30},{28,10,53,54,53},{53,12,55,53,60},{72,62,56,20,80},{80,81,90,95,100}};
+       System.out.println("\n\n*****Testing shortestPath*****");
+       System.out.println("shortest path from {0,0} to {mat.length-1,mat[0].length-1} is: "+shortestPath(d)+" 
+    }
+   public static void printArr(int[]arr){
+       for(int i=0;i<arr.length;i++){
+           System.out.print(arr[i]+" ");
+       }
+   }
+   public static int what(int[]a){
+       int m=0;
+       for(int i=0;i<a.length;i++){
+           for(int j=a.length-1;j>-1;j--){
+               if(a[i]==a[j]){
+                   int t= f(a,i,j);
+                   if(t>m){
+                       m=t;
+                    }
+                }
+            }
+        }
+       return m;
+   }
+   private static int f(int []a,int i,int j){
+       int c =0;
+       while(i<a.length&&j>-1){
+           if(a[i]==a[j]){
+               c++;
+               i++;
+               j--;
+            }
+           else{
+               return c;
+            }
+       }
+       return c;
+    }
+    
+   public static int shortestPath(int[][]mat){
+       return shortestPath(mat,0,0,1,Integer.MAX_VALUE);
+   } 
+   private static int shortestPath(int[][]mat,int row,int col, int counter,int min){
+       if(mat[row][col]==mat[mat.length-1][mat[0].length-1]){
+           counter++;
+           if(counter<min){
+               min=counter;
+           }
+           return counter;
+       }
+       int temp = mat[row][col];
+       int been = Integer.MAX_VALUE;
+       mat[row][col]=been;
+       if(row>0){
+           if(mat[row][col]<mat[row-1][col]&&mat[row-1][col]!=been){
+               counter++;
+               return shortestPath(mat,row,col,counter,min); 
+           }
+       }
+       if(col<mat[0].length-1){
+           if(mat[row][col]<mat[row][col+1]&&mat[row][col+1]!=been){
+               counter++;
+               return shortestPath(mat,row,col,counter,min); 
+           }
+       }
+       if(row<mat.length-1){
+           if(mat[row][col]<mat[row+1][col]&&mat[row+1][col]!=been){
+               counter++;
+               return shortestPath(mat,row,col,counter,min); 
+           }
+       }
+       if(col>0){
+           if(mat[row][col]<mat[row][col-1]&&mat[row][col-1]!=been){
+               counter++;
+               return shortestPath(mat,row,col,counter,min); 
+           }
+       }
+       return mat[row][col]=temp;
+       
+}

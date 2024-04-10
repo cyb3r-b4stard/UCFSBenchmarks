@@ -1,0 +1,409 @@
+package tuiLayer;
+import controlLayer.*;
+import java.util.Scanner;
+import java.util.Calendar;
+
+
+public class MainMenuUI
+{
+    private FriendsController friendsController = new FriendsController();
+    private DVDController dvdController = new DVDController();
+    private int i;
+    private String inputString;
+    public MainMenuUI() {
+
+    }
+    public void start(){
+        mainMenu();
+    }
+
+
+    private void mainMenu(){
+        System.out.println("Welcome to the main menu");
+        System.out.println("Press the number to procceed:");
+        System.out.println("1) Friends");
+        System.out.println("2) DVDs");
+        System.out.println("3) Loans");
+        System.out.println("4) Exit");
+        int i = scanner();
+
+        switch (i){
+            case 1: friendsMenu();
+                break;
+            case 2: DVDMenu();
+                break;
+            case 3: loanMenu();
+                break;
+            case 4: exit();
+                break;
+            default: mainMenu();
+                break;
+        }
+    }
+
+    private int scanner(){
+        Scanner scanner = new Scanner(System.in);
+        i = scanner.nextInt();
+        return i;
+    }
+
+    private void friendsMenu(){
+        System.out.println("Welcome to the friends menu");
+        System.out.println("Press the number to procceed:");
+        System.out.println("1) Create");
+        System.out.println("2) List the users");
+        System.out.println("3) Find specific user");
+        System.out.println("4) Back");
+        int i = scanner();
+
+        switch (i){
+            case 1: createFriend();
+                break;
+            case 2: listAllFriends();
+                break;
+            case 3: findFriend();
+                break;
+            case 4: mainMenu();
+                break;
+            default: friendsMenu();
+                break;
+        }
+    }
+
+    private void DVDMenu(){
+        System.out.println("Welcome to the DVDs menu");
+        System.out.println("Press the number to procceed:");
+        System.out.println("1) Create a DVD");
+        System.out.println("2) List the DVDs");
+        System.out.println("3) Search for specific DVD");
+        System.out.println("4) Back");
+        int i = scanner();
+        switch (i){
+            case 1: createDVD();
+                break;
+            case 2: listDVDs();
+                break;
+            case 3: findDVD();
+                break;
+            case 4: mainMenu();
+                break;
+            default: DVDMenu();
+                break;
+        }
+    }
+
+    private void loanMenu(){
+        System.out.println("Welcome to the loans menu");
+        System.out.println("Press the number to procceed:");
+        System.out.println("1) Create a loan");
+        System.out.println("2) List the loans");
+        System.out.println("3) Find a specific loan");
+        System.out.println("4) Back");
+        int i = scanner();
+
+        switch (i){
+            case 1: createLoan();
+                break;
+            case 2: listLoans();
+                break;
+            case 3: findLoan();
+                break;
+            case 4: mainMenu();
+                break;
+            default: loanMenu();
+                break;
+        }
+    }
+
+    private void updateDVD(id){
+        System.out.println("Welcome to the update DVD menu");
+        System.out.println("Press the number to procceed:");
+        System.out.println("1) Add a copy");
+        System.out.println("2) Delete DVD");
+        System.out.println("3) Delete Copy");
+        System.out.println("4) Back");
+        int i = scanner();
+
+        switch (i){
+            case 1: createCopy(id);
+                break;
+            case 2: deleteDVD(id);
+                break;
+            case 3: deleteCopy(id);
+                break;
+            case 4: mainMenu();
+                break;
+            default: System.out.println("\nYou should select a value from 1 to 4 \n")
+                updateDVD(id);
+                break;
+        }
+    }
+
+
+
+    private void createLoan(){
+    }
+    private void listLoans(){
+    }
+
+    private void findLoan(){
+    }
+
+    private void createCopy(){
+    }
+
+    private void editDVD(){
+        System.out.println("Write an id or name of the friend");
+        String dvdCredentials = getDVDTitleOrId();
+        String fail = dvdController.returnToString(dvdCredentials);
+        if(fail.equals("Does not exist")) {
+            System.out.println(fail);
+            DVDMenu();
+        }else {
+            updateDVD(dvdController.returnId(inputString));
+        }
+    }
+
+    private void deleteDVD(){
+    }
+
+    private void deleteCopy(){
+    }
+
+    private void exit(){
+        System.out.println("You have successfully exited the program");
+    }
+
+    private void inputString(){
+        Scanner scanner = new Scanner(System.in);
+        inputString = scanner.nextLine();
+    }
+
+    private String getName(){
+        System.out.println("Add a name for the friend");
+        inputString();
+        String name = inputString;
+        return name;
+    }
+
+    private String getAdress(){
+        System.out.println("Add an address for the friend");
+        inputString();
+        String address = inputString;
+        return address;
+    }
+
+    private int getPostalCode(){
+        System.out.println("Add a postalcode of the friend");
+
+        int postalCode = scanner();
+        return postalCode;
+    }
+
+    private String getCity(){
+        System.out.println("Add the city of the friend");
+        inputString();
+        String city = inputString;
+        return city;
+    }
+
+    private String getPhone(){
+        System.out.println("Add the phone  of the friend");
+        inputString();
+        String phone = inputString;
+        return phone;
+    }
+
+    private void createFriend(){
+        String name = getName();
+        String address = getAdress();
+        int postalCode = getPostalCode();
+        String city = getCity();
+        String phone = getPhone();
+        friendsController.createFriend(name, address, postalCode, city, phone);
+        System.out.println("The friend was added to your list.");
+        friendsMenu();
+    }
+
+    private void listAllFriends(){
+        System.out.println(friendsController.printFriendsArrayList());
+        findFriend();
+    }
+
+    private String getFriendNameOrId(){
+        inputString();
+        String friendCredentials = inputString;
+        return friendCredentials;
+    }
+
+    private void findFriend(){
+        System.out.println("Write an id or name of the friend");
+        String friendCredentials = getFriendNameOrId();
+        String fail = friendsController.returnToString(friendCredentials);
+        if(fail.equals("Does not exist")) {
+            System.out.println(fail);
+            friendsMenu();
+        }else {
+            editFriendMenu(friendsController.returnId(inputString));
+        }
+    }
+
+    private void editFriendMenu(int id){
+        System.out.println("Press the number to procceed:");
+        System.out.println("1) Change name");
+        System.out.println("2) Change address");
+        System.out.println("3) Change postal code");
+        System.out.println("4) Change city");
+        System.out.println("5) Change phone number");
+        System.out.println("6) Delete friend");
+        System.out.println("7) Back");
+        int i = scanner();
+
+        switch (i){
+            case 1: changeName(id);
+                break;
+            case 2: changeAddress(id);
+                break;
+            case 3: changePostalCode(id);
+                break;
+            case 4: changeCity(id);
+                break;
+            case 5: changePhone(id);
+                break;
+            case 6: deleteFriend(id);
+                break;
+            case 7: friendsMenu();
+                break;
+            default: editFriendMenu(id);
+                break;
+        }
+    }
+
+    private void changeName(int id){
+        System.out.print("Type a new name: ");
+        inputString();
+        friendsController.setName(id, inputString);
+        String id2 = ((Integer)id).toString();
+        System.out.println(friendsController.returnToString(id2));
+        editFriendMenu(id);
+    }
+
+    private void changeAddress(int id){
+        System.out.print("Type a new address: ");
+        inputString();
+        friendsController.setAddress(id, inputString);
+        String id2 = ((Integer)id).toString();
+        System.out.println(friendsController.returnToString(id2));
+        editFriendMenu(id);
+    }
+
+    private void changePostalCode(int id){
+        System.out.print("Type a new postal code: ");
+        int i = scanner();
+        friendsController.setPostalCode(id, i);
+        String id2 = ((Integer)id).toString();
+        System.out.println(friendsController.returnToString(id2));
+        editFriendMenu(id);
+    }
+
+    private void changeCity(int id){
+        System.out.print("Type a new city: ");
+        inputString();
+        friendsController.setCity(id, inputString);
+        String id2 = ((Integer)id).toString();
+        System.out.println(friendsController.returnToString(id2));
+        editFriendMenu(id);
+    }
+
+    private void changePhone(int id){
+        System.out.print("Type a new phone: ");
+        inputString();
+        friendsController.setPhone(id, inputString);
+        String id2 = ((Integer)id).toString();
+        System.out.println(friendsController.returnToString(id2));
+        editFriendMenu(id);
+    }
+
+    private void deleteFriend(int id){
+        friendsController.deleteFriend(id);
+        friendsMenu();
+    }
+
+    private String getBarcode(){
+        System.out.print("Add the barcode of the DVD: ");
+        inputString();
+        String barcode = inputString;
+        return barcode;
+    }
+
+    private String getTitle(){
+        System.out.print("Add the title of the DVD: ");
+        inputString();
+        String title = inputString;
+        return title;
+    }
+
+    private String getArtist(){
+        System.out.print("Add the artist of the DVD: ");
+        inputString();
+        String artist = inputString;
+        return artist;
+    }
+
+    private long getPublicationDate(){
+        int[] yearMonthDate = new int[3];
+        do{
+            System.out.print("Add year of publication: ");
+            int minimumYear = 1970;
+            int year = scanner();
+            if (year <minimumYear || year > Calendar.getInstance().get(Calendar.YEAR)){
+                System.out.println("Thats not a valid year.");
+            }
+            yearMonthDate[0] = year;
+        }while (year < minimumYear || year > Calendar.getInstance().get(Calendar.YEAR));
+
+        do {
+            int month = scanner();
+            if(month<1 || month>12){
+                System.out.println("Thats not a valid month.");
+            }
+            yearMonthDate[1] = month;
+        }while (month<1 || month>12);
+
+        do{
+            int day = scanner();
+            if (day<1 || day> 31){
+                System.out.println("Thats not a valid day.");
+            }
+            yearMonthDate[2] = day;
+        }while (day<1 || day > 31);
+
+    }
+
+    private void createDVD(){
+        String barcode = getBarcode();
+        String title = getTitle();
+        String artist = getArtist();
+        System.out.print("Add the publication date: ");
+        long publicationDate = (long) scanner();
+        dvdController.createDVD(barcode, title, artist, publicationDate);
+        DVDMenu();
+    }
+
+    private void listDVDs(){
+        System.out.println(dvdController.printDVDsArrayList());
+        editDVD();
+    }
+
+    private void findDVD(){
+        System.out.println("Write an id or title of the dvd");
+        String dvdCredentials = getFriendNameOrId();
+        String fail = dvdController.returnToString(dvdCredentials);
+        if(fail.equals("Does not exist")) {
+            System.out.println(fail);
+            DVDMenu();
+        }else {
+            updateDVD(friendsController.returnId(inputString));
+        }
+    }
+}

@@ -1,0 +1,132 @@
+import java.util.Random;
+/**
+ * ### ##### ####### ##### ########## #### #####-#### ## ##### ##### ## ###
+ * ######. ## ## ##### ## ### ##### ##### (### ##### #### ## ##### ## ### ########), 
+ * ###### ## ### ###### #####, ### ### ##########, ##### # ### ######### #########
+ * ######.
+ * 
+ * @###### ######## ####### ##########
+ * @####### ######### ####
+ */
+
+public class SpaceStation
+{
+    private Diamond spaceStation;
+    private Canvas canvas;
+    private int initXPosition; 
+    private int initYPosition; 
+    private int xDistance;     
+    private int yDistance;     
+    private int orbitCount;    
+    private Random r;          
+
+    /**
+     * Creates a space shuttle as a Diamond object at a random position at the top of
+     * the simulation window. Once the space station is initialized, it should begin
+     * to orbit.
+     * 
+     * @param canvas -- the canvas on which to render the space station
+     */
+    public SpaceStation(Canvas simCanvas)
+    {
+        canvas = simCanvas;
+        spaceStation = new Diamond(simCanvas);
+        spaceStation.changeSize(50,80);
+        r = new Random();
+        spaceStation.changeColor("green"); 
+        spaceStation.makeVisible();
+        initXPosition=r.nextInt(canvas.getWidth()-100);
+        initYPosition=spaceStation.getHeight()/2;
+        spaceStation.moveTo(initXPosition, initYPosition);
+        spaceStation.changeColor("green");
+        spaceStation.makeVisible();
+        /** TO DO: Complete the initialization of the spaceStation:
+         * set its initXPosition to a random integer between 0 and the width of the canvas - 100
+         * set its initYPosition so that its upper vertex is at the canvas upper border
+         * move it to its (initXPosition, initYPosition)
+         * set its color to "green"
+         * make it visible
+         */
+    }
+
+    /**      
+     * Handle orbiting details:
+     * (1) move the space station, if it is within canvas boundaries
+     * (2) begin another orbit at a lower starting point, if space station reaches the 
+     * right side of the canvas. Do this by computing new initXPosition and initYPosition
+     * and then by moving there
+     * (2a) update orbitCount
+     * (2b) if space station completed 1 orbit, change its color to "yellow"
+     * (2c) if space station completed 2 orbits, change its color to "red"
+     * 
+     * TO DO: Write the body of this method.
+     */
+    public void moveSmallDistance()
+    {
+        if(spaceStation.getXPosition()<canvas.getWidth())&& spaceStation.getYPosition()<canvas.getHeight {
+            spaceStation.moveDirection(xDistance, yDistance);
+        }
+        else if(spaceStation.getXPosition()>canvas.getWidth()){
+            initXPosition=r.nextInt(canvas.getWidth()-100);
+            initYPosition=r.nextInt(canvas.getWidth()-100);
+            spaceStation.moveTo(initXPosition, initYPosition);
+            orbitCount++;
+            if(orbitCount==1)
+            {
+                spaceStation.changeColor("yellow");
+               
+            }
+            else if(orbitCount==2)
+            {
+                spaceStation.changeColor("red");
+            }
+        }
+    }
+
+    /**
+     * The fuel cell has docked, so:
+     * (1) change color back to "green"
+     * (2) wait 3 seconds
+     * 
+     * TO DO: Write the body of this method.
+     */
+    public void reFuel()
+    {
+    }
+
+    /**
+     * Set the orbiting speed according to 'B', 'I', or 'A'.
+     * You can experiment with xDistance and yDistance for this.
+     *
+     * TO DO: Write the body of this method.
+     */
+    public void setSpeed(char newSpeed)
+    {int speed=0;
+        if(newSpeed=='B')
+            speed=1;
+            if(newSpeed =='I')
+            speed=2;
+            if(newSpeed=='A')
+            speed=3;
+            xDistance=speed;
+            yDistance=speed;
+    }
+
+    /**
+     * @return xPosition -- the current x-coordinate of the space station
+     * TO DO: Rewrite the body of this method.
+     */
+    public int getXPosition()
+    {
+        return 0;
+    }
+
+    /**
+     * @return yPosition -- the current y-coordinate of the space station
+     * TO DO: Rewrite the body of this method.
+     */
+    public int getYPosition()
+    {
+        return 0;
+    }
+}

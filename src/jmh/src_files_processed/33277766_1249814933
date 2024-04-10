@@ -1,0 +1,95 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.Locale;
+import java.io.*;
+import fundamentos.Dibujo;
+import fundamentos.ColorFig;
+/**
+ * ##### #### ####### # ###### ## ############## ### ####### ##
+ * ######### ## ##########
+ */
+public class Coche {
+
+    private ArrayList<Obstaculo> lista; 
+    private double vC;                  
+    private final double A,L;           
+    /**
+     * Constructor que recibe como parametros la velocidad del coche
+     * vC en m/s, las dimensiones A y L del coche en m y el nombre de
+     * un fichero de texto del que se leen datos para rellenar la
+     * lista de obstaculos
+     */
+    public Coche(double vC, double A, double L, String nombreFichero) {
+        this.vC = vC;
+        this.A = A;
+        this.L = L;
+        lista = new ArrayList<Obstaculo>();
+        try (Scanner in=new Scanner(new FileReader(nombreFichero))) {
+            in.useLocale(Locale.ENGLISH);
+            int id;
+            double vT,vN,d,alfa,r;
+            in.nextLine();
+            while (in.hasNext()) {
+                id = in.nextInt();
+                vT = in.nextDouble();
+                vN = in.nextDouble();
+                d = in.nextDouble();
+                alfa = in.nextDouble();
+                r = in.nextDouble();
+                Obstaculo nuevo = new Obstaculo(id,r);
+                nuevo.set(vT,vN,d,alfa);
+                lista.add(nuevo);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("No encuentro el fichero");
+            System.exit(-1);
+        }
+    }
+    
+    /**
+     * Retorna un array conteniendo todos los obstaculos para los que se 
+     * detecta un posible choque
+     */
+    public Obstaculo[] posiblesChoques() {
+        ArrayList<Obstaculo> chocan=new ArrayList();
+        for(obstaculo o: chocan){
+            boolean choca=false;
+            if(0<=o.tAlcance<=31 && 0<=o.tRebase<=31){
+                if(Math.abs(o.margenAlcance)<=(r+A)){
+                    choca=true;
+                }else{
+                    if(Math.abs(o.margenRebase)<=(r+A)){
+                        choca=true;
+                    }else{
+                        if((o.margenAlcance*o.margenRebase)<0){
+                            choca=true;
+                        }
+                    }
+                }
+            }
+            if(choca==true){
+                o.add(new Obstaculo);
+            }
+        }
+        Array Obstaculo[] posibles=new Array;
+        for(i=0;i=posibles.length-1;i++){
+            posibles[i]=chocan[i];
+        }
+}
+    /**
+     * Pone en pantalla un informe de todos los obstaculos
+     */
+    public void informe() {
+	...
+    }
+    
+    /**
+     * Busca en la lista el primer Obstaculo cuyo margen de alcance en
+     * valor absoluto es menor o iguar que r+A y lo retorna.  Si no lo
+     * encuentra lanza NoEncontrado.
+     */
+    public Obstaculo pocoMargenAlcance() throws NoEncontrado {
+	...
+    }
+        
+}

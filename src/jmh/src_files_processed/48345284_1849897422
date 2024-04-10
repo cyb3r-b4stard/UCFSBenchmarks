@@ -1,0 +1,206 @@
+
+/**
+ * # # # # # # #
+ *
+ * ######## ##### ###### ####### ###.
+ * 
+ * @###### ####### ########
+ *         #### #######
+ *         
+ * @####### ## ##### #### 
+ *
+ * ############
+ * ############
+ * 
+ * ########.#######@########.####.##
+ * #######.####@########.####.##
+ */
+
+
+import java.io.PrintWriter;
+public class Tp3Gr20 {
+    private static int compteur = 0;
+    
+    public static void afficherMenuPrincipal() {
+
+        System.out.println("1- Ajouter une nouvelle paire de botte\n"
+            + "2- Supprimer une paire de botte\n"
+            + "3- Afficher les informations sur une paire de botte specifique\n"
+            + "4- Afficher toutes les paires de bottes\n"
+            + "5- Afficher les informations sur une paire de botte de couleur specifique\n"
+            + "6- Afficher les paires de bottes d'un sexe specifie\n"
+            + "7- Afficher les paires de bottes d'une pointure specifiee\n"
+            + "8- Afficher les paires de bottes dont la description contient la chaine recherchee\n"
+            + "9- Quitter le programme\n");
+
+    }
+
+    public static double saisirEtValiderChoixReel ( String msgInvite, double min, double max ) {
+        double choix;
+
+        System.out.print(msgInvite);
+        choix = Clavier.lireDouble();
+        System.out.print("\n");
+
+        while ((choix < min) || (choix > max)) {
+            System.out.println("ERREUR! Les choix possible sont entre " + min + " et " + max + " inclusivement");
+            System.out.print(msgInvite);
+            choix = Clavier.lireDoubleLn();
+            System.out.print("\n");
+        }
+        return choix;
+        
+    }
+
+    public static int saisirEtValiderChoixEntier ( String msgInvite, int min, int max ) {
+        int choix;
+
+        System.out.print(msgInvite);
+        choix = Clavier.lireInt();
+        System.out.print("\n");
+
+        while ((choix < min) || (choix > max)) {
+            System.out.println("ERREUR! Les choix possible sont entre " + min + " et " + max + " inclusivement");
+            System.out.print(msgInvite);
+            choix = Clavier.lireIntLn();
+            System.out.print("\n");
+        }
+        return choix;
+        
+    }
+
+    public static String saisirEtValiderString ( String msgInvite, int max ) {
+        String choix;
+
+        System.out.print(msgInvite);
+        choix = Clavier.lireString();
+        System.out.print("\n");
+
+        while (choix.length() > max) {
+            System.out.println("ERREUR! La longueur du nom du manufacturier doit etre plus petite que " + max);
+            System.out.print(msgInvite);
+            choix = Clavier.lireString();
+            System.out.print("\n");
+        }
+        return choix;
+
+    }
+    
+    public static boolean saisirEtValiderBoolean ( String msgInvite)  {
+       boolean choixBool = false;
+       char choix;
+       
+       System.out.print(msgInvite);
+       choix = Character.toUpperCase(Clavier.lireChar());
+       System.out.print("\n");
+       
+       while (choix != 'U' && choix != 'N'){
+           System.out.print(msgInvite);
+           choix = Character.toUpperCase(Clavier.lireChar());
+           System.out.print("\n");
+        
+       }
+       
+       if (choix == 'N') {
+           choixBool = true;
+        
+        }
+       
+       return choixBool;
+       
+    }
+    
+    public static void afficherMessagePresentation() {
+        System.out.println("Bienvenue sur le programme de gestion d'inventaire de bottes!");
+        System.out.print("\n");
+      
+    }
+    
+    public static void afficherMessageFin() {
+        System.out.print("Fin du programme");
+    
+    }
+    
+    public static Bottes[] ajouterBottes ( Bottes[] tabBottes ) {
+        
+        String msgPointure = "Entrez la pointure de la botte. Les valeurs permises sont entre " + Bottes.POINTURE_MIN + " et " +Bottes.POINTURE_MAX+ " inclusivement : ";
+        String msgSexe = "Entrez le sexe de la botte. Les valeurs permises sont entre " + Bottes.SEXE_MIN + " et " +Bottes.SEXE_MAX+ " inclusivement.\n"
+                         + " 0 = Femme, 1 = Homme, 2 = Unisexe.\n" 
+                         + " Valeur par defaut: 2 : ";
+        String msgCouleur = "Entrez la couleur de la botte. Les valeurs permises sont entre " + Bottes.COULEUR_MIN +  " et " +Bottes.COULEUR_MAX+ " inclusivement.\n"
+                            +  " 0 = Autre, 1 = Argent, 2 = Beige, 3 = Blanc, 4 = Bleu, 5 = Brun, 6 = Gris,\n" 
+                            +  " 7 = Jaune, 8 = Noir, 9 = Or, 10 = Orange, 11 = Rouge, 12 = Vert.\n" 
+                            +  " La valeur par defaut de la couleur est 8 : ";
+      
+        String msgMateriel = "Entrez le materiel de la botte. Les valeurs permises sont entre " + Bottes.MATERIEL_MIN+  " et " +Bottes.MATERIEL_MAX+ " inclusivement.\n"
+                            + " 0 = Autre, 1 = Cuir, 2 = PVC, 3 = Suede.\n" 
+                            + " Valeur par defaut: 1 : ";
+        String msgTalons = "Entrez la longueur du talon de la botte. Les valeurs permises sont entre " + Bottes.TALONS_MIN+  " et " +Bottes.TALONS_MAX+ " inclusivement : ";
+        String msgCorps = "Entrez le corps de la botte. Les valeurs permises sont entre " + Bottes.CORPS_MIN+  " et " +Bottes.CORPS_MAX+ " inclusivement : ";
+        String msgManufacturier = "Entrez le manufacturier de la botte. La longueur maximale permise est de " +Bottes.LONG_MANUF_MAX + " : ";
+        String msgDescription = "Entrez la description de la botte : ";
+        String msgNeufs = "Quel est l'etat de la paire de botte ? u,U pour usage et n,N pour neuve : ";
+        
+        int pointure = saisirEtValiderChoixEntier(msgPointure, Bottes.POINTURE_MIN, Bottes.POINTURE_MAX);
+        int sexe = saisirEtValiderChoixEntier(msgSexe, Bottes.SEXE_MIN, Bottes.SEXE_MAX);
+        int couleur = saisirEtValiderChoixEntier(msgCouleur, Bottes.COULEUR_MIN, Bottes.COULEUR_MAX);
+        int materiel = saisirEtValiderChoixEntier(msgMateriel, Bottes.MATERIEL_MIN, Bottes.MATERIEL_MAX);
+        double talons = saisirEtValiderChoixReel(msgTalons, Bottes.TALONS_MIN, Bottes.TALONS_MAX);
+        double corps = saisirEtValiderChoixReel(msgCorps, Bottes.CORPS_MIN, Bottes.CORPS_MAX);
+        String manufacturier = saisirEtValiderString(msgManufacturier, Bottes.LONG_MANUF_MAX);
+        System.out.print(msgDescription);
+        String description = Clavier.lireString();
+        System.out.print("\n");
+        boolean neufs = saisirEtValiderBoolean(msgNeufs);
+        
+        tabBottes = new Bottes[compteur]
+        
+        Bottes b = new Bottes(pointure,corps,couleur,neufs,talons,sexe,description,manufacturier);
+        
+        tabBottes[compteur] = b;
+        compteur++;
+        
+        return tabBottes;
+        
+    }
+
+    public static void main ( String[] params ) {
+        int nombreBottes;
+        int choixMenu;
+        String msgMenu = "Choisir une option : ";
+        
+        afficherMessagePresentation();
+        System.out.print("Combien de bottes voulez vous creer ? : ");
+        nombreBottes = Clavier.lireInt();
+        Bottes[] tabBottes = new Bottes[nombreBottes];
+ 
+        afficherMenuPrincipal();
+        choixMenu = saisirEtValiderChoixEntier(msgMenu, 1, 9);
+        while(choixMenu != 9) {
+            if(choixMenu == 1) {
+                 ajouterBottes(tabBottes);
+            }else if (choixMenu == 2) {
+            
+            }else if (choixMenu == 3) {
+                
+            }else if (choixMenu == 4) {
+                
+            }else if (choixMenu == 5) {
+                
+            }else if (choixMenu == 6) {
+                
+            }else if (choixMenu == 7) {
+                
+            }else if (choixMenu == 8) {
+                
+            }    
+           
+            afficherMenuPrincipal();
+            choixMenu = saisirEtValiderChoixEntier(msgMenu, 1, 9);
+        }
+        
+        afficherMessageFin()
+        
+    }
+
+} 

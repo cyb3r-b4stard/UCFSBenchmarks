@@ -1,0 +1,399 @@
+package Matrices;
+
+
+/**
+ * ##### ## ########## ## ############ ## ## ####### ## ###.
+ * 
+ * @###### ###### ######### 
+ * @####### #.# - ##/#
+ */
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+
+public class Buscaminas extends JFrame implements ActionListener, MouseListener{
+    private static int n = Integer.parseInt(JOptionPane.showInputDialog("Escribe el numero de tamaño"));
+    private int contador=0; 
+    private int contadordestape=0; 
+0
+    private char [][] Buscaminas = new char [n][n];
+    private char [][] oculto = new char [n][n];
+    private JButton [][] botones = new JButton[n][n];
+    private int casi=0;
+    private int nada=0;
+    private int p=0;
+    
+   public static void main (String [] args){
+    Buscaminas frame = new Buscaminas();
+    frame.setSize(n*70,n*70);
+    frame.crearGUI();
+    frame.setVisible(true);
+   }
+    
+    
+   public void crearGUI(){ 
+      this.setLocationRelativeTo(null);
+      setDefaultCloseOperation(EXIT_ON_CLOSE);
+      Container window = getContentPane ();
+      window.setLayout(new GridLayout(n,n));
+      
+        for (int i=1;i<=cantMinas;i++){
+            int fila, col;
+            do{ 
+                fila = (int) (Math.random()*Buscaminas.length); 
+                col = (int) (Math.random()*(Buscaminas[0].length)); 
+            }while(Buscaminas[fila][col]=='x'); 
+                Buscaminas[fila][col]='x';
+        }
+        
+        for (int f=0;f<Buscaminas.length;f++){
+            for (int c=0;c<Buscaminas[0].length;c++){
+                if (Buscaminas[f][c]!='x'){
+                    Buscaminas[f][c]= (char) (48+CuentaVecinos(Buscaminas,f,c));
+                }
+            }
+        }
+    
+      for (int i=0;i<oculto.length;i++){
+          for (int j=0;j<oculto[0].length;j++){
+            oculto[i][j]='T';
+            }
+        }
+        
+        for (int i=0;i<Buscaminas.length;i++){ 
+           for (int j=0;j<Buscaminas[0].length;j++){
+           System.out.print(Buscaminas[i][j]+ " ");
+        }
+        System.out.println(" ");
+        }
+        
+      for(int fila = 0 ; fila<botones.length; fila++ ){
+          for(int columna = 0;columna <botones.length ; columna++ ){
+              botones[fila][columna] = new JButton();
+              botones[fila][columna].addActionListener (this);
+              botones[fila][columna].addMouseListener(this);
+              window.add(botones[fila][columna]);
+           }
+      }  
+      
+      
+   }
+    
+   public void mouseClicked(MouseEvent e) {
+   JButton presion = (JButton) e.getSource();
+    String presionx = presion.getText();
+  
+   for (int i = 0; i < n; i++){
+       for (int j = 0; j < n; j++){
+           
+           if (botones[i][j]==presion){
+               if (Buscaminas[i][j]=='x'){
+                casi++;}
+            }
+        }
+   } 
+   
+    
+   if(e.isMetaDown()){
+       if (presion.isEnabled()){
+       
+       if (presion.getText().equals("P")){
+                        presion.setText("");
+                        presion.setBackground(null);
+                        
+       }     
+       
+       else if (presion.getText().equals("")){
+                        presion.setText("P");
+                        presion.setBackground(java.awt.Color.green);
+                        
+                }
+         System.out.println("minas" +cantMinas +" casi " +casi);
+        }
+    
+        } 
+    
+   else if (SwingUtilities.isLeftMouseButton(e)){
+           if (presion.getText().equals("P")){}
+           else{      
+    for (int i = 0; i < n; i++){
+     for (int j = 0; j < n; j++){
+         
+         if(botones[i][j]==presion){
+            presion.setText(Character.toString(Buscaminas[i][j]));
+            botones[i][j].setEnabled(false);
+            presion.setBackground(null);
+
+            if (Buscaminas [i][j]=='0'){
+                 destapaSerie(oculto,Buscaminas,i,j);
+                 botones[i][j].setText("");
+                }
+            
+            if (presion.getText().equals("x")){
+                 ImageIcon bomba = new ImageIcon(getClass().getResource("bomba1.png"));
+                 presion.setIcon(bomba);   
+                 for (i = 0; i < n; i++){
+                        for (j = 0; j < n; j++){
+                            if (Buscaminas[i][j]=='x'){
+                                if (botones[i][j].isEnabled()){
+                                bomba = new ImageIcon(getClass().getResource("bomba1.png"));
+                                botones[i][j].setIcon(bomba);
+                                botones[i][j].setText(Character.toString(Buscaminas[i][j]));
+                                botones[i][j].setEnabled(false);
+                                
+                                }                               
+                            }
+                        }
+                    }
+                                       
+                    int c = JOptionPane.showConfirmDialog(this,"Perdiste, ¿Deseas jugar de nuevo?","Perdiste",JOptionPane.YES_NO_OPTION);
+                    
+                    if(c==0){
+                        empezar();
+                    } 
+                    
+                    if(c==1){
+                        System.exit(1);
+                    } 
+            }
+
+            
+            if ((casi)==((n*n-cantMinas))){
+            int c = JOptionPane.showConfirmDialog(this,"Felicidades, ganaste. ¿Deseas jugar de nuevo?","Ganaste",JOptionPane.YES_NO_OPTION);
+            if(c==0){
+               empezar();
+             } 
+                    
+            if(c==1){
+               System.exit(1);
+             } 
+            System.exit(1);
+            }
+         }  
+   }
+   }
+   
+   
+   
+   
+   casi=0;
+   for (int i = 0; i < n; i++){
+       for (int j = 0; j < n; j++){
+           
+           if (botones[i][j].isEnabled()){
+            nada++;
+            }
+           else{
+             casi++;
+           }
+       }
+   }
+   System.out.println(+casi + "minas" +cantMinas);
+   
+   }
+   }
+   
+   if (cantMinas==0){
+            int c = JOptionPane.showConfirmDialog(this,"Felicidades, ganaste. ¿Deseas jugar de nuevo?","Ganaste",JOptionPane.YES_NO_OPTION);
+            if(c==0){
+               empezar();
+             } 
+                    
+            if(c==1){
+               System.exit(1);
+             } 
+            System.exit(1);
+            }
+   
+   
+   } 
+   
+   
+   
+   
+   public void empezar(){
+    for (int f=0;f<Buscaminas.length;f++){
+            for (int c=0;c<Buscaminas[0].length;c++){
+                if (Buscaminas[f][c]=='x'){
+                    Buscaminas[f][c]= '0';
+                }
+            }
+    }  
+    
+    for (int i=1;i<=cantMinas;i++){
+        int fila, col;
+        do{ 
+            fila = (int) (Math.random()*Buscaminas.length); 
+            col = (int) (Math.random()*(Buscaminas[0].length)); 
+        }while(Buscaminas[fila][col]=='x'); 
+        Buscaminas[fila][col]='x';
+    }
+      
+    for (int f=0;f<Buscaminas.length;f++){
+         for (int c=0;c<Buscaminas[0].length;c++){
+             if (Buscaminas[f][c]!='x'){
+                 Buscaminas[f][c]= (char) (48+CuentaVecinos(Buscaminas,f,c));
+             }
+         }
+    }  
+    
+    for(int fila = 0 ; fila<botones.length; fila++ ){
+        for(int columna = 0;columna <botones.length ; columna++ ){
+            botones[fila][columna].setIcon(null);
+            botones[fila][columna].setText("");
+            botones[fila][columna].setEnabled(true);
+            botones[fila][columna].setBackground(null);
+        }
+    }
+    
+   
+   };
+   
+   
+   public void mousePressed(MouseEvent evento){
+    
+    };    
+   public void mouseReleased(MouseEvent evento){};
+   public void mouseEntered(MouseEvent evento){};
+   public void mouseExited(MouseEvent evento){};
+
+   public static int CuentaVecinos(char [][]Buscaminas,int f, int c){
+      int conteo=0;
+        
+      if (f-1>=0 && c-1>=0 && Buscaminas[f-1][c-1]=='x'){
+         conteo++;
+      }
+        
+      if (f-1>=0 && Buscaminas[f-1][c]=='x'){
+         conteo++;
+      }
+        
+      if (f-1>=0 && c+1<Buscaminas[0].length && Buscaminas[f-1][c+1]=='x'){
+         conteo++;
+      }
+        
+      if (f>=0 && c-1>=0 && Buscaminas[f][c-1]=='x'){
+         conteo++;
+      }
+               
+      if (f>=0 && c+1<Buscaminas[0].length && Buscaminas[f][c+1]=='x'){
+         conteo++;
+      }
+        
+      if (f+1<Buscaminas.length && c-1>=0 && Buscaminas[f+1][c-1]=='x'){
+         conteo++;
+      }
+        
+      if (f+1<Buscaminas.length && Buscaminas[f+1][c]=='x'){
+         conteo++;
+      }
+        
+      if (f+1<Buscaminas.length && c+1<Buscaminas[0].length&& Buscaminas[f+1][c+1]=='x'){
+         conteo++;
+      }
+      return conteo;
+   }
+    
+   public void destapavisual (int f, int c){
+        
+       if (botones[f][c].getText().equals("P")){}
+       else{
+       botones[f][c].setText(Character.toString(Buscaminas[f][c]));
+        botones[f][c].setEnabled(false);
+        
+        if (Buscaminas [f][c]=='0'){
+                 botones[f][c].setText(" ");
+        }}
+    }
+  
+    public void destapaSerie (char [][] oculto, char[][] Buscaminas,int f, int c){
+        
+        if (f-1>=0 && c-1>=0 && oculto[f-1][c-1]=='T'){
+            destapavisual(f-1,c-1);
+            oculto[f-1][c-1] = Buscaminas [f-1][c-1];
+            
+                if (oculto[f-1][c-1]=='0'){
+                    destapaSerie(oculto, Buscaminas, f-1,c-1);
+                    
+                } 
+        }
+        
+        if (f-1>=0 && oculto[f-1][c]=='T'){
+            destapavisual(f-1,c); 
+            oculto[f-1][c] = Buscaminas [f-1][c];
+             
+                if (oculto[f-1][c]=='0'){
+                    destapaSerie(oculto, Buscaminas, f-1,c);
+                   
+                } 
+        }
+        
+        if (f-1>=0 && c+1<Buscaminas[0].length && oculto[f-1][c+1]=='T'){
+            destapavisual(f-1,c+1);
+            oculto[f-1][c+1] = Buscaminas [f-1][c+1];
+            
+                if (oculto[f-1][c+1]=='0'){
+                    destapaSerie(oculto, Buscaminas, f-1,c+1);
+                    
+                } 
+        }
+        
+        if (f>=0 && c-1>=0 && oculto[f][c-1]=='T'){
+            destapavisual(f,c-1);
+            oculto[f][c-1] = Buscaminas [f][c-1];
+            
+                if (oculto[f][c-1]=='0'){
+                    destapaSerie(oculto, Buscaminas, f,c-1);
+                    
+                } 
+        }
+               
+        if (f>=0 && c+1<Buscaminas[0].length && oculto[f][c+1]=='T'){
+            destapavisual(f,c+1);
+            oculto[f][c+1] = Buscaminas [f][c+1];
+            
+                if (oculto[f][c+1]=='0'){
+                    destapaSerie(oculto, Buscaminas, f,c+1);
+                    
+                }
+        }
+        
+        
+        if (f+1<Buscaminas.length && c-1>=0 && oculto[f+1][c-1]=='T'){
+            destapavisual(f+1,c-1);
+            oculto[f+1][c-1] = Buscaminas [f+1][c-1];
+            
+                if (oculto[f+1][c-1]=='0'){
+                    destapaSerie(oculto, Buscaminas, f+1,c-1);
+                    
+                }
+        }
+        
+        if (f+1<Buscaminas.length && oculto[f+1][c]=='T'){
+            destapavisual(f+1,c);
+            oculto[f+1][c] = Buscaminas [f+1][c];
+            
+                if (oculto[f+1][c]=='0'){
+                    destapaSerie(oculto, Buscaminas, f+1,c);
+                    
+                }
+        }
+        
+        if (f+1<Buscaminas.length && c+1<Buscaminas[0].length && oculto[f+1][c+1]=='T'){
+            destapavisual(f+1,c+1);
+            oculto[f+1][c+1] = Buscaminas [f+1][c+1];
+            
+                if (oculto[f+1][c+1]=='0'){
+                    destapaSerie(oculto, Buscaminas, f+1,c+1);
+                    
+                }
+        }
+        
+    }
+   
+   public void actionPerformed (ActionEvent e){
+       
+   }
+}

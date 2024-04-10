@@ -1,0 +1,107 @@
+/**
+ * #### ### ###### #### ### #######
+ * ###### ###### ########.
+ * 
+ * @###### ##### #. ###### ### ####### #######.
+ * @####### ####.##.##
+ */
+public class LogAnalyzer
+{
+    private int[] hourCounts;
+    private LogfileReader reader;
+
+    /**
+     * Create an object to analyze hourly web accesses.
+     */
+    public LogAnalyzer()
+    { 
+        hourCounts = new int[24];
+        reader = new LogfileReader();
+    }
+
+    /**
+     * Analyze the hourly access data from the log file.
+     */
+    public void analyzeHourlyData()
+    {
+        while(reader.hasNext()) {
+            LogEntry entry = reader.next();
+            int hour = entry.getHour();
+            hourCounts[hour]++;
+        }
+    }
+
+    /**
+     * Print the hourly counts.
+     * These should have been set with a prior
+     * call to analyzeHourlyData.
+     */
+  
+    public void printHourlyCounts()
+    {
+        System.out.println("Hr: Count");
+        for(int hour = 0; hour < hourCounts.length; hour++) {
+            System.out.println(hour + ": " + hourCounts[hour]);
+        }
+    }
+    
+    /**
+     * Print the lines of data read by the LogfileReader
+     */
+    public void printData()
+    {
+        reader.printData();
+    }
+    
+      public int numberAccesses(){
+        int total=0;
+        for(int i=0; i<hourCounts.length; i++){
+            total=total+hourCounts[i];
+        }
+        return total;
+    }
+    
+    public int busiestHour() {
+    int pos=0;
+    for(int i=1; i<hourCounts.length; i++){
+        if( hourCounts[i]>hourCounts[pos]){
+            pos=i;
+    }
+}
+return pos;
+}
+public int quietestValue(){
+    int least=hourCounts[0];
+    for(int i=1; i<hourCounts.length; i++){
+        if(hourCounts[i]<least){
+        least=hourCounts[i];
+    }
+    }
+    return least;
+    
+}
+public int secondbusy(){
+  int pos=0;
+    for(int i=1; i<hourCounts.length; i++){
+        if( hourCounts[i]>hourCounts[pos]){
+            pos=i;
+    }
+    int largest= hourCounts[0];
+    for (int i=1;i<hourCounts.length; i++){
+        if (hourCounts[i]>largest){
+            largest=hourCounts[i];
+        }
+        
+    }
+  
+}
+
+
+public int twoBusiest(){
+   int pos= busiestHour();
+   int pos2= 17;
+   return pos  ;
+   
+   
+}
+}

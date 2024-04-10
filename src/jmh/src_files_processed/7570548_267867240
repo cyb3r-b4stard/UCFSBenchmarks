@@ -1,0 +1,263 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+
+public class Grid
+{
+    private JFrame frame;
+    private JPanel[] panels;
+    private Tile[][] tiles;
+    
+    private final int UP = 1;
+    private final int LEFT = 2;
+    private final int RIGHT = 3;
+    private final int DOWN = 4;
+    private final int RESET = 0;
+    
+    public Grid()
+    {
+        frame = new JFrame();
+        frame.setLayout(new GridLayout(4, 1));
+        panels = new JPanel[4];
+        tiles = new Tile[4][4];
+        
+        for(int r = 0; r < tiles.length; r++)
+        {
+            for(int c = 0; c < tiles[r].length; c++)
+            {
+                tiles[r][c] = new Tile();
+            }
+        }
+        
+        for(int r = 0; r < panels.length; r++)
+        {
+            panels[r] = new JPanel();
+            panels[r].setLayout(new GridLayout(1, 4));
+            frame.add(panels[r]);
+            for(int c = 0; c < 4; c++)
+            {
+                panels[r].add(tiles[r][c]);
+            }
+        }
+        
+        frame.setSize(500, 500);
+        frame.setVisible(true);
+        
+        this.reset();
+    }
+    
+    public int newTile()
+    {
+        int r = (int)(Math.random() * 4);
+        if(r == 3)
+            return 4;
+        else
+            return 2;
+    }
+    
+    public ArrayList<Tile> getEmptyLocations()
+    {
+        ArrayList<Tile> emptyLocs = new ArrayList<Tile>();
+        for(int r = 0; r < tiles.length; r++)
+        {
+            for(int c = 0; c < tiles[r].length; c++)
+            {
+                if(tiles[r][c].getText().equals(""))
+                {
+                    emptyLocs.add(tiles[r][c]);
+                }
+                if(tiles[r][c].getNum() == 2048)
+                {
+                    int message = JOptionPane.showConfirmDialog(null, "Congratulations!\nYou have reached 2048\nPlay again?", "You win!", JOptionPane.YES_NO_OPTION);
+                    if(message == JOptionPane.YES_OPTION)
+                        reset();
+                    else
+                        System.exit(0);
+                }
+            }
+        }
+        return emptyLocs;
+    }
+    public void randomEmpty(ArrayList<Tile> locs)
+    {
+        int r = (int)(Math.random() * locs.size());
+        Tile select = locs.get(r);
+        select.change(newTile());
+    }
+    
+    public void shift(int direction)
+    {
+        Tile[][] copy1 = copyGrid();
+        if(direction == LEFT)
+        {
+            for(int r = 0; r < tiles.length; r++)
+            {
+                for(int c = 0; c < tiles[r].length; c++)
+                {
+                    Tile temp = tiles[r][c];
+                    if(tiles[r][c].getText().equals(""))
+                    {
+                        for(int i = c + 1; i < tiles[r].length; i++)
+                        {
+                            if(!tiles[r][i].getText().equals(""))
+                            {
+                                tiles[r][c].change(tiles[r][i].getNum());
+                                tiles[r][i].change(0);
+                                break;
+                            }
+                        }
+                    }
+                    if(!tiles[r][c].getText().equals(""))
+                    {
+                        for(int i = c + 1; i < tiles[r].length; i++)
+                        {
+                            if(tiles[r][i].getNum() == (tiles[r][c].getNum()))
+                            {
+                                tiles[r][c].merge(tiles[r][i]);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if(direction == RIGHT)
+        {
+            for(int r = 0; r < tiles.length; r++)
+            {
+                for(int c = tiles[r].length-1; c >= 0; c--)
+                {
+                    if(tiles[r][c].getText().equals(""))
+                    {
+                        for(int i = c - 1; i >= 0; i--)
+                        {
+                            if(!tiles[r][i].getText().equals(""))
+                            {
+                                tiles[r][c].change(tiles[r][i].getNum());
+                                tiles[r][i].change(0);
+                                break;
+                            }
+                        }
+                    }
+                    if(!tiles[r][c].getText().equals(""))
+                    {
+                        for(int i = c - 1; i >= 0; i--)
+                        {
+                            if(tiles[r][i].getNum() == (tiles[r][c].getNum()))
+                            {
+                                tiles[r][c].merge(tiles[r][i]);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if(direction == UP)
+        {
+            for(int r = 0; r < tiles.length; r++)
+            {
+                for(int c = 0; c < tiles[r].length; c++)
+                {
+                    Tile temp = tiles[c][r];
+                    if(tiles[c][r].getText().equals(""))
+                    {
+                        for(int i = c + 1; i < tiles[r].length; i++)
+                        {
+                            if(!tiles[i][r].getText().equals(""))
+                            {
+                                tiles[c][r].change(tiles[i][r].getNum());
+                                tiles[i][r].change(0);
+                                break;
+                            }
+                        }
+                    }
+                    if(!tiles[c][r].getText().equals(""))
+                    {
+                        for(int i = c + 1; i < tiles[r].length; i++)
+                        {
+                            if(tiles[i][r].getNum() == (tiles[c][r].getNum()))
+                            {
+                                tiles[c][r].merge(tiles[i][r]);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if(direction == DOWN)
+        {
+            for(int r = 0; r < tiles.length; r++)
+            {
+                for(int c = tiles[r].length-1; c >= 0; c--)
+                {
+                    if(tiles[c][r].getText().equals(""))
+                    {
+                        for(int i = c - 1; i >= 0; i--)
+                        {
+                            if(!tiles[i][r].getText().equals(""))
+                            {
+                                tiles[c][r].change(tiles[i][r].getNum());
+                                tiles[i][r].change(0);
+                                break;
+                            }
+                        }
+                    }
+                    if(!tiles[c][r].getText().equals(""))
+                    {
+                        for(int i = c - 1; i >= 0; i--)
+                        {
+                            if(tiles[i][r].getNum() == (tiles[c][r].getNum()))
+                            {
+                                tiles[c][r].merge(tiles[i][r]);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        Tile[][] copy 2 = copyGrid();
+        
+        if(!copy1.equals(copy2))
+            randomEmpty(getEmptyLocations());
+        
+        if(direction == RESET)
+        {
+            reset();
+        }
+    }
+    
+    public void reset()
+    {
+        for(Tile[] tArr : tiles)
+        {
+            for(Tile t : tArr)
+            {
+                t.change(0);
+            }
+        }
+        randomEmpty(getEmptyLocations());
+    }
+    
+    public Tile[][] copyGrid()
+    {
+        Tile[][] copy = new Tile[4][4];
+        int row = 0;
+        for(Tile[] arr : tiles)
+        {
+            int col = 0;
+            for(Tile t : arr)
+            {
+                copy[row][col] = new Tile();
+                copy[row][col].change(t.getNum());
+                col++;
+            }
+            row++;
+        }
+        return copy;
+    }
+}

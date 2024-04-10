@@ -1,0 +1,2457 @@
+/*
+ * ######-###########, ## ############ ###########.
+ */
+import java.beans.*;                        
+import java.io.*;                           
+import java.util.*;                         
+import java.text.ParseException;            
+
+/**
+ * ### ###### ######### ###### ### ######### ### ########### ########- ######## ###.
+ * #### #### ### ############# #############, ##### ### ########-######.
+ *
+ * @###### ###### #############, ######### #######, ####### ######
+ * @####### #.#
+ */
+public class Datenbank implements Serializable
+{
+
+    private ArrayList <Kunde> kundenListe;
+    private ArrayList <Artikel> artikelListe;
+    private ArrayList <Rezept> rezeptListe;
+    
+    /**
+     * Konstruktor für Objekte der Klasse Datenbank
+     */
+    public Datenbank()
+    {
+        kundenListe = new ArrayList <Kunde>();
+        artikelListe = new ArrayList <Artikel>();
+        rezeptListe = new ArrayList <Rezept> ();
+        
+    }
+
+    /**
+     * Methode diente bei der Entwicklung zum automatischen Erstellen von Kunden und Artikeln.
+     */
+    public void initData()
+    {
+        Kunde k1 = new Kunde(1001, "Nina", "Schmitt", "weiblich", 37, 1.6f, 60, false);
+        Kunde k2 = new Kunde(1002, "Horst", "Schlemmer", "männlich", 50, 1.70f, 80, false);
+        Kunde k3 = new Kunde(1003, "Susanne", "Müller", "weiblich",25, 1.75f, 55, true);
+        Kunde k4 = new Kunde(1004, "Klaus", "Scollo", "männlich", 42, 1.85f, 90, true);
+        kundenListe.add(k1);
+        kundenListe.add(k2);
+        kundenListe.add(k3);
+        kundenListe.add(k4);
+        
+        
+        Artikel reis = new Artikel ("Reis", 125.0f, 2.0f, 0.6f, 2.2f, 77.7f, 0.0f, "Beilage");
+        Artikel zucchini= new Artikel ("Zucchini", 19.0f, 1.6f, 0.4f, 1.1f, 2.05f, 0.0f, "Gemuese");
+        Artikel karotten = new Artikel (" Karotten", 26.0f, 1.0f, 0.2f, 3.1f, 6.8f, 0.0f, "Gemuese");
+        Artikel paprika = new Artikel ("Paprika", 37.0f, 1.3f, 0.5f, 3.59f, 6.4f, 0.0f, "Gemuese");
+        Artikel blattspinat = new Artikel ("Blattspinat",17.0f, 0.0f, 0.3f, 2.58f, 0.0f,0.0f,"Gemuese");
+        Artikel lachs = new Artikel ("Lachs",131.0f, 18.4f, 6.3f, 0.04f, 0.0f, 0.0f, "Fisch");
+        Artikel knoblauch = new Artikel ("Knoblauch", 14.1f,0.0f, 0.1f, 1.8f, 28.4f, 0.0f, "Gemüse");
+        Artikel tomaten = new Artikel ("Tomaten", 21.0f, 1.0f, 0.3f, 1.2f, 0.0f,0.0f, "Gemüese");
+        Artikel sahne = new Artikel ("Sahne", 183.0f, 4.08f, 7.47f, 0.0f, 22.63f, 0.0f, "Beilage");
+        Artikel rind = new Artikel ("Rind", 183.0f, 30.6f, 5.8f, 0.0f, 0.5f, 0.98f, "Fleisch");
+        Artikel senf = new Artikel ("Senf", 86.0f, 6.0f, 4.0f, 1.0f, 6.0f, 0.0f, "Beilage");
+        Artikel kartoffel = new Artikel ("Kartoffel", 79.0f, 2.33f, 1.9f, 1.75f, 12.49f, 0.0f, "Gemuese");
+        Artikel rotkohl = new Artikel ("Rotkohl", 23.0f, 1.5f, 0.18f, 2.5f, 3.54f, 0.0f, "Gemuese");
+        artikelListe.add(reis);
+        artikelListe.add(zucchini);
+        artikelListe.add(karotten);
+        artikelListe.add(paprika);
+        artikelListe.add(blattspinat);
+        artikelListe.add(lachs);
+        artikelListe.add(knoblauch);
+        artikelListe.add(tomaten);
+        artikelListe.add(sahne);
+        artikelListe.add(rind);
+        artikelListe.add(senf);
+        artikelListe.add(kartoffel);
+        artikelListe.add(rotkohl);
+        
+        
+        
+    }
+
+    /**
+     * Methode dient zum Speichern
+     */
+    private void saveDataToXML() throws IOException
+    {
+        XMLEncoder o = new XMLEncoder(new FileOutputStream("Kochbuch-Software.xml"));
+        o.writeObject("Kochbuch-Software");
+        o.writeObject(this);
+        o.close();
+    }
+
+    /**
+     * Methode dient zum Laden
+     */
+    public Object loadDataFromXML() throws IOException
+    {
+        XMLDecoder o = new XMLDecoder(new FileInputStream("Kochbuch-Software.xml"));
+        o.readObject();
+        Object obj = o.readObject();
+        o.close();
+        return obj;
+
+ 
+   }
+   
+   /**
+     * Methode dient zum Speichern
+     */
+    private void save()
+    {
+        try
+        {
+            saveDataToXML();
+        }
+        catch(java.io.IOException ioe)
+        {
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * Methode dient zum Laden
+     */
+    private void load()
+    {
+        try
+        {
+             Datenbank d = (Datenbank) loadDataFromXML();
+            d.mainMenue();
+        }
+        catch(java.io.IOException ioe)
+        {
+
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * Methode beendet das Programm
+     */
+    private void beenden()
+    {
+        save(); 
+        System.exit(0);
+    }
+
+    /* Folgende Get- und Set-Methoden werden für die XML-Speicherung benötigt */
+
+    /**
+     * Methode gibt KundenListe zurück.
+     */
+    public ArrayList getKundenListe()
+    {
+        return this.kundenListe;
+    }
+
+    /**
+     * Methode setzt KundenListe fest.
+     */
+    public void setKundenListe(ArrayList liste)
+    {
+        this.kundenListe = liste;
+    }
+
+    /**
+     * Methode gibt Artikelliste zurück.
+     */
+    public ArrayList getArtikelListe()
+    {
+        return this.artikelListe;
+    }
+
+    /**
+     * Methode setzt Artikelliste fest.
+     */
+    public void setArtikelListe(ArrayList liste)
+    {
+        this.artikelListe = liste;
+    }
+    
+    /**
+     * Methode gibt Rezeptliste zurück.
+     */
+    public ArrayList getRezeptListe()
+    {
+        return this.rezeptListe;
+    }
+    
+     /**
+     * Methode setzt Rezeptliste fest.
+     */
+    public void setRezeptListe(ArrayList liste)
+    {
+        this.rezeptListe = liste;
+    }
+    
+    
+   
+    /**
+     * Methode ruft das Hauptmenue auf
+     */
+    private void mainMenue()
+    {
+        char eingabe = '0';
+
+        do
+        {
+            printLF();
+            System.out.println("HAUPTMENÜ");
+            System.out.println("------------------------------------------------------------");
+            System.out.println("[1] Rezeptmenü");
+            System.out.println("[2] Kundenmenü");
+            System.out.println("[3] Datenbanksmenü");
+            System.out.println("[x] Programm beenden");
+
+            byte[] buffer = new byte[255];
+            int read = 0; 
+        
+        try {
+            read = System.in.read( buffer );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+ 
+        System.out.println( new String( buffer, 0, read ) );
+
+            switch (eingabe)
+            {
+                case 'x': System.out.println("Daten speichern...\nDas Programm wird beendet.");
+                beenden();
+                case '1': rezeptMenue();
+                break;
+                case '2': kundenMenue();
+                break;
+                case '3': datenbankMenue();
+                break;
+                default: printEingabeFehler();
+            }
+        } while (true);
+    }
+
+    /**
+     * Methode ruft das Rezeptmenue auf
+     */
+    private void rezeptMenue()
+    {
+        char eingabe = '-';
+        boolean menuewechsel = false;
+        do
+        {
+            printLF();
+            System.out.println("REZEPTMENÜ");
+            System.out.println("------------------------------------------------------------");
+            System.out.println("[1] Zeige alle Rezepte an");
+            System.out.println("[2] Rezeptsuche");
+            System.out.println("[3] Erstelle neues Rezept");
+            System.out.println("[4] Lösche Rezept");
+            System.out.println("[0] HAUPTMENÜ");
+            
+            byte[] buffer = new byte[255];
+            int read = 0; 
+
+            try {
+            read = System.in.read( buffer );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+ 
+        System.out.println( new String( buffer, 0, read ) );
+
+            
+             
+
+            switch (eingabe)
+            {
+                case '0':  mainMenue();  
+                break;
+                case '1': showRezeptListe();
+                break;
+                case '3': erstelleNeuesRezept();
+                break;
+                case '4': loescheRezept();
+                break;
+                default: printEingabeFehler();
+            }
+        } while (!menuewechsel);
+        printLF();
+    }
+
+    /**
+     * Methode zeigt alle Rezepte an, die sich in der Liste RezeptListe befinden
+     */
+    private void showRezeptListe()
+    {
+        String s;
+
+        printZentriertKurz("Name");
+        printZentriertKurz("Art");
+        printZentriertKurz("Zutat");
+        printZentriertKurz("Menge");
+        printZentriertKurz("Einheit");
+        
+        printLF();
+        System.out.print("--");
+        printLinieLF(11);      
+
+        Iterator <Rezept>iter = rezeptListe.iterator();  
+        
+
+        boolean treffer = false;
+        boolean stop = false;
+        Rezept i = null;
+        Iterator <Rezept>  = RezeptListe.iterator();
+        while(iter.hasNext() && stop == false)
+        {
+            i  =  iter.next();
+            if (i.getName()==(name)) {treffer = true; stop = true;}
+        }
+
+        if (!treffer) 
+        {
+            System.out.println("Es gibt kein Rezept mit dem Namen "+name+" !");
+        }
+        else 
+        {
+            System.out.print("Name: ");
+            System.out.println(i.getName());
+
+            System.out.print("   Rezepttyp: ");
+            if (i instanceof Vegetarisch) System.out.println("Vegetarisch");
+            if (i instanceof Fleisch) System.out.println("Fleisch");
+            if (i instanceof Fisch) System.out.println("Fisch");
+            
+
+            System.out.print("  Name: "); 
+            System.out.println(i.getName());
+            
+            System.out.print("  Art: ");
+            System.out.println(i.getArt());
+
+            System.out.print(" Zutat: ");
+            System.out.println(i.getZutat());
+
+            System.out.print("     Menge: ");
+            System.out.println(i.getMenge());
+            
+            System.out.print( " Einheit: ");
+            System.out.println(i.getEinheit());
+
+            printLF();
+        }
+
+    }
+
+    /**
+     * Methode dient zum Erstellen eines neuen Rezepts
+     */
+    private void erstelleNeuesRezept()
+    {
+        boolean wdh = false;
+        int zaehler = 999; 
+        char eingabe = '0';
+        do { 
+            wdh = false;
+            try {eingabe = Stdin.readlnChar("Bitte wählen sie [1] für Vegetarisch, [2] für Fleischgerichte oder [3] für Fischgerichte...");}
+            catch(Exception e){System.out.println("Fehler, keine gültige Eingabe gemacht!"); wdh = true;}
+            if(wdh == false && (eingabe!='1' && eingabe!='2' &&  eingabe!='3'  )) 
+            {System.out.println("Fehler, Eingabe nicht erkannt. Versuchen Sie es nocheinmal!");}
+        }
+        while(wdh == true || (eingabe!='1' && eingabe!='2' &&  eingabe!='3' ) );
+
+        String name;
+        String art;
+        String zutat;
+        int menge = 0;
+        String einheit;
+        boolean wdh1 = false;
+        
+
+        switch (eingabe)
+        {
+            default: printEingabeFehler();
+
+            case '1': 
+            do{
+                wdh1 = false;
+                name = Stdin.readlnString("Bitte geben Sie den Namen des vegetarischen Gerichts ein: ");
+                name = umlauteUmwandeln (name);
+                if( bezeichnung.equals("")) {System.out.println("Fehler, keine leere Eingabe möglich. Sie müssen eine Bezeichnung eingeben!"); wdh1 = true;} 
+            }
+            while(wdh1 == true);
+
+            do {   
+                wdh = false;
+                try {menge = Stdin.readlnInt("Bitte geben Sie die Menge des vegetarischen Gerichts ein: ");}
+                catch(Exception e) {System.out.println("Fehler, keine gültige Eingabe!"); wdh = true;}
+                if (menge < 0 && wdh == false) {System.out.println("Fehler, kein negativer Wert zulässig!"); wdh = true;}
+            }
+            while(wdh == true);
+
+            
+
+            do{
+                wdh1 = false;
+                art = Stdin.readlnString("Bitte geben Sie die Art des vegetarischen Gerichts ein: ");
+                art = umlauteUmwandeln (art);
+                if(bezeichnung.equals("")) {System.out.println("Fehler, keine leere Eingabe möglich. Sie müssen eine Bezeichnung eingeben!"); wdh1 = true;}
+            }
+            while(wdh1 == true);
+            
+            do{
+                wdh1 = false;
+                zutat = Stdin.readlnString("Bitte geben Sie die Zutat des vegetarischen Gerichts ein: ");
+                zutat = umlauteUmwandeln (zutat);
+                if( bezeichnung.equals("")) {System.out.println("Fehler, keine leere Eingabe möglich. Sie müssen eine Bezeichnung eingeben!"); wdh1 = true;} 
+            }
+            while(wdh1 == true);
+            
+             do{
+                wdh1 = false;
+                einheit = Stdin.readlnString("Bitte geben Sie die Einheit des vegetarischen Gerichts ein: ");
+                einheit = umlauteUmwandeln (zutat);
+                if( bezeichnung.equals("")) {System.out.println("Fehler, keine leere Eingabe möglich. Sie müssen eine Bezeichnung eingeben!"); wdh1 = true;} 
+            }
+            while(wdh1 == true);
+
+            
+
+            Vegetarisch v1 = new Vegetarisch(name, art, zutat, menge, einheit);  
+            Iterator <Rezept>iter = rezeptListe.iterator();
+
+            while(iter.hasNext())   
+            {
+               Rezept r =  iter.next();
+                if (r.getRezeptnummer() == 0) zaehler = 1000;
+                else zaehler = r.getRezeptnummer(); 
+            }    
+            v1.setRezeptnummer(zaehler+1);  
+            rezeptListe.add(v1);   
+            save(); 
+            printLF();
+            System.out.println("Das Rezept "+bezeichnung+" erhält die Rezeptnummer "+v1.getRezeptnummer()+" und wurde "+menge+" mal hinzugefügt.");
+            printLF();
+            break;
+
+            case '2': 
+            do{
+                wdh1 = false;
+                name = Stdin.readlnString("Bitte geben Sie den Namen des Fleischgerichts ein: ");
+                name = umlauteUmwandeln (name);
+                if( bezeichnung.equals("")) {System.out.println("Fehler, keine leere Eingabe möglich. Sie müssen eine Bezeichnung eingeben!"); wdh1 = true;} 
+            }
+            while(wdh1 == true);
+
+            do {   
+                wdh = false;
+                try {menge = Stdin.readlnInt("Bitte geben Sie die Menge des Fleischgerichts ein: ");}
+                catch(Exception e) {System.out.println("Fehler, keine gültige Eingabe!"); wdh = true;}
+                if (menge < 0 && wdh == false) {System.out.println("Fehler, kein negativer Wert zulässig!"); wdh = true;}
+            }
+            while(wdh == true);
+
+            
+
+            do{
+                wdh1 = false;
+                art = Stdin.readlnString("Bitte geben Sie die Art des Fleischgerichts ein: ");
+                art = umlauteUmwandeln (art);
+                if(bezeichnung.equals("")) {System.out.println("Fehler, keine leere Eingabe möglich. Sie müssen eine Bezeichnung eingeben!"); wdh1 = true;}
+            }
+            while(wdh1 == true);
+            
+            do{
+                wdh1 = false;
+                zutat = Stdin.readlnString("Bitte geben Sie die Zutat des Fleischgerichts ein: ");
+                zutat = umlauteUmwandeln (zutat);
+                if( bezeichnung.equals("")) {System.out.println("Fehler, keine leere Eingabe möglich. Sie müssen eine Bezeichnung eingeben!"); wdh1 = true;} 
+            }
+            while(wdh1 == true);
+            
+             do{
+                wdh1 = false;
+                einheit = Stdin.readlnString("Bitte geben Sie die Einheit des Fleischgerichts ein: ");
+                einheit = umlauteUmwandeln (zutat);
+                if( bezeichnung.equals("")) {System.out.println("Fehler, keine leere Eingabe möglich. Sie müssen eine Bezeichnung eingeben!"); wdh1 = true;} 
+            }
+            while(wdh1 == true);
+
+            
+
+            Fleischgericht f1 = new Fleischgericht(name, art, zutat, menge, einheit);  
+            Iterator <Rezept>iter = rezeptListe.iterator();
+
+            while(iter.hasNext())   
+            {
+               Rezept r =  iter.next();
+                if (r.getRezeptnummer() == 0) zaehler = 1000;
+                else zaehler = r.getRezeptnummer(); 
+            }    
+            f1.setRezeptnummer(zaehler+1);  
+            rezeptListe.add(v1);   
+            save(); 
+            printLF();
+            System.out.println("Das Rezept "+bezeichnung+" erhält die Rezeptnummer "+v1.getRezeptnummer()+" und wurde "+menge+" mal hinzugefügt.");
+            printLF();
+            break;
+
+            
+
+            case '3': 
+            do{
+                wdh1 = false;
+                name = Stdin.readlnString("Bitte geben Sie den Namen des Fischgerichts ein: ");
+                name = umlauteUmwandeln (name);
+                if( bezeichnung.equals("")) {System.out.println("Fehler, keine leere Eingabe möglich. Sie müssen eine Bezeichnung eingeben!"); wdh1 = true;} 
+            }
+            while(wdh1 == true);
+
+            do {   
+                wdh = false;
+                try {menge = Stdin.readlnInt("Bitte geben Sie die Menge des Fischgerichts ein: ");}
+                catch(Exception e) {System.out.println("Fehler, keine gültige Eingabe!"); wdh = true;}
+                if (menge < 0 && wdh == false) {System.out.println("Fehler, kein negativer Wert zulässig!"); wdh = true;}
+            }
+            while(wdh == true);
+
+            
+
+            do{
+                wdh1 = false;
+                art = Stdin.readlnString("Bitte geben Sie die Art des Fischgerichts ein: ");
+                art = umlauteUmwandeln (art);
+                if(bezeichnung.equals("")) {System.out.println("Fehler, keine leere Eingabe möglich. Sie müssen eine Bezeichnung eingeben!"); wdh1 = true;}
+            }
+            while(wdh1 == true);
+            
+            do{
+                wdh1 = false;
+                zutat = Stdin.readlnString("Bitte geben Sie die Zutat des Fischgerichts ein: ");
+                zutat = umlauteUmwandeln (zutat);
+                if( bezeichnung.equals("")) {System.out.println("Fehler, keine leere Eingabe möglich. Sie müssen eine Bezeichnung eingeben!"); wdh1 = true;} 
+            }
+            while(wdh1 == true);
+            
+             do{
+                wdh1 = false;
+                einheit = Stdin.readlnString("Bitte geben Sie die Einheit des Fischgerichts ein: ");
+                einheit = umlauteUmwandeln (zutat);
+                if( bezeichnung.equals("")) {System.out.println("Fehler, keine leere Eingabe möglich. Sie müssen eine Bezeichnung eingeben!"); wdh1 = true;} 
+            }
+            while(wdh1 == true);
+
+            Fischgericht fi1 = new Fischgericht(name,art,zutat,menge,einheit);         
+            Iterator <Rezept>iter3 = rezeptListe.iterator();
+            while(iter3.hasNext())   
+            {
+                Rezept r  =  iter3.next();       
+                zaehler = r.getRezeptnummer(); 
+            }    
+            fi1.setRezeptnummer(zaehler+1); 
+            rezeptListe.add(fi1);
+            save();
+            printLF();
+            System.out.println("Das Rezept "+bezeichnung+" erhält die Rezeptnummer "+fi1.getRezeptnummer()+" und wurde "+menge+" mal hinzugefügt.");
+            printLF();
+            break;
+
+            
+        }
+    }
+
+    /** 
+     * Methode zum Löschen von Rezepten
+     */
+
+    private void loescheRezept()
+    {
+        boolean wdh1 = false;
+        int id = -2222;
+        do{
+            wdh1 = false;
+            try {id = Stdin.readInt("Bitte geben Sie hier die Rezeptnummer des Rezepts an, das gelöscht werden soll: ");}
+            catch(Exception e){
+                System.out.println("Fehler, keine gültige Eingabe gemacht!"); wdh1 = true;
+            }
+        }
+        while(wdh1 == true);
+
+        this.removeArtikel(id);
+    }
+
+    private void removeRezept(int k)
+    {
+        Iterator <Rezept>iter = this.RezeptListe.iterator();
+        int j = 0;
+        boolean found = false;
+        boolean loeschen = false;
+        boolean wdh = false;
+        while(iter.hasNext() && found==false)
+        {
+            Rezept i  =  iter.next();
+            int iid = i.getRezeptnummer();
+            if(iid == k){
+                found = true;
+                printLF();
+                System.out.println("Sind Sie sicher, dass Sie das Rezept  \""+i.getBezeichnung()+"\"  mit der Rezeptnummer   "+k+"   löschen wollen?");
+                printLF();
+                do{
+                    String ok = Stdin.readString("Wählen sie [J] um das Rezept zu löschen oder [N] um das Rezept nicht zu löschen: ");
+                    if("N".equalsIgnoreCase(ok)){ wdh = false; loeschen = false;}
+                    else if("J".equalsIgnoreCase(ok)) { loeschen = true; wdh = false;}
+                    else {System.out.println("Fehler, Ihre Eingabe wurde nicht erkannt!"); wdh = true;}
+                }
+                while(wdh == true);
+
+                if(loeschen == true)
+                {
+                    this.RezeptListe.remove(j);
+                    printLF();
+                    System.out.println("Das Rezept mit der Rezeptnummer "+k+" und der Bezeichnung "+i.getBezeichnung()+" wurde erfolgreich gelöscht!\nKehre zurück zum Rezept...");
+                }
+
+                if(loeschen == false) {printLF(); System.out.println("Rezept wurde NICHT gelöscht! Kehre zurück zum Rezeptmenü...");}
+            }
+            ++j;
+        }
+        if (found == false){printLF(); System.out.println("Es gibt kein Rezept mit der Rezeptnummer "+Integer.toString(k)+" !");}
+    }
+    
+    /**
+     * Methode ruft das Verwaltungsmenue auf
+     */
+    private void datenbankMenue()
+    {
+        char eingabe = '-';
+        boolean menuewechsel = false;
+        do
+        {
+            printLF();
+            System.out.println("DATENBANKMENÜ");
+            System.out.println("------------------------------------------------------------");
+            System.out.println("[1] Lade Daten aus XML-Datei");
+            System.out.println("[2] Speichere Daten in XML-Datei");
+            System.out.println("[3] System zurücksetzen");
+            System.out.println("[0] HAUPTMENÜ");
+
+            printAuswahlTreffen();
+            try {eingabe = Stdin.readlnChar();}
+            catch(Exception e){
+                printEingabeFehler(); 
+                datenbankMenue();
+            }
+            
+             
+            switch (eingabe)
+            {
+                case '0': mainMenue(); 
+                break;
+                case '1': load();
+                break;
+                case '2': save();   
+                break;
+                case '3': systemReset();   
+                break;
+                default: printEingabeFehler();
+            }
+        } while (!menuewechsel);
+        printLF();
+    }
+
+    private void systemReset()
+    {
+        String eingabePasswort;  
+        boolean wdh = false;
+        String janein;
+
+        eingabePasswort = Stdin.readString("Bitte Passwort eingeben, um fortzufahren:  ");
+        if(passwort.equals(eingabePasswort))  
+        {
+            printLF();
+            System.out.println("*** ACHTUNG: Wenn Sie das System zurücksetzen werden ALLE Kunden- und Artikeldaten gelöscht! ***");
+            printLF();
+            do{
+                wdh = false;
+                System.out.println("Sind Sie sicher, dass Sie das System zurücksetzen wollen?");
+                janein = Stdin.readlnString("Geben Sie bitte     [J] fuer Ja     oder    [N] fuer Nein    ein: ");
+                if(janein.equalsIgnoreCase("J"))
+                {
+                    printLF();
+                    System.out.println("System erfolgreich zurückgesetzt!");
+                    printLF();
+                    Datenbank d = new Datenbank();
+                    d.initData();
+                    d.printProgrammInfo();
+                    d.mainMenue();
+                    save();
+                }
+                else if(janein.equalsIgnoreCase("N"))
+                {
+                    printLF();
+                    System.out.println("Das System wurde NICHT zurückgesetzt!");
+                    printLF();
+                }
+                else
+                {
+                    wdh = true;
+                }
+            }
+            while(wdh == true);
+        }
+        else
+        {
+            printLF();
+            System.out.println("Zugriff verweigert! Das von ihnen eingegebene Passwort ist nicht korrekt!");
+            printLF();
+        }
+    }
+
+
+   /**
+     * Methode ruft das Kundenmenue auf
+     */
+    private void kundenMenue()
+    {
+        char eingabe =  '-';
+        boolean menuewechsel = false;
+
+        do
+        {
+            System.out.println();
+            System.out.println("KUNDENMENÜ");
+            System.out.println("------------------------------------------------------------");
+            System.out.println("[1] Zeige alle Kunden an");
+            System.out.println("[2] Suche Kunden nach Nachname");
+            System.out.println("[3] Erstelle neuen Kunden");
+            System.out.println("[0] HAUPTMENÜ");
+
+            printAuswahlTreffen();
+            try{
+                eingabe = Stdin.readlnChar();
+            }
+            catch(Exception e){System.out.println("Fehler, keine gültige Eingabe gemacht!");}
+
+            switch (eingabe)
+            {
+                case '0': menuewechsel = true;
+                break;
+                case '1': showKundenListe();
+                break;
+                case '2': sucheKundeNachNachname();
+                break;
+                case '3': erstelleNeuenKunden();
+                break;
+                default: printEingabeFehler();
+            }
+        } while (!menuewechsel);
+        printLF();
+    }
+
+    /**
+     * Methode ersetzt in Strings Zeichen wie "Ã¼" durch korrekte Zeichen wie "ü" um
+     *  
+     * (Hintergrund: Umlaute und ß die über die Stdin-Methode eingelesen werden werden komischerweise etwa als "Ã¼" abgespeichert.
+     * Um dies zu berichtigen werden diese Zeichen wie "Ã¼" durch den entsprechenden Unicode ersetzt. Dieser wird korrekt angezeigt in der Konsole.)
+     */
+    private String umlauteUmwandeln (String eingabe)
+    {
+        eingabe = eingabe.replace("Ã¼" , "\u00FC" );   
+        eingabe = eingabe.replace("Ã¶" , "\u00F6" );   
+        eingabe = eingabe.replace("Ã¤" , "\u00E4" );   
+        eingabe = eingabe.replace("Ãœ" , "\u00DC" );   
+        eingabe = eingabe.replace("Ã–" , "\u00D6" );   
+        eingabe = eingabe.replace("Ã„" , "\u00C4" );   
+        eingabe = eingabe.replace("ÃŸ" , "\u00DF" );   
+
+        return eingabe;
+    }
+
+    /**
+     * Methode dient zum Erstellen eines neuen Kunden
+     */
+    private void erstelleNeuenKunden()
+    {
+        int zaehler = 1999; 
+
+
+        String nachname; 
+        do
+        {
+            name = Stdin.readlnString("Bitte geben Sie den Namen des Kunden ein:");
+            name = umlauteUmwandeln (name);
+            if (name.matches("")) System.out.println("Fehler, keine leere Eingabe zulässig!");
+        } while (name.matches("")); 
+
+        String vorname; 
+        do
+        {
+            vorname = Stdin.readlnString("Bitte geben Sie den Vornamen des Kunden ein:");
+            vorname = umlauteUmwandeln (vorname);
+            if (vorname.matches("")) System.out.println("Fehler, keine leere Eingabe zulässig!");
+        } while (vorname.matches(""));
+
+        String geschlecht;
+        do
+        {
+            geschlecht = Stdin.readlnString("Bitte geben Sie Geschlecht des Kunden ein (nur Zahlenwerte ohne Leerzeichen sind erlaubt!): ");
+        } while (!geschlecht.matches("[0-9]+"));
+
+        int alter; 
+        do
+        {
+            alter = Stdin.readlnString("Bitte geben Sie das Alter des Kunden ein:");
+            alter = umlauteUmwandeln (alter);
+            if (alter.matches("")) System.out.println("Fehler, keine leere Eingabe zulässig!");
+        } while (alter.matches(""));
+
+        float groesse; 
+        do
+        {   
+            groesse = Stdin.readlnString("Bitte geben Sie Groesse des Kunden ein: ");
+            if (!groesse.matches("[0-9a-z]+")) {System.out.println("Fehler, es sind nur die Zeichen 0-9 und a-z OHNE Leerzeichen als Eingabe zulässig!");}
+        } while (!groesse.matches("[0-9a-z]+"));
+
+        int gewicht; 
+        do
+        {
+            gewicht = Stdin.readlnString("Bitte geben Sie Gewicht des Kunden ein (nur Zahlenwerte ohne Leerzeichen sind erlaubt!): ");
+        } while (!gewicht.matches("[0-9]+"));
+
+        boolean vegetarier; 
+        do
+        {
+            ort = Stdin.readlnString("Bitte geben Sie an, ob der Kunde Vegetarier ist:");
+            ort = umlauteUmwandeln (vegetarier);
+            if (vegetarier.matches("")) System.out.println("Fehler, keine leere Eingabe zulässig!");
+        } while (vegetarier.matches(""));
+
+        Kunde k1 = new Kunde(vorname, name, geschlecht, alter , groesse, gewicht, vegetarier);
+        Iterator <Kunde>iter = kundenListe.iterator();  
+        while(iter.hasNext())   
+        {
+            Kunde a  =  iter.next();       
+            zaehler = a.getId(); 
+        }    
+        k1.setId(zaehler+1);  
+        kundenListe.add(k1);  
+        save();   
+    }
+
+    /**
+     * Methode zeigt alle Kunden an, die in der Kundenliste vorhanden sind
+     */
+    private void showKundenListe()
+    {
+        String s;
+
+        printZentriert("Kunden-ID");
+        printZentriertLang("Vorname");
+        printZentriertLang("Name");
+        printZentriert("Alter");
+        printZentriertLang("Groesse");
+        printZentriertKurz("Gewicht");
+        printZentriert("Vegetarier");
+        printLF();
+        System.out.print("-");   
+        printLinieLF(11); 
+
+        Iterator <Kunde>iter = kundenListe.iterator(); 
+        while(iter.hasNext()) 
+        {
+            Kunde i  =  iter.next();
+
+            s = castInt2String(i.getId());
+            printZentriert(s);
+
+            printLinksbuendigLang(i.getVorname());
+
+            printLinksbuendigLang(i.getName());
+
+            printLinksbuendig(i.getAlter());
+
+            printLinksbuendigLang(i.getGroesse());
+
+            printLinksbuendigKurz(i.getGewicht());
+
+            printLinksbuendig(i.getVegetarier());
+
+            printLF();
+        }
+        printLF();
+    }
+
+    /**
+     * Methode dient zum Durchsuchen der Kundenliste nach einem eingegebenen Nachname
+     */
+    private void sucheKundenName()
+    {
+        String name = "";
+        boolean wdh = false;
+        do
+        {   
+            wdh = false;
+            name = Stdin.readlnString("Bitte geben Sie den Namen des Kunden ein: ");
+            name = umlauteUmwandeln (name);
+            if (name.matches("")) {System.out.println("Fehler, bitte wiederholen Sie die Eingabe!"); wdh = true;}
+        } while (wdh == true);
+
+        boolean treffer = false;
+        Iterator <Kunde>iter = kundenListe.iterator();
+        while(iter.hasNext())
+        {
+            Kunde i  =  iter.next();
+            if (i.getName().equalsIgnoreCase(name)) treffer = true;
+        }
+
+        if (!treffer) 
+        {
+            printLF();
+            System.out.println("Es gibt keinen Kunden mit dem Namen "+name);
+            printLF();
+        }
+        else 
+        {
+            printZentriert("Kunden-ID");
+            printZentriertLang("Vorname");
+            printZentriertLang("Name");
+            printZentriert("Geschlecht");
+            printZentriertLang("Alter");
+            printZentriertKurz("Groesse");
+            printZentriert("Gewicht");
+            printZentriertLang("Vegetarier");
+            printLF();
+            System.out.print("-");  
+            printLinieLF(11); 
+
+            Iterator <Kunde>iter2 = kundenListe.iterator();
+            while(iter2.hasNext())
+            {
+                Kunde i  =  iter2.next();
+
+                if (i.getName().equalsIgnoreCase(nachname))
+                {
+                    String s = castInt2String(i.getId());
+                    printZentriert(s);
+
+                    printLinksbuendigLang(i.getVorname());
+
+                    printLinksbuendigLang(i.getName());
+
+                    printLinksbuendig(i.getGeschlecht());
+
+                    printLinksbuendigLang(i.getAlter());
+
+                    printLinksbuendigKurz(i.getGroesse());
+
+                    printLinksbuendig(i.getGewicht());
+
+                    printLinksbuendigLang(i.getVegetarier());
+
+                    printLF();
+                }
+            }
+            printLF();
+        }
+    }
+
+    /*
+    private void loescheKunde()
+    {
+    printLF();
+    int id = 0;
+    boolean wdh = false;
+    do
+    {   
+    wdh = false;
+    try {id = Stdin.readlnInt("Bitte geben Sie hier die ID des Kunden an, der geloescht werden soll: ");}
+    catch(Exception e){
+    System.out.println("Fehler, unzulässige Eingabe. Bitte Kundennummer nur als ganze Zahl ohne Leerzeichen angeben!");
+    wdh = true;
+    }
+    }
+    while(wdh == true);
+    printLF();
+
+    this.removeKunde(id);
+    }
+
+    private void removeKunde(int k)
+    {
+    Iterator <Kunde>iter = this.kundenListe.iterator();
+    int j = 0;
+    boolean found = false;
+    while(iter.hasNext() && !found)
+    {
+
+    Kunde i  =  iter.next();
+    int iid = i.getId();
+    if(iid == k){
+    this.kundenListe.remove(j);
+    found = true;
+    System.out.println("Kunde erfolgreich gelöscht!");
+    printLF();
+    }
+    ++j;
+
+    }
+    if (!found){System.out.println("Fehler, es gibt keinen Kunden mit der Kundennummer "+Integer.toString(k)+" !  Kehre zurück ins Kundenmenü...");}
+    }*/
+
+    
+    /**
+     * Methode ruft das Bestellmenue auf
+     */
+    private void bestellMenue()
+    {   
+
+        char eingabe = '#';
+        boolean menuewechsel = false;
+
+        do
+        {    
+            System.out.println();
+            System.out.println("BESTELLMENÜ");
+            System.out.println("------------------------------------------------------------");
+            System.out.println("[1] Rezept erstellen");
+            System.out.println("[2] Bestellung eines Kunden abrufen");
+            System.out.println("[3] Alle Bestellungen aufrufen");
+            System.out.println("[4] Bestellung stornieren");
+            System.out.println("[5] Alle Rezepte aufrufen");
+            System.out.println("[6] Übertrage bereits erstelltes Rezept in eine Bestellung");
+            System.out.println("[0] HAUPTMENÜ");
+
+            printAuswahlTreffen();
+            try{
+                eingabe = Stdin.readlnChar();
+            }
+            catch(Exception e){System.out.println("Fehler, keine gültige Eingabe gemacht!");}
+
+            switch (eingabe)
+            {
+                case '0': mainMenue();
+                break;
+                case '1': rezeptBestellen();
+                break;
+                case '2': showBestelllisteEinzel();
+                break;
+                case '3': showBestelllisteGesamt();
+                break;
+                case '4': loescheBestellung2 ();
+                break;
+                case '5': showRezepte();
+                break;
+                case '6': rezeptInBestellung ();
+                break;
+                default: printEingabeFehler();
+            }
+        } while (!menuewechsel);
+        printLF();
+
+    }
+
+    /**
+     * Methode dient zum Bestellen von Rezepten
+     */
+    private void rezeptlBestellen()
+    {    
+        bestellListe = new ArrayList <Bestellung>();    
+        int id = -10;
+        float summe3 = 0;
+        do
+        {   
+            try {
+                id = Stdin.readInt("Bitte geben Sie die Kundennummer des bestellenden Kunden ein: ");
+                if(pruefeKundennummer(id)!=id)  
+                {
+                    String wdh = Stdin.readString("Fehler: Keine passende Kundennummer gefunden, versuchen Sie es erneut!\nDrücken Sie [J] um die Eingabe zu wiederholen oder [N] um zum Bestellmenü zurückzukehren: ");
+
+                    if(wdh.equalsIgnoreCase("N"))
+                    {
+                        bestellMenue();
+                    }
+                }
+            }
+            catch(Exception e){
+                System.out.println("Fehler! Bitte geben Sie eine gültige Kundennummer in Form einer ganzen Zahl ein.");
+                String wdh = Stdin.readString("Drücken Sie [J] um die Eingabe zu wiederholen oder [N] um zum Bestellmenü zurückzukehren: ");
+
+                if(wdh.equalsIgnoreCase("N"))
+                {
+                    bestellMenue();
+                }
+            }
+            
+
+            if(pruefeKundennummer(id)==id)  
+            {
+                System.out.println("\nFolgende Kundendaten wurden gefunden:\n");
+
+                Iterator <Kunde>iterk = kundenListe.iterator();
+                while(iterk.hasNext())   
+                {
+                    Kunde k  =  iterk.next();       
+                    if(k.getId() == id) {
+                        System.out.println("Kundennummer:   "+k.getId());
+                        System.out.println("        Name:   "+k.getName());
+                        System.out.println("     Vorname:   "+k.getVorname());
+                        System.out.println("  Geschlecht:   "+k.getGeschlecht());
+                        System.out.println("       Alter:   "+k.getAlter());
+                        System.out.println("     Groesse:   "+k.getGroesse());
+                         System.out.println("    Gewicht:   "+k.getGewicht());
+                        System.out.println("  Vegetarier:   "+k.getVegetarier());
+
+                        boolean nochmal = false;
+                        do {
+                            nochmal = false;
+                            String wdh = Stdin.readString("\nMöchten Sie mit diesen Kundendaten das Rezept erstellen? Wählen sie   [J] für Ja   oder   [N] für Nein: ");
+                            if(wdh.equalsIgnoreCase("N"))
+                            {
+                                System.out.println("Die Angebotserstellung wird abgebrochen. Kehre zurück ins Bestellmenü...\n");
+                                bestellMenue();
+                            }
+
+                            else if(wdh.equalsIgnoreCase("J"))  { System.out.println("Fahre fort mit der Rezepterstellung...\n");  }
+
+                            else
+                            {
+                                System.out.println("Fehler, keine gültige Eingabe gemacht!");
+                                nochmal = true;
+                            }
+                        }
+                        while(nochmal == true);
+                    }
+                }    
+            }
+
+        }
+        while(pruefeKundennummer(id)!= id);  
+
+        
+
+        while(fortfahren==true)
+        {
+
+            do
+            {
+                do
+                {   
+                    wdh5 = false;
+                    try {artnr = Stdin.readInt("Bitte Rezeptnummer eines Rezepts eingeben, das zur Bestellung hinzugefügt werden soll: ");}
+                    catch(Exception e) {System.out.println("Fehler, unzulässige Eingabe. Rezeptnummer bitte als ganze Zahl ohne Leerzeichen eingeben!"); wdh5 = true;} 
+                }
+                while(wdh5 == true);
+
+                if(pruefeRezeptnummer(reznr)==reznr)
+                {
+                    h2 = false;
+
+                    Rezept r = sucheRezeptzuRezeptnummer(reznr);  
+                    if(r.getMenge()==0)
+                    {
+                        printLF();
+                        System.out.println("Kein Rezept vorhanden!"); 
+                        printLF();
+                    }
+
+                    if(r.getMenge()==0) 
+                    {   
+                        do{
+                            janein = Stdin.readString("Drücken Sie [J] um eine neue Rezeptnummer einzugeben oder [N] um die Bestellung abzubrechen und zum Bestellmenü zurückzukehren: ");
+                            if(janein.equalsIgnoreCase("J"))
+                            {
+                                h2 = true;
+                                h5 = false;
+                            }
+                            else if(janein.equalsIgnoreCase("N"))
+                            {
+                                reznr = 1000;
+                                Rezept r = sucheRezeptzuRezeptnummer(reznr);
+                                Bestellung p = new Bestellung(i,0,0); 
+                                bestellListe.add(p);
+                                h = true;
+                                fortfahren = false;
+                                h2 = false;
+                                h5 = false;
+                            }
+                            else
+                            {
+                                h5 = true;
+                            }
+                        }
+                        while(h5 == true);
+                    }
+                }
+                
+                
+                 if(pruefeRezeptnummer(reznr)!=reznr)  
+                {
+
+                    String wdh2 = Stdin.readString("Fehler: Keine passende Rezeptnummer gefunden, versuchen Sie es erneut!\nDrücken Sie [J] um die Eingabe zu wiederholen oder [N] um zum Bestellmenü zurückzukehren: ");
+                    if(wdh2.equalsIgnoreCase("N"))
+                    {
+                        reznr = 1000;
+                        Rezept i = sucheRezeptzuRezeptnummer(reznr);
+                        Bestellposition p = new Bestellposition(i,0,0); 
+                        bestellListe.add(p);
+                        h = true;
+                        fortfahren = false;
+                    }
+                }
+            }
+            while(pruefeRezeptnummer(reznr)!=reznr || h2 == true);
+            boolean wdh4 = false;
+            if(h==false)
+            {
+                Rezept i = sucheRezeptzuRezeptnummer(reznr);
+                int menge = 0 ;
+
+                do 
+                {
+                    do{
+                        wdh4 = false;
+                        try {menge = Stdin.readInt("Bitte Menge eingeben: ");}
+                        catch(Exception e) {
+                            System.out.println("Fehler, unzulässige Eingabe. Geben Sie bitte eine positive ganze Zahl als Bestellmenge an!");
+                            wdh4 = true;
+                        }
+                    }
+                    while(wdh4 == true);
+                }
+                while(menge>i.getMenge()||menge<0);
+            
+            
+                boolean nochmal2 = false;
+                do {
+                    nochmal2 = false;
+
+                    System.out.println("\nFolge Rezeptdaten wurden gefunden bzw. von Ihnen eingegeben:\n");
+                    System.out.println("      Rezeptnummer:   "+i.getRezeptnummer());
+                    if (i instanceof Vegetarisch) System.out.println("          Rezepttyp:   Vegetarisch");
+                    if (i instanceof Fleischgerichte) System.out.println("          Rezepttyp:   Fleischgerichte");
+                    if (i instanceof Fischgerichte) System.out.println("          Rezepttyp:   Fischgerichte");
+                 
+                    System.out.println("  Rezeptbezeichnung:   "+i.getBezeichnung());
+                   
+         
+                    janein = Stdin.readString("\nSind diese Angaben korrekt? Wählen Sie   [J] um fortzufahren   oder   [N] um die Eingabe zu wiederholen: ");
+                    printLF();
+
+                    if (janein.equalsIgnoreCase("N")) fortfahren = true;
+
+                    else if(janein.equalsIgnoreCase("J")) 
+                    {
+                        zwischensumme = floatAbschneiden(anzahl*(i.getPreis()*pruefeRabatt11(artnr))*pruefeRabatt12(artnr));
+                        Bestellposition p = new Bestellposition(i,anzahl, zwischensumme); 
+                        bestellListe.add(p); 
+                        i.setAnzahl(i.getAnzahl()-anzahl);  
+
+                        if(pruefeRabatt11(artnr)>=0) {  p.setRabatt11(100-pruefeRabatt11(artnr)*100);} 
+
+                        if(pruefeRabatt12(artnr)>=0) p.setRabatt12(100-pruefeRabatt12(artnr)*100); 
+
+                        p.setAbzug3(anzahl*i.getPreis()-zwischensumme); 
+
+                        summe = summe + zwischensumme;  
+                        printLF();
+                        System.out.println("Artikel wurde "+anzahl+" mal zur Bestellung hinzugefügt!\nNeuer Lagerbestand: "+(i.getAnzahl())+" Stück");
+                        printLF();
+                        boolean wdh = true;
+
+                        do  
+                        {
+                            String weiter = Stdin.readString("Weitere Artikel hinzufügen?  [J] für Ja    oder    [N] für Nein    eingeben!:");
+                            if("N".equalsIgnoreCase(weiter)) {fortfahren = false; wdh = false;}
+                            else if ("J".equalsIgnoreCase(weiter)) {fortfahren = true; wdh = false;}
+                            else 
+                            { 
+                                System.out.println("Ihre Eingabe wurde nicht erkannt, versuchen Sie es noch einmal!");
+                                fortfahren = false; wdh = true;
+                            }
+                        }
+                        while(wdh);
+                    }
+
+                    else
+                    {
+                        nochmal2 = true; 
+                        System.out.println("Fehler, Ihre Eingabe wurde nicht erkannt. Versuchen Sie es noch einmal!\n");
+                    }
+                }
+                while(nochmal2 == true);
+            }
+           }
+            
+             int zaehler = 0;
+             Iterator <Bestellung>iter = bestellListe.iterator();
+              while(iter.hasNext())   
+        {
+            Bestellung c  =  iter.next();       
+            zaehler = c.getBestellnummer(); 
+        }    
+
+       
+
+          if(h==false)
+        {
+            printLF();
+            System.out.println("Erstelle Rezept...");
+            showBestelllisteEinzel2(id);
+
+            boolean wdh2 = true;
+
+            do 
+            {
+                String ok = Stdin.readString("Möchten sie das Rezept annehmen?\nWählen sie [J] für um das Rezept anzunehmen und die Bestellung auszuführen oder [N] um das Rezept abzulehnen und zu speichern: ");
+                if("N".equalsIgnoreCase(ok))
+                { 
+                    printLF();
+                    b.setIstBestellung(false);
+                    wdh2 = false;
+
+                    Iterator <Bestellung>iter2 = b.getBestellliste().iterator(); 
+                    while(iter2.hasNext())
+                    {
+                        Bestellung p  =  iter2.next();
+                        int lager = p.getRezept().getMenge();   
+                        int bestellt = p.getMenge();                
+                        p.getRezept().setMenge(lager+bestellt);        
+                    }
+
+                    save();
+                    printLF();
+                    System.out.println("Rezept wird abgeschlossen und zur Rezeptliste hinzugefügt. Kehre zurück zum Bestellmenü..."); 
+                    printLF();
+                }
+            }
+               while (wdh2);
+        }
+        
+        if(h==true) 
+        {
+            printLF();
+            System.out.println("Bestellung wird abgebrochen und storniert... ");
+
+            boolean wdh41 = true;
+            Iterator <Bestellung>iter71 = bestellListe.iterator(); 
+            while(iter71.hasNext() && wdh41==true)
+            {
+                Bestellung i71  =  iter71.next();
+
+                if(i71.getId() == id && i71.getBestellnummer() == bnr)  
+                {
+                    Iterator <Bestellposition>iter41 = i71.getBestellliste().iterator(); 
+                    while(iter41.hasNext())
+                    {
+                        Bestellposition p  =  iter41.next();
+                        int lager = p.getRezept().getMenge();   
+                        int bestellt = p.getMenge();                
+                        p.getRezept().setMenge(lager+bestellt);        
+                    }
+                    wdh41 = false;
+
+                    bestellListe.remove(bestellListe.indexOf(i71));  
+                }
+            }
+
+            printLF();
+        }
+        printLF();
+    }
+     /**
+     * Methode entfernt eine Bestellung aus der Bestellliste
+     */
+    private void loescheBestellung2 ()
+    {
+        int id = 0;
+        boolean wdh = false;
+        int anzahlTreffer = 0;
+        int eingabeBestellnummer = 0;
+
+        do{
+            wdh = false;
+            try {id = Stdin.readInt("Bitte Id von der Bestellung eingeben die gelöscht werden soll: ");}
+            catch (Exception ex) {System.out.println("Fehler, unzulässige Eingabe. Geben sie bitte eine ganze positive Zahl als Id ein!"); wdh = true;}
+
+        }
+        while(wdh == true);
+
+        boolean treffer = false;
+        Bestellung i = null;
+        Iterator <Bestellung>iter = bestellListe.iterator(); 
+        while(iter.hasNext())
+        {
+            i  =  iter.next();
+
+            if(i.getId() == knr && i.getIstBestellung() == true )   
+            {
+                anzahlTreffer = anzahlTreffer + 1;  
+                treffer = true;   
+                printLF();
+                System.out.print("==");
+                printLinieLF2(7);
+                System.out.println("Bestellnummer:  "+i.getBestellnummer());                                                                                      
+                System.out.println("Kundennummer:   "+i.getId());
+
+                
+                printLF();
+                printZentriertKurz("Rezeptnr.");
+                printZentriertLang("Name");
+                printZentriertKurz("Zutat");
+                printZentriertKurz("Menge");
+                printZentriertKurz("Art");            
+                printZentrierKurz("Einheit");
+                printLF();
+                System.out.print("-");
+                printLinieLF(7);        
+                Iterator <Bestellung>iter2 = i.getBestellliste().iterator(); 
+                while(iter2.hasNext())
+                {
+                    Bestellung j  =  iter2.next();
+
+                    String s;
+                    s = castInt2String(j.getRezept().getRezeptnummer()); 
+                    printZentriertKurz(s);
+
+                    printLinksbuendigLang(j.getRezept().getName());    
+
+                }
+            }
+        }
+        
+        if(treffer==true) {System.out.print("=="); printLinieLF2(7);}
+
+        if(treffer==false)
+        {
+            printLF();
+            System.out.println("Keine Bestellung zu dieser Kundennummer gefunden!");
+        }
+
+        if(anzahlTreffer == 1)   
+        {
+            String jaNein = "";
+            System.out.println("Es wurde eine Bestellung zu der von Ihnen angegebenen Kundennummer gefunden. ");
+            do{
+                wdh = true;
+                do{
+                    jaNein = Stdin.readString("Möchten Sie diese Bestellung endgültig löschen? Geben sie  [J] für Ja  oder  [N] für Nein    ein: ");
+                    if (!jaNein.matches("[jnJN]+")) {System.out.println("Fehler, unzulässige Eingabe. Geben Sie bitte nur [J] bzw. [j] oder [N] bzw. [n] ein!");}
+                }
+                while(!jaNein.matches("[jnJN]+"));
+
+                if("N".equalsIgnoreCase(jaNein))
+                { 
+                    printLF();
+                    wdh = false;
+                    System.out.println("Das Rezept wurde NICHT in eine Bestellung übertragen. Kehre zurück zum Bestellmenü..."); 
+                    bestellMenue();
+                    printLF();
+                }
+                else if ("J".equalsIgnoreCase(jaNein)) 
+                {
+                    int reznr1 = 0;
+                    boolean wdh41 = true;
+
+                    Iterator <Bestellung>iter71 = bestellListe.iterator(); 
+                    while(iter71.hasNext() && wdh41==true)
+                    {
+                        Bestellung i71  =  iter71.next();
+
+                        if(i71.getId() == knr && i71.getIstBestellung() == true )
+                        {
+                            Iterator <Bestellung>iter41 = i71.getBestellliste().iterator(); 
+                            while(iter41.hasNext())
+                            {
+                                Bestellung p  =  iter41.next();
+                                int lager = p.getRezept().getMenge();   
+                                int bestellt = p.getMenge();                
+                                p.getRezept().setMenge(lager+bestellt);        
+                            }
+                            bnr1 = i71.getBestellnummer();
+                            wdh41 = false;
+
+                            bestellListe.remove(bestellListe.indexOf(i71));
+                        }
+                    }
+                    printLF();
+                    System.out.println("Die Bestellung mit der Kundennummer "+id+" und der Rezeptnummer "+reznr1+" wurde erfolgreich gelöscht.");
+                    printLF();
+                    wdh = false;
+                }
+
+                else 
+                { 
+                    System.out.println("Ihre Eingabe wurde nicht erkannt, versuchen Sie es noch einmal!");
+                    wdh = true;
+                }
+            }
+            while(wdh == true);
+            printLF();
+        }
+
+        if(anzahlTreffer > 1) 
+        {
+            System.out.println("Es wurden mehrere Bestellungen zu der von Ihnen angegebenen Kundennummer gefunden. ");
+            do {
+                wdh = false;
+                eingabeRezeptummer = Stdin.readInt("Bitte geben Sie die Rezeptnummer der Bestellung ein, welche gelöscht werden soll: ");
+                String s = castInt2String(eingabeRezeptnummer);
+                if (!s.matches("[0-9]+")) {System.out.println("Fehler, unzulässige Eingabe. Geben Sie bitte eine ganze positive Zahl als Rezeptnummer ein!"); wdh = true;}
+            }
+            while(wdh == true);
+
+            int reznr2 = 0;
+            boolean wdh4 = true;
+            Iterator <Bestellung>iter7 = bestellungenListe.iterator(); 
+            while(iter7.hasNext() && wdh4==true)
+            {
+                Bestellung i7  =  iter7.next();
+                if(i7.getRezeptnummer() == eingabeRezeptnummer && i7.getIstBestellung() == true )
+                {
+                    Iterator <Bestellung>iter4 = i7.getBestellliste().iterator(); 
+                    while(iter4.hasNext())
+                    {
+                        Bestellung p  =  iter4.next();
+                        int lager = p.getRezept().getMenge();   
+                        int bestellt = p.getMenge();                
+                        p.getRezept().setMenge (lager+bestellt);        
+                    }
+                    reznr2 = i7.getRezeptnummer();
+                    wdh4 = false;
+
+                    bestellListe.remove(bestellungenListe.indexOf(i7));
+                }
+            }
+            printLF();
+            System.out.println("Die Bestellung mit der Kundennummer "+id+" und der Rezeptnummer "+reznr2+" wurde erfolgreich gelöscht.");
+            printLF();
+        }
+    }
+    
+     /**
+     * Methode sucht Rezept anhand Rezeptnummer und gibt das Rezept als Object aus
+     * @param reznr Rezeptnummer eines Rezepts
+     */
+    private Rezept sucheRezeptzuRezeptnummer(int reznr) 
+    {
+        Iterator <Rezept>iter = RezeptListe.iterator(); 
+        while(iter.hasNext())
+        {
+            Rezept i  =  iter.next();
+
+            if(i.getRezeptnummer() == reznr){
+
+                return i;   
+
+            }
+
+        }
+        return null; 
+    }
+    
+    /**
+     * Methode zeigt ALLE Bestellungen an
+     */
+    private void showBestelllisteGesamt()
+    {
+
+        boolean treffer = false;
+        printLF();
+
+        Iterator <Bestellung>iter = bestellListe.iterator(); 
+        while(iter.hasNext())
+        {
+            Bestellung i  =  iter.next();
+            if(i.getIstBestellung() == true)
+            {
+                treffer = true;
+                System.out.print("==");
+                printLinieLF2(7);
+                System.out.println("Bestellnummer:  "+i.getBestellnummer());
+                System.out.println("Kundennummer:   "+i.getId());
+
+                
+                printLF();
+                printZentriertKurz("Rezeptnr.");
+                printZentriertKurz("Name");
+                printZentriertKurz("Art");
+               
+                printLF();
+                System.out.print("-");
+                printLinieLF(7);        
+                Iterator <Bestellung>iter2 = i.getBestellliste().iterator(); 
+                while(iter2.hasNext())
+                {
+                    Bestellung j  =  iter2.next();
+
+                    String s;
+                    s = castInt2String(j.getRezept().getRezeptnummer()); 
+                    printZentriertKurz(s);
+
+                    printZentriertKurz(j.getRezept().getName());    
+
+                    
+                    printZentriertKurz(j.getRezept().getArt());   
+
+                    
+
+                    
+
+                    
+                 
+
+                }
+
+                
+            }
+
+        }
+
+        if(treffer == false )  {
+            printLF();
+            System.out.println("Es liegen keine Bestellungen vor!");
+            printLF();
+        }
+    }
+    
+    
+    /**
+     * Methode zeigt alle Bestellungen zu einer beliebigen Rezeptnummer an
+     */
+    private void showBestellungenNachRezeptnummer ()
+    {
+        int rezeptnummer = 0;
+        boolean wdh = false;
+        boolean gefunden = false;
+        boolean treffer = false;
+        boolean treffer1 = false;
+        String s;
+        
+
+        do{
+            wdh = false;
+            try {
+                rezeptnummer = Stdin.readInt("Bitte rezeptnummer eines Rezepts eingeben, für den Bestellungen gesucht werden sollen: ");
+                treffer1 = false;
+                Iterator <Rezept>iter = RezeptListe.iterator();
+                while(iter.hasNext())
+                {
+                    Rezept i  =  iter.next();
+                    if (i.getRezeptnummer()==(rezeptnummer)) {treffer1 = true;}
+                }
+
+                if (!treffer1)
+                {
+                    System.out.println("Es gibt kein Rezept mit der Rezeptnummer "+rezeptnummer+" !");
+                }
+            }
+            catch(Exception e)
+            {
+                System.out.println("Fehler, keine gültige Eingabe gemacht. Geben Sie bitte eine ganze positive Zahl als Rezeptnummer ein!");
+                analyseMenue();
+                wdh = true;
+            }
+        }
+        while (wdh == true);
+
+        if(treffer1 == true)
+        {
+            printLF();
+            printZentriertKurz("Rezeptnr.");
+            printZentriertLang("Name");
+            printZentriertKurz("Bestellnr.");     
+            printZentriertKurz("Kundennr.");    
+            
+            printLF();
+            System.out.print("------");
+            printLinieLF(9);       
+
+            Iterator <Bestellung>iter = bestellListe.iterator(); 
+            while(iter.hasNext())
+            {
+                Bestellung i  =  iter.next();
+
+                Iterator <Bestellung>iter2 = i.getBestellliste().iterator(); 
+                while(iter2.hasNext())
+                {
+                    Bestellung j  =  iter2.next();
+
+                    if(rezeptnummer == j.getRezept().getRezeptnummer() && i.getIstBestellung() == true)
+                    {
+                        treffer = true;
+
+                        s = castInt2String(j.getRezept().getRezeptnummer()); 
+                        printZentriertKurz(s);
+
+                        printLinksbuendigLang(j.getRezept().getName());    
+
+                        s = castInt2String(i.getBestellnummer()); 
+                        printZentriertKurz(s);
+
+                        s = castInt2String(i.getId()); 
+                        printZentriertKurz(s);
+
+                        
+
+                        
+
+                       
+
+                        printLF();
+                    }
+
+                }
+            }
+            
+
+            if(treffer == false) {System.out.println("                                            Keine Bestellung zu Rezeptnummer "+Rezeptnummer+" gefunden!                                       ");}
+        }
+    }
+    /**
+     * Methode zeigt BESTELLUNGEN zu EINER Kundennummer an
+     */
+    private void showBestelllisteEinzel()
+    {
+        int knr = 0;
+        boolean wdh = false;
+        do{
+            wdh = false;
+            try {knr = Stdin.readInt("Bitte Kundennummer eingeben, zu der eine Bestellung gesucht werden soll: ");}
+            catch(Exception e) {
+                System.out.println("Fehler, unzulässige Eingabe. Geben Sie bitte eine positive ganze Zahl als Kundennummer ein! ");
+                wdh = true;
+            }
+        }
+        while(wdh == true);
+
+        boolean treffer = false;
+
+        Iterator <Bestellung>iter = bestellungenListe.iterator(); 
+        while(iter.hasNext()) 
+        {
+            Bestellung i  =  iter.next();
+
+            if(i.getId() == knr && i.getIstBestellung() == true )
+            {
+                treffer = true;
+                printLF();
+                System.out.print("==");
+                printLinieLF2(7);
+                System.out.println("Bestellnummer:  "+i.getBestellnummer()+"                                                                                      "+i.getDatum());
+                System.out.println("Kundennummer:   "+i.getId());
+
+                SimpleDateFormat sdfToDate = new SimpleDateFormat("EEEE', 'dd. MMMM yyyy");
+                String datum = sdfToDate.format(i.getLieferdatum());
+                System.out.println("Lieferdatum:    "+datum);
+
+                printLF();
+                printZentriertKurz("Artikelnr.");
+                printZentriertLang("Bezeichnung");
+                printZentriertKurz("Preis [EUR]");
+                printZentriertKurz("Menge");
+                printZentriertLang("Rabatt (Stufe 1/2) [EUR]");            
+                printZentriert("Summe [EUR]");
+                printLF();
+                System.out.print("-");
+                printLinieLF(7);        
+                Iterator <Bestellposition>iter2 = i.getBestellliste().iterator(); 
+                while(iter2.hasNext())
+                {
+                    Bestellposition j  =  iter2.next();
+
+                    String s;
+                    s = castInt2String(j.getArtikel().getArtikelnummer()); 
+                    printZentriertKurz(s);
+
+                    printLinksbuendigLang(j.getArtikel().getBezeichnung());    
+
+                    s = castDouble2String(floatAbschneiden(j.getArtikel().getPreis()));   
+                    printRechtsbuendigKurz(s);
+
+                    s = castDouble2String2(j.getAnzahl());  
+                    printZentriertKurz(s); 
+
+                    boolean giltRabatt1 = true;
+                    float abzugTyp1 = floatAbschneiden(j.getAbzug3());
+                    float rabattstufe1 = floatAbschneiden(j.getRabatt11());
+                    float rabattstufe2 = floatAbschneiden(j.getRabatt12());
+                    if( rabattstufe1 == 0  && rabattstufe2 == 0 ) giltRabatt1 = false;
+
+                    if(giltRabatt1==true)
+                    {
+                        String s1 = castDouble2String3(-abzugTyp1);  
+                        String s2 = castDouble2String3(rabattstufe1);
+                        String s3 = castDouble2String3(rabattstufe2);
+                        printLinksbuendigLang(s2+"%/"+s3+"% => "+s1); 
+                    }
+
+                    if(giltRabatt1==false)
+                    {
+                        printLinksbuendigLang("-");
+                    }
+
+                    s = castDouble2String(j.getZwischensumme());  
+                    printRechtsbuendig(s); 
+                    printLF();
+
+                }
+
+              
+            }
+        }
+        if(treffer==true) {System.out.print("=="); printLinieLF2(7);}
+        if(treffer==false)
+        {
+            printLF();
+            System.out.println("Keine Bestellung zu dieser Kundennummer gefunden!");
+        }
+        printLF();
+    }
+    
+   /**
+     * Methode vergleicht eingegebene Kundennummer mit vorhandenen Kundennummern und gibt sie, falls vorhanden, wieder zurück.
+     * @param id Kundennummer eines Kunden
+     */
+    private int pruefeKundennummer(int id)
+    {
+        Iterator <Kunde>iter = kundenListe.iterator(); 
+
+        while(iter.hasNext())
+        {
+            Kunde i  =  iter.next();
+            if(i.getId() == id)
+            {
+                return i.getId();
+            }
+        }
+
+        return 47585698;    
+    }
+  
+     /**
+     *  Methode für Bestellvorgang benötigt. Sie zeigt im Bestellvorgang für das aktuelle Rezept
+     */
+    private void showRezeptlisteEinzel2(int knr)
+    {
+        Rezept i = null;
+        
+        Iterator <rezept>iter = RezeptListe.iterator();
+        while(iter.hasNext())   
+        {
+            i  =  iter.next();    
+        }   
+
+        if(i.getId() == knr)
+        {
+            System.out.print("==");
+            printLinieLF2(7);
+            System.out.println("Bestellnummer:  "+i.getRezept()+"                                                                                      "+i.getDatum());
+            System.out.println("Kundennummer:   "+i.getId());
+
+            printLF();
+            printZentriertKurz("Rezeptnr.");
+            printZentriertLang("Name");
+            printZentriertKurz("Zutat");
+            printZentriertKurz("Menge");
+            printZentriertLang("Art");            
+            printZentriert("Einheit");
+            printLF();
+            System.out.print("-");
+            printLinieLF(7);        
+            Iterator <Bestellposition>iter2 = i.getBestellliste().iterator(); 
+        }
+            while(iter2.hasNext())
+      {
+                Bestellposition j  =  iter2.next();
+
+                String s;
+                s = castInt2String(j.getRezept().getRezeptnummer()); 
+                printZentriertKurz(s);
+
+                printLinksbuendigLang(j.getRezept().getName()); 
+
+             
+           
+                                                                                  
+      }
+    }
+    
+     /**
+     * Methode wandelt ein Angebot in eine Bestellung um
+     * (Wird benötigt, falls ein Kunde, dem ein Angebot vorliegt, aus diesem Angebot eine Bestellung machen will)
+     */
+    private void angebotInBestellung ()
+    {
+        int knr = 0;
+        boolean wdh = false;
+        int anzahlTreffer = 0;
+        int eingabeBestellnummer = 0;
+        boolean ok = false;
+        boolean treffer3 = false;
+
+        do{
+            wdh = false;
+            knr = Stdin.readInt("Bitte Kundennummer eingeben, zu der eine Angebot gesucht werden soll: ");
+            String s = castInt2String(knr);
+            if (!s.matches("[0-9]+")) {System.out.println("Fehler, unzulässige Eingabe. Geben Sie bitte eine ganze positive Zahl als Kundennummer ein!"); wdh = true;}
+        }
+        while(wdh == true);
+
+        boolean treffer = false;
+        Bestellung i = null;
+        Iterator <Bestellung>iter = bestellListe.iterator(); 
+        while(iter.hasNext())
+        {
+            i  =  iter.next();
+
+            if(i.getId() == knr && i.getIstBestellung() == false )
+            {
+                anzahlTreffer = anzahlTreffer + 1;
+                treffer = true;
+                System.out.print("==");
+                printLinieLF2(7);
+                System.out.println("Bestellnummer:  "+i.getBestellnummer()+"                                                                                      "+i.getDatum());
+                System.out.println("Kundennummer:   "+i.getId());
+
+                printLF();
+                printZentriertKurz("Rezeptnr.");
+                printZentriertLang("Name");
+                printZentriertKurz("Zutat");
+                printZentriertKurz("Menge");
+                printZentriertLang("Art");            
+                printZentriert("Einheit");
+                printLF();
+                System.out.print("-");
+                printLinieLF(7);        
+                Iterator <Bestellposition>iter2 = i.getBestellliste().iterator(); 
+               
+
+            }
+        }
+
+
+        if(treffer==false)
+        {
+            printLF();
+            System.out.println("Kein Rezept zu dieser Kundennummer gefunden!");
+        }
+
+        if(anzahlTreffer == 1) 
+        {
+            String jaNein = "";
+            System.out.println("Es wurde ein Retept zu der von Ihnen angegebenen Kundennummer gefunden. ");
+            printLF();
+            do{
+                wdh = true;
+                do{
+                    jaNein = Stdin.readString("Möchten Sie dieses Angebot in eine Bestellung übertragen? Geben sie  [J] für Ja  oder  [N] für Nein   ein: ");
+                    if (!jaNein.matches("[jnJN]+")) {System.out.println("Fehler, unzulässige Eingabe. Geben sie bitte nur [J] bzw. [j] oder [N] bzw. [n]   ein!");}
+                }
+                while(!jaNein.matches("[jnJN]+"));
+
+                if("N".equalsIgnoreCase(jaNein))
+                { 
+                    printLF();
+                    wdh = false;
+                    System.out.println("Das Angebot wurde NICHT in eine Bestellung übertragen. Kehre zurück zum Bestellmenü..."); 
+                    bestellMenue();
+                    printLF();
+                }
+                else if ("J".equalsIgnoreCase(jaNein)) 
+                {
+                    printLF();
+                    Bestellung i2 = null;
+                    Rabatt rabatt13 = null;
+                    int bnr1 = 0;
+                    String eingabe;
+                    int durchgang = 1;
+                    boolean stop = false;
+
+                    Iterator <Bestellung>iter2 = bestellungenListe.iterator(); 
+                    while(iter2.hasNext())
+                    {
+                        i2  =  iter2.next();
+
+                        if(i2.getId() == knr && i2.getIstBestellung() == false)
+                        {
+
+                            treffer3 = true;
+                            bnr1 = i2.getBestellnummer();
+
+                            Iterator <Bestellposition>iter4 = i2.getBestellliste().iterator(); 
+                            while(iter4.hasNext())
+                            {
+                                Bestellposition p  =  iter4.next();
+
+                                Iterator <Bestellposition>iter41 = i2.getBestellliste().iterator(); 
+                                while(iter41.hasNext())
+                                {
+                                    Bestellposition p41 = iter41.next();
+                                    if(sucheRezeptzuRezeptnummer(p.getRezept().getRezeptnummer()) == null) { stop = true;} 
+                                }
+
+                               
+                             
+                            }
+                        }
+                    }
+
+                    if(treffer3 == false)
+                    {
+                        printLF();
+                        System.out.println("Fehler, kein Angebot zur Bestellnummer  "+eingabeBestellnummer+"  gefunden! Kehre zurück ins Bestellmenü...");
+                        printLF();
+                    }
+
+                    if(ok == true)
+                    {
+                        printLF();
+                        System.out.println("Das Angebot mit der Kundennummer "+knr+" und der Bestellnummer "+bnr1+" wurde erfolgreich in eine Bestellung übertragen.");
+                        printLF();
+                    }
+
+                    if(stop == true  || ok == false)
+                    {
+                        printLF();
+                        System.out.println("Das Angebot mit der Kundennummer "+knr+" und der Bestellnummer "+bnr1+" kann NICHT in eine Bestellung übertragen werden.");
+                        System.out.println("Einer der im Angebot aufgeführten Artikel ist nicht mehr verfügbar. ");
+                        System.out.println("Erstellen Sie bitte, falls gewünscht, ein neus Angebot im Bestellmenü unter dem Punkt \"Angebot erstellen\"!");
+                        printLF();
+                    }
+
+                    wdh = false;
+
+                }
+                else 
+                { 
+                    System.out.println("Ihre Eingabe wurde nicht erkannt, versuchen Sie es noch einmal!");
+                    wdh = true;
+                }
+            }
+            while(wdh == true);
+            printLF();
+        }
+
+        if(anzahlTreffer > 1)
+        {
+            System.out.println("Es wurden mehrere Angebote zu der von Ihnen angegebenen Kundennummer gefunden. ");
+            do {
+                wdh = false;
+                eingabeBestellnummer = Stdin.readInt("Bitte geben Sie die Bestellnummer des Angebots ein, welches in eine Bestellung übertragen werden soll: ");
+                String s = castInt2String(eingabeBestellnummer);
+                if (!s.matches("[0-9]+")) {System.out.println("Fehler, unzulässige Eingabe. Geben Sie bitte eine ganze positive Zahl als Bestellnummer ein!"); wdh = true;}
+            }
+            while(wdh == true);
+
+            Bestellung i3 = null;
+            Rabatt rabatt13 = null;
+            int bnr2 = 0;
+            int durchgang = 1;
+            String eingabe;
+            boolean stop2 = false;
+
+            Iterator <Bestellung>iter3 = bestellungenListe.iterator(); 
+            while(iter3.hasNext())
+            {
+                i3  =  iter3.next();
+
+                if(i3.getBestellnummer() == eingabeBestellnummer && i3.getIstBestellung() == false )
+                {
+                    treffer3 = true;
+                    bnr2 = i3.getBestellnummer();
+                    Iterator <Bestellposition>iter5 = i3.getBestellliste().iterator(); 
+                    while(iter5.hasNext())
+                    {
+                        Bestellposition p  =  iter5.next();
+
+                        Iterator <Bestellposition>iter42 = i3.getBestellliste().iterator(); 
+                        while(iter42.hasNext())
+                        {
+                            Bestellposition p42 = iter42.next();
+                            if(sucheRezeptzuRezeptnummer(p.getRezept().getRezeptnummer()) == null) {stop2 = true;} 
+                        }
+
+                        if(stop2 == false)
+                        {
+
+                            if(p.getRezept().getAnzahl()>=p.getAnzahl())  
+                            {
+                               
+                                }
+
+                                int lager = p.getArtikel().getAnzahl();   
+                                int bestellt = p.getAnzahl();                
+                                p.getArtikel().setAnzahl(lager-bestellt);        
+                                i3.setIstBestellung(true);
+                                ok = true;
+                            }
+                        }
+                    }
+                }
+            }
+        
+        
+        {
+
+            if(treffer3 == false)
+            {
+                printLF();
+                System.out.println("Fehler, kein Angebot zur Bestellnummer  "+eingabeBestellnummer+"  gefunden! Kehre zurück ins Bestellmenue...");
+                printLF();
+            }
+
+            if(ok == true)
+            {
+                printLF();
+                System.out.println("Das Angebot mit der Kundennummer "+knr+" und der Bestellnummer "+bnr2+" wurde erfolgreich in eine Bestellung übertragen.");
+                printLF();
+            }
+
+            if( (ok == false || stop2 == true) )
+            {
+                printLF();
+                System.out.println("Das Angebot mit der Kundennummer "+knr+" und der Bestellnummer "+bnr2+" kann NICHT in eine Bestellung übertragen werden.");
+                System.out.println("Einer der im Angebot aufgeführten Artikel ist nicht mehr verfügbar. ");
+                System.out.println("Erstellen Sie bitte, falls gewünscht, ein neus Angebot im Bestellmenue unter dem Punkt \"Angebot erstellen\"!");
+                printLF();
+            }
+
+        }
+        
+    } 
+    
+    /**
+     * Methode wandelt einen Int in einen String um
+     */
+    private String castInt2String(int meinInt)
+    {
+        return Integer.toString(meinInt);
+    }
+
+    /**
+     * Methode wandelt einen double (oder int oder float) in einen String um und begrenzt die Nachkommastellen auf 2
+     * (Es wird Platz für bis zu 8 Zeichen reserviert)
+     */
+    private String castDouble2String(double meinDouble)
+    {
+        return String.format("%,8.2f", meinDouble);
+    }
+
+    /**
+     * Methode wandelt einen double (oder int oder float) in einen String um und "schneidet" die Nachkommastellen ab
+     */
+    private String castDouble2String2(double meinDouble)
+    {
+        return String.format("%,3.0f", meinDouble);
+    }
+
+    /**
+     * Methode wandelt einen double (oder int oder float) in einen String um und begrenzt die Nachkommastellen auf 2
+     * (Es wird Platz für bis zu 5 Zeichen reserviert)
+     */
+    private String castDouble2String3(double meinDouble)
+    {
+        return String.format("%,5.2f", meinDouble);  
+    }
+
+    /**
+     * Methode wandelt einen double (oder int oder float) in einen String um und begrenzt die Nachkommastellen auf 2
+     * 
+     */
+    private String castDouble2String4(double meinDouble)
+    {
+        return String.format("%,.2f", meinDouble);  
+    }
+
+    /**
+     * Methode gibt eine Leerzeile auf der Konsole aus
+     */
+    private void printLF()
+    {
+        System.out.println();
+    }
+    
+   /**
+     * Methode dient für sehr kurze zentrierte Strings
+     */
+    private void printZentriertKurz(String s)
+    {
+        System.out.print(baueZentriertenString(s, FELDLAENGE-3));
+    }
+    
+
+    /**
+     * Methode zentriert einen String
+     */
+    private void printZentriert(String s)
+    {
+        System.out.print(baueZentriertenString(s, FELDLAENGE));
+    }
+
+    /**
+     * Methode dient für überlange zentrierte Strings
+     */
+    private void printZentriertLang(String s)
+    {
+        System.out.print(baueZentriertenString(s, FELDLAENGE+14));
+    }
+    
+     /**
+     * Methode zeigt ALLE ANGEBOTE an 
+     * (Angebot entspricht Bestellung bei denen boolean IstBestellung=false)
+     */
+    private void showAngebote()
+    {
+        boolean treffer = false;
+
+        printLF();
+
+        Iterator <Bestellung>iter = bestellungenListe.iterator(); 
+        while(iter.hasNext())
+        {
+            Bestellung i  =  iter.next();
+            if(i.getIstBestellung() == false)   
+            {
+                treffer = true;
+                System.out.print("==");
+                printLinieLF2(7);
+                System.out.println("Bestellnummer:  "+i.getBestellnummer()+"                                                                                      "+i.getDatum());
+                System.out.println("Kundennummer:   "+i.getId());
+
+                printLF();
+                printZentriertKurz("Artikelnr.");
+                printZentriertLang("Name");
+                printZentriertKurz("Zutat");
+                printZentriertKurz("Menge");
+                printZentriertLang("Art");            
+                printZentriert("Einheit");
+                printLF();
+                System.out.print("-");
+                printLinieLF(7);        
+                Iterator <Bestellposition>iter2 = i.getBestellliste().iterator(); 
+               
+            }
+
+        }
+
+        if(treffer == false )  {
+            printLF();
+            System.out.println("Es liegen keine Angebote vor!");
+            printLF();
+      }
+    }
+    
+    
+
+    /**
+     * Methode dient für sehr sehr kurze zentrierte Strings
+     */
+    private void printZentriertSehrKurz(String s)
+    {
+        System.out.print(baueZentriertenString(s, FELDLAENGE-9));
+    }
+
+    private void printLinksbuendig(String s)
+    {
+        System.out.print(baueLinksbuendigenString(s, FELDLAENGE));
+    }
+
+    /**
+     * Methode dient für überlange linksbündige Strings
+     */
+    private void printLinksbuendigLang(String s)
+    {
+        System.out.print(baueLinksbuendigenString(s, FELDLAENGE+14));
+    }
+
+    /**
+     * Methode dient für sehr kurze linksbündige Strings
+     */
+    private void printLinksbuendigKurz(String s)
+    {
+        System.out.print(baueLinksbuendigenString(s, FELDLAENGE-3));
+    }
+
+    /**
+     * Methode dient zum Ausgeben von rechtsbündigen Strings
+     */
+    private void printRechtsbuendig(String s)
+    {
+        System.out.print(baueRechtsbuendigenString(s, FELDLAENGE));
+    }
+
+    /**
+     * Methode dient zum Ausgeben von  kurzen rechtsbündigen Strings
+     */
+    private void printRechtsbuendigKurz(String s)
+    {
+        System.out.print(baueRechtsbuendigenString(s, FELDLAENGE-3));
+    }
+
+    /**
+     * Methode dient zum Ausgeben von  sehr sehr kurzen rechtsbündigen Strings
+     */
+    private void printRechtsbuendigSehrKurz(String s)
+    {
+        System.out.print(baueRechtsbuendigenString(s, FELDLAENGE-9));
+    }
+
+    /**
+     * Methode dient zum Ausgeben von langen rechtsbündigen Strings
+     */
+    private void printRechtsbuendigLang(String s)
+    {
+        System.out.print(baueRechtsbuendigenString(s, FELDLAENGE+14));
+    }
+
+    /**
+     * Methode zeichnet die Trennlinie in Tabellen mit dem Zeichen '-'
+     */
+    private void printLinieLF(int anzahlFelder)
+    {
+        /* Besonderheit: hier Nutzung des StringBuilders statt direkt mit String zu arbeiten.
+         * Ist sparsamer im Umgang mit Speicher.
+         */
+        StringBuilder s = new StringBuilder();
+        int laenge = anzahlFelder*(FELDLAENGE+3);
+        for (int i=1;i<=laenge;i++)
+        {
+            s=s.append("-");
+        }
+        System.out.println(s);
+    }
+
+    /**
+     * Methode zeichnet die Trennlinie in Tabellen mit dem Zeichen '='
+     */
+    private void printLinieLF2(int anzahlFelder)
+    {
+        /* Besonderheit: hier Nutzung des StringBuilders statt direkt mit String zu arbeiten.
+         * Ist sparsamer im Umgang mit Speicher.
+         */
+        StringBuilder s = new StringBuilder();
+        int laenge = anzahlFelder*(FELDLAENGE+3);
+        for (int i=1;i<=laenge;i++)
+        {
+            s=s.append("=");
+        }
+        System.out.println(s);
+    }
+
+    private String baueZentriertenString(String s, int laenge)
+    {
+        s = s.trim();
+        if (s.length() > laenge)
+        {
+            s = s.substring(0, laenge);
+        }
+        else
+        {
+            int differenzLinks = (laenge - s.length())/2;
+            for (int i=1;i<=differenzLinks;i++) s=" "+s+" ";
+            if (s.length()<laenge) s=s+" ";
+        }
+
+        return s+" | ";
+    }
+
+    private String baueRechtsbuendigenString(String s, int laenge)
+    {
+        s = s.trim();
+        if (s.length() > laenge)
+        {
+            s = s.substring(0, laenge-3)+"...";
+        }
+        else
+        {
+            int differenzLinks = (laenge - s.length());
+            for (int i=1;i<=differenzLinks;i++) s=" "+s;
+        }
+
+        return s+" | ";
+    }
+
+    private String baueRechtsbuendigenString2(String s)
+    {
+        int laenge = 11;
+        if (s.length() > laenge)
+        {
+            s.substring(0, laenge-3);
+        }
+        else
+        {
+            int differenzLinks = (laenge - s.length());
+            for (int i=1;i<=differenzLinks;i++) s=" "+s;
+        }
+
+        return s;
+    }
+
+    private String baueLinksbuendigenString(String s, int laenge)
+    {
+        s = s.trim();
+        if (s.length() > laenge)
+        {
+            s = s.substring(0, laenge-3)+"...";
+        }
+        else
+        {
+            int differenz = (laenge - s.length());
+            for (int i=1;i<=differenz;i++) s=s+" ";
+        }
+
+        return s+" | ";
+    }
+
+    /**
+     * Methode begrenzt einen float-Wert auf zwei Nachkommastellen
+     */
+    private float floatAbschneiden(float f)
+    {
+
+        f = f + 0.005f;                  
+        f = (int)(f*100);               
+        return f = f/100;              
+    }
+
+    /**
+     * Methode gibt an, was bei einem Eingabefehler auf der Konsole erscheint
+     */
+    private void printEingabeFehler()
+    {
+        System.out.print("Ihre Eingabe wurde nicht erkannt.\n");
+    }
+
+    /**
+     * Methode gibt an, was auf der Konsole erscheint, wenn man eine Auswahl treffen darf
+     */
+    private void printAuswahlTreffen()
+    {
+        System.out.print("Bitte treffen Sie eine Auswahl ...\n");
+    }
+
+    /**
+     * Methode startet das Hauptprogramm
+     * @param args
+     */
+    public static void main(String[] args)
+    {
+        Verwaltung v = new Verwaltung();
+
+        v.initData();
+        v.printProgrammInfo();
+        v.load();   
+        v.mainMenue();        
+
+    }
+
+    
+        }

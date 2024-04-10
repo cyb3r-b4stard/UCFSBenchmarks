@@ -1,0 +1,303 @@
+import java.util.ArrayList;
+/**
+ * ######## ### ######## ### #####.
+ * 
+ * @###### #### #######
+ * @####### ##/##/####
+ */
+public class SeatManager
+{ 
+    public static final int COLUMS = 6;
+    public static final int MIN_FIRST_ROWS = 3;
+    public static final int MIN_STANDARD_ROWS = 4;
+    private Person[][] seats;
+    private int firstRows;
+    private int standardRows;
+
+    /**
+     * Constructor
+     * @param número de filas de primera.
+     * @param número de filas estándar.
+     */
+    public SeatManager(int first, int standard)
+    {
+       setFirstRows(first);
+       setStandardRows(standard);
+       seats = new Person[first+standard][COLUMS];
+    }
+    
+    /**
+     * Método que modifica el atributo firstRows con el valor introducido en el parámetro.
+     * 
+     * @param setFirstRows recibe como parámetro el número de filas de primera.
+     *
+     */
+    public void setFirstRows(int first)
+    {
+       if  (first >= MIN_FIRST_ROWS)
+       {
+          firstRows = first;       
+       }
+       else 
+       
+       {
+          throw new RuntimeException("Mínimo de filas primera " + MIN_FIRST_ROWS);    
+       }
+    }
+    
+    /**
+     * Método que obtiene un pasajero en la posición indicada.
+     * 
+     * @param row.
+     * @param column.
+     * @return devuelve los datos de la posición indicada en el parámetro.
+     */
+    public Person getSeatPerson(int row, int column)
+    {
+       if (row >= 0 && row < (firstRows + standardRows) && column >= 0 && column < 6)
+       {
+          return seats[row][column];   
+       }
+       else
+       {
+          throw new RuntimeException("Esas cordenadas no coinciden con ningún punto de la lista.");    
+       }
+    }
+
+    /**
+     * Método que modifica el atributo standardRows con el valor introducido en el parámetro.
+     * 
+     * @param setStandardRows recibe como parámetro el número de filas de primera.
+     *
+     */
+    public void setStandardRows(int standard)
+    {
+       if (standard >= MIN_FIRST_ROWS)
+       {
+          standardRows = standard;       
+       }
+       else
+       {
+          throw new RuntimeException("Mínimo de filas turista " + MIN_STANDARD_ROWS);    
+       }
+    }
+    
+    /**
+     * Método que reserva un asiento para una persona siempre que esté libre
+     * 
+     * @param persona para reservar.
+     * @param row fila a reservar.
+     * @param colum columna a reservar.
+     * @return true si se ha podido hacer la reserva.
+     */
+    public boolean bookSeat(Person person, int row, int column)
+    {
+       if (person != null && row >= 0 && column >= 0 && row < seats.length && column < seats[row].length)
+       {
+          if (seats[row][column] == null)
+          {
+             seats[row][column] = person;    
+             return true;
+          }
+       }
+       return false;
+    }
+    
+    /**
+     * Define el método oldestPassenger (). 
+     * Devuelve el pasajero de más edad sentado en el avión o null si el avión está vacío. 
+     * 
+     * 
+     * @return oldestPassenger devuelve el pasajero más viejo o null si el avión no tiene pasajeros.
+     */
+    public Person oldestPassenger()
+    {
+       Person person = new Person(0);
+       for (int i = 0; i < seats.length ; i++)
+       {
+          for (int j = 0; j < seats[i].length; j++)
+          {
+             if (seats[i][j] != null)
+             {
+                if (seats[i][j].getAge() > person.getAge())
+                {
+                   person = seats[i][j];
+                }
+             }
+          }
+        }
+       if (person.getAge() == 0)
+       {
+          return null;    
+       }
+       else
+       {
+          return person;    
+       }
+    }
+    
+    /**
+     * Define el método numberOfFreeSeats (int row). 
+     * Devuelve el número de asientos libres en la fila del avión que se le pasa como parámetro.
+     * 
+     * @param recibe como parámetro una fila.
+     * @return devuelve el número de asientos libres.
+     */
+    public int numberOfFreeSeats(int row)
+    {
+       int cont = 0;
+       if (row >= 0 && row < (firstRows + standardRows)) 
+       {
+          for (int i = 0; i < seats[row].length; i++)
+          { 
+             if (seats[row][i] == null)
+             {
+                cont = cont + 1;    
+             }
+          }
+          return cont;
+       }
+       
+       else
+       {
+          throw new RuntimeException("Número de fila introducido no válido");           
+       }
+    }
+    
+    /**
+     * Clase print () que muestra el estado de los asientos del avión. 
+     * Una X para un adulto, una C, para un niño, un ? para un asiento libre con el siguiente formato:
+     *   0 1 2 3 4 5
+     * 0 X X ? ? ? X
+     * 1 X X X ? ? ?
+     * 2 ? X ? ? ? ?
+     * 3 X X ? X X X
+     * 4 X X X X X X
+     * 5 X X ? X X X
+     * 6 X X X X X X
+     * 
+     * 
+     * @return print() devuelve una cadena de caracteres de tipo String.
+     */
+    public void print()
+    {
+       System.out.println ("  " + "0 " + "1 " + "2 " + "3 " + "4 " + "5 ");
+       for (int i = 0; i < seats.length; i++)
+       {
+          System.out.print(i + " "); 
+          for (int j = 0; j < COLUMS ; j++)
+          {
+             if (seats[i][j] == null)
+             {
+                System.out.print("? ");  
+             }
+             else if (seats[i][j].getAge() < 18)
+             {
+                System.out.print("C ");  
+             }
+             else if(seats[i][j].getAge() >= 18)
+             {
+                System.out.print("X ");  
+             }
+          }
+          System.out.println(" ");
+       }
+    }
+    
+    /**
+     * Método que deja un asiento libre y retorna el Person que ocupaba la posición.
+     * 
+     * @param fila a liberar.
+     * @param columna a liberar.
+     * @return persona que deja el asiento o null.
+     */
+    public Person releaseSeat(int row, int column)
+    {
+       if ( row >= 0 && row < seats.length && column >= 0 && column < seats[row].length)
+       {
+          if (seats[row][column] != null)
+          {
+             Person personToRelease = seats[row][column];
+             seats[row][column] = null;
+             return personToRelease; 
+          }
+          
+          else
+          {
+             throw new RuntimeException("No existe persona a liberar");    
+          }
+       }
+       
+       else
+       {
+          throw new RuntimeException("Parámetro incorrecto");    
+       }
+    }
+    
+    /**
+     * Método 
+     * 
+     * 
+     * @return edad más pequeña del avión
+     */
+    private int getYoungestAge()
+    {
+       int youngestAge = 119;
+       for (int i = 0; i < seats.length ; i++)
+       {
+          for (int j = 0; j < seats[i].length; j++)
+          {
+             if (seats[i][j] != null && seats[i][j].getAge() < youngestAge)
+             {
+                youngestAge = seats[i][j].getAge();   
+             }
+          }
+        } 
+       return youngestAge;
+    }
+    
+    /**
+     * Método 
+     * 
+     * 
+     * @return arrayList con todos los pasajeros que tengan la menor edad del avión.
+     */
+    public ArrayList<Person> getYoungestPeople()
+    {
+       int youngestAge = getYoungestAge();
+       ArrayList<Person> youngestPeople = new ArrayList<Person> ();
+       for (int i = 0; i < seats.length ; i++)
+       {
+          for (int j = 0; j < seats[i].length; j++)
+          {
+             if (seats[i][j] != null && seats[i][j].getAge() == youngestAge)
+             {
+                youngestPeople.add(seats[i][j]);
+             }
+          }
+        }
+       return youngestPeople;
+    }
+    
+    /**
+     * Método childrenPassengers que retorne un ArrayList que contenga a todos los pasajeros que son niños. 
+     * 
+     * 
+     * @return retorna una ArrayList con todos los niños del avión.
+     */
+    public ArrayList<Person> childrenPassengers()
+    {
+       ArrayList<Person> childrenPassenger = new ArrayList<Person>();
+       for (int i = 0; i < seats.length; i++)
+       {
+          for (int j = 0; j < seats[i].length; j++)
+          {
+             if (seats[i][j].getAge() < 18)
+             {
+                childrenPassenger.add(seats[i][j];    
+             }
+          }
+       }
+       return childrenPassenger;
+    }
+}

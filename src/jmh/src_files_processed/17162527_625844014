@@ -1,0 +1,132 @@
+
+/**
+ * ##### # ########### ## ##### ############# ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class BSTDictionary<E,K extends Sortable> implements Dictionary<E,K>
+{
+    private BSTNode<E,K> root;
+    private int entries;
+    
+    
+    public BSTDictionary (){
+        root = null;
+    }
+    
+    public E search(K key){
+      BSTNode<E,K> currNode = root;
+      while(currNode.getKey() != key) {
+          int compare = key.compareTo(currNode.getKey());
+          if(compare == -1) {
+              currNode = currNode.getLeft();  
+          } else if (compare == 1) {
+              currNode = currNode.getRight();
+          } else {
+              return currNode.getElement();
+          }
+          
+          if(currNode == null) {
+              return null;
+          }
+      }
+      return currNode.getElement();
+    }
+    
+
+    public void insert(K key, E element){
+        BSTNode<E,K> newNode = new BSTNode(key, element, null, null);
+        if (root==null) {
+            root = newNode;
+            entries++;
+        } else {
+            BSTNode<E,K> currNode = root;
+            BSTNode<E,K> parent;
+            while(true) {
+                parent = currNode;
+                int compare = newNode.getKey().compareTo(parent.getKey());
+                if (compare == -1) {
+                    currNode = currNode.getLeft();
+                    if (currNode == null) {
+                        parent.setLeft(newNode);
+                        entries++;
+                        return;
+                    }
+                } else {
+                    currNode = currNode.getRight();
+                    if (currNode == null) {
+                        parent.setRight(newNode);
+                        entries++;
+                        return;
+                    }
+                }
+                 
+            }
+        }
+            
+    
+    }
+
+    public void delete(K key){
+        boolean right = true; 
+        BSTNode currNode = root;
+        BSTNode temp = root;
+        while(currNode.getKey() != key) {
+            temp = currNode;
+            int compare = key.compareTo(currNode.getKey());
+            if(compare == -1) {
+                right = false;
+                currNode = currNode.getLeft();
+            } else {
+                right = true;
+                currNode = currNode.getRight();
+            }
+            
+            if (currNode == null) {
+                return;
+            }
+        }
+        
+        if(currNode.getLeft() == null && currNode.getRight() == null) {
+            if (currNode == root) {
+                root = null;
+            } else if (right) {
+                temp.setRight(null);
+            }else {
+                temp.setLeft(null);
+            }
+            
+        } else if (currNode.getLeft() == null) {
+            if (currNode == root) {
+                root = currNode.getRight();
+            } else if(right) {
+                temp.setRight(currNode.getLeft)                
+            } else {
+                temp.setLeft(currNode.getRight());
+            }
+            
+        } else if (currNode.getRight() == null){
+            if(currNode == root) {
+                root = currNode.getLeft();
+            } else if (right) {
+                temp.setRight(currNode.getLeft());
+            } else {
+                temp.setLeft(currNode.getRight());               
+            }
+        }
+    }
+
+    public void printTree(){
+        System.out.println("test");
+    }
+
+    public int depth(){
+       return entries;
+    } 
+
+    
+    public static void main(String[] args) {
+        
+    }
+}

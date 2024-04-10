@@ -1,0 +1,63 @@
+
+
+/* ########## ### #### ## #########. ### #### ## ###			* 
+ * ############### ## ### #####, ### ######## ## ##### ##       * 
+ * ############## ## ### ######### # ### ######## ## ###### 	*
+ * ##### ## ##### ### (####)                                    */
+public interface QueueIF <E> extends CollectionIF<E>{
+
+	/* @Pre !isEmpty()											*
+	 * @return la cabeza de la cola (su primer elemento).		*/
+     public E getFirst ();
+
+    /* Incluye un elemento al final de la cola. Modifica el 	*
+     * tamaño de la misma.										*
+     * @param elem el elemento que debe encolar (añadir).		*/
+     public void enqueue (E elem);
+    
+    /* Elimina el primer elemento de la cola. Modifica la 		*
+     * tamaño de la misma.										*
+     * @Pre !isEmpty();											*/
+     public void dequeue ();        
+}
+
+	
+	public static void main(String [] args) throws Exception{
+		Queue<Integer> queue = new Queue<Integer>();
+		queue.enqueue(1);
+		queue.enqueue(2);
+		queue.enqueue(3);
+		queue.enqueue(4);
+		queue.enqueue(5);
+		System.out.println("Recorrido mediante iterador:");
+		IteratorIF<Integer> iterator = queue.iterator();
+		while(iterator.hasNext()){
+			System.out.print(iterator.getNext()+" ");
+		}
+		System.out.println();
+		System.out.println("Tamaño de la cola: "+queue.size);
+		System.out.println("contains(3)?: "+queue.contains(3));
+		System.out.println("contains(9)?: "+queue.contains(9));
+		System.out.println("Recorrido copia de la cola mediante iterador:");
+		QueueIF<Integer> copyQueue = new Queue<Integer>(queue);
+		IteratorIF<Integer> iteratorCopy = copyQueue.iterator();
+		while(iteratorCopy.hasNext()){
+			System.out.print(iteratorCopy.getNext()+" ");
+		}
+		System.out.println();
+		System.out.println("Aplicar getFirst y dequeue:");
+		System.out.println(queue.getFirst());
+		queue.dequeue();
+		System.out.println(queue.getFirst());
+		queue.dequeue();
+		System.out.println(queue.getFirst());
+		queue.dequeue();
+		System.out.println(queue.getFirst());
+		queue.dequeue();
+		System.out.println(queue.getFirst());
+		queue.dequeue();
+		System.out.println("isEmpty?: "+queue.isEmpty());
+
+	}
+
+}

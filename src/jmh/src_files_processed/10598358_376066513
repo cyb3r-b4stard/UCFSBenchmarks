@@ -1,0 +1,210 @@
+import java.util.Scanner;
+
+/**
+ * ##### ########## #.
+ * 
+ * ## ## #####, #### ######, #### ########### ########## ## ## ### #### ### # ####
+ * ### ###### ## ######## #### ### ##### ####### ## ### #####.
+ *
+ * # ####### ## #### #### ##### ########
+ *
+ *  ##### #######: ####.##########@#####.###
+ *  #####: ######
+ *  ###### # ##### ###### ##: #####
+ *  ###### ####: #### ##########
+ *  ###### ## #### #### #### ## #### ##########: #
+ */
+
+public class RockPaperScissors4 {
+    public static final int ROCK = 1;
+    public static final int PAPER = 2;
+    public static final int SCISSORS = 3;
+
+    /* A program to allow a human player to play rock - paper - scissors
+     * against the computer. If args.length != 0 then we assume
+     * the first element of args can be converted to an int
+     */
+    public static void main(String[] args) {
+        int numCompWon =  0;
+        int numPlayerWon = 0;
+        int numDraws = 0;
+
+        RandomPlayer computerPlayer = buildRandomPlayer(args);
+        Scanner console = new Scanner(System.in);
+        String name = getName(console);
+        int totalNumberOfRounds = getNumRounds(console, name);
+        playRounds(console, computerPlayer, name, totalNumberOfRounds);
+
+        if (playerChoice == compChoice){
+            System.out.println("We picked the same thing! This round is a draw.");
+            numDraws++;
+        } else if ((playerChoice == 1 && compChoice == 2) || (playerChoice == 2 && compChoice == 1)){
+            System.out.print("PAPER covers ROCK. ");
+            if (playerChoice == 2){
+                System.out.println("You win.");
+                numPlayerWon++;
+            }else{
+                System.out.println("I win.");
+                numCompWon++;
+            }
+        } else if ((playerChoice == 1 && compChoice == 3) || (playerChoice == 3 && compChoice == 1)){
+            System.out.print("ROCK breaks SCISSORS. ");
+            if (playerChoice == 1){
+                System.out.println("You win.");
+                numPlayerWon++;
+            }else {
+                System.out.println("I win.");
+                numCompWon++;
+            }
+        } else if ((playerChoice == 2 && compChoice == 3) || (playerChoice == 3 && compChoice == 2)){
+            System.out.print("SCISSORS cut PAPER. ");
+            if (playerChoice == 3){
+                System.out.println("You win.");
+                numPlayerWon++;
+            } else {
+                System.out.println("I win.");
+                numCompWon++;
+            }
+        }
+        System.out.println();
+                 overallResults(name, totalNumberOfRounds, numCompWon, numPlayerWon, numDraws)
+    }
+
+    /*
+     * Build the random player. If args is length 0 then the 
+     * default RandomPlayer is built that follows a predictable 
+     * sequence. If args.length > 0 then we assume we can
+     * convert the first element to an int and build the 
+     * RandomPlayer with that initial value.
+     */
+    public static RandomPlayer buildRandomPlayer(String[] args) {
+        if(args.length == 0) {
+            return new RandomPlayer();
+        } else {
+            int seed = Integer.parseInt(args[0]);
+            return new RandomPlayer(seed);
+        }
+    }
+
+
+    public static void overallResults(String name, int totalNumberOfRounds, int numCompWon, 
+    int numPlayerWon, int numDraws){
+        System.out.println();
+        System.out.printf("Number of games of ROCK PAPER SCISSORS: %d\n", totalNumberOfRounds);
+        System.out.printf("Number of times Computer won: %d\n", numCompWon);
+        System.out.printf("Number of times Olivia won: %d\n", numPlayerWon);
+        System.out.printf("Number of draws: %d\n", numDraws);
+
+        winner(name, numCompWon, numPlayerWon);
+    }
+
+
+    public static void winner(String name, int numCompWon, int numPlayerWon){
+        if(numCompWon == numPlayerWon){
+            System.out.print("We are evenly matched.");
+        } else if(numCompWon > numPlayerWon){
+            System.out.print("I, Computer, am a master at ROCK, PAPER, SCISSORS.");
+        }else{
+            System.out.printf("You, %s, are a master at ROCK, PAPER, SCISSORS.", name);
+        }
+    }
+
+
+
+    public static void playRounds(Scanner console, RandomPlayer computerPlayer, String name, 
+    int totalNumberOfRounds){
+        for (int roundNumber = 1; roundNumber <= totalNumberOfRounds; roundNumber++){
+            System.out.printf("Round %d\n", roundNumber);
+            System.out.printf("%s, please enter your choice for this round.\n", name);
+            System.out.print("1 for ROCK, 2 for PAPER, and 3 for SCISSORS: ");
+
+            int playerChoice = console.nextInt();
+            console.nextLine();
+            int compChoice = computerPlayer.getComputerChoice();
+            choiceConversion(name, compChoice, playerChoice);
+
+            winnerOfRound(name, playerChoice, compChoice, numCompWon, numPlayerWon, numDraws);
+        }
+    }
+
+
+    public static void winnerOfRound(String name, int playerChoice, int compChoice, int numCompWon, 
+    int numPlayerWon, int numDraws){
+        if (playerChoice == compChoice){
+            System.out.println("We picked the same thing! This round is a draw.");
+            numDraws++;
+        } else if ((playerChoice == 1 && compChoice == 2) || (playerChoice == 2 && compChoice == 1)){
+            System.out.print("PAPER covers ROCK. ");
+            if (playerChoice == 2){
+                System.out.println("You win.");
+                numPlayerWon++;
+            }else{
+                System.out.println("I win.");
+                numCompWon++;
+            }
+        } else if ((playerChoice == 1 && compChoice == 3) || (playerChoice == 3 && compChoice == 1)){
+            System.out.print("ROCK breaks SCISSORS. ");
+            if (playerChoice == 1){
+                System.out.println("You win.");
+                numPlayerWon++;
+            }else {
+                System.out.println("I win.");
+                numCompWon++;
+            }
+        } else if ((playerChoice == 2 && compChoice == 3) || (playerChoice == 3 && compChoice == 2)){
+            System.out.print("SCISSORS cut PAPER. ");
+            if (playerChoice == 3){
+                System.out.println("You win.");
+                numPlayerWon++;
+            } else {
+                System.out.println("I win.");
+                numCompWon++;
+            }
+        }
+        System.out.println();
+    }
+
+
+    public static void choiceConversion(String name, int compChoice, int playerChoice){
+        if (compChoice == ROCK){
+            System.out.print("Computer picked ROCK, ");
+        }
+        else if (compChoice == PAPER){
+            System.out.print("Computer picked PAPER, ");
+        }
+        else{
+            System.out.print("Computer picked SCISSORS, ");
+        }
+
+        if (playerChoice == ROCK){
+            System.out.println(name + " picked ROCK.");
+        }
+        else if (playerChoice == PAPER){
+            System.out.println(name + " picked PAPER.");
+        }
+        else{
+            System.out.println(name + " picked SCISSORS.");
+        }
+        System.out.println();
+    }
+
+
+    public static int getNumRounds(Scanner console, String name){
+        System.out.printf("Welcome %s.\n\n", name);
+        System.out.printf("All right %s. How many rounds would you like to play?\n", name);
+        System.out.print("Enter the number of rounds you want to play and press return: ");
+        int totalNumberOfRounds = console.nextInt();
+        console.nextLine();
+        System.out.println();
+        return totalNumberOfRounds;
+    }
+
+
+    public static String getName(Scanner console){
+        System.out.println("Welcome to ROCK PAPER SCISSORS. I, Computer, will be your opponent.");
+        System.out.print("Please type in your name and press return: ");
+        String name = console.nextLine();
+        System.out.println();
+        return name;
+    }
+}

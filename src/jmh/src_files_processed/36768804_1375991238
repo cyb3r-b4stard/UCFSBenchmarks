@@ -1,0 +1,148 @@
+import java.util.*;
+import java.util.ArrayList;
+/**
+ * ### ######### ###### ##### #######.
+ * ### ######## ###### ###### #### #### ##### ### ######,
+ * ### ######## #### ###### ####.
+ * @###### ##### #. ###### ### ####### #######.
+ * @####### ####.##.##
+ */
+public class Auktion {
+    private ArrayList<Posten> postenliste;
+    private int naechstePostennummer;
+
+    /**
+     * Erzeuge eine neue Auktion.
+     */
+    public Auktion() {
+        postenliste = new ArrayList<Posten>();
+        naechstePostennummer = 0;
+    }
+
+    /**
+     * Melde einen Posten für diese Auktion an.
+     * Posten können nur über diese Operation in eine
+     * Auktion eingebracht werden.
+     * @param beschreibung die Beschreibung des Postens.
+     */
+    public void postenAnmelden(Posten posten) {
+        postenliste.add(naechstePostennummer,posten);
+        naechstePostennummer++;
+    }
+
+    /**
+     * Beendet die Auktion und gibt Details zu dem höchsten Gebot
+     * und dem dazugehörigen Bieter aus. Ist auf einem Posten kein Gebot,
+     * wird das Objekt des Postens als "Nicht verkauft!" angezeigt.
+     * 
+     * (Robert + Marvin)
+     */
+    public void auktionBeenden() {
+        Iterator<Posten> it = postenliste.iterator();
+        while(it.hasNext())  {
+            Posten posten = it.next();
+            System.out.println(posten.gibNummer() + ": " +
+                posten.gibBeschreibung());
+
+            Person bieter = posten.gibHoechstesGebot().gibBieter();
+            String name = bieter.gibNamen();
+            Gebot hoechstesGebot = posten.gibHoechstesGebot();
+            if (!(hoechstesGebot == null || hoechstesGebot.gibHoehe() == 0)) {
+                System.out.println("    Gebot: " + hoechstesGebot.gibHoehe() + "\n" + "    Durch: " + name + "\n");
+            }
+            else {System.out.println("Nicht verkauft!");}
+
+        }
+    }
+
+    /**
+     * Durchläuft alle Posten und fügt alle ohne Gebot der Liste unverkaufte hinzu.
+     * Leonard
+     * @return gibt unverkaufte Posten
+     */
+    public ArrayList<Posten> gibUnverkaufte(){
+        Iterator<Posten> it = postenliste.iterator();
+        ArrayList<Posten> unverkaufte = new ArrayList<>();
+        while(it.hasNext()) {
+            Posten posten = it.next();
+            Gebot hoechstesGebot = posten.gibHoechstesGebot();
+
+            if (hoechstesGebot == null) {
+                unverkaufte.add(posten);
+            }
+        }
+        return unverkaufte;
+    }
+
+    /**
+     * Zeige eine komplette Liste der Postennummern mit
+     * Postenbeschreibungen für diese Auktion. Zeige auch 
+     * die aktuellen Höchstgebote.
+     */
+    public void zeigePostenliste() {
+        Iterator<Posten> it = postenliste.iterator();
+        while(it.hasNext()) {
+            Posten posten = it.next();
+            System.out.println(posten.gibNummer() + ": " +
+                posten.gibBeschreibung());
+            Gebot hoechstesGebot = posten.gibHoechstesGebot();
+            if (hoechstesGebot != null) {
+                System.out.println("    Gebot: " + 
+                    hoechstesGebot.gibHoehe());
+            }
+            else {System.out.println("    (kein Gebot)");}
+        }
+    }
+    
+    public void zeigeWerbung() {
+        ArrayList<Posten> unverkaufte = gibUnverkaufte();
+        for(Posten posten: unverkaufte){
+            System.out.println("Es liegt noch kein Gebot für "+posten.gibBeschreibung()+". BIETEN SIE JETZT!")
+        }
+        
+        
+    }
+    
+    /**
+     * Liefere den Posten mit der angegebenen Nummer.
+     * Liefere 'null', wenn ein Posten mit dieser Nummer
+     * nicht existiert.
+     * Bearbeitet von Robert + Marvin + Leonard
+     * @param nummer die Nummer des Postens, der geliefert
+     *                werden soll.               
+     */
+    public Posten gibPosten(int nummer) {
+        if ((nummer >= 1) && ((nummer < naechstePostennummer)||naechstePostennummer == 1)) {
+            Posten gewaehlterPosten = postenliste.get(nummer-1);
+            if (gewaehlterPosten.gibNummer() != nummer) {
+                System.out.println("Interner Fehler: " +
+                    "falsche Postennummer. " +
+                    "Number: " + nummer);
+            }
+            return gewaehlterPosten;
+        }
+        else {
+            System.out.println("Einen Posten mit der Nummer: " + nummer +
+                " gibt es nicht.");
+            return null;
+        }
+    }
+
+    /**
+     * Entfernt den Posten mit der gegebenen Postennummer.
+     * Leonard + Robert + Marvin
+     * @param nummer Die Nummer des Postens, der entfernt werden soll.
+     * @return Den Posten mit der gegebenen Nummer oder null (nil), falls
+     * es solch einen Posten nicht gibt.
+     */
+    public Posten entfernePosten (int nummer){
+        for(int i = 0; i<postenliste.size(); i++){
+            Posten pos = postenliste.get(i);
+            if(pos.gibNummer() == nummer){
+                postenliste.remove(i);
+                return pos;
+            }
+        }
+        return null;
+    }
+}

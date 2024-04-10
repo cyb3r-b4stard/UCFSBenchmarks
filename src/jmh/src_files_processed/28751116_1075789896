@@ -1,0 +1,887 @@
+import acm.graphics.*;
+import acm.program.*;
+import acm.gui.*; 
+import acm.util.*;
+import java.util.Scanner; 
+import acm.io.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.applet.*;
+
+/**
+ * #### #####
+ * ##### ######### ### #### ### ########### (#### ####!)
+ * @###### #### ##### ######
+ * @####### ####/##/##
+ */
+public class Game extends KeyAdapter
+{ 
+    private FlappyWorld birdWorld;   
+    private GImage bird;
+    private GImage getReady;
+
+    private GImage skyBackGround; 
+    private GImage wall;       
+    private GImage wallUp;     
+    private GImage wallDown;   
+    private GImage footer;     
+    private GImage over;       
+    private GImage statistic;  
+    private GImage rankDisplay; 
+
+    private GImage oceanBackGround;
+    private GImage fish;
+    private GImage pipeUp;
+    private GImage pipeDown;
+    private GImage pipeLong;
+    private GImage ground;
+
+    private GImage mainMenu;
+    
+    private GLabel scoreLbl;
+    private GLabel scoreLb2;
+    private GLabel bestScoreLb;
+    private GLabel statisticBestScoreLb;
+    private GLabel statisticLowScoreLb;
+    private GLabel statisticAverageLb;
+    private GLabel statisticYourAverageLb;
+
+    private GLabel titelPlaceLb;
+    private GLabel firstPlaceLb;
+    private GLabel secondPlaceLb;
+    private GLabel thirdPlaceLb;
+    private GLabel fourthPlaceLb;
+    private GLabel fivethPlaceLb;
+
+    private static final double gravity = 0.2;
+    private static final double jumpBoost = 14;
+
+    private final static int blockWidth  = 50;
+    private final static int blockHeight = 70;
+
+    private final static int blockTime = 24;
+
+    private final static int blockOver = 350;
+
+    private final static int playerNameSize = 5;
+
+    private GImage[][]mapOriginal = {  
+            { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  ob(),  null, null, null,  ob(),  null, null, null,  ob(),  null, null, null,  ob(),  null, null, null,  ob(),  null, null, null,  obd(), null, null, null, ob(),  null, null, null, ob(),  null, null, null, ob(),  null, null, null, ob(),  null, null, null, ob(),  null, null, null                                                                                           },
+            { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  ob(),  null, null, null,  ob(),  null, null, null,  ob(),  null, null, null,  obd(), null, null, null,  ob(),  null, null, null,  null,  null, null, null, ob(),  null, null, null, ob(),  null, null, null, obd(), null, null, null, ob(),  null, null, null, ob(),  null, null, null                                                                                   },
+            { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  ob(),  null, null, null,  obd(), null, null, null,  ob(),  null, null, null,  null,  null, null, null,  ob(),  null, null, null,  null,  null, null, null, obd(), null, null, null, ob(),  null, null, null, null,  null, null, null, obd(), null, null, null, ob(),  null, null, null                                                                                   },
+            { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  obd(), null, null, null,  null,  null, null, null,  ob(),  null, null, null,  null,  null, null, null,  ob(),  null, null, null,  obu(), null, null, null, null,  null, null, null, obd(), null, null, null, null,  null, null, null, null,  null, null, null, ob(),  null, null, null                                                                                     },
+            { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  null,  null, null, null , null,  null, null, null,  obd(), null, null, null,  obu(), null, null, null,  obd(), null, null, null,  ob(),  null, null, null, null,  null, null, null, null,  null, null, null, obu(), null, null, null, null,  null, null, null, obd(), null, null, null                                                                                       },
+            { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  null,  null, null, null,  obu(), null, null, null,  null,  null, null, null,  ob(),  null, null, null,  null,  null, null, null,  ob(),  null, null, null, obu(), null, null, null, null,  null, null, null, ob(),  null, null, null, obu(), null, null, null, null,  null, null, null                                                                                      },
+            { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  obu(), null, null, null,  ob(),  null, null, null,  null,  null, null, null,  ob(),  null, null, null,  null,  null, null, null,  ob(),  null, null, null, ob(),  null, null, null, obu(), null, null, null, ob(),  null, null, null, ob(),  null, null, null, null,  null, null, null                                                                                      },
+            { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  ob(),  null, null, null,  ob(),  null, null, null,  obu(), null, null, null,  ob(),  null, null, null,  obu(), null, null, null,  ob(),  null, null, null, ob(),  null, null, null, ob(),  null, null, null, ob(),  null, null, null, ob(),  null, null, null, obu(), null, null, null                                                                                     },
+            { ft(), ft(), ft(), ft(), ft(), ft(), ft(), ft(), ft(), ft(), ft(), ft(), ft(), ft(), ft(),  ft(),  ft(), ft(), ft(),  ft(),  ft(), ft(), ft(),  ft(),  ft(), ft(), ft(),  ft(),  ft(), ft(), ft(),  ft(),  ft(), ft(), ft(),  ft(),  ft(), ft(), ft(), ft(),  ft(), ft(), ft(), ft(),  ft(), ft(), ft(), ft(),  ft(), ft(), ft(), ft(),  ft(), ft(), ft(), ft(),  ft(), ft(), ft()                                                                                              }
+        };
+
+    private GImage[][]mapOcean = {  
+            { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  pLg(),   null, null, null,  pLg(),   null, null, null, pLg(),   null, null, null,  pLg(),   null, null, null, pLg(),   null, null, null, pDown(), null, null, null, pLg(),   null, null, null, pLg(),   null, null, null, pLg(),   null, null, null, pLg(),   null, null, null, pLg(),   null, null, null                                                                                           },
+            { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  pLg(),   null, null, null,  pLg(),   null, null, null, pLg(),   null, null, null,  pDown(), null, null, null, pLg(),   null, null, null, null,    null, null, null, pLg(),   null, null, null, pLg(),   null, null, null, pDown(), null, null, null, pLg(),   null, null, null, pLg(),   null, null, null                                                                                   },
+            { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  pLg(),   null, null, null,  pDown(), null, null, null, pLg(),   null, null, null,  null,    null, null, null, pLg(),   null, null, null, null,    null, null, null, pDown(), null, null, null, pLg(),   null, null, null, null,    null, null, null, pDown(), null, null, null, pLg(),   null, null, null                                                                                   },
+            { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  pDown(), null, null, null,  null,    null, null, null, pLg(),   null, null, null,  null,    null, null, null, pLg(),   null, null, null, pUp(),   null, null, null, null,    null, null, null, pDown(), null, null, null, null,    null, null, null, null,    null, null, null, pLg(),   null, null, null                                                                                     },
+            { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  null,    null, null, null , null,    null, null, null, pDown(), null, null, null,  pUp(),   null, null, null, pDown(), null, null, null, pLg(),   null, null, null, null,    null, null, null, null,    null, null, null, pUp(),   null, null, null, null,    null, null, null, pDown(), null, null, null                                                                                       },
+            { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  null,    null, null, null,  pUp(),   null, null, null, null,    null, null, null,  pLg(),   null, null, null, null,    null, null, null, pLg(),   null, null, null, pUp(),   null, null, null, null,    null, null, null, pLg(),   null, null, null, pUp(),   null, null, null, null,    null, null, null                                                                                      },
+            { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  pUp(),   null, null, null,  pLg(),   null, null, null, null,    null, null, null,  pLg(),   null, null, null, null,    null, null, null, pLg(),   null, null, null, pLg(),   null, null, null, pUp(),   null, null, null, pLg(),   null, null, null, pLg(),   null, null, null, null,    null, null, null                                                                                      },
+            { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,  pLg(),   null, null, null,  pLg(),   null, null, null, pUp(),   null, null, null,  pLg(),   null, null, null, pUp(),   null, null, null, pLg(),   null, null, null, pLg(),   null, null, null, pLg(),   null, null, null, pLg(),   null, null, null, pLg(),   null, null, null, pUp(),   null, null, null                                                                                     },
+            { gd(), gd(), gd(), gd(), gd(), gd(), gd(), gd(), gd(), gd(), gd(), gd(), gd(), gd(), gd(),  gd(),    gd(), gd(), gd(),  gd(),    gd(), gd(), gd(), gd(),    gd(), gd(), gd(),  gd(),    gd(), gd(), gd(),  gd(),   gd(), gd(), gd(), gd(),    gd(), gd(), gd(), gd(),    gd(), gd(), gd(), gd(),    gd(), gd(), gd(), gd(),    gd(), gd(), gd(), gd(),    gd(), gd(), gd(), gd(),    gd(), gd(), gd()                                                                                              } 
+
+        };
+
+    private String[] playersList = new String [] {"", "", "", "", ""};
+    int [] highScoreList = new int [] {0, 0, 0, 0, 0};       
+
+    int [] averageScore = new int [] {0, 0, 0, 0, 0};
+
+    private final int limit;
+    private int keyPressed;
+    private int numberLines;
+    private int numberColumns;
+    private int mapPosition;
+    private boolean endOfGame;
+    private double downUnits;
+    private int score;
+    private int scoreCounter;
+    private int bestScore;
+    private int option;
+    private int choice;
+
+    private int statisticScoreHight;
+    private String bestScoreName;
+
+    private int statisticScoreLow;
+    private String worstScoreName;
+
+    private int totalAverage;
+    private int average;
+
+    private int averageCounter;
+    private int yourAverage;
+    private int averageDisplay;
+
+    private String playerName;
+
+    private int rankAverage;
+    private int rankaverageCounter;
+
+    /** Método ob
+     *  Este método cria uma nova imagem, neste caso cria o obstáculo base do primeiro mapa
+     *  @return this.wall - Devolve a imagem criada
+     */
+    private GImage ob()
+    {
+        this.wall = new GImage("wall.png"); 
+        this.wall.setSize(blockWidth, blockWidth);
+        return this.wall;
+    }
+
+    /** Método obu
+     *  Este método cria uma nova imagem, neste cria a parte final de cima do obstáculo do primeiro mapa
+     *  @return this.wallUp - Devolve a imagem criada
+     */
+    private GImage obu()
+    {
+        this.wallUp = new GImage("wallEndUp.png"); 
+        this.wallUp.setSize(blockWidth, blockWidth);
+        return this.wallUp;
+    }
+
+    /** Método obd
+     *  Este método cria uma nova imagem, neste cria a parte final de baixo do obstáculo do primeiro mapa
+     *  @return this.wallDown - Devolve a imagem criada
+     */
+    private GImage obd()
+    {
+        this.wallDown = new GImage("wallEndDown.png"); 
+        this.wallDown.setSize(blockWidth, blockWidth);
+        return this.wallDown;
+    }
+
+    /** Método ft
+     *  Este método cria uma nova imagem, neste caso cria o rodapé 
+     *  @return this.footer - Devolve a imagem criada
+     */
+    private GImage ft()
+    {
+        this.footer = new GImage("footer.png"); 
+        this.footer.setSize(blockWidth, blockHeight);
+        return this.footer;
+    }
+
+    private GImage originalBackGround()
+    {
+        this.skyBackGround = new GImage("bckgnd.jpg");
+        this.skyBackGround.setSize(birdWorld.getGCanvas().getWidth(), birdWorld.getGCanvas().getHeight());
+        return this.skyBackGround;
+    }
+
+    private GImage mainMenu()
+    {
+        this.mainMenu = new GImage("main.png")
+        this.bird.scale(0.4);
+        return this.mainMenu;
+    }
+    
+    /** Método backGroundSecondMap
+     *  Este método cria uma nova imagem, neste caso cria o backGround do segunda mapa
+     *  @return this.oceanBackGround - Devolve a imagem criada
+     */
+    private GImage oceanBackGround()
+    {
+        this.oceanBackGround = new GImage("OceanBackGround1.png");  
+        this.oceanBackGround.setSize(birdWorld.getGCanvas().getWidth(), birdWorld.getGCanvas().getHeight());
+        return this.oceanBackGround;
+    }
+
+    /** Método pLg
+     *  Este método cria uma nova imagem, neste caso cria o obstáculo base do segundo mapa
+     *  @return this.pipeLong - Devolve a imagem criada
+     */
+    private GImage pLg()
+    {
+        this.pipeLong = new GImage("Pipe-Long.png");
+        this.pipeLong.setSize(blockWidth, blockHeight);    
+        return this.pipeLong;
+    }    
+
+    /** Método pUp
+     *  Este método cria uma nova imagem, neste caso cria a parte final do obstáculo base do segundo mapa, sendo esta a parte de cima
+     *  @return this.pipeUp - Devolve a imagem criada
+     */
+    private GImage pUp()
+    {
+        this.pipeUp = new GImage("Pipe-Up.png");
+        this.pipeUp.setSize(blockWidth,blockWidth);
+        return this.pipeUp;
+    }
+
+    /** Método pDown
+     *  Este método cria uma nova imagem, neste caso cria a parte final do obstáculo base do segundo mapa, sendo esta a parte de baixo
+     *  @return this.pipeDown - Devolve a imagem criada
+     */
+    private GImage pDown()
+    {
+        this.pipeDown = new GImage("Pipe-Down.png");
+        this.pipeDown.setSize(blockWidth,blockWidth);
+        return this.pipeDown;
+    }
+
+    /** Método gd
+     *  Este método cria uma nova imagem, neste caso cria o rodapé do segundo mapa
+     *  @return this.ground - Devolve a imagem criada
+     */
+    private GImage gd()
+    {
+        this.ground = new GImage("OceanGround1.png");
+        this.ground.setSize(blockWidth,blockHeight);
+        return this.ground;
+    }
+
+    /** Construtor
+     * 
+     */
+    public Game(FlappyWorld world)
+    {
+        birdWorld = world;
+        this.keyPressed = 0;
+
+        this.main();
+
+        this.scoreLabel();
+
+        this.limit = (int)birdWorld.getGCanvas().getHeight() - (int)this.bird.getHeight();
+        this.numberLines = this.mapOcean.length;
+        this.numberColumns = this.mapOcean[0].length;
+        this.mapPosition = 0;
+        this.endOfGame = false;
+    }
+
+    /** Método main
+     *  Este método mostra um menu com as opções de mapa em que o utilizador deseja jogar
+     */
+    public void main()
+    {
+        IODialog dialog = new IODialog();
+        this.option = dialog.readInt("Em que mapa deseja jogar?\n\n" + 
+            "1 - Original Flappy\n" + 
+            "2 - Ocean fish \n" ); 
+
+        switch(option)
+
+        {
+            case 1:
+            {    
+                this.GetReady();
+
+                this.bird = new GImage("flying-bird-icon.png");
+                this.bird.scale(0.4);
+                birdWorld.add(this.bird, 100, birdWorld.getGCanvas().getHeight() / 2);
+
+                break;
+            }
+            case 2:
+            {
+                mapOriginal = mapOcean; 
+
+                this.GetReady();
+
+                this.bird = new GImage("Fish-Bird.png");
+                this.bird.scale(0.4);
+                birdWorld.add(this.bird, 100, birdWorld.getGCanvas().getHeight() / 2);
+
+                break;
+            }
+        }
+    }
+
+    /** Método scoreLabel
+     *  Este método cria uma label  
+     */
+    private void scoreLabel()
+    {
+        this.scoreLbl = new GLabel("");
+        this.scoreLbl.setFont(new Font("Arial", Font.BOLD, 40));
+        birdWorld.add(this.scoreLbl, birdWorld.getGCanvas().getWidth() / 2, 33);
+    }
+
+    /** Método start
+     *  Este método está sucessivamente a ser corrido no docorrer do jogo
+     */
+    public void start()
+    {
+        while (!this.eGame())
+        {
+            birdWorld.pause(10);
+            this.showGameState();
+            this.changeGameState();
+        }
+    }
+
+    /** Método GetReady 
+     *  Este método mostra na tela a imagem para cliclar e começar a jogar, e também pede ao utilizador o seu nome de jogador 
+     */
+
+    private void GetReady()
+    {
+        if(this.option == 1)
+        {
+            this.originalBackGround().setSize(birdWorld.getGCanvas().getWidth(), birdWorld.getGCanvas().getHeight());
+            birdWorld.add(this.skyBackGround);
+        }
+        else if(this.option == 2)
+        {
+            this.oceanBackGround().setSize(birdWorld.getGCanvas().getWidth(), birdWorld.getGCanvas().getHeight());
+            birdWorld.add(this.oceanBackGround);
+        }
+
+        this.getReady = new GImage("get_ready.png");
+        this.getReady.scale(2);
+        double getReadyHeight = getReady.getHeight();
+        birdWorld.add(getReady, (birdWorld.getGCanvas().getWidth() / 2) - (getReadyHeight/2) , (birdWorld.getGCanvas().getHeight() / 2) - 150);
+
+        this.getName();
+
+        birdWorld.waitForClick();
+        getReady.setVisible(false); 
+    }
+
+    public void mainMenu()
+    {
+        this.originalBackGround().setSize(birdWorld.getGCanvas().getWidth(), birdWorld.getGCanvas().getHeight());
+        birdWorld.add(this.skyBackGround);
+        
+        
+        
+        
+        
+    }
+    /** Método keyPressed
+     *  Este método incrementa um valor de cada vez ao carregar numa tecla do teclado
+     */
+    public void keyPressed()
+    {
+        this.keyPressed++;
+    }
+
+    /** Método eGame
+     *  Este método retorna a variável booleana endOfGame
+     *  @return - Devolve a variável boolean endOfGame
+     */
+    private boolean eGame()
+    {
+        return this.endOfGame;
+    }
+
+    /** Método showGameState
+     *  Este método chama o método showMap()
+     */
+    private void showGameState()
+    {
+        this.showMap();
+    }
+
+    /** Método changeGameState  
+     *  Este método calcula o "salto" do objeto e realiza-o, e chama outros métodos para verificar se a posição colide com outro objeto (imagens/obstáculos)
+     */
+    private void changeGameState()
+    {
+        double jump = this.jumpBoost * this.keyPressed;
+        if (this.keyPressed > 0 && this.bird.getY() > jump)
+        { 
+            this.downUnits = 0;
+            for(int i = 0; jump > i; i++)
+            {
+                this.bird.move(0, this.downUnits);
+                this.downUnits = this.downUnits - this.gravity;
+            }
+        }
+        else if (this.bird.getY() < this.limit)
+        {
+            this.bird.move(0, downUnits);
+        }
+        this.colision();
+        this.score();
+        this.keyPressed = 0;
+        this.changep();
+        this.downUnits = this.downUnits + this.gravity;
+    }
+
+    /** Método colision 
+     *  Este método verifica se existe alguma colisão com algum canto da imagem do objeto. Se tal se confirmar, é realizado o restart 
+     */
+    private void colision()
+    {
+        double birdHeight = bird.getHeight();
+        double birdWidth = bird.getWidth();    
+        double birdX = bird.getX();
+        double birdY = bird.getY();
+
+        if( birdWorld.getElementAt(birdX - 1 , birdY) !=  null && !(birdWorld.getElementAt(birdX - 1 , birdY).getLocation().getX() < 10))
+        {
+            this.highScore();
+            this.restart();
+        }
+
+        if(birdWorld.getElementAt(birdX , birdY + birdHeight + 1) != null && !(birdWorld.getElementAt(birdX , birdY + birdHeight + 1).getLocation().getX() < 10))
+        {
+            this.highScore();
+            this.restart();
+        }
+
+        if(birdWorld.getElementAt(birdX + birdWidth + 1, birdY) !=null && !(birdWorld.getElementAt(birdX + birdWidth + 1, birdY).getLocation().getX() < 10) )
+        {
+            this.highScore();
+            this.restart();
+        }    
+
+        if(birdWorld.getElementAt(birdX + birdWidth + 1, birdY + birdHeight) != null && !(birdWorld.getElementAt(birdX + birdWidth + 1, birdY + birdHeight).getLocation().getX() < 10))
+        {
+            this.highScore();
+            this.restart();
+        }
+
+    }
+
+    /** Método restart
+     *  Este método faz com que seja criado um menu inicializando de novo as suas variàveis ambiente
+     */
+
+    private void restart()
+    {
+        this.gameOver();
+
+        IODialog dlg = new IODialog();
+        do
+        {
+            this.option = dlg.readInt("Indique a opcao\n" +
+                "1 - Restart\n" +
+                "2 - High Score\n" +
+                "3 - Start\n" + "4 - Sair\n");
+
+            switch (option)
+            {
+                case 1:
+                {
+                    birdWorld.waitForClick();
+
+                    this.initialazer();
+
+                    this.nullScoreDisplay();
+
+                    this.start();
+                    break;
+                }
+                case 2:
+                {           
+                    this.initialazer();
+
+                    this.nullScoreDisplay();
+
+                    this.userAverage();
+                    this.rankDisplay();
+
+                    birdWorld.waitForClick();
+                    this.nullRankDisplay();                    
+
+                    this.start();
+                    break;
+                }
+                case 3:
+                {
+                    this.scoreLbl.setLabel("");
+
+                    this.nullScoreDisplay();
+
+                    this.initialazer();
+
+                    this.GetReady();
+
+                    this.start();
+
+                    break;
+                }
+            }
+        }while(option < 4);     
+        System.exit(0);
+    }
+
+    /** Método
+     *  Este método reicinializa as variáveis de ambiente 
+     */
+    private void initialazer()
+    {
+        this.over.setVisible(false); 
+
+        this.downUnits = 0;
+        this.mapPosition = 0;
+        this.keyPressed = 0;
+        this.scoreCounter = 0;
+        this.score = 0;
+        this.bestScore = 0;
+
+        scoreLbl.setLabel("" + this.score);
+
+        birdWorld.add(this.bird, 100, birdWorld.getGCanvas().getHeight() / 2);
+    }
+
+    /** Método gameOver 
+     *  Este método mostra uma imagem (medalha) consoante a pontuação final do jogador
+     */
+    private void gameOver()
+    {
+        if (this.score >= 3 && this.score < 5)
+        {
+            this.over = new GImage("broze.png");
+            this.over.scale(2);
+            double overHeight = over.getWidth();    
+            birdWorld.add(over, (birdWorld.getGCanvas().getWidth() / 2) - (overHeight / 2) , (birdWorld.getGCanvas().getHeight()) - 460 );
+
+            MediaTools.beep();
+            this.scoreDisplay();
+        }
+        else if (this.score >= 5 && this.score < 8)
+        {
+            this.over = new GImage("prata.png");
+            this.over.scale(2);
+            double overHeight = over.getWidth();
+            birdWorld.add(over, (birdWorld.getGCanvas().getWidth() / 2) - (overHeight / 2) , (birdWorld.getGCanvas().getHeight()) - 460 );
+
+            MediaTools.beep();
+            this.scoreDisplay();
+        }
+        else if (this.score >= 8 && this.score < 10)
+        {
+            this.over = new GImage("ouro.png");
+            this.over.scale(2);
+            double overHeight = over.getWidth();
+            birdWorld.add(over, (birdWorld.getGCanvas().getWidth() / 2) - (overHeight / 2) , (birdWorld.getGCanvas().getHeight()) - 460 );
+
+            MediaTools.beep();
+            this.scoreDisplay();
+        }
+        else if (this.score >= 10)
+        {
+            this.over = new GImage("platina.png");
+            this.over.scale(2);
+            double overHeight   = over.getWidth();
+            birdWorld.add(over, (birdWorld.getGCanvas().getWidth() / 2) - (overHeight / 2) , (birdWorld.getGCanvas().getHeight()) - 460 );
+
+            MediaTools.beep();
+            this.scoreDisplay();
+        }
+        else
+        {
+            this.over = new GImage("poop.png");
+            this.over.scale(2);
+            double overHeight = over.getWidth();
+            birdWorld.add(over, (birdWorld.getGCanvas().getWidth() / 2) - (overHeight / 2), (birdWorld.getGCanvas().getHeight()) - 460 );
+
+            MediaTools.beep();
+            this.scoreDisplay();
+        }
+    }
+
+    /** Método nullScoreDisplay
+     *  Este método torna as labels não visieis (sem conteúdo)
+     */
+    private void nullScoreDisplay()
+    {
+        this.statisticYourAverageLb.setLabel("");
+        this.statisticAverageLb.setLabel("");
+        this.statisticLowScoreLb.setLabel("");
+        this.statisticBestScoreLb.setLabel("");
+        this.scoreLb2.setLabel("");
+        this.bestScoreLb.setLabel("");
+    }
+
+    private void scoreDisplay()
+    {
+        this.statisticYourAverageLb();
+        this.statisticAverageLb();
+        this.statisticLowScoreLb();
+        this.statisticBestScoreLb();
+        this.scoreLabe2();
+        this.bestScoreLb();        
+    }
+
+    private void scoreLabe2()
+    {
+        this.scoreLb2 = new GLabel("");
+        this.scoreLb2.setFont(new Font("Arial", Font.BOLD, 40));
+        this.scoreLb2.setLabel("" + this.score);
+        birdWorld.add(this.scoreLb2, (birdWorld.getGCanvas().getWidth() / 2) + 137, 196);
+    }
+
+    private void bestScoreLb()
+    {
+        for(int i = 0; i < playersList.length; i++)
+        {
+            if (playersList[i].equals(this.playerName))
+            {
+                this.bestScore = this.highScoreList[i];
+                break;
+            }
+            break;
+        }
+
+        this.bestScoreLb = new GLabel("");
+        this.bestScoreLb.setFont(new Font("Arial", Font.BOLD, 40));
+        this.bestScoreLb.setLabel("" + this.bestScore);
+        birdWorld.add(this.bestScoreLb, (birdWorld.getGCanvas().getWidth() / 2) + 137, 282);
+    }
+
+    private void statisticBestScoreLb()
+    {
+        this.statisticBestScoreLb = new GLabel("");
+        this.statisticBestScoreLb.setFont(new Font("Arial", Font.BOLD, 20));
+        this.statisticBestScoreLb.setLabel(this.playersList[0] + " " + this.highScoreList[0]);
+        birdWorld.add(this.statisticBestScoreLb, (birdWorld.getGCanvas().getWidth() / 2) + 255, 210);
+    }
+
+    private void statisticLowScoreLb()
+    {
+        for (int i = 4; i >= 0; i--)
+        {
+            if ( this.highScoreList[i] > 0)
+            {
+                this.statisticScoreLow = this.highScoreList[i];
+                this.worstScoreName = this.playersList[i];
+                break;
+            }
+        }
+
+        this.statisticLowScoreLb = new GLabel("");
+        this.statisticLowScoreLb.setFont(new Font("Arial", Font.BOLD, 20));
+        if(this.statisticScoreLow > 0)
+        {
+            this.statisticLowScoreLb.setLabel(this.worstScoreName + " " + this.statisticScoreLow);
+        }
+        else
+        {
+            this.statisticLowScoreLb.setLabel(" " + this.statisticScoreLow);
+        }
+        birdWorld.add(this.statisticLowScoreLb, (birdWorld.getGCanvas().getWidth() / 2) + 255, 250);
+    }
+
+    private void statisticAverageLb()
+    {
+        for (int i = 0; i < this.highScoreList.length; i++)
+        {
+            if ( this.highScoreList[i] > 0)
+            {
+                this.totalAverage= this.totalAverage + this.highScoreList[i];
+                this.average = this.totalAverage /(i+1);
+            }
+        }
+        this.averageCounter = 0;
+        this.totalAverage = 0;
+
+        this.statisticAverageLb = new GLabel("");
+        this.statisticAverageLb.setFont(new Font("Arial", Font.BOLD, 15));
+        this.statisticAverageLb.setLabel("Average:" + " " + this.average);
+        birdWorld.add(this.statisticAverageLb, (birdWorld.getGCanvas().getWidth() / 2) + 255, 290);
+    }
+
+    private void statisticYourAverageLb()
+    {
+        for (int i = 0; i < this.playersList.length; i++)
+        {
+            if (playersList[i].equals(this.playerName))
+            {
+                this.yourAverage= this.yourAverage + this.highScoreList[i];
+                this.averageCounter++;
+                this.averageDisplay = this.yourAverage / this.averageCounter;
+            }
+        }
+        this.averageCounter = 0;
+        this.yourAverage = 0;
+
+        this.statisticYourAverageLb = new GLabel("");
+        this.statisticYourAverageLb.setFont(new Font("Arial", Font.BOLD, 10));
+        this.statisticYourAverageLb.setLabel("Your Average:" + " " + this.averageDisplay);
+        birdWorld.add(this.statisticYourAverageLb, (birdWorld.getGCanvas().getWidth() / 2) + 255, 330);
+    }
+
+    private void nullRankDisplay()
+    {
+        this.rankDisplay.setVisible(false); 
+
+        this.titelPlaceLb.setLabel("");
+        this.firstPlaceLb.setLabel("");
+        this.secondPlaceLb.setLabel("");
+        this.thirdPlaceLb.setLabel("");
+        this.fourthPlaceLb.setLabel("");
+        this.fivethPlaceLb.setLabel("");
+    }
+
+    private void rankDisplay()
+    {
+        this.rankDisplay = new GImage("high_score.png");
+        this.rankDisplay.scale(2);
+        double rankDisplayHeight = rankDisplay.getWidth();
+        birdWorld.add(rankDisplay, (birdWorld.getGCanvas().getWidth() / 2) - (rankDisplayHeight / 2), (birdWorld.getGCanvas().getHeight()) - 310 );
+
+        this.titelPlaceLb();
+        this.firstPlaceLb();
+        this.secondPlaceLb();
+        this.thirdPlaceLb();
+        this.fourthPlaceLb();
+        this.fivethPlaceLb();
+    }
+
+    private void titelPlaceLb()
+    {
+        this.titelPlaceLb = new GLabel("");
+        this.titelPlaceLb.setFont(new Font("Arial", Font.BOLD, 25));
+        this.titelPlaceLb.setLabel("Place" + "            " + "Averege" + "            " + "Name");
+        birdWorld.add(this.titelPlaceLb, (birdWorld.getGCanvas().getWidth() / 2) - 200, (birdWorld.getGCanvas().getHeight()) - 270);
+    }
+
+    private void firstPlaceLb()
+    {
+        this.firstPlaceLb = new GLabel("");
+        this.firstPlaceLb.setFont(new Font("Arial", Font.BOLD, 20));
+        this.firstPlaceLb.setLabel("  1º: " + this.highScoreList[0] + "                       " + this.averageScore[0] + "                       " + this.playersList[0]);
+        birdWorld.add(this.firstPlaceLb, (birdWorld.getGCanvas().getWidth() / 2) - 200, (birdWorld.getGCanvas().getHeight()) - 240);
+    }
+
+    private void secondPlaceLb()
+    {
+        this.secondPlaceLb = new GLabel("");
+        this.secondPlaceLb.setFont(new Font("Arial", Font.BOLD, 20));
+        this.secondPlaceLb.setLabel("  2º: " + this.highScoreList[1] + "                       " + this.averageScore[1] + "                       " + this.playersList[1]);
+        birdWorld.add(this.secondPlaceLb, (birdWorld.getGCanvas().getWidth() / 2) - 200, (birdWorld.getGCanvas().getHeight()) - 205);
+    }
+
+    private void thirdPlaceLb()
+    {
+        this.thirdPlaceLb = new GLabel("");
+        this.thirdPlaceLb.setFont(new Font("Arial", Font.BOLD, 20));
+        this.thirdPlaceLb.setLabel("  3º: " + this.highScoreList[2] + "                       " + this.averageScore[2] + "                      " +  this.playersList[2]);
+        birdWorld.add(this.thirdPlaceLb, (birdWorld.getGCanvas().getWidth() / 2) - 200, (birdWorld.getGCanvas().getHeight()) - 173);
+    }
+
+    private void fourthPlaceLb()
+    {
+        this.fourthPlaceLb = new GLabel("");
+        this.fourthPlaceLb.setFont(new Font("Arial", Font.BOLD, 20));
+        this.fourthPlaceLb.setLabel("  4º: " + this.highScoreList[3] +  "                       " + this.averageScore[3] + "                      " +  this.playersList[3]);
+        birdWorld.add(this.fourthPlaceLb, (birdWorld.getGCanvas().getWidth() / 2) - 200, (birdWorld.getGCanvas().getHeight()) - 140);
+    }
+
+    private void fivethPlaceLb()
+    {
+        this.fivethPlaceLb = new GLabel("");
+        this.fivethPlaceLb.setFont(new Font("Arial", Font.BOLD, 20));
+        this.fivethPlaceLb.setLabel("  5º: " + this.highScoreList[4] +  "                       " + this.averageScore[4] + "                      " +  this.playersList[4]);
+        birdWorld.add(this.fivethPlaceLb, (birdWorld.getGCanvas().getWidth() / 2) - 200, (birdWorld.getGCanvas().getHeight()) - 105);
+    }
+
+    private void userAverage()
+    {
+        for (int i = 0; i < this.highScoreList.length; i++)
+        {
+            for (int j = 0; j < this.highScoreList.length; j++)
+            {
+                if (this.playersList[i].equals(this.playersList[j]) && this.highScoreList[j] > 0 )
+                {
+                    this.rankAverage = this.rankAverage + this.highScoreList[j];
+                    this.rankaverageCounter++;
+                    this.averageScore[i] = this.rankAverage / this.rankaverageCounter;
+                }
+            }
+            this.rankAverage = 0;
+            this.rankaverageCounter = 0;
+        }
+    }
+
+    private void score()
+    {
+        double birdX = bird.getX();
+        double birdY = bird.getY();
+
+        this.scoreLbl.setLabel("" + this.score);
+
+        if (birdWorld.getElementAt(birdX - 1 , 20) !=  null && !(birdWorld.getElementAt(birdX - 1 , 20).getLocation().getX() < 10))
+        {
+            this.scoreCounter++;
+        }
+
+        if (this.scoreCounter == this.blockTime)
+        {
+            this.score++;
+            this.scoreCounter = 0;
+        }
+    }
+
+    private void getName()
+    {
+        IODialog dialog = new IODialog();
+
+        this.playerName = dialog.readLine("Introduza o nome do jogador:");
+        while (playerName.length() > playerNameSize)
+        {
+            this.playerName = dialog.readLine("reintroduza o nome:");
+        }
+    }
+
+    private void highScore()
+    {
+        for (int j = 0; j < this.highScoreList.length; j++)
+        {
+            if ( this.highScoreList[j] < score)
+            {
+                for (int i = 4 ; i >= j +1 ;i--)
+                {
+                    this.highScoreList[i] = this.highScoreList[i-1];
+                    this.playersList[i] = this.playersList[i-1];
+                }
+                this.highScoreList[j] = this.score;
+                this.playersList[j] = this.playerName;
+                break;
+            }
+        }
+
+        for (int i = 0; i < playersList.length; i++)
+        {
+            System.out.println(this.playersList[i] + " " + this.highScoreList[i]);
+        }
+    }
+
+    private void showMap()
+    {
+        for(int line = 0; line < mapOcean.length; line++)
+        {
+            int pos = -this.mapPosition / this.blockWidth % this.numberColumns;
+            for(int col = 0; col < this.numberColumns; col++)
+            {
+                if (mapOriginal[line][pos] != null)
+                {
+                    double x = this.mapPosition + col * this.blockWidth;
+                    birdWorld.add(mapOriginal[line][pos], x, line * this.blockWidth);
+                }
+                pos = Game.incCircular(col, this.numberColumns);
+            }
+        }
+    }
+
+    private static int incCircular(int i, int module)
+    {
+        return (i + 1) % module;
+    }
+
+    private void changep()
+    {
+        if (-this.mapPosition == this.numberColumns * blockWidth)
+        {
+            this.mapPosition = 0;
+        }
+        else
+        {
+            this.mapPosition = this.mapPosition - 2 ;
+        }   
+    }
+}

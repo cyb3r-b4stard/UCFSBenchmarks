@@ -1,0 +1,196 @@
+
+/**
+ * ##### # ########### ## ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import edu.duke.*;
+import org.apache.commons.csv.*;
+public class BabyBirths {
+   public void totalBirths()
+    {
+      int boys=0;
+      int girls=0;
+      int total=0;
+      int countM=0;
+      int countF=0;
+      FileResource fr= new FileResource();
+      for(CSVRecord rec:fr.getCSVParser(false)){
+          int numBorn= Integer.parseInt(rec.get(2));
+          total+=numBorn;
+          if(rec.get(1).equals("M")) {
+              boys+=numBorn;
+              countM++;
+            }
+          if(rec.get(1).equals("F")){
+              girls+=numBorn;
+              countF++;
+            }
+        }
+        System.out.println("total births = " + total);
+		System.out.println("female girls = " + girls);
+		System.out.println("male boys = " + boys);
+		System.out.println("Unique Girls Names = "+countF);
+		System.out.println("Unique Boys Names = "+countM);
+}
+
+public int getRank(int year,String name,String gender) {
+    int countG=0;
+    int rank=0;
+    
+    FileResource fr= new FileResource("testing/yob"+year+"short.csv");
+    for(CSVRecord rec:fr.getCSVParser(false)){
+        if(rec.get(1).equals("F")) 
+            countG++;
+        }
+    for(CSVRecord rec:fr.getCSVParser(false)) {
+        if(gender.equals("F")){
+            rank++;
+            String temp= rec.get(0);
+            if(name.equals(temp)) {
+                if(rank>countG)
+                return-1;
+                else                
+                return rank;
+            }
+            
+        }
+        else {
+            rank++;
+            String temp=rec.get(0);
+            if(name.equals(temp)) {
+                if((rank-countG)==0)
+                return-1;
+                else            
+                return (rank-countG);
+            }
+        }
+    }
+    return -1;
+}
+
+public String getName(int year,int rank,String gender) {
+    int countG=0;
+    int temp=0;
+    int total=0;
+    int sample=0;
+    FileResource fr= new FileResource("testing/yob"+year+"short.csv");
+    
+    for(CSVRecord rec:fr.getCSVParser(false)){
+        if(rec.get(1).equals("F")) {
+            countG++;
+            total++;
+        }
+        else{
+            total++;
+        }
+        }
+    
+    if(gender.equals("F")){
+        if(rank>countG)
+        return "NO NAME";
+         for(CSVRecord rec:fr.getCSVParser(false)){
+            temp++;
+            if(temp==rank)
+            return rec.get(0);
+        }
+    }
+    
+    else {
+        if((rank+countG)>total)
+        return "NO NAME";
+        for(CSVRecord rec:fr.getCSVParser(false)) {
+            sample++;
+            if(sample<=countG)
+            continue;
+            else  {
+            if(sample==(rank+countG))
+            return rec.get(0);
+          }
+        }
+    }
+    return "NO NAME";
+}
+
+public void whatIsNameInYear(String name,int year,int newYear,String gender) {
+    int rank=getRank(year,name,gender);
+    String newName=getName(newYear,rank,gender);
+    System.out.println(name+" born in year "+year+" would be "+newName+" if born in "+newYear);
+
+}
+
+public int yearOfHighestRank(String name,String gender) {
+    int max=0;
+    int rank=0;
+  
+    
+    DirectoryResource dr=new DirectoryResource();
+    for(File f:dr.selectedFiles()){
+        FileResource fr=new FileResource(f);
+        String fname=f.getName()
+        int index=fname.indexOf("2");
+        if(index==-1)
+        index=fname.indexOf("1");
+        String Syear=fname.substring(index,index+4);
+        int year=Int.parseInt(Syear);
+        int rank=(year,name,gender);
+        if(rank==-1)
+        return -1;
+        if(rank>max)
+        max=rank;
+    }
+    return max;
+}
+       
+      
+            
+            
+
+       
+            
+            
+            
+           
+        
+        
+       
+            
+   
+        
+        
+        
+    
+    
+    
+           
+        
+   
+            
+
+
+
+            
+            
+            
+            
+            
+            
+          
+            
+        
+        
+        
+                
+            
+            
+            
+            
+
+        
+            
+            
+        
+
+
+

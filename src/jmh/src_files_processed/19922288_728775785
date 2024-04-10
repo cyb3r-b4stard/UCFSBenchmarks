@@ -1,0 +1,41 @@
+import java.awt.*;
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class JackRabbit extends Wildlife{
+   int moveCount = 0;
+   int moveResponseCount = 0;
+    public JackRabbit(){
+        super ("\\", Color.YELLOW);
+    }
+    
+   /**
+    * determines the appropriate move for the JackRabbit to perform
+    * 
+    * @param  info a WildlifeInfo object containing details about the jack rabbit's state     
+    * @return the move that the jack rabbit will perform
+    */
+   public Action getMove(WildlifeInfo info){
+        if (moveResponseCount%2 == 0){
+            if (toString() == "\\") setDisplay("/");
+            else setDisplay("\\");
+        }
+       
+        if (info.getFront() == Neighbor.OTHER)
+            return Action.INFECT;
+        else if (info.getFront() == Neighbor.SAME || info.getFront() == Neighbor.WALL){
+            moveCount = 0;
+            return Action.LEFT;
+        }
+        else if (moveCount % 5 == 0)
+            return Action.LEFT;
+        else{
+            moveResponseCount++;
+            return Action.MOVE;
+        }
+        moveCount++:
+    }
+}

@@ -1,0 +1,119 @@
+import javax.swing.*;
+import java.applet.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.net.*;
+import java.io.*;
+import java.util.ArrayList;
+
+public class SApplet extends Applet{
+    TextField input,output;
+    Label label1,label2;
+    Button b1;
+    JLabel title,result;
+    JTextField chat;
+    int num, sum = 0;
+    private int font = 20;
+    public final clientThread thread = new clientThread(this);
+    public void init(){
+        /**
+        label1 = new Label("please enter number : ");
+        add(label1);
+        label1.setBackground(Color.yellow);
+        label1.setForeground(Color.magenta);
+        input = new TextField(5);
+        add(input);
+        label2 = new Label("Sum : ");
+        add(label2);
+        label2.setBackground(Color.yellow);
+        label2.setForeground(Color.magenta);
+        output = new TextField(20);
+        add(output);
+        b1 = new Button("Add");
+        add(b1);
+        b1.addActionListener(this);
+        lbl = new JLabel("Swing Applet Example. ");
+        add(lbl);
+        setBackground(Color.yellow);
+         */
+
+        grant { 
+            permission java.security.AllPermission; 
+        };
+
+        setBackground(Color.blue.darker().darker());
+        setLayout(new GridLayout(3,3));
+
+        title=new JLabel("Mafia!", SwingConstants.CENTER);
+        title.setForeground(Color.white);
+        title.setFont(new Font("Arial",0, font));
+        add(title);
+
+        result=new JLabel("<html></html>", SwingConstants.LEFT);
+        result.setVerticalAlignment(JLabel.BOTTOM);
+        result.setForeground(Color.white);
+        result.setFont(new Font("Arial",0, font));
+        add(result);
+
+        chat=new JTextField("");
+        chat.addActionListener(new TextHandler());
+        add(chat);
+    }
+
+    private class TextHandler implements ActionListener
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            if(chat.getText().length()>0){
+                result.setText(result.getText().substring(0,result.getText().length()-7) + "<br>" + chat.getText() + "</html>");
+
+                chat.setText("");
+            }
+        }
+    }
+
+    public void update(String arg){
+        result.setText(result.getText().substring(0,result.getText().length()-7) + "<br>" + arg + "</html>");
+    }
+
+    class clientThread implements Runnable {
+        protected Socket         socket;
+        protected PrintWriter    out;
+        protected BufferedReader in;
+        protected int ID;
+        protected SApplet client;
+
+        public clientThread(SApplet client) {
+            /* Assign local variable */
+            this.client=client;
+            try {
+                socket = new Socket("ec2-52-8-76-50.us-west-1.compute.amazonaws.com", 10101);
+                /* Create the I/O variables */
+                this.out = new PrintWriter(this.socket.getOutputStream(), true);
+                this.in  = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+
+                /* Say hi to the client */
+            } catch (IOException e) {
+                System.out.println("IOException: " + e);
+            }
+        }
+
+        public void run(){
+            while(true){
+                try{
+                    String fromServer = this.in.readLine();
+                    if(fromServer!=null){
+                        client.update(fromServer);
+                    }
+                } catch (IOException e) {
+                    System.out.println("IOException: " + e);
+                    return;
+                }
+            }
+        }
+
+        public void tellServer(String msg){
+            this.out.println(msg);
+        }
+    }
+}

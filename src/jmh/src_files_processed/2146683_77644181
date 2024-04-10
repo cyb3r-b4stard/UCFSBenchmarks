@@ -1,0 +1,216 @@
+import java.util.ArrayList;
+/**
+ * ##### # ########### ## ##### ######### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class BrickWall
+{
+    private int bWidth;
+    private int bHeight;
+    private int numRows;
+    private int rowLength;
+    private ArrayList<String> colors;
+    private ArrayList<Rectangle> bricks;
+    private boolean decrease;
+    private boolean isSymmetric;
+    private boolean isMultiColor;
+    private int currentColor;
+    private int startX;
+    private int startY;
+    private Rectangle brick; 
+
+    /**
+     * Constructor for objects of class BrickWall.
+     * @param rows The number of rows in the wall
+     * @param rowlen The maximum number of bricks in a row
+     * @param isMultiColor when false all bricks are the same colour.  When true the colours cycle through the 6 colours.
+     * @param decrease If true subtract 2 from rowLen for each row drawn
+     * @param isSymmetric if decrease is greater than 0 and isSymmetric is true the wall is a pyramid shape, otherwise it is a rectangle or a right angle triangle.
+     */
+    public BrickWall(int rows, int rowLen)
+    {
+        setUpColors();
+        bWidth = 54;
+        bHeight = 16;
+        startX = 10;
+        startY = 550;
+        bricks = new ArrayList<Rectangle>();
+        currentColor = 0;
+        setNumRows(rows);
+        setRowLength(rowLen);
+        this.isMultiColor = false;
+        this.decrease = false;
+        this.isSymmetric = false;
+    }
+
+    private void setUpColors() {
+        colors = new ArrayList<String>();
+        colors.add("red");
+        colors.add("yellow");
+        colors.add("blue"); 
+        colors.add("green");
+        colors.add("magenta");
+        colors.add("black");
+    }
+
+    /**
+     * Toggle whether the wall is multicoloured.
+     */
+    public void toggleMultiColour() {
+        isMultiColor = !isMultiColor;
+        currentColor = 0; 
+        int z = 0; 
+
+    
+        while (z + 1 < getNumberOfBricks()) {
+            z = z + 1; 
+            if (currentColor == 0) { 
+                bricks.get(z).changeColor("red"); 
+                currentColor = currentColor + 1; 
+
+            }
+
+            else if (currentColor == 1) { 
+
+                bricks.get(z).changeColor("yellow"); 
+                currentColor = currentColor + 1; 
+
+            }
+
+            else if (currentColor == 2) { 
+
+                bricks.get(z).changeColor("blue"); 
+                currentColor = currentColor + 1; 
+
+            }
+
+            else if (currentColor == 3) { 
+
+                bricks.get(z).changeColor("green"); 
+                currentColor = currentColor + 1; 
+
+            }
+
+            else if (currentColor == 4) { 
+
+                bricks.get(z).changeColor("magenta"); 
+                currentColor = currentColor + 1; 
+
+            }
+
+            else if (currentColor == 5) { 
+
+                bricks.get(z).changeColor("black"); 
+                currentColor = 0; 
+
+            }
+
+        }}
+
+    /**
+     * Toggle whether the decrease in a row length is symmetric.
+     */
+    public void toggleSymmetric() {
+        isSymmetric = !isSymmetric; 
+
+    }
+
+    /**
+     * Toggle whether the length of a new row is one less than the length of the previous row.
+     */
+    public void toggleDecrease() { {
+        decrease = ! decrease;
+        int z = 0; 
+        z - 1 = decrease; 
+        }
+        
+        
+    }
+
+    /**
+     * @return the number of bricks in the current wall.
+     */
+    public int getNumberOfBricks() {
+        return bricks.size();
+    }
+
+    /**
+     * Set the length of a row.  There can be no more than 22 bricks in a row.
+     * @param len The number of bricks in a row.  If len is less than or equal
+     * to zero OR len is greater than 22, the row length will be assigned the value 22.
+     * Otherwise the length of a row will be assigned the value of len.
+     */
+    public void setRowLength(int len) {
+        if (len <= 0 || len > 22) {
+            rowLength = 22;
+        } else {
+            rowLength = len;
+        }
+    }
+
+    /**
+     * Set the maximum number of rows in the wall.  If the length of a row decreases, 
+     * there may not be this many rows in the wall.
+     * @param rows The maximum number of rows in the wall.  If rows is less than
+     * or equal to zero OR rows is greater than 30, the number of rows will be assigned the value 30.
+     * Otherwise the number of rows will be assigned the value of rows.
+     */
+    public void setNumRows(int rows) {
+        if (rows <= 0 || rows > 30) {
+            numRows = 30;
+        } else {
+            numRows = rows;
+        }
+    }
+
+    /**
+     * Draw the wall.  The first brick will be positioned at the coordinates (10, 550).  
+     * The number of bricks in a row is specified by setRowLength().  The maximum number of rows
+     * is specified by setNumRows().  If decrease is true, each subsequent row of bricks 
+     * contains one brick less than the previous row.  If symmetric is true AND decrease is true then
+     * the wall is pyramid shaped.  If symmetric is false AND decrease is true then the wall is shaped
+     * like a right angle triangle.
+     */
+    public void draw(int x, int y) {
+        {
+            eraseWall();
+
+            int z = 0; 
+
+            while (z<numRows) { 
+                drawRow(x,y,rowLength); 
+                y = y + 16; 
+                z = z + 1; 
+                
+            }
+
+        }}
+
+    private void makeBrick(int x, int y) {
+        Rectangle brick = new Rectangle(54, 16); 
+        brick.makeVisible(); 
+        bricks.add(brick); 
+        brick.moveHorizontal(x); 
+        brick.moveVertical(y); 
+
+    }
+
+    private void drawRow (int x, int y, int n) { 
+        int z = 0; 
+        while (z < n)  { 
+            makeBrick(x, y); 
+            x = x + 54; 
+            z = z + 1; 
+
+        }
+    }
+
+    public void eraseWall() {
+        Canvas canvas = Canvas.getCanvas();
+        for (int i=0; !bricks.isEmpty(); i++) {
+            canvas.erase(bricks.remove(0));
+        }
+    }
+}

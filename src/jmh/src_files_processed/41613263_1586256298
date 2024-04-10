@@ -1,0 +1,111 @@
+import java.awt.Color;
+import java.util.Random;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.geom.*;
+
+
+/**
+ * ##### ######## - # ##### ############# ####### ######### #### ### 
+ * ###### #####. 
+ *
+ * @###### ####### ####### ### ##### #. ######
+ * @####### ####.##.##
+ */
+
+public class BallDemo   
+{
+    private Canvas myCanvas;
+    private Random randomGenerator;
+    private JFrame frame;
+   
+    private Graphics2D graphic;
+    private Color backgroundColor;
+    private Image canvasImage;
+
+    /**
+     * Create a BallDemo object. Creates a fresh canvas and makes it visible.
+     */
+    public BallDemo()
+    {
+        myCanvas = new Canvas("Ball Demo", 600, 500);
+        randomGenerator = new Random();
+        
+    }
+
+    /**
+     * Simulate two bouncing balls
+     */
+    public void bounce()
+    {
+        int ground = 400;   
+        int index = randomGenerator.nextInt(500); 
+        int index1 = randomGenerator.nextInt(500);
+        
+        
+
+        myCanvas.setVisible(true);
+
+        myCanvas.setForegroundColor(Color.BLACK);
+        myCanvas.drawLine(50, ground, 550, ground);
+
+        
+
+        BouncingBall ball = new BouncingBall(index, 50, 17, Color.BLUE, ground, myCanvas);
+        ball.draw();
+        
+   
+        BouncingBall ball2 = new BouncingBall(index1, 80, 20, Color.RED, ground, myCanvas);
+        ball2.draw();
+        
+        boolean finished =  false;
+        while (!finished) {
+            myCanvas.wait(50);           
+            ball.move();
+            ball2.move();
+            if(ball.getXPosition() >= 550 && ball2.getXPosition() >= 550) {
+                finished = true;
+            }
+        }
+    }
+    
+    /**
+     *The boxBounce method will draw a rectangle on the screen with one or more
+     *balls inside the box.
+     */
+    
+    public void boxBounce()
+    {
+        int ground = 400;
+        int top = 50;
+        int left = 0;
+        int right = 550;
+        Integer index = randomGenerator.nextInt(4); 
+        Integer index1 = randomGenerator.nextInt(4);
+        
+        myCanvas.setForegroundColor(Color.BLACK);
+        myCanvas.drawLine(50, ground, 550, ground);
+        myCanvas.drawLine(550, ground, 550, 50);
+        myCanvas.drawLine(50, ground, 50, 50);
+        myCanvas.drawLine(50, 50, 550, 50);
+        
+        BoxBall ball = new BoxBall(50, 50, 17, Color.index, ground, myCanvas);
+        ball.draw();
+        
+   
+        BoxBall ball2 = new BoxBall(70, 80, 20, Color.index1, ground, myCanvas);
+        ball2.draw();
+        
+        boolean finished =  false;
+        while (!finished) {
+            myCanvas.wait(50);           
+            ball.move();
+            ball2.move();
+            if(ball.move() == 0 && ball2.move() == 0 {
+                finished = true;
+            }
+            
+            
+        }
+    }
+}

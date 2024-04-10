@@ -1,0 +1,77 @@
+import java.util.*;
+import java.io.*;
+
+public class tester
+{
+    public static void main(String[] args) throws Exception
+    {
+        long STAT_operationcount = 0;
+        long STAT_reads = 0;
+        long STAT_writes = 0;
+        
+        if (args.length == 3)
+        {
+            String filename = args[0];
+            String algorithm = args[1];
+            int framecount = Integer.parseInt(args[2]);
+            
+            File file = new File(filename);
+            Scanner scanscan = new Scanner(file);
+            
+            Page PAGETABLE = new Page();
+            
+            
+            while(scanscan.hasNextLine())
+            {
+                String temp = scanscan.nextLine();
+                
+                boolean writecmd = false;
+                if(temp.contains("W"))
+                    writecmd = true;
+                else if(temp.contains("R"))
+                    writecmd = false;
+                    
+                String nooffset = temp.substring(0,5);
+
+                long tempaddress = Long.parseLong(nooffset,16);
+                System.out.println(tempaddress);
+                if (writecmd==true)
+                    Address a = new Address(tempaddress,true);
+                else
+                    Address a = new Address(tempaddress,false);
+                
+                              
+                if(algorithm.equals("rand"))
+                {
+                    
+                }
+                else if(algorithm.equals("lru"))
+                {
+                    
+                }
+                else if(algorithm.equals("fifo"))
+                {
+                    
+                }
+                else
+                {
+                    System.out.println("ERROR - Invalid algorithm");
+                    return;
+                }
+                
+            }     
+            
+            System.out.println();
+            System.out.println("Operations: " + STAT_operationcount);
+            System.out.println("Writes: " + STAT_writes);
+            System.out.println("Reads: " + STAT_reads);
+        } 
+        else
+        {
+            System.out.println("Please use command line arguments to pass input\n");
+            System.out.println("arg0 - filename");
+            System.out.println("arg1 - algorithm <rand | lru | fifo>");
+            System.out.println("arg2 - page frame count");
+        }
+    }
+}

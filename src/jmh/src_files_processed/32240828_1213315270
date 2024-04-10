@@ -1,0 +1,86 @@
+/**
+ * ###### #######
+ * 
+ * @###### ##### ############ 
+ * @####### ####### #
+ * @####### ######-##
+ * @####### ###### ####
+ */
+
+import java.util.ArrayList;
+import java.awt.Color;
+import java.awt.Point;
+
+public class ConvexPolygon implements Shape{
+    private ArrayList<Point> vertices = new ArrayList<Point>();
+    private Color color;
+    private boolean filled;
+    
+    public double getArea(){
+        double area = 0;
+        for (i = 0; i < vertices.size(); i++){
+            if (i + 1 >= vertices.size()){
+                j = 0;
+            }
+            else{
+                j = i+1;
+            }
+            area += 0.5*Math.abs(vertices.get(i).x * vertices.get(j).y);
+        }
+        for (i = 0; i < vertices.size(); i++){
+            
+        }
+        return area
+    }
+    
+    public Color getColor(){
+        return color;
+    }
+    
+    public void setColor(Color color){
+        this.color = color;
+    }
+    
+    public boolean getFilled(){
+        return filled;
+    }
+    
+    public void setFilled(boolean filled){
+        this.filled = filled;
+    }
+    
+    public void move (Point point){
+        for (int i = 0; i <vertices.size(); i++){
+            Point newPoint = new Point (vertices.get(i).x += point.x, vertices.get(i).y += point.y);
+            vertices.set(i, newPoint);
+        }
+    }
+    
+    
+    public ConvexPolygon(Point[] array, Color color, boolean filled){
+        for (Point p : array){
+            vertices.add(p);
+        }
+        this.color = color;
+        this.filled = filled;
+    }
+    
+    
+    public Point getVertex(int index){
+        return vertices.get(index);
+    }
+    
+    public void setVertex(int index, Point point){
+        vertices.set(index, point);
+    }
+    
+    public boolean equals(Object other){
+        if (other == null || this.getClass() != other.getClass()){
+            return false;
+        }
+        else{
+            ConvexPolygon o = (ConvexPolygon)other;
+            return (this.vertices.equals(o.vertices) && this.color.equals(o.color) && this.filled == o.getFilled());
+        }
+    }
+}

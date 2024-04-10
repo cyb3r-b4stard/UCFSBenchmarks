@@ -1,0 +1,86 @@
+import java.util.Scanner;
+import java.math.BigInteger;
+
+public class FracCalc {
+
+    public static void main(String[] args) 
+    {
+        Scanner in = new Scanner(System.in);
+        System.out.println("Enter in your equation: ");
+        String equation = in.nextLine();
+        while (!equation.equalsIgnoreCase("quit"))
+        {
+            System.out.println(produceAnswer(equation));
+            equation = in.nextLine();
+        }
+
+    }
+    
+    public static String produceAnswer(String input)
+    { 
+        String[] equation = parseEquation(input);
+        int[] frac1 = makeImproperFraction(parseFraction(equation[0]));
+        int[] frac2 = makeImproperFraction(parseFraction(equation[2]));
+        return "whole:" + frac2[0] + " numerator:" + frac2[1] + " denominator:" + frac2[2];
+        
+    }
+    
+    public static String[] parseEquation(String equation)
+    {
+        String[] answer = new String[3];
+        int operatorLocation = 0;
+        if (equation.contains(" + "))
+            operatorLocation = equation.indexOf(" + ");
+        else if (equation.contains(" - "))
+            operatorLocation = equation.indexOf(" - ");
+        else if (equation.contains(" * "))
+            operatorLocation = equation.indexOf(" * ");
+        else if (equation.contains(" / "))
+            operatorLocation = equation.indexOf(" / ");
+        answer[0] = equation.substring(0, operatorLocation);
+        answer[1] = equation.substring(operatorLocation + 1, operatorLocation + 2);
+        answer[2] = equation.substring(operatorLocation + 3, equation.length());
+        return answer;
+    }
+    public static void operateOnFraction(String )
+    {
+        
+    }
+    public static int[] parseFraction(String fraction)
+    {
+        int[] answer = new int[3];
+        if (!(fraction.contains("_")) && !(fraction.contains("/"))) 
+        {
+            answer[0] = Integer.parseInt(fraction); 
+            answer[1] = 0; answer[2] = 0;
+        } 
+        else if (fraction.contains("/") && !(fraction.contains("_"))) 
+        {
+            int operatorLocation = fraction.indexOf("/");
+            answer[0] = 0;
+            answer[1] = Integer.parseInt(fraction.substring(0, operatorLocation));
+            answer[2] = Integer.parseInt(fraction.substring(operatorLocation + 1, fraction.length()));
+        } 
+        else 
+        {
+           int underscoreLocation = fraction.indexOf("_");
+           int operatorLocation = fraction.indexOf("/");
+           answer[0] = Integer.parseInt(fraction.substring(0, underscoreLocation));
+           answer[1] = Integer.parseInt(fraction.substring(underscoreLocation + 1, operatorLocation));
+           answer[2] = Integer.parseInt(fraction.substring(operatorLocation + 1, fraction.length()));
+        }
+        return answer;
+    }
+    public static int[] makeImproperFraction(int[] fraction)
+    {
+        int[] answer = new int[3];
+        answer[0] = 0;
+        answer[2] = fraction[2];
+        if (fraction[0] != 0)
+            answer[1] = (Math.abs(fraction[0]) * fraction[2]) + fraction[1];
+        if (fraction[0] < 0)
+            answer[1] = answer[1] * -1;
+        return answer;
+    }
+
+}

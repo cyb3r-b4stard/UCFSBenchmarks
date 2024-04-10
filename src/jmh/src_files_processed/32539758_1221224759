@@ -1,0 +1,147 @@
+import java.io.File;
+import java.io.IOException;
+import java.util.Scanner;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.util.Random;
+/**
+ *#### ## #######: ########## #### #
+ *########### ## #######: 
+ *@######:##### ###### ####
+ *@#######:#
+ */
+
+public class Intro
+{
+    private class Mobile
+    {
+        String manufactor;
+        String model;
+        double cost = 0;
+    }
+    int number = 0;
+    Mobile []mob = new Mobile[200];
+
+    public static void Main ()
+    {
+        Intro i = new Intro();
+        i.init();
+        i.Start();
+    }
+
+    public void init(){
+        for ( int i=0; i<200; i++){
+            mob[i] = new Mobile();
+            mob[i].manufactor = "";
+            mob[i].model = "";
+            mob[i].cost = 0;
+
+        }
+    }
+
+    public void Start()
+    {
+        readCsv("mobiles.csv");
+        int choice = 0;
+        while (choice !=6)
+        {
+            System.out.println("Enter 1 to display all mobiles");
+            System.out.println("Enter 2 to search mobiles by manufacturer");
+            System.out.println("Enter 3 to search mobiles by cost");
+            System.out.println("Enter 4 to display average cost of all mobiles");
+            System.out.println("Enter 5 to add a new mobile");
+            System.out.println("Enter 6 to exit the program");
+            System.out.print("Please enter an number: ");
+            choice = Genio.getInteger();
+            if (choice == 1){
+                System.out.print("\n");
+                Display_All();
+            }
+            else if (choice == 2){
+                System.out.print("\n");
+                Search_By_Man();
+            }
+            else if (choice == 3){
+                System.out.print("\n");
+                Search_By_Cost();
+            }
+            else if (choice == 4){
+                System.out.print("\n");
+                Display_Average();
+            }
+            else if (choice == 5){
+                System.out.print("\n");
+                Add_New();
+            }
+            else if (choice == 6)
+                System.out.println("Done");
+            else
+                System.out.print("That is an invalid entry, please re-enter");           
+        }
+    }
+
+    public void Display_All()
+    {
+        int count = 0;
+        for (int i = 0; i<114; i++)
+        {
+            System.out.println(mob[i].manufactor+", "+mob[i].model+", "+mob[i].cost);
+            if ( count == 3){
+                Genio.pressKey();
+                Genio.clrScr();
+            }
+
+            System.out.print("\n");
+        }
+
+        public void Search_By_Man()
+        {
+        }
+
+        public void Search_By_Cost()
+        {
+        }
+
+        public void Display_Average()
+        {
+        }
+
+        public void Add_New()
+        {
+        }
+
+        public void readCsv(String filename)
+        {
+            try{
+                Scanner scanner = new Scanner(new File(filename));
+                Scanner dataScanner = null;
+                int index = 0;
+
+                while (scanner.hasNextLine()) {
+                    dataScanner = new Scanner(scanner.nextLine());
+                    dataScanner.useDelimiter(",");
+                    Mobile tmp = new Mobile();
+
+                    while (dataScanner.hasNext()) {
+                        String data = dataScanner.next();
+                        if (index == 0)
+                            tmp.manufactor = data;
+                        else if (index == 1)
+                            tmp.model = data;
+                        else if (index == 2)
+                            tmp.cost = Double.parseDouble(data);
+                        else
+                            System.out.println("invalid data::" + data);
+                        index++;
+                    }
+                    index = 0;
+                    mob[number] = tmp;
+                    number++;
+                }
+                scanner.close();
+            }
+            catch (IOException e) {
+                System.err.println("Caught IOException: " + e.getMessage());
+            }
+        }
+    }

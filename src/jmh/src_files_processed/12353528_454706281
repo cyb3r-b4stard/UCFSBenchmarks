@@ -1,0 +1,59 @@
+public class Rational{
+    private int num, denom;
+public Rational( int n, int d ){
+    if ( d == 0 )
+    throw new IllegalArgumentException( 
+    "denominator cannot be zero" );
+    if ( d < 0 ){
+        n = -1*n;
+        d = -1*d;
+    }
+    num = n;
+    denom = d;
+    reduce();
+}
+public Rational multiply( Rational r ){
+int top = num * r.num;
+int bottom = denom * r.denom;
+return new Rational( top, bottom );
+}
+public Rational add( Rational r ){
+    /* Returns a Rational object that is the sum of 
+     * this object and r. The denominators may be different.
+       */
+      int newDenom = r.getDenom()*denom;
+      int Rnum = r.getNum()*denom;
+      int numSum = Rnum + num*r.getDenom();
+      Rational sum = new Rational(numSum, newDenom);
+      return sum;
+}
+public boolean same( Rational r ){
+return num == r.num && denom == r.denom;
+}
+public double value(){
+double decimalValue = num*1.0/denom;
+return decimalValue;
+}
+private void reduce(){
+/* Find the greatest common factor between the 
+numerator and the denomination. Use this number to 
+simplify the fraction. */
+int factor=1;
+for (int i= num; num%i!=0 && denom%i!=0); i--){
+    if(num%i==0 && denom%i==0)
+    factor=i;
+}
+num = num/factor;
+denom = denom/factor;
+}
+public String toString(){
+  
+return num + "/" + denom;
+}
+public int getNum(){
+    return num;
+}
+public int getDenom(){
+    return denom;
+}
+}

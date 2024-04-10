@@ -1,0 +1,416 @@
+import java.util.Scanner;
+import java.io.*;
+public class Project1
+{
+public static void main(String [] args) {
+    Scanner input = new Scanner (System.in);
+    System.out.println("Please input filename: ");
+    String filename = input.nextLine();
+    int choice=0;
+    do{
+      try{
+         File file = new File(filename);
+         Scanner inFile = new Scanner(file);
+         Scanner item = new Scanner (System.in);
+         Scanner option = new Scanner (System.in);
+         Scanner sell = new Scanner (System.in);
+         Scanner buy = new Scanner (System.in);
+         Scanner price = new Scanner (System.in);
+         String str;
+         int choice2=0;
+         int selling;
+         int buying;
+         int pricePer;
+         double balance=0;
+         double price1=0;
+         double price2=0;
+         double price3=0;
+         int quantity1=0;
+         int quantity2=0;
+         int quantity3=0;
+         String item1="";
+         String item2="";
+         String item3="";
+         String goAgain = "";
+         Scanner again = new Scanner(System.in);
+             balance = inFile.nextDouble();
+             item1 = inFile.next();
+             price1 = inFile.nextDouble();
+             quantity1 = inFile.nextInt();
+             item2 = inFile.next();
+             price2 = inFile.nextDouble();
+             quantity2 = inFile.nextInt();    
+             item3 = inFile.next();
+             price3 = inFile.nextDouble();
+             quantity3 = inFile.nextInt();
+    do{
+      
+             System.out.println("Current Balance: $" + balance);
+             System.out.println("1. " + item1 + "       " + "(" + quantity1 + " at $" + price1 + ")");
+             System.out.println("2. " + item2 + "      " + "(" + quantity2 + " at $" + price2 + ")");
+             System.out.println("3. " + item3 + "       " + "(" + quantity3 + " at $" + price3 + ")");
+             System.out.println("0. Exit");
+             System.out.println("please enter choice: ");
+             choice=item.nextInt();
+         if (choice==1){
+                   System.out.println("Current balance: $" + balance);
+                   System.out.println("Current quantity: " + quantity1);
+                   System.out.println("Current price: " + price1);
+                   System.out.println("1. Sell "+ item1);
+                   System.out.println("2. buy "+ item1);
+                   System.out.println("3. Change Price");
+                   System.out.println("0. return to main menu");
+                   System.out.println("Please enter a choice: ");
+             choice2=option.nextInt();
+             
+             if(choice2==1){
+                 System.out.println("Ammount to sell (current quantity: "+ quantity1 + "): ");
+                 selling=sell.nextInt();
+                 if (selling<=0)
+                 {
+                     System.out.println("you must enter a posative ammount");  
+                    }
+                 else{
+                 System.out.println("-----------------------------------");
+                 if ((quantity1 - selling)<0)
+                 {
+                     System.out.println("That's more than you have, do you want to continue?");
+                     
+                    }
+                    else{
+                 balance= balance + (selling * price1);
+                 quantity1= quantity1 - selling;
+                 PrintWriter pw = new PrintWriter(filename);
+                 pw.println(balance);
+                 pw.println("Lamps \t" + price1 + "\t" + quantity1);
+                 pw.println("Chairs \t" + price2 + "\t" + quantity2);
+                 pw.println("Desks \t" + price3 + "\t" + quantity3);
+                 pw.close();
+                       System.out.println("Current balance: $" + balance);
+                       System.out.println("Current quantity: " + quantity1);
+                       System.out.println("Current price: " + price1);
+                       System.out.println("1. Sell "+ item1);
+                       System.out.println("2. buy "+ item1);
+                       System.out.println("3. Change Price");
+                       System.out.println("0. return to main menu");
+                       System.out.println("Please enter a choice: ");
+                 choice2=option.nextInt();
+                while(goAgain.equalsIgnoreCase("Y"));{
+                     System.out.println("Thank you, goodbye");
+                }
+            }
+            }
+             else if(choice2==2){
+                 System.out.println("Ammount to buy: ");
+                 buying = buy.nextInt();
+                 System.out.println("Price per item: ");
+                 pricePer = price.nextInt();
+                 if (buying<=0)
+                 {
+                     System.out.println("you must enter a posative ammount");  
+                    }
+                 else if (pricePer<=0)
+                 {
+                     System.out.println("you must enter a posative price");
+                    }
+                 else{
+                 if ((balance - (buying * pricePer))<0)
+                 {
+                     System.out.println("That's more than you have, do you want to continue?");
+                    }
+                    else{
+                 balance= balance - (buying * pricePer);
+                 quantity1 = quantity1 + buying;
+                 PrintWriter pw = new PrintWriter(filename);
+                 pw.println(balance);
+                 pw.println("Lamps \t" + price1 + "\t" + quantity1);
+                 pw.println("Chairs \t" + price2 + "\t" + quantity2);
+                 pw.println("Desks \t" + price3 + "\t" + quantity3);
+                 pw.close();
+                       System.out.println("Current balance: $" + balance);
+                       System.out.println("Current quantity: " + quantity1);
+                       System.out.println("Current price: " + price1);
+                       System.out.println("1. Sell "+ item1);
+                       System.out.println("2. buy "+ item1);
+                       System.out.println("3. Change Price");
+                       System.out.println("0. return to main menu");
+                       System.out.println("Please enter a choice: ");
+                 choice2=option.nextInt();
+                }
+            }
+            }
+             else if(choice2==3){
+                 System.out.println("New Price: ");
+                 price1 = price.nextInt();
+                 if (price3<=0)
+                 {
+                    System.out.println("you must enter a posative price");  
+                    }
+                 else{
+                 PrintWriter pw = new PrintWriter(filename);
+                 pw.println(balance);
+                 pw.println("Lamps \t" + price1 + "\t" + quantity1);
+                 pw.println("Chairs \t" + price2 + "\t" + quantity2);
+                 pw.println("Desks \t" + price3 + "\t" + quantity3);
+                 pw.close();
+                       System.out.println("Current balance: $" + balance);
+                       System.out.println("Current quantity: " + quantity1);
+                       System.out.println("Current price: " + price1);
+                       System.out.println("1. Sell "+ item1);
+                       System.out.println("2. buy "+ item1);
+                       System.out.println("3. Change Price");
+                       System.out.println("0. return to main menu");
+                       System.out.println("Please enter a choice: ");
+                 choice2=option.nextInt();
+                }
+            }
+             else if (choice2 == (0))
+             {
+                 break;
+             }
+         }
+          else if (choice==2){
+                 System.out.println("Current balance: $" + balance);
+                 System.out.println("Current quantity: " + quantity2);
+                 System.out.println("Current price: " + price2);
+                 System.out.println("1. Sell "+ item2);
+                 System.out.println("2. buy "+ item2);
+                 System.out.println("3. Change Price");
+                 System.out.println("0. return to main menu");
+                 System.out.println("Please enter a choice: ");
+                     choice2=option.nextInt();
+                    
+                
+       
+         if(choice2==1){
+             System.out.println("Ammount to sell (current quantity: "+ quantity2 + "): ");
+             selling=sell.nextInt();
+             if (selling<=0)
+                 {
+                     System.out.println("you must enter a posative ammount");  
+                    }
+             else{
+             System.out.println("-----------------------------------");
+             if ((quantity1 - selling)<0)
+                 {
+                     System.out.println("That's more than you have, do you want to continue?");
+                    }
+                    else{
+             balance= balance + (selling * price2);
+             quantity2= quantity2 - selling;
+                 PrintWriter pw = new PrintWriter(filename);
+                 pw.println(balance);
+                 pw.println("Lamps \t" + price1 + "\t" + quantity1);
+                 pw.println("Chairs \t" + price2 + "\t" + quantity2);
+                 pw.println("Desks \t" + price3 + "\t" + quantity3);
+                 pw.close();
+                 System.out.println("Current balance: $" + balance);
+                 System.out.println("Current quantity: " + quantity2);
+                 System.out.println("Current price: " + price2);
+                 System.out.println("1. Sell "+ item2);
+                 System.out.println("2. buy "+ item2);
+                 System.out.println("3. Change Price");
+                 System.out.println("0. return to main menu");
+                 System.out.println("Please enter a choice: ");
+             choice2=option.nextInt();
+                
+            }
+         }
+         }
+             else if(choice2==2){
+                 System.out.println("Ammount to buy: ");
+                 buying = buy.nextInt();
+                 System.out.println("Price per item: ");
+                 pricePer = price.nextInt();
+                 if (buying<=0)
+                 {
+                     System.out.println("you must enter a posative ammount");  
+                    }
+                 else if (pricePer<=0)
+                 {
+                     System.out.println("you must enter a posative price");
+                    }
+                 else{
+                 if ((balance - (buying * pricePer))<0)
+                 {
+                     System.out.println("That's more than you have, do you want to continue?");
+                    }
+                    else{
+                 balance= balance - (buying * pricePer);
+                 quantity2 = quantity2 + buying;
+                 PrintWriter pw = new PrintWriter(filename);
+                 pw.println(balance);
+                 pw.println("Lamps \t" + price1 + "\t" + quantity1);
+                 pw.println("Chairs \t" + price2 + "\t" + quantity2);
+                 pw.println("Desks \t" + price3 + "\t" + quantity3);
+                 pw.close();
+                 System.out.println("Current balance: $" + balance);
+                 System.out.println("Current quantity: " + quantity2);
+                 System.out.println("Current price: " + price2);
+                 System.out.println("1. Sell "+ item2);
+                 System.out.println("2. buy "+ item2);
+                 System.out.println("3. Change Price");
+                 System.out.println("0. return to main menu");
+                 System.out.println("Please enter a choice: ");
+                 choice2=option.nextInt();
+                }
+            }
+         }
+             else if(choice2==3){
+                 System.out.println("New Price: ");
+                 price2 = price.nextInt();
+                 if (price3<=0)
+                 {
+                    System.out.println("you must enter a posative price");  
+                    }
+                 else{
+                 PrintWriter pw = new PrintWriter(filename);
+                 pw.println(balance);
+                 pw.println("Lamps \t" + price1 + "\t" + quantity1);
+                 pw.println("Chairs \t" + price2 + "\t" + quantity2);
+                 pw.println("Desks \t" + price3 + "\t" + quantity3);
+                 pw.close();
+                 System.out.println("Current balance: $" + balance);
+                 System.out.println("Current quantity: " + quantity2);
+                 System.out.println("Current price: " + price2);
+                 System.out.println("1. Sell "+ item2);
+                 System.out.println("2. buy "+ item2);
+                 System.out.println("3. Change Price");
+                 System.out.println("0. return to main menu");
+                 System.out.println("Please enter a choice: ");
+                 choice2=option.nextInt();
+                }
+            }
+             else if (choice2 == (0))
+             {
+                 break;
+             }
+           }
+            
+      
+        else if (choice==3){
+                   System.out.println("Current balance: $" + balance);
+                   System.out.println("Current quantity: " + quantity3);
+                   System.out.println("Current price: " + price3);
+                   System.out.println("1. Sell "+ item3);
+                   System.out.println("2. buy "+ item3);
+                   System.out.println("3. Change Price");
+                   System.out.println("0. return to main menu");
+                   System.out.println("Please enter a choice: ");
+                   choice2=option.nextInt();
+         
+             if(choice2==1){
+                 System.out.println("Ammount to sell (current quantity: "+ quantity3 + "): ");
+                 selling=sell.nextInt();
+                 if (selling<=0)
+                 {
+                     System.out.println("you must enter a posative ammount");  
+                    }
+                 else{
+                 System.out.println("-----------------------------------");
+                 if ((quantity1 - selling)<0)
+                 {
+                     System.out.println("That would put you in debt");
+                    }
+                    else{
+                 balance= balance + (selling * price3);
+                 quantity1= quantity3 - selling;
+                 PrintWriter pw = new PrintWriter(filename);
+                 pw.println(balance);
+                 pw.println("Lamps \t" + price1 + "\t" + quantity1);
+                 pw.println("Chairs \t" + price2 + "\t" + quantity2);
+                 pw.println("Desks \t" + price3 + "\t" + quantity3);
+                 pw.close();
+                       System.out.println("Current balance: $" + balance);
+                       System.out.println("Current quantity: " + quantity3);
+                       System.out.println("Current price: " + price3);
+                       System.out.println("1. Sell "+ item3);
+                       System.out.println("2. buy "+ item3);
+                       System.out.println("3. Change Price");
+                       System.out.println("0. return to main menu");
+                       System.out.println("Please enter a choice: ");
+                 choice2=option.nextInt();
+                }
+            }
+         }
+         }
+             else if(choice2==2){
+                 System.out.println("Ammount to buy: ");
+                 buying = buy.nextInt();
+                 System.out.println("Price per item: ");
+                 pricePer = price.nextInt(); 
+                if (buying<=0)
+                 {
+                     System.out.println("you must enter a posative ammount");  
+                    }
+                 else if (pricePer<=0)
+                 {
+                     System.out.println("you must enter a posative price");
+                    }
+                 else{
+                 if ((balance - (buying * pricePer))<0)
+                 {
+                     System.out.println("That is more than you have");
+                    }
+                    else{
+                 System.out.println("Price per item: ");
+                 pricePer = price.nextInt();
+                 balance= balance - (buying * pricePer);
+                 quantity3 = quantity3 + buying;
+                 PrintWriter pw = new PrintWriter(filename);
+                 pw.println(balance);
+                 pw.println("Lamps \t" + price1 + "\t" + quantity1);
+                 pw.println("Chairs \t" + price2 + "\t" + quantity2);
+                 pw.println("Desks \t" + price3 + "\t" + quantity3);
+                 pw.close();
+                       System.out.println("Current balance: $" + balance);
+                       System.out.println("Current quantity: " + quantity3);
+                       System.out.println("Current price: " + price3);
+                       System.out.println("1. Sell "+ item3);
+                       System.out.println("2. buy "+ item3);
+                       System.out.println("3. Change Price");
+                       System.out.println("0. return to main menu");
+                       System.out.println("Please enter a choice: ");
+                 choice2=option.nextInt();
+                }
+               }
+            }
+             else if(choice2==3){
+                 System.out.println("New Price: ");
+                 price3 = price.nextInt();
+                 if (price3<=0)
+                 {
+                    System.out.println("you must enter a posative price");  
+                    }
+                 else{
+                 PrintWriter pw = new PrintWriter(filename);
+                 pw.println(balance);
+                 pw.println("Lamps\t" + price1 + "\t" + quantity1);
+                 pw.println("Chairs\t" + price2 + "\t" + quantity2);
+                 pw.println("Desks\t" + price3 + "\t" + quantity3);
+                 pw.close();
+                       System.out.println("Current balance: $" + balance);
+                       System.out.println("Current quantity: " + quantity3);
+                       System.out.println("Current price: " + price3);
+                       System.out.println("1. Sell "+ item3);
+                       System.out.println("2. buy "+ item3);
+                       System.out.println("3. Change Price");
+                       System.out.println("0. return to main menu");
+                       System.out.println("Please enter a choice: ");
+                 choice2=option.nextInt(); 
+                }
+                }
+            
+             else if (choice2 == (0))
+             {
+                 break;
+             }
+    }while(choice2!=(0));
+         choice2=69;
+         inFile.close();
+  }catch (IOException e){
+              System.out.println("File not found");
+            }
+}while(choice!=(0));
+}
+}

@@ -1,0 +1,116 @@
+
+/**
+ * ###### #### ########## ##### ## ###### ###.
+ * 
+ * @###### (####### #####) 
+ * @####### (#.#)
+ */
+public class AMPEL
+{
+    private LAMPE l1;                           
+    private LAMPE l2;                           
+    private LAMPE l3;                           
+
+    private enum Zustand{aus,gruen,gelb,rot,gelbrot}
+    private Zustand zustand;                    
+    /**
+     * Ampel wir aus 3 LAMPE'n aufgebaut.
+     */
+    public AMPEL(){
+        char ausrichtung = 's';
+        zustand = Zustand.aus;
+
+        l1 = new LAMPE ();
+        l1.PositionSetzen(1, 1);
+        l1.FarbeSetzen("schwarz");
+
+        l2 = new LAMPE ();
+        l2.PositionSetzen(1, 2);
+        l2.FarbeSetzen("schwarz");
+
+        l3 = new LAMPE ();        
+        l3.PositionSetzen(1, 3);
+        l3.FarbeSetzen("schwarz");
+    }
+
+    /**
+     * Diese Methode wird benutzt um  die AMpel richtig auszurichten.
+     * @param x ist die x-Koordinate der obersten Lampe(gruen)
+     * @param y ist die y-Koordinate der obersten Lampe(gruen)
+     * @param ausrichtung ist die HImmelsrichtung der Ampel ('s','n','w'.'o')
+     */
+    public void Ausrichten(int x,int y,char ausrichtung){
+        if (ausrichtung == 's'){
+            l1.PositionSetzen(x, y);
+            l2.PositionSetzen(x, y+1);
+            l3.PositionSetzen(x, y+2);
+        }
+        else if (ausrichtung == 'w'){
+            l1.PositionSetzen(x, y);
+            l2.PositionSetzen(x-1, y);   
+            l3.PositionSetzen(x-2, y);
+        }
+        else if (ausrichtung == 'n'){
+            l1.PositionSetzen(x, y);
+            l2.PositionSetzen(x, y-1);      
+            l3.PositionSetzen(x, y-2);
+        }
+        else if (ausrichtung == 'o'){
+            l1.PositionSetzen(x, y);
+            l2.PositionSetzen(x+1, y);      
+            l3.PositionSetzen(x+2, y);
+        }
+        zustand = Zustand.aus;
+
+    }
+
+    /**
+     * Wird genutzt um pausen zu machen.
+     * @param millisekunde = in millisekunde angegeben
+     */
+    private void pause(int millisekunden){
+        try {
+            Thread.sleep(millisekunden);                 
+        } catch(InterruptedException e) {
+            System.out.println("fehler");
+        } 
+    }
+
+    /**
+     * Bringt Ampel zum Schalten.
+     */
+    public void schalten()
+    {
+        if(zustand == Zustand.aus){
+            l1.FarbeSetzen("schwarz");
+            l2.FarbeSetzen("schwarz");
+            l3.FarbeSetzen("schwarz");
+            zustand = Zustand.gruen;
+        }
+        else if(zustand == Zustand.gruen){
+            l1.FarbeSetzen("schwarz");
+            l2.FarbeSetzen("schwarz");
+            l3.FarbeSetzen("gruen");
+            zustand = Zustand.gelb;
+        }
+        else if(zustand == Zustand.gelb){
+            l1.FarbeSetzen("schwarz");
+            l2.FarbeSetzen("gelb");
+            l3.FarbeSetzen("schwarz");
+            zustand = Zustand.rot; 
+        }
+        else if(zustand == Zustand.rot){
+            l1.FarbeSetzen("rot");
+            l2.FarbeSetzen("schwarz");
+            l3.FarbeSetzen("schwarz");
+            zustand = Zustand.gelbrot;
+        }
+        else if(zustand == Zustand.gelbrot){
+            l1.FarbeSetzen("schwarz");
+            l2.FarbeSetzen("gelb");
+            l3.FarbeSetzen("schwarz");
+            zustand = Zustand.gruen;
+        }
+    }   
+}
+}

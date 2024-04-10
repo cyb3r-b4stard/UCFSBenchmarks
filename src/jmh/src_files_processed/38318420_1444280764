@@ -1,0 +1,255 @@
+
+/**
+ * ##### # ########### ## ##### ########### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import java.io.*;
+import java.util.*;
+import java.lang.String;
+public class StudentList
+{
+  
+    private ArrayList<Student> objStudent;
+    private ArrayList<Subject> objSubject;
+    private SubjectList objSubjectList;
+    private Validation objValidation;
+    private static final String defaultFile = "default.txt";
+    private int totalStudent = 0;
+
+    /**
+     * Constructor for objects of class StudentList
+     */
+    public StudentList()
+    {
+        objStudent = new ArrayList<>(); 
+        objSubjectList = new SubjectList;
+        objSubject = new ArrayList<>();
+        objValidation = new Validation();
+        objSubjectList.subjectInitialisation ();
+    }
+  
+   
+    public void subjectInitialisation ()
+    {
+        objSubject.add(new Subject( "Computing"));
+        objSubject.add(new Subject( "Maths"));
+        objSubject.add(new Subject( "English"));
+    }
+    
+    
+
+    /**
+    * Build up a list of default responses from which we can pick
+    * if we don’t know what else to say.
+    */
+    public void loadInputFile()
+    {
+            int countRecord = 0;
+            try 
+            {
+                Scanner scInputFile = new Scanner(new FileReader("default.txt"));
+                String response;
+                while(scInputFile.hasNextLine())
+                {
+                    response = scInputFile .nextLine().trim();
+                    String[] temp = response.split(",");
+                    String name = temp[0];
+                    String phoneNum = temp[1];
+                    ArrayList<String> inputLine = new ArrayList<String>();
+                    int count = temp.length;
+                    for( int i = 2; i< count; i++)
+                    {
+                        inputLine.add(temp[i]);
+                    }
+                    objStudent.add(new Student(name,phoneNum,inputLine));
+                    countRecord++;
+                }
+                scInputFile.close();
+                System.out.println(countRecord + " has been added from file student.txt");
+            }
+            catch(FileNotFoundException e)
+            {
+                System.err.println("Unable to open " + defaultFile);
+            }
+            catch(IOException e)
+            {
+                System.err.println("A problem was encountered reading " + defaultFile);
+            }
+                
+    }
+    
+    public void writeOutputToFile()
+    {
+        try 
+        {
+            PrintWriter outputFile = new PrintWriter(defaultFile);
+                       
+            for(Student studentInfo : objStudent)
+                outputFile.println(studentInfo.getDetail());
+            outputFile.close();
+        }
+        catch (IOException e) 
+        {
+            System.err.println("Error: " + e.getMessage());
+        }
+    }
+    
+    public void setNewStudent(String name,String phoneNum,ArrayList<String> subject)
+    {
+            objStudent.add(new Student(name,phoneNum,subject));
+    }
+
+    public void setDisplay()
+    {
+        if( objStudent.isEmpty())
+        {
+        System.out.println("No records found ");
+        } 
+        else
+        {
+            System.out.println("Below are required details : ");
+            for(Student student : objStudent)
+            {
+                student.displayDetail();
+            }
+        }
+        System.out.println();
+    }
+    
+    /*(public void searchByName(String name)
+    {
+         for(Student student : objStudent)
+        {
+            String studentName = student.getName();
+            if (studentName.toUpperCase().equals(name.toUpperCase()))
+            {
+                int index = objStudent.indexOf(student);
+                System.out.println("Student found. Below are student details:");
+                Student objStudentDetail = objStudent.get(index);
+                objStudentDetail.displayDetail();
+                break;
+            }
+        }
+    }*/
+    public void searchByName(String name)
+    {
+        boolean loopBreak = false;
+        boolean flagResult = false;
+        int loopCount = 0;
+        while( objStudent.size() > loopCount && loopBreak == false)
+        {
+            
+            String studentName = objStudent.get(loopCount).getName();
+            if (studentName.toUpperCase().equals(name.toUpperCase()))
+            {
+                int index = objStudent.indexOf(objStudent);
+                System.out.println("Student found. Below are student details:");
+                Student objStudentDetail = objStudent.get(loopCount);
+                objStudentDetail.displayDetail();
+                loopBreak = true;
+                flagResult = true;
+            }
+            loopCount++;
+        }
+        if (flagResult == false)
+        {
+            System.out.println("Invalid Name. " + name + " does not exist in our database");
+        }
+    }
+    
+    public void searchBySubject(String subject)
+    {
+        boolean flagResult = false; 
+        boolean flagSubjectAvailable = false;
+        for(Subject tempSubject : objSubject)
+        {
+            String studentSubject = tempSubject.getSubjectName();
+            if (studentSubject.toUpperCase().equals(subject.toUpperCase()))
+            
+                flagSubjectAvailable = true;
+            
+        }
+       /* for(Student student : objStudent)
+        {
+            ArrayList<String> studentSubject = student.getSubject();
+           /* if (studentSubject.toUpperCase().equals(subject.toUpperCase()))
+            {
+                int index = objStudent.indexOf(student);
+                Student objStudentDetail = objStudent.get(index);
+                objStudentDetail.displayDetail();
+                flagResult = true;
+            }
+            
+        }
+        if (flagResult == false && flagSubjectAvailable == false)
+        
+            System.out.println("Invalid subject. " + subject + " does not exist in our database");
+        
+        else if(flagResult == false && flagSubjectAvailable == true)
+        
+            System.out.println("Sorry. No record found for " + subject );*/
+        
+    }
+    
+    
+    public void deleteStudent(String name)
+    {
+        boolean flagResult = false; 
+        for(Student student : objStudent)
+        {
+            String studentName = student.getName();
+            if (studentName.toUpperCase().equals(name.toUpperCase()))
+            {
+                int index = objStudent.indexOf(student);
+                System.out.println("Student details are below which you want to delete:");
+                Student objStudentDetail = objStudent.get(index);
+                objStudentDetail.displayDetail();
+                System.out.println("Are you sure you want to delete above student? (press Y for yes)");
+                Scanner scInput = new Scanner(System.in);
+                if ( scInput.nextLine().toLowerCase().charAt(0) == 'y' || scInput.nextLine().toLowerCase().charAt(0) == 'Y')
+                {
+                    objStudent.remove(index);
+                    flagResult = true;
+                    System.out.println("Student is deleted");
+                    break;
+                }
+                else
+                {
+                   System.out.println("No records deleted"); 
+                   flagResult = true;
+                }
+            }
+        }
+        if (flagResult == false)
+        {
+            System.out.println("Invalid name. " + name + " does not exist in our database");
+            System.out.println("No records deleted");
+        }
+    }
+    public int searchSubject(String subjectName)
+    {
+         for(Subject subject : objSubject)
+        {
+            
+            String studentSubject = subject.getSubjectName();
+            if (studentSubject.toUpperCase().equals(subjectName.toUpperCase()))
+                return 0;
+        }
+        return 1;
+    }
+    
+     public boolean searchName(String name)
+    {
+         for(Student student : objStudent)
+        {
+            String studentName = student.getName();
+            if (studentName.toUpperCase().equals(name.toUpperCase()))
+            
+                return false;
+            
+        }
+        return true;
+    }
+}

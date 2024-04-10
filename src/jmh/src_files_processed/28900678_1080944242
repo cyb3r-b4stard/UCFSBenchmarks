@@ -1,0 +1,160 @@
+import acm.graphics.*;
+import acm.program.*;
+import acm.gui.*; 
+import acm.util.*; 
+import acm.io.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.applet.*;
+
+/**
+ * #### #####
+ * ##### ######### ### #### ### ########### (#### ####!)
+ * @###### #### ##### ######
+ * @####### ####/##/##
+ */
+public class Game extends KeyAdapter
+{
+    private int keyPressed; 
+    private FlappyWorld w;
+    private GImage b;  
+    private final int limit;
+    private static final int bj = 30;
+    private final static int cs = 50;
+
+    private GImage[][]map = { 
+            { null, null, null, null, null, ob(), null, null, null, ob(), null, null, null, ob() },
+            { null, null, null, null, null, ob(), null, null, null, ob(), null, null, null, ob() },
+            { null, null, null, null, null, ob(), null, null, null, null, null, null, null, ob() },
+            { null, null, null, null, null, ob(), null, null, null, null, null, null, null, ob() },
+            { null, null, null, null, null, null, null, null, null, null, null, null, null, ob() },
+            { null, null, null, null, null, null, null, null, null, ob(), null, null, null, null },
+            { null, null, null, null, null, ob(), null, null, null, ob(), null, null, null, null },
+            { null, null, null, null, null, ob(), null, null, null, ob(), null, null, null, ob() },
+            { null, null, null, null, null, ob(), null, null, null, ob(), null, null, null, ob() },
+            { null, null, null, null, null, ob(), null, null, null, ob(), null, null, null, ob() },
+            { null, null, null, null, null, ob(), null, null, null, ob(), null, null, null, ob() },
+            { null, null, null, null, null, ob(), null, null, null, ob(), null, null, null, ob() }
+        };
+    private int nl;
+    private int nc;
+    private int p;
+    private boolean e;
+
+    private static GImage ob()
+    {
+        GImage img = new GImage("wall.jpg");
+        img.setSize(cs, cs);
+        return img;
+    }
+
+    public Game(FlappyWorld world)
+    {
+        w = world;
+        this.keyPressed = 0;
+        this.b = new GImage("flying-bird-icon.png");
+        this.b.scale(0.4);
+        this.limit = (int)w.getGCanvas().getHeight() - (int)this.b.getHeight();
+        this.nl = this.map.length;
+        this.nc = this.map[0].length;
+        this.p = 0;
+        this.e = false;
+        w.waitForClick();
+        w.add(this.b, 100, 100);
+    }
+
+    public void start()
+    {
+        while (!this.eGame())
+        {
+            w.pause(15);
+            this.showGameState();
+            this.changeGameState();
+        }
+    }
+
+    public void keyPressed()
+    {
+        this.keyPressed++;
+    }
+
+    private boolean eGame()
+    {
+        return this.e;
+    }
+
+    private void showGameState()
+    {
+        this.showMap();
+    }
+
+    private void getInput()
+    {
+    }
+
+    private void changeGameState()
+    {
+        int jump = bj * this.keyPressed;
+        if (this.keyPressed > 0 && this.b.getY() > jump)
+        { 
+            this.b.move(0, -jump);
+        }
+        else if (this.b.getY() < this.limit)
+        {
+            this.b.move(0, 1);
+        }
+        
+        int countKeyPressed = 0;
+        double  = w.getGCanvas().getHeight();
+        double canvasX = w.getGCanvas().getWidth();
+        if(this.keyPressed > 0 )
+        {
+            countKeyPressed = countKeyPressed + this.keyPressed;
+            GLabel label = new GLabel("OI", canvasX + 50, canvasY);
+            w.add(label);
+        }
+
+        this.keyPressed = 0;
+        this.changep();
+        this.testColision();
+    }
+    
+    private void testColision()
+    {
+    }
+
+    private void showMap()
+    {
+        for(int line = 0; line < map.length; line++)
+        {
+            int pos = -this.p / cs % this.nc;
+            for(int col = 0; col < this.nc; col++)
+            {
+                if (map[line][pos] != null)
+                {
+                    double x = this.p + col * cs;
+                    w.add(map[line][pos], x, line * cs);
+                }
+                pos = Game.incCircular(col, this.nc);
+            }
+        }
+    }
+
+    private static int incCircular(int i, int module)
+    {
+        return (i + 1) % module;
+    }
+
+    private void changep()
+    {
+        if (-this.p == this.nc * cs)
+        {
+            this.p = 0;
+        }
+        else
+        {
+            this.p--;
+        }   
+    }
+}

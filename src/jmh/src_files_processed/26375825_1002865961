@@ -1,0 +1,586 @@
+
+import java.util.Random;
+
+/**
+ * ##### ######## ### ###### ##### 
+ * 
+ */
+public class MemoryGameModel implements MemoryGameModelInterface {
+    
+    /*
+     * Private Variables
+     */
+    private final Random random = new Random();
+    /* Players are numbered from 0 to 1
+     *You will update this value when the turn passes to the other  player, which
+     * in general is after a player makes their second choice.
+     * You will use this value when a match is made, to record who got credit for the match.
+     */    
+    private int currentPlayer = 0;
+
+    /* Index of the most recent first and second picks.
+     * The game interface (which you are not responsible for) uses
+     * these in determining what is displayed.  Your game logic uses
+     * these when determining whether a second card chosen matches the
+     * first card.
+     * At the beginning of a game these should both be set to -1.
+     * After each choice is made, one of these should be updated
+     * to record that choice.
+     */
+    private int firstPick = -1;
+    private int secondPick = -1;
+    /* Index of the card on the table picked first.
+     * Meaningful only when isFirstPick is false.
+     * Note:  the only values this variable should ever have are the
+     * constants STATE_NOT_PLAYING (no game is being played),
+     * STATE_FIRST_PICK (while waiting on a player's first choice), and
+     * STATE_SECOND_PICK (while waiting on a player's second choice)
+     */
+    private int gameState = STATE_NOT_PLAYING;
+    private int cardCount;
+    /*
+     * Parallel arrays indexed by card position
+     *
+     * These arrays contain various information about each position on the board.
+     */
+    private int[] cardValues;
+    /* true if the card is face-up, false otherwise
+     * All cards start the game face-down.
+     * A matched pair remains face-up for the duration of the game.
+     * Finally, the cards a player chooses remain face-up until the next player
+     * makes their first choice, in order to allow both players to see them
+     * before they are turned down again.
+     */ 
+    private boolean[] faceUp;
+    private boolean[] hasMatched;
+    /* Player # who successfully matched this card
+     * This value is meaningless if the card has not been matched, so the hasMatched array
+     * should probably be checked before this one.
+     */
+    private int[] whoMatched;
+    
+    private int nOoFTurns;
+    private String quotes[] = {"In a world where so much happens through a computer\nscreens, making a meal by hand, touching the raw materials, feeling your way through a recipe, \ntasting, adjusting, engaging all the senses, can be a soothing release.\n\t...Hint...Hint...","Holding on to anger is like drinking poison/nand expecting the other person to die.", "Just keep flipping...", "Happiness never decreases by being shared.", "If you're still flipping, you have not failed.", "It will all be revealed in due time.", "Pause for a moment and ask yourself:\nAm I running away from something?", "Accept that sometimes it is defeat that advances a person's character.", "Don't work hard- be smart. Then work hard.", "Over-thinking will kill your happiness."};
+    /*
+     * Constructor
+     *
+     * The constructor will be invoked with the total number of cards on the board.
+     * You can assume the given number will be reasonable, which means it will be an
+     * even number, at least 4 and not more than 26.
+     *
+     * This constructor must initialize instance variables with reasonable values.
+     * This includes creating arrays of the correct size for number of cards used in
+     * the game, which is given to the constructor as an argument.
+     *
+     * You may not use a constant value for the number of cards on the board!  This
+     * isn't as hard as it may sound.  When you're tempted to use a constant, look
+     * for a variable to use instead.  If that variable isn't initialized yet, look
+     * for a reason why.
+     *
+     * Hint:  Most of the work that the constructor needs to do, will happen for every
+     * new game.  If you implement the method newGame before the constructor, and
+     * use it here, this will be much easier to implement.
+     */
+
+    public MemoryGameModel(int numberOfCards) {
+        this.cardCount = numberOfCards;
+        newGame(numberOfCards);
+    }
+   
+    /*
+     * Accessors
+     * ie., Getters and setters
+     *
+     * These should all be trivial to implement, especially given
+     * that this class doesn't require any setters (mutators).
+     *
+     * Each of these should return the correct value, which may  depend on a given
+     * index argument.
+     */
+
+    public int getFirstPick() { 
+        return firstPick;
+    }
+
+    public int getSecondPick() {  
+        return secondPick;
+
+    }
+
+    public boolean getHasMatched(int idx) {
+        if(hasMatched[idx] == true){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public int getCardCount() {
+        return cardCount;
+    }
+
+    public boolean isFaceUp(int idx) { 
+        if (faceUp[idx] == true){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+
+    public int getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public int getGameState() {
+        return gameState;
+    }
+
+    public int getCardValue(int idx) {
+        return cardValues[idx];
+    }
+
+    /*
+     * Some convenience methods and other simple methods
+     */
+
+    /* Given a player number, this method must return the number of cards that
+     * player has successfully matched.  You can devise a way to track this directly,
+     * but I recommend you calculate it using the values in the arrays hasMatched[]
+     * and whoMatched[].
+     */
+
+    public int getCardsMatched(int player) {
+        int numberCardsMatched = 0;
+        for(int x =0; x<whoMatched.length; x++){
+            if(hasMatched[x] == true && whoMatched[x] == player){
+                numberCardsMatched++;
+            }
+        }
+        return numberCardsMatched;
+    }
+
+    /* Return true if, based on the game state, the game has ended, which
+     * happens when all cards have been matched.
+     * This method cannot rely on the game state tracked in the instance variable
+     * gameState.  Rather, this method will be used later when deciding how to
+     * update that instance variable.
+     */
+
+    private boolean isGameOver() {
+
+        for(int y = 0; y < hasMatched.length;y++){
+            if(hasMatched[y] == false){
+                return false;
+            }
+        }
+        return true;
+
+    }
+
+    /* When a player's turn is over, the turn passes to the next player.
+     * This method updates the instance variable currentPlayer to
+     * reflect that.
+     * (In a single player game, there is nothing to do here.)
+     */
+
+    private void changePlayer() {
+        if(currentPlayer == 0){
+            currentPlayer = 1;
+        }
+        else if(currentPlayer == 1){
+            currentPlayer = 0;
+        }
+
+    }
+
+    /*
+     * stopGame() must set the gameState to the right value.
+     * This method should not automatically start a new game,
+     * and should leave the board and scoring information intact,
+     * because the interface code may still refer to it for
+     * display.
+     */
+    public void stopGame() {
+        gameState = STATE_NOT_PLAYING;
+    }
+
+    /*
+     * Convenience method to test if an int is odd
+     */
+    private boolean isOdd(int val) {
+        return ! isEven(val);
+    }
+
+    /*
+     * Convenience method to test if an int is even
+     */
+    private boolean isEven(int val) {
+        return (val % 2) == 0;
+    }
+
+    /*
+     * Shuffle any array of ints
+     * This modifies the given array, and has no return value.
+     * This is public, so the user interface can make use of it also.
+     *
+     * This method is provided to you, so you don't need to change this.
+     */
+    public void shuffleIntArray(int arr[]) {
+        int size = arr.length;
+        int swap, temp;
+        for (int idx = size-1; idx > 0; idx--) {
+            swap = random.nextInt(idx);
+            temp = arr[swap];
+            arr[swap] = arr[idx];
+            arr[idx] = temp;
+        }
+    }
+
+    /*
+     * The remaining methods contain most of the interesting game logic.
+     * Except where noted, you should implement everything above first,
+     * then use those methods (and other helper methods you may think of)
+     * as building blocks to implement the methods below.
+     */
+
+
+    /* This method is called when a new game is started, to initialize
+     * the various parallel arrays that are indexed by card location.
+     * Each one should be allocated here.  Initializing the values is
+     * trivial for most of them:
+     * hasMatched[] - because no cards are matched yet
+     * whoMatched[] - same
+     * faceUp[] - no cards are face-up yet
+     *
+     * cardValues[] needs more attention.  Note that the number of
+     * cards on the board is not constant, but it's given as a constructor
+     * argument, should be stored in the instance variable cardCount,
+     * and cannot change during the game.  The values in cardValues[]
+     * must be integers from zero up, with each occurring twice.
+     */
+    private void initializeCards() {
+        faceUp = new boolean[cardCount];
+        hasMatched = new boolean[cardCount];
+        whoMatched = new int[cardCount]; 
+        cardValues = new int[cardCount];
+        
+        for (int x = 0; x < cardCount; x++){
+            hasMatched[x] = false;
+            faceUp[x] = false;
+            whoMatched[x] = -1;
+        }
+        for(int y = 0; y < (cardCount/2); y++){
+            cardValues[y] = y;
+            cardValues[cardCount-1-y] = y;
+        }
+    }
+
+    /*
+     * The user interface will call this method to start a new game.
+     *
+     * This method is responsible for initializing all necessary game state for a new game.
+     * It must work correctly for any even cardCount within the range (4 <= cardCount <= 28)
+     * Its responsibilities are...
+     *   store the number of cards being used (there is an instance variable for this),
+     *   set which player is to choose next (there is an instance variable for this),
+     *   randomize card placement, (there is an instance variable for this),
+     *   place all cards face-down (there is an instance variable for this),
+     *   set a flag indicating the next pick is a "first pick" (there is an instance variable for this),
+     *   set a flag indicating the game has begun (there is an instance variable for this)
+     *
+     * Optionally, you may check the input for validity
+     */
+
+    public void newGame(int numberOfCards) {
+        cardCount = numberOfCards;
+        initializeCards();
+        shuffleIntArray(cardValues);
+        gameState = STATE_FIRST_PICK;
+        currentPlayer = 0;
+        firstPick = -1;
+        secondPick = -1;
+
+    }
+  
+    
+    public boolean checkIfEqual(int fIRSTpICK, int sECONDpICK){
+        if( cardValues[fIRSTpICK]== cardValues[sECONDpICK]){
+            return true;
+        }
+        else{return false;}
+    }
+   
+    public boolean pickAnalyzer(int pick){
+    
+     if(isPositive(pick) == false ){
+        return false;
+    }
+    else if(pickInBounds(pick) == false){
+        return false;
+    } 
+    else if(checkIfFlipped(pick) == true){
+        return false;
+    }
+    return true;
+    }
+    public boolean checkIfFlipped(int indexOfDesiredCard){
+
+        if(faceUp[indexOfDesiredCard] == true) 
+        {return  true;}
+        else {return false;
+        }
+        
+    }
+    
+    public boolean getIsGameOverResult(){
+        boolean gameStatus = isGameOver();
+        return gameStatus;
+    }
+    public String checkWinner(){
+        /*Takes inputs from get cards matched and places them in two
+           local variables and compares them. Returns the proper victor and the card margin*/
+        String statement = "";
+        int firstChecker = getCardsMatched(currentPlayer);
+        changePlayer();
+        int secondChecker = getCardsMatched(currentPlayer);
+        if(firstChecker > secondChecker){
+            changePlayer();
+            statement = "Player " + (currentPlayer+1) + " wins by a margin of " + (firstChecker-secondChecker) + " cards.";
+        }
+        else if(firstChecker < secondChecker){
+
+            statement = "Player " + (currentPlayer+1) + " wins by a margin of " + (secondChecker - firstChecker) + " cards.";
+        }
+        else if(firstChecker ==secondChecker){
+
+            statement = "It's a tie. :(";
+        }
+        return statement;
+    }
+   
+
+    public void makeChoice(int cardIndex) {
+        if(gameState == STATE_FIRST_PICK){
+          
+                firstPick = cardIndex;
+                faceUp[cardIndex] = true;
+
+                gameState = STATE_SECOND_PICK;
+                
+            
+            
+
+        }
+        else  {
+               
+                secondPick = cardIndex;
+                faceUp[cardIndex] = true;
+                if(checkIfEqual(firstPick,secondPick) == true){
+                    System.out.println("CONGRATULATIONS! You got a match!\n");
+                    faceUp[firstPick] = true;
+                    faceUp[secondPick] = true;
+                    whoMatched[firstPick] = currentPlayer;
+                    whoMatched[secondPick] = currentPlayer;
+                    hasMatched[firstPick] = true;
+                    hasMatched[secondPick] = true;
+                    System.out.println("Player 1: " + getCardsMatched(0) + " cards\tPlayer 2: " + getCardsMatched(1) + " cards" );
+                }
+                else{
+                    
+                    System.out.println("They are not a match.\n");
+                    
+                    faceUp[firstPick] = false;
+                    faceUp[secondPick] = false;
+                    changePlayer();
+                }
+             
+                
+                gameState = STATE_FIRST_PICK;
+                
+        }
+        
+        if (isGameOver() == true){ 
+            System.out.println(checkWinner());
+            gameState = STATE_NOT_PLAYING;
+            
+        }
+
+    }
+    /*
+     *
+     */
+    public void makeChoiceRelaxingMode(int cardIndex) {
+        if(gameState == STATE_FIRST_PICK){
+
+                firstPick = cardIndex;
+                faceUp[cardIndex] = true;
+
+                gameState = STATE_SECOND_PICK;
+               
+            
+
+        }
+        else  {
+
+                secondPick = cardIndex;
+                faceUp[cardIndex] = true;
+                if(checkIfEqual(firstPick,secondPick) == true){
+                    System.out.println("CONGRATULATIONS! You got a match!\n");
+                    faceUp[firstPick] = true;
+                    faceUp[secondPick] = true;
+                    whoMatched[firstPick] = currentPlayer;
+                    whoMatched[secondPick] = currentPlayer;
+                    hasMatched[firstPick] = true;
+                    hasMatched[secondPick] = true;
+                    System.out.println("Player " + (currentPlayer+1 )+" Total: " + getCardsMatched(0));
+                    nOoFTurns--;
+                    System.out.println("Turns remaining:" + nOoFTurns + "\n");
+                }
+                else{
+                    nOoFTurns;
+                    System.out.println("They are not a match.\nTurns remaining:" + nOoFTurns + "\n");
+                    faceUp[firstPick] = false;
+                    faceUp[secondPick] = false;
+                    System.out.println("Number of matched cards: " + getCardsMatched(currentPlayer));
+                }
+             
+                gameState = STATE_FIRST_PICK;
+        }
+        if(isGameOver() ==true){
+            System.out.println("You cleared the board in " +  nOoFTurns + " turns!");
+            gameState = STATE_NOT_PLAYING;
+        }   
+        
+    }
+    public void makeChoiceChallengeMode(int cardIndex) {
+        if(gameState == STATE_FIRST_PICK){
+
+                firstPick = cardIndex;
+                faceUp[cardIndex] = true;
+
+                gameState = STATE_SECOND_PICK;
+               
+            
+
+        }
+        else  {
+
+                secondPick = cardIndex;
+                faceUp[cardIndex] = true;
+                if(checkIfEqual(firstPick,secondPick) == true){
+                    System.out.println("CONGRATULATIONS! You got a match!\n");
+                    faceUp[firstPick] = true;
+                    faceUp[secondPick] = true;
+                    whoMatched[firstPick] = currentPlayer;
+                    whoMatched[secondPick] = currentPlayer;
+                    hasMatched[firstPick] = true;
+                    hasMatched[secondPick] = true;
+                    System.out.println("Player " + (currentPlayer+1 )+" Total: " + getCardsMatched(0));
+                    nOoFTurns--;
+                    System.out.println("Turns played:" + nOoFTurns + "\n");
+                }
+                else{
+                    nOoFTurns++;
+                    System.out.println("They are not a match.\nTurns played:" + nOoFTurns + "\n");
+                    faceUp[firstPick] = false;
+                    faceUp[secondPick] = false;
+                    System.out.println("Number of matched cards: " + getCardsMatched(currentPlayer));
+                }
+             
+                gameState = STATE_FIRST_PICK;
+        }
+        if(isGameOver() ==true){
+            System.out.println("You cleared the board in " +  nOoFTurns + " turns!");
+            gameState = STATE_NOT_PLAYING;
+        }   
+        
+    }
+    
+    
+    
+    public boolean pickInBounds(int indexOfDesiredCard){
+        int lengthOfArray = cardValues.length;
+        if(indexOfDesiredCard > lengthOfArray ){
+                return false;
+      }  
+      return true;
+    }
+    public boolean isPositive(int indexOfDesiredCard){
+        if(indexOfDesiredCard< 0){
+            return false;
+        }
+        return true;
+    }  
+    public String printCards(){
+        String x = " ";
+        String cardSystem = "";
+        for(int y = 0; y < cardCount; y++){
+            if(faceUp[y] == true){
+                x = "" + cardValues[y];
+                
+            }
+            cardSystem += (" |" + x + "| ");
+            x = " ";
+        }
+        return (cardSystem + "\nPlayer " + (currentPlayer+1) + "'s turn!");
+        
+    }
+    public String printCardsAfterChoice2(int int1, int int2){
+        String x = " ";
+        String cardSystem = "";
+        for(int y = 0; y < cardCount; y++){
+            if(faceUp[y] == true || y == int1 || y == int2 ){
+                x = "" + cardValues[y];
+                
+            }
+            cardSystem += (" |" + x + "| ");
+            x = " ";
+        }
+        return (cardSystem); 
+    }
+    public String printCardsRelaxingMode(){
+        int cardsInRow = 0;
+        String x = " ";
+        String cardSystem = "";
+        for(int y = 0; y < cardCount; y++){
+            if(faceUp[y] == true ){
+                x = "" + cardValues[y];
+                
+            }
+            cardSystem += (" |" + x + "| ");
+            cardsInRow++;
+            if(cardsInRow % 10 ==0){
+                cardSystem += "\n";
+            }
+            x = " ";
+        }
+        cardSystem+= "\n\n";
+        return (cardSystem);
+    }
+    public String printRelaxingModeCardsAfterChoice2(int int1, int int2){
+        int cardsInRow = 0;
+        String x = " ";
+        String cardSystem = "";
+        for(int y = 0; y < cardCount; y++){
+            if(faceUp[y] == true || y == int1 || y == int2 ){
+                x = "" + cardValues[y];
+                
+            }
+            cardSystem += (" |" + x + "| ");
+             cardsInRow++;
+            if(cardsInRow % 10 == 0){
+                cardSystem += "\n";
+            }
+            x = " ";
+        }
+        cardSystem += "\n"; 
+        return (cardSystem);
+    }
+    public String printAQuote(){
+        int x = random.nextInt(quotes.length);
+        return "\"" + quotes[x] + "\"\n" ;
+    }
+}

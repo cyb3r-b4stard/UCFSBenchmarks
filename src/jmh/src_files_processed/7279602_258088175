@@ -1,0 +1,95 @@
+
+/**
+ * #### ####### ###### ##### ## ###### # #### ##### ######
+ * 
+ */
+import bulletproof.*;
+import java.util.*;
+
+public class Manager {
+    private static ArrayList<String> list = new ArrayList<String>();
+    private static BPScanner kb = new BPScanner();
+
+    public static void main(String[] args) {
+        while (true) {
+            String input = kb.getMenuStringFromUser("List Manager", "Add", "Delete", "Modify", "Display", "Quit");
+
+            if (input.equals("Quit"))
+                break;
+
+            if (list.size() == 0){
+                System.out.println("Please add at least one item to your list first. ");break
+                input = kb.getMenuStringFromUser("List Manager", "Add", "Display", "Quit");
+            }
+
+            if (input.equals("Add")) {
+                add();
+            } 
+            if (input.equals("Display")) {
+                display();
+            }
+            if(input.equals("Delete")){
+                delete();
+            }
+            if(input.equals("Modify")){
+                modify();
+            }
+        }
+    }
+
+    public static boolean isValidName(String name){
+        boolean isVal = true;
+        char c;
+        for (int i = 0; i < name.length(); i++)
+        {
+            c = name.charAt(i);
+            if (!('A' <= c && c <= 'Z'
+                || 'a' <= c && c <= 'z'
+                || c == ' ')){
+                isVal = false;
+                break;
+            }
+        }
+        return isVal;
+    }
+
+    public static void add() {
+        String name = kb.getStringFromUser("Enter name: ");
+        while(!(isValidName(name))){
+            name = kb.getStringFromUser("Please enter a valid name with only letters and spaces: ");
+        }
+        list.add(name);
+    }
+
+    public static void display() {
+        System.out.println("\nList:");
+        for (int i=0; i < list.size(); i++) {
+            System.out.printf( i + 1 + ". " + list.get(i) + "\n" );
+        }
+        String input = kb.getStringFromUser("\nContinue (y/n)? ");              
+        if (input.startsWith("n")) System.exit(0);
+    }
+
+    public static void delete(){
+
+        for (int i=0; i < list.size(); i++) {
+            System.out.printf( i + 1 + ". " + list.get(i) + "\n" );
+        }
+        int index = kb.getIntegerFromUser("Enter index: ", 1, list.size());
+        list.remove(index-1);
+
+    }
+
+    public static void modify(){
+
+        for (int i=0; i < list.size(); i++) {
+            System.out.printf( i + 1 + ". " + list.get(i) + "\n" );
+        }
+        int indexToReplace = kb.getIntegerFromUser("Enter index you wish to replace: ", 1, list.size());
+        String newName = kb.getStringFromUser("Enter new name: ");
+        list.remove(indexToReplace-1);
+        list.add(indexToReplace-1, newName);
+
+    }
+
+}

@@ -1,0 +1,115 @@
+/**
+ * ##### ###### ######### #### ######## #########. ### ###
+ * ####### ####### ###### #### ### ####### ### ######### ### ### 
+ * ########## ########.
+ * 
+ * @######  ####### ######## ### ##### #. ######
+ * @####### ####.##.##
+ */
+public class Zeichnung
+{
+    private Quadrat box;
+
+    /**
+     * Erzeuge ein Exemplar der Klasse Zeichnung
+     */
+    public Zeichnung()
+    {
+
+    }
+
+    /**
+     * Zeichnet ein Quadrat aus Quadern auf den Bildschirm.
+     * Hierbei werden die Quader Zeilenweise gezeichnet.
+     * Die Farbe der einzelnen Quader wird zeilenweise geaendert.
+     * 
+     * @param groesse Anzahl der Quader in Breite und Hoehe des
+     *          zu zeichnenden Quadrats.
+     */
+    public void zeichneWhile(int groesse, char gestreift)
+    {
+        int yPosition = 0;
+        int xPosition = 0;
+        int dimension = 30;
+        String farbe;
+        switch (gestreift) { 
+            case 'h' :while(yPosition/dimension != groesse) {
+                box = new Quadrat();
+                farbe = gibFarbe(yPosition/dimension);
+                box.farbeAendern(farbe);
+                box.horizontalBewegen(xPosition);
+                box.vertikalBewegen(yPosition);
+                box.sichtbarMachen();
+                xPosition+=dimension;
+                if(xPosition/dimension == groesse) {
+                    xPosition = 0;
+                    yPosition+=dimension; 
+                }
+            }
+            case 'v' :while(yPosition/dimension != groesse) {
+                box = new Quadrat();
+                farbe = gibFarbe(yPosition/dimension);
+                box.farbeAendern(farbe);
+                box.horizontalBewegen(yPosition);
+                box.vertikalBewegen(xPosition);
+                box.sichtbarMachen();
+                xPosition+=dimension;
+                if(xPosition/dimension == groesse) {
+                    xPosition = 0;
+                    yPosition+=dimension; 
+                }
+            }
+        }
+    }
+
+    /**
+     * Zeichnet ein Quadrat aus Quadern auf den Bildschirm.
+     * Hierbei werden die Quader Zeilenweise gezeichnet.
+     * Die Farbe der einzelnen Quader wird zeilenweise geaendert.
+     * 
+     * @param groesse Anzahl der Quader in Breite und Hoehe des
+     *          zu zeichnenden Quadrats.
+     */
+    public void zeichneFor(int groesse, char gestreift)
+    {
+        int dimension = 30;
+        int x = 0;
+        int y = 0;
+        String farbe;
+        switch (gestreift) { 
+            case 'v' :
+                for(x=0 ; y/dimension != groesse; x+=dimension) {
+                box = new Quadrat();
+                farbe = gibFarbe(x/dimension);
+                box.farbeAendern(farbe);
+                box.horizontalBewegen(y);
+                box.vertikalBewegen(x);
+                box.sichtbarMachen();
+                if (x/dimension == groesse) {
+                    x=0;
+                y+=dimension
+            }
+            }
+        }
+    }
+
+
+    /**
+     * Gibt in Abhaengigkeit eines ganzzahligen Wertes eine 
+     * Farbe zurueck.
+     */
+    public String gibFarbe(int wert)
+    {
+        String farbe = "schwarz";
+
+        switch(wert%6) {
+            case 0 : farbe = "rot"; break;
+            case 1 : farbe = "schwarz"; break;
+            case 2 : farbe = "blau"; break;
+            case 3 : farbe = "gelb"; break;
+            case 4 : farbe = "gruen"; break;
+            case 5 : farbe = "lila"; break;
+        }
+        return farbe;
+    }
+}

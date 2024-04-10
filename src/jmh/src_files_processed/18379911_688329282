@@ -1,0 +1,557 @@
+import java.util.*;
+/**
+ * ##### ###### ### #'####### ## #### ### ####.
+ * 
+ * ## #### ###### ##### ## ##### ### ###### ### #####, ### ######## ## ### ### ## #### #### #### ## ######, ## ####### ## #### ##### ## #### ### ## ###### ## ####
+ * ### ######## ## #######, ## ##'# ###### #### ## ##### ## ### ##### ###### ## #####.
+ * 
+ */
+public class jeu implements Runnable
+{
+    static int carteTable[] = new int[7];
+    static int cartes[] = new int[52];
+    private boolean flop;
+    private boolean turn;
+    private boolean river; 
+    private boolean finDesTours;
+    private boolean difficulte;
+    static int nbJoueur = 4;
+    static int nbIA = nbJoueur-1; 
+    static int tapisIA [] = new int [nbJoueur];
+    private int miseIA [] = new int [nbJoueur];
+    static int carteUnIA [] = new int [nbJoueur];
+    static int carteDeuxIA [] = new int [nbJoueur]; 
+    static int typeMainIA [] = new int [nbJoueur]; 
+    private int miseMaxIA [] = new int [nbJoueur];
+    private boolean testRelance[] = new boolean [nbJoueur];
+    private int relanceIA[] = new int [nbJoueur];
+    private boolean testTapis[] = new boolean [nbJoueur];
+    private int potIntermediaire[] = new int [nbJoueur];
+    private int valeurMise[] = new int [nbJoueur]; 
+    private boolean couche[] = new boolean[nbJoueur];
+    static int smallBlind = 10;
+    static int bigBlind = 2*smallBlind;
+    private boolean firstRelance;
+    private int lastRelance = bigBlind;
+    private int miseEnJeu = 0;
+    
+    int n, i, v, e, a;
+    int tour; 
+    int miseMaxTable = 0; 
+    int tourComplet = 0;
+    String test = ""; 
+    private Thread processus = null;
+    
+        IA ia = new IA();
+        trouverMain TrouverMain = new trouverMain(); 
+        private Background affichage;
+    public jeu(Background affichage) {
+        this.affichage = affichage;
+    }
+      
+    public void init() {
+        int n;
+        /**
+         * Va initialiser les 52 cartes
+         */
+        i = 2;
+        v = 1;
+        for(n = 0; n<52;n++) {
+            if(i<14) {
+                cartes[n] = i*10+v;
+                i++; 
+            } else {
+                cartes[n] = i*10+v;
+                i = 2;
+                v++;
+            } 
+        } 
+        
+        for(n = 0; n<=6;n++) {
+            carteTable[n] = -33*n+1;
+        }
+        
+        if(tapisIA[0]==0) {
+            for(n = 0;n< nbJoueur;n++) {
+                tapisIA[n] = 500;
+            }
+        }
+        
+        for (n = 0;n<nbJoueur;n++) {
+            if(tapisIA[n] != 0) { 
+                carteUnIA[n] = initierCarte();
+                carteDeuxIA[n] = initierCarte();
+                if(carteDeuxIA[n] > carteUnIA[n]) {
+                    i = carteDeuxIA[n];
+                    carteDeuxIA[n] = carteUnIA[n];
+                    carteUnIA[n] = i; 
+                } else if (carteUnIA[n] == carteDeuxIA[n]) {
+                    typeMainIA[n] = (10000 + (int)(carteUnIA[n]/10))*10+2;
+                } 
+            }
+        }
+        affichage.afficherCarteIA(nbIA);
+        
+        affichage.afficherCarteJoueur(afficherValeurCarte(carteUnIA[0]/10),afficherCouleurCarte(carteUnIA[0]%10),afficherValeurCarte(carteDeuxIA[0]/10),afficherCouleurCarte(carteDeuxIA[0]%10));
+        
+        affichage.afficherMain("Vous avez "+afficherMain(typeMainIA[0]));
+        System.out.println("combien misez vous ?                        Votre Tapis: "+tapisIA[0]);
+        
+        String nomIA0 = String.valueOf(miseIA[0]);
+        String tapisIA0 = String.valueOf(tapisIA[0]);
+        if(nbIA == 1) {
+           affichage.setTapisNom(nomIA0, tapisIA0, nomIA(1), String.valueOf(tapisIA[1]));
+        }else if (nbIA == 2) {  
+           affichage.setTapisNom(nomIA0, tapisIA0, nomIA(1), String.valueOf(tapisIA[1]), nomIA(2),  String.valueOf(tapisIA[2]));
+        }else if (nbIA == 3) { 
+           affichage.setTapisNom(nomIA0, tapisIA0, nomIA(1), String.valueOf(tapisIA[1]), nomIA(2),  String.valueOf(tapisIA[2]), nomIA(3), String.valueOf(tapisIA[3]));
+        }
+    }
+    
+    public int initierCarte () {
+        int carte, n;
+        do{
+            n = (int)(Math.random()*52); 
+        } while(cartes[n] == -1);
+        carte = cartes[n];
+        cartes[n] = -1;
+        return carte;
+        
+    }
+      
+    public void miser(int testMise) {
+        int relanceMin;
+        if (!firstRelance){
+            relanceMin = bigBlind*2;
+        } else {
+            relanceMin = lastRelance;
+        }
+        if(testMise >= miseMaxTable || testMise >= miseMaxTable+relanceMin) {
+                
+            
+            this.miseMaxTable = testMise;
+            
+            for(n=0;n<nbJoueur;n++) {
+                miseMaxIA[n] = ia.miseMax(typeMainIA[n]/100000,carteUnIA[n], carteDeuxIA[n], tapisIA[n]);
+            
+                relanceIA[n] = ia.getRelanceIA(relanceMin, miseMaxIA[n], bigBlind, lastRelance, firstRelance, tapisIA[n], typeMainIA[n]/100000);
+            
+                testRelance[n] = ia.relance(miseMaxTable, typeMainIA[n]/10000, carteUnIA[n], carteDeuxIA[n], tapisIA[n], miseMaxIA[n] , bigBlind,carteTable[0],carteTable[1],carteTable[2],carteTable[3],carteTable[4],river, relanceIA[n]);
+                
+                testRelance[0] = false;
+                relanceIA[0] = 0;
+                miseMaxIA[0] = tapisIA[n];
+                /**if(testRelance[n]) {
+                    System.out.println(nomIA(n) +" va miser jusqu'à "+miseMaxIA[n]+" et relance de "+relanceIA[n]);
+                } else {
+                    System.out.println(nomIA(n) +" va miser jusqu'à "+miseMaxIA[n] +" et ne relance pas");
+                }*/
+            }
+            this.start("mise");
+        }
+        
+        
+    }
+    
+    public void choixFlopTurnRiver() {
+        if(!flop) {
+            flop = true;
+            flop();
+        }else if(!turn){ 
+            turn = true;
+            turn();
+        }else if(!river){
+            river = true;
+            river();
+        }else if(river && !finDesTours){
+            if(nbIA == 1) {
+                affichage.retournerCarte(afficherValeurCarte(carteUnIA[1]/10),afficherCouleurCarte(carteUnIA[1]%10),afficherValeurCarte(carteDeuxIA[1]/10),afficherCouleurCarte(carteDeuxIA[1]%10));
+            }
+            if(nbIA == 2) {
+                affichage.retournerCarte(afficherValeurCarte(carteUnIA[1]/10),afficherCouleurCarte(carteUnIA[1]%10),afficherValeurCarte(carteDeuxIA[1]/10),afficherCouleurCarte(carteDeuxIA[1]%10),afficherValeurCarte(carteUnIA[2]/10),afficherCouleurCarte(carteUnIA[2]%10),afficherValeurCarte(carteDeuxIA[2]/10),afficherCouleurCarte(carteDeuxIA[2]%10));
+            }
+            if(nbIA == 3) {
+                affichage.retournerCarte(afficherValeurCarte(carteUnIA[1]/10),afficherCouleurCarte(carteUnIA[1]%10),afficherValeurCarte(carteDeuxIA[1]/10),afficherCouleurCarte(carteDeuxIA[1]%10),afficherValeurCarte(carteUnIA[2]/10),afficherCouleurCarte(carteUnIA[2]%10),afficherValeurCarte(carteDeuxIA[2]/10),afficherCouleurCarte(carteDeuxIA[2]%10),afficherValeurCarte(carteUnIA[3]/10),afficherCouleurCarte(carteUnIA[3]%10),afficherValeurCarte(carteDeuxIA[3]/10),afficherCouleurCarte(carteDeuxIA[3]%10));
+            }
+            finDesTours = true;
+            resultats();
+        }
+    }
+    
+    public void check(int numJoueur) {
+        System.out.println(nomIA(numJoueur)+"Check");
+        miser(0);
+    }
+    
+    /** 
+     * Les 3 prochaines méthodes servent à mettre les cartes sur la table et à tester si les joueurs
+     * ont quelquechose
+     */
+    public void flop() {          
+        carteTable[0] = initierCarte();
+        
+        carteTable[1] = initierCarte();
+        
+        carteTable[2] = initierCarte();
+        
+        System.out.println("                                "+afficherValeurCarte(carteTable[0]/10)+"   "+afficherValeurCarte(carteTable[1]/10)+"   "+afficherValeurCarte(carteTable[2]/10));
+        
+        for(n=0;n<nbJoueur;n++) {
+            typeMainIA[n] = TrouverMain.testTypeMain(typeMainIA[n],carteUnIA[n], carteDeuxIA[n],carteTable[0],carteTable[1],carteTable[2],carteTable[3],carteTable[4]);  
+        }
+        affichage.afficherFlop(afficherValeurCarte(carteTable[0]/10),afficherCouleurCarte(carteTable[0]%10),afficherValeurCarte(carteTable[1]/10),afficherCouleurCarte(carteTable[1]%10),afficherValeurCarte(carteTable[2]/10),afficherCouleurCarte(carteTable[2]%10));
+        affichage.afficherMain("Vous avez "+afficherMain(typeMainIA[0]));
+    }    
+    public void turn(){
+        carteTable[3] = initierCarte();
+        
+         
+        System.out.println("                                "+afficherValeurCarte(carteTable[0]/10)+"   "+afficherValeurCarte(carteTable[1]/10)+"   "+afficherValeurCarte(carteTable[2]/10)+"   "+afficherValeurCarte(carteTable[3]/10));
+        
+        for(n=0;n<nbJoueur;n++) {
+            typeMainIA[n] = TrouverMain.testTypeMain(typeMainIA[n],carteUnIA[n], carteDeuxIA[n],carteTable[0],carteTable[1],carteTable[2],carteTable[3],carteTable[4]);  
+        }
+        affichage.afficherTurn(afficherValeurCarte(carteTable[3]/10),afficherCouleurCarte(carteTable[3]%10));
+        affichage.afficherMain("Vous avez "+afficherMain(typeMainIA[0])); 
+    }
+    public void river(){
+        carteTable[4] = initierCarte();
+         
+        System.out.println("                                "+afficherValeurCarte(carteTable[0]/10)+"   "+afficherValeurCarte(carteTable[1]/10)+"   "+afficherValeurCarte(carteTable[2]/10)+"   "+afficherValeurCarte(carteTable[3]/10)+"   "+afficherValeurCarte(carteTable[4]/10));
+        
+        for(n=0;n<nbJoueur;n++) {
+            typeMainIA[n] = TrouverMain.testTypeMain(typeMainIA[n],carteUnIA[n], carteDeuxIA[n],carteTable[0],carteTable[1],carteTable[2],carteTable[3],carteTable[4]);  
+        }
+        affichage.afficherRiver(afficherValeurCarte(carteTable[4]/10),afficherCouleurCarte(carteTable[4]%10));
+        affichage.afficherMain("Vous avez "+afficherMain(typeMainIA[0]));
+    }
+    
+    public void resultats() {
+        int quiBest=0;
+        int quiBest2=-1;
+        int quiBest3=-1;
+        int quiBest4=-1;
+        int nbBest= 1;
+        
+        System.out.println("Tu as "+ afficherMain(typeMainIA[0]));
+        
+        for(n=0;n<nbJoueur;n++){
+            System.out.println(nomIA(n)+" a "+ afficherMain(typeMainIA[n])); 
+            System.out.println("Les cartes de "+nomIA(n)+" : " + afficherValeurCarte(carteUnIA[n]/10) + " de "+afficherCouleurCarte(carteUnIA[n]%10)+" et " +afficherValeurCarte(carteDeuxIA[n]/10) + " de "+afficherCouleurCarte(carteDeuxIA[n]%10));
+            if(!couche[n]){
+                if(typeMainIA[n]/10 > typeMainIA[quiBest]/10){ 
+                    quiBest = n;
+                    quiBest2 = -1;
+                    quiBest3 = -1;
+                    quiBest4 = -1;
+                    nbBest = 1; 
+                } else if(typeMainIA[n]/10 == typeMainIA[quiBest]/10 && n != quiBest) {
+                    if(carteUnIA[n] > carteUnIA[quiBest]) { 
+                        quiBest = n;
+                        quiBest2 = -1;
+                        quiBest3 = -1;
+                        quiBest4 = -1;
+                        nbBest = 1;
+                    } else if (carteUnIA[n] == carteUnIA[quiBest]) {
+                        if(carteDeuxIA[n] > carteDeuxIA[quiBest]) { 
+                            quiBest = n;
+                            quiBest2 = -1;
+                            quiBest3 = -1;
+                            quiBest4 = -1;
+                            nbBest = 1;
+                        } else if (carteDeuxIA[n] == carteDeuxIA[quiBest] ) {
+                            nbBest += 1;
+                            if(quiBest2 == -1) {
+                                quiBest2 = n;
+                            } else if (quiBest3 == -1){
+                                quiBest3 = n;
+                            } else if (quiBest4 == -1) {
+                                quiBest4 = n;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        String resultat = "";
+        if(nbBest == 1) {
+            if(quiBest == 0) {
+                resultat = "Bravo ! vous avez gagné ! ";
+                tapisIA[0] += miseEnJeu;
+            } else {
+                resultat = "Perdu, c'est "+ nomIA(quiBest) +" qui gagne";
+                tapisIA[quiBest] +=miseEnJeu;
+            }
+        } else if(nbBest == 2) {
+            resultat = "Egalité entre "+nomIA(quiBest)+" et "+nomIA(quiBest2);
+            tapisIA[quiBest] += miseEnJeu/2;
+            tapisIA[quiBest2] += miseEnJeu/2;
+        } else if (nbBest == 3) {
+            resultat = "Egalité entre "+nomIA(quiBest)+", "+nomIA(quiBest2)+" et "+nomIA(quiBest3);
+            tapisIA[quiBest] += miseEnJeu/3;
+            tapisIA[quiBest2] += miseEnJeu/3;
+            tapisIA[quiBest3] += miseEnJeu/3;
+        } else if (nbBest == 4) {
+            resultat = "Egalité entre "+nomIA(quiBest)+", "+nomIA(quiBest2)+", "+nomIA(quiBest2)+" et "+nomIA(quiBest3);
+            tapisIA[quiBest] += miseEnJeu/4;
+            tapisIA[quiBest2] += miseEnJeu/4;
+            tapisIA[quiBest3] += miseEnJeu/4;
+            tapisIA[quiBest4] += miseEnJeu/4;
+        }
+        affichage.afficherResultat(resultat);
+    }
+   
+    
+    public String afficherValeurCarte (double n) {
+        String ecrire="";
+        if(n < 2) {ecrire = "Error afficherValeurCarte in jeu input too small ("+n+")";}
+        else if(n < 3)ecrire = "deux";
+        else if(n < 4)ecrire = "trois";
+        else if(n < 5)ecrire = "quatre";
+        else if(n < 6)ecrire = "cinq";
+        else if(n < 7)ecrire = "six";
+        else if(n < 8)ecrire = "sept";
+        else if(n < 9)ecrire = "huit";
+        else if(n < 10)ecrire = "neuf";
+        else if(n < 11)ecrire = "dix";
+        else if(n < 12)ecrire = "valet";
+        else if(n < 13)ecrire = "dame";
+        else if(n < 14)ecrire = "roi";
+        else if(n < 15)ecrire = "as";
+        else ecrire = "Error afficherValeurCarte in jeu input too big ("+n+")";
+        return ecrire;
+    }
+    
+
+    public String afficherCouleurCarte (int n) {
+        String ecrire="";
+        if(n == 1) {ecrire = "carreau";}
+        else if(n == 2){ecrire = "coeur";}
+        else if(n == 3){ecrire = "trefle";}
+        else if(n == 4){ecrire = "pique";}
+        else{ecrire = "Error afficherCouleurCarte in jeu input incorrect ("+n+")";}
+        return ecrire;
+    } 
+    
+    public String nomIA (int n) { 
+        String nom = "";
+        if(n==0)nom="vous";
+        else if(n==1)nom="Jean";
+        else if(n==2)nom="Jacques";
+        else if(n==3)nom="Goldman";
+        else if(n==4)nom="George";
+        else if(n==5)nom="Moustaki";
+        else nom="Error nomIA in jeu input incorrect ("+n+")";
+        return nom;
+    }
+   
+    public String afficherMain(double typeMain) {
+        int mainChiffre = (int)(typeMain/100000);
+        int couleur = (int)((typeMain%100)/10); 
+        typeMain = (int)(typeMain/10);
+        typeMain = typeMain%10000;
+        String mainEcrit = ""; 
+        if(mainChiffre == 0) 
+            mainEcrit = "rien";
+        else if (mainChiffre == 1)
+            mainEcrit = "une paire de "+afficherValeurCarte(typeMain);
+        else if (mainChiffre == 2)
+            mainEcrit = "une double paire de "+afficherValeurCarte((int)(typeMain/100))+" et de "+afficherValeurCarte((int)(typeMain%100));
+        else if (mainChiffre== 3)
+            mainEcrit = "un brelan de "+afficherValeurCarte(typeMain);
+        else if (mainChiffre == 4)
+            mainEcrit = "une quinte de "+afficherValeurCarte(typeMain);
+        else if (mainChiffre == 5)
+            mainEcrit = "une couleur de "+afficherCouleurCarte(couleur);
+        else if (mainChiffre == 6)
+            mainEcrit = "un full aux "+afficherValeurCarte((int)(typeMain/100))+" par les "+afficherValeurCarte((int)(typeMain%100));
+        else if (mainChiffre == 7)
+            mainEcrit = "un carré de "+afficherValeurCarte(typeMain);
+        else if (mainChiffre == 8)
+            mainEcrit = "un quinte flush de "+afficherValeurCarte(typeMain);
+        else if (mainChiffre == 8 && typeMain == 14)
+            mainEcrit = "un quinte flush royal";
+        else System.out.println("Error afficherMain in jeu input incorrect ("+mainChiffre+" "+typeMain+" "+couleur+")");
+        return mainEcrit;
+    }
+    
+    public void miseJoueurPlus(int miseJoueur) {
+        miseIA[0] +=  miseJoueur;
+        
+        String nomIA0 = String.valueOf(miseIA[0]);
+        String tapisIA0 = String.valueOf(tapisIA[0]);
+       if(nbIA == 1) {
+            affichage.setTapisNom(nomIA0, tapisIA0, nomIA(1), String.valueOf(tapisIA[1]));
+       }else if (nbIA == 2) {  
+            affichage.setTapisNom(nomIA0, tapisIA0, nomIA(1), String.valueOf(tapisIA[1]), nomIA(2),  String.valueOf(tapisIA[2]));
+       }else if (nbIA == 3) { 
+            affichage.setTapisNom(nomIA0, tapisIA0, nomIA(1), String.valueOf(tapisIA[1]), nomIA(2),  String.valueOf(tapisIA[2]), nomIA(3), String.valueOf(tapisIA[3]));
+       }
+    }
+    
+    public void recommencer() {
+        for(n=0;n<nbJoueur;n++) {
+            miseIA[n] = bigBlind;
+            carteUnIA[n] = 0;
+            carteDeuxIA[n] = 0;
+            relanceIA[n] = 0; 
+            typeMainIA[n] = 0;
+            potIntermediaire[n] = 0;
+            couche[n] = false;
+        }
+        lastRelance = 0;
+        tour = 0;
+        tourComplet = 0;
+        affichage.recommencer();
+        miseMaxTable = 0;
+        miseEnJeu = 0;
+        flop = false;
+        turn = false;
+        river = false;
+        finDesTours = false;
+        firstRelance = false;
+        processus = null;
+        init();
+    }
+    
+    public void changerNbJoueur(int nbJoueur) {
+        if(this.nbJoueur != nbJoueur) {
+            this.nbJoueur = nbJoueur;
+            nbIA = nbJoueur-1;
+            recommencer();
+        }
+    }
+    public void changerDifficulte(boolean difficulte) {
+        if(this.difficulte!=difficulte) {
+            this.difficulte = difficulte;
+            IA.changerDifficulte;
+        }
+    }
+    
+    public void start(String test) {
+        if (processus == null && this.test == "") { 
+            this.test = test;
+            processus = new Thread(this);
+            processus.start();
+        }
+    }
+    
+    public void run() {
+            boolean relance = false;
+            System.out.println("La mise actuelle est de "+miseMaxTable);
+        while(processus != null && relance == false) {
+            try {
+                if(tourComplet < nbJoueur) {
+                    if(tapisIA[tour] == 0) {
+                    } else if (tapisIA[tour] < miseMaxTable) {
+                        System.out.println(nomIA(tour)+" fait tapis!");
+                        miseEnJeu += tapisIA[tour];
+                        valeurMise[tour] += tapisIA[tour];
+                        potIntermediaire[tour] = miseEnJeu;
+                    } else if (tapisIA[tour] == miseMaxTable && miseMaxIA[tour] <= miseMaxTable){
+                        System.out.println(nomIA(tour)+" fait tapis");
+                        miseEnJeu += tapisIA[tour];
+                        valeurMise[tour] += tapisIA[tour];
+                        potIntermediaire[tour] = miseEnJeu;
+                        
+                    } else if (miseMaxIA[tour] < miseMaxTable) {
+                        couche[tour] = true;
+                        System.out.println(nomIA(tour)+" se couche");
+                    } else if (testRelance[tour]) {
+                        System.out.println(nomIA(tour)+" suit pour "+miseMaxTable+" et relance de "+relanceIA[tour]);
+                        miseEnJeu += miseMaxTable + relanceIA[tour];
+                        miseMaxTable += relanceIA[tour];
+                        valeurMise[tour] += miseMaxTable;
+                        relance = true;
+                        firstRelance = true;
+                        lastRelance = relanceIA[tour];
+                        System.out.println("la prochaine relance devra être de: "+(lastRelance+miseMaxTable));
+                        tourComplet = 0;
+                        test = "";
+                        stop();
+                        affichage.afficherValeurMise(tour,String.valueOf(valeurMise[tour]));
+                        Thread.sleep(1200);
+                        miser(miseMaxTable);
+                    } else if (tapisIA[tour] > miseMaxTable && miseMaxIA[tour] >= miseMaxTable) {
+                        System.out.println(nomIA(tour)+" suit pour "+miseMaxTable);
+                        miseEnJeu += miseMaxTable ;
+                        valeurMise[tour] = miseMaxTable;
+                        tapisIA[tour] -= miseMaxTable;
+                    }
+                    affichage.afficherValeurMise(tour,String.valueOf(valeurMise[tour]));
+                    i=0;
+                    for(n = 0;n<nbJoueur;n++) {
+                        if(couche[n]) {
+                            i++;
+                        }
+                        if(i == nbJoueur-1) {
+                            test = "";
+                            stop();
+                            relance = true;
+                            resultats(); 
+                        }
+                    }
+                    
+                    do {
+                        if (tour == nbJoueur-1 && !couche[0] && tourComplet != (nbJoueur-1)){
+                            tour = 0;
+                            System.out.println("c'est à vous de miser, au moins "+miseMaxTable+" pour suivre et "+relanceIA[0]+" pour relancer");
+                            relance = true;
+                            test = "";
+                            stop();
+                        } else if(tour == nbJoueur-1 && !couche[0] && tourComplet == (nbJoueur-1)){
+                            tour = 0;
+                        } else if (tour == nbJoueur-1 && couche[0]) {
+                            tour = 1;
+                        } else if(couche[tour+1]) {
+                            tour++;
+                            tourComplet++;
+                        } else {
+                            tour++;
+                        }
+                    }while(couche[tour]||tapisIA[tour]==0) ;
+                    
+                }
+                 if (tourComplet == nbJoueur && !relance) {
+                     tour = 0;
+                    tourComplet = 0;
+                    miseMaxTable = 0;
+                    firstRelance = false;
+                    for(n = 0; n< nbJoueur; n++) {
+                        valeurMise[n] = 0;
+                        affichage.afficherValeurMise(n,"");
+                    }
+                    affichage.afficherJetonPot(String.valueOf(miseEnJeu));
+                    test = "";
+                    stop();
+                    choixFlopTurnRiver();
+                }else tourComplet++;
+                
+                affichage.afficherPot(String.valueOf(miseEnJeu));
+                Thread.sleep(1200);
+            }catch (InterruptedException e) {} 
+        }
+    }
+
+    public void stop(){
+        processus = null;
+    }
+    
+    /** 
+     * Ces methodes envoient plein de valeurs
+     */
+    public int getMiseJoueur() {return miseIA[0];}
+    
+    public int getTapisJoueur(){return tapisIA[0];}
+    
+    public int getTapisIA(int n){return tapisIA[n];}
+    
+    public int getNbIA() {return nbIA;}
+    
+    public int getValeurMise(int n){return valeurMise[n];}
+    
+    public void joueurSeCouche() {
+        couche[0] = true;
+        start("mise");
+    }
+}

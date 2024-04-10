@@ -1,0 +1,227 @@
+package src.work;
+
+import java.util.*
+
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
+
+import eea.engine.component.render.ImageRenderComponent;
+import eea.engine.entity.Entity;
+/**
+ * 
+ * @###### ########## #####
+ * @###### ######## #######
+ * @###### ###### ##¶##
+ * @###### ##### ####
+ * 
+ * #### ##### ## #### ### ### ###: #### ######### ## ### ### #.#. ### ######### ## [#][#] ##
+ * ## ###### ## ##### ###########. #### ######### ### ###### ###############: ## ###### ## ####
+ * ########### ########## # #### ## # #### ## ## ##### ## #####.
+ * ### ############## (#####, #####, ###### ## ### ## # ####) ## ##### ## # ######, ###### 
+ * "########". #### ## ## ########### ## ### ########### ##### #####, #### #### # ###########
+ * ### #######, ### ###### ###### ### ####. ### ###### ######### ##### #### # ####-####.
+ * 
+ * ####: ### ######## #### ##### ########### ##### ####### # ########### ####### ### ####.
+ * ## #### ## ### ####, ### ## #### ######## ####### #######. ## ###, ########## ## ####### ## 
+ * ##### #######.
+ */
+public class FieldEntity extends Entity{
+
+    private boolean gotHit = false; 
+    private Coordinate pos;
+
+    /**
+     * Constructor for objects of class FieldEntity. The given string determines, what kind of 
+     * FieldEntity the new FieldEntity is supposed to represent. Therefore, the constructor only
+     * accepts certain Strings. These are:
+     *<ul>
+     *  <li>"W" for water that already got hit by a shot</li>
+     *  <li>"w" for water that didn't get hit yet</li>
+     *  <li>"F" for the front of an already hit front of a ship</li>
+     *  <li>"f" for a non-hit front</li>
+     *  <li>"M" for a hit middle part of a ship</li>
+     *  <li>"m" for a non-hit middle part</li>
+     *  <li>"E" for a hot end of a ship</li>
+     *  <li>"e" for a non-hit end of a ship</li>
+     *</ul>
+     * 
+     * @param entityID This string accepts "W","w","F",f","M","m","E","e"
+     * 
+     * @throws SlickException An exception in case loading of pictures fails (not relevant for your implementation of the project)
+     */
+    public FieldEntity(String entityID) throws SlickException {
+        super(entityID);
+        
+        switch (entityID) {
+        case "W":
+            addComponent(new ImageRenderComponent(new Image("/assets/GetroffenWasser.png")));
+            gotHit = true;
+            setVisible(gotHit);
+            setScale((float)0.5);
+            break;
+        case "w":
+            addComponent(new ImageRenderComponent(new Image("/assets/wasser.png")));
+            gotHit = false;
+            setVisible(gotHit);
+            setScale((float)0.5);
+            break;
+        case "F":
+            addComponent(new ImageRenderComponent(new Image("/assets/GetroffenFront.png")));
+            gotHit = true;
+            setVisible(gotHit);
+            setScale((float)0.5);
+            break;
+        case "f":
+            addComponent(new ImageRenderComponent(new Image("/assets/Front.png")));
+            gotHit = false;
+            setVisible(gotHit);
+            setScale((float)0.5);
+            break;
+        case "M":
+            addComponent(new ImageRenderComponent(new Image("/assets/GetroffenMitte.png")));
+            gotHit = true;
+            setVisible(gotHit);
+            setScale((float)0.5);
+            break;
+        case "m":
+            addComponent(new ImageRenderComponent(new Image("/assets/Mitte.png")));
+            gotHit = false;
+            setVisible(gotHit);
+            setScale((float)0.5);
+            break;
+        case "E":
+            addComponent(new ImageRenderComponent(new Image("/assets/GetroffenEnde.png")));
+            gotHit = true;
+            setVisible(gotHit);
+            setScale((float)0.5);
+            break;
+        case "e":
+            addComponent(new ImageRenderComponent(new Image("/assets/Ende.png")));
+            gotHit = false;
+            setVisible(gotHit);
+            setScale((float)0.5);
+            break;
+        default:
+            System.out.println("String ist unbekannt fuer FieldEntity");
+        }   
+    }
+    
+    /**
+     * Method to determine whether the current FieldEntit   y is shot or not.
+     * 
+     * @return True, if this FieldEntity is already shot.
+     * @return False, if this FieldEntity wasn't shot.
+     */
+    public boolean gotHit(){
+        if (gotHit == true){
+            return true;
+        }
+        else 
+            return false;
+    }
+    
+    /**
+     * This method checks if the FieldEntity represents a part of a ship.
+     * 
+     * @return Returns true if the FiledEntity is part of a ship. If it is water, it returns false.
+     */
+    public boolean isShip(){
+        if (getID().toLowerCase().equals("f", "m", "e"))  {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+
+    /**
+     * This method is used for manipulating the position of the FieldEntity
+     * 
+     * @param pos The new position the FieldEntity shall be set on.
+     */
+    public void setMapPosition(Coordinate pos){
+        this.pos = pos;
+    }
+    
+    /**
+     * This method is used to get the current position within the map of current FieldEntity.
+     * 
+     * @return The current position of the FieldEntity
+     */
+    public Coordinate getMapPosition(){
+        return pos;
+    }
+    
+    /**
+     * (Not relevant)
+     * This method is used for filling the FieldEntity with the "fog of war".  
+     */
+    public void setFog(){
+        this.removeComponent("ImageRenderComponent");
+        try {
+            addComponent(new ImageRenderComponent(new Image("/assets/nebel.png")));
+        } catch (SlickException e) {
+            System.out.println("Ungueltiger Image Pfad");
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * (Not relevant)
+     * This method is used for displaying the default picture when a part of a ship got hit
+     * but if it's not yet completely destroyed.
+     */
+    public void setDefaultShipPic(){
+        this.removeComponent("ImageRenderComponent");
+        try {
+            addComponent(new ImageRenderComponent(new Image("/assets/SchiffsteilHit.png")));
+        } catch (SlickException e) {
+            System.out.println("Ungueltiger Image Pfad");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * (Not relevant)
+     * This method is used for replacing the default picture with the correct picture after the 
+     * ship got destroyed completely.
+     * 
+     * @param horizontal If a ship's orientation is horizontal
+     * @throws SlickException
+     */
+    public void setCorrectPic(boolean horizontal) throws SlickException {
+        String pathExt = "";
+        if(horizontal)
+            pathExt = "Hori";
+        this.removeComponent("ImageRenderComponent");
+        switch (getID()) {
+        case "W":
+            addComponent(new ImageRenderComponent(new Image("/assets/GetroffenWasser"+pathExt+".png")));
+            break;
+        case "w":
+            addComponent(new ImageRenderComponent(new Image("/assets/wasser"+pathExt+".png")));
+            break;
+        case "F":
+            addComponent(new ImageRenderComponent(new Image("/assets/GetroffenFront"+pathExt+".png")));
+            break;
+        case "f":
+            addComponent(new ImageRenderComponent(new Image("/assets/Front"+pathExt+".png")));
+            break;
+        case "M":
+            addComponent(new ImageRenderComponent(new Image("/assets/GetroffenMitte"+pathExt+".png")));
+            break;
+        case "m":
+            addComponent(new ImageRenderComponent(new Image("/assets/Mitte"+pathExt+".png")));
+            break;
+        case "E":
+            addComponent(new ImageRenderComponent(new Image("/assets/GetroffenEnde"+pathExt+".png")));
+            break;
+        case "e":
+            addComponent(new ImageRenderComponent(new Image("/assets/Ende"+pathExt+".png")));
+            break;
+        default:
+            System.out.println("String ist unbekannt fuer FieldEntity");
+        }   
+    }
+}

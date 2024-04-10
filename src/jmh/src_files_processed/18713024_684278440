@@ -1,0 +1,349 @@
+import java.util.*;
+import java.io.File;
+
+public class Simulator {
+   ArrayList<String> memory;
+   ArrayList<Long> register;
+   ListIterator<String> iter;
+   int offset, instrNum, memRefNum, clockCycles;
+   public static long curInstr = 0;
+   private int s, t, d, a, f;
+
+   public Simulator (ArrayList<String> list) 
+   {
+      memory = new ArrayList<String>(list);
+      register = new ArrayList<Long>();
+      offset = 0x400000;
+
+      for(int count = 32; count > 0; count--)
+      {
+          long i = 0;
+          register.add(i);
+      }
+   }
+
+   public void simulate() {
+      Scanner scan = new Scanner(System.in);
+      String action;
+
+      System.out.println("Simulate \"full\" program, \"step\" through, or \"exit\"?");
+
+      while(scan.hasNext()) {
+         action = scan.next();
+         switch(action) {
+
+            case "full":
+
+               break;
+
+            case "step":
+
+               break;
+
+            case "exit":
+               return;
+
+            default:
+               System.out.println("Not a valid command.");
+         }
+      }
+
+
+   }
+
+   public void step() {
+      try {
+         String instruction, opcode;
+         
+         instruction =  iter.next();
+         opcode = instruction.substring(0, 4);
+      }
+      catch (NoSuchElementException e) {
+
+      }
+   }
+
+
+   private void addi(String inst)
+   {
+       int rt = Integer.parseInt(inst.substring(11, 16), 2);
+       int rs = Integer.parseInt(inst.substring(6, 11), 2);
+       long immediate = Long.parseLong(inst.substring(16, 32), 2);
+       
+       register.set(rt, register.get(rs) + immediate);
+   }
+   
+    private void addiu(String inst)
+   {
+       int rt = Integer.parseInt(inst.substring(11, 16), 2);
+       int rs = Integer.parseInt(inst.substring(6, 11), 2);
+       long immediate = Long.parseLong(inst.substring(16, 32), 2);
+       
+       register.set(rt, register.get(rs) + immediate);
+   }
+   
+   private void ori(String inst)
+   {
+       int rt = Integer.parseInt(inst.substring(11, 16), 2);
+       int rs = Integer.parseInt(inst.substring(6, 11), 2);
+       long immediate = Long.parseLong(inst.substring(16, 32), 2);
+       
+       register.set(rt, register.get(rs) | immediate);
+   }
+   
+
+   private void sltiu(String inst)
+   {
+       int rt = Integer.parseInt(inst.substring(11, 16), 2);
+       int rs = Integer.parseInt(inst.substring(6, 11), 2);
+       long immediate = Long.parseLong(inst.substring(16, 32), 2);
+       
+       if(register.get(rs) < immediate)
+       {
+           long one = 1;
+           register.set(rt, one);
+       }
+       else
+       {
+           long zero = 0;
+           register.set(rt, zero);
+       }
+   }
+   
+   private void sw(String inst)
+   {
+       int rt = Integer.parseInt(inst.substring(11, 16), 2);
+       int rs = Integer.parseInt(inst.substring(6, 11), 2);
+       long immediate = Long.parseLong(inst.substring(16, 32), 2);
+       
+       Long offsetL = register.get(rs) + immediate;
+       int off = offsetL.intValue();
+       
+       String str = Long.toString(register.get(rt), 2);
+       
+       String newMem = String.format("%32s", str).replace(' ', '0');
+       
+       memory.set(off, newMem);
+   }
+   
+   private void lw(String inst)
+   {
+       int rt = Integer.parseInt(inst.substring(11, 16), 2);
+       int rs = Integer.parseInt(inst.substring(6, 11), 2);
+       long immediate = Long.parseLong(inst.substring(16, 32), 2);
+       
+       Long offsetL = register.get(rs) + immediate;
+       int off = offsetL.intValue();
+       String mem = memory.get(off);
+       
+       register.set(rt, Long.parseLong(mem, 2));
+   }
+   
+   private void lui(String inst)
+   {
+       int rt = Integer.parseInt(inst.substring(11, 16), 2);
+       long immediate = Long.parseLong(inst.substring(16, 32), 2);
+       
+       immediate = immediate << 16;
+       
+       register.set(rt, immediate);
+   }
+   
+   private void beq(String inst)
+   {
+       int rt = Integer.parseInt(inst.substring(11, 16), 2);
+       int rs = Integer.parseInt(inst.substring(6, 11), 2);
+       long immediate = Long.parseLong(inst.substring(16, 32), 2);
+       
+       
+       
+       if (immediate >= 32768) 
+       {
+           immediate -= 2 * 32768;
+       }
+       
+       if(register.get(rs).equals(register.get(rt)))
+       {
+           curInstr = curInstr + immediate;
+       }
+   }
+   
+      private void bne(String inst)
+   {
+       int rt = Integer.parseInt(inst.substring(11, 16), 2);
+       int rs = Integer.parseInt(inst.substring(6, 11), 2);
+       long immediate = Long.parseLong(inst.substring(16, 32), 2);
+       
+       
+       
+       if (immediate >= 32768) 
+       {
+           immediate -= 2 * 32768;
+       }
+       
+       if(!register.get(rs).equals(register.get(rt)))
+       {
+           curInstr = curInstr + immediate;
+       }
+   }
+
+   private void j(String inst)
+   {
+       long immediate = Long.parseLong(inst.substring(6, 32), 2);
+       
+       if (immediate >= 33554432) 
+       {
+           immediate -= 2 * 33554432;
+       }
+       
+       
+       curInstr = curInstr + immediate;
+   }
+   
+   private void jal(String inst)
+   {
+       long immediate = Long.parseLong(inst.substring(6, 32), 2);
+       
+       if (immediate >= 33554432) 
+       {
+           immediate -= 2 * 33554432;
+       }
+       
+       register.set(31, curInstr);
+       curInstr = curInstr + immediate;
+   }
+
+   private void add(String instruction) {
+      int result = 0;
+      reg(instruction);
+
+      result = register.get(s) + register.get(t);
+
+      register.set(d, result);
+   }
+
+   private void addu(String instruction) {
+      int result= 0;
+      String temp;
+
+      reg(instruction);
+      temp = Integer.toUnsignedString(register.get(s) + register.get(t));
+      result = Integer.parseInt(temp);
+
+      register.set(d, result);
+   }
+
+   private void and(String instruction) {
+      int result= 0;
+      reg(instruction);
+
+      result = register.get(s) & register.get(t);
+
+      register.set(d, result);
+   }
+
+   private void or(String instruction) {
+      int result= 0;
+      reg(instruction);
+
+      result = register.get(s) | register.get(t);
+
+      register.set(d, result);
+   }
+
+   private void sll(String instruction) {
+      reg();
+      int result= 0;
+      reg(instruction);
+
+      result = register.get(t) <<< register.get(a);
+
+      register.set(d, result);
+   }
+
+   private void srl(String instruction) {
+      int result= 0;
+      reg(instruction);
+
+      result = register.get(t) >>> register.get(a);
+
+      register.set(d, result);
+   }
+
+   private void sra(String instruction) {
+      int result= 0;
+      reg(instruction);
+
+      result = register.get(t) >> register.get(a);
+
+      register.set(d, result);
+   }
+
+   private void sub(String instruction) {
+      int result= 0;
+      reg(instruction);
+
+      result = register.get(s) - register.get(t);
+
+      register.set(d, result);
+   }
+
+   private void sltu(String instruction) {
+      reg(instruction);
+
+      register.set(d, register.get(s) < register.get(t));
+   }
+
+   private void jr(String instruction) {
+      reg(instruction);
+
+
+   }
+
+
+
+
+   public ArrayList<String> getInst()
+   {
+       return memory;
+   }
+
+
+   private void reg(String instruction) {
+      s = Integer.parseInt(instruction.substring(6, 10), 2);
+      t = Integer.parseInt(instruction.substring(11, 15), 2);
+      d = Integer.parseInt(instruction.substring(16, 20), 2);
+      a = Integer.parseInt(instruction.substring(21, 25), 2);
+      f = Integer.parseInt(instruction.substring(26, 31), 2);
+   }
+   
+   
+   public static void main(String yarghh[]) 
+   {
+      System.out.println("MIPS Simulator 0.1");
+      System.out.println("Created by Jose, Ethan, and Derek\n");
+      System.out.println("");
+      
+        File file = new File("testz.asm");
+        try
+        {
+            BinaryCode assembler = new BinaryCode(file);
+            ArrayList<String> instructions = assembler.createBinary();
+            
+            System.out.println("In the generated code: ");
+            
+            for(String s : instructions)
+            {
+                System.out.println(" " + s);
+            }
+            System.out.println("");
+            
+            Simulator s = new Simulator(instructions);
+        }
+        catch(Exception e)
+        {
+            System.out.println(e.toString());
+        }
+   }
+
+}

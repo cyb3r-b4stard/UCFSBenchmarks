@@ -1,0 +1,128 @@
+import javax.swing.*;
+import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
+import java.util.*;
+public class Main
+{
+    public static void main(String[] args)
+    {
+        String fileName = "database.txt";
+        Person[] persons = loadData(fileName);
+        
+        JFrame frame = new JFrame();
+        frame.setBounds(100, 100, 500, 300);
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+        frame.setContentPane(panel);
+        final JTextField txtKeyword = new JTextField();
+        txtKeyword.setBounds(5, 5, 380, 20);
+        panel.add(txtKeyword);
+        
+        final JTextArea txtResult = new JTextArea();
+        txtResult.setBounds(5, 30, 475, 225);
+        txtResult.setEditable(false);
+        panel.add(txtResult);
+        
+        JButton btnSearch = new JButton();
+        btnSearch.setText("검색");
+        btnSearch.setBounds(390, 5, 90, 20);
+        btnSearch.addActionListener(new ActionListener() {
+            
+            public void actionPerformed(ActionEvent e) 
+            {
+                String keyword = txtKeyword.getText();
+력한것
+                String result = "";
+                for(int i=0; i<persons.length;i++)
+                {
+                    String name = persons[i].getName();
+                    if(name.indexOF(keyword)>=)
+                    {
+                        result = rseult + name + "\n";
+                    }
+                }
+            txResult.setText(result);
+            }
+        });
+        panel.add(btnSearch);
+        frame.setVisible(true);
+    }
+    
+    public static Person[] loadData(String fileName) 
+    {
+       try
+       {
+           FileInputStream fstream = new FileInputStream(fileName);
+           DataInputStream in = new DataInputStream(fstream);
+           BufferedReader br = new BufferedReader(new InputStreamReader(in));
+           
+           int rowCount = 0;
+           String strLine;
+           Person[] persons = null;
+           while((strLine = br.readLine()) != null)
+           {
+               if(rowCount == 0)
+               {
+                   int personCount = Integer.parseInt(strLine);
+                   persons = new Person[personCount];
+               }
+               else
+               {
+                   StringTokenizer tokenzier = new StringTokenizer(strLine, ",");
+                   int columnCount = 0;
+                   while(tokenzier.hasMoreTokens())
+                   {
+                       String token = tokenzier.nextToken();
+                       token = token.trim();
+                       if(columnCount == 0)
+                       {
+                           if(token.equals("S"))
+                               persons[rowCount-1] = new Student();
+                           else if(token.equals("P"))
+                               persons[rowCount-1] = new Professor();
+                       }
+                       else if(columnCount == 1)
+                           persons[rowCount-1].setName(token);
+                       else if(columnCount == 2)
+                           persons[rowCount-1].setId(token);
+                       else if(columnCount == 3)
+                           persons[rowCount-1].setDepartment(token);
+                       else
+                       {
+                           if(persons[rowCount-1] instanceof Student)
+                           {
+                               Student student = (Student)persons[rowCount-1];
+                               if(columnCount == 4)
+                               {
+                                   int grade = Integer.parseInt(token);
+                                   student.setGrade(grade);
+                               }
+                               else if(columnCount == 5)
+                               {
+                                   double credit = Double.parseDouble(token);
+                                   student.setCredit(credit);
+                               }
+                           }
+                           else if(persons[rowCount-1] instanceof Professor)
+                           {
+                               Professor professor = (Professor)persons[rowCount-1];
+                               double salary = Double.parseDouble(token);
+                               professor.setSalary(salary);
+                           }
+                       }
+                       columnCount++;
+                   }
+               }
+               rowCount = rowCount + 1;
+           }
+           in.close();
+           return persons;
+       }
+       catch(Exception e)
+       {
+       }
+       return null;
+    }
+}

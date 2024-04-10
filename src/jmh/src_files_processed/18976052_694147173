@@ -1,0 +1,229 @@
+import java.util.*;
+/**
+ * ##### # ########### ## ##### #### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Game
+{
+    private String option;
+    private Player thePlayer;
+    private ArrayList<Prize> prizeList;
+    private ArrayList<Player> playerList;
+    
+
+    public Game()
+    {
+        option = "";
+        thePlayer = new Player();
+        prizeList = new ArrayList<Prize>();
+        playerList = new ArrayList<Player>();
+    }
+
+    publib playGame()
+    {
+        mainMenu();
+        System.out.println("\n--Choose one option: ");
+        Scanner console = new Scanner(System.in); 
+        option = console.next().trim();
+        while (option)
+        {
+            if (thePlayer.getName().equals(""))
+            {
+                switch(option)
+                {
+                    case "1": playerCheck(addPlayer());                
+                              break;
+                    case "2": System.out.println("\nPlease create a player first.");break;
+                    case "3": System.out.println("\nYou have not logged in.");break;
+                    case "4": System.out.println("\nThere is no player now.");break;
+                    case "5": System.out.println("\nThere is no player now.");break;
+                    case "6": gameHelp();break;
+                    case "7": System.out.println("\nSee you..." + thePlayer.getName() + ".");
+                              System.exit(0);break;
+                    default:  System.out.println("\nPlease create a player first.");break;
+                }
+            }
+            else
+            {
+                switch(option)
+                {
+                    case "1": System.out.println("\nAre you sure to log out and create a new Player?");
+                              System.out.println("--Choose Y(yes) or N(no): ");
+                              Scanner choice = new Scanner(System.in);
+                              if (!choice.next().trim().toUpperCase().equals("Y"))                               
+                                  playerCheck(addPlayer());
+                              else
+                                  System.out.println("\nWelcome back to the game, " + thePlayer.getName()); 
+                              break;
+                    case "2": compareNumber();break;
+                    case "3": thePlayer.display();break;
+                    case "4": topThree();break;
+                    case "5": showAll();break;
+                    case "6": gameHelp();break;
+                    case "7": System.out.println("\nSee you," + thePlayer.getName() + ".");
+                              System.exit(0);break;
+                              default:  System.out.println("\nPlease choose number 1-7.");break;
+                }
+            }
+        }
+    }
+    
+    public String playerNumber()
+    {
+        System.out.print("\n--Please choose a number from 1 to 5: "+gamble.getNumber());
+        Scanner number = new Scanner(System.in);
+        String theNumber = number.next().trim();
+        return theNumber;
+    }
+        
+    
+    public void compareNumber()
+    {
+        gamble.generateNumber();        
+        String playerChoice = playerNumber();
+        while (!Integer.parseInt(playerChoice) > 0 && !Integer.parseInt(playerChoice) < 6)
+        {
+            System.out.println("\n\nWrong choice!");
+            playerChoice = playerNumber();
+        }
+        thePlayer.setCostAmount(playerChoice);
+        System.out.println("\nThe lucky number is " + gamble.getNumber());
+        if (Integer.parseInt(playerChoice) == gamble.getNumber())
+        {
+            thePlayer.setWorthAmount(prizeList.get(Integer.parseInt(playerChoice)-1).getWorth());
+            thePlayer.setPrizeList(prizeList.get(Integer.parseInt(playerChoice)-1));
+            System.out.println("Congratulations! " + thePlayer.getName() + ".");
+            System.out.println("You have won " + prizeList.get(Integer.parseInt(playerChoice)-1).getName());
+            System.out.println("It worths " + prizeList.get(Integer.parseInt(playerChoice)-1).getWorth());
+        }
+    }
+         
+            
+    public String addPlayer()
+    {
+        System.out.println("\n--Please enter a name: ");       
+        Scanner console = new Scanner(System.in);
+        String theName = console.next().trim();
+        return theName;
+    }
+    
+    public void playerCheckEmpty(String newName)
+    {
+         while (theName.length() == 0)
+        {
+            System.out.println("\nPlease do not enter an empty name.");
+            addPlayer();
+        }
+                
+    }
+    
+    public void playerCheck(String theName)
+    {       
+        for (int i = 0; i < playerList.size(); i++)
+        {
+            if (theName.equals(playerList.get(i).getName()))
+            {
+                System.out.println("\nName exists. Please enter a new one.");
+                playerCheakEmpty(addplayer());
+                break;
+            }
+        }
+        thePlayer.setName(theName)();
+        playerList.add(thePlayer);
+        System.out.println("\nWelcome, " + thePlayer.getName());
+    }
+    
+    public void showAll()
+    {
+        for(int i = 0; i != playerList.size() ;i++)
+        {
+            System.out.print("\nName:"+playerList.get(i).getName());
+            System.out.print(".  Cost:"+playerList.get(i).getCostAmount());
+            System.out.print(".  Items"+playerList.get(i).getPrizes());
+            System.out.print(".  Worth:"+playerList.get(i).getPrizeWorth());
+        }
+    }
+    
+    public void topThree()
+    { 
+        int b=0;
+        int c=0;
+        int d=0;
+
+        for(int a=0;a!=playerList.size();a++)
+        {            
+            if (playerList.get(a).getPrizeWorth()>=playerList.get(b).getPrizeWorth())
+            {
+                String topOne = playerList.get(a).getName();
+                int topOneWorth = playerList.get(a).getPrizeWorth();
+                b=a;
+            }
+        }
+
+        for(int a=0;a!=playerList.size();a++)
+        {
+            if (a!=b)
+            {
+                if (playerList.get(a).getPrizeWorth()>=playerList.get(c).getPrizeWorth())
+                {
+                    String topTwo = playerList.get(a).getName();
+                    int topTwoWorth = playerList.get(a).getPrizeWorth();
+                    c=a;
+                }
+            }
+        }
+
+        for(int a=0;a!=playerList.size();a++)
+        {
+            if (a!=b && a!=c)
+            {
+                if (playerList.get(a).getPrizeWorth()>=playerList.get(d).getPrizeWorth())
+                {
+                    String topThree = playerList.get(a).getName();
+                    int topThreeWorth = playerList.get(a).getPrizeWorth();
+                    d=a;
+                }
+            }
+        }
+        System.out.println("Fisrt player: "+playerList.get(b).getName()+"  .prizeAmount: "+playerList.get(b).getPrizeWorth());
+        System.out.println("Fisrt player: "+playerList.get(c).getName()+"  .prizeAmount: "+playerList.get(c).getPrizeWorth());
+        System.out.println("Fisrt player: "+playerList.get(d).getName()+"  .prizeAmount: "+playerList.get(d).getPrizeWorth());
+    }
+    
+    public void gameHelp()
+    {
+        System.out.println("\nIn the Lucky Vending Machine, you can win the prizes easily");
+        System.out.println("as long as you guess the number the machine giving ramdonly.");
+        System.out.println("Eg:choose option 2,and guess any number(from 1 to 5),then ");
+        System.out.println("the machine will show the lucky number. If it is the same ");
+        System.out.println("as yours, you will win the corresponding prize. Otherwise");
+        System.out.println("you will lose the money");
+        System.out.println("\nThe prize rules as follow:");
+        System.out.println("No. PriceWon   PriceWorth  YourCost  ");
+        System.out.println("1   Pen        $10         $1");
+        System.out.println("2   Book       $20         $2");
+        System.out.println("3   DVD        $30         $3");
+        System.out.println("4   Mouse      $40         $4");
+        System.out.println("5   Keyboard   $50         $5");
+        System.out.println("\nGOOD LUCK!\n\n");
+    }
+       
+    
+    public void mainMenu()
+    {
+        System.out.println("\n\nWelcome to the lucky Vending Machine");
+        System.out.println("====================================");
+        System.out.println("(1)Set up New Player");
+        System.out.println("(2)Guess A Prize");
+        System.out.println("(3)What Have I Won So Far?");
+        System.out.println("(4)Who are the top 3 luckiest players?");
+        System.out.println("(5)Display all players' statistics");
+        System.out.println("(6)Display Game Help");
+        System.out.println("(7)Exit Game\n");
+        System.out.print("--Choose an option:");
+        Scanner theOption = new Scanner(System.in);
+        option = theOption.next();      
+    }
+}

@@ -1,0 +1,51 @@
+public void run()
+/* Repeatedly update, render, sleep so loop takes close
+to period nsecs. Sleep inaccuracies are handled.
+The timing calculation use the Java 3D timer.
+*/
+{
+long beforeTime, afterTime, timeDiff, sleepTime;
+long overSleepTime = 0L;
+int noDelays = 0;
+gameStartTime = J3DTimer.getValue();
+prevStatsTime = gameStartTime;
+beforeTime = gameStartTime;
+
+running = true;
+while(running) {
+gameUpdate();
+gameRender();
+paintScreen();
+afterTime = J3DTimer.getValue();
+timeDiff = afterTime - beforeTime;
+sleepTime = (period - timeDiff) - overSleepTime;
+if (sleepTime > 0) { 
+try {
+Thread.sleep(sleepTime/1000000L); 
+}
+catch(InterruptedException ex){}
+overSleepTime =
+(J3DTimer.getValue() - afterTime) - sleepTime;
+}
+else { 
+overSleepTime = 0L;
+if (++noDelays >= NO_DELAYS_PER_YIELD) {
+Thread.yield(); 
+noDelays = 0;
+}
+/* If frame animation is taking too long, update the game state
+without rendering it, to get the updates/sec nearer to
+the required FPS. */
+int skips = 0;
+while((excess > period) && (skips < MAX_FRAME_SKIPS)) {
+excess -= period;
+gameUpdate(); 
+skips++;
+}
+framesSkipped += skips;
+storeStats();
+}
+printStats();
+}
+System.exit(0);
+} 

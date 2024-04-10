@@ -1,0 +1,255 @@
+import java.awt.*;
+import javax.swing.*;
+import java.util.*;
+import java.awt.event.*;
+import java.text.*;
+
+/**
+ * ##### ### - ##### # ########### ## ### ##### ####
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ######)
+ */
+public class tr extends JApplet implements ActionListener
+{
+    Button []buttonarrayInt = new Button[10];
+    Button []buttonarrayRest = new Button [11];       
+    String []operatoren = new String[]{"+","-","*","/","sqrt","(",")",".","=","C","fuckoff"};
+
+    TextField tf;
+    int letztesAuf=0,letztesZu=0;
+    Scanner s = new Scanner(System.in);
+    String term;
+    String text;
+    DecimalFormat kommastellen = new DecimalFormat("0.###", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+
+    ArrayList <Integer> klammern= new <Integer> ArrayList();
+
+    public void init()
+    {        
+        for (int x=0;x<10;x++)
+        {            
+            buttonarrayInt[x]= new Button(String.valueOf(x));
+            buttonarrayInt[x].addActionListener(this);
+            buttonarrayInt[x].setActionCommand(""+x);            
+        }
+
+        buttonarrayInt[9].setBounds(165,225,50,50);  
+        buttonarrayInt[8].setBounds(110,225,50,50);  
+        buttonarrayInt[7].setBounds(55,225,50,50);  
+        buttonarrayInt[6].setBounds(165,280,50,50);  
+        buttonarrayInt[5].setBounds(110,280,50,50);  
+        buttonarrayInt[4].setBounds(55,280,50,50);  
+        buttonarrayInt[3].setBounds(165,335,50,50);  
+        buttonarrayInt[2].setBounds(110,335,50,50);  
+        buttonarrayInt[1].setBounds(55,335,50,50);  
+        buttonarrayInt[0].setBounds(55,390,50,50);   
+
+        for (int i=0;i<11;i++)
+        {
+            buttonarrayRest[i]=new Button(operatoren[i]);
+            buttonarrayRest[i].addActionListener(this);           
+            buttonarrayRest[i].setActionCommand(operatoren[i]);  
+        }
+        buttonarrayRest[10].setBounds(55,170,50,50);
+        buttonarrayRest[9].setBounds(55,170,50,50);
+        buttonarrayRest[8].setBounds(165,390,50,50); 
+        buttonarrayRest[7].setBounds(110,390,50,50); 
+        buttonarrayRest[6].setBounds(220,170,50,50); 
+        buttonarrayRest[5].setBounds(165,170,50,50); 
+        buttonarrayRest[4].setBounds(110,170,50,50);  
+        buttonarrayRest[3].setBounds(220,390,50,50); 
+        buttonarrayRest[2].setBounds(220,335,50,50); 
+        buttonarrayRest[1].setBounds(220,280,50,50); 
+        buttonarrayRest[0].setBounds(220,225,50,50); 
+
+        tf= new TextField();
+        tf.setBounds(55,115,215,50);
+        add(tf);
+
+        for(int i=0;i<10;i++)
+        {
+            add(buttonarrayInt[i]);
+            add(buttonarrayRest[i]);
+
+        }          
+        add(buttonarrayRest[10]);
+        remove(buttonarrayRest[10]);
+    }          
+
+    public void paint(Graphics g)
+    {
+        g.setColor(Color.blue);
+        g.fillRoundRect(40,75,245,375,25,25);
+        g.setColor(Color.cyan);
+        g.drawRect(54,114,216,51);
+
+    }
+
+    public void actionPerformed(ActionEvent e)
+    {
+        switch (e.getActionCommand())
+        {
+            case "+":
+            text = tf.getText();
+            tf.setText(text+"+");   
+            break;
+            case "-":
+            text = tf.getText();
+            tf.setText(text+"-"); 
+            break;
+            case "*":
+            text = tf.getText();
+            tf.setText(text+"*"); 
+            break;
+            case "/":
+            text = tf.getText();
+            tf.setText(text+"/"); 
+            break;
+            case "^":
+            text = tf.getText();
+            tf.setText(text+"^"); 
+            break;
+            case "sqrt":
+            text = tf.getText();
+            tf.setText(text+"sqrt("); 
+            break;
+            case "(":
+            text = tf.getText();
+            tf.setText(text+"("); 
+            break;
+            case ")":
+            text = tf.getText();
+            tf.setText(text+")"); 
+            break;
+            case ".":
+            text = tf.getText();
+            tf.setText(text+"."); 
+            break;
+            case "=":
+            text=tf.getText();
+            termEinteilen(text);
+            break;
+            case "C":
+            tf.setText("");
+            break;
+            case "0":
+            text = tf.getText();
+            tf.setText(text+"0"); 
+            break;
+            case "1":
+            text = tf.getText();
+            tf.setText(text+"1"); 
+            break;
+            case "2":
+            text = tf.getText();
+            tf.setText(text+"2"); 
+            break;
+            case "3":
+            text = tf.getText();
+            tf.setText(text+"3"); 
+            break;
+            case "4":
+            text = tf.getText();
+            tf.setText(text+"4"); 
+            break;
+            case "5":
+            text = tf.getText();
+            tf.setText(text+"5"); 
+            break;
+            case "6":
+            text = tf.getText();
+            tf.setText(text+"6"); 
+            break;
+            case "7":
+            text = tf.getText();
+            tf.setText(text+"7"); 
+            break;
+            case "8":
+            text = tf.getText();
+            tf.setText(text+"8"); 
+            break;
+            case "9":
+            text = tf.getText();
+            tf.setText(text+"9"); 
+            break;
+
+        }
+    }
+
+    public void termEinteilen(String term)
+    {
+        String diezahlenString=term.replace("+"," ").replace("-"," ").replace("*"," ").replace("/"," ").replace("^"," ")+" 1";        
+        String dieOperatoren="+"+term.replace("0"," ").replace("1"," ").replace("2"," ").replace("3"," ").replace("4"," ").replace("5"," ").replace("6"," ").replace("7"," ").replace("8"," ").replace("9"," ").replace("."," ");
+
+        
+        
+        while (term.indexOf("(",letztesAuf)!=-1)
+        {            
+            klammerAuf.add(term.indexOf("(",letztesAuf);
+            letztes=term.indexOf("(",letztesAuf);
+        }
+        while (term.indexOf(")",letztesZu)!=-1)
+        {            
+            klammerAuf.add(term.indexOf("(",letztesZu);
+            letztes=term.indexOf("(",letztesZu);
+        }
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        rechnen(diezahlenString, dieOperatoren);
+    }
+
+    public void rechnen(String diezahlenString, String dieOperatoren)
+    {
+        StringTokenizer stz = new StringTokenizer(diezahlenString," "); 
+        StringTokenizer sto = new StringTokenizer(dieOperatoren," ");
+
+        double ergebnis;
+        double temp1=0;
+        double temp2=0;
+        double zahl;   
+        while(sto.hasMoreTokens())
+
+        {
+            zahl=Double.parseDouble(stz.nextToken());  
+            switch (sto.nextToken())
+            {
+                case "+":
+                temp2=temp1+zahl;
+                break;                
+                case "-":
+                temp2=temp1-zahl;
+                break;                
+                case "*":
+                temp2=temp1*zahl;
+                break;                
+                case "/":
+                temp2=(temp1/zahl);
+                break;                
+                case "^":
+                temp2=Math.pow(temp1,zahl);
+                break;                  
+            }
+            temp1= temp2;
+        }
+        tf.setText(kommastellen.format(temp2));
+    }
+
+}

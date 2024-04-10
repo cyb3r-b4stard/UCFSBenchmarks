@@ -1,0 +1,347 @@
+
+import info.graphics.*;
+import static info.utils.io.*;
+import static info.graphics.Color.*;
+import static info.graphics.Tools.*;
+import static java.lang.Math.*;
+
+/**
+ * #### ###### ####### ##### ###### ### ###
+ *
+ * @######  ########## #######
+ * @####### ##/##/##
+ */
+public class TP4 {
+    static int calculPuissance(int n, int p) {
+        int res = 1;
+        int compteur = 0;
+        while (compteur < p) {
+            res = res * n;
+            compteur++;
+        }
+        return res;
+    }
+
+    static void saisirEtCalculer() {
+        int n;
+        int p;
+        output.print("n ? ");
+        n = input.nextInt();
+        output.print("p ? ");
+        p = input.nextInt();
+        output.println(n + " Puissance " + p + " donne " + calculPuissance(n,p));
+    }
+
+
+
+    static void drawRandomShapes(int n) {
+        assert n > 0 : "Le nombre de formes doit être positif !";
+        int compteur = 0;
+        n = input.nextInt();
+        Window window = new Window(300, 200, "Random Shapes");
+        window.setBackgroundColor(black);
+        while (compteur < n) {
+            TP3.drawRandomShape(window);
+            compteur++;
+        }
+    }
+
+    static void toss(int max) {
+        int compteur = 0;
+        int pile = 0;
+        int face = 0;
+        boolean tirage;
+        while (compteur < max) {
+            tirage = random.nextBoolean();
+            if (tirage == true){
+                pile = pile + 1;
+            } else {
+                face = face + 1;
+            }
+            compteur++;
+        }
+        assert compteur < max;
+        output.println("Nombre de tirages : " + max);
+        output.println(pile*100./max + "% true");
+        output.println(face*100./max + "% false");
+    }
+
+    static void toss () {
+        int compteur = 0;
+        int pile = 0;
+        int face = 0;
+        double pourcentPile = 0;
+        double pourcentFace = 0;
+        boolean tirage;
+        for (compteur = 1;((pourcentPile) != 50.0) || ((pourcentFace) != 50.0) || (compteur < 100); compteur++) {
+            tirage = random.nextBoolean();
+            if (tirage == true){
+                pile++;
+            } else {
+                face++;
+            }
+            pourcentPile = (pile*100./compteur);
+            pourcentFace = (face*100./compteur);
+        }
+        assert pourcentPile == 50 : "pile est différent de 50%";
+        assert compteur > 100 : "Le nombre de tirage est inferieur à 100";
+        output.println("Nombre de tirages : " + compteur);
+        output.println(pourcentPile + "% true");
+        output.println(pourcentFace + "% false");
+    }
+
+    static void drawRow () {
+        int x = random.nextInt(801)+200;
+        int y = 245;
+        int coteCarre = 33;
+        int xCarre = 0;
+        int yCarre = y/2 - coteCarre/2;
+        Color couleur = blue;
+        Window myWindow = new Window(x, y, "Draw Row");
+        while (xCarre < x) {
+            if (couleur.equals(blue)) {
+                couleur = red;
+            } else {
+                couleur = blue;
+            }
+            myWindow.drawRectangle(xCarre, yCarre, true, couleur, coteCarre, coteCarre);
+            xCarre= xCarre + coteCarre;
+        }
+    }
+
+    static void chessBoard () {
+        int largeur = random.nextInt(801)+200;
+        int hauteur = random.nextInt(801)+200;
+        int coteCarre = 33;
+        int ligne = hauteur/coteCarre;
+        int colonne = largeur/coteCarre;
+        int i;
+        int j;
+        Window myWindow = new Window(largeur, hauteur, "Draw ChessBoard");
+        for (i=0; i<= ligne; i++) {
+            for (j=0; j<= colonne; j++) {
+                if ((i+j)%2==0) {
+                    myWindow.drawRectangle(j*coteCarre, i*coteCarre, true, black, coteCarre, coteCarre);
+                } else {
+                    myWindow.drawRectangle(j*coteCarre, i*coteCarre, true, white, coteCarre, coteCarre);
+                }
+            }
+        }
+    }
+
+    static void testTurtle() {
+        Window window = new Window(600, 400, "Turtle");
+        int nbPas = 0;
+        Turtle turtle;
+        turtle = new Turtle(300, 200);
+        turtle.show(window);
+        turtle.setSpeed(5);
+        while (nbPas < 5) {
+            turtle.moveEast(window);
+            nbPas++;
+        }
+    }
+
+
+    static void goEast(int avance) {
+        Window window = new Window(600, 400, "Turtle");
+        int nbPas = 0;
+        boolean moveEast;
+        Turtle turtle;
+        turtle = new Turtle(300, 200);
+        turtle.show(window);
+        turtle.setSpeed(5);
+        while (nbPas < avance) {
+            moveEast = turtle.moveEast(window);
+            output.print(moveEast + " ");
+            nbPas++;
+        }
+    }
+
+
+
+
+    static void goEast() {
+        Window window = new Window(600, 400, "Turtle");
+        int nbPas = 0;
+        boolean moveEast = true;
+        Turtle turtle;
+        turtle = new Turtle(300, 200);
+        turtle.show(window);
+        turtle.setSpeed(5);
+        while (moveEast != false) {
+            moveEast = turtle.moveEast(window);
+            output.print(moveEast + " ");
+            nbPas++;
+        }
+    }
+
+    static boolean goEast(Window window,Turtle turtle, int avance) {
+        int nbPas = 0;
+        boolean moveEast = true;
+        turtle.show(window);
+        turtle.setSpeed(5);
+        while (moveEast != false && nbPas < avance) {
+            moveEast = turtle.moveEast(window);
+            nbPas++;
+        }
+        return moveEast;
+    }
+
+    static boolean goDirection(Window window,Turtle turtle,char direction, int avance) {
+        assert direction=='N' || direction=='S' || direction=='W' || direction =='E' : "Mauvaise direction !";
+        int nbPas = 0;
+        boolean mouvement = true;
+        turtle.show(window);
+
+        if (direction=='N'){
+            while (mouvement != false && nbPas < avance) {
+                mouvement = turtle.moveNorth(window);
+                nbPas++;
+            }
+        } else if (direction=='S'){
+            while (mouvement != false && nbPas < avance) {
+                mouvement = turtle.moveSouth(window);
+                nbPas++;
+            }
+        }else if (direction=='E'){
+            while (mouvement != false && nbPas < avance) {
+                mouvement = turtle.moveEast(window);
+                nbPas++;
+            }
+        }else{
+            while (mouvement != false && nbPas < avance) {
+                mouvement = turtle.moveWest(window);
+                nbPas++;
+            }
+        }
+        return mouvement;
+    }
+
+    static void testGo() {
+        Window window = new Window(600, 400, "Turtle");
+        Turtle turtle = new Turtle(300, 200);
+        output.println(goDirection(window, turtle, 'E', 6)); 
+        output.println(goDirection(window, turtle, 'E', 4)); 
+        output.println(goDirection(window, turtle, 'N', 9));
+        output.println(goDirection(window, turtle, 'S', 4));
+        output.println(goDirection(window, turtle, 'W', 6));
+        output.println(goDirection(window, turtle, 'W', 4));
+    }
+
+    static void drawSquare(int size) {
+        Window window = new Window(400, 300, "Turtle");
+        int nbPas = 0;
+        boolean mouvement = true;
+        Turtle turtle;
+        turtle = new Turtle(60, 60);
+        turtle.show(window);
+        turtle.setSpeed(5);
+        while (mouvement != false && nbPas < size) {
+            mouvement = turtle.moveSouth(window);
+            nbPas++;
+        }
+        nbPas = 0;
+        while (mouvement != false && nbPas < size) {
+            mouvement = turtle.moveEast(window);
+            nbPas++;
+        }
+        nbPas = 0;
+        while (mouvement != false && nbPas < size) {
+            mouvement = turtle.moveNorth(window);
+            nbPas++;
+        }
+        nbPas = 0;
+        while (mouvement != false && nbPas < size) {
+            mouvement = turtle.moveWest(window);
+            nbPas++;
+        }
+    }
+
+    static void drawSpiral(){
+        Window window = new Window(600, 600, "Turtle");
+        int nbPas = 2;
+        int i=0;
+        int direction = 0;
+        boolean ok = true;
+        Turtle turtle;
+        turtle = new Turtle(270, 270);
+        turtle.show(window);
+        while (ok == true){
+            switch(direction){
+                case 0:
+                ok = goDirection(window, turtle, 'E', nbPas);
+                break;
+                case 1:
+                ok = goDirection(window, turtle, 'S', nbPas);
+                break;
+                case 2:
+                ok = goDirection(window, turtle, 'W', nbPas);
+                break;
+                case 3:
+                ok = goDirection(window, turtle, 'N', nbPas);
+                break;
+            }
+            i++;
+            if (i%2==0){
+                nbPas+=2;
+            }
+            direction = (direction + 1)%4;
+        }
+    }
+
+    static void turtlePingPong(){
+        Window window = new Window(600, 200, "Turtle");
+        int nbPas = 100;
+        int direction = 0;
+        boolean ok = true;
+        Turtle turtle;
+        turtle = new Turtle(0, 100);
+        turtle.show(window);
+        turtle.setSpeed(25);
+        while ((ok == true) || (ok ==false)){
+            switch(direction){
+                case 0:
+                ok = goDirection(window, turtle1, 'E', nbPas);
+                goDirection(window, turtle2, 'W', nbPas);
+                break;
+                case 1:
+                ok = goDirection(window, turtle1, 'W', nbPas);
+                goDirection(window, turtle2, 'E', nbPas);
+                break;
+            }
+            direction = (direction + 1)%2;
+        }
+    }
+
+    static void roundAbout(){
+        Window window = new Window(300, 180, "Round About");
+        boolean ok = true;
+        int direction = 0;
+        Turtle turtle;
+        turtle = new Turtle(0,0);
+        turtle.show(window);
+        while ((ok == true) || (ok ==false)){
+          switch (direction){
+                case 0:
+                ok = goDirection(window, turtle1, 'E', nbPas);
+                break;
+                case 1;
+                ok = goDirection(window, turtle1, 'S', nbPas);
+                break;
+                case 2;
+                ok = goDirection(window, turtle1, 'W', nbPas);
+                case 3;
+                ok = goDirection(window, turtle1, 'E', nbPas);
+                break;
+          }
+          direction = (direction + 1)%4;
+        }
+    }
+
+    static int calculerTriple (int a) {
+        return a*3;
+    }
+
+    
+}

@@ -1,0 +1,145 @@
+
+/* #### ### ####### ##########
+ * ####:
+ * ########:
+ * ##:
+ */
+
+import ecs100.*;
+import java.awt.Color;
+import java.util.*;
+import java.io.*;
+
+/** ######: #### ##### #### ## ## # ##### #####.
+#### ####, # #### ###### ## # ##### ## ### #####,
+## ### ##### ####### ### # #####, ### ##### ## #######.
+## ### ##### #####'# #### # #####, #### # ##### ## ###
+####### ###### ## #####, ### ### ####### ###### ## ######## ## ###
+##### ######.
+### ##### ## ### ##### ## ###### ## # ## ##### ## #####, ####
+- #### ####### ### #### ## #####,
+- #####.##### ####### #### ##### ## # ##### ##### ## ### ####
+- #####.##### ####### #### ##### ## # ##### ##### ## ### ####
+##### #### #####, ### ##### ## ####### ##########.
+
+(####, ### #### ## ##### ### # ##### #### ## #######, ### ### ###### ###
+###### ## ### ####### ## ### #######, ## ##### ### ######## ## # ## ######.
+### #### ## ######## ####### ## ### #### # ##### #### ## ####### ###
+#### ### ###### ## ### ###### ## ### #######.)
+
+ */
+
+public class GoGame  {
+
+    public static final Color BOARD_COLOR = new Color(230, 120, 0);
+    public static final double BOARD_LEFT = 50;
+    public static final double BOARD_TOP = 20;
+    public static final double GRID_SIZE = 25;
+    public static final double NUM_CELLS = 19;
+    public static final double BOARD_DIM = GRID_SIZE*NUM_CELLS;
+
+    private double rx;
+    private double ry;
+
+    private int boardX;
+    private int boardY;
+
+    private Color[][] board = new Color[19][19];
+    private Color turn = Color.black;
+
+    /*# YOUR CODE HERE */
+    public GoGame(){
+        UI.initialise();
+        UI.addButton("New", this::New);
+        UI.setMouseListener(this::doMouse);
+    }
+
+    public void New(){
+        redraw();
+
+    }
+
+    public void doMouse(String mouseAction, double x, double y) {
+        if (mouseAction.equals("released")){
+            /*# YOUR CODE HERE */
+            rx = x;
+            ry = y;
+
+            int rows = board.length;
+            int cols = board[0].length;
+
+            for (int row = 0; row < rows; row++){
+                if (rx < ((row * GRID_SIZE) + 50)) {
+                    boardX = row-1;
+                    rx = ((row-1) * GRID_SIZE) +50;
+                    break;
+                }
+
+            }
+
+            for (int col = 0; col < cols; col++){
+                if (ry < ((col * GRID_SIZE) + 20)) {
+                    boardY = col-1;
+                    ry = ((col-1) * GRID_SIZE) + 20;
+                    break;
+                }          	 
+
+            }
+
+            drawpiece();
+
+            
+        }
+    }
+
+    public void redraw() {
+        int rows = board.length;
+        int cols = board[0].length;
+
+        for (int row = 0; row < rows; row++){
+            double y = BOARD_TOP + GRID_SIZE * row;
+
+            for (int col = 0; col < cols; col++){
+
+                double x = BOARD_LEFT + GRID_SIZE * col;
+                UI.setColor(BOARD_COLOR);
+                UI.fillRect(x, y, GRID_SIZE, GRID_SIZE);
+                UI.setColor(new Color(0, 0, 0));
+                UI.drawRect(x, y, GRID_SIZE, GRID_SIZE);
+
+                /*if (board[row][col] != null){
+                board[row][col].draw(x, y);
+                }
+                 */
+            }
+        }
+
+        for (int m = 0; m < NUM_CELLS; m++) {
+            for (int n = 0; n < NUM_CELLS; n++) {
+                board[m][n] = null;
+
+            }
+        }
+    }
+    
+    public void drawpiece(x, y) {
+        
+        if (turn.equals(Color.black)) {
+                UI.setColor(Color.black);
+                UI.fillOval(rx, ry, 25, 25);
+                turn = Color.white;
+            } else {
+                UI.setColor(Color.white);
+                UI.fillOval(rx, ry, 25, 25);
+                turn = Color.black;
+            }
+
+    
+}
+
+    public static void main(String[] arguments){
+        GoGame obj = new GoGame();
+        
+
+    }   	 
+}

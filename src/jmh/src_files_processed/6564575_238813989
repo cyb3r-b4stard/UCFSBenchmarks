@@ -1,0 +1,649 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class Kalkulacka extends JFrame {
+    private JButton bPlus, bMinus, bKrat, bDeleno, bMocnina, bOdmocnina, bVysledek;
+    private JTextField tf;
+    private JPanel p;
+    private JMenuBar mb;
+    private JMenu mVolby, mStyl, mNapoveda;
+    private JMenuItem miZavrit, miVynulovat, miNavod, miOProgramu, miKlavesnice;
+    private JCheckBox gk;
+    private JRadioButton sedy, vychozi;
+    private Color c1, c2;
+    public ButtonGroup bg;
+    double v, c;
+    int a;
+    
+    private JButton bVypocet;
+    private JRadioButton kruznice, elipsa, parabola, hyperbola;
+    private JTextField gx, gy, gm, gn, gr, gp, ga, gb;
+    private JLabel vzorec;
+    public ButtonGroup bg1;
+    private JFrame frame;
+    
+    public static void main(String [] args) {
+        Kalkulacka k = new Kalkulacka();
+    }
+    
+    public Kalkulacka() {
+        super("Kalkulačka");
+        setVisible(true);
+        setSize(370,120);
+        setResizable(false); 
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        setLayout(new BorderLayout(0,0));
+        add(p = new JPanel(), BorderLayout.SOUTH);
+        
+        setJMenuBar(mb = new JMenuBar());
+        mb.add(mVolby = new JMenu("Volby"));
+        mVolby.add(miVynulovat = new JMenuItem("Vynulovat"));
+        mVolby.add(gk = new JCheckBox("Grafická kalkulačka"));
+        mVolby.add(miKlavesnice = new JMenuItem("Klávesnice na obrazovce"));
+        mVolby.add(mStyl = new JMenu("Styl"));
+        mVolby.add(miZavrit = new JMenuItem("Zavrit"));
+        
+        mb.add(mNapoveda = new JMenu("Nápověda"));
+        mNapoveda.add(miNavod = new JMenuItem("Návod"));
+        mNapoveda.add(miOProgramu = new JMenuItem("O programu kalkulačka"));
+        mStyl.add(vychozi = new JRadioButton("Výchozí", true));
+        mStyl.add(sedy = new JRadioButton("Šedý     "));
+        bg = new ButtonGroup();
+        bg.add(vychozi);
+        bg.add(sedy);
+        
+        tf = new JTextField("",10);
+        bPlus = new JButton("  +  ");
+        bMinus = new JButton("  -  ");
+        bKrat = new JButton("  *  ");
+        bDeleno = new JButton("  /  ");
+        bMocnina = new JButton("^n");
+        bOdmocnina = new JButton("n√");
+        bVysledek = new JButton("=");
+        
+        add(tf, BorderLayout.CENTER);
+        add(bVysledek, BorderLayout.EAST);
+        p.add(bPlus);
+        p.add(bMinus);
+        p.add(bKrat);
+        p.add(bDeleno);
+        p.add(bMocnina);
+        p.add(bOdmocnina);
+        
+        bPlus.addActionListener(new Plus());
+        bMinus.addActionListener(new Minus());
+        bKrat.addActionListener(new Krat());
+        bDeleno.addActionListener(new Deleno());
+        bMocnina.addActionListener(new Mocnina());
+        bOdmocnina.addActionListener(new Odmocnina());
+        bVysledek.addActionListener(new Vysledek());
+        
+        miZavrit.addActionListener(new Zavrit());
+        miVynulovat.addActionListener(new Vynulovat());
+        gk.addActionListener(new GrafickaKalkulacka());
+        miKlavesnice.addActionListener(new Klavesnice());
+        miNavod.addActionListener(new Navod());
+        miOProgramu.addActionListener(new OProgramu());
+        vychozi.addActionListener(new Vychozi());
+        sedy.addActionListener(new Sedy());
+        
+        mb.setBackground(c1 = new Color(225, 230, 225));
+        p.setBackground(c1);
+        bPlus.setBackground(Color.WHITE);
+        bMinus.setBackground(Color.WHITE);
+        bKrat.setBackground(Color.WHITE);
+        bDeleno.setBackground(Color.WHITE);
+        bMocnina.setBackground(Color.WHITE);
+        bOdmocnina.setBackground(Color.WHITE);
+        bVysledek.setBackground(Color.WHITE);
+        mStyl.setOpaque(true);
+        
+        add(vzorec = new JLabel("                           (x-m)^2 + (y-n)^2 = r^2                           "));
+        add(gx = new JTextField("x", 4));
+        add(gm = new JTextField("m", 4));
+        add(ga = new JTextField("a", 4));
+        add(gp = new JTextField("p", 4));
+        add(gy = new JTextField("y", 4));
+        add(gn = new JTextField("n", 4));
+        add(gb = new JTextField("b", 4));
+        add(gr = new JTextField("r", 4));
+        bg1 = new ButtonGroup();
+        bg1.add(kruznice = new JRadioButton("Kružnice", true));
+        bg1.add(elipsa = new JRadioButton("Elipsa"));
+        bg1.add(parabola = new JRadioButton("Parabola"));
+        bg1.add(hyperbola = new JRadioButton("Hyperbola"));
+        add(kruznice);
+        add(elipsa);
+        add(parabola);
+        add(hyperbola);
+        add(bVypocet = new JButton("Výpočet"), BorderLayout.SOUTH);
+        
+        vzorec.setVisible(false);
+        gx.setVisible(false);
+        gm.setVisible(false);
+        ga.setVisible(false);
+        gp.setVisible(false);
+        gy.setVisible(false);
+        gn.setVisible(false);
+        gb.setVisible(false);
+        gr.setVisible(false);
+        kruznice.setVisible(false);
+        elipsa.setVisible(false);
+        parabola.setVisible(false);
+        hyperbola.setVisible(false);
+        bVypocet.setVisible(false);
+        
+        kruznice.addActionListener(new Kruznice());
+        elipsa.addActionListener(new Elipsa());
+        parabola.addActionListener(new Parabola());
+        hyperbola.addActionListener(new Hyperbola());
+        bVypocet.addActionListener(new Vypocet());
+    }
+    
+    public class Plus implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            try {
+                c = Double.parseDouble(tf.getText()); 
+                switch(a) { 
+                    case 1: v=v+c; break;
+                    case 2: v=v-c; break;
+                    case 3: v=v*c; break;
+                    case 4: v=v/c; break;
+                    case 5: v=Math.pow(v,c); break;
+                    case 6: v=Math.pow(v,(1.0/c)); break;
+                    default: v=v+c; break;
+                }
+                a = 1; 
+                tf.setText("");
+            }
+            catch (NumberFormatException nfe) { 
+                JOptionPane.showMessageDialog(null, "Chyba při výpočtu", "Chyba", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    public class Minus implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            try {
+                c = Double.parseDouble(tf.getText());
+                if(a==0)
+                    v = c;
+                else {
+                    switch(a) {
+                        case 1: v=v+c; break;
+                        case 2: v=v-c; break;
+                        case 3: v=v*c; break;
+                        case 4: v=v/c; break;
+                        case 5: v=Math.pow(v,c); break;
+                        case 6: v=Math.pow(v,(1.0/c)); break;
+                        default: v=v-c; break;
+                    }
+                }
+                a = 2;
+                tf.setText("");
+            }
+            catch (NumberFormatException nfe) {
+                JOptionPane.showMessageDialog(null, "Chyba při výpočtu", "Chyba", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    public class Krat implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            try {
+                c = Double.parseDouble(tf.getText());
+                if(a==0)
+                    v = c;
+                else {
+                    switch(a) {
+                        case 1: v=v+c; break;
+                        case 2: v=v-c; break;
+                        case 3: v=v*c; break;
+                        case 4: v=v/c; break;
+                        case 5: v=Math.pow(v,c); break;
+                        case 6: v=Math.pow(v,(1.0/c)); break;
+                        default: v=v*c; break;
+                    }
+                }
+                a = 3;
+                tf.setText("");
+            }
+            catch (NumberFormatException nfe) {
+                JOptionPane.showMessageDialog(null, "Chyba při výpočtu", "Chyba", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    public class Deleno implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            try {
+                c = Double.parseDouble(tf.getText());
+                if(a==0)
+                    v = c;
+                else {
+                    switch(a) {
+                        case 1: v=v+c; break;
+                        case 2: v=v-c; break;
+                        case 3: v=v*c; break;
+                        case 4: v=v/c; break;
+                        case 5: v=Math.pow(v,c); break;
+                        case 6: v=Math.pow(v,(1.0/c)); break;
+                        default: v=v/c; break;
+                    }
+                }
+                a = 4;
+                tf.setText("");
+            }
+            catch (NumberFormatException nfe) {
+                JOptionPane.showMessageDialog(null, "Chyba při výpočtu", "Chyba", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    public class Mocnina implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            try {
+                c = Double.parseDouble(tf.getText());
+                if(a==0)
+                    v = c;
+                else {
+                    switch(a) {
+                        case 1: v=v+c; break;
+                        case 2: v=v-c; break;
+                        case 3: v=v*c; break;
+                        case 4: v=v/c; break;
+                        case 5: v=Math.pow(v,c); break;
+                        case 6: v=Math.pow(v,(1.0/c)); break;
+                        default: v=Math.pow(v,c); break;
+                    }
+                }
+                a = 5;
+                tf.setText("");
+            }
+            catch (NumberFormatException nfe) {
+                JOptionPane.showMessageDialog(null, "Chyba při výpočtu", "Chyba", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    public class Odmocnina implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            try {
+                c = Double.parseDouble(tf.getText());
+                if(a==0)
+                    v = c;
+                else {
+                    switch(a) {
+                        case 1: v=v+c; break;
+                        case 2: v=v-c; break;
+                        case 3: v=v*c; break;
+                        case 4: v=v/c; break;
+                        case 5: v=Math.pow(v,c); break;
+                        case 6: v=Math.pow(v,(1.0/c)); break;
+                        default: v=Math.pow(v,(1.0/c)); break;
+                    }
+                }
+                a = 6;
+                tf.setText("");
+            }
+            catch (NumberFormatException nfe) {
+                JOptionPane.showMessageDialog(null, "Chyba při výpočtu", "Chyba", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    public class Vysledek implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            try {
+                c = Double.parseDouble(tf.getText());
+                switch(a) {
+                    case 1: v=v+c; break;
+                    case 2: v=v-c; break;
+                    case 3: v=v*c; break;
+                    case 4: v=v/c; break;
+                    case 5: v=Math.pow(v,c); break;
+                    case 6: v=Math.pow(v,(1.0/c)); break;
+                    default: v=c; break;
+                }
+                tf.setText(Double.toString(v));
+                a=0;
+                v=0;
+            }
+            catch (NumberFormatException nfe) {
+                JOptionPane.showMessageDialog(null, "Chyba při výpočtu", "Chyba", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    public class Zavrit implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            System.exit(0); 
+        }
+    }
+    public class Vynulovat implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            tf.setText("");
+            a=0;
+            v=0;
+        }
+    }
+    public class GrafickaKalkulacka implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            if(gk.isSelected(true) {
+            }
+        }
+    }
+    public class Klavesnice extends JFrame implements ActionListener {
+        private JButton b1, b2, b3, b4, b5, b6, b7, b8, b9, b0, bDes, bZpet;
+        private JPanel p0,p1,p2,p3;
+        public Klavesnice() {
+            super("Numerická klávesnice");
+            setVisible(false); 
+            setLocation(80,135);
+            setSize(200,200);
+            setResizable(false);
+            setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+            setLayout(new FlowLayout());
+            
+            bZpet = new JButton("←");
+            b0 = new JButton(" 0 ");
+            bDes = new JButton("  . ");
+            b1 = new JButton(" 1 ");
+            b2 = new JButton(" 2 ");
+            b3 = new JButton(" 3 ");
+            b4 = new JButton(" 4 ");
+            b5 = new JButton(" 5 ");
+            b6 = new JButton(" 6 ");
+            b7 = new JButton(" 7 ");
+            b8 = new JButton(" 8 ");
+            b9 = new JButton(" 9 ");
+            
+            add(p3 = new JPanel());
+            add(p2 = new JPanel());
+            add(p1 = new JPanel());
+            add(p0 = new JPanel());
+            
+            p0.add(bZpet);
+            p0.add(b0);
+            p0.add(bDes);
+            p1.add(b1);
+            p1.add(b2);
+            p1.add(b3);
+            p2.add(b4);
+            p2.add(b5);
+            p2.add(b6);
+            p3.add(b7);
+            p3.add(b8);
+            p3.add(b9);
+            
+            bZpet.addActionListener(new BZpet());
+            b0.addActionListener(new B0());
+            bDes.addActionListener(new BDes());
+            b1.addActionListener(new B1());
+            b2.addActionListener(new B2());
+            b3.addActionListener(new B3());
+            b4.addActionListener(new B4());
+            b5.addActionListener(new B5());
+            b6.addActionListener(new B6());
+            b7.addActionListener(new B7());
+            b8.addActionListener(new B8());
+            b9.addActionListener(new B9());
+        }
+        public void actionPerformed(ActionEvent e) {
+            setVisible(true);
+        }
+    }
+    public class Navod extends JFrame implements ActionListener {
+        private JPanel p1;
+        private JLabel l01, l02, l03, l04, l05, l06, l07, l08, l09, l10, l11, l12, l13, l14, l15, l16;
+        private Font f;
+        public Navod() {
+            super("Návod");
+            setVisible(false);
+            setLocation(10,150);
+            setSize(260,380);
+            setResizable(false);
+            setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+            setLayout(new BorderLayout(5,5));
+            add(p1 = new JPanel(), BorderLayout.CENTER);
+            
+            l01 = new JLabel(" Návod pro aplikaci Kalkulačka");
+            l02 = new JLabel("Do textového okna zadávejte pouze číslo.    ");
+            l03 = new JLabel("Po zadání čísla si vyberte následující            ");
+            l04 = new JLabel("operaci (sčítání, odčítání, násobení,...)          ");
+            l05 = new JLabel("a zadejte další číslo, na které má být             ");
+            l06 = new JLabel("vaše zadaná operace navázána, až budete  ");
+            l07 = new JLabel("chtít získat výsledek, zmáčkněte tlačítko     ");
+            l08 = new JLabel("[=] (je možno použít složitější výpočty            ");
+            l09 = new JLabel("např: 5*2+7). Reálné čísla pomocí tečky.       ");
+            l10 = new JLabel("V tlačítkách písmeno n značí druhé číslo,     ");
+            l11 = new JLabel("to znamená, že v případě, že budete               ");
+            l12 = new JLabel("chtít použít mocninu (tlačítko: [^n]),                ");
+            l13 = new JLabel("první zadané číslo mocníte číslem zadaným");
+            l14 = new JLabel("jako druhý, to znamená: 2 na 3. =>                  ");
+            l15 = new JLabel("2 [^n] 3. V případě odmocniny je to samé:    ");
+            l16 = new JLabel("3. odmocnina ze 2 => 2 [n√] 3                          ");
+            add(l01, BorderLayout.NORTH);
+            p1.add(l02);
+            p1.add(l03);
+            p1.add(l04);
+            p1.add(l05);
+            p1.add(l06);
+            p1.add(l07);
+            p1.add(l08);
+            p1.add(l09);
+            p1.add(l10);
+            p1.add(l11);
+            p1.add(l12);
+            p1.add(l13);
+            p1.add(l14);
+            p1.add(l15);
+            p1.add(l16);
+            l01.setFont(f = new Font("DialogInput", Font.BOLD, 13));
+        }
+        public void actionPerformed(ActionEvent e) {
+            setVisible(true);
+        }
+    }
+    public class OProgramu extends JFrame implements ActionListener {
+        private JLabel l1, l2, l3, l4;
+        private JPanel p;
+        private Font f;
+        public OProgramu() {
+            super("O programu");
+            setVisible(false);
+            setLocation(290,150);
+            setSize(240,200);
+            setResizable(false);
+            setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+            setLayout(new BorderLayout(5,5));
+
+            add(p = new JPanel(), BorderLayout.CENTER);
+            l1 = new JLabel("Program KALKULAČKA", JLabel.CENTER);
+            l2 = new JLabel("Vytvořil:  Vyskočil Jiří                              ");
+            l3 = new JLabel("3.H/S2, 2013/14       ");
+            l4 = new JLabel("              student VOŠ a SPŠE Plzeň");
+            add(l1, BorderLayout.NORTH);
+            p.add(l2);
+            p.add(l3);
+            p.add(l4);
+            l1.setFont(f = new Font("SansSerif", Font.BOLD, 18));
+            l1.setOpaque(true);
+            l1.setBackground(Color.RED);
+            p.setBackground(Color.GRAY);
+            l2.setForeground(Color.WHITE);
+            l3.setForeground(Color.WHITE);
+            l4.setForeground(Color.WHITE);
+        }
+        public void actionPerformed(ActionEvent e) {
+            setVisible(true);
+        }
+    }
+    public class Vychozi implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            mb.setBackground(c1);
+            p.setBackground(c1);
+            tf.setBackground(Color.WHITE);
+            bPlus.setBackground(Color.WHITE);
+            bMinus.setBackground(Color.WHITE);
+            bKrat.setBackground(Color.WHITE);
+            bDeleno.setBackground(Color.WHITE);
+            bMocnina.setBackground(Color.WHITE);
+            bOdmocnina.setBackground(Color.WHITE);
+            bVysledek.setBackground(Color.WHITE);
+            mStyl.setBackground(c1);
+            miZavrit.setBackground(c1);
+            miVynulovat.setBackground(c1);
+            miKlavesnice.setBackground(c1);
+            miNavod.setBackground(c1);
+            miOProgramu.setBackground(c1);
+            vychozi.setBackground(c1);
+            sedy.setBackground(c1);
+            mVolby.setBackground(c1);
+            mNapoveda.setBackground(c1);
+            
+            setVisible(false);
+            setVisible(true);
+        }
+    }
+    public class Sedy implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            mb.setBackground(c2 = new Color(220,220,220));
+            p.setBackground(c2);
+            tf.setBackground(Color.LIGHT_GRAY);
+            bPlus.setBackground(Color.LIGHT_GRAY);
+            bMinus.setBackground(Color.LIGHT_GRAY);
+            bKrat.setBackground(Color.LIGHT_GRAY);
+            bDeleno.setBackground(Color.LIGHT_GRAY);
+            bMocnina.setBackground(Color.LIGHT_GRAY);
+            bOdmocnina.setBackground(Color.LIGHT_GRAY);
+            bVysledek.setBackground(Color.LIGHT_GRAY);
+            mStyl.setBackground(c2);
+            miZavrit.setBackground(c2);
+            miVynulovat.setBackground(c2);
+            miKlavesnice.setBackground(c2);
+            miNavod.setBackground(c2);
+            miOProgramu.setBackground(c2);
+            vychozi.setBackground(c2);
+            sedy.setBackground(c2);
+            mVolby.setBackground(c2);
+            mNapoveda.setBackground(c2);
+            
+            setVisible(false);
+            setVisible(true);
+        }
+    }
+    
+    public class BZpet implements ActionListener {
+        String s;
+        int d;
+        public void actionPerformed(ActionEvent event){
+            s = tf.getText(); 
+            d = s.length(); 
+            if(d!=0) {
+                tf.setText(s.substring(0,d-1)); 
+            }
+        }
+    }
+    public class B0 implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            tf.setText(tf.getText()+"0");
+        }
+    }
+    public class BDes implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            tf.setText(tf.getText()+".");
+        }
+    }
+    public class B1 implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            tf.setText(tf.getText()+"1");
+        }
+    }
+    public class B2 implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            tf.setText(tf.getText()+"2");
+        }
+    }
+    public class B3 implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            tf.setText(tf.getText()+"3");
+        }
+    }
+    public class B4 implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            tf.setText(tf.getText()+"4");
+        }
+    }
+    public class B5 implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            tf.setText(tf.getText()+"5");
+        }
+    }
+    public class B6 implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            tf.setText(tf.getText()+"6");
+        }
+    }
+    public class B7 implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            tf.setText(tf.getText()+"7");
+        }
+    }
+    public class B8 implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            tf.setText(tf.getText()+"8");
+        }
+    }
+    public class B9 implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            tf.setText(tf.getText()+"9");
+        }
+    }
+    
+    public class Kruznice extends JFrame implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            gr.setVisible(true);
+            ga.setVisible(false);
+            gb.setVisible(false);
+            gp.setVisible(false);
+            setVisible(false);
+            setVisible(true);
+            vzorec.setText("                           (x-m)^2 + (y-n)^2 = r^2                           ");
+        }
+    }
+    public class Elipsa extends JFrame implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            gr.setVisible(false);
+            ga.setVisible(true);
+            gb.setVisible(true);
+            gp.setVisible(false);
+            setVisible(false);
+            setVisible(true);
+            vzorec.setText("                   [(x-m)^2/a^2] + [(y-n)^2/b^2] = 1                       ");
+        }
+    }
+    public class Parabola extends JFrame implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            gr.setVisible(false);
+            ga.setVisible(false);
+            gb.setVisible(false);
+            gp.setVisible(true);
+            setVisible(false);
+            setVisible(true);
+            vzorec.setText("                             (x-m)^2 = 2p(y-n)                                    ");
+        }
+    }
+    public class Hyperbola extends JFrame implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            gr.setVisible(false);
+            ga.setVisible(true);
+            gb.setVisible(true);
+            gp.setVisible(false);
+            setVisible(false);
+            setVisible(true);
+            vzorec.setText("                   [(x-m)^2/a^2] - [(y-n)^2/b^2] = 1                       ");
+        }
+    }
+    public class Vypocet implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            
+        }
+    }
+}

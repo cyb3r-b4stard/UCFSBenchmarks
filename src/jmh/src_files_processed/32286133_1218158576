@@ -1,0 +1,87 @@
+import objectdraw.*; 
+import java.awt.*; 
+/**
+ * ##### # ########### ## ##### #### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Grid
+{
+    private FilledRect cell; 
+    private static final int CELL_SIZE = 20; 
+    private int numCells = 0; 
+    private static final int GRID_ROW = 10; 
+    private static final int GRID_COL = 10; 
+    private int MAX_MINES = 10; 
+    private static final int GRID_OFFSET = 21; 
+    private int left = 10; 
+    private int top = 10; 
+    private GridCell[][] cells = new GridCell [GRID_ROW][GRID_COL];
+    public void addCells (DrawingCanvas canvas) {
+        for (int r = 0; r < GRID_ROW; r++) {            
+            for (int c = 0; c < GRID_COL; c++) {  
+                cells[r][c] = new GridCell (left, top, canvas);   
+                left = left + GRID_OFFSET;
+                numCells++; 
+                if (numCells % 10 == 0) {   
+                    top = top + GRID_OFFSET; 
+                    left = 10; 
+                } 
+            }    
+        }
+    }
+
+    public void revealMines () {
+        for (int a = 0; a < GRID_ROW; a++) {
+            for (int b = 0; b < GRID_COL; b++) {
+                if (cells [a][b] != null) {
+                    cells[a][b].showAllMines();
+                }
+            }
+        }
+    }
+
+    public void setMines () {
+        int numMines = 0;
+        RandomIntGenerator gen = new RandomIntGenerator (0, 9); 
+        while (numMines < MAX_MINES) {
+            int gridRow = gen.nextValue(); 
+            int gridCol = gen.nextValue(); 
+            if (!cells[gridRow][gridCol].hasMine()){ 
+                numMines++;
+                cells[gridRow][gridCol].showAllMines();  
+            }
+        }
+    } 
+
+    public void showNeighbor(int X, int Y) {
+        int numNeighbor = 0;
+        int row = getRow(Y);
+        int col = getCol (X); 
+        if (cells[row][col].hasMine(){
+            cells[row][col].mineFound();
+        }
+        
+        for (int r = row - 1; r <= row+1; r++) {
+            for (int c = col - 1; c <= col+1; c++) {
+                if (r >= 0 && r < 10 && c >= 0 && c < 10) {
+                    if (cells[r][c].hasMine()) {
+                        numNeighbor++;
+                    }
+                    else {   
+                    }
+                }
+            }
+        }
+        cells[row][col].showNum(numNeighbor);
+    }
+
+    private int getRow (int Y) {
+        return ((int)(Y - GRID_OFFSET)) / CELL_SIZE;
+    }
+
+    private int getCol (int X) {
+        return ((int)(X - GRID_OFFSET)) / CELL_SIZE;
+    } 
+}

@@ -1,0 +1,106 @@
+import java.util.function.*;
+import java.util.Scanner;
+/**
+ * ##### # ########### ## ##### ######### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class LambdaTest {
+    private Scanner input = new Scanner(System.in);
+    
+    public static LongFunction<Long> quadrat = (long x) -> x * x;
+    public static LongFunction<Long> fakultaet = (long x) -> (x == 0) ? 1 : x * LambdaTest.fakultaet.apply(x-1);
+    public static LongFunction<Long> pow = (long x) -> (long)Math.pow(x, x+1);
+    public static LongFunction<Long> fibonacci = (long x) -> (x <= 2) ? 1 : LambdaTest.fibonacci.apply(x-1) + LambdaTest.fibonacci.apply(x-2);
+    
+    public static LongFunction quadratt = new LongFunction() {
+        public long apply(long x) {
+            return x * x;
+        }
+    };
+    
+    public static AnonymeFunktionen fakultaett = new AnonymeFunktionen() {
+        public long operiere(long x) {
+            if (x == 0) {
+                return 1;
+            }
+            return x * operiere(x-1);
+        }
+    };
+    
+    public static AnonymeFunktionen poww = new AnonymeFunktionen() {
+        public long operiere(long x) {
+            return (long)Math.pow(x, x+1);
+        }
+    };
+    
+    public static AnonymeFunktionen fibonaccii = new AnonymeFunktionen() {
+        public long operiere(long x) {
+            if(x <= 2) {
+                return 1;
+            }
+            return operiere(x-1) + operiere(x-2);
+        }
+    };
+    
+    
+    
+    public static void main(String[] args) {
+        LambdaTest test = new LambdaTest();
+        test.start(); 
+    }
+    
+    public void start() {
+        /*System.out.println("Bitte zwei Zahlen eingeben");
+        long zahl1 = input.nextLong();
+        long zahl2 = input.nextLong();
+        System.out.println("Es wurden " + zahl1 + " und " +  zahl2 + " angenommen.");*/
+        
+        applyAndPrint(1, 20, quadrat);
+        applyAndPrint(1, 20, pow);
+        applyAndPrint(1, 20, fakultaet);
+    }
+    
+    public void start2() {
+        
+    }
+    
+    public static void applyAndPrint(int linkerIvRand, int rechterIvRand, LongFunction funktion) {
+        for(int i = linkerIvRand; i <= rechterIvRand; i++) {
+            System.out.println(funktion.apply(i));
+        }
+    }
+    
+    /*public static void applyAndPrint(int linkerIvRand, int rechterIvRand, AnonymeFunktionen funktion) {
+        for(int i = linkerIvRand; i <= rechterIvRand; i++) {
+            ;
+        }
+    }*/
+    
+    static class Fakultaet {
+        public static int berechneFakultaet(int zahl) {
+            if(zahl == 0) {
+                return 1;
+            }
+            return zahl * berechneFakultaet(zahl-1);
+        }
+    }
+    
+    /*
+    public static void main(String[] args) {
+        IntPredicate ip = (int x) -> x < 5555;
+        System.out.println(ip.test(423) + "\n");
+        
+        IntPredicate intPredGroesser = (int x) -> x > 0;
+        IntPredicate intPredKleiner = (int x) -> x < 1000;
+        IntPredicate verundet = intPredGroesser.and(intPredKleiner);
+        
+        System.out.println("4434" + verundet.test(4434));
+        System.out.println("42" + verundet.test(42) + "\n");
+        
+        IntConsumer addierer = (int x) -> System.out.println(x + x);
+        IntConsumer multiplizierer = (int x) -> System.out.println(x * x);
+        addierer.andThen(multiplizierer).accept(5);
+    }*/
+}

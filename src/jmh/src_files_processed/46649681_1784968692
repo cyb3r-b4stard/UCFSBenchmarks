@@ -1,0 +1,125 @@
+
+/* #### ### ####### ########## #  
+ * ####: ### ########
+ * ########: #########
+ * ##: #########
+ */
+
+import ecs100.*;
+import java.awt.Color;
+
+/**
+ * ##### # ##### ##### (# #### #########), ### #### ##### # ##### #####
+ *  ####### ### ###### ## ### ##### ## ##### ## ### ##.
+ * ### ##### #### ## ####### ### #### ## #### #### ## ### #######
+ *  #########, ### ##### ### "####" (## ####### ##### ## ###, ######
+ *  ### ####, ### ######### ######).
+ * #### ## ## ##### ## #### # ####, ### ####### #### ##### ####
+ *  ## ###'# ## #### ##### ## ### #####, ### ###### ### #########
+ *  ## # ### ###### ######### ## ## ##### ## #### ### ####.
+ *
+ * #####:
+ *   - ### ### ### ####.######() ## ###### # ###### ###### (####### #.# ### #.#)
+ *
+ *   - ## ### ##### ##### ## #### # ######## # ## ### ######### #, #### ## ###
+ *     #### ### ### ####### ## #### ## ### # ### # ########## ############ #####
+ *     ##### ############:
+ *       # * ####.###(# * ####.##/###)   ###   # * ####.###(# * ####.##/###)
+ *     (######## #### # ## ######## ## ####### #### # ## ###)
+ *
+ *   - ##### ### ###### #### ### #### ####, ### # ######## ###### ###
+ *     ####### ### ##### #######. ## ###### #### ### ######### ###
+ *     ##### ####### ## ####### ## #### ###. 
+ */
+
+public class FloorCleaner{
+    public static final double Left = 50;
+    public static final double Right = 550; 
+    public static final double Top = 50;
+    public static final double Bot = 420; 
+    public static final double Radius = 30;
+    public static final double Diam = 2*Radius;
+
+    /** cleanFloor
+     *  The main simulation loop,
+     *  Draws the floor area
+     *  Initialises the position and direction of the floor cleaning robot and draws it
+     *  Loops forever
+     *    erase the robot from its current position
+     *    work out position of one step in the current direction
+     *    check if it is hitting a wall or not
+     *    then either move it to the new position, or change its direction
+     *    redraw
+     *    sleep for a short time.
+     */
+    public void cleanFloor(){
+        /*# YOUR CODE HERE */
+        double x = Left + ((Right-Left)/2) - Radius;
+        double y = Top + ((Bot-Top)/2) - Radius;
+        double d = 180;
+        double s = 1;
+        double objectX = 300;
+        double objectY = 150;
+        double objectWidth = 100;
+        double objectHeight = 50;
+
+        UI.setColor(Color.lightGray);
+        UI.fillRect(Left, Top, Right, Bot);
+
+        this.object(objectX, objectY, objectWidth, objectHeight);
+
+        this.draw(x, y, d);
+        while(true){
+            UI.eraseOval(x, y, Diam, Diam);
+
+            x += s * Math.cos(d * Math.PI/180);
+            y += s * Math.sin(d * Math.PI/180);
+
+            if (x + Diam > Right + 50){ 
+                d = Math.random() * (360 - 180); 
+            }
+            if(x < Left){
+                d = Math.random() * 180;
+            }
+            if(y + Diam > Bot + 50){
+                d = Math.random() * (90 - 270);
+            }
+            if(y < Top){
+                d = Math.random() * (270 - 90);
+            }
+
+            /*if(){
+                
+            }*/
+
+            this.draw(x, y, d);
+            UI.sleep(8);
+        }
+
+    }
+
+    /**
+     * Draws the robot as a red circle at the specified position and direction
+     */
+    public void draw(double x, double y, double dir) {
+        /*# YOUR CODE HERE */
+        UI.setColor(Color.lightBlue);
+        UI.fillOval(x, y, Diam, Diam); 
+        UI.drawString("K", x, y);
+    }
+
+    public void object(double objectX, double objectY, double objectWidth, double objectHeight) {
+        UI.setColor(Color.pink);
+        UI.fillRect(objectX, objectY, objectWidth, objectHeight);
+    }
+
+    /** Create a new FloorCleaner object and call cleanFloor.   */
+    public static void main(String[] arguments){
+        FloorCleaner fc =new FloorCleaner();
+        UI.addButton("Quit", UI::quit);
+        UI.setDivider(0);
+        fc.cleanFloor();
+
+    }        
+
+}

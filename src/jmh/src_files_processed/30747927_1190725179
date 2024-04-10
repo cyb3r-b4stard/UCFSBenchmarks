@@ -1,0 +1,197 @@
+package librerias.estructurasDeDatos.deDispersion;
+
+import librerias.estructurasDeDatos.modelos.Map;
+import librerias.estructurasDeDatos.modelos.ListaConPI; 
+import librerias.estructurasDeDatos.lineales.LEGListaConPI;
+
+/**
+ * ############## ## ### ######### ######## ### ###### ### ## 
+ * @##### <#>, #### ## ### ###### ## ## ##### ####, ##### ########### ########
+ * @##### <#>, #### ## ### ####### ######### # ### ###### ## ### ##### ####
+ * @###### (###)
+ * @####### (####### ####)
+ */
+public class TablaHash<C, V> implements Map<C, V> {
+
+    /** El valor del factor de carga de una Tabla Hash 
+     *  (valor por defecto en la clase java.util.HashMap) */
+    public static final double FACTOR_CARGA = 0.75;
+    
+    protected ListaConPI<EntradaHash<C, V>>[] elArray;
+    
+    protected int talla; 
+            
+    /** Crea una Tabla Hash vacia, con una capacidad (inicial) maxima  
+     *  de tallaMaximaEstimada entradas y factor de carga 0.75
+     */
+    @SuppressWarnings("unchecked") 
+    public TablaHash(int inicial) {
+        int capacidad = siguientePrimo((int) (inicial / FACTOR_CARGA));
+        elArray = new LEGListaConPI[capacidad];
+        for (int i = 0; i < elArray.length; i++) { 
+            elArray[i] = new LEGListaConPI<EntradaHash<C, V>>();
+        }
+        talla = 0;
+    }
+    
+    public static final int siguientePrimo(int n) {
+        int nn = n;
+        if (nn % 2 == 0) { nn++; }
+        for ( ; !esPrimo(nn); nn += 2) { ; } 
+        return nn;
+    } 
+    
+    protected static final boolean esPrimo(int n) {
+        for (int i = 3; i * i <= n; i += 2) {
+            if (n % i == 0) { return false; } 
+        }
+        return true; 
+    } 
+    
+    protected int indiceHash(C c) {
+        int indiceHash = c.hashCode() % this.elArray.length;
+        if (indiceHash < 0) { indiceHash += this.elArray.length; }
+        return indiceHash;
+    }
+    
+    /** Devuelve el valor de la entrada con clave c,
+     *  o null si no hay una entrada con clave c en la Tabla
+     */
+    public V recuperar(C c) {
+        int pos = indiceHash(c);
+        ListaConPI<EntradaHash<C, V>> l = elArray[pos];
+        V valor = null;        
+        l.inicio();
+        while (!l.esFin() && !l.recuperar().clave.equals(c)) { 
+            l.siguiente(); 
+        }
+        if (!l.esFin()) {
+            valor = l.recuperar().valor;
+        }
+        return valor;
+    }
+    
+    
+    /** Elimina la entrada con clave c y devuelve su valor 
+     *  asociado, o null si no hay ninguna entrada con clave c 
+     */
+    public V eliminar(C c) {
+        int pos = indiceHash(c);
+        ListaConPI<EntradaHash<C, V>> l = elArray[pos];
+        V valor = null;      
+        l.inicio();
+        while (!l.esFin() && !l.recuperar().clave.equals(c)) { 
+            l.siguiente(); 
+        }
+        if (!l.esFin()) {
+            valor = l.recuperar().valor;
+            l.eliminar();
+            talla--;
+        }
+        return valor;
+    }
+        
+    /** Inserta la entrada (c, v)  a una Tabla Hash y devuelve  
+     *  el antiguo valor asociado a c, o null si no hay ninguna 
+     *  entrada con clave c en la Tabla
+     */
+    public V insertar(C c, V v) {
+        int pos = indiceHash(c);
+        ListaConPI<EntradaHash<C, V>> l = elArray[pos];
+        V antiguoValor = null;
+        l.inicio();
+        while (!l.esFin() && !l.recuperar().clave.equals(c)) { 
+            l.siguiente(); 
+        }
+        if (l.esFin()) { 
+            l.insertar(new EntradaHash<C, V>(c, v));
+            talla++;
+            if (factorCarga() > FACTOR_CARGA) {
+                rehashing();
+            }
+        }
+        else { 
+            antiguoValor = l.recuperar().valor; l.recuperar().valor = v;
+        }
+        return antiguoValor;
+    }
+    /** Comprueba si una Tabla Hash esta vacia, i.e. si tiene 0 entradas. */
+    public boolean esVacio() { return talla == 0; }
+    
+    /** Devuelve la talla, o numero de entradas, de una Tabla Hash. */
+    public int talla() { return talla; } 
+        
+    /** Devuelve el factor de carga actual de una Tabla Hash, i.e. la longitud
+     *  media de sus cubetas */
+    public final double factorCarga() {
+        
+        return (double) talla/elArray.length;
+        
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected final void rehashing() {
+        ListaConPI[] old = elArray;
+        elArray = new ListaConPI[siguientePrimo(2*elArray.length)];
+        for(int i = 0; i < elArray.length; i++){
+            elArray[i] = new LEGListaConPI<EntradaHash<C, V>>();
+        }
+        this.talla = 0;
+        for (int i = 0; i < old.length; i++) {
+            ListaConPI<EntradaHash<C,V>> l = old[i];
+            l.inicio();
+            for (l.inicio(); !l.esFin(); l.siguiente()) {
+                EntradaHash<C, V> e = l.recuperar();
+                this.insertar(e.clave, e.valor);
+            }   
+        }
+        
+        
+    } 
+
+    /** Devuelve una ListaConPI con las talla() claves de una Tabla Hash */
+    public ListaConPI<C> claves() {
+        ListaConPI<C> res = new LEGListaConPI();
+        for(int i=0;i<elArray.length;i++){
+            elArray[i].inicio();
+            while(!elArray[i].esFin()){
+            res.insertar(elArray[i].recuperar().clave);
+            elArray[i].siguiente();
+           }
+        }
+        return res;
+        
+    }
+   
+    /** Calcula la desviacion tipica de las longitudes de las listas */
+    public final double desviacionTipica() {
+        double acc = 0;
+         for(int i = 0; i < elArray.length; i++){
+            double a = elArray[i].talla() - factorCarga();
+            acc += (a * a);
+        
+        }
+        return Math.sqrt(acc / elArray.length);
+        
+    }
+
+    /** Devuelve un String que representa el histograma de ocupacion:
+      * lineas, cada una de ellas con dos valores: 
+      * longitudCubeta  NumeroDeCubetas 
+      * donde:
+      * - las lineas 0 a 8 contienen el numero de cubetas de esa longitud, 
+      *   0<=longitud<9
+      * la ultima linea (9) contiene el numero de cubetas de longitud 9 o mas
+      */      
+    public String histograma() {
+        int c=0;
+        String k="";
+        for (int i = 0; i < elArray.length; i++){
+            if (c < 9){
+                k=k++i++"   "++elArray[i].talla()++"";
+            }
+        }
+        return "";
+        
+    }
+}

@@ -1,0 +1,82 @@
+import javax.swing.*;
+import javax.swing.event.*;
+import java.awt.Graphics.*;
+import java.awt.event.*;
+import java.text.*;
+import javax.swing.border.*;
+import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.Container;
+import java.awt.Color;
+public class Main 
+{
+
+    public List<Card> liveCards = new ArrayList<Card>(); 
+    int aiNum = 4;
+    public List<Ai> liveAi = new ArrayList<Ai>();
+    public List<Card> playerCards = new ArrayList<Card>();
+    public Main()
+    {
+        createCards(aiNum*2+7);
+        assignCards();
+        for(int i=0;i<aiNum;i++){
+            System.out.println("Ai" + i +"'s cards"); 
+            System.out.println("Value " +liveAi.get(i).myCards.get(0).value +" Suit " + liveAi.get(i).myCards.get(0).suit );
+            System.out.println("Value " + liveAi.get(i).myCards.get(1).value + " Suit " + liveAi.get(i).myCards.get(1).suit);
+            System.out.println("Check! "+liveAi.get(i).mergeSortandValue(liveCards));
+                    System.out.println("TOP CARD! " + liveAi.get(i).topCards.get(0);
+
+
+        }
+        for(int i=0;i<liveCards.size();i++){
+        System.out.println("Value " + liveCards.get(i).value + " Suit " + liveCards.get(i).suit);
+
+        }
+        
+
+    }
+
+    public void createCards(int n){
+
+        if(n==0){
+            System.out.println
+            ("DONE");
+            return;
+        }
+        Random r = new Random();
+        int nValue = r.nextInt(13)+1;
+        int nSuit  = r.nextInt(4)+1;
+        if(liveCards.size()>0){;
+            for(int i =0;i<liveCards.size();i++){
+
+                Card testC = liveCards.get(i);
+
+                if(testC.suit==nSuit&&testC.value==nValue){
+                    createCards(n);
+                    return;
+                }
+
+            }}
+        liveCards.add(new Card(nValue, nSuit));
+        createCards(n-1);
+
+    }
+
+    public void assignCards(){
+        for(int i=0;aiNum*2>i;i+=2){
+            Ai cpu = new Ai();
+
+            cpu.myCards.add(liveCards.get(i));
+            cpu.myCards.add(liveCards.get(i+1));
+
+            liveAi.add(cpu);
+        }
+        playerCards.add(liveCards.get(aiNum*2));
+        playerCards.add(liveCards.get(aiNum*2+1));
+        liveCards.subList(0,aiNum*2+2).clear();
+
+    }
+
+  
+}

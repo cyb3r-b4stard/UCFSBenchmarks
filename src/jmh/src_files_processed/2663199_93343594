@@ -1,0 +1,87 @@
+
+/**
+ * ##### # ########### ## ##### ######## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import java.io.*;
+
+public class Diagonals
+{   
+    public static void main(double exampleMatrix)
+    {
+        exampleMatrix [][] = {{10, 0, 0, 0, 0},{0, 10, 0, 0, 0,},{0, 0, 5, 0, 0},{0, 0, 0, -10, 0},{0, 0, 0, 0, 7}};
+        int i,j,k=0;
+        double sum;
+        double array[] = new double[5];
+        
+        for (i=0;i<5;i++)
+        {
+            for(j=0;j<5;j++)
+            {
+                if(exampleMatrix[i][j]!=0)
+                array [k]=exampleMatrix[i][j];
+                k++;
+            }
+        }
+        System.out.println("Sum of Digonal elements are: %d");
+    }
+    
+    public double sum(int array[])
+    {
+        double sum=0;
+        for(int i=0;i<5;i++)
+            sum+=array[i];
+        return sum;
+    }
+    
+    public double[][] product(double exampleMatrix[][])
+    {
+        double P[][]=new double [5][5];
+        for(int i=0;i<5;i++)
+            for(int j=0;j<5;j++)
+                for(int k=0;k<5;k++)
+                P[i][k]=exampleMatrix[i][k]*exampleMatrix[k][j];
+        return P;
+    }
+    
+    public double[][] inverse(double exampleMatrix[][])
+    {
+        int i,j,k;
+        double factor;
+        double I[][]=new double[5][5];
+        for(i=0;i<5;i++)
+        {
+            for(j=0;j<5;j++)
+            {
+                if(i==j)
+                I[i][j]=1;
+                else
+                I[i][j]=0;
+            }
+        }
+        
+        for(i=0;i<5;i++)
+        {
+            for(j=0;j<5;j++)
+                exampleMatrix[i][j]=exampleMatrix[j][i]/exampleMatrix[i][i];
+            I[i][j]=I[i][j]/exampleMatrix[i][i];
+            
+            for(k=0;k<5;k++)
+            {
+                if(k!=i)
+                {
+                    factor=exampleMatrix[k][i];
+                    for(j=0;j<5;j++)
+                        exampleMatrix[k][j]=exampleMatrix[k][j]-factor*exampleMatrix[k][j];
+                    I[k][j]=I[k][j]-factor*I[k][j];
+                }
+            }
+        }
+        
+        return I;
+    }
+    
+
+}

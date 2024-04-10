@@ -1,0 +1,120 @@
+import java.util.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import java.awt.event.*;
+public class Ai 
+{
+    public List<Card> myCards = new ArrayList<Card>(); 
+    public int handS = 0;
+    public List<Integer>topCards = new ArrayList<Integer>(); 
+    public List<String>names = new ArrayList<String>();
+    names.add("Bob");
+    public List<Integer>tempCard = new ArrayList<Integer>();
+    public Ai()
+    {
+
+    }
+    public int mergeSortandValue(List<Card> liveCards){
+        myCards.addAll(liveCards);
+        fullCardCheck(0,1,myCards);
+        return  handS;
+
+    }
+
+    public void fullCardCheck(int indexOne, int indexTwo,List<Card>allCards){
+        tempCard.clear();
+        if(indexOne >= allCards.size()-1){
+            return;
+        }
+        List<Card>tempL = new ArrayList<Card>();
+        tempL.addAll(allCards);
+        tempL.remove(indexOne);
+        if(allCards.size()==7){
+            tempL.remove(indexTwo-1);
+        }
+        checkCards(tempL);
+        if(indexTwo==allCards.size()-1){
+            fullCardCheck(indexOne+1,indexOne+2,allCards);
+        }
+        else{
+            fullCardCheck(indexOne,indexTwo+1,allCards);
+        }
+        return;
+    }
+
+    public int checkCards(List<Card>subL){
+        int tempS = flushCheck(subL) +  straightCheck(subL) + pairCheck(subL);
+        System.out.println(tempS);
+        if(tempS>handS){
+            handS=tempS;    
+        }
+        return tempS;
+    }
+
+    public int flushCheck(List<Card>subL){
+        for(int i=0;i<subL.size()-1;i++){
+            if(subL.get(i).suit!=subL.get(i+1).suit)
+            {
+                return 0;
+            }
+        }
+        
+        return 350;
+    }
+
+    public int straightCheck(List<Card>subL){
+        for(int i=0;i<subL.size()-1;i++){
+            if(subL.get(i).value+1!=subL.get(i+1).value)
+            {
+                return 0;
+            }
+        }
+        return 325;
+    }
+
+    public int pairCheck(List<Card>subL){
+        List<Card>tempL = new ArrayList<Card>();
+        tempL.addAll(subL);
+        int pC=0;
+        int value=0;
+        for(int i = 0;i<tempL.size();i++){
+            int changeP = 0;
+            for(int n=i+1;n<tempL.size();n++){
+                if(tempL.get(i).value == tempL.get(n).value){
+                    tempL.remove(n);  
+                    n--;
+                    changeP++;
+                }
+
+            }
+            if(changeP!=0){
+                if(changeP==4){
+                    value+=400;
+                }
+                else if(changeP==3){
+                    value+=300;
+                    System.out.println("3Pair!");
+                }
+                else{
+                    value+=changeP*10;
+                }
+                tempL.remove(i);
+                i--;
+            }
+
+        }
+
+        return value;
+    }
+    
+    public int highCard(List<Card>subL){
+        int h=0;
+        for(int i=0;i<subL.size();i++){
+            if(subL.get(i).value>h){
+                h=subL.get(i).value;
+
+            }
+        }
+        return h;
+    }
+}

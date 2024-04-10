@@ -1,0 +1,78 @@
+import edu.duke.*;
+
+public class CaesarCipher {
+    public String encrypt(String input, int key) {
+        StringBuilder encrypted = new StringBuilder(input);
+        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String shiftedAlphabet = alphabet.substring(key)+
+        alphabet.substring(0,key);
+        for(int i = 0; i < encrypted.length(); i++) {
+            char currChar = encrypted.charAt(i);
+            int idx = alphabet.indexOf(Character.toUpperCase(currChar));
+            if(idx != -1){
+
+                char newChar = shiftedAlphabet.charAt(idx);
+                if (Character.isLowerCase(currChar)) {
+                newChar = Character.toLowerCase(newChar);
+                }                
+                encrypted.setCharAt(i, newChar);
+            }
+        }
+        return encrypted.toString();
+    }
+    
+    
+    public String encryptTwoKeys(String input, int key1, int key2) {
+        StringBuilder oddChars = new StringBuilder();
+        StringBuilder evenChars = new StringBuilder();
+        StringBuilder inputSB = new StringBuilder(input);
+    for(int i = 0; i < input.length(); i++) {
+        char currChar = inputSB.charAt(i);
+        if (i%2 == 0) {
+            oddChars.append(currChar);
+        }
+        else {
+            evenChars.append(currChar); 
+        }
+    }
+    
+    String oddEncrypted = encrypt(oddChars.toString(), key1);
+    String evenEncrypted = encrypt(evenChars.toString(), key2);    
+    
+    StringBuilder encrypted = new StringBuilder();
+    
+    int k = 0;
+    int j = 0; 
+    char currChar;
+    
+    for(int i = 0; i < input.length(); i++) {
+        
+        
+        if (i%2 == 0) {
+            currChar = oddEncrypted.charAt(k);
+            k++;
+        }
+        else {
+            currChar = evenEncrypted.charAt(j);
+            j++;
+        }
+        encrypted.append(currChar); 
+    }
+    
+    return encrypted.toString();
+    
+    }
+    
+    
+    
+    public void testCaesar() {
+        int key = 15;
+        String message = "At noon be in the conference room with your hat on for a surprise party. YELL LOUD!";
+        String encrypted = encrypt(message, key);
+        System.out.println(encrypted);
+        String decrypted = encrypt(encrypted, 26-key);
+        System.out.println(decrypted);
+        
+        System.out.print(encryptTwoKeys(message, 8, 21);
+    }
+}

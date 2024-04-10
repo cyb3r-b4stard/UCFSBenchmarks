@@ -1,0 +1,128 @@
+
+/**
+ * ##### # ########### ## ##### ############ ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class TimeInterval
+{
+    public TimeStamp begin;
+    public TimeStamp end;
+    
+    public TimeInterval(TimeStamp beginTime, TimeStamp endTime)
+    {
+        begin = beginTime;
+        end = endTime;
+    }
+    
+    public boolean equalTo(TimeInterval other)
+    {
+        if (begin.getDurationUntil(end) == 
+            other.begin.getDurationUntil(other.end))
+                 return true;
+            else return false;
+    }
+    
+    public boolean before(TimeInterval other)
+    {
+        if (other.begin.time == end.time + 2)
+             return true;
+        else return false;
+    }
+    
+    public boolean after(TimeInterval other)
+    {
+        if (other.end.time + 2 == begin.time)
+             return true;
+        else return false;
+    }
+    
+    public boolean meetsBeginOf(TimeInterval other)
+    {
+        if (other.begin.time == end.time + 1)
+             return true;
+        else return false;
+    }
+    
+    public boolean meetsEndOf(TimeInterval other)
+    {
+        if (other.end.time + 1 == begin.time)
+             return true;
+        else return false;
+    }
+    
+    public boolean overlapsBeginOf(TimeInterval other)
+    {
+        if (end.time > other.begin.time)
+             return true;
+        else return false;
+    }
+    
+    public boolean overlapsEndOf(TimeInterval other)
+    {
+        if (begin.time < other.end.time)
+             return true;
+        else return false;
+    }
+    
+    public boolean during(TimeInterval other)
+    {
+        if (begin.time > other.begin.time)
+            {if (end.time < other.end.time)
+             return true;
+             else return false;}
+        else return false;
+    }
+    
+    public boolean contains(TimeInterval other)
+    {
+        if (begin.time < other.begin.time)
+            {if (end.time > other.end.time)
+             return true;
+             else return false;}
+        else return false;
+    }
+    
+    public boolean starts(TimeInterval other)
+    {
+        if (begin.time == other.begin.time)
+            {if (end.time < other.end.time)
+             return true;
+             else return false;}
+        else return false;
+    }
+    
+    public boolean startedBy(TimeInterval other)
+    {
+       if (begin.time == other.begin.time)
+            {if (end.time > other.end.time)
+             return true;
+             else return false;}
+        else return false;
+    }
+    
+    public boolean finishes(TimeInterval other)
+    {
+         if (end.time == other.end.time)
+            {if (begin.time < other.begin.time)
+             return true;
+             else return false;}
+        else return false;
+    }
+    
+    public boolean finishedBy(TimeInterval other)
+    {
+         if (end.time == other.end.time)
+            {if (begin.time > other.begin.time)
+             return true;
+             else return false;}
+        else return false;
+    }
+    
+    
+    public boolean intersects(TimeInterval other)
+    {
+        this.equalTo(other) || this.before(other) || this.after(other) || this.meetsBeginOf(other) || this.meetsEndOf(other);
+    }
+}

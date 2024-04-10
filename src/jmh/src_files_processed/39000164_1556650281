@@ -1,0 +1,98 @@
+import java.util.Scanner;
+import java.util.regex.*;
+
+/**
+ * #### ##### ########## ### ###### #### ## ### #### #### #####.
+ * <#>
+ * ### ###### #### ######## #### #### ######## # ####### ##############. 
+ * #### ######### ####### #### ## ######### ### ##########.
+ * <#>
+ * ### #### #### ## ###### ### ############## ## ### ###########
+ * ###### ## ######## #### #####.  ## ##### ##### ## #### #### #### ##
+ * ## #######.  ## ### ##### ### ########### ## ######### ## ### ######
+ * ######.  ## ### ### #### ##### ###### # #######.  ### ### ### ###
+ * ####### #######, ## ### ####, ### ## ### ###### ### ### #######. 
+ * #### #### #### #### ## ######### #### #### #### ## ######.
+ */
+
+public class MessageSender
+{
+
+    private int mtu;                    
+    private FrameSender physicalLayer;  
+    private TerminalStream terminal;    
+
+
+
+    /**
+     * MessageSender constructor - DO NOT ALTER ANY PART OF THIS
+     * Create and initialize new MessageSender.
+     * @param mtu the maximum transfer unit (MTU)
+     * (the length of a frame must not exceed the MTU)
+     * @throws ProtocolException if error detected
+     */
+
+    public MessageSender(int mtu) throws ProtocolException
+    {
+
+        this.mtu = mtu;
+        this.physicalLayer = new FrameSender();
+        this.terminal = new TerminalStream("MessageSender");
+        terminal.printlnDiag("data link layer ready (mtu = " + mtu + ")");
+    }
+
+
+    /**
+     * Send a message - THIS IS THE ONLY METHOD YOU NEED TO MODIFY
+     * @param message the message to be sent.  The message can be any
+     * length and may be empty but the string reference should not
+     * be null.
+     * @throws ProtocolException immediately without attempting to
+     * send any further frames if, and only if, the physical layer
+     * throws an exception or the given message can't be sent
+     * without breaking the rules of the protocol including the MTU
+     */
+
+    public void sendMessage(String message) throws ProtocolException
+    {
+
+        terminal.printlnDiag("  sendMessage starting (message = \"" + message + "\")");
+
+
+        int checksum = 0;
+        int checksumb = 0;
+        for(int i = 0; i < message.length(); i++ ){
+            char a = message.charAt(i);
+            checksum = checksum + (int) a;
+
+        }
+        Pattern p = Pattern.compile("[:]+");
+        Matcher m = p.matcher(message);
+        boolean charMatches = m.find();
+        if (charMatches){
+            message = message.replace(":", "::");
+            physicalLayer.sendFrame("("  + message+ ":" + message.format("%03d", checksum %1000)+"."+")");
+        }
+        else if(message.length() >= 18){  
+            int indexOf(String str, int b);
+            String b = message.substring(0,9);
+            checksumb = checksumb + (int) b;
+            
+
+            physicalLayer.sendFrame("("  + b+ ":" + message.format("%03d", checksumb %1000)+"+"+")");
+            physicalLayer.sendFrame("("  + message+ ":" + message.format("%03d", checksum %1000)+"+"+")");
+            physicalLayer.sendFrame("("  + message+ ":" + message.format("%03d", checksum %1000)+"."+")");
+        
+        }
+        else{
+            physicalLayer.sendFrame("("  + message + ":" + message.format("%03d", checksum %1000)+"."+ ")");
+        }
+
+
+
+        terminal.printlnDiag("  sendMessage finished");
+
+    } 
+
+
+} 

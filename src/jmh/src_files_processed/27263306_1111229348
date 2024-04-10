@@ -1,0 +1,629 @@
+/**
+ * ###.##########.### 
+ * ##### ## ##### ########
+ *
+ * #### ######: ### ##, ####
+ *
+ * @###### ### ### #####, #########
+ * @####### #.#
+ * @####### ### ####### (####:
+ */
+
+import java.util.Arrays;
+import java.util.Random;
+import java.util.HashMap;
+
+
+/**
+ * #### ##### ## ### ###### ## #### ###. #### #### ############ #### ### ###### ### #### #### #### #######
+ */
+public class BotStarter implements Bot {
+
+    static Random rng = new Random();    
+    static double pushFoldStart = 8.00;
+    static double callFoldStart = 8.00;    
+    static double pushFold[] = {0,
+            30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00, 
+            30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00, 
+            30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00, 
+            30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00,24.15, 
+            30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00, 
+            18.00,30.00,30.00,30.00,30.00,20.90,30.00,16.10,28.60,25.10, 
+            25.60,15.10,19.90,30.00,30.00,30.00,29.40,13.00,14.25,25.20, 
+            19.30,24.40,30.00,13.10,30.00,16.30,10.35,30.00,12.05,12.20, 
+            9.60,13.55,30.00,30.00,18.65,11.65,30.00,12.70, 8.95,14.75, 
+            17.50, 8.50, 7.90,30.00,13.55,24.75,10.65, 7.55,20.30,30.00, 
+            9.00, 6.50,26.85, 8.55, 7.05,11.95, 6.05,10.50,10.85,30.00, 
+            5.45, 5.70,14.45, 7.50,30.00, 5.00,14.70, 6.10,18.85, 5.20, 
+            4.60, 4.15, 5.75,23.80, 3.85, 4.90, 7.00,29.35, 8.90, 3.55, 
+            3.40, 3.45,10.75,13.95, 2.95,23.45, 3.00,16.35, 2.75, 2.70, 
+            2.60, 2.55, 2.50, 2.50, 2.45,12.90, 2.35, 2.35, 2.25, 7.85, 
+            2.15, 2.10, 2.10, 2.05, 2.05, 2.00, 1.95, 1.85, 1.85, 1.85, 
+            1.80, 1.75, 1.75, 1.65, 1.60, 1.55, 1.55, 1.45, 1.40        
+        };
+    static double callFold[] = {0,
+            30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00, 
+            30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00,30.00, 
+            30.00,30.00,30.00,30.00,30.00,26.45,30.00,27.80,22.20,30.00, 
+            30.00,30.00,23.40,23.35,25.45,28.55,17.65,24.60,19.50,17.15, 
+            20.55,21.40,16.15,15.20,18.00,23.20,15.35,30.00,18.35,14.30, 
+            13.80,13.00,16.65,13.25,13.40,11.75,12.75,12.35,15.85,12.15, 
+            10.55,11.00,11.40,11.50,10.65,22.35, 9.95, 9.75,10.20, 9.50, 
+            10.75, 8.95, 9.30, 9.15, 8.80, 8.45, 8.00, 8.40, 7.60, 8.70, 
+            7.35, 7.80, 8.25, 7.40, 7.05, 8.15,15.05, 7.25, 6.80, 6.90, 
+            6.65, 6.40, 6.25, 7.00, 6.15, 6.35, 5.80, 5.90, 6.05, 6.55, 
+            5.50, 5.40, 5.85, 5.65, 5.60, 5.25, 5.10, 5.20, 5.00, 5.60, 
+            4.75, 4.65, 5.00, 4.85, 5.45, 4.50, 4.75, 4.55, 4.85, 4.25, 
+            4.20, 4.00, 4.30, 4.80, 3.85, 4.15, 4.10, 4.95, 4.15, 3.75, 
+            3.65, 3.90, 4.05, 4.15, 3.50, 4.60, 3.60, 4.30, 3.65, 3.30, 
+            3.60, 3.55, 3.65, 3.15, 3.70, 4.05, 3.80, 3.20, 3.05, 3.85, 
+            3.20, 3.30, 3.50, 3.30, 3.60, 3.35, 2.90, 3.40, 2.80, 2.90, 
+            3.15, 2.95, 3.30, 3.00, 2.65, 2.85, 2.70, 2.75, 2.65        
+        };
+    
+    public String[] data = new String[10];
+
+    data[] =
+        "1002C0AA,0,0,0,0,0,0,0,1,"+
+        "1002C0AB,0,1,0,0,0,0,0,0,"+
+        "1002C0AC,0,1,0,0,0,0,0,0,"+
+        "1002C0AD,0,1,0,0,0,0,0,0,"+
+        "1002C0AE,0,1,0,0,0,0,0,0,"+
+        "1002C0AF,0,0,0,0,0,0,0,1,"+
+        "1002C0AG,0,0,0,1,0,0,0,0,";
+
+    HashMap<String, double[]> map = new HashMap<String, double[]>();
+    double[] strategy = new double [8];
+    String infoSet;
+    String[] strategies = data.split(",");  
+
+    {
+        for (int i = 0; i < strategies.length/9; i++) {            
+            double[] strat = new double [8];
+            infoSet = strategies[i*9];
+            for (int j = 0; j<8; j++) {
+                strat[j] = Double.parseDouble(strategies[i*9+j+1]);
+                if (j == 7) map.put(infoSet, strat);
+            }        
+        }
+    }
+
+    /**
+     * Implement this method to return the best move you can. Currently it will return a raise the ordinal value
+     * of one of our cards is higher than 9, a call when one of the cards has a higher ordinal value than 5 and
+     * a check otherwise.
+     * @param state : The current state of your bot, with all the (parsed) information given by the engine
+     * @param timeOut : The time you have to return a move
+     * @return PokerMove : The move you will be doing
+     */
+    @Override
+    public PokerMove getMove(BotState state, Long timeOut) {
+        HandHoldem hand = state.getHand();        
+
+        int height1 = hand.getCard(0).number % 13 + 2;        
+        int height2 = hand.getCard(1).number % 13 + 2;
+        int suit1 = hand.getCard(0).number / 13; 
+        int suit2 = hand.getCard(1).number / 13;
+        if (height2 > height1) {
+            height1 = height1+height2;
+            height2 = height1-height2;
+            height1 = height1-height2;
+            if (suit1 != suit2) {
+                suit1 = suit1+suit2;
+                suit2 = suit1-suit2;
+                suit1 = suit1-suit2;
+            }
+        }
+        int preFlopRank = getRank(height1, height2, suit1==suit2);
+
+        int minStack = Math.min(state.getMyStartStack(),state.getOpponentStartStack());
+        double minStackBB = (double)minStack/(double)state.getBigBlind();     
+
+        if (state.onButton() && minStackBB <= pushFoldStart && 
+        state.getBigBlind() + state.getSmallBlind() == state.getPot()){
+            if (minStackBB <= pushFold[preFlopRank])
+                return new PokerMove(state.getMyName(), "raise", state.getmyStack());
+            else return new PokerMove(state.getMyName(), "check", 0);            
+        }        
+
+        if (!state.onButton() && state.getPot() == state.getBigBlind() *2 + state.getAmountToCall()) {
+            if (minStackBB <= callFoldStart)
+                if (minStackBB <= callFold[preFlopRank]) 
+                    return new PokerMove(state.getMyName(), "raise", state.getmyStack());
+                else return new PokerMove(state.getMyName(), "check", 0);                 
+        }
+
+        char stackCode;
+        if (minStackBB < Math.sqrt(15 * 30)) stackCode = 'A'; else
+        if (minStackBB < Math.sqrt(30 * 60)) stackCode = 'B'; else        
+            stackCode = 'C';
+
+        int round = Math.max(state.getTable().length - 1, 1);
+
+        int pot = state.getPot() - state.getAmountToCall();
+        String potCode = String.format("%03d", pot);
+        if (pot == 26 || pot == 28) potCode = "027"; else 
+        if (pot == 30 || pot == 32) potCode = "031"; else
+        if (pot == 38 || pot == 40) potCode = "039"; else
+        if (pot == 42 || pot == 44) potCode = "043"; else
+        if (pot == 54 || pot == 56) potCode = "055"; else
+        if (pot == 60 || pot == 62) potCode = "061"; else
+        if (pot == 64 || pot == 66) potCode = "065"; else
+        if (pot == 78 || pot == 80) potCode = "079"; else
+        if (pot == 90 || pot == 92) potCode = "091"; else
+        if (pot == 98 || pot == 100) potCode = "099"; else
+        if (pot == 114 || pot == 116) potCode = "115"; else
+        if (pot == 124 || pot == 126) potCode = "125"; else
+        if (pot == 128 || pot == 130) potCode = "129"; else
+        if (pot == 132 || pot == 134) potCode = "133"; else
+        if (pot == 138 || pot == 140) potCode = "139"; else
+        if (pot == 144 || pot == 146) potCode = "145"; else
+        if (pot == 150 || pot == 152) potCode = "151"; else
+        if (pot == 160 || pot == 162) potCode = "161"; else
+        if (pot == 168 || pot == 170) potCode = "169"; else
+        if (pot == 174 || pot == 176) potCode = "175"; else
+        if (pot == 182 || pot == 184) potCode = "183"; else
+        if (pot == 186 || pot == 188) potCode = "187"; else
+        if (pot == 190 || pot == 192) potCode = "191"; else
+        if (pot == 194 || pot == 196) potCode = "195"; else
+        if (pot == 198 || pot == 200) potCode = "199"; else
+        if (pot == 208 || pot == 210) potCode = "209"; 
+
+        double potsToCall = state.getAmountToCall() / pot;
+        double maxPotsToCall = (minStack - pot/2) / pot;
+        char callCode;
+        if (potsToCall <= 0) callCode = 'A'; else
+        if (potsToCall < Math.sqrt(.25 * .5)) callCode = 'B'; else
+        if (potsToCall < Math.sqrt(.5 * 1)) callCode = 'C'; else
+        if (potsToCall < Math.sqrt(1.0 * 2.0)) callCode = 'D'; else
+        if (potsToCall < Math.sqrt(2.0 * 3.0)) callCode = 'E'; else
+        if (potsToCall < Math.sqrt(3.0 * maxPotsToCall)) callCode ='F'; else
+            callCode = 'G';
+
+        int player = (state.onButton() ? 0 : 1);
+
+        String strCode;
+        char str2Code;    
+
+        if (round == 1) {            
+            if (preFlopRank <= 1) strCode ="A"; else
+            if (preFlopRank <= 3) strCode ="B"; else
+            if (preFlopRank <= 5) strCode ="C"; else
+            if (preFlopRank <= 7) strCode ="D"; else
+            if (preFlopRank == 9 || preFlopRank == 17) strCode ="E"; else
+            if (preFlopRank == 27 || preFlopRank == 48) strCode ="H"; else
+            if (preFlopRank == 66 || preFlopRank == 87) strCode ="L"; else
+            if (preFlopRank <= 16) strCode ="F"; else
+            if (preFlopRank <= 31) strCode ="G"; else
+            if (preFlopRank <= 45) strCode ="I"; else
+            if (preFlopRank <= 58) strCode ="J"; else
+            if (preFlopRank <= 75) strCode ="K"; else
+            if (preFlopRank <= 89) strCode ="M"; else
+            if (preFlopRank <= 102) strCode ="N"; else
+            if (preFlopRank <= 117) strCode ="O"; else
+            if (preFlopRank <= 131) strCode ="P"; else
+            if (preFlopRank <= 145) strCode ="Q"; else
+            if (preFlopRank <= 159) strCode ="R"; else            
+                strCode = "S";
+        } else {
+            double riverAdvantage, riverWinEst, currAdvantage, currWinEst;
+            if (round == 4) {
+                riverAdvantage = sim(hand, state.getTable());               
+            } else {                
+                riverAdvantage = simRiver(hand, state.getTable());                            
+            }
+            riverWinEst = .5 + riverAdvantage/2;
+            if (riverWinEst > .99) strCode = "A"; else
+            if (riverWinEst > .97) strCode = "B"; else
+            if (riverWinEst > .94) strCode = "C"; else
+            if (riverWinEst > .90) strCode = "D"; else
+            if (riverWinEst > .86) strCode = "E"; else 
+            if (riverWinEst > .82) strCode = "F"; else 
+            if (riverWinEst > .78) strCode = "G"; else 
+            if (riverWinEst > .74) strCode = "H"; else 
+            if (riverWinEst > .70) strCode = "I"; else 
+            if (riverWinEst > .66) strCode = "J"; else 
+            if (riverWinEst > .62) strCode = "K"; else 
+            if (riverWinEst > .58) strCode = "L"; else 
+            if (riverWinEst > .54) strCode = "M"; else 
+            if (riverWinEst > .50) strCode = "N"; else 
+            if (riverWinEst > .46) strCode = "O"; else 
+            if (riverWinEst > .40) strCode = "P"; else
+            if (riverWinEst > .32) strCode = "Q"; else
+            if (riverWinEst > .22) strCode = "R"; else
+            if (riverWinEst > .12) strCode = "S"; else
+                strCode = "T";   
+            if (round < 4 && riverWinEst > .4 && riverWinEst <= .86) {
+                currAdvantage = sim(hand, state.getTable());
+                currWinEst = .5 + currAdvantage/2;
+                double winDiff = riverWinEst - currWinEst;
+                if (winDiff > .06) str2Code = 'A'; else  
+                if (winDiff > -.06) str2Code = 'B'; else 
+                    str2Code = 'C'; 
+                if (riverWinEst > .74 && riverWinEst <= .82 && winDiff > .06)
+                    str2Code = 'B';
+                strCode = strCode + str2Code;    
+            }            
+        }
+
+        String infoSet = round + potCode + callCode + player + stackCode + strCode;
+
+        strategy = map.get(infoSet);
+
+        double r = rng.nextDouble();
+        int action = 0;
+        double cumulativeProb = 0;
+        while (action < 7) {
+            cumulativeProb += strategy[action];
+            if (r < cumulativeProb) break;
+            action++;        
+        }
+
+        if (action == 0) return new PokerMove(state.getMyName(), "check", 0);
+        if (action == 1) return new PokerMove(state.getMyName(), "call", 0);
+        if (action == 2) return new PokerMove(state.getMyName(), "raise", (pot + state.getAmountToCall() *2) /4);
+        if (action == 3) return new PokerMove(state.getMyName(), "raise", (pot + state.getAmountToCall() *2) /2);
+        if (action == 4) return new PokerMove(state.getMyName(), "raise", (pot + state.getAmountToCall() *2));
+        if (action == 5) return new PokerMove(state.getMyName(), "raise", (pot + state.getAmountToCall() *2) *2);
+        if (action == 6) return new PokerMove(state.getMyName(), "raise", (pot + state.getAmountToCall() *2) *3);
+        if (action == 7) return new PokerMove(state.getMyName(), "raise", state.getmyStack());
+
+        System.err.println ("oops, this infoset is not in the map");
+        return new PokerMove(state.getMyName(), "check", 0);
+    }
+
+    public double sim(HandHoldem hand,Card[] table){
+        int myHandValue, oppHandValue;
+        long handCode, tableCode, dead, unused;
+        long card1, card2;
+        int wins = 0, losses = 0, count = 0;
+        handCode = getHandCode(hand);        
+        tableCode = getTableCode(table);
+        unused = (7l << 13) + (7l << 29) + (7l << 45);
+        dead = handCode + tableCode + unused;
+        switch (table.length) {
+            case 3:                
+            myHandValue = HandEval.hand5Eval(handCode | tableCode);
+            for (int i = 0; i<61; i++){               
+                card1 = 1l << i;
+                if ((card1 & dead) !=0) continue;
+                for (int j = (i+1); j<61; j++) {                    
+                    card2 = 1l << j;
+                    if ((card2 & dead) !=0) continue;                    
+                    oppHandValue = HandEval.hand5Eval(card1 | card2 | tableCode);
+                    if (myHandValue > oppHandValue) wins++;
+                    if (myHandValue < oppHandValue) losses++;
+                    count++;                    
+                }
+
+            }
+            return (double)wins/count - (double)losses/count;
+            case 4:
+            myHandValue = HandEval.hand6Eval(handCode | tableCode);  
+            for (int i = 0; i<61; i++){               
+                card1 = 1l << i;
+                if ((card1 & dead) !=0) continue;
+                for (int j = (i+1); j<61; j++) {                    
+                    card2 = 1l << j;
+                    if ((card2 & dead) !=0) continue;                    
+                    oppHandValue = HandEval.hand6Eval(card1 | card2 | tableCode);
+                    if (myHandValue > oppHandValue) wins++;
+                    if (myHandValue < oppHandValue) losses++;
+                    count++;                    
+                }
+
+            }
+            return (double)wins/count - (double)losses/count;
+            case 5:
+            myHandValue = HandEval.hand7Eval(handCode | tableCode);
+            for (int i = 0; i<61; i++){               
+                card1 = 1l << i;
+                if ((card1 & dead) !=0) continue;
+                for (int j = (i+1); j<61; j++) {                    
+                    card2 = 1l << j;
+                    if ((card2 & dead) !=0) continue;                    
+                    oppHandValue = HandEval.hand7Eval(card1 | card2 | tableCode);
+                    if (myHandValue > oppHandValue) wins++;
+                    if (myHandValue < oppHandValue) losses++;
+                    count++;                    
+                }
+            }
+            return (double)wins/count - (double)losses/count;
+        }    
+        return 0;
+    }
+
+    public double simRiver(HandHoldem hand, Card[] table) {
+        int myHandValue, oppHandValue;
+        long handCode, tableCode, dead, unused;
+        long card1, card2, card3, card4;
+        int wins = 0, losses = 0, count = 0;
+        handCode = getHandCode(hand);        
+        tableCode = getTableCode(table);
+        unused = (7l << 13) + (7l << 29) + (7l << 45);
+        dead = handCode + tableCode + unused;
+        switch (table.length) {
+            case 4:
+            for (int i = 0; i<61; i++){
+                card1 = 1l << i;                
+                if ((card1 & dead) !=0) continue;                             
+                for (int j = (i+1); j<61; j++) {                    
+                    card2 = 1l << j;
+                    if ((card2 & dead) !=0) continue;
+                    for (int k = (j+1); k<61; k++){
+                        card3 = 1l << k;
+                        if ((card3 & dead) != 0) continue;
+
+                        myHandValue = HandEval.hand7Eval (handCode | tableCode | card1);
+                        oppHandValue = HandEval.hand7Eval(card1 | card2 | card3 | tableCode);
+                        if (myHandValue > oppHandValue) wins++;
+                        if (myHandValue < oppHandValue) losses++;
+
+                        myHandValue = HandEval.hand7Eval (handCode | tableCode | card2);                        
+                        if (myHandValue > oppHandValue) wins++;
+                        if (myHandValue < oppHandValue) losses++;
+
+                        myHandValue = HandEval.hand7Eval (handCode | tableCode | card3);                       
+                        if (myHandValue > oppHandValue) wins++;
+                        if (myHandValue < oppHandValue) losses++;
+                        count += 3; 
+                    }                                    
+                }
+
+            }
+            return (double)wins/count - (double)losses/count;
+            case 3:
+            for (int i = 0; i<61; i++){
+                card1 = 1l << i;                
+                if ((card1 & dead) !=0) continue;                             
+                for (int j = (i+1); j<61; j++) {                    
+                    card2 = 1l << j;
+                    if ((card2 & dead) !=0) continue;
+                    for (int k = (j+1); k<61; k++){
+                        card3 = 1l << k;
+                        if ((card3 & dead) != 0) continue;
+                        for (int l = (k+1); l<61; l++) {
+                            card4 = 1l << l;
+                            if ((card4 & dead) !=0) continue;
+
+                            myHandValue = HandEval.hand7Eval (handCode | tableCode | card1 | card2);
+                            oppHandValue = HandEval.hand7Eval(card1 | card2 | card3 | card4 | tableCode);
+                            if (myHandValue > oppHandValue) wins++;
+                            if (myHandValue < oppHandValue) losses++;
+
+                            myHandValue = HandEval.hand7Eval (handCode | tableCode | card1 | card3);
+                            if (myHandValue > oppHandValue) wins++;
+                            if (myHandValue < oppHandValue) losses++;
+
+                            myHandValue = HandEval.hand7Eval (handCode | tableCode | card1 | card4);
+                            if (myHandValue > oppHandValue) wins++;
+                            if (myHandValue < oppHandValue) losses++;
+
+                            myHandValue = HandEval.hand7Eval (handCode | tableCode | card2 | card3);
+                            if (myHandValue > oppHandValue) wins++;
+                            if (myHandValue < oppHandValue) losses++;
+
+                            myHandValue = HandEval.hand7Eval (handCode | tableCode | card2 | card4);
+                            if (myHandValue > oppHandValue) wins++;
+                            if (myHandValue < oppHandValue) losses++;
+
+                            myHandValue = HandEval.hand7Eval (handCode | tableCode | card3 | card4);
+                            if (myHandValue > oppHandValue) wins++;
+                            if (myHandValue < oppHandValue) losses++;
+                            count += 6;
+                        }                   
+                    }                                    
+                }
+
+            }
+            return (double)wins/count - (double)losses/count;         
+        }
+        return 0;
+    }
+
+    public int getRank(int card1, int card2, boolean suited){
+        if (card1 == 14 && card2 == 14) return 1;               
+        if (card1 == 13 && card2 == 13) return 2;               
+        if (card1 == 12 && card2 == 12) return 3;               
+        if (card1 == 11 && card2 == 11) return 4;               
+        if (card1 == 10 && card2 == 10) return 5;               
+        if (card1 == 9 && card2 == 9) return 6;                 
+        if (card1 == 8 && card2 == 8) return 7;                 
+        if (card1 == 14 && card2 == 13 && suited) return 8;     
+        if (card1 == 7 && card2 == 7) return 9;                 
+        if (card1 == 14 && card2 == 12 && suited) return 10;
+        if (card1 == 14 && card2 == 11 && suited) return 11;    
+        if (card1 == 14 && card2 == 13) return 12;
+        if (card1 == 14 && card2 == 10 && suited) return 13;    
+        if (card1 == 14 && card2 == 12) return 14;
+        if (card1 == 14 && card2 == 11) return 15;              
+        if (card1 == 13 && card2 == 12 && suited) return 16;
+        if (card1 == 6 && card2 == 6) return 17;
+        if (card1 == 14 && card2 == 9 && suited) return 18;     
+        if (card1 == 14 && card2 == 10) return 19;
+        if (card1 == 13 && card2 == 11 && suited) return 20;    
+        if (card1 == 14 && card2 == 8 && suited) return 21;     
+        if (card1 == 13 && card2 == 10 && suited) return 22;
+        if (card1 == 13 && card2 == 12) return 23;              
+        if (card1 == 14 && card2 == 7 && suited) return 24;     
+        if (card1 == 14 && card2 == 9) return 25;
+        if (card1 == 13 && card2 == 11) return 26;
+        if (card1 == 5 && card2 == 5) return 27;                
+        if (card1 == 12 && card2 == 11 && suited) return 28;
+        if (card1 == 13 && card2 == 9 && suited) return 29;
+        if (card1 == 14 && card2 == 5 && suited) return 30;
+        if (card1 == 14 && card2 == 6 && suited) return 31;
+        if (card1 ==14 && card2 == 8) return 32;
+        if (card1 == 13 && card2 == 10) return 33;              
+        if (card1 == 12 && card2 == 10 && suited) return 34;
+        if (card1 == 14 && card2 == 4 && suited) return 35;     
+        if (card1 == 14 && card2 == 7) return 36;
+        if (card1 == 13 && card2 == 8 && suited) return 37;     
+        if (card1 == 14 && card2 == 3 && suited) return 38;
+        if (card1 == 12 && card2 == 11) return 39;
+        if (card1 == 13 && card2 == 9) return 40;               
+        if (card1 == 14 && card2 == 5) return 41;
+        if (card1 == 14 && card2 == 6) return 42;
+        if (card1 == 12 && card2 == 9 && suited) return 43;
+        if (card1 == 13 && card2 == 7 && suited) return 44;
+        if (card1 == 11 && card2 == 10 && suited) return 45;
+        if (card1 == 14 && card2 == 2 && suited) return 46;     
+        if (card1 == 12 && card2 == 10) return 47;
+        if (card1 == 4 && card2 == 4) return 48;
+        if (card1 == 14 && card2 == 4) return 49;               
+        if (card1 == 13 && card2 == 6 && suited) return 50;
+        if (card1 == 13 && card2 == 8) return 51;               
+        if (card1 == 12 && card2 == 8 && suited) return 52;
+        if (card1 == 14 && card2 == 3) return 53;
+        if (card1 == 13 && card2 == 5 && suited) return 54;
+        if (card1 == 11 && card2 == 9 && suited) return 55;
+        if (card1 == 12 && card2 == 9) return 56;               
+        if (card1 == 11 && card2 == 10) return 57;
+        if (card1 == 13 && card2 == 7) return 58;
+        if (card1 == 14 && card2 == 2) return 59;               
+        if (card1 == 13 && card2 == 4 && suited) return 60;    
+        if (card1 == 12 && card2 == 7 && suited) return 61;     
+        if (card1 == 13 && card2 == 6) return 62;
+        if (card1 == 13 && card2 == 3 && suited) return 63;
+        if (card1 == 10 && card2 == 9 && suited) return 64;
+        if (card1 == 11 && card2 == 8 && suited) return 65;
+        if (card1 == 3 && card2 == 3) return 66;                
+        if (card1 == 12 && card2 == 6 && suited) return 67;
+        if (card1 == 12 && card2 == 8) return 68;
+        if (card1 == 13 && card2 == 5) return 69;               
+        if (card1 == 11 && card2 == 9) return 70;
+        if (card1 == 13 && card2 == 2 && suited) return 71;
+        if (card1 == 12 && card2 == 5 && suited) return 72;     
+        if (card1 == 10 && card2 == 8 && suited) return 73;
+        if (card1 == 13 && card2 == 4) return 74;
+        if (card1 == 11 && card2 == 7 && suited) return 75;
+        if (card1 == 12 && card2 == 4 && suited) return 76;     
+        if (card1 == 12 && card2 == 7) return 77;
+        if (card1 == 10 && card2 == 9) return 78;               
+        if (card1 == 11 && card2 == 8) return 79;
+        if (card1 == 13 && card2 == 3) return 80;               
+        if (card1 == 12 && card2 == 6) return 81;               
+        if (card1 == 12 && card2 == 3 && suited) return 82;
+        if (card1 == 9 && card2 == 8 && suited) return 83;
+        if (card1 == 10 && card2 == 7 && suited) return 84;
+        if (card1 == 11 && card2 == 6 && suited) return 85;
+        if (card1 == 13 && card2 == 2) return 86;
+        if (card1 == 2 && card2 == 2) return 87;                
+        if (card1 == 12 && card2 == 2 && suited) return 88;
+        if (card1 == 12 && card2 == 5) return 89;
+        if (card1 == 11 && card2 == 5 && suited) return 90;     
+        if (card1 == 10 && card2 == 8) return 91;
+        if (card1 == 11 && card2 == 7) return 92;
+        if (card1 == 12 && card2 == 4) return 93;               
+        if (card1 == 9 && card2 == 7 && suited) return 94;
+        if (card1 == 11 && card2 == 4 && suited) return 95;
+        if (card1 == 10 && card2 == 6 && suited) return 96;
+        if (card1 == 11 && card2 == 3 & suited) return 97;      
+        if (card1 == 12 && card2 == 3) return 98;
+        if (card1 == 9 && card2 == 8) return 99;
+        if (card1 == 8 && card2 == 7 && suited) return 100;   
+        if (card1 == 10 & card2 == 7) return 101;
+        if (card1 == 11 && card2 == 6) return 102;
+        if (card1 == 9 && card2 == 6 && suited) return 103;     
+        if (card1 == 11 && card2 == 2 && suited) return 104;
+        if (card1 == 12 && card2 == 2) return 105;
+        if (card1 == 10 && card2 == 5 && suited) return 106;
+        if (card1 == 11 && card2 == 5) return 107;
+        if (card1 == 10 && card2 == 4 && suited) return 108;
+        if (card1 == 9 && card2 == 7) return 109;
+        if (card1 == 8 && card2 == 6 && suited) return 110;
+        if (card1 == 11 && card2 == 4) return 111;
+        if (card1 == 10 && card2 == 6) return 112;
+        if (card1 == 9 && card2 == 5 && suited) return 113;
+        if (card1 == 10 && card2 == 3 && suited) return 114;
+        if (card1 == 7 && card2 == 6 && suited) return 115;
+        if (card1 == 11 && card2 == 3) return 116;
+        if (card1 == 8 && card2 == 7) return 117;
+        if (card1 == 10 && card2 == 2 && suited) return 118;
+        if (card1 == 8 && card2 == 5 && suited) return 119;
+        if (card1 == 9 && card2 == 6) return 120;
+        if (card1 == 11 && card2 == 2) return 121;
+        if (card1 == 10 && card2 == 5) return 122;
+        if (card1 == 9 && card2 == 4 && suited) return 123;
+        if (card1 == 7 && card2 == 5 && suited) return 124;
+        if (card1 == 10 && card2 == 4) return 125;
+        if (card1 == 9 && card2 == 3 && suited) return 126;
+        if (card1 == 8 && card2 == 6) return 127;
+        if (card1 == 6 && card2 == 5 && suited) return 128;
+        if (card1 == 8 && card2 == 4 && suited) return 129;
+        if (card1 == 9 && card2 == 5) return 130;
+        if (card1 == 10 && card2 == 3) return 131;
+        if (card1 == 9 && card2 == 2 && suited) return 132;
+        if (card1 == 7 && card2 == 6) return 133;
+        if (card1 == 7 && card2 == 4 && suited) return 134;
+        if (card1 == 10 && card2 == 2) return 135;
+        if (card1 == 5 && card2 == 4 && suited) return 136;
+        if (card1 == 8 && card2 == 5) return 137;
+        if (card1 == 6 && card2 == 4 && suited) return 138;
+        if (card1 == 8 && card2 == 3 && suited) return 139;
+        if (card1 == 9 && card2 == 4) return 140;
+        if (card1 == 7 && card2 == 5) return 141;
+        if (card1 == 8 && card2 == 2 && suited) return 142;
+        if (card1 == 7 && card2 == 3 && suited) return 143;
+        if (card1 == 9 && card2 == 3) return 144;
+        if (card1 == 6 && card2 == 5) return 145;
+        if (card1 == 5 && card2 == 3 && suited) return 146;
+        if (card1 == 6 && card2 == 3 && suited) return 147;
+        if (card1 == 8 && card2 == 4) return 148;
+        if (card1 == 9 && card2 == 2) return 149;
+        if (card1 == 4 && card2 == 3 && suited) return 150;
+        if (card1 == 7 && card2 == 4) return 151;
+        if (card1 == 7 && card2 == 2 && suited) return 152;
+        if (card1 == 5 && card2 == 4) return 153;
+        if (card1 == 6 && card2 == 4) return 154;
+        if (card1 == 5 && card2 == 2 && suited) return 155;
+        if (card1 == 6 && card2 == 2 && suited) return 156;
+        if (card1 == 8 && card2 == 3) return 157;
+        if (card1 == 4 && card2 == 2 && suited) return 158;
+        if (card1 == 8 && card2 == 2) return 159;
+        if (card1 == 7 && card2 == 3) return 160;
+        if (card1 == 5 && card2 == 3) return 161;
+        if (card1 == 6 && card2 == 3) return 162;
+        if (card1 == 3 && card2 == 2 && suited) return 163;
+        if (card1 == 4 && card2 == 3) return 164;
+        if (card1 == 7 && card2 == 2) return 165;
+        if (card1 == 5 && card2 == 2) return 166;
+        if (card1 == 6 && card2 == 2) return 167;
+        if (card1 == 4 && card2 == 2) return 168;
+        if (card1 == 3 && card2 == 2) return 169;
+        System.err.println("oops I didn't see your cards!");
+        return 200;
+    }
+
+    /**
+     * Calculates the bot's hand strength, with 0, 3, 4 or 5 cards on the table.
+     * This uses the com.stevebrecher package to get hand strength.
+     * @param hand : cards in hand
+     * @param table : cards on table
+     * @return HandCategory with what the bot has got, given the table and hand
+     */
+
+    public long getHandCode(HandHoldem hand){
+        long code = hand.getCard(0).getNumber() + hand.getCard(1).getNumber();
+        return code;
+    }
+
+    public long getTableCode (Card[] table) {
+        long code = 0;
+        for( Card card : table ) { code += card.getNumber(); }
+        return code;    
+    }
+
+    /**
+     * small method to convert the int 'rank' to a readable enum called HandCategory
+     */
+
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        BotParser parser = new BotParser(new BotStarter());
+        parser.run();
+    }
+
+}

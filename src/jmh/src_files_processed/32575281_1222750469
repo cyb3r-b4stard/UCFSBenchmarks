@@ -1,0 +1,240 @@
+import java.util.*;
+/**
+ * ### #### ##### #### ####### ### ### ####, ### ### ### #### ##### ##### ### ##### ####### #### ### ###### ### ####. 
+ * 
+ * @######
+ * @####.#.##
+ */
+public class Game
+{
+    private Player player1;
+    private Player player2;
+    private Dice diceClass;
+    private int maximumResult;
+    
+    /**
+     * This is a constructor for the method. 
+     * 
+     */
+    public Game ()
+    {
+        player1 = new Player();
+        player2 = new Player();
+        diceClass = new Dice();
+        maximumResult = 200;
+    }
+    
+    
+    /**
+     * An display method is for display main menu. 
+     * 
+     */
+    public void displaymenu()
+    {
+        int selectMenu;
+        selectMenu = 0;
+        while (selectMenu != 5)
+        {
+            System.out.println("Welcome to My Dice-and-Roll Game!");
+            System.out.println("==============================");
+            System.out.println("(1) Start a New Game");
+            System.out.println("(2) Play One Round");
+            System.out.println("(3) Who is leading now");
+            System.out.println("(4) Display Game Help");
+            System.out.println("(5) Eixt Game");
+            System.out.print("Choose an option: ");
+            selectMenu = 0;
+            Scanner enterSelect = new Scanner(System.in);
+            selectMenu = enterSelect.nextInt();
+            
+            switch (selectMenu)
+            {
+                case 1:
+                       creatPlayers();
+                       break;
+                case 2:
+                       playRound();
+                       break;
+                case 3: 
+                       checkResult();
+                       break;
+                case 4: 
+                       help();
+                       break;
+                case 5:
+                       exit();
+                       break;
+                default:
+                       System.out.println("Sorry you enter is not correct, please try again.");
+                       break;         
+            }
+        }
+    }
+    
+    /**
+     * the creatPlayers medthod will require users enter the two users' name and if necessary users can change the maximum score. 
+     */
+    public void creatPlayers()
+    {
+        player1 = new Player();
+        player2 = new Player();
+        System.out.println("Enter the first player's name :");
+        Scanner enterPlayerOneName = new Scanner(System.in);
+        playerOneName = enterPlayerOneName.nextLine();
+        playOneName(playname)
+        
+        
+        
+        
+        System.out.println("the MaximumScore of the result is " +  maximumResult + " currently.");
+        System.out.println("Keep the setting please press 1");
+        System.out.println("Change the setting please press 2");
+        int settingOption = 0;
+        Scanner enterSetting = new Scanner(System.in);
+        settingOption = enterSetting.nextInt();
+        
+        if (settingOption == 2)
+        {
+            System.out.println("Please enter the new maximum score of the result, the minimum number is 12."); 
+            int settingNumber = 0;
+            Scanner enterSettingNumber = new Scanner(System.in);
+            settingNumber = enterSetting.nextInt();
+            while (settingNumber < 12)
+            {
+                System.out.println("Your input is not correct,please try again.");
+                settingNumber = enterSetting.nextInt();
+            }
+            
+            if (settingNumber > 12)
+            {
+                maximumResult = settingNumber;
+                System.out.println("Now, the maximum score is change to " + maximumResult + ".");
+            }
+                 
+        }
+        
+        while (settingOption != 1 && settingOption != 2)
+        {
+            System.out.println("Your input is must be 1 or 2, please try again."); 
+            settingOption = enterSetting.nextInt();
+        }
+        
+        System.out.println("You have create Two Players that are "+ player1.getPlayerName() + " and " + player2.getPlayerName());
+        System.out.println("The Maximum Result is " + maximumResult + ".");
+    }
+    
+    public void playName()
+    {
+        String playerName = "";
+        Scanner enterPlayerName = new Scanner(System.in);
+        playerName = enterPlayerName.nextLine();
+        
+        if (playerName.trim().length() > 0)
+            player.setPlayerName(playerName);
+        else
+            {
+                while(playerName.trim().length() == 0)
+                {
+                    System.out.println("Your input is not correct,please try again.");
+                    System.out.println("Enter the player's name :");
+                    playerName = enterPlayerName.nextLine();
+                }
+            }
+        
+    }
+    
+    /**
+     * the playRound medthod will require users enter the two users' name and if necessary users can change the maximum score. 
+     */
+    public void playRound()
+    {
+        
+        if (player1.getPlayerName().trim().length() == 0 || player2.getPlayerName().trim().length() == 0)
+        {
+            System.out.println("Please press 1 to creat two players at first.");
+        }
+        else if (player1.getPlayerResult() >= maximumResult || player2.getPlayerResult() >= maximumResult)
+        {
+            System.out.println("The Maximum score of the result is " + maximumResult);
+            System.out.println("The player one " + player1.getPlayerName() + " have got " + player1.getPlayerResult());
+            System.out.println("The player two " + player2.getPlayerName() + " have got " + player2.getPlayerResult());
+            System.out.println("The Game has to end.");
+        }
+        else if (player1.getPlayerResult() < maximumResult && player2.getPlayerResult() < maximumResult)
+        {
+            int player1Round1 = diceClass.getRandomNumber();
+            player1.setPlayerResult(player1Round1);
+            int player1Round2 = diceClass.getRandomNumber();
+            player1.setPlayerResult(player1Round2);
+            
+            System.out.println(player1.getPlayerName() + " get the number " + player1Round1 + " and "+ player1Round2 +" at this around.");
+            System.out.println(player1.getPlayerName() + "'s total number " + player1.getPlayerResult());
+            
+            int player2Round1 = diceClass.getRandomNumber();
+            player2.setPlayerResult(player2Round1);
+            int player2Round2 = diceClass.getRandomNumber();
+            player2.setPlayerResult(player2Round2);
+            
+            System.out.println(player1.getPlayerName() + " get the number " + player2Round1 + " and " + player2Round2 + " at this around.");
+            System.out.println(player2.getPlayerName() + "'s total number " + player2.getPlayerResult());
+            
+        }
+    }
+    
+    public void checkResult()
+    {
+        
+        if (player1.getPlayerName().trim().length() == 0 || player2.getPlayerName().trim().length() == 0)
+        {
+            System.out.println("Please press 1 to creat two players at first.");
+        }
+        
+        else if (player1.getPlayerResult() == 0 || player2.getPlayerResult() == 0)
+        {
+            System.out.println("Please press 2 to play a round at least one time.");
+        }
+        
+        else if (player1.getPlayerResult() >  player2.getPlayerResult())
+        {
+            System.out.println(player1.getPlayerName() + "'s total number " + player1.getPlayerResult());
+            System.out.println(player2.getPlayerName() + "'s total number " + player2.getPlayerResult());
+            System.out.println("Thus,"+ player1.getPlayerName() + " is leading" );
+        }
+        
+        else if (player1.getPlayerResult() <  player2.getPlayerResult())
+        {
+            System.out.println(player1.getPlayerName() + "'s total number " + player1.getPlayerResult());
+            System.out.println(player2.getPlayerName() + "'s total number " + player2.getPlayerResult());
+            System.out.println("Thus,"+ player2.getPlayerName() + " is leading" );
+        }
+        
+        else if (player1.getPlayerResult() == player2.getPlayerResult())
+        {
+            System.out.println(player1.getPlayerName() + "'s total number " + player1.getPlayerResult());
+            System.out.println(player2.getPlayerName() + "'s total number " + player2.getPlayerResult());
+            System.out.println("Thus,"+ player1.getPlayerName() + " and " + player2.getPlayerName() + " is same result" );
+        }
+        
+    }
+    
+    public void exit()
+    {
+        System.out.println("Thanks for playing the dices machine");
+        System.out.println("Bye Bye !"); 
+    }
+    
+     public void help()
+    {
+        System.out.println("Welcome");
+        System.out.println("The machine can help two users play a dice game."); 
+        System.out.println("Firstly, please press 1 and enter the two player's name."); 
+        System.out.println("Secondly, please press 2 and play the game for one round and get result, you can play mutiple times for the game.");
+        System.out.println("Thirly, please press 3 to check who is leading so far.");
+        System.out.println("If you want to quit the game, just press 5 in the menu page.");
+        System.out.println("if you want help again, press 4 for reading help document above.");
+    }
+    
+}
+
+    
+    

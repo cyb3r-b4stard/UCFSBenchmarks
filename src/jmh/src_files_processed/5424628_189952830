@@ -1,0 +1,182 @@
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.Rectangle;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import javax.swing.Timer;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+public class Move 
+{
+    public Move()
+    {
+        EventQueue.invokeLater(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                try 
+                {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+                }
+                JFrame frame = new JFrame("Move This");
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setLayout(new BorderLayout());
+                frame.add(new Trust());
+                frame.pack();
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+            }
+        });
+    }
+    public static void main(String [] args)
+    {
+        new Move();
+    }
+    public class Trust extends JPanel
+    {
+        private Rectangle[] snake = new Rectangle[200];
+        private int previousX = 0;
+        private int previousY = 0;
+        private int[] x = new int[400];
+        private int[] y = new int[400];
+        private int keyPressCount = 0;
+        private Timer repaintTimer;
+        private int h = 10;
+        private int w = 20;
+        private String axis = "";
+        private int deltaX = 0;
+        private int deltaY = 0;
+        
+        public Trust()
+        {
+            InputMap im = getInputMap(WHEN_IN_FOCUSED_WINDOW);
+            ActionMap am = getActionMap();
+            
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_W, 0, false), "pressed.up");
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_W, 0, true), "released.up");
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_D, 0, false), "pressed.right");
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_D, 0, true), "released.right");
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, 0, false), "pressed.down");
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, 0, true), "released.down");
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, 0, false), "pressed.left");
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, 0, true), "released.left");
+            
+            am.put("pressed.up", new MoveAction(-2, 0, true));
+            am.put("released.up", new MoveAction(0, 0, false));
+            am.put("pressed.right", new MoveAction(0, 2, true));
+            am.put("released.right", new MoveAction(0, 0, false));
+            am.put("pressed.down", new MoveAction(2, 0, true));
+            am.put("released.down", new MoveAction(0, 0, false));
+            am.put("pressed.left", new MoveAction(0, -2, true));
+            am.put("released.left", new MoveAction(0, 0, false));
+            
+            repaintTimer = new Timer(30, new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    previousX = snake[0].getX();
+                    previousY = snake[0].getY();
+                    snake[0].setX(snake[0].getX() + deltaX);
+                    snake[0].setY(snake[0].getY() + deltaY);
+                    
+                    for(int i = 1; snake[i + 1] != null; i++)
+                    {
+                        if(snake[i - 1].getX() > previousX)
+                        {
+                            snake[i].setX(snake[i - 1].getX() - w;
+                        }
+                    }
+                    if(y[0] < 0)
+                    {
+                        System.exit();
+                    }
+                    else if(y1 + h > getHeight())
+                    {
+                        y1 = getHeight() + h;
+                    }
+                    if(x1 < 0)
+                    {
+                        x1 = 0;
+                    }
+                    else if(x1 + w > getWidth())
+                    {
+                        x1 = getWidth() - w;
+                    }
+                    repaint();
+                }
+            });
+            repaintTimer.setInitialDelay(0);
+            repaintTimer.setRepeats(true);
+            repaintTimer.setCoalesce(true);
+        }
+        
+        @Override
+        public Dimension getPreferredSize()
+        {
+            return new Dimension(400, 400);
+        }
+        
+        @Override
+        protected void paintComponent(Graphics g)
+        {
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g.create();
+            g2d.setColor(Color.GREEN);
+            for(int i = 3; i < snake.length; i++)
+            {
+                snake[i] = null;
+            }
+            snake[0] = new Rectangle(210, 200, h, w);
+            snake[1] = new Rectangle(200, 200, h, w);
+            snake[2] = new Rectangle(190, 200, h, w);
+            g2d.dispose();
+        }
+        
+        public class MoveAction extends AbstractAction
+        {
+            private int place;
+            private boolean keyDown;
+            private int xDelta;
+            private int yDelta;
+            public MoveAction(int yDelta, int xDelta, boolean down)
+            {
+                this.place = place;
+                this.xDelta = xDelta;
+                this.yDelta = yDelta;
+                keyDown = down;
+            }
+            
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                deltaX = xDelta;
+                deltaY = yDelta;
+                if(keyDown)
+                {
+                    if(!repaintTimer.isRunning())
+                    {
+                        repaintTimer.start();
+                    }
+                }
+                else
+                {
+                    repaintTimer.stop();
+                }
+            }
+        }
+    }
+}

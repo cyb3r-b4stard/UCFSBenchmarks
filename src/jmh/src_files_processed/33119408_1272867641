@@ -1,0 +1,116 @@
+import java.util.ArrayList;
+public abstract class Card
+{
+    private Board board;
+    private boolean top;
+    private Card target;
+    private int row;
+    private int col;
+    private int health;
+    private int damage;
+    private boolean dead;
+    public Card(Board inputBoard, boolean inputTop, int inputRow, int inputCol, int inputHealth, int inputDamage)
+    {
+        board = inputBoard;
+        top = inputTop;
+        row = inputRow;
+        col = inputCol;
+        health = inputHealth;
+        damage = inputDamage;
+        dead = false;
+        board.setCard(this, row, col);
+    }
+
+    public Board getBoard()
+    {
+        return board;
+    }
+
+    public int getRow()
+    {
+        return row;
+    }
+
+    public int getCol()
+    {
+        return col;
+    }
+
+    public int getHealth()
+    {
+        return health;
+    }
+
+    public int getDamage()
+    {
+        return damage;
+    }
+
+    public boolean getDead()
+    {
+        return dead;
+    }
+
+    public void target()
+    {
+        if(target != null && target.getDead()==true)
+        {
+            target = null;
+        }
+        if(target==null)
+        {
+            if(board.getIsAdjacentCards(row, col)==true)
+            {
+                ArrayList<Card> cards = board.getAdjacentCards(row, col);
+                if(cards.size()>0)
+                {
+                    target = cards.get((int)(Math.random()*cards.size()));
+                }
+            }
+        }
+    }
+
+    public void move()
+    {
+        if(target != null)
+        {
+            target.damage(damage);
+        }
+        else
+        {
+            if(row<board.getClosestTower(top, row, col).getrow());
+        }
+        else if(!board.onSides(row, col))
+        {
+            board.removeCard(this, row, col);
+            board.setCard(this, row-1, col);
+            row--;
+        }
+    }
+
+    public void damage(int inputDamage)
+    {
+        health-=inputDamage;
+    }
+
+    public boolean die()
+    {   
+        if(health<=0)
+        {
+            dead = true;
+            board.removeCard(this, row, col);
+            return true;
+        }
+        return false;
+    }
+
+    public void act()
+    {
+        System.out.println(health);
+        target();
+        if(!die())
+        {
+            move();
+        }
+    }
+}

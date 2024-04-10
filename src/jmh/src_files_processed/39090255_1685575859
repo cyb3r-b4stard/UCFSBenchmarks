@@ -1,0 +1,110 @@
+
+    
+   import java.util.Random;
+
+public class SPIELAUTOMAT
+{
+    private SPIELWALZE spielwalze1, spielwalze2, spielwalze3;
+    private int z1, z2, z3;
+    private Random zufall;
+    private int guthaben;
+ 
+    private int spielezahl;
+    
+    
+    public SPIELAUTOMAT()
+    {
+        zufall = new Random();
+        z1 = 0;
+        z2 = 0;
+        z3 = 0;
+        spielwalze1 = new SPIELWALZE(20,50,150,z1);
+        spielwalze2 = new SPIELWALZE(170,50,150,z2);
+        spielwalze3 = new SPIELWALZE(320,50,150,z3);
+        guthaben = 10;
+       
+      
+    }
+    
+    public void zeichne()
+    {
+        spielwalze1.zeichne();
+        spielwalze2.zeichne();
+        spielwalze3.zeichne();
+    } 
+    
+    public void setzeFarbmuster(int z1Neu, int z2Neu, int z3Neu)
+    {
+        z1 = z1Neu;
+        z2 = z2Neu;
+        z3 = z3Neu;
+        spielwalze1.faerbeUm(z1);
+        spielwalze2.faerbeUm(z2);
+        spielwalze3.faerbeUm(z3);
+    }
+    
+    public void spiele()
+    {
+        setzeFarbmuster(zufall.nextInt(9),zufall.nextInt(9),zufall.nextInt(9));
+       berecheguthaben ();
+    
+      
+    }
+     
+    public void schreibeWerte()
+    {
+        System.out.println("z1: "+z1+"  z2: "+z2+"  z3: "+z3 + "  Gewinn: "+ ermittleGewinn());
+    }
+    
+    public int ermittleGewinn()
+    {
+        if ((z1==z2)&&(z1==z3))
+        {
+            return 10;
+        }
+        else 
+        {
+            if ((z1==z2)||(z1==z3)||(z3==z2))
+            {
+                return 2;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+public void gewinnsichger()
+{
+    int g;
+    do
+    {
+        setzeFarbmuster(zufall.nextint(9),zufall.nextint(9),zufall.nextint(9));
+         berecheguthaben ();
+        }     
+        
+      
+ 
+      
+          
+
+   public void berecheguthaben ()
+   {    
+       guthaben = guthaben-1 + ermittleGewinn();
+      
+}
+
+public void spieleselbst()
+{
+    while (guthaben > 0 ) {
+     spiele();
+       }
+}
+}
+
+    
+    
+    
+    
+    
+   

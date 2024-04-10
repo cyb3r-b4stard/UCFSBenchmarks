@@ -1,0 +1,54 @@
+import ecs100.*;
+import java.awt.Color;
+import java.util.*;
+import java.io.*;
+public class Salary{
+
+    ArrayList<list> mos = new ArrayList<list>();
+    public Salary()
+    {
+
+        UI.addButton("Java", this::Java);
+        UI.addButton("Display",this::display);
+
+        UI.setDivider(1);
+        
+
+    }
+
+    public void Java(){
+        try{
+
+            Scanner scan = new Scanner(new File("price.txt"));
+            while(scan.hasNext()){
+                String name = scan.next();
+                int min = scan.nextInt();
+                int max = scan.nextInt();
+                int rate = scan.nextInt();
+                double point = scan.nextDouble();
+                int senior = scan.nextInt();
+                double nz = scan.nextDouble(); 
+                list hey = new list(name, min, max,rate, point, senior, nz);
+                mos.add(hey);
+
+            }
+            scan.close();
+            UI.println("Scanning from the file is done");
+        }
+        catch(IOException ex){
+            UI.println("Could not read the file " + ex.getMessage());
+
+        }
+
+    }
+
+    public void display(){
+        Collection.sort(mos, new minComp());
+        int count = 0;
+        for(list p : mos){
+            count++;
+            UI.println(count+ "-" + p.toString());
+
+        }
+    }
+}

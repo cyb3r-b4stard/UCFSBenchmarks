@@ -1,0 +1,44 @@
+import java.awt.*;
+import javax.swing.JPanel;
+public class fractalTree extends JPanel
+{
+    private double angle1 = Math.PI/3    
+    private final int d =-3;
+    int count;
+
+    public fractalTree()
+    {
+        setBackground (Color.black);
+    }
+    public void paintComponent (Graphics g)
+    {
+        super.paintComponent (g);
+        g.setColor (Color.green);
+        DrawFractal(g,500,300,100,angle1);
+        
+    }
+    public void DrawFractal(Graphics g, int x, int y, int pLength, double pAngle){
+        int length = pLength + d;
+        if(length <=50){
+            int bifhae = 1;
+        }else{
+            double rAngle = pAngle-angle1;
+            double lAngle = pAngle+angle1;
+            int rX = x-(int)(length*Math.sin(rAngle));
+            int rY = y-(int)(length*Math.cos(rAngle));
+            int lX = x-(int)(length*Math.sin(lAngle));
+            int lY =y-(int)(length*Math.cos(lAngle));
+            
+            if(count !=0){
+                g.drawLine(x,y,lX,lY);
+                DrawFractal(g,lX,lY,length,lAngle);
+            }else
+            {
+                count =4;
+            }
+            g.drawLine(x,y,rX,rY);
+            DrawFractal(g,rX,rY,length,rAngle);
+            
+        }
+    }
+}

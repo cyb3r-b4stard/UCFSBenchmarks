@@ -1,0 +1,682 @@
+import java.util.*;
+
+public class Teo
+{
+    private int invoicecode;                             
+    private TreeMap<Integer,Cliente> clients;            
+    private TreeMap<String,Double> movielist;            
+    private TreeMap<String,Double> channels;             
+    private TreeMap<String,Double> cabotvprice;          
+    private TreeMap<Integer,Double> phoneprice;          
+    private TreeMap<String,Double> internetprice;        
+    private TreeMap<Integer,Double> vodprice;            
+    private HashMap<Integer,GregorianCalendar> invoices; 
+    
+    public Teo()
+    {
+        this.clients=new TreeMap<Integer,Cliente>();
+        this.movielist=new TreeMap<String,Double>();
+        this.channels=new TreeMap<String,Double>();
+        this.cabotvprice=new TreeMap<String,Double>();
+        this.internetprice=new TreeMap<String,Double>();
+        this.phoneprice=new TreeMap<Integer,Double>();
+        this.vodprice=new TreeMap<Integer,Double>();
+        this.invoices=new HashMap<Integer,GregorianCalendar>();
+        this.invoicecode=1;
+        
+        this.cabotvprice.put("070 Canais",9.99);
+        this.cabotvprice.put("100 Canais",13.99);
+        this.cabotvprice.put("150 Canais",19.99);
+        this.cabotvprice.put("200 Canais",24.99);
+        
+        this.phoneprice.put(500,9.99);
+        this.phoneprice.put(1000,14.99);
+        this.phoneprice.put(1500,19.99);
+        this.phoneprice.put(2000,23.99);
+        
+        this.internetprice.put("030 mbits / 500  GB",19.99);
+        this.internetprice.put("050 mbits / 750  GB",24.99);
+        this.internetprice.put("100 mbits / 1000 GB",34.99);
+        
+        this.vodprice.put(24,1.99);
+        this.vodprice.put(50,2.49);
+        this.vodprice.put(75,3.49);
+        this.vodprice.put(100,4.49);
+        
+        this.movielist.put("LOTR",3.0);
+        this.movielist.put("Invictus",2.0);
+        this.movielist.put("Iron Man",2.0);
+        this.movielist.put("2012",3.0);
+        this.movielist.put("Avengers",2.0);
+        this.movielist.put("The Pianist",3.0);
+        
+        this.channels.put("BBC News HD",1.99);
+        this.channels.put("National Geographic HD",0.99);
+        this.channels.put("Canal História HD",0.99);
+        this.channels.put("SPORT TV 1 HD",3.99);
+        this.channels.put("Euronews HD",3.99);
+        
+        Cliente cliente1=new Cliente("Pedro","Rua A","Pedro@mail.com");
+        Contrato c1=new Contrato();
+        Contrato c12=new Contrato();
+        c1.addService(new TelefoneFixo(9.99,500));
+        c1.addService(new Internet(19.99,30,500));
+        c12.addService(new Internet(19.99,30,500));
+        c1.addService(new CaboTV(13.99,"100 Canais"));
+        c1.addService(new VideonDemand(1.99,24));
+        cliente1.addContract(c1);
+        cliente1.addContract(c12);
+        this.clients.put(1,cliente1.clone());
+                
+        Cliente cliente2=new Cliente("Rute","Rua B","Rute@mail.com");
+        Contrato c2=new Contrato();
+        c2.addService(new CaboTV(19.99,"150 Canais"));
+        c2.addService(new VideonDemand(3.49,75));
+        cliente2.addContract(c2);
+        this.clients.put(2,cliente2.clone());
+        
+        Cliente cliente3=new Cliente("João","Rua C","João@mail.com");
+        Contrato c3=new Contrato();
+        c3.addService(new Internet(34.99,100,1000));
+        c3.addService(new CaboTV(9.99,"070 Canais"));
+        cliente3.addContract(c3);
+        this.clients.put(3,cliente3.clone());
+        
+        Cliente cliente4=new Cliente("Maria","Rua D","Maria@mail.com");
+        this.clients.put(4,cliente4.clone());      
+    }
+      
+    public List<String> showDeals(String s)
+    {
+        List<String> l=new ArrayList<String>();
+        
+        if(s.equals("CaboTV"))
+            for(String x:this.cabotvprice.keySet())
+                l.add(x + "  -> " + this.cabotvprice.get(x) +"€");
+    
+        if(s.equals("Internet"))
+           for(String x:this.internetprice.keySet())
+                l.add(x + "\t -> " + this.internetprice.get(x) +"€");
+        
+        if(s.equals("Telefone"))
+            for(int x:this.phoneprice.keySet())
+                l.add(x + " mins \t -> " + this.phoneprice.get(x) +"€");
+                
+        if(s.equals("VideonDemand"))
+           for(int x:this.vodprice.keySet())
+                l.add(x + " mbits \t -> "+ this.vodprice.get(x) + "€");
+                
+        return l;
+    }
+    
+    public boolean changeDealsPrices(int n,double p)
+    {
+        int i=1;
+        String temp="";
+        int temp2=0;
+        
+        if(n>0&&n<5)
+            for(String x:this.cabotvprice.keySet())
+            {
+                if(n==i)
+                {
+                    this.cabotvprice.remove(x);
+                    this.cabotvprice.put(x,p);
+                    return true;
+                }
+                else
+                    i++;
+            }
+        
+        if(n>4&&n<8)
+            for(String x:this.internetprice.keySet())
+            {
+                if(n-this.cabotvprice.size()==i)
+                {
+                    temp=x;
+                    this.internetprice.remove(x);
+                    this.internetprice.put(temp,p);
+                    return true;
+                }
+                else
+                    i++;
+            }
+        
+        if(n>7&&n<12)
+            for(int x:this.phoneprice.keySet())
+            {
+                if(n-this.cabotvprice.size()-this.internetprice.size()==i)
+                {
+                    temp2=x;
+                    this.phoneprice.remove(x);
+                    this.phoneprice.put(temp2,p);
+                    return true;
+                }
+                else
+                    i++;
+            }   
+        
+        return false;
+    }
+    
+    public boolean addClient(String clientname, String clientadress, String clientmail)  
+    {
+        for(Cliente x:this.clients.values())
+            if(x.getClientAdress().equals(clientadress)||x.getClientEmail().equals(clientmail))
+                return false;
+           
+        this.clients.put(this.clients.size()+1,new Cliente(clientname,clientadress,clientmail));
+        
+        return true;
+    }
+    
+    public boolean clientExists(int client)
+    {return this.clients.containsKey(client);}
+
+    public int addClientContract(int clientcode)
+    {
+        if(this.clients.containsKey(clientcode))
+        {
+            Cliente x=this.clients.get(clientcode);
+            Contrato y=new Contrato();
+            x.addContract(y);
+            return y.getContractNumber();
+        }
+        
+        return 0;
+    }
+    
+    public Contrato searchContract(int contract)        
+    {        
+        for(Cliente i:this.clients.values())
+            if(i.getClientContracts()!=null)
+                for(Contrato x:i.getClientContracts())
+                    if(x.getContractNumber()==contract)
+                        return x;
+                          
+        return null;
+    }
+    
+    public int numContractServices(int contract)
+    {
+        int i=0;
+        
+        Contrato x=searchContract(contract);
+        
+        if(x!=null)
+            if(x.getContractServices()!=null)
+                for(Serviço y:x.getContractServices())
+                    i++;
+                        
+        return i;
+    }
+    
+    public boolean searchService(String s,Contrato c)
+    {
+        if(c==null)
+            return false;
+               
+        if(c.getContractServices()!=null)
+            for(Serviço y:c.getContractServices())
+                if(y.getClass().getName().equals(s))
+                     return true;
+
+        return false;         
+    }
+    
+    public boolean addClientCaboTV(int contract,int op)
+    {
+        if(op>4||op<1)
+            return false;
+            
+        int i=1;
+        
+        for(String x:this.cabotvprice.keySet())
+        {
+            if(i==op)
+            { 
+                 if(searchContract(contract).addService(new CaboTV(this.cabotvprice.get(x),x))==true)
+                     return true;
+            }
+            else
+                i++;
+        }
+        
+        return false;                       
+    }
+    
+    public boolean addClientInternet(int contract,int op)
+    {
+        if(op>3||op<1)
+            return false;
+            
+        int i=1;
+            
+        for(String x:this.internetprice.keySet())
+        {
+            if(i==op&&op==1)
+                if(searchContract(contract).addService(new Internet(this.internetprice.get(x),30,500))==true)
+                    return true;
+                    
+            if(i==op&&op==2)
+                if(searchContract(contract).addService(new Internet(this.internetprice.get(x),50,750))==true)
+                    return true;
+            
+            if(i==op&&op==3)
+                if(searchContract(contract).addService(new Internet(this.internetprice.get(x),100,1000))==true)
+                    return true;        
+            else
+                i++;
+        }
+        
+        return false;
+    }
+    
+    public boolean addClientTelefone(int contract,int op)
+    {
+        if(op>4||op<1)
+           return false;
+           
+        int i=1;
+            
+        for(int x:this.phoneprice.keySet())
+        {
+            if(i==op)
+            {
+                if(searchContract(contract).addService(new TelefoneFixo(this.phoneprice.get(x),x))==true)
+                    return true;
+            }
+            else
+                i++;
+        }     
+      
+        return false;
+    }
+    
+    public boolean addClientVoD(int contract,int op)
+    {
+        if(op>4||op<1)
+           return false;
+           
+        int i=1;
+        
+        for(int x:this.vodprice.keySet())
+        {
+            if(i==op)
+            {
+                if(searchContract(contract).addService(new VideonDemand(this.vodprice.get(x),x))==true)
+                    return true;
+            }
+            else
+                i++;
+        }
+ 
+        return false;
+    }
+    
+    public List<String> listClients(boolean all,int c) 
+    {
+        List<String> l=new ArrayList<String>();
+        
+        if(this.clients.isEmpty())
+            return null;
+            
+        if(all)
+            for(Cliente x:this.clients.values())
+                l.add("\nNome: "+x.getClientName()+ "\nMorada: "+x.getClientAdress()+"\nEmail: "+x.getClientEmail()+"\nNúmero de cliente: "+x.getClientCode());
+        else
+        {
+             Cliente x=this.clients.get(c);
+             l.add("\nNome: "+x.getClientName()+ "\nMorada: "+x.getClientAdress()+"\nEmail: "+x.getClientEmail()+"\nNúmero de cliente: "+x.getClientCode());
+        }
+        
+        return l;
+    }
+    
+    public List<String> listContractservices(int contract)
+    {
+        List<String> l=new ArrayList<String>();
+        
+        Contrato x=searchContract(contract);
+
+        if(x==null)
+            return null;
+                    
+        if(x.getContractServices()==null)           
+            return null;
+        else
+        {
+            l.add("\nContrato n.º "+x.getContractNumber()+":\n");
+            for(Serviço y:x.getContractServices())
+            {    
+                if(y.getClass().getName().equals("CaboTV"))
+                    l.add("CaboTV       - " + ((CaboTV)y).getCabledeal());
+                
+                if(y.getClass().getName().equals("Internet"))
+                    l.add("Internet     - " + ((Internet)y).getSpeed()+ " mbits / "+ ((Internet)y).getBandwidth()+" GB");
+                    
+                if(y.getClass().getName().equals("TelefoneFixo"))
+                    l.add("Telefone     - " + ((TelefoneFixo)y).getCalls()+ " mins");
+                
+                if(y.getClass().getName().equals("VideonDemand"))
+                    l.add("VideonDemand - " + ((VideonDemand)y).getSpeed()+ " mbits");    
+            }
+        }
+        
+        return l;
+    }
+    
+    public List<String> listClientservices(int client)
+    {
+        List<String> l=new ArrayList<String>();
+        
+        if(this.clients.containsKey(client))
+        {    
+            Cliente x=this.clients.get(client);
+            
+            if(x.getClientContracts()==null)
+                return null;
+                
+            for(Contrato y:x.getClientContracts())
+                if(listContractservices(y.getContractNumber())!=null)
+                    for(String i:listContractservices(y.getContractNumber()))
+                        l.add(i);
+            
+            return l;
+        }    
+
+        return null;
+    }
+    
+    public List<String> listClientcontracts(int client)
+    {
+        List<String> l=new ArrayList<String>();
+        
+        if(this.clients.containsKey(client))
+        {
+            Cliente x=this.clients.get(client);
+            
+            if(x.getClientContracts()==null)
+                return null;
+        
+            for(Contrato y:x.getClientContracts())
+                l.add("Contrato n.º "+y.getContractNumber()+"\n");
+   
+            return l;
+        }
+        
+        return null;
+    }
+    
+    public List<String> listDownloadableClients()
+    {
+        List<String> l=new ArrayList<String>();
+        
+        if(this.clients.values()==null)
+            return null;
+        boolean added=false;
+        
+        for(Cliente x:this.clients.values())
+            if(x.getClientContracts()!=null)
+                for(Contrato y:x.getClientContracts())
+                    if(y.getContractServices()!=null)
+                    {
+                        for(Serviço z:y.getContractServices())
+                            if(z instanceof Downloadable&&!added)
+                            {
+                                l.add("Contrato n.º "+y.getContractNumber());
+                                added=true;
+                            }
+                        added=false;   
+                    }
+                                                            
+        return l;
+    }
+    
+    public boolean addMovieVod(int m,int contract)
+    {
+        Contrato x=searchContract(contract);                          
+        int i=1;
+        
+        for(Serviço y:x.getContractServices())       
+            if(y.getClass().getName().equals("VideonDemand"))
+                for(String z:this.movielist.keySet())
+                    if(i==m)
+                    {   
+                        if(((VideonDemand)y).addMovie(z,this.movielist.get(z))==true)   
+                            return true;
+                        else
+                           return false;                                                
+                    }
+                    else
+                        i++;   
+     
+        return false;                
+    }
+    
+    public Set<String> listAvailableMovies()
+    {
+        TreeSet<String> temp= new TreeSet<String>();
+        int i=1;
+        
+        for(String x:this.movielist.keySet())
+        {
+            temp.add(i+": "+x+" - "+this.movielist.get(x)+" €");
+            i++;
+        }  
+        
+        return temp;           
+    }
+    
+    public List<String> listClientMostVod()
+    {
+        List<String> l=new ArrayList<String>();
+        
+        double max=0;
+        int c=0;
+        
+        if(this.clients.values()==null)
+            return null;
+        
+        for(Cliente x:this.clients.values())
+            if(x.getClientContracts()!=null)
+                for(Contrato y:x.getClientContracts())
+                    if(y.getContractServices()!=null)
+                        for(Serviço z:y.getContractServices())
+                            if(z.getClass().getName().equals("VideonDemand"))
+                                if(((VideonDemand)z).getMoviesize()!=0)
+                                    if(max<((VideonDemand)z).getTotalPrice())
+                                    {
+                                         max=((VideonDemand)z).getTotalPrice();
+                                         c=x.getClientCode();
+                                    }
+
+        if(max==0)
+            return null;           
+            
+        for(String i:listClients(false,c))
+            l.add(i);
+        
+        max=Math.round(max*100.0)/100.0;
+        l.add("Valor gasto: "+max+" €");
+       
+        return l;
+    }
+    
+    public Set<String> listAvailableChannels()
+    {
+        TreeSet<String> temp= new TreeSet<String>();
+        int i=1;
+        
+        for(String x:this.channels.keySet())
+        {
+            temp.add(i+": "+x+" - "+this.channels.get(x)+" €");
+            i++;
+        }  
+        
+        return temp;           
+    }
+    
+    public boolean addChannel(int m,int contract)  
+    {
+        Contrato x=searchContract(contract);           
+        int i=1;
+        
+        for(Serviço y:x.getContractServices())       
+            if(y.getClass().getName().equals("CaboTV"))
+                for(String z:this.channels.keySet())
+                    if(i==m)
+                    {   
+                        if(((CaboTV)y).addPremium(z,this.channels.get(z))==true)   
+                            return true;
+                        else
+                            return false;                                                
+                    }
+                    else
+                        i++;   
+                        
+        return false;                         
+    }
+    
+    public Set<String> listPhoneClients() 
+    {
+        TreeSet<String> temp=new TreeSet<String>();
+        
+        if(this.clients.values()==null)
+            return null;
+        
+        for(Cliente x:this.clients.values())
+            if(x.getClientContracts()!=null)
+                for(Contrato y:x.getClientContracts())
+                    if(searchService("TelefoneFixo",y))
+                        temp.add(x.getClientEmail());
+                
+        return temp;
+    }
+    
+    public double calcCostService(int client)
+    {
+        double t=0.0;
+        GregorianCalendar lastinvoice;
+        GregorianCalendar newinvoice=new GregorianCalendar();
+        
+        if(this.invoices.get(client)!=null)
+        {   
+            lastinvoice=this.invoices.get(client);
+            if((newinvoice.get(Calendar.DAY_OF_MONTH)>27&&newinvoice.get(Calendar.MONTH)==lastinvoice.get(Calendar.MONTH))||newinvoice.get(Calendar.MONTH)>lastinvoice.get(Calendar.MONTH))
+            {
+                Cliente x=this.clients.get(client);
+                for(Contrato y:x.getClientContracts())
+                    for(Serviço z:y.getContractServices())
+                        t+=z.getPrice();
+            }
+            else
+                return -1;
+        }
+        else
+        {
+            Cliente x=this.clients.get(client);
+            for(Contrato y:x.getClientContracts())
+                for(Serviço z:y.getContractServices())
+                    if(z.getData().get(Calendar.DAY_OF_MONTH)<27)
+                        t+=(z.getPrice()*(27-z.getData().get(Calendar.DAY_OF_MONTH)))/30;
+                    else
+                    {
+                        t+=z.getPrice(); 
+                        if(z.getData().get(Calendar.MONTH)==11)
+                            this.invoices.put(client,new GregorianCalendar(z.getData().get(Calendar.YEAR)+1,0,27)
+                    }
+        }
+         
+        return t;
+    }
+    
+    public List<String> createBill(int client)
+    {
+        List<String> l=new ArrayList<String>();
+        double total=0;
+        GregorianCalendar invoicedate=new GregorianCalendar();
+        l.add("\nFatura n.º "+this.invoicecode);
+        l.add("Data de emissão: "+invoicedate.get(Calendar.DAY_OF_MONTH)+"/"+(invoicedate.get(Calendar.MONTH)+1)+"/"+invoicedate.get(Calendar.YEAR));
+        l.add("Data limite de pagamento: 27/"+(invoicedate.get(Calendar.MONTH)+1)+"/"+invoicedate.get(Calendar.YEAR));
+        
+        Cliente x=this.clients.get(client);
+        
+        for(Contrato y:x.getClientContracts())
+        {
+            l.add("----------------------\nContrato n.º "+y.getContractNumber()+"\n");
+            for(Serviço z:y.getContractServices())
+            {
+                GregorianCalendar w=z.getData();
+                if(z.getClass().getName().equals("CaboTV"))
+                {
+                    l.add("CaboTV "+((CaboTV)z).getCabledeal()+" - "+z.getPrice()+"€");
+                    
+                    if(((CaboTV)z).getPremiumSize()>0)
+                    {
+                        l.add("\nCanais premium contratados: ");
+                        for(String i:((CaboTV)z).getPremium())
+                            l.add(i+" - "+((CaboTV)z).getPremiumPrice(i)+" €");
+                    }  
+                    
+                    l.add("\nPeríodo de faturação: "+w.get(Calendar.DAY_OF_MONTH)+"/"+(w.get(Calendar.MONTH)+1)+"/"+w.get(Calendar.YEAR)+" até 27/"+(invoicedate.get(Calendar.MONTH)+1)+"/"+invoicedate.get(Calendar.YEAR)+"\n");
+                    
+                    if(invoicedate.get(Calendar.DAY_OF_MONTH)<28)
+                        total+=(z.getPrice()*(27-z.getData().get(Calendar.DAY_OF_MONTH)))/30;
+                    else
+                        total+=z.getPrice();
+                }
+                
+                if(z.getClass().getName().equals("Internet"))
+                {
+                    l.add("Internet "+((Internet)z).getSpeed()+" mbits / "+((Internet)z).getBandwidth()+"GB - "+z.getPrice()+"€");
+                    l.add("\nPeríodo de faturação: "+w.get(Calendar.DAY_OF_MONTH)+"/"+(w.get(Calendar.MONTH)+1)+"/"+w.get(Calendar.YEAR)+" até 27/"+(invoicedate.get(Calendar.MONTH)+1)+"/"+invoicedate.get(Calendar.YEAR)+"\n");
+                    
+                    if(invoicedate.get(Calendar.DAY_OF_MONTH)<28)
+                        total+=(z.getPrice()*(27-z.getData().get(Calendar.DAY_OF_MONTH)))/30;
+                    else
+                        total+=z.getPrice();
+                }
+                
+                if(z.getClass().getName().equals("TelefoneFixo"))
+                {
+                    l.add("Telefone "+((TelefoneFixo)z).getCalls()+" minutos - "+z.getPrice()+"€");
+                    l.add("\nPeríodo de faturação: "+w.get(Calendar.DAY_OF_MONTH)+"/"+(w.get(Calendar.MONTH)+1)+"/"+w.get(Calendar.YEAR)+" até 27/"+(invoicedate.get(Calendar.MONTH)+1)+"/"+invoicedate.get(Calendar.YEAR)+"\n");
+                    
+                    if(invoicedate.get(Calendar.DAY_OF_MONTH)<28)
+                        total+=(z.getPrice()*(27-z.getData().get(Calendar.DAY_OF_MONTH)))/30;
+                    else
+                        total+=z.getPrice();
+                }
+                
+                if(z.getClass().getName().equals("VideonDemand"))
+                {
+                    l.add("Video on Demand "+((VideonDemand)z).getSpeed()+" mbits"+" - "+z.getPrice()+"€");
+                    
+                    if(invoicedate.get(Calendar.DAY_OF_MONTH)<28)
+                        total+=(z.getPrice()*(27-z.getData().get(Calendar.DAY_OF_MONTH)))/30;
+                    else
+                        total+=z.getPrice();
+                                               
+                    if(((VideonDemand)z).getMoviesize()>0)
+                    {
+                        l.add("\nFilmes alugados: ");
+                        for(String i:((VideonDemand)z).getMovies())
+                        {
+                            l.add(i+" - "+((VideonDemand)z).getMoviePrice(i)+" €");
+                            total+=((VideonDemand)z).getMoviePrice(i);
+                        }
+                    }
+                    
+                    l.add("\nPeríodo de faturação: "+w.get(Calendar.DAY_OF_MONTH)+"/"+(w.get(Calendar.MONTH)+1)+"/"+w.get(Calendar.YEAR)+" até 27/"+(invoicedate.get(Calendar.MONTH)+1)+"/"+invoicedate.get(Calendar.YEAR)+"\n");
+                }
+                
+            }
+        } 
+        
+        total=Math.round(total*100.0)/100.0;            
+        l.add("--------------------\nTotal a pagar: "+total+" €");
+        this.invoicecode++;
+        return l;
+    }
+}

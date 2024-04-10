@@ -1,0 +1,264 @@
+ 
+
+ 
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+
+
+
+/**
+ * @###### ##### ######
+ *
+ */
+@SuppressWarnings("serial")
+
+public class Game extends GameCore 
+{
+	static int screenWidth = 6000;
+	static int screenHeight = 380;
+
+ 
+    
+    float lift = 0.005f;
+    float gravity = 0.0001f;
+    boolean running = false;
+
+    Animation landing;
+    
+    Sprite	player =null;
+    ArrayList<Sprite> clouds = new ArrayList<Sprite>();
+
+    TileMap tmap = new TileMap();	
+    
+    Animation anim;
+Sprite boy;
+private double xscale=1.0;
+private double yscale=1.0;
+ private Image bgImage;
+ private Sprite sprite;
+    long total;         			
+
+    
+    public void loadImages() {
+        bgImage = loadImage("images/bg.jpg");
+        Image player1 = loadImage("images/enemy.png");
+        Image player2 = loadImage("images/s1.png");
+        Image player3 = loadImage("images/s3.png");
+
+        Animation anim = new Animation();
+        anim.addFrame(player1, 250);
+        anim.addFrame(player2, 150);
+        anim.addFrame(player1, 150);
+        anim.addFrame(player2, 150);
+        anim.addFrame(player3, 200);
+        anim.addFrame(player2, 150);
+        sprite = new Sprite(anim);
+
+        sprite.setVelocityX(0.0f);
+        sprite.setVelocityY(0.0f);
+    }
+
+    /**
+	 * The obligatory main method that creates
+     * an instance of our class and starts it running
+     * 
+     * @param args	The list of parameters this program might use (ignored)
+     */
+    public static void main(String[] args) {
+
+        Game gct = new Game();
+        gct.init();
+        gct.run(false,screenWidth,screenHeight);
+    }
+
+    /**
+     * Initialise the class, e.g. set up variables, load images,
+     * create animations, register event handlers
+     */
+    public void init()
+    {         
+        Sprite boy;	
+
+        tmap.loadMap("maps", "map.txt");
+
+        
+        landing = new Animation();
+        landing.loadAnimationFromSheet("images/boy.png", 1, 1, );
+        
+        player = new Sprite(landing);
+        total=0;
+    anim = new Animation();
+    Image boy1 = loadImage("images/boy.png");
+        
+        anim.addFrame(boy1, 250);
+        boy =new Sprite (anim);
+        boy.setX(100);
+        boy.setY(100);
+        boy.setVelocityX(0.1f);
+        boy.setVelocityY(0.1f);
+        
+   
+    boy.show();
+        Animation ca = new Animation();
+        ca.addFrame(loadImage("images/enemy.png"), 1000);
+        
+        for (int c=0; c<1; c++)
+        {
+        	boy= new Sprite(ca);
+        	boy.setX(screenWidth + (int)(Math.random()*200.0f));
+        	boy.setY(60+ (int)(Math.random()*250.0f));
+        	boy.setVelocityX(-0.02f);
+        	boy.show();
+        	clouds.add(boy);
+        }
+
+        initialiseGame();
+      		
+        System.out.println(tmap);
+    }
+
+    /**
+     * You will probably want to put code to restart a game in
+     * a separate method so that you can call it to restart
+     * the game.
+     */
+    public void initialiseGame()
+    {
+    	total = 0;
+    	      
+        player.setX(64);
+        player.setY(280);
+        player.setVelocityX(0);
+        player.setVelocityY(0);
+        player.show();
+    }
+    
+    /**
+     * Draw the current state of the game
+     */
+    public void draw(Graphics2D g)
+    {    	
+
+        int xo = 0;
+        int yo = 0;
+
+
+        
+        g.setColor(Color.orange);
+        g.fillRect(0, 0, getWidth(), getHeight());
+        
+        for (Sprite s: clouds)
+        {
+        	s.setOffsets(xo,yo);
+        	s.draw(g);
+        }
+
+        player.setOffsets(xo, yo);
+        player.draw(g);
+                
+        tmap.draw(g,xo,yo);    
+        
+        String msg = String.format("Score: %d", total/100);
+        g.setColor(Color.darkGray);
+        g.drawString(msg, getWidth() - 80, 50);
+    }
+
+    /**
+     * Update any sprites and check for collisions
+     * 
+     * @param elapsed The elapsed time between this call and the previous call of elapsed
+     */    
+    public void update(long elapsed)
+    {
+    	
+        player.setVelocityY(player.getVelocityY()+(gravity*elapsed));
+    	    	
+       	player.setAnimationSpeed(1.0f);
+       	
+       	if (running) 
+       	{
+       		player.setAnimationSpeed(1.8f);
+       		player.setVelocityY(-0.04f);
+       		
+       		
+       		
+       	}
+                
+       	for (Sprite s: clouds)
+       		s.update(elapsed);
+       	
+        player.update(elapsed);
+       
+        handleTileMapCollisions(player,elapsed);
+         	
+    }
+    
+    
+    /**
+     * Checks and handles collisions with the tile map for the
+     * given sprite 's'. Initial functionality is limited...
+     * 
+     * @param s			The Sprite to check collisions for
+     * @param elapsed	How time has gone by
+     */
+   pablic void handleTileMapCollisions(Sprite s, long elapsed)
+    {
+    	
+        if (player.getY() + player.getHeight() > tmap.getPixelHeight())
+        {
+        	player.setY(tmap.getPixelHeight() - player.getHeight());
+        	
+        	player.setVelocityY(-player.getVelocityY() * (0.03f * elapsed));
+        }
+    }
+    
+    
+     
+    /**
+     * Override of the keyPressed event defined in GameCore to catch our
+     * own events
+     * 
+     *  @param e The event that has been generated
+     */
+    public void keyPressed(KeyEvent e) 
+    { 
+    	int key = e.getKeyCode();
+    	
+    	if (key == KeyEvent.VK_ESCAPE) stop();
+    	
+    	if (key == KeyEvent.VK_UP) running = true;
+    	if (key== KeyEvent.VK_RIGHT) player.setVelocityX(player.getVelocityX()+0.1f);
+        if (key == KeyEvent.VK_LEFT) player.setVelocityX(player.getVelocityX()-0.1f);
+         if (key == KeyEvent.VK_DOWN) player.setVelocityY(player.getVelocityY()+0.1f);
+        
+    	   	
+    	if (key == KeyEvent.VK_S)
+    	{
+    		Sound s = new Sound("sounds/caw.wav");
+    		s.start();
+    	}
+    }
+
+    public boolean boundingBoxCollision(Sprite s1, Sprite s2)
+    {
+    	return false;   	
+    }
+
+
+	public void keyReleased(KeyEvent e) { 
+
+		int key = e.getKeyCode();
+
+		switch (key)
+		{
+			case KeyEvent.VK_ESCAPE : stop(); break;
+			case KeyEvent.VK_UP     : running= false; break;
+			case KeyEvent.VK_RIGHT     : running= false; break;
+			case KeyEvent.VK_LEFT     : running= false; break;
+			case KeyEvent.VK_DOWN     : running= false; break;
+			default :  break;
+		}
+	}
+}

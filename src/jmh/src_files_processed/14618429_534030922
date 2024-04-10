@@ -1,0 +1,69 @@
+
+/**
+ * ##### # ########### ## ##### ############## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class MaximumFinders
+{
+    static Maximum findMaximumOnGrid(RealFunction f, double a, double b, int n)
+    {
+        if(a >= b)
+        {
+            throw new IllegalArgumentException();
+        }
+
+        if(n <= 0)
+        {
+            throw new IllegalArgumentException();
+        }
+
+        Maximum v = new Maximum();
+        double largestNumber=Long.MIN_VALUE;
+        for(int i=0;i<=n;i++)
+        {
+            double c=a+(b-a)/n*i ;
+            f.valueAt(c);
+            if(f.valueAt(c) > largestNumber)
+            {
+                largestNumber=f.valueAt(c);
+                v.position=c;
+            }
+        }
+        v.value=largestNumber;
+        return v;
+    } 
+
+    static Maximum findMaximumByNewton(RealFunction f, double a, double b, double x0)
+    {
+        if(a >= b)
+        {
+            throw new IllegalArgumentException();
+        }
+        
+        if(x0<a || x0>b)
+        {
+            throw new IllegalArgumentException();
+        }
+        double v;
+        int N=0;
+        Maximum r=new Maximum();
+        do
+        {
+            v=f.derivativeValueAt(x0)/f.secondDerivativeValueAt(x0);
+            x0=x0-v;
+            N++;
+            if(N>10)
+            {
+                throw new java.lang.ArthmeticException;
+            }
+        }
+        while (Math.abs(v) > 1e-6);
+        r.value=f.valueAt(x0);
+        r.position=x0;
+        return r;
+    }
+}
+
+    

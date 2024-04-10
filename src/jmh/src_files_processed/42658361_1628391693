@@ -1,0 +1,251 @@
+/*
+ ##: ########
+ ####: ####
+ ####: #####
+ */
+
+
+import java.util.Scanner;
+import java.io.*;
+public class sort3
+{
+    static int numNumbers, temp, counter = 0, minCounter = 10000000, num1S, num2S, num3S;
+    static boolean counterChanged = false;
+    static int counter1;
+    static int counter2;
+    static boolean[][] imSmart = new boolean[1001][1001];
+    public static void main(String[] args) throws IOException
+    {
+        Scanner in = new Scanner(new FileReader("sort3.in"));
+        PrintWriter output = new PrintWriter("sort3.out");
+        numNumbers = in.nextInt();
+        int[] inputArray = new int[numNumbers];
+        boolean changed = false;
+        counter1 = 0;
+        counter2 = 0;
+        int[] numArray = new int[numNumbers];
+        int[] numArray1 = new int[numNumbers];
+        for(int i = 0; i < 1001; i++)
+            for(int j = 0; j < 1001; j++)
+                imSmart[i][j] = false;
+        for(int i = 0; i < numNumbers; i++)
+        {
+            numArray[i] = in.nextInt();
+            numArray1[i] = numArray[i];
+            if(numArray1[i] == 1) num1S++;
+            else if(numArray1[i] == 2) num2S++;
+            else if(numArray1[i] == 3) num3S++;
+        }
+        for(int i = 0; i < num1S; i++)
+        {
+            if(numArray1[i] != 1)
+            {
+                inputArray[counter1] = numArray[i];
+                counter1++;
+                changed = true;
+            }
+        }
+        for(int i = num1S; i < num1S + num2S; i++)
+        {
+            if(numArray1[i] != 2)
+            {
+                inputArray[counter1] = numArray[i];
+                counter1++;
+                changed = true;
+            }
+        }
+        for(int i = num1S + num2S; i < num1S + num2S + num3S; i++)
+        {
+            if(numArray1[i] != 3)
+            {
+                inputArray[counter1] = numArray[i];
+                counter1++;
+                changed = true;
+            }
+        }
+        if(changed)
+        {
+            counter1--;
+        }
+        /*for(int i = 0; i < numNumbers; i++)
+        {
+            System.out.print(numArray[i] + " ");
+            System.out.print(numArray1[i] + " ");
+            System.out.println();
+        }*/
+        
+        sort(numArray);
+        /*for(int i = 0; i < numNumbers; i++)
+        {
+            for(int j = numNumbers - 1; j > i; j--)
+            {
+                if(numArray[j] < numArray[i] && (numArray[i] - numArray[j] == 2 || numArray[j] == 1))
+                {
+                    temp = numArray[i];
+                    numArray[i] = numArray[j];
+                    numArray[j] = temp;
+                    counter++;                   
+                }
+            }
+        }
+        for(int i = 0; i < numNumbers; i++)
+        {
+            System.out.print(numArray[i] + " ");
+        }
+        for(int i = 0; i < numNumbers; i++)
+        {
+            for(int j = i+1; j < numNumbers; j++)
+            {
+                if(numArray[j] < numArray[i] )
+                {
+                    temp = numArray[i];
+                    numArray[i] = numArray[j];
+                    numArray[j] = temp;
+                    counter++;
+                    System.out.println(i + "\n" + j);
+                }
+            }
+        }*/
+        /*if(one == false)
+        {
+            for(int j = i+1; j < numNumbers; j++)
+            {
+                if(numArray[j] < numArray[i] && numArray[j] == 2)
+                {
+                    temp = numArray[i];
+                    numArray[i] = numArray[j];
+                    numArray[j] = temp;
+                    counter++;
+                    System.out.println(i + "\n" + j);
+                }
+            }
+        }*/
+        /*int counter3 = 0;
+        for(int i = 0; i < numNumbers; i++)
+        {   
+            for(int j = 0; j < numNumbers; j++)
+            {
+                if(imSmart[i][j]) counter3++;
+            }
+            if(counter3 > 1) minCounter--;
+            counter3 = 0;
+        }
+        for(int i = 0; i < numNumbers; i++)
+        {
+            for(int j = 0; j < numNumbers; j++)
+            {
+                if(imSmart[j][i]) counter3++;
+            }
+            if(counter3 > 1) minCounter--;
+            counter3 = 0;
+        }*/
+        if(counterChanged)
+            output.println(minCounter);
+        else 
+            output.println(0);
+        /*for(int y = 0; y < numNumbers; y++)
+        {
+            System.out.print(numArray[y] + "  ");
+            System.out.print(numArray1[y]);
+            System.out.println();
+        }*/
+        output.close();
+        System.exit(0);
+    }
+    public static void sort(int[] numArray)
+    {
+        for(int i = 0; i < numNumbers; i++)
+        {
+            for(int j = numNumbers - 1; j > i ; j--)
+            {
+                if(numArray[j] < numArray[i] && range(j, numArray) && range(i, numArray)
+                {
+                    temp = numArray[i];
+                    numArray[i] = numArray[j];
+                    numArray[j] = temp;
+                    counter++;
+                    counterChanged = true;
+                    imSmart[i][j] = true;
+                    System.out.print(i + " " + j+ "\n");
+                    if(counter < minCounter && isSorted(numArray)){
+                        minCounter = counter;
+                    }
+                    sort(numArray);
+                    counter = 0;
+                }
+            }
+        }
+    }
+    public static boolean range(int tester, int[] numArray)
+    {
+        if(numArray[j] == 1 && 0 <= j && j < num1S) return true;
+        else if(numArray[j] == 2 && num1S <= j && j < num1S + num2S) return true;
+        else if(numArray[j] == 3 && num1S + num2S <= j && j < num1S + num2S + num3S) return true;
+    }
+    public static void sort1(int[] numArray1)
+    {
+        for(int i = 0; i < numNumbers; i++)
+        {
+            for(int j = i; j < numNumbers; j++)
+            {
+                if(numArray1[j] < numArray1[i])
+                {
+                    temp = numArray1[i];
+                    numArray1[i] = numArray1[j];
+                    numArray1[j] = temp;
+                    counter++;
+                    counterChanged = true;
+                    System.out.print(i + " " + j+ "\n");
+                    if(counter < minCounter && isSorted(numArray1)) minCounter = counter;
+                    sort1(numArray1);
+                    counter = 0;
+                }
+            }
+        }
+    }
+    public static boolean isSorted(int[] checker)
+    {
+        for(int i = 0; i < numNumbers; i++)
+        {
+            for(int j = i; j < numNumbers; j++)
+            {
+                if(checker[i] > checker[j]) return false;
+            }
+        }
+        return true;
+    }
+    public static boolean isSorted1(int[] inputArray)
+    {
+        for(int i = 0; i < counter1; i++)
+        {
+            for(int j = i; j < counter1; j++)
+            {
+                if(inputArray[i] > inputArray[j]) return false;
+            }
+        }
+        return true;
+    }
+    public static void sort2(int[] inputArray)
+    {
+        for(int i = 0; i < counter1; i++)
+        {
+            for(int j = counter1 - 1; j > i ; j--)
+            {
+                if(inputArray[j] < inputArray[i])
+                {
+                    temp = inputArray[i];
+                    inputArray[i] = inputArray[j];
+                    inputArray[j] = temp;
+                    counter++;
+                    counterChanged = true;
+                    System.out.print(i + " " + j+ "\n");
+                    if(counter < minCounter && isSorted1(inputArray)){
+                        minCounter = counter;
+                    }
+                    sort2(inputArray);
+                    counter = 0;
+                }
+            }
+        }
+    }
+}

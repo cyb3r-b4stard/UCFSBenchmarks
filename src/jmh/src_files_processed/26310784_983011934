@@ -1,0 +1,326 @@
+import java.util.ArrayList;
+
+public class Words2
+{
+    private ArrayList<String> wordList;
+
+    public Words2( )
+    {
+        this.wordList = new ArrayList<String>();
+        populate( );
+    }
+
+    public ArrayList<String> getWordList( )
+    {
+        return this.wordList;
+    }
+
+    /**
+     * returns the size of wordList
+     * 
+     * @return int
+     */
+    public int count( )
+    {
+
+        int size = wordList.size();
+
+        return size;
+    }
+
+    /**
+     * Done
+     */
+    public void populate( )
+    {
+        String[ ] spellings = 
+            { 
+                new String( "" ),
+                new String( "1234" ),
+
+                "a99le",
+
+                "apple",               
+                "bannana",
+                "peach",
+
+                new String( "plum" ),
+
+                "orange",
+                "lime"
+            };
+
+        for (String s: spellings)
+        {
+            this.addWord( s );
+        }
+    }
+
+    /*
+     * Creates and returns a String[ ] array of all String elements
+     * that are included in the wordList field.
+     * 
+     * @return a String[ ] array
+     */
+    public String[ ] copyToWordArray( )
+    {
+        {
+            String[ ] wordArray = new String[wordList.size() ];
+
+            for(int n=0; n<wordArray.length; n++)
+            {
+                wordArray[ n ] = wordList.get( n );
+            }
+            return wordArray;
+        }
+    }
+
+    /*
+     * Creates and returns an ArrayList of all String elements 
+     * in wordList that contain the given substring.
+     * 
+     * @return ArrayList<String>
+     * @param String substring
+     */
+    public ArrayList<String> contains( String substring )
+    {
+        ArrayList<String> list = new ArrayList<String> ();
+
+        for(String s : wordList)
+        {
+            if(s.contains(substring))
+            {
+                list.add(s);
+            }
+        }
+        return list;
+    }
+
+    /*
+     * Creates and returns an ArrayList of all String elements
+     * in wordList that start with the given prefix.
+     * 
+     * @return ArrayList<String>
+     * @param  String prefix
+     */
+    public ArrayList<String> startsWith( String prefix )
+    {
+        ArrayList<String> list = new ArrayList<String> ();
+
+        for(String s : wordList)
+        {
+            if(s.startsWith("a"))
+            {
+                list.add(s);
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Searches wordList with a for-each loop, and 
+     * returns the word if it is found. Otherwise,
+     * returns null.
+     * 
+     * @return String
+     * @param String word
+     */
+    public String find( String word )
+    {
+
+        for(String s : wordList) 
+        {
+            if(s == (word)) {
+                return word;
+            }
+        }
+
+        return null;
+
+    }
+
+    /**
+     *  For a word to be valid:
+     *    1) word.length() is postive,
+     *    2) word contains alphabetic characters exclusively.
+     *    
+     *  This method uses a for loop to examine each character 
+     *  in the given word.
+     *  
+     *  it returns:
+     *    - false for the first non-alphabetic character detected. 
+     *    - true if all characters in the given word are strictly
+     *      alphabetic, and the word length is positive.
+     *  
+     *  @return true or false
+     *  @param  String str
+     */
+    private boolean isValidWord( String str )
+    {
+        if (str == null) {
+            return false;
+        }
+
+        int length = str.length();
+        if (length == 0) {
+            return false;
+        }
+
+        for (char c : str.toCharArray())
+        {
+            if (Character.isDigit(c)) return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Calls addWord( s ) for each element s in the String[ ] array
+     * to add them to wordList.
+     * 
+     * @param String[ ] spellings
+     */
+    public void addwords( String[ ] spellings )
+    {
+        for (String s: spellings)
+        {
+            this.add( s );
+        }
+    }
+
+    /**
+     *  This method calls the find method to determine
+     *  whether the given word is already in wordList.
+     *  There are two cases: find returns either 
+     *  1) null -- word not found in wordList -- or 
+     *  2) the word -- the one that it found.
+     *  
+     *  If the given word is not found in wordList,  it
+     *  adds the given word to wordList.
+     *     
+     *  
+     *  @param  String word
+     */
+    public void add( String word )
+    {
+        String w = this.find( word );
+
+        if(w == null)
+        {
+            wordList.add(w);
+        }
+
+    }
+
+    /**
+     *  If the given word is valid, this method calls the add( word ) method. 
+     *  
+     *  @param  String str
+     */
+    public void addWord( String str )
+    {
+        if (isValidWord( str ) == true)
+        {
+            wordList.add(str);
+        }
+    }
+
+    /**
+     *  This method calls the find method. Two cases: 
+     *  find returns either null or the word that was found.
+     *  
+     *  If the given word is found, the method removes
+     *  it from the wordList, 
+     *     
+     *  
+     *  @param  String word
+     */
+    public void remove( String word )
+    {
+        String w = this.find( word );
+
+        for ( int i = 0;  i < wordList.size(); i++){
+            String tempName = wordList.get(i);
+            if(tempName == (word)){
+                wordList.remove(i);
+            }
+        }
+
+    }
+
+    /**
+     *  This method, on the condition that there is an nth element
+     *  in wordList, removes the given word from the location.
+     *  
+     *  @param  n
+     */
+    public void remove( int n )
+    {
+        if (n < this.wordList.size( ))
+        {
+            wordList.remove(n);
+        }
+    }
+
+    /**
+     * Done
+     */
+    public String toString( )
+    {
+        String str = wordList.size( ) + " words";
+        for (String c: wordList)
+        {
+            str += "\n\t" + c.toString( );
+        }
+        return str + "\n";
+    }
+
+    /**
+     * Done
+     */
+    public static void main( String[ ] args )
+    {
+        System.out.println( "Dan Pokorny" "\n" );
+        Words2 words = new Words2( );
+        System.out.println( words.toString( ) );
+        System.out.println( );
+
+        words.add( "lemon" );
+
+        words.add( "lemon" );
+
+        words.remove( "lemon" );
+
+        words.remove( "lemon" );
+
+        words.remove( words.count( ) - 1 );
+
+        words.remove( "bannana" );
+
+        System.out.println( words.toString( ) );
+
+        String[ ] wordArray = words.copyToWordArray( );
+        System.out.println( wordArray.length + " Words, stored in a String[ ] array" );
+        for (String w: wordArray)
+        {
+            System.out.println( "\t" + w.toString( ) );
+        }
+        System.out.println( );
+
+        ArrayList<String> list = words.contains( "p" );
+        System.out.println( list.size( ) + " Words that contain letter p" );
+        for (String w: list)
+        {
+            System.out.println( "\t" + w.toString( ) );
+        }
+        System.out.println( );
+
+        list = words.startsWith( "p" );
+        System.out.println( list.size( ) + " Words that start with letter p" );
+        for (String w: list)
+        {
+            System.out.println( "\t" + w.toString( ) );
+        }
+        System.out.println( );
+    }
+}

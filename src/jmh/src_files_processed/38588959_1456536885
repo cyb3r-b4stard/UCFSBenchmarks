@@ -1,0 +1,304 @@
+import java.awt.*;
+import javax.swing.*;
+import java.awt.event.*;
+
+public class calculator {
+
+   private Frame mainFrame;
+   private Label headerLabel;
+   private JTextArea resultBoard;
+   private Panel controlPanel;
+   private String[] numButtons = {"0", "1", "2", "3", "4", "5", "6", "7", "8",
+                                    "9", "00"};         
+   private int size_num = 11;
+   private String[] operatorButtons = {"+", "-", "*", "/"};
+   private size_operator = 4;
+   private String[] resultButtons = {"=", "C"};
+   private size_result = 2;
+   private int[10000] calcresult = 0;
+   private int size1=0;
+   private int size2=0;
+   private int calcsize = 0;
+   public calculator(){
+      prepareGUI();
+   }
+
+   public static void main(){
+      calculator  calc = new calculator();
+      calc.showEventDemo();
+   }
+
+   private void prepareGUI(){
+      mainFrame = new Frame("Program for Polyhack");
+      mainFrame.setSize(800,1200);
+      mainFrame.setLayout(new GridLayout(3, 1));
+      mainFrame.addWindowListener(new WindowAdapter() {
+         public void windowClosing(WindowEvent windowEvent){
+            System.exit(0);
+         }        
+      });    
+      headerLabel = new Label();
+      headerLabel.setAlignment(Label.CENTER);
+      resultBoard = new JTextArea();
+      resultBoard.setSize(700, 200);
+
+      controlPanel = new Panel();
+      controlPanel.setLayout(new FlowLayout());
+
+      mainFrame.add(headerLabel);
+      mainFrame.add(controlPanel);
+      mainFrame.add(resultBoard);
+      mainFrame.setVisible(true);  
+   }
+
+   private void showEventDemo(){
+      headerLabel.setText("Control in action: Button"); 
+      
+      Button oneButton = new Button("1");
+      Button twoButton = new Button("2");
+      Button threeButton = new Button("3");
+      Button fourButton = new Button("4");
+      Button fiveButton = new Button("5");
+      Button sixButton = new Button("6");
+      Button sevenButton = new Button("7");
+      Button eightButton = new Button("8");
+      Button nineButton = new Button("9");
+      Button zeroButton = new Button("0");
+      Button dizeroButton = new Button("00");
+      Button addButton = new Button("+");
+      Button minusButton = new Button("-");
+      Button multiplyButton = new Button("*");
+      Button divideButton = new Button("/");
+      Button equalButton = new Button("=");
+      Button clearButton = new Button("C");
+      
+      
+      oneButton.setActionCommand("1");
+      twoButton.setActionCommand("2");
+      threeButton.setActionCommand("3");
+      fourButton.setActionCommand("4");
+      fiveButton.setActionCommand("5");
+      sixButton.setActionCommand("6");
+      sevenButton.setActionCommand("7");
+      eightButton.setActionCommand("8");
+      nineButton.setActionCommand("9");
+      zeroButton.setActionCommand("0");
+      dizeroButton.setActionCommand("00");
+      addButton.setActionCommand("+");
+      minusButton.setActionCommand("-");
+      multiplyButton.setActionCommand("*");
+      divideButton.setActionCommand("/");
+      equalButton.setActionCommand("=");
+      clearButton.setActionCommand("C");
+
+      oneButton.addActionListener(new ButtonClickListener()); 
+      twoButton.addActionListener(new ButtonClickListener()); 
+      threeButton.addActionListener(new ButtonClickListener()); 
+      fourButton.addActionListener(new ButtonClickListener()); 
+      fiveButton.addActionListener(new ButtonClickListener()); 
+      sixButton.addActionListener(new ButtonClickListener()); 
+      sevenButton.addActionListener(new ButtonClickListener()); 
+      eightButton.addActionListener(new ButtonClickListener()); 
+      nineButton.addActionListener(new ButtonClickListener()); 
+      zeroButton.addActionListener(new ButtonClickListener()); 
+      dizeroButton.addActionListener(new ButtonClickListener()); 
+      addButton.addActionListener(new ButtonClickListener()); 
+      minusButton.addActionListener(new ButtonClickListener()); 
+      divideButton.addActionListener(new ButtonClickListener()); 
+      multiplyButton.addActionListener(new ButtonClickListener()); 
+      equalButton.addActionListener(new ButtonClickListener()); 
+      clearButton.addActionListener(new ButtonClickListener()); 
+      
+      controlPanel.add(oneButton);
+      controlPanel.add(twoButton);
+      controlPanel.add(threeButton);
+      controlPanel.add(fourButton);
+      controlPanel.add(fiveButton);
+      controlPanel.add(sixButton);
+      controlPanel.add(sevenButton);
+      controlPanel.add(eightButton);
+      controlPanel.add(nineButton);
+      controlPanel.add(zeroButton);
+      controlPanel.add(dizeroButton);
+      controlPanel.add(addButton);
+      controlPanel.add(minusButton);
+      controlPanel.add(divideButton);
+      controlPanel.add(equalButton);
+      controlPanel.add(clearButton);      
+      
+      mainFrame.setVisible(true);  
+   }
+   
+   private void add(int[] curr1, int[] curr2)
+   {
+       int jinwei = 0;
+       int mid = 0;
+       int small;
+       int i;
+       if (size1 < size2)
+       {
+           small = size1;
+       }
+       else
+       {
+           small = size2;
+       }
+       for (i = 0; i < small; i++)
+       {
+           mid = curr1[i] + curr2[i] + jinwei;
+           jinwei = mid / 10;
+           calcresult [i] = mid % 10;
+           jinwei = 0;
+           mid = 0;
+       }
+       if (size1 > i)
+       {
+           for (int a = i; a < size1; a++)
+           {
+               mid = curr1[a] + jinwei;
+               jinwei = mid / 10;
+               calcresult[a] = mid % 10;
+           }
+       }
+   }
+   private void (int[] curr1, int[] curr2)
+   {
+       int jinwei = 0;
+       int mid = 0;
+       int small;
+       int i;
+       int a;
+       if (size1 < size2)
+       {
+           small = size1;
+       }
+       else
+       {
+           small = size2;
+       }
+       for (i = 0; i < small; i++)
+       {
+           mid = curr1[i] + curr2[i] + jinwei;
+           jinwei = mid / 10;
+           calcresult [i] = mid % 10;
+           mid = 0;
+       }
+       if (size1 == size2)
+       {
+           if (jinwei != 0)
+           {
+               calcresult[i] = jinwei;
+           }
+       }
+       else if (size1 > size2)
+       {
+           for (a = i; a < size1; a++)
+           {
+               mid = curr1[a] + jinwei;
+               jinwei = mid / 10;
+               calcresult[a] = mid % 10;
+           }
+       }
+       else
+       {    
+           for (a = i; a < size2; a++)
+           {
+               mid = curr2[a] + jinwei;
+               jinwei = mid / 10;
+               calcresult[a] = mid % 10;
+           }
+       }
+       calcsize = a;
+   }
+   
+   private class ButtonClickListener implements ActionListener{
+      public void actionPerformed(ActionEvent e) {
+         int times = 1;
+         int counter = 0;
+         int operator = 0;
+         int result = 0
+         int[100] curr1 = null;
+         int[100] curr2 = null;
+         String command = e.getActionCommand();  
+         for (int i = 0; i < size_num; i++)
+         {
+             if (command.equals(numButtons[i]))
+             {
+                 if (times == 1 && (!command.equals("00")))
+                 {
+                     curr1[counter] = i;
+                     counter++;
+                     size1 = counter;
+                 }
+                 else if (times == 1 && command.equals("00"))
+                 {
+                     curr1[counter] = 0;
+                     curr1[++counter] = 0;
+                     counter++;
+                     size1 = counter;
+                 }
+                 else if (times == 2 && (!command.equals("00")))
+                 {
+                     curr1[counter] = i;
+                     counter++;
+                     size2 = counter;
+                 }
+                 else if (times == 1 && command.equals("00"))
+                 {
+                     curr1[counter] = 0;
+                     curr1[++counter] = 0;
+                     counter++;
+                     size2 = counter;
+                 }
+                 resultBoard.append(command);
+             }
+         }
+         for (int i = 0; i < size_operators; i++)
+         {
+             if (command.equals(operatorsButtons[i]))
+             {
+                 display.setText(command);
+                 times = 2;
+                 operator = i;
+             }
+         }
+         if (command.equals("C"))
+         {
+             display.setText("0");
+             times = 1;
+             int times = 1;
+             int counter = 0;
+             int operator = 0;
+             int[100] curr1 = null;
+             int[100] curr2 = null;
+         }
+         if (command.equals("="))
+         {
+             if (operator == 0)
+             {
+                 add(curr1, curr2);
+             }
+             /*
+             if (operator == 1)
+             {
+                 minus(curr1, curr2);
+             }
+             if (operator == 2)
+             {
+                 multiply(curr1, curr2);
+             }
+             if (operator == 3)
+             {
+                 divide(curr1, curr2);
+             }
+             */
+             display.setText("");
+             for (int a = 0; a < calcsize; a++)
+             {
+                 display.append(String(calcresult[a]));
+                 
+             }
+         }
+      }     
+   }
+}

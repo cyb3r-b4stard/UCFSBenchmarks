@@ -1,0 +1,174 @@
+import java.awt.event.*;
+import java.awt.*;
+import javax.swing.*;
+import java.util.Random;
+/**
+ * ##### ######### - ##### ######### ######### ### ######### ### ######## ### ##### ### ### ####
+ * 
+ * @###### (#### #####) 
+ * @####### (#.#)
+ */
+public class Gameboard extends JApplet implements MouseListener
+{
+    private boolean[][] board = {
+            {false, false, false, false, false, false},
+            {false, false, false, false, false, false},
+            {false, false, false, false, false, false},
+            {false, false, false, false, false, false},
+            {false, false, false, false, false, false},
+            {false, false, false, false, false, false}
+        };
+    protected static SnakeTile snakeBody = new SnakeTile();
+    private int[] goal = new int[2];
+    /**
+     * Called by the browser or applet viewer to inform this JApplet that it
+     * has been loaded into the system. It is always called before the first 
+     * time that the start method is called.
+     */
+    public void init()
+    {
+        JRootPane rootPane = this.getRootPane();    
+        rootPane.putClientProperty("defeatSystemEventQueueCheck", Boolean.TRUE);
+        Random rand = new Random();
+        int y = 0;
+        int x = 0;
+        int counter = 0;
+        while(counter < 4){
+            x = rand.nextInt(6);
+            y = rand.nextInt(6);
+            if(board[x][y] == false){
+                board[x][y] = true;
+                counter ++;
+            }else if (counter == 3)
+                goal[0] = x; goal[1] = y;
+        }
+        addMouseListener(this);
+    }
+
+    /**
+     * Called by the browser or applet viewer to inform this JApplet that it 
+     * should start its execution. It is called after the init method and 
+     * each time the JApplet is revisited in a Web page. 
+     */
+    public void start()
+    {
+    }
+
+    /** 
+     * Called by the browser or applet viewer to inform this JApplet that
+     * it should stop its execution. It is called when the Web page that
+     * contains this JApplet has been replaced by another page, and also
+     * just before the JApplet is to be destroyed. 
+     */
+    public void stop()
+    {
+    }
+
+    public void mousePressed(MouseEvent e){}
+
+    public void mouseReleased(MouseEvent e){}
+
+    public void mouseEntered(MouseEvent e){}
+
+    public void mouseExited(MouseEvent e){}
+
+    public void mouseClicked(MouseEvent e){
+        int x = e.getX();
+        int y = e.getY();
+        x = x / 50;
+        y = y / 50;
+        if(snakeBody.snakeBod[x][y] == false  && board[x][y] == false){
+            if(x == snakeBody.head[0] + 1 &&  y == snakeBody.head[1]){
+                moveSnake(x,y);
+            }else if(x == snakeBody.head[0] - 1 &&  y == snakeBody.head[1]){
+                moveSnake(x,y);
+            }else if(y == snakeBody.head[1] - 1 &&  x == snakeBody.head[0]){
+                moveSnake(x,y);
+            }else if(y == snakeBody.head[1] + 1&&  x == snakeBody.head[0]){
+                moveSnake(x,y);
+            }
+        }
+        repaint();
+    }
+
+    protected void moveSnake (int x, int y) {
+        snakeBody.snakeBod[x][y] = true;
+        snakeBody.snakeBod[snakeBody.end[0]][snakeBody.end[1]] = false;
+        snakeBody.end[0] = snakeBody.mid[0]; snakeBody.end[1] = snakeBody.mid[1]; 
+        snakeBody.mid[0] = snakeBody.head[0]; snakeBody.mid[1] = snakeBody.head[1];
+        snakeBody.head[0] = x; snakeBody.head[1] = y;
+    }
+
+    /**
+     * Paint method for applet.
+     * 
+     * @param  g   the Graphics object for this applet
+     */
+    public void paint(Graphics g)
+    {
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, 300, 300);
+        g.setColor(Color.BLACK);
+        for(int i = 0; i <= 300; i = i + 50){
+            g.drawLine(i ,0 ,i , 300 ); 
+            g.drawLine(0 ,i ,300 ,i ); 
+        }
+        for(int i = 0; i < 6; i++){
+            for(int r = 0; r < 6; r++){
+                if(board[i][r] == true)
+                    if(i == goal[0] && r == goal[1]{
+                        g.setColor(Color.RED));
+                        
+                    g.fillRect(i * 50, r * 50, 50, 50);
+            }
+        }
+        g.setColor(Color.GREEN);
+        for(int i = 0; i < 6; i++){
+            for(int r = 0; r < 6; r++){
+                if(snakeBody.snakeBod[i][r])
+                    g.fillRect(i * 50, r * 50, 50, 50);
+            }
+        }
+    }
+
+    /**
+     * Called by the browser or applet viewer to inform this JApplet that it
+     * is being reclaimed and that it should destroy any resources that it
+     * has allocated. The stop method will always be called before destroy. 
+     */
+    public void destroy()
+    {
+    }
+
+    /**
+     * Returns information about this applet. 
+     * An applet should override this method to return a String containing 
+     * information about the author, version, and copyright of the JApplet.
+     *
+     * @return a String representation of information about this JApplet
+     */
+    public String getAppletInfo()
+    {
+        return "Title:   \nAuthor:   \nA simple applet example description. ";
+    }
+
+    /**
+     * Returns parameter information about this JApplet. 
+     * Returns information about the parameters than are understood by this JApplet.
+     * An applet should override this method to return an array of Strings 
+     * describing these parameters. 
+     * Each element of the array should be a set of three Strings containing 
+     * the name, the type, and a description.
+     *
+     * @return a String[] representation of parameter information about this JApplet
+     */
+    public String[][] getParameterInfo()
+    {
+        String paramInfo[][] = {
+                {"firstParameter",    "1-10",    "description of first parameter"},
+                {"status", "boolean", "description of second parameter"},
+                {"images",   "url",     "description of third parameter"}
+            };
+        return paramInfo;
+    }
+}

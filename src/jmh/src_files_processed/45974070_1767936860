@@ -1,0 +1,171 @@
+import java.util.*;
+import java.io.*;
+/**
+ * ######### ######## ### ######### ##### ## #####
+ * 
+ * @###### {##### #### #### ####}
+ *
+ */
+public class Warehouse
+{
+    private int numItems;
+    private List <Item> Items = new ArrayList <>();
+    private PrintWriter out = new PrintWriter(fileName);
+    public Warehouse() throws IOException
+    {
+        numItems = loadData("Inventory.txt");
+    }
+
+    public Warehouse(fileNameIn) 
+    {
+        fileName = fileNameIn;
+    }
+
+    /**
+     * This is the hardcoded data to be loaded into the instance variables.  
+     */
+    public int loadData(String fileName) throws IOException
+    {
+        Scanner file = new Scanner(new File(fileName));
+        numItems = 0;
+        while(file.hasNext())
+        {
+            String itemNo = file.next();
+            String itemName = file.next();
+            int onHand = file.nextInt();
+            int onOrder = file.nextInt();
+            int committed = file.nextInt();
+            double unitPrice = file.nextDouble();
+            int reorderPoint = file.nextInt();
+            int econOrderQty = file.nextInt();
+            Item item = new Item(itemNo , itemName, onHand, onOrder, committed, unitPrice, reorderPoint, econOrderQty);
+            Items.add(item);
+            numItems ++;
+        }        
+        file.close();
+        return numItems;
+    }
+
+    public boolean itemNumValidator(String UserInput) 
+    {
+        int count = 0;
+        boolean validNumber = false;
+
+        while(count < numItems)
+        {
+            if (UserInput.equals(Items.get(count).getItemNo()))
+            {
+                validNumber = true;
+                System.out.println("Valid Number");
+            }
+            count ++;
+        }
+
+        return validNumber;
+    }
+
+    public int itemNumberIndex(String UserInput) 
+    {
+        int count = 0; 
+        int index = 0;
+        boolean validNumber = false;
+
+        while(count < numItems)
+        {
+            if (UserInput.equals( Items.get(count).getItemNo()))
+            {
+                validNumber = true;
+                index = count;
+            }
+            count ++;
+        }
+
+        return index;
+    }
+
+    public void orderInv(int itemIndex, int numItemOrder) 
+    {
+        Items.get(itemIndex).orderItem(numItemOrder);
+    }   
+
+    public boolean shipmentRecieved(int itemIndex, int numItemRecieved) 
+    {
+        boolean valid = false;
+        valid = Items.get(itemIndex).shipmentRecieved(numItemRecieved);
+        return valid;
+    }
+
+    public boolean returnItemSupplier(int itemIndex, int numItemReturn) 
+    {
+        boolean valid = false;
+        Items.get(itemIndex).returnItemsSupplier(numItemReturn);
+        return valid;
+    }
+
+    public boolean shipItems(int itemIndex, int numItemShip) 
+    {
+        boolean valid = false;
+        Items.get(itemIndex).shipItems(numItemShip);
+        return valid;
+    }
+
+    public boolean proccessCustomerOrder(int itemIndex, int numItemOrdered) 
+    {
+        boolean valid = false;
+        Items.get(itemIndex).processCustomerOrder(numItemOrdered);
+        return valid;
+    }   
+
+    public void customerReturns(int itemIndex, int numItemReturn) 
+    {
+        Items.get(itemIndex).processCustomerReturn(numItemReturn);
+    }   
+
+    public void itemInquiry(int itemIndex) 
+    {
+        Items.get(itemIndex).itemInquiry();
+    }
+
+    public void endOfDay() 
+    {
+        System.out.println("Item    Item                            Unit            Item");
+        System.out.println("Number" +   "\t" + "Name" + "\t" + "On Hand"+ "\t"  + "Committed" +"\t"+"On Order" +"\t"+"Price"+"\t"+"Value");
+        for(int items = 0; items < numItems; items ++)
+        {
+            Items.get(items).printEnd();
+        }
+
+        for(int items = 0; items < numItems; items ++)
+        {
+            Items.get(items).reorder();
+        }
+
+    }
+
+    public void addInvItem(String ItemNo, String ItemName, int OnHand, double UnitPrice, int ReorderPoint, int EconOrderQty)
+    {
+        Item item = new Item(ItemNo , ItemName, OnHand, UnitPrice, ReorderPoint, EconOrderQty);
+        Items.add(item);
+        numItems = numItems + 1;
+    }
+
+    public void removeInvItem(String ItemNo)
+    {
+        int itemIndex = 0;
+        itemIndex = itemNumberIndex(ItemNo);
+        Items.remove(itemIndex);
+        numItems = numItems - 1;
+        System.out.println("Item removed: " + ItemNo);
+    } 
+
+    public void changeItemPrice(int index, double UnitPrice)
+    {
+        Items.get(index).setUnitPrice(UnitPrice);
+        System.out.println("Item price changed" + "\n" + "New Price: " + UnitPrice);
+    }
+
+    public void fileWrite(int index, String transactionType, double amount) throws IOException
+    {
+        out.println(Items.get(index).getItemNo()+ " " + transactionType+ " " + amount);
+    }
+}

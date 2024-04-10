@@ -1,0 +1,514 @@
+import java.util.*;
+import becker.robots.*;
+import java.awt.Color;
+
+public class Prison_Break
+{
+
+    static Robot p1, enemy1,enemy2,enemy3,enemy4,direction;   
+    public static void main(String[] args){
+
+        Scanner in = new Scanner(System.in);
+        System.out.println("You have to get the master key to escape from a jail you've been imprisoned. You will be given 3 moves at a time, and make sure you won't be caught by prisonguards.");
+        System.out.println("**HINT** : You can just press "f" to stay on the place where you are currently standing.");
+
+        Random numGen = new Random();
+        String userInput;
+        int p1Num, comNum;
+        
+        int street, avenue, direction;
+        Direction x; 
+        direction = numGen.nextInt(4);
+        int ThingStreet = numGen.nextInt(12)+1; 
+        int ThingAvenue = numGen.nextInt(10)+1;
+
+        City prison = new City(15,10);
+        p1 = new Robot(prison,12,10, Direction.NORTH); 
+        p1.setColor(Color.BLACK);
+        Thing key = new Thing(prison,ThingStreet,ThingAvenue); 
+        boolean pickKey = p1.canPickThing();
+        int MasterKey = p1.countThingsInBackpack();
+        MasterKey = 0;
+
+        direction = numGen.nextInt(4);
+        if (direction == 0){       
+            x = Direction.SOUTH;
+        }
+        else if (direction==1)      
+        {x = Direction.NORTH;
+        }
+        else if (direction==2)      
+        {x = Direction.EAST;
+        }
+        else                       
+        {x = Direction.WEST;
+        }
+        enemy1 = new Robot(prison, 2,3, x);    
+        enemy2 = new Robot(prison, 3,8 ,x);
+        enemy3= new Robot(prison, 10,3, x);
+        enemy4= new Robot(prison, 8,8,x);
+
+        for(int sidewalls = -2; sidewalls<12; sidewalls++){ 
+            Wall w1 = new Wall(prison,sidewalls+1,0,Direction.WEST); 
+            Wall w2 = new Wall(prison,sidewalls+1, 10, Direction.EAST);
+
+        }
+        for(int roofWalls =0; roofWalls<11; roofWalls++){       
+            Wall w3 = new Wall(prison,-2,roofWalls,Direction.SOUTH);
+            Wall w4 = new Wall(prison,13,roofWalls-1,Direction.NORTH); 
+
+        }
+
+        int moves = 4; 
+        comNum= numGen.nextInt(5) +1;
+
+        int counter = 0; 
+
+        int DeadChecker = 0; 
+
+        while(true) 
+        {
+            System.out.println("Enter w to go forward,a to go Left,s,to go right, and s to go backward.");
+            for(int p1Moving = 0 ; p1Moving<3; p1Moving++)
+            {
+
+                System.out.println("You've got" + 4 +"moves! Run away from enemy.");
+
+                userInput = in.nextLine();
+                if(userInput.equals("a"))
+                {p1Left();
+                    if(p1.getAvenue() == 10 && p1.getStreet() == 13 && MasterKey == 1  )
+                    {System.out.println("Congratualation! Now you are free.");
+                        System.exit(0);
+
+                    }
+                    if(MasterKey == 0   && p1.getAvenue() == 10&& p1.getStreet() == 13)
+
+                    {System.out.println("You can not escape from the jail without a master key.");
+                        for(int Back = 0; Back<2; Back++)
+                        {p1.turnLeft();
+                        }
+                        p1move();
+                    }
+
+                }
+                else if(userInput.equals("w"))
+                {p1Forward();
+                    if(p1.getAvenue() == 10 && p1.getStreet() == 13 && MasterKey == 1  )
+                    {System.out.println("Congratualation! Now you are free.");
+                        System.exit(0);
+
+                    }
+                    if(MasterKey == 0   && p1.getAvenue() == 10&& p1.getStreet() == 13)
+
+                    {System.out.println("You can not escape from the jail without a master key.");
+                        for(int Back = 0; Back<2; Back++)
+                        {p1.turnLeft();
+                        }
+                        p1move();
+                    }
+                }
+                else if (userInput.equals("d"))
+                {
+                    p1Right();
+                    if(p1.getAvenue() == 10 && p1.getStreet() == 13 && MasterKey == 1  )
+                    {System.out.println("Congratualation! Now you are free.");
+                        System.exit(0);
+
+                    }
+                    if(MasterKey == 0   && p1.getAvenue() == 10&& p1.getStreet() == 13)
+
+                    {System.out.println("You can not escape from the jail without a master key.");
+                        for(int Back = 0; Back<2; Back++)
+                        {p1.turnLeft();
+                        }
+                        p1move();
+                    }
+
+                }
+                else if(userInput.equals("s"))
+                {p1Backward();
+                    if(p1.getAvenue() == 10 && p1.getStreet() == 13 && MasterKey == 1  )
+                    {System.out.println("Congratualation! Now you are free.");
+                        System.exit(0);
+
+                    }
+                    if(MasterKey == 0   && p1.getAvenue() == 10&& p1.getStreet() == 13)
+
+                    {System.out.println("You can not escape from the jail without a master key.");
+                        for(int Back = 0; Back<2; Back++)
+                        {p1.turnLeft();
+                        }
+                        p1move();
+                    }
+                    else if (userInput.equals("f"))
+                    {for(int i = 0; i<4 ; i++)
+                    {p1.turnLeft();
+                    }
+                    
+
+                }
+                else
+                {
+                    System.out.println("Please try again");
+                    p1Moving -=1;
+                    
+                     
+            }
+        }
+            
+            for(int j =0; j<4; j++)
+            {
+                int randomTurn1 =  numGen.nextInt(4) + 1;
+                do{
+                    enemy1.turnLeft();
+                    counter += 1;
+
+                }while (counter == randomTurn1);
+                if(enemy1.frontIsClear()==true)
+                {
+                    enemy1.move();
+                    if(enemy1.getAvenue() == p1.getAvenue() && enemy1.getStreet() == p1.getStreet())
+                    {DeadChecker+=1;
+                        break;
+                    }
+                    counter = 0;
+                }
+                else
+                {
+                    enemy1.turnLeft();
+
+                    counter = 0;};
+                if(enemy1.frontIsClear()==true)
+                {
+                    enemy1.move();
+                    if(enemy1.getAvenue() == p1.getAvenue() && enemy1.getStreet() == p1.getStreet())
+                    {DeadChecker+=1;
+                        break;
+                    }
+                    counter = 0;
+                }
+                else
+                {
+                    enemy1.turnLeft();
+
+                    counter = 0;};
+            }
+            for(int k =0; k<4; k++)
+            {
+                int randomTurn1 =  numGen.nextInt(4) + 1;
+                do{
+                    enemy2.turnLeft();
+
+                    counter += 1;
+                }while (counter == randomTurn1);
+
+                if(enemy2.frontIsClear()==true)
+                {
+                    enemy2.move();
+
+                    if(enemy2.getAvenue() == p1.getAvenue() && enemy2.getStreet() == p1.getStreet())
+                    {DeadChecker+=1;
+                        break;
+                    }
+                    counter = 0;
+                }
+                else
+                {
+                    enemy2.turnLeft();
+
+                    counter = 0;};
+                if(enemy2.frontIsClear()==true)
+                {
+                    enemy2.move();
+
+                    if(enemy2.getAvenue() == p1.getAvenue() && enemy2.getStreet()== p1.getStreet())
+                    {DeadChecker+=1;
+                        break;
+                    }
+                    counter = 0;
+                }
+                else
+                {
+                    enemy2.turnLeft();
+
+                    counter = 0;};
+            }
+            for(int q =0; q<4; q++)
+            {
+                int randomTurn1 =  numGen.nextInt(4) + 1;
+                do{
+                    enemy3.turnLeft();
+
+                    counter += 1;
+                }while (counter == randomTurn1);
+
+                if(enemy3.frontIsClear()==true)
+                {
+                    enemy3.move();
+
+                    if(enemy3.getAvenue() == p1.getAvenue() && enemy3.getStreet() == p1.getStreet())
+                    {DeadChecker+=1;
+                        break;
+                    }
+                    counter = 0;
+                }
+                else
+                {
+                    enemy3.turnLeft();
+
+                    counter = 0;};
+                if(enemy3.frontIsClear()==true)
+                {
+                    enemy3.move();
+
+                    if(enemy3.getAvenue() == p1.getAvenue() && enemy3.getStreet() == p1.getStreet())
+                    {DeadChecker+=1;
+                        break;
+                    }
+                    counter = 0;
+                }
+                else
+                {
+                    enemy3.turnLeft();
+
+                    counter = 0;};
+            }
+            for(int r =0; r<4; r++)
+            {
+                int randomTurn1 =  numGen.nextInt(4) + 1;
+                do{
+                    enemy4.turnLeft();
+
+                    counter += 1;
+                }while (counter == randomTurn1);
+
+                if(enemy4.frontIsClear()==true)
+                {
+                    enemy4.move();
+
+                    if(enemy4.getAvenue() == p1.getAvenue() && enemy4.getStreet() == p1.getStreet())
+                    {DeadChecker+=1;
+                        break;
+                    }
+                    counter = 0;
+                }
+                else
+                {
+                    enemy4.turnLeft();
+
+                    counter = 0;};
+                if(enemy4.frontIsClear()==true)
+                {
+                    enemy4.move();
+
+                    if(enemy4.getAvenue() == p1.getAvenue() && enemy4.getStreet() == p1.getStreet())
+                    {
+                        DeadChecker+=1;
+                        break;
+                    }
+                    counter = 0;
+                }
+                else
+                {
+                    enemy4.turnLeft();
+
+                    counter = 0;};
+            }
+
+            if( p1.getAvenue() == ThingAvenue && p1.getStreet() == ThingStreet)
+
+            {
+
+                p1.pickThing();
+                pickKey = true;
+                MasterKey +=1;
+            }
+
+            if(DeadChecker >= 1)
+            {
+                System.out.println("Game Over");
+                System.exit(0);
+            }
+
+        }
+    }
+}
+
+    public static void p1Right()
+    {
+
+        boolean pickKey = p1.canPickThing();
+        int MasterKey = p1.countThingsInBackpack();
+        MasterKey = 0;
+        Random numGen = new Random();
+        int ThingStreet = numGen.nextInt(12)+1;
+        int ThingAvenue = numGen.nextInt(10)+1;
+
+        for(int i =0; i<3; i++)
+        {p1.turnLeft();
+        }
+        if(p1.frontIsClear() == true)
+        { p1move();
+            if( p1.getAvenue() == ThingAvenue && p1.getStreet() == ThingStreet)
+
+            {
+
+                p1.pickThing();
+                pickKey = true;
+                MasterKey +=1;
+            }
+
+        }else
+        {for(int Back = 0; Back<2; Back++)
+            { p1.turnLeft();
+            }
+            p1move();
+        }
+    }
+
+    public static void p1Left()
+    {
+
+        boolean pickKey = p1.canPickThing();
+        int MasterKey = p1.countThingsInBackpack();
+        MasterKey = 0;
+        Random numGen = new Random();
+        int ThingStreet = numGen.nextInt(12)+1;
+        int ThingAvenue = numGen.nextInt(10)+1;
+        {if(p1.frontIsClear() == true)
+            {
+
+                p1.turnLeft();
+
+                p1move();
+                if( p1.getAvenue() == ThingAvenue && p1.getStreet() == ThingStreet)
+
+                {
+
+                    p1.pickThing();
+                    pickKey = true;
+                    MasterKey +=1;
+                }
+
+            }
+            else
+            {for(int Back = 0; Back<2; Back++)
+                { p1.turnLeft();
+                }
+                p1move();
+            }
+        }
+    }
+
+    public static void p1Forward()
+    {
+        boolean pickKey = p1.canPickThing();
+        int MasterKey = p1.countThingsInBackpack();
+        MasterKey = 0;
+        Random numGen = new Random();
+        int ThingStreet = numGen.nextInt(12)+1;
+        int ThingAvenue = numGen.nextInt(10)+1;
+        {if(p1.frontIsClear() == true)
+            {
+
+                p1move();
+                if( p1.getAvenue() == ThingAvenue && p1.getStreet() == ThingStreet)
+
+                {
+
+                    p1.pickThing();
+                    pickKey = true;
+                    MasterKey +=1;
+                }
+            }
+            else
+            {for(int Back = 0; Back<2; Back++)
+                { p1.turnLeft();
+                }
+                p1move();
+                if( p1.getAvenue() == ThingAvenue && p1.getStreet() == ThingStreet)
+
+                {
+
+                    p1.pickThing();
+                    pickKey = true;
+                    MasterKey +=1;
+                }
+            }
+
+        }
+    }
+
+    public static void p1Backward()
+    {
+        boolean pickKey = p1.canPickThing();
+        int MasterKey = p1.countThingsInBackpack();
+        MasterKey = 0;
+        Random numGen = new Random();
+        int ThingStreet = numGen.nextInt(12)+1;
+        int ThingAvenue = numGen.nextInt(10)+1;
+        {if(p1.frontIsClear() ==true)
+            {
+                for(int i = 0; i<2;i++)
+                {p1.turnLeft();
+                }
+
+                p1move();
+
+                if( p1.getAvenue() == ThingAvenue && p1.getStreet() == ThingStreet)
+
+                {
+
+                    p1.pickThing();
+                    pickKey = true;
+                    MasterKey +=1;
+                    if( p1.getAvenue() == ThingAvenue && p1.getStreet() == ThingStreet)
+
+                    {
+
+                        p1.pickThing();
+                        pickKey = true;
+                        MasterKey +=1;
+                    }
+                }
+
+            }
+            else
+            {for(int Back = 0; Back<2; Back++)
+                { p1.turnLeft();
+                }
+                p1move();
+            }
+
+        }
+    }
+
+    public static void p1move()
+    {boolean pickKey = p1.canPickThing();
+        int MasterKey = p1.countThingsInBackpack();
+        MasterKey = 0;
+        Random numGen = new Random();
+        int ThingStreet = numGen.nextInt(12)+1;
+        int ThingAvenue = numGen.nextInt(10)+1;
+        {if(p1.frontIsClear() ==true)
+            { p1.move();
+
+            }
+            else
+            {for(int i = 0 ; i<2; i ++)
+                {p1.turnLeft();
+                }
+                p1.move();
+                if( p1.getAvenue() == ThingAvenue && p1.getStreet() == ThingStreet)
+
+                {
+
+                    p1.pickThing();
+                    pickKey = true;
+                    MasterKey +=1;
+                }
+            }
+        }
+    }
+}

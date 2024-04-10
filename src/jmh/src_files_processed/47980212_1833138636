@@ -1,0 +1,83 @@
+
+/**
+ * ####### # ######### ## ###### ######## ####.
+ * 
+ * @###### (### ####) 
+ * @####### (###### ## ###### ## ####)
+ */
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.stream.Stream;
+import static java.util.stream.Collectors;
+public class MailList {
+    private String recetor;
+    private List<Mail> listaM;
+    
+    public MailList(String rec, List<Mail> l) {
+        recetor = rec;
+        listaM = new ArrayList<Mail>();
+        for(Mail m: l)
+            listaM.add(m.clone());
+    }
+    public MailList() {
+        recetor = "n/d";
+        listaM = new ArrayList<Mail>();
+    }
+    public MailList(MailList l) {
+        recetor = l.getRecetor();
+        listaM = l.getListaM();
+    }
+    
+    public String getRecetor() {return recetor;}
+    public List<Mail> getListaM() {
+        List<Mail> res = new ArrayList<Mail>();
+        for(Mail m: listaM)
+            res.add(m.clone());
+        return res;
+    }
+    
+    public void setRecetor(String rec) {recetor=rec;}
+    public void setListaM(List<Mail> l) {
+        listaM = new ArrayList<Mail>();
+        for(Mail m: l)
+            listaM.add(m.clone());
+    }
+    
+    /**
+     * Determinar o total de mails guardados.
+     */
+    public int totalEmails() {return listaM.size();}
+    
+    /**
+     * Guardar um novo mail recebido.
+     */
+    public void adicionarEmail(Mail m) {
+        listaM.add(m.clone());
+    }
+    
+    /**
+     * Determinar quantos mails têm por origem um dado endereço. Implementar com iterador externo.
+     */
+    public int from(String endereco) {
+        int r=0;
+        /*
+         * for(Mail m: listaM) {
+         *     if (m.getRemetente().equals(endereco)) r++;
+         * }
+        */
+        Iterator<Mail> it = listaM.iterator();
+        while (it.hasNext()) {
+            Mail m = it.next();
+            if (m.getRemetente().equals(endereco)) r++;
+        }
+        return r;
+    }
+    
+    /**
+     * Determinar quantos mails têm por origem um dado endereço. Implementar com iterador interno.
+     */
+	public int from(String endereco) {
+		return (int) listaM.stream().filter(f->f-getRemetente().equals(endereco)).count();
+	}
+}

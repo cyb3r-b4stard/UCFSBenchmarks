@@ -1,0 +1,92 @@
+import java.util.*;
+
+public class Immobilienverwaltung
+{
+    private ArrayList<Immobilie> liste;
+
+    public Immobilienverwaltung(ArrayList<Immobilie> dieImmobilien)
+    {
+        liste = dieImmobilien;
+    }
+
+    public boolean addImmobilie(Immobilie neueImmo)
+    {
+        for(int i = 0; i < liste.size(); i++)
+        {
+            if(liste.get(i).getAdresse().equals(neueImmo.getAdresse()) && 
+            liste.get(i).getRefNummer() == neueImmo.getRefNummer())
+            {
+                return false;
+            }
+        }
+
+        liste.add(neueImmo);
+        return true;
+    }
+
+    public double gibGesamteinnahmen()
+    {
+        double g = 0.0;
+        
+        for(int i = 0; i < liste.size(); i++)
+        {
+            if(liste.get(i).getVermietet())
+            {
+                g += liste.get(i).getMiete() + liste.get(i).getBK();
+            }
+            
+        }
+        
+        return g;
+    }
+
+    public ArrayList < Immobilie > sucheFreie ( int minQm, int maxQm, double maxPreis)
+    {
+        ArrayList <Immobilie> f = new ArrayList <Immobilie>();
+        
+        for(int i = 0; i < liste.size(); i++)
+        {
+            if(!liste.get(i).getVermietet() && liste.get(i).getQM() >= minQm && 
+            liste.get(i).getQM() <= maxQm && 
+            (liste.get(i).getMiete() + liste.get(i).getBK()) <= maxPreis)
+            {
+                f.add(liste.get(i));
+            }
+        }
+        
+        return f;
+    }
+
+    public double gibProzentVermietete ()
+    {
+        double c = 0.0;
+        
+        for(int i = 0; i < liste.size(); i++)
+        {
+            if(liste.get(i).getVermietet())
+            {
+                c ++;
+            }
+        }
+        
+        return ((c / ((double) liste.size())) * 100);
+        
+    }
+
+    public double gibDurchschnittlicheMieteProQm ()
+    {
+        double mpq = 0.0;
+        
+        for(int i=0; i < liste.size(); i++)
+        {
+            mpq += (liste.get(i).getMiete() / liste.get(i).getQM());
+        }
+        
+        return (mpq / ((double) liste.size());
+    }
+
+    public String gibMehrfachAdresse (int k )
+    {
+    }
+
+}

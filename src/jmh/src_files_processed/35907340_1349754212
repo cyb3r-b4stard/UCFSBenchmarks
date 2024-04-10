@@ -1,0 +1,214 @@
+/* #### ### ####### ##########
+
+ * ####:
+ * ########:
+ * ##:
+ */
+
+import ecs100.*;
+import java.awt.Color;
+import java.util.*;
+import java.io.*;
+
+
+/** #############   */
+
+public class AdventureGame{
+
+    /*# YOUR CODE HERE */
+    Player player;
+    List<Pod> allPods;
+    Pod dockingPod;
+    private ArrayList<Trap> traps;
+    ArrayList<Item> items;
+    
+    /** Construct a new AdventureGame object and initialise the interface */
+    public AdventureGame(){
+        UI.initialise();
+        UI.addButton("List Pack", this::doList);
+        UI.addButton("Portal A", ()->{this.goPortal(0);});
+        UI.addButton("Portal B", ()->{this.goPortal(1);});
+        UI.addButton("Portal C", ()->{this.goPortal(2);});
+        UI.addButton("Disable Trap", this::doDisable);
+        UI.addButton("Look", this::doLook);
+        UI.addButton("Search", this::doSearch);
+        UI.addButton("Pickup", this::doPickUp);
+        UI.addButton("PutDown", this::doPutDown);
+        UI.addButton("Use Kit", this::useRecoveryKit);
+        UI.addButton("Quit", UI::quit);
+
+        UI.setDivider(1.0);  
+        this.initialiseGame();
+    }
+
+
+    /** List the items in the player's pack */
+    public void doList(){
+        if (player==null){ return;}
+        /*# YOUR CODE HERE */
+
+    }
+
+
+    /** Exit the current pod going through the specified portal number */
+    public void goPortal(int num){
+        if (player==null){ return; }
+        /*# YOUR CODE HERE */
+
+    }
+
+    /** Look around at the pod and report what's there (except for datacache)*/
+    public void doLook(){
+        if (player==null || checkTrap()){ return; }
+        /*# YOUR CODE HERE */
+
+    }
+
+    /** Search for the data cache, and pick it up if it is found.
+     *  If the player has a torch, then there is a higher probability of
+     *  finding the datacache (assuming it is in the pod) than if the player
+     *  doesn't have a torch.
+     */
+    public void doSearch(){
+        if (player==null || checkTrap()){ return;}
+        /*# YOUR CODE HERE */
+
+    }
+
+
+    /** Attempt to pick up an item from the pod and put it in the pack.
+     *  If item makes the pack too heavy, then puts the item back in the pod */
+    public void doPickUp(){
+        if (player==null || checkTrap()){ return;}
+        /*# YOUR CODE HERE */
+
+    }
+
+    /** Attempt to put down an item from the pack. */
+    public void doPutDown(){
+        if (player==null || checkTrap()){ return;}
+        /*# YOUR CODE HERE */
+
+    }                
+
+    /** Attempt to disable the trap in the current pod.
+     * If there is no such trap, or it is already disabled, return immediately.
+     * If disabling the trap with the players current pack of items doesn't work,
+     *  the player is damaged. If their health is now <=0, then the game is over
+     */
+    public void doDisable(){
+        if (player==null){ return;}
+        /*# YOUR CODE HERE */
+
+    }
+
+    /** If there is a recovery kit in the pod that hasn't been already used on
+     *  this visit, then use it (increase the player's health) and remember that
+     *  the kit has now been used.
+     */
+    public void useRecoveryKit(){
+        if (player==null || checkTrap()){ return;}
+        /*# YOUR CODE HERE */
+
+    }
+
+    /** Check if there is an active trap. If so, set it off and damage the player.
+     *  Returns true if the player got damaged. 
+     */
+    private boolean checkTrap(){
+        /*# YOUR CODE HERE */
+    }
+
+
+
+
+    /** Intialise all the pods in the game and the player
+     *  YOU DO NOT NEED TO USE THIS METHOD - YOU CAN REPLACE IT WITH YOUR OWN
+     *  The code provided is a pretty simple initialisation process.
+     *  It makes assumptions about the constructors and some methods for other classes.
+     *  You will need to change it if it doesn't fit with the rest of your design
+     *  It reads the pod descriptions from the game-data.txt file, and connects
+     *  them in a circle, with random cross-links. 
+     *  It then reads descriptions of the traps (and the items that disable them),
+     *   makes Trap objects and Item objects,
+     *   puts the Traps and the items in random pods 
+     *  Puts a torch Item into one of the pods
+     *  Makes a player
+     *  Assumes constructors for Pod, Player, Item, and Trap
+     *  Assumes allPods field, and several methods on traps, pods, and items
+     *   You will need to modify the code if you have different constructors and methods.
+     */
+    public void initialiseGame(){
+        Scanner data = null;
+        try{
+            data = new Scanner(new File("game-data.txt"));
+            while (data.hasNext("#")){data.nextLine();}
+            int numPods = data.nextInt(); data.nextLine();
+            for (int i=0; i<numPods; i++){
+                String podName = data.nextLine().trim();
+                boolean hasRecoveryKit = data.nextBoolean();
+                boolean hasDataCache = data.nextBoolean();
+                Pod pod = new Pod(podName, hasRecoveryKit, hasDataCache);                
+                allPods.add(pod);
+                data.nextLine();
+            }
+            dockingPod = allPods.get(0);
+            for (int i=0; i<numPods; i++){
+                Pod pod1 = allPods.get(i);
+                Pod pod2 = allPods.get((i+1)%numPods);
+                pod1.addPortalTo(pod2);               
+            }
+            for (Pod pod : allPods){
+                Pod podB = allPods.get((int)(Math.random()*allPods.size()));
+                Pod podC = allPods.get((int)(Math.random()*allPods.size()));
+                pod.addPortalTo(podB);               
+                pod.addPortalTo(podC);               
+            }
+            UI.printf("Created %d pods\n", allPods.size());
+
+            ArrayList<Trap> traps = new ArrayList<Trap>();
+            ArrayList<Item> items = new ArrayList<Item>();
+            while (data.hasNext()){
+                String trapName = data.nextLine().trim();
+                ArrayList<Item> itemsForTrap = new ArrayList<Item>();
+                int numItems = data.nextInt(); data.nextLine();
+                for (int i=0; i<numItems; i++){
+                    double weight = data.nextDouble();
+                    String itemName = data.nextLine().trim();
+                    Item it = new Item(itemName, weight);             
+                    itemsForTrap.add(it);
+                }
+                Trap trap = new Trap(trapName, itemsForTrap);         
+                traps.add(trap);
+                items.addAll(itemsForTrap);
+            }
+            data.close();
+
+            items.add(new Item("Torch", 0.4));
+            UI.printf("Created %d traps and %d items\n", traps.size(), items.size());
+            while (!traps.isEmpty()){
+                Pod pod = allPods.get(1+(int) (Math.random()*numPods-1));
+                if (pod.getTrap() == null){               
+                    pod.setTrap(traps.remove(0));         
+                }
+            }
+            while (!items.isEmpty()){
+                Pod pod = allPods.get((int) (Math.random()*numPods));
+                pod.addItem(items.remove(0));            
+            }
+            UI.printf("added traps and items to Pods\n");
+            currentPod = dockingPod;
+            player = new Player();                       
+            UI.println("You are at the Docking pod:");
+            UI.println(currentPod.getDescription());     
+           }
+        catch(InputMismatchException e){UI.println("Wrong type of data at: " + data.nextLine());}
+        catch(IOException e){UI.println("Failed to read data correctly:\n" + e);}
+    }
+
+    public static void main(String[] args){
+        new AdventureGame();
+    }
+
+
+}

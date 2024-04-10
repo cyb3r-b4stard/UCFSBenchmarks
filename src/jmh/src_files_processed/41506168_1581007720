@@ -1,0 +1,106 @@
+public class PointInTime
+{
+    private int year;
+    private int day;
+    private int hour;
+
+    public PointInTime(int y, int d, int h)
+    {
+        if( y > 999 && y < 10000 )
+        {
+            year = y;
+        }
+        else
+        {
+            throw new IllegalArgumentException();
+        }
+
+        if ( d >= 1 && d <= 365 )
+        {
+            day = d;
+        }
+        else
+        {
+            throw new IllegalArgumentException();
+        }
+
+        if ( h >=0 && h <=23 )
+        {
+            hour = h;
+        }
+        else
+        {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public String toString()
+    {
+        String temp1;
+        String temp2;
+
+        if( day < 100)
+        {
+            if( day < 10 )
+            {
+                temp1 = "00" + day;
+            }
+            else
+            {
+                temp1 = "0" + day;
+            }
+        }
+        else
+        {
+            temp1 = "" + day;
+        }
+        
+                
+        if( hour < 10 )
+        {
+            temp2 = "0" + hour;
+        }
+        else
+        {
+            temp2 = "" + hour;
+        }
+
+        return year + ":" + temp1 + ":" + temp2 ;
+    }
+    
+    public PointInTime clone(String c)
+    {
+        return new PointInTime ( year, day, hour );
+    }
+
+    public void change(int h)
+    {
+        int temph=0;
+        
+        temph = hour + h;
+        if( temph > 23)
+        {
+            while ( temph > 24 )
+            {
+                temph - 24; 
+                day++;
+            }
+            
+            if( day > 365)
+            {
+                while ( day > 365 )
+                {
+                    day-366;
+                    year++;
+                }
+
+                if( year >= 10000 )
+                {
+                    throw new IllegalArgumentException();
+                }
+            }
+        }
+        
+    }
+    
+}

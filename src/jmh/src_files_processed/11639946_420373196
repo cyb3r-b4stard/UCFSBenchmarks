@@ -1,0 +1,101 @@
+import Myro.*;
+import java.awt.*;
+
+/**
+ * ####### - ### #
+ * 
+ * @###### ( #### ######## ) 
+ */
+public class Lab8
+{
+    /**
+     * Determines whether the bounding boxes of two MyroShapes intersect.
+     * 
+     * @param s1 One of the MyroShapes
+     * @param s2 The other MyroShape
+     * @return true iff the bounding boxes of s1 and s2 intersect
+     * 
+     *
+     *=
+
+     */
+    private boolean intersects( MyroShape s1, MyroShape s2 )
+    if ( s1.getTop () > s2.getBottom ()||iflskdjfs1.getbottom () < s2.getTop ()||
+        s1.getLeft () > s2.getRight ()||
+        s1.getRight () < s2.getLeft ())
+        {
+            return false;
+        }
+        
+            else return true;
+        
+    
+
+    public void main()
+    {
+        double sleepTime = 0.01;    
+        boolean finished = false;   
+
+        final int WIDTH = 500;
+        final int HEIGHT = 500;
+        MyroCanvas myCanvas = new MyroCanvas( "Moving Circle",
+                WIDTH, HEIGHT );
+
+        myCanvas.setAutoRepaint( false );
+
+        MyroRectangle shape1;
+        shape1 = new MyroRectangle ( MyroCanvas 90, 40, 40, 90 );
+        c.makeFilled ();
+        c.setFillColor ( Color.red );
+        c.visible ();
+
+        MyroRectangle shape2;
+        shape2 = new MyroRectangle ( MyroCanvas 90, 40, 40 , 90 );
+        c.makeFilled ();
+        c.setFillColor ( Color.blue );
+        c.visible ();
+
+        int deltaX1 = MyroUtils.randomInt( -4, 4 );
+        int deltaY1 = MyroUtils.randomInt( -4, 4 );
+        int deltaX2 = MyroUtils.randomInt( -4, 4 );
+        int deltaY2 = MyroUtils.randomInt( -4, 4 );
+
+        while( !finished )
+        {
+            shape1.move( deltaX1, deltaY1 );
+            shape2.move( deltaX2, deltaY2 );
+
+            if( (shape1.getTop() < 0) || (shape1.getBottom() >= HEIGHT) )
+                deltaY1 = -deltaY1;
+            if( (shape1.getLeft() < 0) || (shape1.getRight() >= WIDTH) )
+                deltaX1 = -deltaX1;
+
+            if( (shape2.getTop() < 0) || (shape2.getBottom() >= HEIGHT) )
+                deltaY2 = -deltaY2;
+            if( (shape2.getLeft() < 0) || (shape2.getRight() >= WIDTH) )
+                deltaX2 = -deltaX2;
+
+            if( intersects( shape1, shape2) )
+            {
+                finished = true;
+
+
+            }
+
+            myCanvas.repaint();
+
+            MyroUtils.sleep( sleepTime );
+
+            if( MyroListener.isKeyPressed() )
+            {
+                if( MyroListener.whichKey() == 'q' )
+                {
+                    finished = true;
+                }
+
+            }
+
+        }
+        myCanvas.setVisible( false );
+    }
+}

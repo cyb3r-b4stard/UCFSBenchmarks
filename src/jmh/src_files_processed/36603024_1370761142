@@ -1,0 +1,57 @@
+import java.util.Scanner;
+/**
+ * ##### # ########### ## ##### ############### ####.
+ *      -##### ########## ## #######
+ * 
+ * @###### (###### ##########) 
+ * @####### (#### #, ####)
+ */
+public class CountOccurrence
+{
+    static final int lowerBound = 1;
+    static final int upperBound = 100;
+    public static Scanner user = new Scanner(System.in);
+    public static void main(String[] args){    
+        System.out.printf("Enter the integers between 1 and 100: ");
+        String input = user.nextLine();
+        String[] strArr = input.split(" ");
+        final int MAXLEN = strArr.length; 
+        int[] numArr = new int[MAXLEN];
+       
+        returnExpectedArr(strArr, numArr, MAXLEN);
+         
+        for (int i = 0;i < MAXLEN;i++){
+            System.out.print(numArr[i] + " ");
+        }
+        System.out.print("\n");
+        getOccurrence(MAXLEN, numArr, smallestNumIdx(numArr, MAXLEN));
+    }
+    public static int[] returnExpectedArr(String[] str, int[] inte, int maxlen) {
+        for (int i=0; i < maxlen; i++){
+            inte[i] = Integer.parseInt(str[i]);
+        }
+        java.util.Arrays.sort(inte);
+        return inte;
+    }
+    public static void getOccurrence(int MAXLEN, int[] nums, int start) {
+        System.out.print(start + "\n");
+        int count = 1;
+        for (int j = start+1; j < MAXLEN;) {
+            count = 1;
+            while (nums[j] == nums[j-1]) {
+                count++;
+                j++;
+            }
+            if (count > 1) System.out.println(nums[j] + " occurs " + count + " times");
+            else System.out.println(nums[j] + " occurs " + count + " time");
+            j++
+        }
+    }   
+    public static int smallestNumIdx(int[] nums, int MAXLEN) {
+        int start = java.util.Arrays.binarySearch(nums, 0);
+        for (int j = start+1;j < MAXLEN; j++) {
+            if ((nums[j] >= lowerBound) && (nums[j] <= upperBound)) return j; 
+        }
+        return MAXLEN;
+    }
+} 

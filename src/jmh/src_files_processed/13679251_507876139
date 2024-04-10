@@ -1,0 +1,229 @@
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.*;
+import javax.swing.*;
+import java.io.*;
+import java.util.*; 
+
+
+public class MainMenu extends JFrame implements ActionListener {
+  public static final long LOANMAX = 1814400000; 
+  private Map<Integer, Borrower> borrowers;
+  private Map<Integer, Item> items;
+  private List<LoanTransaction> loans;
+  
+  private ReturnDlg returnDlg;
+  private JButton btnReadData, btnSaveLoans, btnLendItems, btnReturnItems,
+                  btnListLoans, btnListODLoans;
+  private BorrowDlg borrowDlg;
+  
+  public static void main(String[] args) {
+    MainMenu app = new MainMenu();
+    app.setVisible(true);
+  }
+
+  public MainMenu() { 
+    borrowers = new HashMap<Integer, Borrower>();
+    items = new HashMap<Integer, Item>();
+    loans = new LinkedList<LoanTransaction>();
+
+    returnDlg = new ReturnDlg(this);
+    borrowDlg = new BorrowDlg(this);
+
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setBounds(200, 100, 250, 300);
+
+    JPanel mainPnl = new JPanel();
+    mainPnl.setLayout(new GridLayout(3,1));
+
+    btnReadData = new JButton("Read Data");
+    btnReadData.addActionListener(this);
+    mainPnl.add(btnReadData);
+    
+    btnLendItems = new JButton("Lend Items");
+    btnLendItems.addActionListener(this);
+    mainPnl.add(btnLendItems);
+    
+    btnReturnItems = new JButton("Return Items");
+    btnReturnItems.addActionListener(this);
+    mainPnl.add(btnReturnItems);
+    
+    btnListLoans = new JButton("List of Loans");
+    btnReturnItems.addActionListener(this);
+    mainPnl.add(btnListLoans);
+    
+    btnOverdueLoans = new JButton("List Overdue Loans");
+    btnOverdueLoans.addActionListener(this);
+    mainpnl.add(btnOverdueLoans);
+    
+    btnSaveLoans = new JButton("Save Loans");
+    btnSaveLoans.addActionListener(this);
+    mainPnl.add(btnSaveLoans);
+    
+    add(mainPnl, BorderLayout.CENTER);
+  } 
+
+  public Map<Integer, Borrower>  getBorrowers() { return borrowers; }
+  public Map<Integer, Item>      getItems()     { return items; }
+  public List<LoanTransaction> getLoans()       { return loans; }
+
+  /**
+   * Actions in response to buttons
+   */
+  public void actionPerformed(ActionEvent evt) {
+    Object src = evt.getSource();
+    if (src == btnReadData) { 
+      readBorrowerData();
+      readItemData();
+      readLoans();
+      
+      btnReadData.setEnabled(false);      
+    } else if (src == btnLendItems) { 
+      borrowDlg.setVisible(true);
+    } else if (src == btnReturnItems) { 
+      returnDlg.setVisible(true);
+    } else if (src == btnListOfLoans) { 
+      listOfLoans();
+    } else if (src == btnOverdueLoans) { 
+      overDueLoans();
+    }
+     else if (src == btnSaveLoans) { 
+
+    }
+  }
+  
+  /**
+   * Read data from borrowers.txt using a Scanner; unpack and populate
+   *   borrowers Map. List displyed on console.  
+   */
+  public void readBorrowerData() {
+    String fnm="", snm="", pcd="";
+    int num=0, id=1;
+    try {
+      Scanner scnr = new Scanner(new File("borrowers.txt"));
+      scnr.useDelimiter("\\s*#\\s*");
+      while (scnr.hasNextInt()) {
+        id  = scnr.nextInt();
+        if(borrower.containsKey(id))
+        {
+            JOption.showmessageDialog(this,"ID is Invalid.", "Borrower with ID" + id + "already stored", JOptionPane.ERROR_MESSAGE);
+        }
+        snm = scnr.next();
+        if(snm.equals(""))
+        {
+            JOptionPane.showMessageDialog(this, "Surname is Invalid.", "Enter Surname.", JOptionPane.ERROR_MESSAGE);
+        }
+        fnm = scnr.next();
+        if(fnm.equals(""))
+        {
+            JOptionPane.showMessageDialog(this,"Forename is Invalid.", "Enter Forename.", JOptionPane.ERROR_MESSAGE);
+        }
+        num = scnr.nextInt();
+        pcd = scnr.next();
+        borrowers.put(new Integer(id), new Borrower(id, snm, fnm, num, pcd));
+      }
+      scnr.close();
+    } catch (NoSuchElementException e) {
+      System.out.printf("%d %s %s %d %s\n", id, snm, fnm, num, pcd);
+      JOptionPane.showMessageDialog(this, e.getMessage(),
+          "fetch of next token failed ", JOptionPane.ERROR_MESSAGE);
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, e.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
+    } catch (IllegalArgumentException e) {
+        JOptionPane.showMessageDialog(this, e.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
+    } catch (IOException e) {
+      JOptionPane.showMessageDialog(this, "File Not Found",
+          "Unable to open data file", JOptionPane.ERROR_MESSAGE);
+    }
+    listBorrowers();
+  } 
+  
+  public void listBorrowers() {
+    System.out.println("Borrowers:");
+    for (Borrower b: borrowers.values()) {
+      System.out.println(b);
+    }
+    System.out.println();
+  }
+
+  /**
+   * Read data from items.txt using a Scanner; unpack and populate
+   *   items Map. List displyed on console.  
+   */
+  public void readItemData() {
+    String ttl="", aut="";
+    int id=1;
+    try {
+      Scanner scnr = new Scanner(new File("items.txt"));
+      scnr.useDelimiter("\\s*#\\s*");
+      while (scnr.hasNextInt()) {
+        id  = scnr.nextInt();
+        ttl = scnr.next();
+        if(ttl.equals(""))
+        {
+            JOptionPane.showMessageDialog(this,"Title is Invalid.", "Enter Title.", JOptionPane.ERROR_MESSAGE);
+        }
+        aut = scnr.next();
+        if(aut.equals(""))
+        {
+            JOptionPane.showMessageDialog(this,"Author is Invalid.", "Enter Author.", JOptionPane.ERROR_MESSAGE);
+        }
+        items.put(new Integer(id), new Item(id, ttl, aut));
+      }
+      scnr.close();
+    } catch (NoSuchElementException e) {
+      System.out.printf("%d %s %s\n", id, ttl, aut);
+      JOptionPane.showMessageDialog(this, e.getMessage(),
+          "fetch of next token failed ", JOptionPane.ERROR_MESSAGE);
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, e.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
+    } catch (IllegalArgumentException e) {
+        JOptionPane.showMessageDialog(this, e.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
+    } catch (IOException e) {
+      JOptionPane.showMessageDialog(this, "File Not Found",
+          "Unable to open data file", JOptionPane.ERROR_MESSAGE);
+    }
+    listItems();
+  } 
+
+  public void listItems() {
+    System.out.println("Items:");
+    for (Item i: items.values()) {
+      System.out.println(i);
+    }
+    System.out.println();
+  }
+  
+  public void listOfLoans()
+  {
+      System.out.println("List of Loans:");
+      
+      for(LoanTransaction 1 : getLoans()){
+          
+        }
+        
+      System.out.println();
+  }
+  
+  public void overDueLoans(){
+      
+  }
+  
+  public void saveLoans(){
+      String fileName;
+      
+      PrintWriter printWriter;
+      printWriter = newPrintWriter(new FileOutputStream("savedLoans.txt"));
+      System.out.println("Loans have been saved.");
+      for (LoanTransaction 1: loans){
+          
+      }
+      
+      printWriter.close
+  }
+
+} 

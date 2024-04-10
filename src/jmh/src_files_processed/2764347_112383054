@@ -1,0 +1,305 @@
+import javax.swing.JPanel;
+import java.util.ArrayList;
+import java.io.FileReader;
+import java.awt.event.KeyListener;
+import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+
+public class Plateau extends JPanel implements KeyListener
+{
+   String Jeu[][] = new String[20][20]; 
+   Historique historique;               
+   int Niveau = 1;     
+   int Deplacement;
+   int Poussee; 
+   
+   ArrayList<Mur> Murs; 
+   ArrayList<Zone> Zones; 
+   public ArrayList<Caisse> Caisses; 
+   
+   Mur mur;                                       
+   Magasinier magasinier;                         
+   Zone zone;                                     
+   Caisse caisse;                                 
+   Rectangle Rmur = new Rectangle();              
+   Rectangle Rmagasinier = new Rectangle();       
+   Rectangle Rzone = new Rectangle();             
+   Rectangle Rcaisse = new Rectangle();           
+   
+   FileReader fr;
+   
+   public Plateau()
+    {
+       this.setFocusable(true);
+       addKeyListener(this); 
+       this.setBackground(Color.BLACK);
+       this.setForeground(Color.WHITE);
+       this.Chargement_niveau();
+     }
+   
+   public void Chargement_niveau()
+    { try { 
+            fr = new FileReader("niveaux/lvl"+Niveau+".sok");
+            int x = 0,y = 0,i = 0;
+            
+            this.Murs = new ArrayList<Mur>();
+            this.Caisses = new ArrayList<Caisse>();
+            this.Zones = new ArrayList<Zone>();
+            
+            Deplacement = 0; Poussee = 0;
+            
+            for(int j =0; j<20; j++)
+             for(int h=0; h<20;h++)
+               { Jeu[j][h] = null;};
+               
+            while((i = fr.read())!= -1)
+              { char cara = (char) i; 
+                if(cara == '#')
+                 { Jeu[y][x] = "Mur";
+                   mur = new Mur(x*32,y*32);
+                   Murs.add(mur); x++;
+                    }
+                else if(cara == '@')
+                 { magasinier = new Magasinier(x*32,y*32); x++; }
+                else if(cara == '$')
+                 { Jeu[y][x] = "Caisse";
+                   caisse = new Caisse(x*32,y*32,false,null);
+                   Caisses.add(caisse); x++;
+                    }
+                else if(cara == '*')
+                 { Jeu[y][x] = "Caisse";
+                   caisse = new Caisse(x*32,y*32,true,"Zone");
+                   Caisses.add(caisse);
+                   zone = new Zone(x*32,y*32,true);
+                   Zones.add(zone); x++;
+                   }
+                else if(cara == '.')
+                 { Jeu[y][x] = "Zone";
+                   zone = new Zone(x*32,y*32,false);
+                   Zones.add(zone); x++;
+                   }
+                else if(cara == ' ')
+                 { x++;  }
+                else if (cara == 'r')
+                  { while( x < 20 ) 
+                    { Jeu[y][x] = null; x++; } }  
+                if( x >= 20 )         
+                 { y++; x = 0; } 
+                }
+             }
+       catch(Exception e) {}
+       historique = new Historique();
+       repaint();
+       }
+     
+   public void paint(Graphics g)
+    { 
+      super.paint(g);
+      Graphics2D g2d = (Graphics2D) g;
+      for(int i = 0; i < Murs.size(); i++) 
+         {   mur = (Mur) Murs.get(i);
+             g2d.drawImage(mur.getimage(),mur.getx(),mur.gety(),null);
+             }
+      for(int i = 0; i < Zones.size(); i++) 
+         {   zone = (Zone) Zones.get(i);
+             g2d.drawImage(zone.getimage(),zone.getx(),zone.gety(),null);
+             }
+      for(int i = 0; i < Caisses.size(); i++) 
+         {   caisse = (Caisse) Caisses.get(i);
+             g2d.drawImage(caisse.getimage(),caisse.getx(),caisse.gety(),null);
+             }
+      try {g2d.drawImage(magasinier.getimage(),magasinier.getx(),magasinier.gety(),null);}
+      catch(Exception e) {}
+      
+      g.setColor(Color.WHITE);
+      g.drawString("Niveau : "+Niveau,10,630);
+      g.drawString("Appuyez sur R pour recommencer le niveau ",10,650);
+      g.drawString("Déplacements : "+Deplacement,300,630);
+      g.drawString("Poussées : "+Poussee,420,630);
+      g.drawString("Appuyez sur U pour annuler ",300,650);
+      }
+   
+   public void keyReleased(KeyEvent ke) 
+     { int key = ke.getKeyCode();
+       int pmx = magasinier.x;
+       int pmy = magasinier.y;
+       if (key == KeyEvent.VK_DOWN) 
+          { magasinier.dir = "bas";
+            magasinier.Bouger();  obstacle();  coup();
+          }
+       else if (key == KeyEvent.VK_UP) 
+          { magasinier.dir = "haut";
+            magasinier.Bouger();  obstacle();  coup();
+           }
+       else if (key == KeyEvent.VK_RIGHT) 
+          { magasinier.dir = "droite";
+            magasinier.Bouger();  obstacle();  coup();
+          }
+       else if (key == KeyEvent.VK_LEFT) 
+          { magasinier.dir = "gauche";
+            magasinier.Bouger();  obstacle();  coup();
+           }
+       if((pmx != magasinier.x)||(pmy != magasinier.y))
+          { Deplacement ++; 
+            historique.maj_Historique(pmx, pmy, -1, 0, 0);} 
+       if(key == KeyEvent.VK_R)
+          { Chargement_niveau(); 
+            }
+       if(key == KeyEvent.VK_U)
+          {  if(historique.Actions.size()>0) {Retour();}
+            }
+       if((key == KeyEvent.VK_P)&&(Niveau<=100))
+          { Niveau++;
+            Chargement_niveau();
+            }
+       verif_caisse_zone();
+       repaint();
+       affiche();
+       niveau_termine();
+        }
+   
+   public void affiche() 
+   { for(int j = 0; j<20; j++)
+       { for(int i = 0; i<20; i++)
+            { System.out.print(Jeu[j][i]+" ");
+              }; System.out.println();
+         }
+     }
+     
+   public void niveau_termine()
+    {
+        int nbCaisseOK = 0 ;
+        for(int i = 0; i < Caisses.size(); i++) 
+          { caisse = (Caisse) Caisses.get(i);
+            if( caisse.enplace ) 
+              { nbCaisseOK++; }
+            if(nbCaisseOK == Caisses.size())
+              { Niveau++;
+                Chargement_niveau();}
+             }
+      }
+      
+   public void obstacle() 
+    {  
+        Rmagasinier = magasinier.getBounds();
+        for(int i=0;i<Murs.size();i++)
+         { mur = (Mur) Murs.get(i);
+           Rmur = mur.getBounds();
+           if(Rmagasinier.intersects(Rmur))
+             { if(magasinier.dir == "bas")
+                 {  magasinier.y -= 32; }
+               else if(magasinier.dir == "haut")
+                 {  magasinier.y += 32;}
+               else if(magasinier.dir == "droite")
+                 {  magasinier.x -= 32; }
+               else if(magasinier.dir == "gauche")
+                 {  magasinier.x += 32;}
+                }
+            }
+        }    
+        
+   public void coup()
+    {
+        for(int i=0; i<Caisses.size(); i++)
+          { caisse = (Caisse) Caisses.get(i);
+            Rcaisse = caisse.getBounds();
+            if(Rmagasinier.intersects(Rcaisse))
+              { if(rien_ne_gene(caisse))
+                 { 
+                   if(magasinier.dir == "bas" )
+                     {historique.maj_Historique( magasinier.x, magasinier.y - 32, i, caisse.x, caisse.y)}
+                   else if(magasinier.dir == "haut") 
+                     { historique.maj_Historique( magasinier.x, magasinier.y + 32, i, caisse.x, caisse.y); }
+                   else if(magasinier.dir == "droite")  
+                     { historique.maj_Historique( magasinier.x - 32, magasinier.y, i, caisse.x, caisse.y); }
+                   else if(magasinier.dir == "gauche")
+                      { historique.maj_Historique( magasinier.x + 32, magasinier.y, i, caisse.x, caisse.y); }
+                   pousser(caisse);
+                   Poussee++;
+                    }
+                else {if(magasinier.dir == "bas") { magasinier.y -=32;}
+                      else if(magasinier.dir == "haut") { magasinier.y +=32;}
+                      else if(magasinier.dir == "droite") { magasinier.x -=32;}
+                      else if(magasinier.dir == "gauche") { magasinier.x +=32;}}
+                          
+                }
+            }
+     }
+     
+   public boolean rien_ne_gene(Caisse c)
+    { boolean b = true ;
+      int X = c.y/32;
+      int Y = c.x/32;
+      if(magasinier.dir == "bas" ) { if((Jeu[X+1][Y]=="Mur")||(Jeu[X+1][Y]=="Caisse"))
+                        { b = false;  };}
+      else if(magasinier.dir == "haut") { if((Jeu[X-1][Y]=="Mur")||(Jeu[X-1][Y]=="Caisse")) 
+                        { b = false;  };}
+      else if(magasinier.dir == "gauche") { if((Jeu[X][Y-1]=="Mur")||(Jeu[X][Y-1]=="Caisse")) 
+                        { b = false;  };}
+      else if(magasinier.dir == "droite") { if((Jeu[X][Y+1]=="Mur")||(Jeu[X][Y+1]=="Caisse"))
+                        { b = false;  };}  
+      return(b);
+        }
+    
+   public void pousser(Caisse c)
+    {   Jeu[c.y/32][c.x/32] = null;
+        if(magasinier.dir == "bas") {c.y +=32;}
+        else if(magasinier.dir == "haut") {c.y -=32;}
+        else if(magasinier.dir == "gauche") {c.x -=32;}
+        else if(magasinier.dir == "droite") {c.x +=32;}
+        Jeu[c.y/32][c.x/32] = "Caisse";
+      }
+      
+   public void verif_caisse_zone()
+    {
+        for(int i = 0; i<Caisses.size(); i++)
+          { caisse = (Caisse) Caisses.get(i);
+            Rcaisse = caisse.getBounds();
+            int nb = 0;
+            for( int j = 0; j<Zones.size(); j++) 
+              {   
+                  zone = (Zone) Zones.get(j);
+                  Rzone = zone.getBounds();
+                  if(Rcaisse.intersects(Rzone))
+                   {  caisse.enplace = true;
+                      zone.caissedessus = true;
+                      nb++;
+                    }
+                }
+            if(nb == 0) { caisse.enplace = false;}
+            }
+        for( int j = 0; j<Zones.size(); j++)
+          { int nb = 0;
+            zone = (Zone) Zones.get(j);
+            Rzone = zone.getBounds();
+            for(int i = 0; i<Caisses.size(); i++)
+              { caisse = (Caisse) Caisses.get(i);
+                Rcaisse = caisse.getBounds();
+                if(Rcaisse.intersects(Rzone))
+                 { nb++;}
+                }
+            if(nb == 0) { zone.caissedessus = false;}
+            } 
+        } 
+        
+   public void Retour()
+    {
+      Action a = (Action)historique.Actions.get(historique.Actions.size() - 1);
+      magasinier.x = a.x_prec_m; magasinier.y = a.y_prec_m; 
+      Deplacement--;
+      if(a.ind >= 0)
+        { Caisse c = (Caisse) Caisses.get(a.ind);
+          Jeu[c.y/32][c.x/32] = null;
+          c.x = a.x_prec_c; c.y = a.y_prec_c;
+          Jeu[c.y/32][c.x/32] = "Caisse";
+          Poussee--;}
+      historique.Actions.remove(historique.Actions.size() - 1);
+         }
+ 
+   public void keyPressed(KeyEvent ke) {}
+   
+   public void keyTyped(KeyEvent ke) {}
+}

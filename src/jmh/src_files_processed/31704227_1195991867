@@ -1,0 +1,147 @@
+
+/* #### ### #### ### ########## # 
+ * ####: ###### #######
+ * ########: ##########
+ * ##: #########
+ */
+
+import ecs100.*;
+import java.awt.Color;
+
+/** ### ####### ######## ### ####### ### ######### ### ######## ## ### ##### ## ##### ##### ## # ##### #### ### ###### ## # ###.
+ *  ##### ### ####### ###### ##### ### ##### ##### ##### #### # #### ### ## ########## ##: 
+ *    ### ####### ### ### ####### ##### ##### ##### ## ### ##### ###### ### ###.
+ *    ### ####### ##### ##### ##### ###### ### ###.
+ *
+ *  ### ####### ### ### #######.  #### #### #### # ######## ## ###### ####
+ *  ### #### (####### ### ######## ######).
+ *  ### ###### # ###### ##### ### ######; ### ##### ##### # #####.
+ */
+public class PowerAnalyser{
+
+    /**
+     * analyseLevels reads a sequence of levels from the user  and prints out
+     *    maximum, minimum, and average level.
+     *    
+     * The sequence is terminated by any word (non-number) such as "done" or "end".
+     * All the levels are integers between 0 and 8000. 
+     * The method will need variables to keep track of various quantities, all of which 
+     * need to be initialised to an appropriate value.
+     * It will need a loop to keep reading the levels until there isn't an integer next.
+     * [Core]
+     *   - There is guaranteed to be at least one level,
+     *   - Print the maximum, minimum, and average level
+     *   - Hint, keep track of the sum of the levels using a variable of type double
+     */
+    public void analyseLevels() {
+        UI.clearText();
+
+
+        /*# YOUR CODE HERE */
+
+        UI.println("Enter Levels: End with 'done': ");
+        double max = Integer.MIN_VALUE;
+        double min = Integer.MAX_VALUE;
+        double average = 0;
+        double sum = 0;
+        int count = 0;
+
+        while (UI.hasNextDouble()){
+            double num = UI.nextDouble();
+            if (count == 0){
+                UI.println("-----Analysis-----");
+            }
+
+            if (num < min) {
+                min = num;
+            }
+
+            if (num > max) {
+                max = num;
+            }   
+            count++;
+            sum = sum + num;
+            average = sum / count;
+        }
+        UI.println("Minimum level was: " + min + "KWH"); 
+        UI.println("Maximum level was: "+ max + "KWH");
+        UI.println("Average level was: "+ average + "KWH");
+        UI.nextLine();
+    }
+
+    /**
+     * Reads a sequence of levels (integers) from the user (using Scanner
+     * and the terminal window) and plots a bar graph of them, using narrow 
+     * rectangles whose heights are equal to the level.
+     * The sequence is terminated by any word (non-number) such as "done" or "end".
+     * The method may assume that there are at most 24 numbers.
+     * The method will need a loop to keep reading the levels until there isn't a number next.
+     *  Each time round the loop, it needs to read the next level and work out where
+     *  to draw the rectangle for the bar. 
+     * [Completion]
+     *   - The method should work even if there were no readings for the day.
+     *   - Any level greater than 8000 should be plotted as if it were just 8000, putting an
+     *         asterisk ("*") above it to show that it has been cut off.
+     *   - Draws a horizontal line for the x-axis (or baseline) without any labels.
+     * [Challenge:] 
+     *   - The graph should also have labels on the axes, roughly every 50 pixels.
+     *   - Make the method ask for a maximum level first, then scale the y-axis and values 
+     *     so that the largest numbers just fit on the graph.
+     *   - The numbers on the y axis should reflect the scaling.
+     */
+    public void plotLevels() {
+        UI.clearText();
+        UI.clearGraphics();
+
+        /*# YOUR CODE HERE */
+        UI.println("Enter Levels: End with 'done': ");
+        double x1 = 800;
+        double x2 = 300;
+
+        double size = 30;
+        double xPos = 300;
+        double yPos = 500;
+        double count = 0;
+        double num = 0;
+        double num2 = 9;
+        double labelY = 500;   
+
+        UI.setColor(Color.black);
+        UI.drawLine(x1, yPos, x2, yPos);
+
+        UI.setColor(Color.black);
+        UI.drawLine(x2, yPos-400, x2, yPos);
+
+        while (num < num2){
+            UI.setColor(Color.black);
+            UI.drawLine(x1-500, labelY, x2-10, labelY);
+            num++;
+            labelY = labelY - 50;
+        }
+
+        while(UI.hasNextDouble()){
+            UI.setColor(Color.black);
+            double level = UI.nextDouble()/20;
+
+            if (level >= 8000){
+                level = 8000;
+                UI.fillColor(Color.red);
+                UI.drawString("*", xPos+15, yPos-15);
+            }
+            UI.fillRect(xPos, yPos-level, size, level);
+            xPos = xPos+33;
+        }
+        UI.nextLine(); 
+        UI.println("Done");
+    }
+    /** ---------- The code below is already written for you ---------- **/
+    /** Constructor: set up user interface */
+    public PowerAnalyser(){
+        UI.initialise();
+        UI.addButton("Clear", UI::clearPanes );
+        UI.addButton("Analyse Levels", this::analyseLevels );
+        UI.addButton("Plot Levels Completion", this::plotLevels );
+        UI.addButton("Quit", UI::quit );
+    }
+
+}

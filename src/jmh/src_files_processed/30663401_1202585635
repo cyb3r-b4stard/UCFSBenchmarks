@@ -1,0 +1,121 @@
+
+import javax.swing.*;  
+import java.awt.*;     
+import java.awt.event.*;
+import java.lang.Math.*;
+import javax.swing.*;  
+import java.awt.*;     
+import java.awt.image.BufferStrategy;
+import java.awt.*;     
+import java.util.*;
+import java.awt.image.*;
+import java.io.*;
+import javax.imageio.*;
+
+import java.util.*;
+
+public class Main{
+    /*
+         
+     */
+    /**
+     * Welcome to my tank of "things"!!!
+     * 
+     * That's seriously what I called them. Don't ask me why.
+     * As you can see, there's a lot here, so I did my best to add comments everywhere.
+     * 
+     * The shadowed variable is at the beginning of PopThing. I added some note there.
+     */
+    public static void main(String args[]){
+        JFrame win;                 
+        Container contentPane;
+        Graphics g;
+      
+        win = new JFrame("'Spuriments");  
+        MouseHandler mouseListener = new MouseHandler(win);
+        win.addMouseListener(mouseListener);
+        win.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        win.setResizable(false);
+        win.validate();
+        
+        Wait.sleep(400);
+        
+        int width =(int)(PlantGrid.cellSize * 11.42857142857143);
+        int height = PlantGrid.cellSize * 6;
+        
+        
+        
+        
+        win.setLocation(100,80);
+
+        win.setSize(width,height);
+        win.setVisible(true);
+        
+        
+        
+        win.createBufferStrategy(2);
+        BufferStrategy buffer = win.getBufferStrategy();
+        gr = buffer.getDrawGraphics();
+        
+        Graphics2D g = (Graphics2D)gr;
+        
+        Wait.sleep(400);
+        
+        PlantGrid grid = new PlantGrid((int)(PlantGrid.cellSize/0.3888888888888889), (int)(PlantGrid.cellSize/1.4), 9, 5, width, height, g, mouseListener);
+        ZombieGenerator zGen = new ZombieGenerator(grid);
+        Entity.setMouseHandler(mouseListener);
+        
+        grid.addPlantToGrid(new PeaShooter(width, height, g), 1, 1);
+        grid.addPlantToGrid(new SunFlower(width, height, g), 0, 1);
+        Image img = null;
+        
+        try {
+            img = ImageIO.read(new File("Background1.jpg"));
+        } catch (IOException e) {
+            System.out.println("Unable to load image for background from path of Background1.jpg");
+        }
+        
+        boolean gameIsLost = false;
+        
+        while(!gameIsLost){
+            double startTime = System.currentTimeMillis();
+            System.out.println("startTime = " + startTime);
+            
+            g.setColor(Color.BLUE);
+            g.fillRect(-50, -50, width * 2, height * 2);
+            g.drawImage(img, 0, 0, (int)(grid.cellSize * 14.35714285714286), height, null);
+            Entity.sortEntities();
+            grid.drawGrid();
+            zGen.runZombies();
+            for(int i = 0; i < Entity.entitiesLengthGet(); i++){
+                Entity e = Entity.entitiesGet(i);
+                e.run();
+                if(e.isRemoved()){
+                    i--;
+                }
+                
+                if(e instanceof Zombie && ((Zombie)e).zombieHasWon()){
+                    gameIsLost = true;
+                }
+            }
+            
+            buffer.show();
+            
+            System.out.println("endTime is " + System.currentTimeMillis());
+            
+            double elapsedTime = System.currentTimeMillis() - startTime;
+            
+            System.out.println("elapsedTime = " + elapsedTime);
+            
+            Wait.sleep((long)(100 - elapsedTime));
+        }
+        
+        BufferedImage snapshot;
+        int alpha = 0;
+        
+        while(true){
+            g.setColor(new Color(0, 0, 0, alpha);
+            g.
+        }
+    }
+}

@@ -1,0 +1,68 @@
+import java.util.*;
+public class mainQueue2 
+    {
+        static Scanner reader= new Scanner (System.in);
+        public static Queue<Integer> buildQ( )
+        { 
+            int num;
+            Queue <Integer> q=new Queue <Integer>();
+            for (int i=0;i<=4;i++)
+            {
+                System.out.println("קלוט מספר");
+                q.insert(num=reader.nextInt());
+            }
+            return q;
+        }
+        public static void moveQtoQ(Queue<Integer> q1, Queue<Integer> q2)
+        { 
+                while (!q2.isEmpty())
+                    q1.insert(q2.remove());     }
+        public static Queue<Integer> copyQ(Queue<Integer> q)
+        {      
+            Queue<Integer> temp1=new Queue<Integer>();
+            Queue<Integer> temp2=new Queue<Integer>();
+            moveQtoQ(temp2,q);
+            while (!temp2.isEmpty())
+                { temp1.insert(temp2.head());
+                  q.insert(temp2.remove());
+                }
+            return temp1;
+        }
+        public static int maxInQ(Queue<Integer> q)
+        { 
+            Queue<Integer> temp=copyQ(q);
+            int max=0;
+            while (!temp.isEmpty()) {
+                if (q.head()>max) max=q.remove();
+                else q.remove(); }
+            return max;
+        }
+        public static void getNumOut(Queue<Integer> q, int num)
+        { 
+            q.insert(-1); 
+            while (q.head()!=-1); 
+                if (q.head()==num) q.remove();
+                else q.insert(q.remove());
+        }
+        public static void main(String[] args)
+        {
+            Queue<Integer> q=buildQ();
+            System.out.println(q);
+            System.out.println("קלוט מספר להסרה");
+            int num=reader.nextInt();
+            System.out.println("וואי תודה רבה");
+            getNumOut(q,num);
+            System.out.println(q);
+        }
+        public static void sortQ(Queue<Integer> q)
+        { 
+            Queue<Integer> temp=new Queue<Integer>();
+            while (!q.isEmpty())
+                {   int max=maxInQ(q);
+                    temp.insert(max);
+                    getNumOut(q,max);
+                }
+            q=copyQ(temp);
+    }
+            
+            

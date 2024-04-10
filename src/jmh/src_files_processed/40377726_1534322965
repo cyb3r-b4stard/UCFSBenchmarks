@@ -1,0 +1,41 @@
+
+/**
+ * ##### # ########### ## ##### ############ ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import java.util.ArrayList;
+public class Bibliotheque
+{
+    private ArrayList<Client> clients;
+    private ArrayList<Livre> livres;
+    private ArrayList<Emprunt> emprunts;
+
+    public static final long LIMITE_PAR_CLIENT =5 ;
+    public Bibliotheque()
+    {
+        clients  = new ArrayList<Client>();
+        livres   = new ArrayList<Livre>();
+        emprunts = new ArrayList<Emprunt>();  
+    }
+
+    public boolean estEmprunt(Livre livre){
+        return emprunts.stream().anyMatch((x) -> livre.equals(x.getLivre()));
+    }
+
+    public long nombreEmprunt(Client client){
+        return emprunts.stream().filter((x) -> client.equals(x.getClient())).count();
+    }
+
+    public void emprunter(Client client, Livre livre) throws LivreDejaEmprunte, ClientAtteintLimite {
+        if (estEmprunt(livre)){
+            throw new LivreDejaEmprunte();
+        }
+        if (nombreEmprunt(client)== LIMITE_PAR_CLIENT){
+            throw new ClientAtteintLimite();
+        }
+        
+        emprunts.add(new Emprunts(livre,client));
+    }
+}

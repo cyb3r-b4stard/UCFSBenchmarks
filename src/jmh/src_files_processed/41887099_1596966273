@@ -1,0 +1,458 @@
+import java.awt.Color;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.NoSuchElementException;
+
+/**
+ * ###### ####### #### #### ### ### ##### ####### ## ### ###### ##### # ### ######.
+ * ######## ##### ## ### #### #### #### ## ## ###### #### ##### ## ####### ####### ## ### ### #####, #### ## ####, #####, ###.
+ * ##### ### ### #####. #####,######,######,##,####,####,######,####,######,######,####,#####.
+ * 
+ * 
+ * @###### ###### ###(###)
+ * @####### ####.##.##
+ */
+
+public class DrawingTool
+{   
+    private static int CANVAS_WIDTH= 500;
+    private static int CANVAS_HEIGHT= 400;
+    
+	private Canvas canvas;
+	private String penName;
+	private Pen pen;
+	private InputReader reader;
+
+    private Map<String,Pen> pens = new HashMap<String,Pen>();
+    private Util util;
+
+
+    /**
+     * @param args enter parameter.
+     */
+   
+    /**
+     * Prepare to draw on a canvas of default size.
+     */
+    public DrawingTool()
+    {
+    	this(CANVAS_WIDTH, CANVAS_HEIGHT);  
+        util = new Util();
+
+    }
+    /**
+     * Prepare to draw on a canvas of specified size.
+     * @param width The canvas width.
+     * @param height The canvas height.
+     */
+    public DrawingTool(int width, int height)
+    {
+        canvas = new Canvas("Drawing Program", width, height);
+        reader = new InputReader();
+        pen = new Pen(0, 0, canvas);
+        pen.setColor(Color.BLACK);
+        pen.penUp();
+    }
+    
+    /**
+     * Allow the user to draw on the canvas by typing commands.<br>
+     * <br>
+     * <p>Support following command:<br>
+     * "pen name":Create a new Pen that will be referred to with the given name.<br>
+     * "select name":Select the pen with the given name as the one to which future commands will apply.<br>
+     * "delete name":Delete the pen with the given name.<br>
+     * "up":Raise the pen off the canvas so that movements do not cause drawing.<br>
+     * "down":Lower the pen onto the canvas so that movements cause drawing.<br>
+     * "move distance":Move the pen the specified distance in its direction of movement. distance must be an integer value.<br>
+     * "moveto x y":Move to co-ordinate position x,y on the canvas. Both x and y must be integers.<br>
+     * "turn angle":Change the direction of movement by angle degrees. angle must be an integer.<br>
+     * "turnto angle":Change the direction of movement to angle degrees. angle must be an integer.<br>
+     * "colour colour-name":Change the drawing colour to be colour-name. colour-name must be one of the following: “red”, “blue”, “yellow”, “magenta”, “green” or “black”.
+     * "help": Print an explanatory help message.
+	 * "bye": exit.
+	 */
+    public void draw()
+    {
+        boolean finished = false;
+        
+        printWelcome();
+        
+        while(!finished) {
+            LinkedList<String> command = null;
+            try {
+            	command = reader.getInput();	
+			} catch (NoSuchElementException noSuchElementException) {
+				finished = true;
+			}
+            if(command!=null && !command.isEmpty()) {
+                String firstWord = command.get(0);
+                switch(firstWord) {
+                    case "up":
+                    upAction();
+                    break;
+                
+                case "down":
+                	if(hasPen()){
+                		downAction();
+                	}
+                    break;
+                case "move":
+                	if(hasPen()){
+                		moveAction(command);
+                	}
+                    break;
+                case "moveto":
+                	if(hasPen()){
+                		movetoAction(command);
+                	}
+                    break;    
+                case "turn":
+                	if(hasPen()){
+                		turnAction(command);
+                	}
+                    break;
+                case "turnto":
+                	if(hasPen()){
+                		turntoAction(command);
+                	}
+                    break;
+                case "colour":
+                	if(hasPen()){
+                		colourAction(command);
+                	}
+                    break;                                     
+                case "pen":
+                	penAction(command);
+                    break;  
+                case "select":
+                	selectAction(command);
+                    break;
+                case "delete":
+                	deleteAction(command);
+                    break;                        
+                case "help":
+                	helpAction();
+                    break;                             
+                case "bye":
+                    finished = true;
+                    break;                        
+                default:
+                    System.out.println("Unrecognised command: " + firstWord);
+                    helpAction();
+                    break;
+                }
+            }
+        }
+        printGoodbye();
+        System.exit(0);
+    }
+    
+    /**
+     * implement pen command.
+     * @param command pen
+     */
+    private void penAction(LinkedList<String> command){
+    	if(command.size()==2){
+        	String name = command.get(1);
+        	if(pens.containsKey(name)){
+        		System.out.println("The pen has already exist.");
+        	}else{
+        		createPen(name);
+        		System.out.println(name+" is created successfully！");
+        		System.out.println("The " + penName + " pen position: " + pen.getX() + "," + pen.getY());
+                System.out.println("The " + penName + " pen is " + (pen.isPenDown() ? "down" : "up") + ".");
+        	}
+    	}else{
+    		System.out.println("command format is pen name,eg.pen first");
+    	}	
+    }
+    
+    /**
+     * Create a pen name.
+     * The pen starts up at position (0, 0) and its colour is black.
+     * @param name 
+     */
+    private void createPen(String name){
+    	penName = name;
+        pen = new Pen(0, 0, canvas);
+        pen.setColor(Color.BLACK);
+        pen.penUp();
+     
+  
+    	pens.put(penName, pen);
+    }
+    
+    /**
+     * implememt select command.
+     * @param command select.
+     */
+    private void selectAction(LinkedList<String> command){
+    	if(command.size()==2){
+        	String name = command.get(1);
+        	if(pens.containsKey(name)){
+        		selectPen(name);
+        		System.out.println("The pen is"+name);
+        	}else{
+        		System.out.println("The pen doesn't exist");
+        	}
+    	}else{
+    		System.out.println("command format is select name,eg.select first");
+    	}	
+    }
+    /**
+     * choose the tool
+     * @param name of drawing tool.
+     */
+    private void selectPen(String name){
+    	penName = name;
+    	pen = pens.get(penName);
+    }
+    
+    /**
+     * impelment delete command.
+     * @param command delete command.
+     */
+    private void deleteAction(LinkedList<String> command){
+    	if(command.size()==2){
+        	String name = command.get(1);
+        	if(pens.containsKey(name)){
+        		deletePen(name);
+        		System.out.println(name+"The pen has delete.");
+        	}else{
+        		System.out.println("The pen doesn't exist.");
+        	}
+    	}else{
+    		System.out.println("command format is delete name,eg.delete first");
+    	}
+    }
+    /**
+     * Delete drawing tool
+     * @param name
+     */
+    private void deletePen(String name){
+    	pens.remove(name);
+    	if(penName.equals(name)){
+        	pen = null;
+        	penName = "";	
+    	}
+    }
+    
+    /**
+     * if there is no pen，then returfalse，and print the information.
+     * @return true-pen false-no pen
+     */
+    private boolean hasPen(){
+    	if(pen == null){
+    		if(pens.size()>0){
+    			System.out.println("There is no pen be selected,please create your pens or select pens!");
+    		}else{
+    			System.out.println("There is no pen,please create your pens!");
+    		}
+    		return false;
+    	}else{
+    		return true;
+    	}
+    }
+    
+    /**
+     * implement up command.
+     */
+    private void upAction(){
+        pen.penUp();
+        System.out.println("The pen is " + (pen.isPenDown() ? "down" : "up") + ".");
+    }
+    
+    /**
+     * impleent down command.
+     */
+    private void downAction(){
+        pen.penDown();
+        if(hasPen() && !==null){
+        System.out.println("The "+ penName +" pen is " + (pen.isPenDown() ? "down" : "up") + ".");
+    }
+    else{
+        System.out.println("The pen is " + (pen.isPenDown() ? "down" : "up") + ".");
+    }
+    }
+    
+    /**
+     * implement move command.
+     * @param command move
+     */
+    private void moveAction(LinkedList<String> command){
+    	if(command.size()==2){
+        	String secondWord = command.get(1);
+        	if(!reader.isAnInteger(secondWord)){
+        		System.out.println("The second word must be integer.");
+        	}else{
+        		int distance = Integer.parseInt(secondWord);
+        		if(isValidDistance(distance)){
+        			pen.move(distance);
+        			System.out.println("Pen position: " + pen.getX() + "," + pen.getY());
+        		}else{
+        			System.out.println("The moved distance beyond the canvas.");
+        		}
+        	}
+    	}else{
+    		System.out.println("command format is move distance,eg.move 10");
+    	}
+    }
+    
+    /**
+     * Check if an IndexOutOfBoundsException.
+     * @param distance the distance moved.
+	 * @return false if the pen was moved out of the canvas,true othwise.
+     */
+    private boolean isValidDistance(int distance){
+    	double angle = Math.toRadians(pen.getRotation());
+        int newX = (int) Math.round(pen.getX() + Math.cos(angle) * distance);
+        int newY = (int) Math.round(pen.getY() + Math.sin(angle) * distance);
+        return isValidPosition(newX,newY);
+    }
+    
+	/**
+     * if there is an IndexOutOfBoundsException.
+	 * @param x the horizontal coordinate of the pen.
+     * @param y the vertical coordinate of the pen.
+	 * @return true if the position is on the canvas,false othwise.
+     */
+    private boolean isValidPosition(int x,int y){
+        if(x<0 || y<0 || x>CANVAS_WIDTH || y>CANVAS_HEIGHT){
+        	return false;
+        }else{
+        	return true;
+        }
+    }
+	
+    /**
+     * implement moveto command.
+     * @param command moveTo
+     */
+    private void movetoAction(LinkedList<String> command){
+    	if(command.size()==3){
+        	String secondWord = command.get(1);
+        	String thirdWord = command.get(2);
+        	if(!reader.isAnInteger(secondWord)){
+        		System.out.println("The second word must be integer.");	
+        	}else if(!reader.isAnInteger(thirdWord)){
+        		System.out.println("The third word must be integer.");	
+        	}else{
+        		int x = Integer.parseInt(secondWord);
+        		int y = Integer.parseInt(thirdWord);
+        		if(isValidPosition(x, y)){
+        			pen.moveTo(x, y);
+            		System.out.println("Pen position: " + pen.getX() + "," + pen.getY());	
+        		}else{
+        			System.out.println("The position is not in canvas.");
+        		}
+        	}
+    	}else{
+    		System.out.println("command format is moveto x y,eg.moveto 10 30");
+    	}
+    }
+    
+    /**
+     * implement turn command.
+     * @param command turn.
+     */
+    private void turnAction(LinkedList<String> command){
+    	if(command.size()==2){
+        	String secondWord = command.get(1);
+        	if(!reader.isAnInteger(secondWord)){
+        		System.out.println("The second word must be integer.");
+        	}else{
+        		int angle = Integer.parseInt(secondWord);
+        		pen.turn(angle);
+        		
+        		System.out.println("Pen angle degree : " + pen.getRotation());
+        	}
+    	}else{
+    		System.out.println("command format is turn angle,eg.turn 10");
+    	}
+    }
+    
+    /**
+     * implemet turnto command.
+     * @param command turnTo command.
+     */
+    private void turntoAction(LinkedList<String> command){
+    	if(command.size()==2){
+        	String secondWord = command.get(1);
+        	if(!reader.isAnInteger(secondWord)){
+        		System.out.println("The second word must be integer.");
+        	}else{
+        		int angle = Integer.parseInt(secondWord);
+        		pen.turnTo(angle);
+        		
+        		System.out.println("Pen angle degree : " + pen.getRotation());
+        	}
+    	}else{
+    		System.out.println("command format is turnto angle,eg. turnto 10");
+    	}
+    }
+    
+    /**
+     * implement colour command.
+     * @param command colour.
+     */
+    private void colourAction(LinkedList<String> command){
+    	if(command.size()==2){
+        	String colourName = command.get(1);
+        	Color color = util.convertToColour(colourName);
+        	if(color==null){
+        		System.out.println("colour-name must be one of the following: red, blue, yellow, magenta, green or black.");
+        	}else{
+        		pen.setColor(color);
+        		System.out.println("Pen colour : " + colourName);
+        	}
+    	}else{
+    		System.out.println("command format is colour colour-name,eg. colour blue");
+    	}
+    }
+    
+	/**
+	 * implement help command.
+	 */
+    private void helpAction(){    	
+    	System.out.println("drawing command involves：");
+    	System.out.println("pen name");
+    	System.out.println("	-Create a new Pen that will be referred to with the given name.\n");
+    	System.out.println("select name");
+    	System.out.println("	-Select the pen with the given name as the one to which future commands will apply.\n");
+    	System.out.println("delete name");
+    	System.out.println("	-Delete the pen with the given name. \n");    	
+    	System.out.println("up");
+    	System.out.println("	-Raise the pen off the canvas so that movements do not cause drawing.\n");
+    	System.out.println("down");
+    	System.out.println("	-Lower the pen onto the canvas so that movements cause drawing.\n");
+    	System.out.println("move distance");
+    	System.out.println("	-Move the pen the specified distance in its direction of movement. distance must be an integer value.\n");
+    	System.out.println("moveto x y");
+    	System.out.println("	-Move to co-ordinate position x,y on the canvas. Both x and y must be integers.\n");
+    	System.out.println("turn angle");
+    	System.out.println("	-Change the direction of movement by angle degrees. angle must be an integer.\n");
+    	System.out.println("turnto angle");
+    	System.out.println("	-Change the direction of movement to angle degrees. angle must be an integer.\n");
+    	System.out.println("colour colour-name");
+    	System.out.println("	-Change the drawing colour to be colour-name. colour-name must be one of the following: “red”, “blue”, “yellow”, “magenta”, “green” or “black”.\n");    	
+	}
+	 /**
+     * Print a welcome message to the screen.
+     */
+    private void printWelcome()
+    {
+        System.out.println("Welcome to the multiple drawing tool.");
+        System.out.println();
+        System.out.println("Type bye to exit.");
+        System.out.println("Type help to get command info.");
+    }
+
+    /**
+     * Print a good-bye message to the screen.
+     */
+    private void printGoodbye()
+    {
+        System.out.println("Goodbye!");
+    }
+}

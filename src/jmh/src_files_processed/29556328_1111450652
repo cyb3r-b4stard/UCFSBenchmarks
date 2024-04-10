@@ -1,0 +1,192 @@
+import java.util.Scanner;
+
+
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Restaurant
+{
+
+    private String name;            
+    private ConsoleMenu menu;       
+    private Customer sampleCustomer;    
+    private boolean haveRegisteredCustomer;  
+
+    private static final String DEFAULT_MENU_STRING = "1: Burger\n2: Cheese burger\n3: Salad\n4: Chicken Sandwich\n5: Lemonade";
+    private static final int DEFAULT_MENU_OPTIONS = 5;
+
+
+    /**
+     * Constructor for objects of class Restaurant - Sets up the default Restaurant called "The Lemonade Stand", and Uses the default string for menu
+     */
+    public Restaurant()
+    {
+        this("The Lemonade Stand");
+    }
+
+    /**
+     * Restaurant Constructor - Uses the restaurantName parameter and the default string for the menu
+     *
+     * @param restaurantName A String representation of the restaurant's name
+     */
+    public Restaurant(String restaurantName){
+        this(restaurantName, DEFAULT_MENU_STRING, DEFAULT_MENU_OPTIONS);
+    }
+
+    /**
+     * Restaurant Constructor - Creates a Restaurant object with name and custom menu
+     *
+     * @param restaurantName A String representation of the restaurant's name
+     * @param menuOptions A String of the menu choices, with numbers and  \n between items so it prints nicely:
+     *                  Example: "1: the first menu option\n2: the second menu option\n3: the third option\n
+     * @param numberOfMenuOptions the total number of choices for the string menuOptions in parameter2 -- Example above would be 3
+     */
+    public Restaurant(String restaurantName, String menuOptions, int numberOfMenuOptions){
+        this.name = restaurantName;
+        this.menu = new ConsoleMenu(menuOptions, numberOfMenuOptions);
+        this.haveRegisteredCustomer = false;
+    }
+
+    /**
+     * Method run()
+     *
+     */
+    public void run(){
+        /* Uncomment these after you write the methods needed
+        displayWelcome();
+
+        findOutIfNewCustomer();
+        takeCustomerOrder();
+
+        displayGoodbye();
+        */
+       displayWelcome();
+       
+       findOutIfNewCustomer();
+       
+       System.out.println("Here is our menu. Please look over at it.");
+       menu.print();
+       
+       takeCustomerOrder();
+       
+       
+    }
+
+    /*
+    public void displayWelcome(){}
+
+    public void displayGoodbye(){}
+
+    public void findOutIfNewCustomer(){}
+    public boolean getYesOrNoAnswer(String yesNoprompt){}
+    public void takeCustomerOrder(){}
+
+    private int getPointValueForFoodItem(int menu_choice) {}
+
+    private void getNewCustomerInformation(){ }
+    */
+   public void displayWelcome(){
+       System.out.println("Welcome to The Lemond Stand!");
+    }
+   
+   public boolean getYesOrNoAnswer(String yesNoprompt){
+     System.out.println(yesNoprompt);
+     
+     Scanner YoN = new Scanner (System.in);
+     String yesNopromptstring = YoN.next();
+     char yesOrNo = yesNopromptstring.charAt(0);
+
+ 
+     if (yesOrNo == 'Y' || yesOrNo == 'y'){
+         return true;
+        }
+        else {
+            return false;
+        }
+
+
+    }
+   
+   public void findOutIfNewCustomer(){
+      
+      boolean isFirstTime = getYesOrNoAnswer("Is this the first time you are here?");
+      if(isFirstTime == true && haveRegisteredCustomer == false){
+         System.out.println("You are actually our first customer");
+         getNewCustomerInformation();
+        }
+        else if (isFirstTime == true && haveRegisteredCustomer==true){
+            System.out.println("Sorry. Right now, our system can only keep track of one customer. \n So Connie will be receiving points for you.");
+            
+            getNewCustomerInformation();
+        }
+        else if (isFirstTime == false && haveRegisteredCustomer==true){
+            System.out.print("Welcome back" + sampleCustomer.getName());
+        }
+        else{
+            System.out.println("You must be a new customer.");
+            
+        }
+        
+      
+    }
+   
+   private void getNewCustomerInformation(){
+      boolean pointSystem = getYesOrNoAnswer("Would you like to sign up for our point system? (y/n)"); 
+      
+      if (pointSystem == true){
+        System.out.println("Thank you! We are going to start you with 10 points now.");
+        System.out.println("What's your name?");
+        
+        Scanner sc = new Scanner(System.in);
+        String customerName = sc.nextLine();
+        sampleCustomer = new Customer(customerName, 10);
+        }
+        else{
+            System.out.println("Please. Otherwise, the system wouldn't work.");
+            System.out.println("Just do it for now. We will give you 20 points.");
+             
+            Scanner sc = new Scanner(System.in);
+            String customerName = sc.nextLine();
+            sampleCustomer = new Customer(customerName, 20);
+        }
+        haveRegisteredCustomer = true;
+    }
+   
+   public void takeCustomerOrder(){
+       menu.getUserChoice();
+    } 
+   
+   private int getPointValueForFoodItem(int menu_choice) {
+       int pointAdd;
+       switch(menu_choice){
+           case 1:
+                pointAdd = 2;
+                break;
+           case 2:
+                pointAdd = 3;
+                break;
+           case 3: 
+                pointAdd = 3;
+                break;
+           case 4:
+                pointAdd = 4;
+                break;
+           case 5:
+                pointAdd = 5;
+                break;
+           default:
+                pointAdd = 0;
+                break;
+        }
+        return pointAdd;
+    } 
+    
+   public void displayGoodBye(){
+       int finalPointAdd = getPointValueForFoodItem(menu_choice);
+       finalPointAdd = sampleCustomer.addPoints(int numPointsToAdd);
+       System.out.println("Thank you for coming in, " + sampleCustomer + ". You have " + num
+    }
+    }

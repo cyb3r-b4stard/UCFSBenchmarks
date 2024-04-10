@@ -1,0 +1,82 @@
+import java.io.*;
+import java.util.*;
+
+public class CopyNumLb { 
+ в текстовый файл
+    public static void main(String[ ] args) throws IOException {
+        double m,d; 
+        long toRead;
+        double Str[] = new double[3];
+        double A[] = new double [9];
+        double Matr[][] = new double [3][3];
+        double Rez[] = new double [3];
+        
+        RandomAccessFile p = new RandomAccessFile("madb.bin", "rw");
+        for(int i=0;i<8888;i++){
+            
+            m=(int)(Math.random()*100);
+            p.writeDouble(m);
+        }
+        
+        
+        PrintWriter PW = null;
+        RandomAccessFile in=null;
+        try {
+            PW = new PrintWriter(new FileWriter("matrt2.txt"));
+            in=new RandomAccessFile("madb.bin","r");
+            toRead=in.length();
+            System.out.println("File length "+toRead);
+            
+            void k=p.seek(8800);
+            
+            while ( k<8888                  /*toRead>=((A.length+Str.length)*8)*/){
+                k++;
+                System.out.println();
+                System.out.println("Vector-Stroka");
+                for(int i=0;i<Str.length;i++){
+                    d = in.readDouble(); toRead-=8;
+                    Str[i]=d;
+                    System.out.print(Str[i]+" ");
+                }
+                System.out.println();
+                System.out.println("Matruza-stroka 9elem");
+                for (int i=0; i<A.length;i++) {
+                
+                    d = in.readDouble(); toRead-=8;
+                    A[i]=d;
+                    System.out.print(A[i]+" ");
+                }
+                System.out.println();
+                System.out.println("Matruza 3x3");
+                for (int str=0;str<3; str++){
+                   Matr[0][str]=A[str];
+                   Matr[1][str]=A[str+3];
+                   Matr[2][str]=A[str+6];
+                }
+                for (int i=0;i<3;i++){
+                    for (int j=0;j<3;j++)
+                        System.out.print(Matr[i][j]+" ");
+                    System.out.println();}
+                    System.out.println();
+                    System.out.println("Rezult");
+                 for (int i=0;i<3;i++){
+                    for (int j=0;j<3;j++)   
+                        Rez[i] = (Str[i]*Matr[i][j])+(Str[i]*Matr[i][j])+(Str[i]*Matr[i][j]);
+                        System.out.print(Rez[i]+" ");
+                
+                
+                
+                }
+                
+                    System.out.println("==========");
+            }
+                
+                
+            
+        }
+        finally {
+            if (in != null) {in.close();}
+            if (PW != null) {PW.close();}
+        }
+    }
+}

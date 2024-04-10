@@ -1,0 +1,88 @@
+/*
+ * ######### (#) #### ### ###### <####@##############.##>
+ * ### ###### ########.
+ *
+ * ############## ### ### ## ###### ### ###### #####, #### ## #######
+ * ############, ### ######### ######## #### ### ######### ##########
+ * ### ###:
+ * #. ############### ## ###### #### #### ###### ### ##### #########
+ *    ######, #### #### ## ########## ### ### ######### ##########.
+ * #. ############### ## ###### #### #### ######### ### ##### #########
+ *    ######, #### #### ## ########## ### ### ######### ########## ## ###
+ *    ############# ###/## ##### ######### ######## #### ### ############.
+ * #. ### #### ## ### ###### ### ### ## #### ## ####### ## ####### ########
+ *    ####### #### #### ######## ####### ######## ##### ####### ##########.
+ *
+ * #### ######## ## ######## ## ### ###### ``## ##'' ### ### ####### ##  
+ * ####### ##########, #########, ### ### ####### ##, ### ####### ##########
+ * ## ############### ### ####### ### # ########## ####### ### ##########.
+ * ## ## ##### ##### ### ###### ## ###### ### ### ######, ########,
+ * ##########, #######, #########, ## ############# ####### (#########, ###
+ * ### ####### ##, ########### ## ########## ##### ## ########; #### ## ###, 
+ * ####, ## #######; ## ######## ############) ####### ###### ### ## ###
+ * ###### ## #########, ####### ## ########, ###### #########, ## ####
+ * (######### ########## ## #########) ####### ## ### ### ### ## ### ### ##
+ * #### ########, #### ## ####### ## ### ########### ## #### ######.
+ */
+ 
+import java.awt.*;
+import javax.swing.*; 
+import javax.swing.border.*;
+import javax.swing.table.*;
+import javax.swing.event.*;
+import java.awt.event.*;
+ 
+public class SI_Holzfäller extends JPanel
+{
+    private JButton button1;
+    private String namex;
+    private MySQL mysql;
+    private GAME game;
+    private Build_Calc bcx;
+    
+    public SI_Holzfäller(GAME gamex,String name,int x,int y)
+    {
+        game = gamex;
+        namex = name;
+        mysql = new MySQL();
+        setDesign(x,y);
+    }
+    
+    public void setDesign(int x,int y)
+    {
+        setLayout(null);
+        setBounds(x*18+(x-1)*150, (y+1)*10+y*130, 150, 130);
+        setBorder(new BevelBorder(BevelBorder.RAISED, Color.black, Color.lightGray, Color.lightGray, Color.black));
+        setBackground(new Color(0, 0, 0, 55));
+        
+        button1 = new JButton();
+        button1.setText("Holzfäller");
+        add(button1);
+        button1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button1.setFocusPainted(false);
+        button1.addActionListener(e -> button1ActionPerformed(e));
+        button1.setBorder(UIManager.getBorder("ToggleButton.border"));
+        button1.setBounds(30, 90, 90, 30);
+        
+        if(mysql.loadBuild(namex)[2]!=0) button1.setEnabled(false);
+    }
+
+    private void button1ActionPerformed(ActionEvent e) {
+        int gold=game.map.holzfäller.giveCost()[0];
+        int ressi=game.map.holzfäller.giveCost()[1];
+        if(new Shop_Info().askHolzfäller(game,gold,ressi) != 1)
+        {
+            if(Integer.parseInt(mysql.gold(namex)[0])>=gold && Integer.parseInt(mysql.ressi(namex)[0])>=ressi) {
+                mysql.uploadGold(namex, Integer.parseInt(mysql.gold(namex)[0])-gold);
+                mysql.uploadRessi(namex, Integer.parseInt(mysql.ressi(namex)[0])-ressi);
+                game.gold.loadGoldOnly(namex);
+                game.ressi.loadRessiOnly(namex);
+                bcx = new Build_Calc();
+                bcx.setBuild(namex,2,Integer.parseInt(game.map.holzfäller.levelx)+1);
+                game.bd_holz.timer(bcx.loadBuild(namex,2));
+                button1.setEnabled(false); 
+                JOptionPane.showMessageDialog(null, "Das Gold und das Holz wurden\ndir erfolgreich abgezogen!", "ERFOLG: Gebäude ausgebaut", JOptionPane.OK_OPTION);
+            } else JOptionPane.showMessageDialog(null, "Du hast nicht genug Gold oder Holz!\nBaue deine Minen und Holzfällerhütten\naus um mehr zu bekommen.", "ACHTUNG: Zu wenig Ressourcen", JOptionPane.OK_OPTION);
+        }
+    }
+}

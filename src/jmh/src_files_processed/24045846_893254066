@@ -1,0 +1,86 @@
+import objectdraw.*;
+import java.awt.*;
+
+public class Assignment14 extends WindowController {
+
+    private boolean drawScarf = true;
+
+    private int tieWidth = 200;
+    private final static int TIE_HEIGHT = 10;
+    private final static int TIE_SPACING = 20;
+    private final static int MAX_ROWS = 10;
+
+    private int tieX = 20;
+    private int tieY = 300;
+
+    private int lRailStartX = 28;
+    private int lRailStartY = 300;
+    private int lRailEndX = 34;
+    private int lRailEndY = 290;
+    private int rRailStartX = 212;
+    private int rRailStartY = 300;
+    private int rRailEndX = 206;
+    private int rRailEndY = 290;
+
+    private int numTie = 0;
+    private int numRow = 0;
+
+    FilledRect currentTie;
+    Line lRail;
+    Line rRail;
+
+    private final static int STITCH_WIDTH = 12;
+    private final static int STITCH_HEIGHT = 12;
+    private final static int STITCH_SPACING = 8;
+    private final static int STITCH_PER_ROW = 12;
+    private final static int MAX_SROWS = 40;
+
+    private int nextStitchX = 50;
+    private int nextStitchY = 10;
+
+    private int numStitch = 0;
+    private int numSRow = 0;
+
+    FramedOval currentStitch;
+    public void onMousePress(Location point) {
+        drawScarf = !drawScarf;
+    }
+    
+    public void onMouseClick(Location point) {
+        if(drawScarf) {
+            canvas.clear;
+            while(numRow < MAX_SROWS) {
+                for(int numStitch = 0; numStitch < STITCH_PER_ROW; numStitch++) {
+                    currentStitch = new FramedOval(nextStitchX, nextStitchY, STITCH_WIDTH, STITCH_HEIGHT, canvas);        
+                    nextStitchX += STITCH_SPACING;
+                }   
+                nextStitchX = 50;
+                nextStitchY += STITCH_SPACING;
+                numSRow++;
+            }
+        } else {
+            canvas.clear;
+            while(numRow < MAX_ROWS) {
+                for(int numTie = 0; numTie < 1; numTie++) {
+                    currentTie = new FilledRect(tieX, tieY, tieWidth, TIE_HEIGHT, canvas); 
+                    lRail = new Line(lRailStartX, lRailStartY, lRailEndX, lRailEndY, canvas);
+                    rRail = new Line(rRailStartX, rRailStartY, rRailEndX, rRailEndY, canvas);
+                }
+                tieX += 10;
+                tieY -= TIE_SPACING;
+                tieWidth -= 20;
+                lRailStartX += 10;
+                lRailStartY -= 20;
+                lRailEndX += 10;
+                lRailEndY -= 20;
+                rRailStartX -= 10;
+                rRailStartY -= 20;
+                rRailEndX -= 10;
+                rRailEndY -= 20;
+
+                numRow++;
+            }
+        }    
+    }
+
+}

@@ -1,0 +1,159 @@
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.*;
+public class second extends JPanel implements ActionListener,KeyListener 
+{
+    Timer t = new Timer(5, this);
+    double x = 0, y = 0, velx = 0, vely = 0;
+    private Rectangle2D player;
+    public second(){
+        t.start();
+        addKeyListener(this);
+        setFocusable(true);
+        setFocusTraversalKeysEnabled(false);
+    }
+    
+    public void paintComponent(Graphics g){
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g;
+        player = new Rectangle2D.Double(x,y,80,80); 
+        Rectangle2D enemy = new Rectangle2D.Double(100,50,80,80); 
+        g2.fill(player);
+        g2.setPaint(Color.RED);
+        g2.fill(enemy);
+        enemy = new Rectangle2D.Double(620,50,80,80);
+        g2.fill(enemy);
+        
+    }
+                       
+    public void actionPerformed(ActionEvent e){
+        repaint();
+        x += velx;
+        y += vely;        
+    }
+    
+    public void keyPressed(KeyEvent e){
+        int code = e.getKeyCode();
+        if (code == KeyEvent.VK_W){
+            up();
+        }
+        if (code == KeyEvent.VK_S){
+            down();
+        }
+        if (code == KeyEvent.VK_D){
+            right();
+        }
+        if (code == KeyEvent.VK_A){
+            left();
+        }
+        
+        if (code == KeyEvent.VK_Q){
+            upleft();            
+        }
+        if (code == KeyEvent.VK_E){
+            upright();
+        }
+        if (code == KeyEvent.VK_C){
+            downright();
+        }
+        if (code == KeyEvent.VK_Z){
+            downleft();
+        } 
+        
+        if (code == KeyEvent.VK_SPACE){
+            shoot a = new shoot(accX(),);
+                                                           
+        }  
+    }
+    
+    public void keyReleased(KeyEvent e){
+        int code = e.getKeyCode();        
+        if (code == KeyEvent.VK_W){
+            stop();
+        }
+        if (code == KeyEvent.VK_S){
+            stop();
+        }
+        if (code == KeyEvent.VK_D){
+            stop();
+        }
+        if (code == KeyEvent.VK_A){
+            stop();
+        } 
+        
+        if (code == KeyEvent.VK_Q){
+            stop();
+        } 
+        if (code == KeyEvent.VK_E){
+            stop();
+        }
+        if (code == KeyEvent.VK_C){
+            stop();
+        }
+        if (code == KeyEvent.VK_Z){
+            stop(); 
+        }
+    }
+    
+    public void keyTyped(KeyEvent e){}
+    
+    public Rectangle2D accRect(){
+        return(player);
+    }  
+    
+    public double accX(){
+        return(x);
+    }   
+    
+    public double accY(){
+        return(y);
+    } 
+    
+    public void up(){
+        vely = -5;
+        velx = 0;
+    }
+    
+    public void down(){
+        vely = 5;
+        velx = 0;
+    }
+    
+    public void left(){
+        velx = -5;
+        vely = 0;
+    }
+    
+    public void right(){
+        velx = 5;
+        vely = 0;
+    }
+    
+    public void upleft(){
+        velx = -5;
+        vely = -5;
+    }
+    
+    public void upright(){
+        velx = 5;
+        vely = -5;
+    }
+    
+    public void downright(){
+        velx = 5;
+        vely = 5;
+    }
+    
+    public void downleft(){
+        velx = -5;
+        vely = 5;
+    }        
+    
+    public void stop(){
+        velx = 0;
+        vely = 0;
+    }
+       
+}

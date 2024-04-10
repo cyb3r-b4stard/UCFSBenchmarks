@@ -1,0 +1,168 @@
+
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import java.util.Scanner;
+import java.util.ArrayList;
+
+public class EightsGame
+{
+    private ArrayList<Strategy> player;
+    private Hand drawPile;
+    private Hand discardPile;
+    private Scanner input;
+    
+    /**
+     * Initializes the state of the game.
+     */
+    public EightsGame() {
+        
+        Deck deck = new Deck("deck");
+        deck.shuffle();
+        int handSize = 5;
+        
+        
+        
+        discardPile = new Hand("\nDiscard Pile");
+        deck.deal(discardPile, 1);
+        
+        drawPile = new Hand("Draw Pile");
+        deck.dealAll(drawPile);
+        
+        input = new Scanner(System.in);
+        
+        System.out.println("Enter number of players: ");
+        int numberOfPlayers = input.nextInt();
+        input.nextLine();
+                                        
+        for ( int i = 0; i < numberOfPlayers; i++) {
+            
+            System.out.println("Enter the name of player" + (i + 1) + " : " ); 
+            String playerName = input.nextLine();
+            player.add(new Strategy(playerName));
+            deck.deal(player.get(i).getHand(),handSize);
+        }
+                
+                       
+    }
+    
+        
+    /**
+     * Moves cards from the discard pile to the draw pile and shuffles.
+     */
+    public void reshuffle() {
+        Card topCard = discardPile.popCard();
+        discardPile.shuffle();
+        discardPile.dealAll(drawPile);
+        discardPile.addCard(topCard);
+    }
+    
+   /**
+     * Returns true if either hand is empty.
+     */
+    public boolean isDone() {
+        for ( int i = 0; i < player.size() ; i++) {
+            
+            return player.get(i).getHand().isEmpty();
+        }
+   }
+    
+   /**
+     * Returns a card from the draw pile.
+     */
+    public Card draw() {
+        if(drawPile.isEmpty()) {
+            reshuffle();
+        }
+        return drawPile.popCard();
+    }
+    
+    /**
+     * Displays the state of the game.
+     */
+    public void displayState() {
+        for ( int i = 0; i < player.size() ; i++) {
+        
+            player.get(i).display();
+            discardPile.display();
+            System.out.println("-----Draw pile-----");
+            System.out.println("Draw pile has " + drawPile.size() + " cards");
+        }
+    }
+    
+    /**
+     * Waits for the user to press enter.
+     */
+    public void waitForNextStrategy() {
+        input.nextLine();
+    }
+    
+    /**
+     * Switches players.
+     */
+    public Strategy nextStrategy(Strategy current) {
+        for ( int i = 0; i < player.size() ; i++) {
+        if (current == player.get(i)) {
+            return player.get(i + 1) ;
+        } else {
+            return player.get(i);
+        }
+    }
+}
+    
+    /**
+     * One player takes a turn.
+     */
+    public void takeTurn(Strategy player) {
+        Card topCard = discardPile.topCard();
+        Card playedCard = player.play(this, topCard);
+        discardPile.addCard(playedCard);
+        
+        System.out.println(player.getName() + " plays " + playedCard);
+        System.out.println();
+    }
+    
+    /**
+     * Plays the game.
+     */
+    public void playGame() {
+        for ( int i = 0; i < player.size() ; i++) {
+        Strategy player = player.get(i);
+        
+        while(!isDone()) {
+            displayState();
+            waitForNextStrategy();
+            takeTurn(player);
+            player = nextStrategy(player);
+        }
+        
+        one.displayScore();
+        two.displayScore();
+        
+    }
+    
+    public int countWin() {
+        
+        
+        if (one.score() == 0) {
+            return 1;
+            
+        } else {
+            return 0;
+                           
+        }
+        
+    }
+    
+    /**
+     * Creates the game and runs it.
+     */
+    public static void main(String[] args) {
+        EightsGame game = new EightsGame();
+        game.playGame();
+        
+    }
+}

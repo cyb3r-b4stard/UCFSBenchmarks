@@ -1,0 +1,304 @@
+/**
+ * ###### ### #### ######, ### ################ ############## ###
+ * ###########. ### ############### ####### ##### ### #########
+ * ##########: ### ########## ###### ## ##### #################
+ * ##### ### '#####'-###### ########. ##### ########### #### #####
+ * #### ######## # ### ### ########. ###### ##### #### ###########.
+ * ### ############ [#..###] ############## ### #################:
+ * # #### #######, ### #### ##### ### ################## ##### ####
+ * ### ###############.
+ * 
+ * ############### '#######': ### ######### #### #### ##
+ * ### ######### '#####' ########### ######.
+ * 
+ * @######  #### ###########
+ * @###### ##### ######-######
+ * @####### #. ###### ####
+ */
+class SWBild
+{
+    private short[][] _bilddaten;
+
+    private int _breite;
+
+    private int _hoehe;
+
+    private Leinwand _leinwand;
+
+    /**
+     * Initialisiert ein Bild mit einer Bilddatei. Der Benutzer kann interaktiv mit Hilfe eines
+     * Dateidialogs die zu ladende Datei auswaehlen.
+     */
+    public SWBild()
+    {
+        _bilddaten = BildEinleser.liesBilddaten();
+        if (_bilddaten != null)
+        {
+            aktualisiereBildgroesse(_bilddaten);
+            erzeugeLeinwand();
+        }
+    }
+
+    /**
+     * Initialisiert ein Bild mit einer Bilddatei. Der Dateiname kann als absoluter oder relativer
+     * Pfad uebergeben werden.
+     * 
+     * @param bilddateiName
+     *            der Name der Bilddatei
+     */
+    public SWBild(String bilddateiName)
+    {
+        _bilddaten = BildEinleser.liesBilddaten(bilddateiName);
+        aktualisiereBildgroesse(_bilddaten);
+        erzeugeLeinwand();
+    }
+
+    /**
+     * Dieses Bild um einen Wert abdunkeln. 
+     * 
+     * @param delta
+     *            Wert der Abdunkelung. Es wird mit dem Betrag von delta gerechnet, 
+     *            deshalb darf der Parameter sowohl positiv als auch negativ sein.  
+     */
+    public void dunkler(int delta)
+    {
+        if (delta < 0)
+        {
+            delta = -delta;
+        }
+
+        hellerDunker(-delta);
+
+        zeichneBild();
+    }
+
+    /**
+     * Dieses Bild um einen Wert aufhellen.
+     * 
+     * @param delta
+     *            Wert der Aufhellung. Es wird mit dem Betrag von delta gerechnet, 
+     *            deshalb darf der Parameter sowohl positiv als auch negativ sein.  
+     */
+    public void heller(int delta)
+    {
+        if (delta < 0)
+        {
+            delta = -delta;
+        }
+
+        hellerDunker(delta);
+
+        zeichneBild();
+    }
+
+    private void hellerDunker(int delta)
+    {
+        delta = -delta;
+        for (int y = 0; y < _hoehe; y++)
+        {
+            for (int x = 0; x < _breite; x++)
+            {
+                if ((_bilddaten[y][x] - delta) > 0 && (_bilddaten[y][x] - delta) < 255)
+                {
+                    _bilddaten[y][x] = (short) (_bilddaten[y][x] - delta);
+                }
+                else
+                {
+                    if ((_bilddaten[y][x] - delta) >= 255)
+                    {
+                        _bilddaten[y][x] = 255;
+                    }
+                    else
+                    {
+                        _bilddaten[y][x] = 0;
+                    }
+                }
+            }
+        }
+
+        zeichneBild();
+    }
+
+    /**
+     * Dieses Bild invertieren.
+     */
+    public void invertieren()
+    {
+        for (int y = 0; y < _hoehe; y++)
+        {
+            for (int x = 0; x < _breite; x++)
+            {
+                _bilddaten[y][x] = (short) (255 - _bilddaten[y][x]);
+            }
+        }
+
+        zeichneBild();
+    }
+
+    /**
+     * Dieses Bild vertikal spiegeln.
+     */
+    public void vertikalSpiegeln()
+    {
+        short[][] copy = kopiereBild();
+        for (int y = 0; y < _hoehe; y++)
+        {
+            for (int x = 0; x < _breite; x++)
+            {
+                _bilddaten[y][x] = copy[_hoehe - y - 1][x];
+            }
+        }
+        zeichneBild();
+    }
+
+    /**
+     * Dieses Bild weichzeichnen.
+     */
+    public void weichzeichnen()
+    {
+        short[][] copy = kopiereBild();
+        for (int y = 1; y < _hoehe - 1; y++)
+        {
+            for (int x = 1; x < _breite - 1; x++)
+            {
+                long value = 0;
+
+                value += copy[y - 1][x - 1];
+                value += copy[y - 1][x + 0];
+                value += copy[y - 1][x + 1];
+
+                value += copy[y + 0][x - 1];
+                value += copy[y + 0][x + 0];
+                value += copy[y + 0][x + 1];
+
+                value += copy[y + 1][x - 1];
+                value += copy[y + 1][x + 0];
+                value += copy[y + 1][x + 1];
+
+                _bilddaten[y][x] = (short) (value / 9);
+            }
+        }
+        zeichneBild();
+    }
+
+    /**
+     * Dieses Bild am Mittelpunkt spiegeln.
+     */
+    public void punktSpiegeln()
+    {
+        short[][] copy = kopiereBild();
+        for (int y = 0; y < _hoehe; y++)
+        {
+            for (int x = 0; x < _breite; x++)
+            {
+                _bilddaten[y][x] = copy[_hoehe - y - 1][_breite - x - 1];
+            }
+        }
+        zeichneBild();
+    }
+
+    /**
+     * Erzeuge bei diesem Bild einen Spot mit Radius r, Mittelpunkt x0,y0 und
+     * Beleuchtungsintensitaet i. Ausserhalb von r nimmt die Ausleuchtung linear ab.
+     * Wie im wirklichem Leben...
+     * 
+     * @param xo
+     *            x-Koordinate des Mittelpunktes
+     * @param yo
+     *            y-Koordinate des Mittelpunktes
+     * @param r
+     *            Radius
+     * @param i
+     *            Beleuchtungsintesitaet
+     */
+    public void spot(int x0, int y0, int r, short i)
+    {
+        for (int y = 0; y < _hoehe; y++)
+        {
+            for (int x = 0; x < _breite; x++)
+            {
+                double distanz = Math.sqrt((x0 -x) * (x0 -x) + (y0- y) * (y0 - y));
+                if (distanz <= r)
+                {
+                    _bilddaten[y][x] = (short) (_bilddaten[y][x] * i);
+                }
+                else
+                {
+                    _bilddaten[y][x] = (short) (_bilddaten[y][x] * (i / distanz));
+                }
+                
+                if (_bilddaten[y][x] < 0)
+                {
+                    _bilddaten[y][x] = 0
+                }
+                
+                if (_bilddaten[y][x] > 255)
+                {
+                    _bilddaten[y][x] = 255
+                }
+            }
+        }
+        zeichneBild();
+    }
+
+    /**
+     * Gib den Wert eines einzelnen Bildpunktes zurueck.
+     * 
+     * @param y
+     *            die y-Koordinate des Bildpunktes.
+     * @param x
+     *            die x-Koordinate des Bildpunktes.
+     * @return den Wert des angegebenen Bildpunktes.
+     */
+    public short gibBildpunkt(int y, int x)
+    {
+        return _bilddaten[y][x];
+    }
+
+
+    /**
+     * Zeichnet das Bild in _bilddaten neu
+     */
+    private void zeichneBild()
+    {
+        _leinwand.zeichneBild(_bilddaten);
+    }
+
+    /**
+     * Hoehe und Breite neu berechnen, nachdem die Bilddaten veraendert worden sind.
+     */
+    private void aktualisiereBildgroesse(short[][] bilddaten)
+    {
+        _hoehe = bilddaten.length;
+        if (_hoehe == 0)
+        {
+            _breite = 0;
+        }
+        else
+        {
+            _breite = bilddaten[0].length;
+        }
+    }
+
+    /**
+     * Erzeuge die Leinwand zur Darstellung und zeige sie an.
+     */
+    private void erzeugeLeinwand()
+    {
+        _leinwand = new Leinwand("Bildbetrachter", _breite, _hoehe);
+        _leinwand.sichtbarMachen();
+
+        zeichneBild();
+    }
+
+    private short[][] kopiereBild()
+    {
+        short[][] copy = new short[_hoehe][_breite];
+
+        for(int i=0; i<_bilddaten.length; i++)
+            for(int j=0; j<_bilddaten[i].length; j++)
+                copy[i][j]=_bilddaten[i][j];
+
+        return copy;
+    }
+}

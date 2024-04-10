@@ -1,0 +1,106 @@
+import sum.kern.*;
+import sum.werkzeuge.*;
+/**
+ * @###### ###########
+ * @####### ########
+ */
+public class Wolf
+{
+    Buntstift hatStift;
+    Rechner hatRechner;
+    Bildschirm kenntBildschirm;
+    Rotkäppchen kenntRotkäppchen;
+
+    double zAbstand;
+
+    public Wolf(Bildschirm pBildschirm)
+    {
+        hatStift = new Buntstift();
+        hatRechner = new Rechner();
+        kenntBildschirm = pBildschirm;
+        
+        hatStift.runter();
+        hatStift.setzeFarbe(Farbe.SCHWARZ);
+
+    }
+    /**
+     * Der Wolf wird freigegeben
+     */
+    public void gibFrei()
+    {
+        hatStift.gibFrei();
+        hatRechner.gibFrei();
+    }
+
+    /**
+     * Der Wolf bewegt sich
+     */
+    public void bewege()
+    {
+        hatStift.bewegeUm(10);
+      
+
+        if(amLinkenRand())
+        {
+            hatStift.dreheBis(0);
+        }
+
+        if(amRechtenRand())
+        {
+            hatStift.dreheBis(180);
+        }
+
+        if(amOberenRand())
+        {
+            hatStift.dreheBis(-90);
+        }
+
+        if(amUnterenRand())
+        {
+            hatStift.dreheBis(90);
+        }
+
+        else hatStift.dreheUm(hatRechner.ganzeZufallszahl(300, -300));
+
+    }
+
+
+
+
+
+    /**
+     * Der Wolf gibt zurück, ob er am linken Rand angekommen ist
+     * @return true wenn der Wolf am linken Rand angekommen ist
+     */
+    public boolean amLinkenRand()
+    {
+        return hatStift.hPosition() < 25;
+    }
+
+    /**
+     * Der Wolf gibt zurück, ob er am rechten Rand angekommen ist
+     * @return true wenn der Wolf am rechten Rand angekommen ist
+     */
+    public boolean amRechtenRand()
+    {
+        return hatStift.hPosition() > kenntBildschirm.breite() -25;
+    }
+
+    /**
+     * Der Wolf gibt zurück, ob er am oberen Rand angekommen ist
+     * @return true wenn der Wolf am oberen Rand angekommen ist
+     */
+    public boolean amOberenRand()
+    {
+        return hatStift.vPosition() < kenntBildschirm.hoehe() 25;
+    }
+
+    /**
+     * Der Wolf gibt zurück, ob er am unteren Rand angekommen ist
+     * @return true wenn der Wolf am unteren Rand angekommen ist
+     */
+    public boolean amUnterenRand()
+    {
+        return hatStift.vPosition() > kenntBildschirm.hoehe() -25;
+    }
+}

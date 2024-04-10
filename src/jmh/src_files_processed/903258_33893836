@@ -1,0 +1,260 @@
+
+import java.text.*;
+import javax.swing.*;
+import java.awt.*;
+
+public class VideoKiosk
+{
+    private String video1, video2, video3;
+    private int iVideo1, iVideo2, iVideo3;
+    private double credit, amountDue, dailySales;
+    private int customerSelections, dailyTransactions;
+    private double TAX = 1.06;
+    private double PRICE = 198;
+    private NumberFormat currency = NumberFormat.getCurrencyInstance();
+    private boolean TransCheck;
+
+    public VideoKiosk()
+    {
+        video1 = "The Breakfast Club";
+        video2 = "The Hobbit";
+        video3 = "Braveheart";
+        credit = 0;
+        amountDue = 0;
+        customerSelections = 0;
+        dailySales = 0;
+        iVideo1 = 3;
+        iVideo2 = 3;
+        iVideo3 = 3;
+        PRICE = 198.0;
+        TAX = 1.06;
+        TransCheck = false;
+        displayGreeting();
+    }
+
+    public VideoKiosk(int units)
+    {
+        video1 = "The Breakfast Club";
+        video2 = "The Hobbit";
+        video3 = "Braveheart";
+        credit = 0;
+        amountDue = 0;
+        customerSelections = 0;
+        dailySales = 0;
+        iVideo1 = units;
+        iVideo2 = units;
+        iVideo3 = units;
+        PRICE = 198.0;
+        TAX = 1.06;
+        TransCheck = false;
+        displayGreeting();
+    }
+
+    private void displayGreeting()
+    {
+
+
+        System.out.println("Welcome to VideoKiosk");
+        System.out.println("(1)" + video1 + ": " + iVideo1 + " available");
+        System.out.println("(2)" + video2 + ": " + iVideo2 + " available");
+        System.out.println("(3)" + video3 + ": " + iVideo3 + " available");
+        System.out.println("Please make a selection..." + "\n");
+
+    }
+    public double getPrice ( ){
+        return PRICE;
+    }
+
+    public double getCredit ( ){
+        return credit;
+    }
+
+    public double getAmountDue ( ){
+        return amountDue;
+    }
+
+    public int getTransactions ( ){
+        return dailyTransactions;
+    }
+
+    public int getNumSelections ( ){
+        return customerSelections;
+    }
+
+    public int getTotalInventory ( ){
+        return (iVideo1 + iVideo2 + iVideo3);
+
+    }
+
+    public double getDailySales ( ){
+        return dailySales;
+    }
+
+    public int getVideoCount (int id){
+        if (id == 1){
+            return iVideo1;
+        }
+        else if (id == 2){
+            return iVideo2;
+        }
+        else if (id == 3){
+            return iVideo3;
+        }
+        else{
+            return -1;
+        }
+    }
+
+    public void selectVideo (int id){
+
+        if (iVideo1 > 0 && id == 1){ 
+            System.out.println("You have selected " + video1);
+            iVideo1 --;
+            customerSelections ++;
+            TransCheck = true;
+        }
+        else if (iVideo2 > 0 && id == 2){
+            System.out.println("You have selected " + video2);
+            iVideo2 --;
+            customerSelections ++;
+            TransCheck = true;
+        }
+        else if (iVideo3 > 0 && id == 3){
+            System.out.println("You have selected " + video3);
+            iVideo3 --;
+            customerSelections ++;
+            TransCheck = true;
+        }
+
+        else if (iVideo1 > 0 && id == 1){
+            System.out.println(video1 + " is out of stock");
+
+        }
+        else if (iVideo2 > 0 && id == 2){
+            System.out.println(video2 + " is out of stock");
+
+        }
+        else if (iVideo3 > 0 && id == 3){
+            System.out.println(video3 + " is out of stock"); 
+
+        }
+        else{
+            System.out.println("Error: Title is unavailable");
+
+        }
+    }
+
+    public void checkOut (){
+        if (TransCheck = true){
+            amountDue = (customerSelections * PRICE * TAX);
+            System.out.println("\n Amount Due: " + currency.format(amountDue/100));
+            System.out.println("Pretty please insert payment.");
+        }
+        else{
+            System.out.println("Error: Trasaction is not in progress");
+        }
+    }
+    
+    public void insertMoney (int amount){
+        double stillDue;
+        if (TransCheck == true){
+            if (amount == 5 || amount == 10 || amount ==  25 || amount ==  100 || amount == 500){
+                credit += amount;
+                if (credit >= amountDue){
+                    System.out.println("\n" + "Thank you, enjoy the film" + "\n");
+                    System.out.println("Here is your change: " + currency.format((credit - amountDue)/100))
+                    + "\n";
+                    dailyTransactions += 1;
+                    finishTransaction();
+                }
+                else{ 
+                    System.out.println("\n" + "Credit Balance: " + currency.format(credit/100));
+                    stillDue = (amountDue - credit);
+                    System.out.println("Amount Due: " + currency.format(stillDue/100));
+                }   
+
+            }
+            else{
+                System.out.println("Please insert nickels, dimes, quarters, $1, or $5");
+            }
+        }
+        else{
+            System.out.println("Error: Transaction is not in progress");
+        }
+    }
+
+    public void finishTransaction ( ){
+        dailySales += amountDue;
+        amountDue = 0;
+        customerSelections = 0;
+        credit = 0;
+        displayGreeting();
+        TransCheck = false;
+    }
+
+    public void returnVideo (int id){
+        if (TransCheck == false){
+            if (iVideo1 > 0 && id == 1){
+                System.out.println("You have returned " + video1);
+                iVideo1 ++;
+                dailyTransactions ++;
+            }
+            else if (iVideo2 > 0 && id == 2){
+                System.out.println("You have returned " + video2);
+                iVideo2 ++;
+                dailyTransactions ++;
+            }
+            else if (iVideo3 > 0 && id == 3){
+                System.out.println("You have returned " + video3);
+                iVideo3 ++;
+                dailyTransactions ++;
+            }
+            else{
+                System.out.println("Error: Title is unavailable"); 
+            }
+        }
+        else{
+            System.out.println("Error: Transaction in progress");
+        }
+    }
+
+    public void createDailyReport ( ){
+        if (TransCheck == false){
+            System.out.println("\n" + "Today's Sales Report");
+            System.out.println("DVDs in stock: "+(iVideo1 + iVideo2 + iVideo3));
+            System.out.println("Daily Transactions: " + (dailyTransactions));
+            System.out.println("Daily Sales: " + (currency.format(dailySales/100)));
+            resetKiosk();
+        }
+        else {
+            System.out.println("Error: Transaction in progress");
+        }
+
+    }
+
+    public void resetKiosk(){
+        if (TransCheck == false){
+            dailyTransactions = 0;
+            dailySales = 0;
+        }
+        else {
+            System.out.println("Error: Transaction in progress");
+        }
+    }
+
+    public static void main(String [] args){ 
+        VideoKiosk v = new VideoKiosk(); 
+        v.selectVideo(2);
+        v.getPrice();
+        v.getCredit();
+        v.getAmountDue();
+        v.getTransactions();
+        v.getNumSelections();
+        v.getTotalInventory();
+        v.getDailySales();  
+        v.getVideoCount(3);
+        v.checkOut();
+        v.insertMoney(500);
+
+    }
+}

@@ -1,0 +1,95 @@
+import java.util.Scanner;
+import java.io.*;
+/**
+ * ##### # ########### ## ##### ######### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)######
+ */
+public class Escenario
+{
+    private Elemento[][] escenario = new Elemento[3][20];
+    private int disInicial=25;
+    private int disIncrement=50;
+    private boolean[] permisos = new boolean[4];
+
+    /**
+     * Constructor for objects of class Escenario
+     */
+    public Escenario()
+    {
+     try
+     {
+        String linea;
+        File file = new File("nivel1.txt");
+        Scanner nivel = new Scanner(new FileReader(file));
+       
+       for (int i=0;i<escenario.length;i++)
+       {
+        if(nivel.hasNextLine())
+        {
+           linea=nivel.nextLine();
+           char[] columnas=new char[linea.length()];
+           
+           for(int j=0;j<escenario[i].length;j++)
+           {
+               if(columnas[j]=='M')
+               {
+                    escenario[i][j]=new Muro((disInicial+disIncrement*j),(disInicial+disIncrement*i));
+               }
+               if(columnas[j]=='B')
+               {
+                   escenario[i][j]=new Bola((disInicial+(disIncrement*j)),(disInicial+(disIncrement*i)));
+               }
+            }
+        }
+        }
+        for(int k=0; k<permisos.length;k++)
+        {
+            permisos[k]=true;
+        }
+    }
+    Catch(exception e)
+    {
+            throw new exception("fallo"+e);
+    }
+    }
+    
+    public Elemento[][] getEscenario()
+    {
+        return escenario;
+    }
+    
+    public boolean[] situacion(int x, int y)
+    {
+        int j=(x-disInicial)/disIncrement;
+        int i=(y-disInicial)/disIncrement;
+        
+        if(j==0 || j<0) permisos[0]=false; else permisos[0]=true; 
+        if(j>=escenario[i].length) permisos[2]=false; else permisos[2]=true; 
+        if(i==0 || i<0) permisos[1]=false; else permisos[1]=true; 
+        if(i>=escenario.length) permisos[3]=false; else permisos[3]=true; 
+        
+        if(permisos[0])
+        {
+            permisos[0]=escenario[i][j-1].getTraspasar();
+        }
+           if(permisos[2])
+        {
+            permisos[2]=escenario[i][j+1].getTraspasar();
+        }
+           if(permisos[1])
+        {
+            permisos[1]=escenario[i-1][j].getTraspasar();
+        }
+           if(permisos[3])
+        {
+            permisos[3]=escenario[i+1][j].getTraspasar();
+        }
+        
+        
+        return permisos;
+    }
+
+   
+}

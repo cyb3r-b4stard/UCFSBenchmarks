@@ -1,0 +1,133 @@
+import java.util.Scanner;
+public class RandomNumberGame
+{
+    private static Scanner scan = new Scanner(System.in);
+    public static void main (String[] args)
+    {
+        int firstDigit = (int)(Math.round(Math.random()* 8)+1); 
+        int secondDigit = (int)(Math.round(Math.random()* 9));
+        int thirdDigit = (int)(Math.round(Math.random()* 9));
+        int wantHint = 0, hintCounter = 0;
+        int guess = 0, guessCounter = 0;
+        int score = 200;
+        boolean guessIsLarger;
+        int randomNumber = firstDigit*100 +secondDigit*10 + thirdDigit;
+        System.out.println("Guess the 3-Digit number:");
+        while (score > 0)
+        {
+            guess = scan.nextInt();
+            if (guess == randomNumber || guess == -1)
+            {
+                break;
+            }            
+            score -= 5;
+            guessCounter++;
+            guessIsLarger = guess > randomNumber;
+            if (guessIsLarger)
+            {
+                System.out.println("The guess was too high.");
+            }
+            else
+            {
+                System.out.println("The guess was too low.");
+            }
+            System.out.println("Would you like a hint?");
+            System.out.println("Enter 0 for no hint");
+            System.out.println("Enter 1 for a general hint");
+            System.out.println("Enter 2 for a range hint");            
+            System.out.println("Enter 3 for a digit hint");
+            System.out.println("Enter 4 for the last digit");
+            wantHint = scan.nextInt();
+            if (wantHint != 0)
+            {
+                if (wantHint == 0)
+                {
+                    System.out.println("Good luck");
+                }
+                if (wantHint == 1)
+                {
+                    if (randomNumber % 5 == 0)
+                    {
+                        System.out.println("The number is divisible by 5");
+                    }
+                    else if (randomNumber % 3 == 0)
+                    {
+                        System.out.println("The number is divisible by 3");
+                    }
+                    else if (randomNumber % 2 == 0)
+                    {
+                        System.out.println("The number is divisible by 2");
+                    }
+                    else
+                    {
+                        System.out.println("The number is not divisible by 2, 3, or 5");
+                    }
+                    score -= 7;
+                }
+                if (wantHint == 2)
+                {
+                    if (guessIsLarger)
+                    {
+                        if (guess - randomNumber <= 50)
+                        {
+                            System.out.println("The guess was within 50.");
+                        }
+                        else if (guess - randomNumber <= 100)
+                        {
+                            System.out.println("The guess was within 100.");
+                        }
+                        else if (guess - randomNumber <= 200)
+                        {
+                            System.out.println("The guess was within 200.");
+                        }
+                        else if (guess - randomNumber <= 300)
+                        {
+                            System.out.println("The guess was within 300.");
+                        }
+                        else if (guess - randomNumber <= 500)
+                        {
+                            System.out.println("The guess was within 500.");
+                        }
+                        else
+                        {
+                            System.out.println("The guess was not even close.");
+                        }
+                    }
+                    else
+                    {
+                        if (randomNumber - guess <= 50)
+                        {
+                            System.out.println("The guess was within 50.");
+                        }
+                        else if (randomNumber - guess <= 100)
+                        {
+                            System.out.println("The guess was within 100.");
+                        }
+                        else if (randomNumber - guess <= 200)
+                        {
+                            System.out.println("The guess was within 200.");
+                        }
+                        else if (randomNumber - guess <= 300)
+                        {
+                            System.out.println("The guess was within 300.");
+                        }
+                        else if (randomNumber - guess <= 500)
+                        {
+                            System.out.println("The guess was within 500.");
+                        }
+                        else
+                        {
+                            System.out.println("The guess was not even close.");
+                        }
+                    }
+                    else
+                    {
+                        System.out.println("Invalid input");
+                    }
+                }
+            }
+        }
+        System.out.println("Nice meme!");
+        System.out.println("You guessed " + guessCounter + " times, leaving you with a final score of " + score + ".");
+    }
+}

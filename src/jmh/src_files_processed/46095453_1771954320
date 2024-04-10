@@ -1,0 +1,256 @@
+import sum.werkzeuge.*;
+import sum.ereignis.*;
+
+/**
+ * @###### 
+ * @####### 
+ */
+public class Computergegner
+{
+    private int[] SpaltenReihenfolge = { 3, 2, 4, 5, 1, 0, 6 };
+    private int besteSpalte;
+    private int zSuchtiefe;
+    public Computergegner(int pSuchtiefe)
+    {
+        zSuchtiefe = pSuchtiefe;
+    }
+
+    public int ComputerZug(Spiel pSpielfeld)
+    {
+        int zbesteSpalte = 0;
+        int value = alpha(zSuchtiefe, Integer.MIN_VALUE, Integer.MAX_VALUE, 2, pSpielfeld);
+        return besteSpalte;
+    }
+
+    public int alpha(int pmaxSuchtiefe, int palpha, int pbeta, int pSpieler, Spiel pSpielfeld )
+    {
+        int zalpha = 0; 
+        int zSpieler; 
+        int zaktSuchtiefe = pmaxSuchtiefe; 
+
+        for (int Spalte : SpaltenReihenfolge) 
+        {
+            if(pSpielfeld.Spaltevoll(Spalte) == false )
+            { 
+                pSpielfeld.setzteTestStein(Spalte, pSpieler);
+                if(pSpieler == 1)
+                    zSpieler = 2;
+                else
+                    zSpieler = 1;
+
+                if (pSpielfeld.Gewonnen(pSpieler) == true ||   
+                    zaktSuchtiefe <= 0 || 
+                    pSpielfeld.SpielbrettVoll() == true)  
+                    zalpha = Bewerte(pSpielfeld, pSpieler);
+                else  
+                    zalpha = beta(zaktSuchtiefe - 1, palpha, pbeta, 1, pSpielfeld);
+                    
+                pSpielfeld.nehmeTestSteinzurueck(Spalte);
+                if (zalpha > palpha)
+                { 
+                    palpha = zalpha;
+                    if (pmaxSuchtiefe == zSuchtiefe)
+                        besteSpalte = Spalte;
+                }
+                if (zalpha >= pbeta) 
+                    return pbeta;
+            }    
+        }
+        return palpha;
+    }
+
+    public int beta(int pmaxSuchtiefe, int palpha, int pbeta, int pSpieler, Spiel pSpielfeld )
+    {
+        int zbeta = 0;
+        int zSpieler;
+        int zaktSuchtiefe = pmaxSuchtiefe;
+            zSpieler = 2;
+        else
+            zSpieler = 1;
+        for (int Spalte : SpaltenReihenfolge) 
+        {
+            if(pSpielfeld.Spaltevoll(Spalte) == false )
+            { 
+                pSpielfeld.setzteTestStein(Spalte, pSpieler);
+
+                if (pSpielfeld.Gewonnen(pSpieler) == true ||   
+                zaktSuchtiefe <= 0 || 
+                pSpielfeld.SpielbrettVoll() == true)
+                zbeta = Bewerte(pSpielfeld, pSpieler);
+                else  
+                    zbeta = alpha(zaktSuchtiefe - 1, palpha, pbeta, 2, pSpielfeld);
+                pSpielfeld.nehmeTestSteinzurueck(Spalte);
+                if (zbeta < pbeta)
+                {  
+                    pbeta = zbeta;
+                }
+                if (zbeta <= palpha) 
+                    return palpha;
+            }    
+        }
+        return pbeta;
+    }
+
+    public int Bewerte(Spiel pSpielfeld, int pSpieler)
+    {
+        int zBewertung = 0;
+        int Spieler1 = 0;
+        int Spieler2 = 0;
+
+        for(int Spalte = 0; Spalte<7; Spalte++)
+        {
+            for(int Reihe= 0; Reihe < 6; Reihe++)
+            {
+                if(pSpielfeld.Farbe(Spalte,Reihe) != 0)
+                {
+                    if(pSpielfeld.Farbe(Spalte,Reihe) == 1)
+                    {
+                        if(Spalte<6 && Spalte >0)
+                        {
+
+                            if(pSpielfeld.Farbe(Spalte+1, Reihe) == 0)
+                                Spieler1++;
+
+                            if(pSpielfeld.Farbe(Spalte-1, Reihe) == 0)
+                                Spieler1++;
+
+                            if(Reihe < 5 )
+                            {
+                                if(pSpielfeld.Farbe(Spalte, Reihe+1) == 0)
+                                    Spieler1++;
+
+                                if(pSpielfeld.Farbe(Spalte-1, Reihe+1) == 0)
+                                    Spieler1++;
+
+                                if(pSpielfeld.Farbe(Spalte+1, Reihe+1) == 0)
+                                    Spieler1++;
+
+                            }
+
+                        }
+                        else
+                        {   
+
+                            if(Spalte == 0)
+                            {
+
+                                if(pSpielfeld.Farbe(Spalte+1, Reihe) == 0)
+                                    Spieler1++;  
+
+                                if(Reihe < 5 )
+                                {
+
+                                    if(pSpielfeld.Farbe(Spalte, Reihe+1) == 0)
+                                        Spieler1++;
+
+                                    if(pSpielfeld.Farbe(Spalte+1, Reihe+1) == 0)
+                                        Spieler1++;
+
+                                }
+
+                            }
+                            if(Spalte==6)
+                            {
+                                if(pSpielfeld.Farbe(Spalte-1, Reihe) == 0)
+                                    Spieler1++; 
+
+                                if(Reihe < 5 )
+                                {
+                                    if(pSpielfeld.Farbe(Spalte, Reihe+1) == 0)
+                                        Spieler1++;
+
+                                    if(pSpielfeld.Farbe(Spalte-1, Reihe+1) == 0)
+                                        Spieler1++;
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                    else
+                    {
+                        if(Spalte<6 && Spalte >0)
+                        {
+
+                            if(pSpielfeld.Farbe(Spalte+1, Reihe) == 0)
+                                Spieler2++;
+
+                            if(pSpielfeld.Farbe(Spalte-1, Reihe) == 0)
+                                Spieler2++;
+
+                            if(Reihe < 5 )
+                            {
+                                if(pSpielfeld.Farbe(Spalte, Reihe+1) == 0)
+                                    Spieler2++;
+
+                                if(pSpielfeld.Farbe(Spalte-1, Reihe+1) == 0)
+                                    Spieler2++;
+
+                                if(pSpielfeld.Farbe(Spalte+1, Reihe+1) == 0)
+                                    Spieler2++;
+
+                            }
+
+                        }
+                        else
+                        {   
+
+                            if(Spalte == 0)
+                            {
+
+                                if(pSpielfeld.Farbe(Spalte+1, Reihe) == 0)
+                                    Spieler2++;  
+
+                                if(Reihe < 5 )
+                                {
+
+                                    if(pSpielfeld.Farbe(Spalte, Reihe+1) == 0)
+                                        Spieler2++;
+
+                                    if(pSpielfeld.Farbe(Spalte+1, Reihe+1) == 0)
+                                        Spieler2++;
+
+                                }
+
+                            }
+                            if(Spalte==6)
+                            {
+                                if(pSpielfeld.Farbe(Spalte-1, Reihe) == 0)
+                                    Spieler2++; 
+
+                                if(Reihe < 5 )
+                                {
+                                    if(pSpielfeld.Farbe(Spalte, Reihe+1) == 0)
+                                        Spieler2++;
+
+                                    if(pSpielfeld.Farbe(Spalte-1, Reihe+1) == 0)
+                                        Spieler2++;
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+                }
+            }
+        }
+
+        if (pSpieler == 1)
+        {
+
+            zBewertung = Spieler1 - Spieler2;
+        }
+        else
+        {
+
+            zBewertung = Spieler2 - Spieler1;
+        }
+        return zBewertung;
+
+    }
+}

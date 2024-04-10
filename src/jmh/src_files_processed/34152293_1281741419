@@ -1,0 +1,88 @@
+import objectdraw.*;
+import java.awt.*;
+
+public class InvisibleGame extends WindowController {
+
+  FilledRect s, m, l;
+  InvisibleColor sc, mc, lc;
+  Location s_point, m_point,l_point;
+  double s_x,s_y,m_x,m_y,l_x,l_y;
+  private boolean s_grabbed,m_grabbed,l_grabbed;
+  private int s_t=0,m_t=0,l_t=0;
+  int score=0;
+  public void hakohaichi(){
+    
+    s_x=Math.random()*200;
+    s_y=Math.random()*200;
+    m_x=Math.random()*200;
+    m_y=Math.random()*200;
+    l_x=Math.random()*200;
+    l_y=Math.random()*200;
+    
+    s_point=new Location(s_x,s_y);
+    m_point=new Location(m_x,m_y);
+    l_point=new Location(l_x,l_y);
+    s = new FilledRect(s_point, 30, 30, canvas);
+    m = new FilledRect(m_point, 45, 45, canvas);
+    l = new FilledRect(l_point, 80, 80, canvas);
+
+    sc = new InvisibleColor(Color.RED);
+    mc = new InvisibleColor(Color.GREEN);
+    lc = new InvisibleColor(Color.BLUE);
+
+    s.setColor(sc);
+    m.setColor(mc);
+    l.setColor(lc);
+    
+    
+    }
+  
+  
+  
+  public void begin() {
+    hakohaichi();
+  }
+
+  public void onMousePress( Location point ) {
+    s_grabbed=s.contains(point);
+    m_grabbed=m.contains(point);
+    l_grabbed=l.contains(point);
+    
+    score=score-5;
+    if(s_grabbed && s_t<1){
+       s_t++;
+       score+=100;
+    }
+    
+    if(m_grabbed && m_t<1){
+       m_t++;
+       score+=50;
+    }
+    
+    if(l_grabbed && l_t<1){
+       l_t++;
+       score+=30;
+    }
+    
+    if(s_t=1 && m_t=1){score+=50;}
+    if(s_t=1&&l_1=1){score+=20;}
+    if(m_t=1&&l_t=1){score+=40;}
+    
+    
+    s.setColor(sc.visible());
+    m.setColor(mc.visible());
+    l.setColor(lc.visible());
+  }
+
+  public void onMouseRelease( Location point ) {
+    s.setColor(sc.invisible());
+    m.setColor(mc.invisible());
+    l.setColor(lc.invisible());
+    
+  }
+  
+  public void onMouseExit( Location point ){
+    
+     new Text ("あなたの得点は"+score,400,400,canvas);
+    }
+}

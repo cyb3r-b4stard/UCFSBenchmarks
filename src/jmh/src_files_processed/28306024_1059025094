@@ -1,0 +1,53 @@
+ 
+import java.util.ArrayList;
+public class Balicek {
+    private ArrayList<Karta> karty;;
+    private Farba farba;
+    private Karta karta;
+    public Balicek(Farba farba) {
+        this.karty = new ArrayList<Karta>();
+        this.farba = farba;
+        for(int c = 2; c < 8; c++) {
+            this.karta = new Karta(this.farba, c);
+            this.karty.add(karta);
+        }
+        
+    }
+    public void polozBalicekPodSeba(Balicek balicek) {
+        balicek.karty.addAll(this.karty);
+    }
+    public void polozKartuNaSeba(Karta karta) {
+        this.karty.add(0,karta);
+    }
+    public Karta odoberKartu() {
+        Karta karta;
+        karta = this.karty.get(0);
+        this.karty.remove(0);
+        return karta;
+    }
+    public boolean maKarty() {
+        return this.karty.isEmpty();
+    }
+    public Karta getKarta(int index) {
+        if (index > this.karty.size()) {
+            return null;
+        } else {
+            return this.karty.get(index);
+        }
+    }
+    public void vymenKarty(int indexPrvej, int indexDruhej) {
+        this.karty.set(indexPrvej, this.karty.get(indexDruhej));
+    }
+    public void zamiesaj(int kolkokrat, Nahoda nahoda) {
+        for(int c = 0; c < kolkokrat; c++) {
+            for(int i = 0; i < this.karty.size(); i++) {
+                this.karty.set(i, this.karty.get(nahoda.dalsie(this.karty.size())));
+            }
+        }
+    }
+    public void naTerminal() {
+       
+            System.out.println(this.karty.size())
+        
+    }
+}

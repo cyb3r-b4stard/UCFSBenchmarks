@@ -1,0 +1,148 @@
+import java.util.*;
+
+public class Trip
+{
+    private ArrayList<Flight> flights;
+    int[] layOvers;
+
+    public Trip()
+    {
+        flights = new ArrayList<Flight>();
+    }
+
+    /**
+     * Returns the number of minutes from the departure of the first flight
+     * to the arrival of the last flight if there are one or more flights in the trip;
+     * 0, if there are no flights in the trip
+     */
+    public int getDuration()
+    {
+        Time departure;
+        Time arrival;
+        Time futureDeparture;
+
+        NumberDisplay departHour;
+        NumberDisplay departMin;
+
+        NumberDisplay futureDepartHour;
+        NumberDisplay futureDepartMin;
+
+        NumberDisplay arrivalHour;
+        NumberDisplay arrivalMin;
+
+        int flightTimeMin = 0;
+        int layOverTime = 0;
+        int getDuration = 0;
+
+        for ( int cycle = 0; cycle < flights.size(); cycle++)
+        {
+            if ((cycle + 1) < flights.size()) 
+            {
+                departure = flights.get(cycle).getDepartureTime();
+                departHour = departure.getHours();
+                departMin = departure.getMinutes();
+
+                arrival = flights.get(cycle).getArrivalTime();
+                arrivalHour = arrival.getHours();
+                arrivalMin = arrival.getMinutes();
+
+                int departHour2MinPlusDepartMin = ((departHour.getValue()*60)+(departMin.getValue()));
+                int arrivalHour2MinPlusArrivalMin = ((arrivalHour.getValue()*60)+arrivalMin.getValue());
+
+                System.out.println("Flight " + (cycle+1) );
+
+                flightTimeMin = arrivalHour2MinPlusArrivalMin - departHour2MinPlusDepartMin;
+
+                futureDeparture = flights.get(cycle+1).getDepartureTime();
+                futureDepartHour = futureDeparture.getHours();
+                futureDepartMin = futureDeparture.getMinutes();
+
+                int futureDepartHour2MinPlusDepartMin = ((futureDepartHour.getValue()*60)+(futureDepartMin.getValue()));
+
+                layOverTime = futureDepartHour2MinPlusDepartMin - arrivalHour2MinPlusArrivalMin;
+                
+                layOvers[cycle] = layOverTime;                
+                
+                int flightTimeMin2Hour = flightTimeMin / 60;
+                int layOverTime2Hour = layOverTime / 60;
+
+                System.out.println(departHour.getValue() + ":" + departMin.getValue() + " = " + departHour2MinPlusDepartMin + " minutes ");
+                System.out.println(arrivalHour.getValue() + ":" + arrivalMin.getValue() + " = " + arrivalHour2MinPlusArrivalMin + " minutes " + " Flight took " + flightTimeMin + " minutes or " + flightTimeMin2Hour + ":" + flightTimeMin%60);
+                System.out.println();
+
+                System.out.println("Layover " + (cycle + 1));
+                System.out.println(arrivalHour.getValue() + ":" + arrivalMin.getValue() + " = " + arrivalHour2MinPlusArrivalMin + " minutes " );
+                System.out.println(futureDepartHour.getValue() + ":" + futureDepartMin.getValue() + " = " + futureDepartHour2MinPlusDepartMin + " minutes " + " Layover took " + layOverTime + " minutes or " + layOverTime2Hour + ":" + layOverTime%60);
+                System.out.println();
+
+                getDuration = getDuration + flightTimeMin;
+                getDuration = getDuration + layOverTime;
+
+            }
+            else
+            {
+                departure = flights.get(cycle).getDepartureTime();
+                departHour = departure.getHours();
+                departMin = departure.getMinutes();
+
+                arrival = flights.get(cycle).getArrivalTime();
+                arrivalHour = arrival.getHours();
+                arrivalMin = arrival.getMinutes();
+
+                int departHour2MinPlusDepartMin = ((departHour.getValue()*60)+(departMin.getValue()));
+                int arrivalHour2MinPlusArrivalMin = ((arrivalHour.getValue()*60)+arrivalMin.getValue());
+
+                System.out.println("Flight " + (cycle+1) );
+
+                flightTimeMin = arrivalHour2MinPlusArrivalMin - departHour2MinPlusDepartMin;
+
+                int flightTimeMin2Hour = flightTimeMin / 60;
+
+                System.out.println(departHour.getValue() + ":" + departMin.getValue() + " = " + departHour2MinPlusDepartMin + " minutes ");
+                System.out.println(arrivalHour.getValue() + ":" + arrivalMin.getValue() + " = " + arrivalHour2MinPlusArrivalMin + " minutes " + " Flight took " + flightTimeMin + " minutes or " + flightTimeMin2Hour + ":" + flightTimeMin%60);
+                System.out.println();
+
+                getDuration = getDuration + flightTimeMin;
+            }
+        }
+        return getDuration; 
+    }
+
+    /**
+     * Returns the smallest number of minutes between the arrival of a flight
+     * and the departure of the next flight in the list. If there are fewer than 
+     * two flights in the list, return -1
+     */
+    public int getShortestLayover()
+    {
+        layOvers = new int[flights.size() - 1];
+        int shortest = 0;
+        
+        if (flights.size() < 1)
+        {
+            return -1;
+        }
+        else
+        {
+            if ()
+            {
+                
+            }
+        }
+        return -1; 
+    }
+
+    public void addFlight(Flight flight)
+    {
+        flights.add(flight);
+    }
+
+    public String displayItinerary()
+    {
+        String msg = "";
+        for( Flight f: flights ) {
+            msg += f.toString() + "\n";
+        }
+        return msg;
+    }
+}

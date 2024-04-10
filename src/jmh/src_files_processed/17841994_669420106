@@ -1,0 +1,146 @@
+
+/**
+ * ##### # ########### ## ##### ###### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Client
+{
+    private String name;
+    private ContactInfo homeAddress;
+    private ContactInfo workAddress;
+    private int amountDue;
+    private int reminder;    
+    
+    /**
+     * Consructor for a new client.
+     */
+    public Client(String Name,String haddress, String htown, int hzipCode, String hphoneNumber,String waddress,
+    String wtown,int wzipCode, String wphoneNumber,int amountDue)
+    {
+        name = Name;
+        homeAddress = new ContactInfo(haddress, htown,  hzipCode, hphoneNumber);
+        workAddress = new ContactInfo(waddress, wtown,  wzipCode, wphoneNumber);
+        amountDue = amountDue;
+        reminder = 0;
+    }
+    
+    /**
+     * Second constructor for a new client.
+     */
+    public Client (String Name, ContactInfo homeAddress, ContactInfo workAddress, int amountDue)
+    {
+        name = Name;
+        homeAddress = homeAddress;
+        workAddress = workAddress;
+        amountDue = amountDue;
+        reminder = 0;
+    
+    }
+    
+    /**
+     * Set the client's amoount due.
+     */
+    public void updateAmountDue(int amount)
+    {
+        amountDue -= amount ;
+    }
+    
+    /**
+     * Set the reminder for the client's debts.
+     */
+    public void updateReminder()
+    {
+        if (amountDue > 0 )
+        {
+            reminder ++ ;
+        }
+        else
+        {
+            reminder = 0 ;
+        }
+    }
+    
+    /**
+    * Print receipt about the amount tha has been paid.
+    */
+    public void receipt(int amount)
+    {
+        System.out.println("*************** Receipt **************");
+        System.out.println( name + " paid " + amount );
+        System.out.println("Πλήρης διεύθυνση κατοικίας : " + homeAddress.getFullAddress());
+        System.out.println("The rest is " + amountDue + " euros " );
+        System.out.println("****************************************");
+            
+        
+        
+    }
+    
+    /**
+     * Method that reminds the client of the amount due in home or work address.
+     */
+    public void message(ContactInfo address)
+    {
+        System.out.println("*************** Reminder " + "#" + reminder + "***************");
+        System.out.println(name);
+        System.out.println(address.getFullAddress());
+        System.out.println("Please pay " + amountDue + "Euro by the end of the month");
+ 
+    }
+    
+    /**
+     * Method that remidns the client of the amount due by phone call.
+     */
+    public void recordedMessage(ContactInfo address)
+    {
+        System.out.println("*************** Recorded Message *************** " );
+        System.out.println("*************** Reminder " + "#" + reminder + "***************");
+        System.out.println("*************** I am calling "  );
+        System.out.println(name);
+        System.out.println("Please pay " + amountDue + "Euro by the end of the month");
+         
+        
+        
+    }
+   
+    /**
+     * Method that send reminders to the client.
+     */
+    public void reminder()
+    {
+        if ( (amountDue != 0 ) && (reminder == 1) )
+        {
+            message(workAddress);
+            updateReminder();
+        }
+        if ( (amountDue != 0 ) && (reminder == 2) )
+        {
+            homeAddress.message(homeAddress);
+            updateReminder();
+        }
+        if ( (amountDue != 0 ) && (reminder == 3) )
+        {
+            recordedMessage(ContactInfo address);
+            updateReminder();
+        }
+        if ( (amountDue != 0 ) && (reminder == 4 ) )
+        {
+            recordedMessage(ContactInfo address);
+            updateReminder();
+        }
+        if ( (amountDue != 0 ) && (reminder > 4 ) )
+        {
+            System.out.println("********** Problem with client **********");
+            System.out.println("Unkhown person. The address changed");
+            System.out.println("***************************************");
+            homeAddress.unknown();
+            workAddress.unknown();
+            
+        }
+        
+    }
+    
+    
+    }
+    

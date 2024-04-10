@@ -1,0 +1,231 @@
+import static org.junit.Assert.*;
+import java.util.ArrayList;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+/**
+ * @###### ########
+ *
+ */
+public class CSTest {
+
+    @Before
+    public void setUp() throws Exception {
+    }
+
+    @After
+    public void tearDown() throws Exception {
+    }
+
+    /**
+     * Checks the constructor of SolarPanel
+     */
+    @Test
+    public void test1() 
+    {
+        SolarPanel panel1 = new SolarPanel("Ying", 3000);
+        assertEquals("Ying", panel1.getCompany());
+        assertEquals(3000, panel1.getPeakPower(), 0.1);     
+    }
+
+    /**
+     * Checks if you can check quality of a solar panel
+     */
+    @Test
+    public void test2() 
+    {
+        SolarPanel panel1 = new SolarPanel("Ying", 3000);
+        assertFalse(panel1.checkQuality());
+        assertTrue(panel1.addMeasurement(3120));
+        assertTrue(panel1.addMeasurement(2990));
+        assertFalse(panel1.checkQuality());
+        assertTrue(panel1.addMeasurement(2880));
+        assertTrue(panel1.addMeasurement(2898));
+        assertTrue(panel1.addMeasurement(3002));
+        assertTrue(panel1.addMeasurement(3026));
+        assertTrue(panel1.addMeasurement(2986));
+        assertTrue(panel1.addMeasurement(3001));
+        assertTrue(panel1.addMeasurement(2999));
+        assertTrue(panel1.addMeasurement(3011));
+        assertFalse(panel1.addMeasurement(3000));
+        assertTrue(panel1.checkQuality());
+    }
+
+    /**
+     * check constructor of ControlSystem
+     */
+    @Test
+    public void test3() 
+    {
+        ControlSystem cs1 = new ControlSystem();
+        assertEquals(0, cs1.nrOfPanels());
+    }
+
+    /**
+     * check adding of panels to ControlSystem
+     */
+    @Test
+    public void test4() 
+    {
+        ControlSystem cs1 = new ControlSystem();
+        SolarPanel panel1 = new SolarPanel("Ying", 3000);
+        cs1.addPanel(panel1);
+        assertEquals(1, cs1.nrOfPanels());
+        SolarPanel panel2 = new SolarPanel("Yang", 3200);
+        cs1.addPanel(panel2);
+        assertEquals(2, cs1.nrOfPanels());
+        SolarPanel panel3 = new SolarPanel("Yong", 3200);
+        cs1.addPanel(panel3);
+        assertEquals(3, cs1.nrOfPanels());
+    }
+
+    /**
+     * check adding of panels to ControlSystem, no doubles accepted
+     */
+    @Test
+    public void test5() 
+    {
+        ControlSystem cs1 = new ControlSystem();
+        SolarPanel panel1 = new SolarPanel("Ying", 3000);
+        cs1.addPanel(panel1);
+        assertEquals(1, cs1.nrOfPanels());
+        SolarPanel panel2 = new SolarPanel("Yang", 3200);
+        cs1.addPanel(panel2);
+        assertEquals(2, cs1.nrOfPanels());
+        SolarPanel panel3 = new SolarPanel("Yang", 3200);
+        cs1.addPanel(panel3);
+        assertEquals(3, cs1.nrOfPanels());
+        cs1.addPanel(panel2);
+        assertEquals(3, cs1.nrOfPanels());
+    }
+
+    /**
+     * find Panel with max peak power, if multiple return first
+     */
+    @Test
+    public void test6() 
+    {
+        ControlSystem cs1 = new ControlSystem();
+        SolarPanel panel1 = new SolarPanel("Ying", 3000);
+        cs1.addPanel(panel1);
+        SolarPanel panel2 = new SolarPanel("Yang", 3200);
+        cs1.addPanel(panel2);
+        SolarPanel panel3 = new SolarPanel("Yong", 3500);
+        cs1.addPanel(panel3);
+        SolarPanel panel4 = new SolarPanel("Yang", 3200);
+        cs1.addPanel(panel4);
+        assertEquals(panel3, cs1.getMaxPeakPower());
+    }
+
+    /**
+     * get alphabetical list of unique companies involved (every company only once)
+     */
+    @Test
+    public void test7() 
+    {
+        ControlSystem cs1 = new ControlSystem();
+        SolarPanel panel1 = new SolarPanel("Ying", 3000);
+        cs1.addPanel(panel1);
+        SolarPanel panel2 = new SolarPanel("Yang", 3200);
+        cs1.addPanel(panel2);
+        SolarPanel panel3 = new SolarPanel("Yong", 3200);
+        cs1.addPanel(panel3);
+        SolarPanel panel4 = new SolarPanel("Yang", 3200);
+        cs1.addPanel(panel4);
+        ArrayList<String> result = cs1.giveAllCompanies();
+        assertEquals(3, result.size());
+        assertEquals("Yang", result.get(0));
+        assertEquals("Ying", result.get(1));
+    }
+
+    /**
+     * Remove all panels which do not fullfill the quality control
+     * since testPanel is used this test is
+     * only 99% certain (3xsigma), if test fails, try it again
+     */
+    @Test
+    public void test10() 
+    {
+        ControlSystem cs1 = new ControlSystem();
+        SolarPanel panel1 = new SolarPanel("Ying", 3000);
+        cs1.addPanel(panel1);
+        SolarPanel panel2 = new SolarPanel("Yang", 3200);
+        cs1.addPanel(panel2);
+        SolarPanel panel3 = new SolarPanel("Yong", 3200);
+        cs1.addPanel(panel3);
+        SolarPanel panel4 = new SolarPanel("Yang", 3200);
+        cs1.addPanel(panel4);
+        panel1.fillMeasurements();
+        panel2.fillMeasurements();
+        panel3.addMeasurement(3202);
+        panel3.addMeasurement(3402);
+        panel4.addMeasurement(3000);
+        panel4.fillMeasurements();
+        ArrayList<SolarPanel> result = cs1.removeBadPanels();
+        assertEquals(2, result.size());
+        assertEquals(panel3, result.get(0));
+        assertEquals(panel4, result.get(1));
+        assertEquals(2, cs1.nrOfPanels());        
+    }}
+*/
+/**
+ * test creation of polymorph collection
+ *
+@Test
+public void test11() 
+{
+ControlSystem cs1 = new ControlSystem();
+SolarPanel panel1 = new HQSolarPanel("Ying", 3000);
+cs1.addPanel(panel1);
+SolarPanel panel2 = new LQSolarPanel("Yang", 3200);
+cs1.addPanel(panel2);
+SolarPanel panel3 = new LQSolarPanel("Yong", 3200);
+cs1.addPanel(panel3);
+SolarPanel panel4 = new HQSolarPanel("Yang", 3200);
+cs1.addPanel(panel4);
+assertEquals(4, cs1.nrOfPanels());
+cs1.addPanel(panel2);
+cs1.addPanel(panel1);
+assertEquals(4, cs1.nrOfPanels());
+}
+ */
+/**
+ * adapt checkQuality, for HQSolarPanel tolerance = 1% and mean >= peakPower, for LQSolarPanels 5%
+ *
+@Test
+public void test12() 
+{
+ControlSystem cs1 = new ControlSystem();
+SolarPanel panel1 = new HQSolarPanel("Ying", 3000);
+cs1.addPanel(panel1);
+SolarPanel panel2 = new LQSolarPanel("Yang", 3200);
+cs1.addPanel(panel2);
+SolarPanel panel3 = new LQSolarPanel("Yong", 3200);
+cs1.addPanel(panel3);
+SolarPanel panel4 = new HQSolarPanel("Yang", 3200);
+cs1.addPanel(panel4);
+panel1.addMeasurement(3029);
+panel1.fillMeasurements();
+panel2.fillMeasurements();
+panel3.addMeasurement(3202);
+panel3.addMeasurement(3402);
+panel4.addMeasurement(3100);
+panel4.addMeasurement(3100);
+panel4.fillMeasurements();
+ArrayList<SolarPanel> result = cs1.removeBadPanels();
+assertEquals(2, result.size());
+assertEquals(panel3, result.get(0));
+assertEquals(panel4, result.get(1));
+assertEquals(2, cs1.nrOfPanels());
+}
+ */
+
+/*
+ * 
+@Test
+public void test13() 
+{
+}
+ */    

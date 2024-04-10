@@ -1,0 +1,251 @@
+/**
+ * #### ####### ####### ##### ####### # ###### ####### ####### (####### ##########) #### ### ##### ## ###########,
+ * ### ###### ### ####### ## # ####### #########. 
+ * 
+ * ##### #######
+ */
+import java.util.*; 
+public class Megabucks1 
+{
+    private ArrayList<Integer> LotteryNumbers = new ArrayList<Integer>();
+    private ArrayList<Integer> ActLotteryNumbers = new ArrayList<Integer>();
+    private Scanner scan = new Scanner(System.in);
+    
+    private int bonus;
+    private String number; 
+    private static int m; 
+    private String Winnings; 
+    private int money; 
+    private static int [] Frequencies= new int [6]; 
+    private static int jackpots;
+    private int bonus1; 
+    private int earnings; 
+    private String ticket; 
+    private int [] earn = new int [7]; 
+     int b=0, z=0, s=0, f=0, fr=0, t=0, tw=0, o=0;
+     
+    public Megabucks1()
+{
+        bonus=0; 
+        Winnings=""; 
+        number="";
+        money=0;
+}
+    public void input(int i) 
+{ 
+         System.out.println("Enter your 6 Lottery Numbers (Your numbers must be integers from 1-42):");
+         int input= scan.nextInt(); 
+          while (input <1|| input>42)
+           {
+            System.out.println("INVALID Number! \n Please enter a lottery number between 1 and 42 (no duplicates)."); 
+            input=scan.nextInt(); 
+            if (input>=1|| input<=49)
+            {
+                LotteryNumbers.add(input);
+            }
+           }
+         if(LotteryNumbers.contains(input))
+          {
+                while (LotteryNumbers.contains(input)==true)
+                {
+                System.out.println("Invalid Number! No Duplicates allowed! \n Please enter different lottery numbers."); 
+                input=scan.nextInt(); 
+                }
+        }
+        
+        else 
+        {
+            LotteryNumbers.add(input);
+        }
+}
+public void randomNums(int i) 
+{
+    int input= (int)((Math.random()*42)+1); 
+    if (i>0)
+    {
+        for (int j=i; j>0; j--)
+        {
+            while(LotteryNumbers.contains(input)==true)
+            {
+                input=(int)((Math.random()*42)+1); 
+            }
+        }
+    }
+    LotteryNumbers.add(i, input); 
+}
+public void lotteryNumbers()
+{
+    for(int i=0; i<6; i++)
+    {
+        int random= (int)((Math.random()*42)+1); 
+        if(i>0)
+        {
+            for(int j=i; j>0; j--)
+            {
+                while(ActLotteryNumbers.contains(random)==true)
+                {
+                    random= (int)((Math.random()*42)+1); 
+                }
+            }
+        }
+        ActLotteryNumbers.add(i, random); 
+    }
+    bonus=(int)((Math.random()*42)+1); 
+    while(ActLotteryNumbers.contains(bonus)==true)
+    {
+        bonus=(int)((Math.random()*42)+1);
+    }
+}
+public int compare()
+{
+    int counter=0;
+    for(int l=0; l<6; l++)
+    {
+        if (ActLotteryNumbers.contains(LotteryNumbers.get(l))==true)
+        {
+            counter++; 
+            Frequencies[l]++;
+        }
+        else if (LotteryNumbers.contains(bonus)==true)
+        {
+            money=1; 
+            bonus1++;
+        }
+    }
+    if( counter==6)
+    {
+        Winnings="Won the Jackpot"; 
+        jackpots++;
+    }
+    else if(counter==5)
+    {
+        Winnings="Matched 5";
+    }
+    else if(counter==4)
+    {
+        Winnings="Matched 4";
+    }
+    else if (counter==3)
+    {
+        Winnings="Matched 3";
+    }
+    else if (counter==2)
+    {
+        Winnings="Matched 2"; 
+    }
+    else if (counter==1)
+    {
+        Winnings="Matched 1";
+    }
+    else
+    {
+        Winnings="NO Matches"; 
+    }
+    return counter; 
+}
+public void prizes(int counter)
+{
+    if (counter==2)
+    { if(money==1)
+        {earnings +=2;
+        earn[0]++; 
+    }
+     tw++; 
+   }
+    else if (counter==3)
+    {    if (money==1)
+        {
+          earnings +=5; 
+          earn[1]++; 
+        }
+        else
+        {
+            ticket= "******CONGRATULATIONS! You earned a FREE ticket!******"; 
+            earnings +=0;
+            earn[6]++;
+        }
+        t++; 
+    }
+    else if (counter==4)
+    {
+        if( money==1)
+        {
+            earnings += 50; 
+            earn[3]++; 
+        }
+        else
+        {
+            earnings +=40;
+            earn[2]++;
+        }
+        fr++; 
+    }
+    else if (counter==5)
+    { 
+        if (money==1)
+        {
+            earnings+=10000; 
+            earn[5]++;
+        }
+        else 
+        {
+            earnings+=1000;
+            earn[4]++;
+        }
+        f++;
+    }
+    else 
+    {
+        earnings+=0; 
+        o++; 
+    }
+}
+public void jackpots()
+{
+    System.out.println(Winnings); 
+}
+public static int getJackpot()
+{
+    return jackpots;
+}
+public int getEarning (int i) 
+{
+    return (earn[i]); 
+}
+public int earnings() 
+{
+    return earnings; 
+}
+public int getNumber (int i)
+{
+    return (LotteryNumbers.get(i)); 
+}
+public static int getFreq(int i)
+{
+    return Frequencies[i];
+}
+public void removeNumbers()
+{
+    while (ActLotteryNumbers.size()>0)
+    {
+        ActLotteryNumbers.remove(0);
+    }
+}
+public void printearnings() 
+{
+    System.out.println(earnings);
+}
+public String ToString()
+{
+    return ("Your numbers: "+ LotteryNumbers+ " \nWinning numbers " + ActLotteryNumbers+ " \nBonus: " + bonus);
+    return ("Your earnings due to matching numbers:" + earn]);
+}
+public String results()
+{
+    return ("You had five numbers matching: " +f+ " times\n"+
+    "You had four numbers matching: " +fr+ " times\n"+ "You had three numbers matching: " +t+ " times\n"+
+    "You had two numbers matching: " +tw+ " times\n"+ "You had one numbers matching: " +o+ " times\n");
+}   
+}
+        
+    

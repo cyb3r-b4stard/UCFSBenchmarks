@@ -1,0 +1,146 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import objectdraw.*;
+/**
+ * ##### # ########### ## ##### ############# ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Concentration extends WindowController implements ActionListener
+{
+    private CardCollection cards = new CardCollection();
+    
+    private Card card;
+
+    private static final int CARD_SIZE = 50;
+    private static final int LEFT = 10;
+    private static final int TOP = 10;
+    private static final int DIST = 20;
+
+    private static final int MAX_WIDTH = (CARD_SIZE + DIST) *6;
+    private static final int MAX_HEIGHT = MAX_WIDTH;
+
+    private JPanel buttonPanel;
+    private JButton cheatButton;
+
+    private Card selectedCard = null;
+    
+    private Location lastPoint;
+
+    private Card firstCard = null;
+    private Card secondCard = null;
+
+    private Location cardOne;
+    private Location cardTwo;
+
+    public void begin () {
+        char characters [] = {'a','b','c','d','e','f',
+            'g','h','i','j','k','l','m','n','o','p',
+            'q','r'}; 
+
+        characters = new char [36];
+        char character = 'a','b','c','d','e','f',
+            'g','h','i','j','k','l','m','n','o','p',
+            'q','r';
+        
+        char randomCharacters[];
+        randomCharacters = new char [36];
+        
+        /*for loop in order to produce different symbols on the card. generates in alphabetical 
+        sequence*/
+        for (int i= 0; i<36; i=i+2)
+        {
+            characters[i]= character;
+            characters[i+1]= character;
+            character++;
+        }
+        
+        /*takes the value of the cards from the original array, stores it as a character and then puts
+         * it into the new array in a different order to shuffle all the cards.
+         */ 
+        RandomIntGenerator randomCharacter = new RandomIntGenerator (0,35);
+        for (int value = 0; value < 100; value ++)
+        {
+            int valueCharacterOne = randomCharacter.nextValue();
+            char characterOne = characters[valueCharacterOne];
+            int valueCharacterTwo = randomCharacter.nextValue();
+            char characterTwo = characters[valueCharacterTwo];
+            
+            randomCharacters [valueCharacterTwo] = characterOne;
+            randomCharacters [valueCharacterOne] = characterTwo;
+        }
+        
+        int characterNumber = 0;
+        for (int row = 10; row < MAX_WIDTH; row= row + CARD_SIZE+DIST) {
+            for (int col = 10; col < MAX_HEIGHT; col= col+ CARD_SIZE+DIST){
+                card = new Card (randomCharacters [characterNumber], row, col, canvas) ;  
+                characterNumber++;
+                cards.addCard(card);
+            }           
+        } 
+
+        JPanel buttonPanel = createButtonPanel();
+        add (buttonPanel, BorderLayout.NORTH);
+    }  
+
+    private JPanel createButtonPanel() {
+        buttonPanel = new JPanel();
+        cheatButton = new JButton ("Cheat");
+        buttonPanel.add(cheatButton);
+        cheatButton.addActionListener(this);
+        return buttonPanel;
+    }
+
+    /*the action listener for the cheat button which makes the cards face up when cheat button is 
+    clicked*/
+    public void actionPerformed (ActionEvent evt) {
+        if (evt.getSource() == cheatButton)  
+        {
+            cards.faceUp();
+        }
+    }
+
+    public void onMouseClick (Location point)
+    {
+        selectedCard = cards.getCardAt (point);
+        
+        if(selectedCard !=null && firstCard == null) {
+            selectedCard.showSymbol();
+            firstCard= cards.getCardAt(point);
+            cardOne = point;
+        } 
+        else if (selectedCard !=null && secondCard == null) {
+            selectedCard.showSymbol();
+            secondCard= cards.getCardAt(point);
+            cardTwo = point;
+        } /*determines if first and second card are selected and match then on third click they can 
+        be eliminated*/
+        else if (firstCard !=null && secondCard != null)
+        {
+            if ((firstCard.getSymbol()).equals (secondCard.getSymbol()))
+            {
+                firstCard.removeFromCanvas(cardOne);
+                secondCard.removeFromCanvas(cardTwo);
+                
+                cards.removeCard(cardOne);
+                cards.removeCard(cardTwo);
+                
+                firstCard= null;
+                secondCard= null;
+                selectedCard=null;
+            } 
+            else { 
+                firstCard.hideSymbol();
+                secondCard.hideSymbol();   
+                firstCard= null;
+                secondCard= null;
+                selectedCard=null;
+            }
+            
+        }
+        
+    }
+}

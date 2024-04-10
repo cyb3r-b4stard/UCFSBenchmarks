@@ -1,0 +1,99 @@
+/**
+ * ##### ########## #.
+ *
+ * ## ## #####, <####### ######>, #### ########### ########## ## ## ### #### ### # ####
+ * ### ###### ## ######## #### ### ##### ####### ## ### #####.
+ *
+ * # ####### ## #### #######.
+ *
+ *  ##### #######:############@######.###   
+ *  #####:######
+ *  ###### # ##### ###### ##:#####
+ *  ###### ####:####
+ *  ###### ## #### #### #### ## #### ##########:
+ */
+
+import java.util.Scanner;
+
+public class Hangman {
+    public final int NUM_POSSIBLEWRONG = 5;
+
+    public static void main(String[] args) {
+        intro();
+        PhraseBank phrases = buildPhraseBank(args);
+        Scanner keyboard = new Scanner(System.in);
+        String beforeAsterisks = getPhraseBank(phrases);
+        System.out.println(beforeAsterisks); 
+        String afterAsterisks = encodePhrase(beforeAsterisks);
+        playgame(beforeAsterisks, afterAsterisks,keyboard);
+
+        keyboard.close();
+    }
+
+    public static String getPhraseBank(PhraseBank phrases) {
+        System.out.println();
+        System.out.println("I am thinking of a "+phrases.getTopic()+" ...");
+        System.out.println();
+        String originalString = phrases.getNextPhrase();
+        return originalString;
+    }
+
+    public static String encodePhrase(String beforeAsterisks){
+        String filler = "";
+        int length = beforeAsterisks.length();
+        for (int i=0; i<length;i++) {
+            if (beforeAsterisks.charAt(i) == ('_')){
+                filler += "_";
+            } else if (beforeAsterisks.charAt(i) != ('_')) {
+                filler += "*";
+            }
+        }
+        System.out.println("The current phrase is "+filler);
+        System.out.println();
+        return filler;
+    }
+
+    public static void playGame(String beforeAsterisks, String afterAsterisks, Scanner keyboard) {
+        int NUM_RIGHT = 0;
+        int NUM_WRONG = 0;
+        int length = beforeAsterisks.length();
+        while( NUM_RIGHT != length || NUM_WRONG != NUM_POSSIBLEWRONG) {
+            userInput(
+            System.out.println("The letters you have not guessed yet are:")
+            System.out.println();
+            
+            System.out.println("Enter your next guess:"+userInput(keyboard));
+            
+            
+
+        }
+    }
+    
+    public static String userInput(Scanner keyboard){
+        String userGuess = keyboard.nextLine();
+        return userGuess;    
+    }
+    
+    
+    
+
+    public static PhraseBank buildPhraseBank(String[] args) {
+        PhraseBank result;
+        if(args == null || args.length == 0
+        || args[0] == null || args[0].length() == 0)
+            result =  new PhraseBank();
+        else
+            result = new PhraseBank(args[0]);
+        return result;
+    }
+
+    public static void intro() {
+        System.out.println("This program plays the game of hangman.");
+        System.out.println();
+        System.out.println("The computer will pick a random phrase.");
+        System.out.println("Enter letters for your guess.");
+        System.out.println("After 5 wrong guesses you lose.");
+        System.out.println();
+    }
+
+}

@@ -1,0 +1,406 @@
+import java.text.*; 
+/**
+ * ## ######### ###### ## ############# ### ########### ### #### ## ######## ## #### #### ## ## #### ###### #'###.
+ * ###-#######-## 
+ * @###### ####### ##### 
+ * @####### ##### ####
+ * #### ######### ############
+ * #####.#######@########.####.##
+ * ### ## ########## ###### ###########
+ */
+public class TP2Gr20BACKUP {
+    static final DecimalFormat dec2 = new DecimalFormat ( "0.00" ); 
+
+    final static char GRAND_O = 'O';
+    final static char GRAND_N = 'N';
+    final static char PETIT_O = 'o';
+    final static char PETIT_N = 'n';
+
+    final static char GRAND_M = 'M';
+    final static char GRAND_F = 'F';
+    final static char PETIT_M = 'm';
+    final static char PETIT_F = 'f';
+
+    final static int GROUPE_AGE_UN_MIN = 5;
+    final static int GROUPE_AGE_UN_MAX = 12;
+    final static int GROUPE_AGE_DEUX_MIN = 13;
+    final static int GROUPE_AGE_DEUX_MAX = 18;
+    final static int GROUPE_AGE_TROIS_MIN = 19; 
+    final static int GROUPE_AGE_TROIS_MAX = 30; 
+    final static int GROUPE_AGE_QUATRE_MIN = 31;
+    final static int GROUPE_AGE_QUATRE_MAX = 45;
+    final static int GROUPE_AGE_CINQ_MIN = 46;
+
+    final static int GROUPE_AGE_1 = 1;
+    final static int GROUPE_AGE_2 = 2;
+    final static int GROUPE_AGE_3 = 3;
+    final static int GROUPE_AGE_4 = 4;
+    final static int GROUPE_AGE_5 = 5;
+
+    final static int RESTAURANT_1 = 1;
+    final static int RESTAURANT_2 = 2;
+    final static int RESTAURANT_3 = 3;
+    final static int RESTAURANT_4 = 4;
+
+    final static int SAVEUR_1 = 1;
+    final static int SAVEUR_2 = 2;
+    final static int SAVEUR_3 = 3;
+
+    final static String GROUPE_1 = "\n  groupe 1 : 5 a 12 ans "; 
+    final static String GROUPE_2 = "\n  groupe 2 : 13 a 18 ans "; 
+    final static String GROUPE_3 = "\n  groupe 3 : 19 a 30 ans "; 
+    final static String GROUPE_4 = "\n  groupe 4 : 31 a 45 ans ";
+    final static String GROUPE_5 = "\n  groupe 5 : 46 ans et plus "; 
+
+    public static void presenterProgramme(){
+        System.out.println("\n PRESENTATION DU LOGICIEL "); 
+        System.out.println(" ========================");
+        System.out.println(" Bienvenue!");
+        System.out.println(" Ce programme permet de comptabiliser les preferences alimentaires en fonction du sexe et de l'age des repondants.\n\n");       
+    }
+
+    /**
+     * Cette methode saisit et valide un caractere et le retourne sous forme  de lettre MAJUSCULE.
+     * @param invite le message de sollicitation pour le caractere.
+     * @param msgErr le message d'erreur pour un caractere invalide.
+     * @param carMin le caractere minuscule.
+     * @param carMaj le carcter majuscule.
+     * @return Majuscule du caractere saisi et valide.
+     */
+    public static char saisirEtValiderOuiNon(String invite){        
+        char reponse;    
+        System.out.print(invite);
+        reponse = Character.toUpperCase(Clavier.lireCharLn());
+        while(reponse != GRAND_O  && reponse != GRAND_N){
+            System.out.println(" ERREUR!!!! La reponse DOIT etre 'o', 'O', 'n' ou 'N'.");
+            System.out.print(invite);
+            reponse = Character.toUpperCase(Clavier.lireCharLn());
+        }
+        System.out.println();
+        return reponse;
+    }  
+
+    /**
+     * Cette methode saisit et valide un caractere et le retourne sous forme  de lettre MAJUSCULE
+     * @param invite le message de sollicitation pour le caractere.
+     * @param msgErr le message d'erreur pour un caractere invalide.
+     * @param carMin le caractere minuscule.
+     * @param carMaj le carcter majuscule.
+     * @return Majuscule du caractere saisi et valide.
+     */
+    public static char saisirEtValiderSexe(String invite) {        
+        char sexe;     
+        System.out.print(invite);
+        sexe = Character.toUpperCase(Clavier.lireCharLn());
+        while(sexe != GRAND_M  && sexe != GRAND_F) {
+            System.out.println(" ERREUR!!!! La reponse DOIT etre 'M', 'm', 'F' ou 'f'.");
+            System.out.println();
+            System.out.print(invite);
+            sexe = Character.toUpperCase(Clavier.lireCharLn());
+        }
+        System.out.println();
+        return sexe;
+    }  
+
+    /**
+     * Affiche le menu du groupe d'âge
+     * @param aucun 
+     * @return aucun
+     */
+    public static void afficherMenuGroupeAge(){
+        System.out.println("\n GROUPE D'AGE\n\n"        
+            + "  1 - 5 a 12 ans \n" 
+            + "  2 - 13 a 18 ans\n" 
+            + "  3 - 19 a 30 ans\n" 
+            + "  4 - 31 a 45 ans\n" 
+            + "  5 - 46 ans et plus\n");   
+    }    
+
+    /**
+     * Affiche le menu du choix des types de restaurants 
+     * @param aucun
+     * @return aucun
+     */
+    public static void afficherMenuRestaurants(){
+        System.out.println("\n TYPES DE RESTAURANTS\n\n"          
+            + "  1 - Asiatique (chinois, vietnamien, japonais, etc.)\n" 
+            + "  2 - Italien/mexicain\n" 
+            + "  3 - Libanais/marocain\n" 
+            + "  4 - Junk Food (malbouffe)\n");             
+    }     
+
+    /**
+     *  Affiche le menu du choix des types de saveurs
+     * @param aucun
+     * @return aucun
+     */
+    public static void afficherMenuSaveurs(){
+        System.out.println("\n SAVEURS\n\n"         
+            + "  1 - Sucre \n" 
+            + "  2 - Sale \n" 
+            + "  3 - Epice\n");       
+    }    
+
+    /**
+     * Cette methode saisit et valide un entier entre un min et un max inclusivement.
+     * @param msgInvite le message de sollicitation pour entrer un choix.
+     * @param msgErr le message d'erreur pour un choix invalide.
+     * @param min la borne inferieure d'un intervalle.
+     * @param max la borne superieure d'un intervalle.
+     * @return l'entier saisi et valide.
+     */
+    public static int saisirEtValiderChoix(String msgInvite, int min, int max)  {       
+        int choix;     
+        System.out.print(msgInvite);
+        choix = Clavier.lireInt();
+        while(choix < min || choix > max) {
+            if(msgInvite == " Entrez le groupe d'age du repondant : "){
+                System.out.println(" ERREUR! Les choix possibles sont entre 1 et 5 inclusivement. ");
+            }else if(msgInvite == " Entrez le type de restaurant prefere du repondant : "){
+                System.out.println(" ERREUR! Les choix possibles sont entre 1 et 4 inclusivement. ");
+            }else if(msgInvite == " Entrez la saveur preferee du repondant : "){
+                System.out.println(" ERREUR! Les choix possibles sont entre 1 et 3 inclusivement. ");
+            }
+            System.out.print(msgInvite);
+            choix = Clavier.lireInt();
+        }   
+        System.out.println();
+        return choix;
+    }
+
+    /**
+     * Affiche les statistiques sur les préférences des hommes et les préférences des femmes 
+     * @param aucun
+     * @return aucun
+     */
+    public static void afficherStatsHommeFemme (int[] hommeRestaurants, int[] hommeSaveurs, int[] femmeRestaurants, int[] femmeSaveurs){      
+        int nombreHomme = 0;
+        int nombreFemme = 0;
+
+        for(int i = 0; i< hommeRestaurants.length; i++){
+            nombreHomme = nombreHomme+hommeRestaurants[i];                   
+        }
+
+        for(int i = 0; i< femmeSaveurs.length; i++){  
+            nombreFemme = nombreFemme+femmeSaveurs[i];             
+        }
+
+        if (nombreHomme == 0){
+            System.out.println("\n\n RESTAURANT PREFERE"); 
+            for(int i = 0; i < femmeRestaurants.length; i++){
+                System.out.println(" "+TYPES_RESTAURANTS[i]+ " : 0,00% des hommes, "
+                    +dec2.format(femmeRestaurants[i]*100.0/nombreFemme)+"% des femmes");                   
+            }
+            System.out.println("\n\n SAVEUR PREFEREE");
+            for(int i = 0; i< femmeSaveurs.length; i++){  
+                System.out.println(" "+TYPES_SAVEURS[i]+ " : 0,00% des hommes, "
+                    +dec2.format(femmeSaveurs[i]*100.0/nombreFemme)+"% des femmes");                   
+            }
+        }else if(nombreFemme == 0) { 
+            System.out.println("\n\n RESTAURANT PREFERE");
+            for(int i = 0; i< hommeRestaurants.length; i++){
+                System.out.println(" "+TYPES_RESTAURANTS[i]+ " : " +
+                    dec2.format( hommeRestaurants[i]*100.0/nombreHomme)+"% des hommes, 0,00% des femmes");                   
+            }
+            System.out.println("\n\n SAVEUR PREFEREE"); 
+            for(int i = 0; i< hommeSaveurs.length; i++){  
+                System.out.println(" "+TYPES_SAVEURS[i]+ " : " +
+                    dec2.format(hommeSaveurs[i]*100.0/nombreHomme) +"% des hommes, 0,00% des femmes");                   
+            }
+        }else{
+            System.out.println("\n\n RESTAURANT PREFERE");
+            for(int i = 0; i< hommeRestaurants.length && i < femmeRestaurants.length ; i++){
+                System.out.println(" "+TYPES_RESTAURANTS[i]+ " : " +dec2.format(hommeRestaurants[i]*100.0/nombreHomme) 
+                    +"% des hommes, "+dec2.format(femmeRestaurants[i]*100.0/nombreFemme)+"% des femmes");                   
+            }
+            System.out.println("\n\n SAVEUR PREFEREE");
+            for(int i = 0; i< hommeSaveurs.length && i < femmeSaveurs.length; i++){  
+                System.out.println(" "+TYPES_SAVEURS[i]+ " : " +dec2.format(hommeSaveurs[i]*100.0/nombreHomme)
+                    +"% des hommes, "+dec2.format(femmeSaveurs[i]*100.0/nombreFemme)+"% des femmes");                   
+            }
+        }       
+    }
+
+    /**
+     * Affiche les statistiques sur les préférences D'UN groupe d'âge 
+     * @param aucun
+     * @return aucun
+     */
+    public static void afficherStatsPourUnGroupe(String descDuGroupe, int [] groupeRestaurants, int [] groupeSaveurs){         
+        int nombreRepondantGroupe = 0; 
+        System.out.println(descDuGroupe);
+        for(int i = 0; i < groupeRestaurants.length; i++){  
+            nombreRepondantGroupe = nombreRepondantGroupe + groupeRestaurants[i];                   
+        } 
+
+        if(nombreRepondantGroupe == 0){               
+            System.out.println("    AUCUN participant de ce groupe d'age ");          
+        }else{
+            System.out.println("   Restaurants : ");
+            for(int i = 0; i < groupeRestaurants.length; i++){  
+                System.out.println("   -"+TYPES_RESTAURANTS[i]+ " : " + 
+                    dec2.format(groupeRestaurants[i]*100.0/nombreRepondantGroupe)+"%");                   
+            }
+            System.out.println("   Saveurs : ");            
+            for(int i = 0; i <  groupeSaveurs.length; i++){  
+                System.out.println("   -"+TYPES_SAVEURS[i]+ " : " + 
+                    dec2.format(groupeSaveurs[i]*100.0/nombreRepondantGroupe)+"%");                   
+            }
+        } 
+    }
+
+    final static String[]TYPES_SAVEURS =  {" Sucre", " Sale", " Epice"};   
+    final static String[]TYPES_RESTAURANTS = {" Asiatique", " Italien/mexicain", " Libanais/marocain"," Junk Food(malbouffe)"};     
+
+    public static void main (String [] params){      
+        char reponse;
+        char sexe;
+        int choixGroupeAge;
+        int choixRestaurant;
+        int choixSaveur;
+
+        int nombreFemme = 0;
+        int nombreHomme = 0;
+
+        int[] hommeSaveurs = new int [3];
+        int[] femmeSaveurs = new int [3];
+        int[] groupe1Saveurs = new int [3]; 
+        int[] groupe2Saveurs = new int [3];
+        int[] groupe3Saveurs = new int [3]; 
+        int[] groupe4Saveurs = new int [3]; 
+        int[] groupe5Saveurs = new int [3]; 
+        int[] hommeRestaurants = new int [4];
+        int[] femmeRestaurants = new int [4];
+        int[] groupe1Restaurants = new int [4];
+        int[] groupe2Restaurants = new int [4];       
+        int[] groupe3Restaurants = new int [4];
+        int[] groupe4Restaurants = new int [4];
+        int[] groupe5Restaurants = new int [4];
+        int[] groupeRestaurants = new int [4];
+        int[] groupeSaveurs = new int [3];
+
+        presenterProgramme();            
+        do { 
+            reponse = saisirEtValiderOuiNon(" Voulez-vous entrer des informations sur les preferences alimentaires ('o', 'O', 'n' ou 'N') : ");
+            if (reponse == GRAND_O) {                            
+                sexe = saisirEtValiderSexe(" Quel est le sexe du repondant ('M', 'm', 'F' ou 'f') : ");
+                afficherMenuGroupeAge();
+                choixGroupeAge =  saisirEtValiderChoix(" Entrez le groupe d'age du repondant : ", GROUPE_AGE_1, GROUPE_AGE_5);
+                afficherMenuRestaurants();
+                choixRestaurant = saisirEtValiderChoix(" Entrez le type de restaurant prefere du repondant : ", RESTAURANT_1, RESTAURANT_4);
+                afficherMenuSaveurs();
+                choixSaveur = saisirEtValiderChoix(" Entrez la saveur preferee du repondant : ",SAVEUR_1, SAVEUR_3);                
+                if(choixRestaurant == RESTAURANT_1){
+                    groupeRestaurants[0] = groupeRestaurants[0] +1;                
+                }else if(choixRestaurant == RESTAURANT_2){ 
+                    groupeRestaurants[1]  = groupeRestaurants[1] +1;              
+                }else if(choixRestaurant == RESTAURANT_3){
+                    groupeRestaurants[2]  = groupeRestaurants[2] +1;              
+                }else if(choixRestaurant == RESTAURANT_4){
+                    groupeRestaurants[3]  = groupeRestaurants[3] +1;                  
+                }
+                if(choixSaveur == SAVEUR_1){ 
+                    groupeSaveurs[0] = groupeSaveurs[0] +1; 
+                }else if(choixSaveur == SAVEUR_2){ 
+                    groupeSaveurs[1] = groupeSaveurs[1]+1;
+                }else if(choixSaveur == SAVEUR_3){
+                    groupeSaveurs[2] = groupeSaveurs[2] +1;
+                }
+
+                if(sexe == GRAND_F){
+                    nombreFemme = nombreFemme+1;                    
+                    for(int i = 0; i < femmeRestaurants.length; i++){  
+                        femmeRestaurants[i] = groupeRestaurants [i];                    
+                    }       
+                    for(int i = 0; i < femmeSaveurs.length; i++){  
+                        femmeSaveurs[i] = groupeSaveurs[i];                
+                    }    
+                }else if(sexe == GRAND_M){ 
+                    nombreHomme = nombreHomme+1;
+                    for(int i = 0; i < hommeRestaurants.length; i++){  
+                        hommeRestaurants[i] = groupeRestaurants [i];                    
+                    }       
+                    for(int i = 0; i < hommeSaveurs.length; i++){  
+                        hommeSaveurs[i] = groupeSaveurs[i];                        
+                    }    
+                }
+
+                if(choixGroupeAge == GROUPE_AGE_1){ 
+                    for(int i = 0; i < groupe1Restaurants.length; i++){  
+                        groupe1Restaurants[i] = groupeRestaurants [i];                    
+                    }       
+                    for(int i = 0; i < groupe1Saveurs.length; i++){  
+                        groupe1Saveurs[i] = groupeSaveurs[i];                
+                    }    
+                }else if(choixGroupeAge == GROUPE_AGE_2){
+                    for(int i = 0; i < groupe2Restaurants.length; i++){  
+                        groupe2Restaurants[i] = groupeRestaurants [i];                    
+                    }       
+                    for(int i = 0; i < groupe2Saveurs.length; i++){  
+                        groupe2Saveurs[i] = groupeSaveurs[i];                
+                    }    
+                }else if(choixGroupeAge == GROUPE_AGE_3){
+                    for(int i = 0; i < groupe3Restaurants.length; i++){  
+                        groupe3Restaurants[i] = groupeRestaurants [i];                    
+                    }       
+                    for(int i = 0; i < groupe3Saveurs.length; i++){  
+                        groupe3Saveurs[i] = groupeSaveurs[i];                
+                    }    
+                }else if(choixGroupeAge == GROUPE_AGE_4){ 
+                    for(int i = 0; i < groupe4Restaurants.length; i++){  
+                        groupe4Restaurants[i] = groupeRestaurants [i];                    
+                    }       
+                    for(int i = 0; i < groupe4Saveurs.length; i++){  
+                        groupe4Saveurs[i] = groupeSaveurs[i];                
+                    }    
+                }else if(choixGroupeAge == GROUPE_AGE_5){
+                    for(int i = 0; i < groupe5Restaurants.length; i++){  
+                        groupe5Restaurants[i] = groupeRestaurants [i];                    
+                    }       
+                    for(int i = 0; i < groupe5Saveurs.length; i++){  
+                        groupe5Saveurs[i] = groupeSaveurs[i];                
+                    }    
+                }
+            }
+        }while (reponse == GRAND_O);
+
+        if(nombreHomme + nombreFemme == 0){
+            System.out.print("\n Aucun Traitement. Au Revoir !");
+        }else{
+            System.out.println("\n STATISTIQUES\n");
+            System.out.println(hommeSaveurs[0]);
+            System.out.println(hommeSaveurs[1]);
+            System.out.println(hommeSaveurs[2]);
+            
+            System.out.println( " +groupe1Saveurs " +groupe1Saveurs[0]);
+            System.out.println( " +groupe2Saveurs " +groupe2Saveurs[0]);
+            System.out.println(" +groupe3Saveurs  " +groupe3Saveurs[0]);
+            System.out.println(" +groupe4Saveurs  " +groupe4Saveurs[0]);
+            System.out.println(" +groupe5Saveurs  " +groupe5Saveurs[0]);
+            System.out.println(" +groupe5Restaurant  " +groupe5Restaurants[i])
+            
+            System.out.println(" Nombre total de repondants : " +(nombreHomme+nombreFemme));
+            System.out.println(" Nombre total d'hommes : "      +nombreHomme);
+            System.out.println(" Nombre total de femmes : "     +nombreFemme);            
+            afficherStatsHommeFemme(hommeRestaurants,hommeSaveurs,femmeRestaurants,femmeSaveurs);
+            System.out.print("\n\n Appuyez sur ENTER pour continuer. ");
+            Clavier.lireFinLigne();
+            afficherStatsPourUnGroupe (GROUPE_1, groupe1Restaurants, groupe1Saveurs);
+            System.out.print("\n\n Appuyez sur ENTER pour continuer. ");
+            Clavier.lireFinLigne();
+            afficherStatsPourUnGroupe (GROUPE_2, groupe2Restaurants, groupe2Saveurs);
+            System.out.print("\n\n Appuyez sur ENTER pour continuer. ");
+            Clavier.lireFinLigne();
+            afficherStatsPourUnGroupe (GROUPE_3, groupe3Restaurants, groupe3Saveurs);
+            System.out.print("\n\n Appuyez sur ENTER pour continuer. ");
+            Clavier.lireFinLigne();
+            afficherStatsPourUnGroupe (GROUPE_4, groupe4Restaurants, groupe4Saveurs);
+            System.out.print("\n\n Appuyez sur ENTER pour continuer. ");
+            Clavier.lireFinLigne();
+            afficherStatsPourUnGroupe (GROUPE_5, groupe5Restaurants, groupe5Saveurs);
+            System.out.print("\n\n Appuyez sur ENTER pour continuer. ");
+            Clavier.lireFinLigne();           
+            System.out.print("\n FIN NORMALE DU PROGRAMME \n");
+        }
+    }
+}

@@ -1,0 +1,80 @@
+
+/**
+ * ##### # ########### ## ##### ####### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import java.util.*;
+import java.io.*;
+public class Compact
+{
+    private String [] data;
+    private int size;
+    Compact()
+    {
+        data = new String[100];
+        size = 0;
+        try
+        {
+            readData();
+        }
+        catch(IOException e)
+        {
+            System.err.print(e.getMessage());
+        }
+    }
+
+    private void readData() throws IOException
+    {
+        FileReader file = new FileReader("compact.txt");
+        Scanner fileIn = new Scanner(file);
+        while(fileIn.hasNext())
+        {
+            data[size++] = fileIn.next();
+
+        }
+        fileIn.close();
+    }
+
+    public int getSize()
+    {
+        return size;
+    }
+
+    public boolean addNumberToData(int number)
+    {
+        if(size==1000)
+            return false;
+        data[size++] = number+"";
+        return true;
+    }
+
+    public void printData()
+    {
+        for(int i =0; i<size;i++)
+        {
+            System.out.println((i+1)+") "+data[i]);
+        }
+    }
+
+    public void removeZeros()
+    {
+        for(int i = 0;i<size;i++)
+        {
+            int b = 0;
+
+            if(data[b].charAt(0)!='0')
+            {
+                for(b = i; i<size;i++)
+                {
+                    if(data[b].charAt(0)!='0')
+                    {
+                        data[i] = data[b];
+                    }
+
+                }
+            }
+        }
+
+    }

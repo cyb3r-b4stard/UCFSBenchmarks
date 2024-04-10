@@ -1,0 +1,225 @@
+import java.util.*;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+public class Driver extends JFrame implements Runnable,KeyListener
+{
+    Container con = getContentPane();
+    Thread t = new Thread(this);
+    Ship s1= new Ship();
+    int bunny=75000;
+    int mayo[]=new int[bunny];
+    int mayoy[]=new int[bunny];
+    enemy e1[] = new enemy[7];
+    missile m1[]=new missile[12];
+    int z=50;
+    boolean move=false;
+    Image health;
+    int h1x=640;
+    int h1y=650;
+
+    public Driver ()
+    {
+        s1=new Ship();
+        for (int x = 0; x<e1.length; x++)
+        {
+            e1[x] = new enemy();
+
+        }
+        for (int x = 0; x<m1.length; x++)
+        {
+            m1[x] = new missile();
+
+        }
+        Random r=new Random();
+        for(int x = 0; x < mayo.length; x++) 
+        {
+            mayo[x] = r.nextInt(5000);
+        }
+        for(int x = 0; x < mayoy.length; x++) 
+        {
+            mayoy[x] = r.nextInt(5000);
+
+        }  
+        for (int x = 0; x< e1.length; x++)
+        {
+            e1[x] = new enemy();
+
+        }
+        addKeyListener(this);
+        con.setLayout(new FlowLayout());
+        t.start();
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        health=Toolkit.getDefaultToolkit().getImage(getClass().
+            getResource("healthheart.gif"));
+        health=health.getScaledInstance(60,60,1);
+
+    }
+
+    public void run()
+    {
+        try{
+            while(true)
+            {
+                t.sleep(80);
+                int tempx=s1.getx();
+                System.out.println(tempx);
+                  for(int x=0;x<m1.length;x++)
+                    {
+                        for(int y=0;y<e1.length;y++)
+                        {
+                        }
+
+                    }
+
+                for (int x = 0; x<mayoy.length; x++)
+                {
+                    mayoy[x]=mayoy[x]+8;
+                    z=z+6;
+                    if(z>300)
+                    {
+                        mayoy[x]=mayoy[x]-200;
+                        z=0;
+                    }
+
+                }
+                for (int x = 0; x<m1.length; x++)
+                {
+                    m1[x].move();
+
+                }
+                for (int x = 0; x<e1.length; x++)
+                {
+                   
+
+                }
+            }
+                repaint();
+            }
+            
+
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void paint(Graphics gr)
+    {
+        Image i=createImage(getSize().width, getSize().height);
+        Graphics2D g2 = (Graphics2D)i.getGraphics(); 
+        Graphics2D g3 = (Graphics2D)i.getGraphics(); 
+        g2.setColor(Color.BLACK);
+        g2.fillRect(0,0,1000,1000);
+        g2.setColor(Color.WHITE);
+        for(int z = 0; z < bunny; z++)
+        {
+            g2.drawOval(mayo[z], mayoy[z],1, 1);
+        }
+        for (int x = 0; x<m1.length; x++)
+        {
+            m1[x].draw(g2);
+
+        }
+        for (int x = 0; x<e1.length; x++)
+        {
+            e1[x].draw(g2);
+
+        }
+        g3.drawImage(health,h1x,h1y,this);
+
+        s1.draw(g2);
+        g2.dispose();
+
+        gr.drawImage(i, 0, 0, this);
+    }
+
+    public static void main(String[] args)
+    {
+        Driver frame = new Driver ();
+        frame.setSize(700, 700);
+        frame.setVisible(true);
+    }
+
+    public void update(Graphics g)
+    {
+        paint(g);
+    } 
+
+    public void keyPressed(KeyEvent e)
+    {
+        if (e.getKeyCode() == 37)
+        {
+            s1.moveleft();
+
+        }
+
+        if (e.getKeyCode() == 39)
+        {
+
+            s1.moveright();
+        }
+        
+        if (e.getKeyCode() == 38)
+        {
+
+        }
+
+        if (e.getKeyCode() == 40)
+        {
+
+        }
+
+        if(e.getKeyCode()==32)
+        {
+            int tempx=s1.getx()+50;
+            int tempy=s1.gety();
+            move=true; 
+            int index=0;
+            index++;
+            if(index==0){
+                m1[0].fire(s1.getx()+10,s1.gety());
+                index++;
+            }
+            if(index==1)
+            {
+                m1[1].fire(s1.getx()+10,s1.gety());
+                index++;
+            }
+            if(index==2)
+            {
+                m1[2].fire(s1.getx()+10,s1.gety());
+                index++;
+            }
+            if(index==3)
+            {
+                m1[3].fire(s1.getx()+10,s1.gety());
+                index++;
+            }
+            
+
+        }
+    }
+
+    public void keyReleased(KeyEvent e)
+    {
+    }
+
+    public void keyTyped(KeyEvent e)
+    {
+          if (e.getKeyCode() == 37)
+        {
+            s1.moveleft();
+
+        }
+
+        if (e.getKeyCode() == 39)
+        {
+
+            s1.moveright();
+        }
+    }
+
+}

@@ -1,0 +1,66 @@
+
+import java.util.ArrayList;
+import java.util.*;
+
+public class SeatingChart 
+{
+    private Student[][] seats;
+
+    public SeatingChart(ArrayList<Student> studentList, int rows, int cols)
+    {
+        seats = new Student[rows][cols];
+
+        int q = 0;
+
+        for(int y = 0; y < seats[0].length; y++)
+        {
+            for(int x = 0; x < seats.length; x++)
+            {
+                if(q < studentList.size()) 
+                {
+                    seats[x][y] = studentList.get(q);
+                    q++;
+                }
+            }
+        }
+
+    }
+
+    public int removeAbsentStudents(int allowedAbsences)
+    {
+
+        int count = 0;
+        
+        for(int y = 0; y < seats[0].length; y++)
+        {
+            for(int x = 0; x < seats.length; x++)
+            {
+                if( > allowedAbsences)
+                {
+                    seats[x][y] = null;
+                    count++;
+                }
+            }
+        }
+        
+        return count;
+    }
+
+    public String toString()
+    {
+        String ret = "";
+        for( Student[] row : seats )
+        {
+            for( Student it : row )
+            {
+                if( it == null )
+                    ret += String.format("%-9s","null");
+                else
+                    ret += it;
+            }
+            ret += "\n";
+        }
+        return ret;
+    }
+
+}

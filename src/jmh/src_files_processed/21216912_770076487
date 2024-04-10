@@ -1,0 +1,82 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.ServerSocket;
+
+
+class Server 
+{
+  private ServerSocket serverSocket;
+  private BufferedReader input;
+  private PrintWriter output;
+  private Socket socket;
+  
+  /*public Server() throws Exception 
+  {
+      serverSocket = new ServerSocket(9090);
+  }
+*/
+  public void runServer()  throws Exception
+  {
+    serverSocket = new ServerSocket(9090);
+    while (true) 
+    {
+      try 
+      {
+        
+        System.err.println("Waiting for connection...");
+        socket = serverSocket.accept();
+        input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        output = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+      } 
+      catch (IOException ioException) 
+      {
+        ioException.printStackTrace();
+        closeConnection();
+      }
+    }
+  }
+  private void loginServer()
+  {
+    try
+    {
+       runServer(); throws Exception;
+       String username = input.readLine();
+       String password = input.readLine();
+       Login test = new Login(username, password);
+       output.println(test.userVerificationCheck());
+       output.flush();
+    }
+    catch (IOException ioException) 
+    {
+       ioException.printStackTrace();
+    }
+    finally
+    {
+        closeConnection();
+    }
+     
+  }
+  public void closeConnection()
+  {
+      try
+      {
+         output.close();
+         input.close();
+         socket.close(); 
+      }
+      catch (IOException ioException) 
+      {
+          ioException.printStackTrace();
+      }
+  }
+
+  public static void main(String args[]) throws Exception 
+  {
+    Server server = new Server();
+    server.loginServer();
+  }
+}

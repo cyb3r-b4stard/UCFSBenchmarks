@@ -1,0 +1,194 @@
+
+/**
+ * ##### # ########### ## ##### ###### ####.
+ * 
+ * @###### ###### #. ####
+ * @####### ######### #, ####
+ */
+public class Rabbit extends Animal {
+    private Direction directionOfFox;
+    private Direction directionOfFox2;
+    boolean firstFox = false;
+    private int distOfFox1;
+    private int distOfFox2;
+
+    int rounds;
+
+    /**
+     * In order to create a new Rabbit we need to provide a
+     * model og and position. Do not change the signature or
+     * first line of the construction. Appending code after
+     * the first line is allowed.
+     */
+    public Rabbit(Model model, Position position) {
+        super(model, position);
+        directionOfFox = Direction.N;
+        directionOfFox2 = Direction.N;
+
+    }
+
+    /**
+     * Decides in which direction the rabbit wants to move.
+     */
+    @Override
+    public Direction decideDirection() {
+        return decideDirection4();
+    }
+
+    /**
+     * Denne strategi går ud på at undgå at blive set.
+     * Hvert dyr starter sin tur med at se sig omkring, lige før det flytter sig. 
+     * Derefter kan det ikke se noget før i næste runde. Det kan kaninen benytte sig af.
+     * Vores kanin starter med at tjekke om den kan se en ræv. Hvis false: bliv stående.
+     * Hvis true: bevæg sig væk fra ræven.
+     */
+    public Direction decideDirection1() {
+        Direction decision = Direction.STAY;
+
+        if(runAway(20) == true){
+            decision = Direction.turn(directionOfFox, 3);
+            int dist = distance(decision);
+            if(dist <= 3){
+                decision = Direction.turn(decision, 2);
+
+            }
+        }
+        return decision;
+    }
+
+    /**
+     * Denne strategi går ud på at lade ræven kommer tæt på.
+     * Og herefter rykke væk fra ræven i en retning der gør at den aldrig kan fange kaninen.
+     * Først tjekker kaninen om ræven er i området ellers bliver den stående.
+     * Hvis ræven er 1 felt væk, bevæger kaninens sig i modsat retning af ræven.
+     * Næste gang dette sker igen, vil kaninen gå væk fra ræven i en 45 graders retning. 
+     * Dette skaber en cirkel som kaninen løber i indtil spillet er slut.
+     */
+    public Direction decideDirection2(){
+        Direction decision = Direction.STAY;
+
+        if(runAway(1) == true && rounds <1){
+            decision = Direction.turn(directionOfFox, 4);
+            rounds = rounds +1;
+        } else if(runAway(1) == true && rounds == 1 ){
+            decision = Direction.turn(directionOfFox, 3);
+            rounds = 0;
+        } 
+
+        return decision;
+    }
+
+    /**
+     * Denne strategi går ud på at tage højde for den ræv der er tættest på.
+     * Hvis ræv1 er tættest på, reagere kaninen i forhold til dens retning.
+     * Hvis ræv2 er tættest på, reagere kaninen i forhold til dens retning.
+     * Til dette har vi lavet en runAway2, som tager højde for, hvilken ræv
+     * den har set.
+     */
+    public Direction decideDirection3(){
+        Direction decision = Direction.STAY;
+
+        if(runAway2(10) == true){
+            if(distOfFox1 < distOfFox2){ 
+                decision = Direction.turn(directionOfFox, 3);
+            }
+            if(distOfFox2 < distOfFox1){ 
+                decision = Direction.turn(directionOfFox2, 3);
+            }
+        }
+        return decision;
+    }
+
+    public Direction decideDirection4() {
+        Direction decision = Direction.STAY;
+
+        if(!isBerserk()){
+            if(runAway(20) == true){
+                decision = Direction.turn(directionOfFox, 3);
+                int dist = distance(decision);
+                if(dist <= 4){
+                    decision = Direction.turn(decision, 2);
+                }
+            }
+        }
+        
+        if(decision == directionOfFox && isBerserk()){
+            return decision;
+        }
+        
+        if(decision == 
+
+        return decision;
+    }
+
+    /**
+     * Tjekker om rabbit kan se ræven og vurderer om der er grund til at bevæge sig.
+     * Samtidigt: gem værdien af rævens retning i en feltvariabel.
+     */
+    public boolean runAway(int distToFox){
+        boolean runAway = false;
+
+        for(Direction d: Direction.allDirections()){
+            Class<?> a = look(d);
+            int dist = distance(d);
+
+            if (a == Fox.class && dist <= distToFox) {
+                runAway = true;
+                if(firstFox == false){
+                    directionOfFox = d;
+                    firstFox = true;
+                }
+                if(firstFox == true){
+                    directionOfFox2 = d;
+                }
+
+            }
+        }
+
+        return runAway;
+    }
+
+    public boolean runAway2(int distToFox){
+        boolean runAway = false;
+
+        for(Direction d: Direction.allDirections()){
+            Class<?> a = look(d);
+            int dist = distance(d);
+
+            if (a == Fox.class && dist <= distToFox) {
+                runAway = true;
+                if(firstFox == false){
+                    directionOfFox = d;
+                    firstFox = true;
+                    distOfFox1 = dist;
+                } else{
+                    directionOfFox2 = d;
+                    distOfFox2 = dist;
+                }
+
+            }
+        }
+
+        return runAway;
+    }
+    
+    public Direction directionOfCarrot(){
+        
+        
+        for(Direction d: Direction.allDirections()){
+            Class<?> a = look(d);
+            int dist = distance(d);
+
+            if (a == Carrot.class) {
+             return d;
+            }
+        }
+    }
+
+    /**
+     * This method is used to retrieve who the authors are.
+     */
+    public String getCreator() {
+        return "Unknown";
+    }
+}

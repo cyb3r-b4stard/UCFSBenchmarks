@@ -1,0 +1,85 @@
+
+import java.awt.*;
+import java.awt.event.*;
+
+public class Convertitore extends Frame implements ActionListener, WindowListener{
+
+    private TextField centigradi = new TextField("", 40);
+    
+    private TextField fahrenheit = new TextField("", 40);
+    
+    private Button converti = new Button("Converti Centigradi");
+    private Button converti2 = new Button("Converti Fahrenheit");
+    
+    
+    public Convertitore(){
+    
+        super("Conversione Gradi"); 
+        
+        setSize(400, 100); 
+        setResizable(false); 
+        fahrenheit.setEnabled(false); 
+        setVisible(true); 
+        setLocation(200, 150); 
+        
+        this.setLayout(new GridLayout(3, 1, 2, 2));
+        
+        Panel p1 = new Panel();
+        p1.setLayout(new GridLayout(1,2));
+        
+        Panel p2 = new Panel();
+        p2.setLayout(new GridLayout(1,2));
+        
+        p1.add(new Label("Gradi Centigradi"));
+        p2.add(new Label("Gradi Fahrenheit"));
+        p1.add(centigradi); 
+        
+        this.add(p1);
+        this.add(converti)(converti2); 
+        
+        this.add(p2);
+        p2.add(fahrenheit); 
+        
+        addWindowListener(this);
+        converti.addActionListener(this);
+    }
+    
+    
+    public void actionPerformed(ActionEvent event){
+    
+        double gradiCentigradi, gradiFahrenheit;
+        
+        try{
+        
+            String valore = centigradi.getText();
+            gradiCentigradi = Double.parseDouble(valore);
+            
+            gradiFahrenheit = 32.0 + gradiCentigradi * 1.8;
+            
+            fahrenheit.setText(Double.toString(gradiFahrenheit));
+        }
+        
+        catch(Exception exception){
+        
+            fahrenheit.setText("");
+        }
+    }
+    
+    
+    public void windowIconified(WindowEvent event){}
+    public void windowDeiconified(WindowEvent event){}
+    public void windowActivated(WindowEvent event){}
+    public void windowDeactivated(WindowEvent event){}
+    public void windowOpened(WindowEvent event){}
+    public void windowClosed(WindowEvent event){}
+    public void windowClosing(WindowEvent event){
+    
+        System.exit(0); 
+    }
+    
+    public static void main(){
+    
+        Convertitore convertitore = new Convertitore();
+    }
+    
+}

@@ -1,0 +1,276 @@
+
+/* #### ### ####### ########## #, 
+ * ####: ##### ##
+ * ########: ######
+ * ##: #########
+ */
+
+import ecs100.*;
+import java.awt.Color;
+import java.util.*;
+import java.io.*;
+
+/** ##############
+#### ####### ########. */
+
+public class PatternsDrawer{
+
+    public static final double boardLeft = 50;   
+    public static final double boardTop = 50;
+    public static final double boardSize = 300;  
+
+    public PatternsDrawer(){
+        UI.initialise();
+        UI.addButton("Clear",UI::clearPanes);
+        UI.addButton("Core: Star", this::drawStar);
+        UI.addButton("Core: Illusion", this::drawIllusion);
+        UI.addButton("Core: Grid", this::drawGridBoard);
+        UI.addButton("Completion: Checkers", this::drawCheckersBoard);
+        UI.addButton("Completion: Concentric", this::drawConcentricBoard);
+        UI.addButton("Challenge Hexagonal Pattern", this::drawHex);
+        UI.addButton("Challenge Spiral", this::drawSpiralBoard);
+    }   
+
+    /** **/
+    public void drawStar(){
+
+        UI.clearGraphics();
+        double num = UI.askInt("How many rays:");
+        double wedgeSize = (360.00 / num);
+        double angle = 0;
+        double blackendangle = 0;
+        double startangle = 0;
+        UI.setColor(Color.black);
+        UI.drawOval(boardLeft, boardTop, boardSize, boardSize);
+
+        while (angle < 360){
+            startangle = angle;
+            blackendangle = startangle + wedgeSize;
+            angle = blackendangle + wedgeSize;
+            UI.setLineWidth(3);
+            UI.setColor(Color.black);
+            UI.fillArc(boardLeft, boardTop, boardSize, boardSize, startangle, wedgeSize);
+
+            UI.setColor(Color.white);
+            UI.fillArc(boardLeft, boardTop, boardSize, boardSize, blackendangle, wedgeSize);
+            UI.setLineWidth(1);
+        }
+
+    }
+
+    /** **/
+    public void drawIllusion(){
+
+        UI.clearGraphics();
+        int user_num = UI.askInt("How many rows:");
+        int sqlength = 20;
+        int row = 0;
+        int cols = 0;
+        int i = 0;
+        int j = 0;
+        double patternLeft = user_num * sqlength;
+        double patternTop = boardTop;
+        for (i = 1; i <= user_num; i= i + 1){
+            for(j = 1; j<=i; j = j + 1){
+                double x = patternLeft - (i * sqlength);
+                double y = patternTop + (j * sqlength);
+
+                UI.setColor(Color.black);
+                UI.fillRect(x, y, sqlength, sqlength);
+
+                UI.setLineWidth(4);
+                UI.setColor(Color.white);
+                UI.drawRect(x, y, sqlength, sqlength);
+                UI.setLineWidth(1);
+
+            }
+        }
+
+
+        for(i = 1 ; i <= user_num ; i++)
+        {
+            for(j=1; j<=i; j++)
+            {
+                UI.print("*");
+            }
+            UI.print("\n");
+        }
+
+    }
+
+    /** Draw a square grid board with white squares.
+    Asks the user for the number of squares on each side
+     */
+    public void drawGridBoard(){
+        UI.clearGraphics();
+        double user_num = UI.askInt("How many rows:");
+        double sqlength = boardSize / user_num;
+        
+        
+        int row = 0;
+
+        while (row < user_num){
+            int col = 0;
+
+            while (col < user_num){
+
+                int x = 50 + row * sqlength;
+                int y = 20 + col * sqlength;
+                UI.setColor(Color.black);
+                UI.drawRect(x, y, sqlength, sqlength);
+
+                col = col + 1;
+            }
+            row = row + 1;
+
+        }
+    }
+
+    /** Draw a checkered board with alternating black and white squares
+    Asks the user for the number of squares on each side
+     */
+    public void drawCheckersBoard(){
+        UI.clearGraphics();
+        int user_num = UI.askInt("How many rows:");
+        int sqlength = 20;
+        int row = 0;
+
+        while (row < user_num){
+            int col = 0;
+
+            while (col < user_num){
+
+                int x = 50 + row * sqlength;
+                int y = 20 + col * sqlength;
+                if (( row % 2) == (col % 2)){
+                    UI.setColor(Color.white);
+
+                }
+                else{
+                    UI.setColor(Color.black);
+                }
+
+                UI.fillRect(x, y, sqlength, sqlength);
+
+                col = col + 1;
+            }
+            row = row + 1;
+
+
+        }
+
+    }
+
+    /** Draw a board made of concentric circles, 2 pixel apart
+    Asks the user for the number of squares on each side
+     */
+    public void drawConcentricBoard(){
+
+        UI.clearGraphics();
+        int user_num = UI.askInt("How many rows:");
+
+        int row = 0;
+        double diam = 30;
+        double left = diam;
+        double top = diam ;
+
+        while (row < user_num){
+            int col = 0;
+
+            while (col < user_num){
+
+                double x = left +(row * diam);
+                double y = top + (col * diam);
+
+                UI.setColor(Color.blue);
+                this.drawCircle(x, y, diam);
+                col = col + 1;
+            }
+
+            row = row + 1;
+        }
+    }
+
+    public void drawCircle(double x, double y, double diam){
+        UI.setColor(Color.black);
+        while(diam > 0){
+            UI.drawOval(x, y, diam,diam);
+            diam = diam - 4;
+            x = x + 2;
+            y = y + 2;
+
+        }
+
+
+    }
+
+    public void drawHex(){
+
+        UI.clearGraphics();
+
+        int user_num = UI.askInt("How many rows:");
+        int row = 0;
+
+        while (row < user_num){
+            int col = 0;
+            while (col < user_num){
+
+                this.hexSpecs(user_num);
+
+                col++;
+
+            }
+            row++;
+        }
+    }
+
+    public void hexSpecs(int user_num){
+
+        
+        double left = boardLeft /user_num;
+        double top = boardTop /user_num;
+        double size = boardSize / user_num;
+
+        double xHexpos1 = left+size/2;
+        double xHexpos2 = left+size/2 + size;
+        double xHexpos3 = ((left+size/2)+size)-size/2;
+        double xHexpos4 = (((left + size/2)+size) + size/2);
+        double xHexpos5 = ((left+size/2)+size)+size;
+        double xHexpos6 = (left+size/2)+size+size+size/2;
+
+
+        double yHexpos1 = top+size;
+        double yHexpos2 = top+(size*2);
+
+
+        double posx1[]= {left, xHexpos1, xHexpos2, xHexpos3};
+        double posy1[]= {yHexpos1, top, top, yHexpos1};
+
+        double posx2[]= {xHexpos2, xHexpos4, xHexpos6, xHexpos5};
+        double posy2[]= {top, yHexpos1, yHexpos1, top};
+
+
+        double posx3[]= {left, xHexpos1, xHexpos2, xHexpos3};
+        double posy3[]= {yHexpos1, yHexpos2, yHexpos2, yHexpos1};
+
+
+        double posx4[]= {xHexpos2, xHexpos4, xHexpos6, xHexpos5};
+        double posy4[]= {yHexpos2, yHexpos1, yHexpos1, yHexpos2};
+
+        UI.drawPolygon(posx1, posy1, 4);
+        UI.drawPolygon(posx2, posy2, 4);
+        UI.drawPolygon(posx3, posy3, 4);
+        UI.drawPolygon(posx4, posy4, 4);
+
+    }
+
+    /** Draw a Spiral board consisting of a square spiral path of small white squares.
+    Asks the user for the number of squares along the top
+     */
+    public void drawSpiralBoard(){
+        UI.clearGraphics();
+        int num = UI.askInt("How many squares along top:");
+        /*# YOUR CODE HERE */
+
+    }
+}

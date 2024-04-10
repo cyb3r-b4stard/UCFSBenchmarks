@@ -1,0 +1,193 @@
+    /**
+     * ########: ###### ### ###### ########## ## #### # 
+     * ########## ## ######## ## ######### ## ######## 
+     * # ## ###### ### ######### #########.
+     */
+    import java.util.*;
+    public class MailList {
+        
+        private ArrayList<Mail> mailList;
+        
+        public MailList(){
+            mailList = new ArrayList<Mail>();
+        }
+          
+        
+        /** Número total de mensagens */
+        public int numMensagens() { return mailList.size(); }
+        
+        /** Insere uma nova mensagem de mail */
+        public void insMens(Mail mail) { 
+           mailList.add(mail.clone()); 
+        }
+        
+        /** Total de mensagens recebidas de um dado endereço */
+        public int comEndereco(String endereco) {
+            int conta = 0;
+            for(Mail m : mailList)
+                if(m.getEndereco().equals(endereco)) conta++;
+            return conta;
+        }
+    
+        /** Devolve uma lista contendo os Números das mensagens
+            com a string parâmetro no seu assunto */
+        public ArrayList<Integer> numAssuntoCom(String txt) {
+            ArrayList<Integer> nums = new ArrayList<Integer>(); 
+            int index = 0;
+            for(Mail m : mailList) {
+              if (m.getAssunto().contains(txt)) 
+                    nums.add(index+1);
+              index++;
+            }
+            return nums;
+        }
+        
+        /** Lista das mensagens que contêm uma dada 
+            string no assunto */
+        public ArrayList<Mail> mensAssuntoCom(String txt) {
+            ArrayList<Mail> mensgs = new ArrayList<Mail>();
+            for(Mail m : mailList) 
+              if (m.getAssunto().contains(txt)) 
+                    mensgs.add(m.clone());
+            return mensgs;
+        }
+    
+        /** Remove todas as mensagens anteriores a dada data */
+        public void removeAnterioresA(GregorianCalendar data) {
+            int[] indices = new int[mailList.size()];   
+            int conta = 0; int index = 0;
+            for(Mail m : mailList) {
+              if (m.getRecepcao().before(data)) { 
+                  indices[conta] = index; conta++; 
+              }
+              index++;
+            }
+            for(int i = 0; i <= conta-1; i++)
+                  mailList.remove(indices[i]);
+        }
+        
+        /** Lista das mensagens recebidas hoje */
+        public ArrayList<Mail> deHoje() {
+            ArrayList<Mail> mailsDeHoje = new ArrayList<Mail>();
+            GregorianCalendar hoje = new GregorianCalendar();
+            GregorianCalendar dataRecep = null;
+            int diaHoje = hoje.get(Calendar.DAY_OF_MONTH);
+            int mesHoje = hoje.get(Calendar.MONTH); 
+            int anoHoje = hoje.get(Calendar.YEAR);
+            for(Mail m : mailList) {
+              dataRecep = m.getRecepcao();
+              int diaRecep = 
+                          dataRecep.get(Calendar.DAY_OF_MONTH);
+              int mesRecep = dataRecep.get(Calendar.MONTH);
+              int anoRecep = dataRecep.get(Calendar.YEAR);
+              if (diaHoje == diaRecep && mesHoje == mesRecep && 
+                  anoHoje == anoRecep)
+                           mailsDeHoje.add(m.clone());
+            }
+            return mailsDeHoje;
+        }
+        
+        /** Remove todas as mensagens cujo assunto contenha uma 
+            das palavras da lista parâmetro */
+        public void antiSpam(ArrayList<String> palavras) {
+            for(Mail m : mailList) {
+               int index = 0; boolean contem = false;
+               while(index <= palavras.size()-1 && !contem) {
+                  contem =  
+                    m.getAssunto().contains(palavras.get(index));
+                  if (contem) mailList.remove(m); 
+                  else index++;
+               }
+            }
+        }
+       
+        /** Fciha 5 **/
+        
+        public int totalEmails(){
+            return mailList.size();
+        }
+        
+        public void adicionarEmail(Mail e){
+            mailList.add(e.clone());
+        }
+        
+        public int from(String endereco){
+            return (int) mailList.stream().filter(a -> a.getEndereco().equals(endereco)).count();
+        }
+    
+        public int fromF(String endereco){
+            int res = 0;
+            for(Mail m:mailList){
+                if(m.getEndereco().equals(endereco))
+                    res++;
+            }
+            return res;
+        }
+        
+        public List<Integer> comAssunto(String s){
+            Iterator<Mail> iter = mailList.iterator();
+            List<Integer> listaIndex = new ArrayList<>();
+            Mail aux = null;
+            while(iter.hasNext()){
+                aux = iter.next();
+                if(aux.getAssunto().equals(s))
+                    listaIndex.add(mailList.indexOf(aux));
+            }
+            return listaIndex;
+        }
+        
+        public List<Integer> comAssuntoF(String s){
+            List<Integer> listaIndex = new ArrayList<>();
+            for(Mail m : mailList){
+                if(m.getAssunto().equals(s))
+                    listaIndex.add(mailList.indexOf(m));
+            }
+            return listaIndex;
+        }
+        
+        public void eliminarRecebidos(GregorianCalendar data){
+            Iterator<Mail> iter = mailList.iterator();
+            Mail aux = null;
+            while(iter.hasNext()){
+                aux = iter.next();
+                if(aux.getRecepcao().compareTo(data) < 0)
+                    iter.remove();
+            }
+        }
+        
+        public void eliminarRecebidosF(GregorianCalendar data){
+            mailList.removeIf(a -> a.getRecepcao().compareTo(data) < 0);
+        }
+        
+        public List<Mail> emailsDoDia(){
+            Iterator<Mail> iter = mailList.iterator();
+            Mail aux = null;
+            ArrayList<Mail> mailsDeHoje = new ArrayList<Mail>();
+            GregorianCalendar hoje = new GregorianCalendar();
+            GregorianCalendar dataRecep = null;
+            int diaHoje = hoje.get(Calendar.DAY_OF_MONTH);
+            int mesHoje = hoje.get(Calendar.MONTH); 
+            int anoHoje = hoje.get(Calendar.YEAR);
+            int diaRecep,mesRecep,anoRecep;
+            while(iter.hasNext()){
+                aux = iter.next();
+                dataRecep = aux.getRecepcao();
+                diaRecep = dataRecep.get(Calendar.DAY_OF_MONTH);
+                mesRecep = hoje.get(Calendar.MONTH); 
+                anoRecep = hoje.get(Calendar.YEAR);
+                if(diaRecep == diaHoje && mesRecep == mesHoje && anoRecep == anoHoje)
+                    mailsHoje.add(aux.clone());
+            }
+            return mailsDeHoje;
+        }
+        
+        /** toString() */
+        public String toString() {
+            StringBuilder s = 
+                  new StringBuilder(".... MAILList ....\n");
+            for(Mail m : mailList)  
+                  s.append(m.toString() + "\n"); 
+            return s.toString();
+        }   
+    
+    }

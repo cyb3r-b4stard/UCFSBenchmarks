@@ -1,0 +1,202 @@
+import java.util.ArrayList;
+
+/** 
+ * ######:  #######, #.
+ * #######:  ##/##/####
+ */
+
+public class Store 
+{
+    private ArrayList<Movie> movies;     
+    private Movie thisMovie;             
+
+    private ArrayList<Customer> customers;  
+    private Customer thisCustomer;
+
+    private int movieKey;
+    private String movieName;
+    private int renterID;
+    private int dueDate;
+    private double price;
+    private int timesRented;
+    private int currentDate = 20150206;
+
+    private ReadFile reader;
+    /**
+     * Create the store. This means set up the ArrayList for movies.
+     */
+    public Store() 
+    {
+        movies = new ArrayList<Movie>();
+        customers = new ArrayList<Customer>();
+        readFromMovieFile();
+        readFromCustomerFile();
+    }
+
+    /**
+     * Read initial movie info from file.
+     */
+    private void readFromMovieFile() 
+    {
+
+        reader = new ReadFile("MovieData.txt");
+
+        reader.setSeparator(",");
+
+        reader.readInputLine();
+
+        while(reader.eof() == false)        
+        {
+            movieKey = reader.getIntField(1);
+            movieName = reader.getStringField(2);
+            renterID = reader.getIntField(3);
+            dueDate = reader.getIntField(4);
+            price = reader.getDoubleField(5);
+            timesRented = reader.getIntField(6);
+
+            thisMovie = new Movie(movieKey, movieName, renterID, dueDate, price, timesRented);
+
+            movies.add(thisMovie);
+
+            reader.readInputLine();
+        }
+        System.out.println("All movies read from the file and added to the ArrayList");
+    }
+
+    /**
+     *  Given the Index of the array, print all info for this movie
+     */
+    public void printAllMovieInfoForThisMovie(int index)
+    {
+        System.out.println("Movie ID    Movie Name                Cust ID       DueDate");
+        Movie thisMovie = movies.get(index);
+        thisMovie.print();
+    }
+
+    private void readFromCustomerFile() 
+    {
+
+        reader = new ReadFile("CustomerData.txt");
+
+        reader.setSeparator(",");
+
+        reader.readInputLine();
+
+        int numberOfCustomersReadIn = 0;
+
+        while(reader.eof() == false)        
+        {
+            int customerKey = reader.getIntField(1);
+            String custName = reader.getStringField(2);
+            String phoneNum = reader.getStringField(3);
+            double outStandingLateFees = reader.getDoubleField(4);
+
+            Customer thisCustomer = new Customer(customerKey, custName, phoneNum, outStandingLateFees);          
+
+            customers.add(thisCustomer);
+
+            numberOfCustomersReadIn = numberOfCustomersReadIn + 1;
+
+            reader.readInputLine();
+        }
+        System.out.println( numberOfCustomersReadIn + " customers read from the file and added to the ArrayList");
+    }
+
+    /*
+     * List all movies in the system with a while loop
+     */ 
+    public void listMoviesWithWhile()
+    {
+        System.out.println("Listing Movies)");
+        int index = 0;
+        while(index < movies.size())
+        {
+            Movie thisMovie = movies.get(index);
+            thisMovie.print();
+
+            index ++;
+        }
+        System.out.println();
+    }
+
+    /*
+     * List all customers in the system with a while loop
+     */ 
+    public void listCustomersWithWhile()
+    {
+        System.out.println("Listing Customers");
+        int index = 0;
+        while(index < customers.size())
+        {
+            Customer thisCustomer = customers.get(index);
+            thisCustomer.printCustomerInfo();
+
+            index ++;
+        }
+        System.out.println();
+    }
+
+    /*
+     * Check Out Movie if all info is valid.
+     */ 
+    public void checkOutMovie(int pCustID, int pMovieID)
+    {
+        /**
+         * Suggested approach. 
+         *  Find the movie, put it in thisMovie.  If you can't find it, print error message and return
+         *  Find the customer, put it in thisCustomer.  If you can't find it, print error message and return
+         *  Check to make sure the movie is not already rented.  If it is already rented, print error message and return
+         *  If all is well above, determine the total amount customer has to pay, print out relevant information (movie rented to xxxx, payment, etc.
+         *  Update all relevant fields.  
+         * 
+         */
+        Movie thisMovie;
+        rightMovie = null;
+        int index = 0;
+
+        while(index < movies.size())
+        {
+            thisMovie = movies.get(index);
+            if(thisMovie.getMovieKey == pMovieId)
+            {
+                rightMovie = thisMovie;
+            }
+            index ++;
+        }
+
+        Customer thisCustomer;
+        rightCustomer = null;
+        index = 0;
+        while(index < customers.size())
+        {
+            thisCustomer = customers.get(index);
+            if(thisCustomer.getCustKey == pCustID)
+            {
+                rightCustomer = thisCustomer;
+            }
+            index++;
+        }
+        
+        if(rightMovie == null)
+        {
+            System.out.println("Movie " + pMovieID + " is not in the system");
+            return;
+        }
+        if(rightCustomer == null)
+        {
+            System.out.println("Customer " + pCustID + " is not in the system");
+            return;
+        }
+        if(rightMovie.getRenterID() > 0)
+        {
+            System.out.println("Movie " + pMovieID + " is already checked out");
+            return;
+        }
+        
+        System.out.println("Movie " + pMovieID + " is checked out to Customer " + pCustID + ".");
+        System.out.println("    Price " + rightMovie.getPrice());
+        System.out.println(" Late Fees " + rightCustomer.getLateFees());
+        System.out.println("Total Due " + (rightCustomer.getLateFees() + rightMovie.getPrice());
+        
+    }
+}

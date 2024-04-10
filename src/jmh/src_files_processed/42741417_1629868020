@@ -1,0 +1,71 @@
+import javafx.application.*;
+import javafx.event.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.*;
+import javafx.scene.shape.*;
+import javafx.embed.swing.*;
+import javafx.application.*;
+import javafx.scene.text.*;
+import java.util.*;
+import javafx.scene.paint.Color;
+import javafx.geometry.Pos;
+
+/**
+ * #### ##### - ########## ###### ###### 
+ * @###### #### - #### ##### 
+ * @####### ####/##/##
+ */
+public class GameBoard extends BorderPane  { 
+    private Label[] totalLabels = {new Label("0"), new Label("0"), new Label("0") };   
+
+    private static final int N_LINES = 10;
+    private static final int N_COLS  = 10;
+
+    private GameModel model;
+    public GameBoard()
+    {
+        this.model = new GameModel(N_LINES, N_COLS);
+
+        FlowPane totalPane = new FlowPane();
+        totalPane.setHgap(20); 
+        totalPane.setAlignment(Pos.CENTER_RIGHT);
+        Label[] labels = {new Label("Game_luis")};
+        for(int i = 0; i < labels.length; i++)
+        {
+            totalPane.getChildren().add(labels[i]);
+            totalPane.getChildren().add(totalLabels[i]);
+        }
+        this.setTop(totalPane);
+        this.createButtonPane();
+    }
+
+    private void createButtonPane()
+    {
+        GridPane buttonGridPane = new GridPane();
+        for(int row = 0; row < 10; row++)
+        {
+            for(int col = 0; col < 10; col++)
+            {
+
+                if(Button button = new MyButton(row, col, this.model.getValue(row, col).toString())))
+                {
+                    button.setStyle("-fx-font: 22 arial; -fx-base: #b6e7c9;");
+                }
+                button.setMaxWidth(100);
+                button.setOnAction(event -> {
+                        MyButton b = (MyButton)(event.getTarget());
+                        int[] totalsPerValue = this.model.computeTotalPerValue(b.line(), b.col());
+                        for(int i = 0; i < totalLabels.length; i++)
+                        {
+                            totalLabels[i].setText("" + totalsPerValue[i]);                            
+                        }
+                    }
+                );
+                buttonGridPane.add(button, col, row);
+            }
+        }
+        this.setCenter(buttonGridPane);
+    }  
+}

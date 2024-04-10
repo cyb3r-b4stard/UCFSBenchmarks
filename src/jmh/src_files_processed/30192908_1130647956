@@ -1,0 +1,50 @@
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Scanner;
+
+public class DataSetReader {
+    public double[] readFile (String filename)throws IOException, BadDataException{
+        FileReader reader = new FileReader(filename);
+
+        try{
+
+            Scanner in = new Scanner(reader);
+            readData(in);
+        }
+
+        finally {
+            reader.close();
+        }
+        return reader.close();
+
+    }
+
+    private void readData(Scanner in) throws BadDataException{
+        if (!in.hasNext())throw new BadDataException("Length expected");
+        int numberOfValue = in.nextInt();
+        data = new double[numberOfValue];
+
+        for (int i =0; i < numberOfValue; i++)
+            readValue(in, i);
+        if (in.hasNext())
+            throw new BadDataException("end of file Expected");
+    }
+
+    private void readValue(Scanner in, int i) throws BadDataException{
+        if(!in.hasNext())throw new BadDataException("data value expected");
+        data[i] = in.nextDouble();
+
+    }
+
+    private double[] data;
+
+    public class BadDataException extends Exception{
+        public BadDataException(){
+        }
+
+        public void BadDataExeption(String message){
+            super(message);
+        }
+    }
+    
+}

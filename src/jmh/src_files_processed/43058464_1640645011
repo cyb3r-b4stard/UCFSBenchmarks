@@ -1,0 +1,306 @@
+
+/**
+ * ##### # ########### ## ##### ###### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+public class Pacman      implements   ActionListener,KeyListener
+
+{
+    JFrame f1;
+    JPanel main, sub;
+    PacmanGP g1;
+    Container c1;
+    JButton Start,Stop;
+    boolean stop, eat1, eat5, eat2,eat3,eat4,beat1, beat2,beat3,beat4,badGhost,StartGame;
+    int pacx, pacy,
+    pacxdir,pacydir,
+    score,index,gindex,totalpellets; 
+    int[] pex1,pex2,pey1,pey2,ghx,ghy;
+    int[] ghxdir,
+    ghydir,
+    ghsteps,
+    ghrandomdir;
+
+    public Pacman()
+    {
+        pex1= new int [10];
+        pey1= new int [10];
+        pex2= new int [10];
+        pey2= new int [10];
+        ghx=new int[4];
+        ghy= new int[4];
+        ghxdir= new int [4];
+        ghydir= new int [4];
+
+       totalpellets=9
+        gindex=0 ;
+
+        pacx= 100;
+        pacy=210;
+
+        stop = false;
+        StartGame= false;
+
+        eat1 = false;
+
+        eat2 = false;
+
+        eat3 = false;
+
+        eat4 = false;
+
+        eat5=false;
+
+        beat1 = false;
+        ghx[0]=500;
+        ghy[0]=200;
+        ghxdir[0]=0;
+        ghydir[0]=0;
+
+        beat2 = false;
+        ghx[1]=140;
+        ghy[1]=550;
+        ghxdir[1]=0;
+        ghydir[1]=0;
+
+        beat3 = false;
+        ghx[2]=405;
+        ghy[2]=333;
+        ghx[2]=0;
+        ghydir[2]=0;
+
+        beat4 = false;
+        ghx[3]=450;
+        ghy[3]=560;
+        ghxdir[3]=0;
+        ghydir[3]=0;
+
+        score = 0;
+        for(index=0;index <=totalpellets;index++)
+        { 
+            pex1[index]=index *10+10;
+            pey1[index]=300;
+            pex2[index]=400;
+            pey2[index]= index *10+10;
+            index=index+1;
+        }
+
+        
+        f1 = new JFrame("Pac-Man");
+        f1.setSize(700,700);
+        f1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        c1 = f1.getContentPane();
+
+      
+        
+        
+        g1 = new PacmanGP(pacx,pacy,
+            pacxdir,pacydir,
+            score,
+            pex1,pex2,
+            pey1,pey2,
+            ghx,
+            ghy);
+
+        g1.addKeyListener(this);
+        Start = new JButton("Begin");
+        Start.addActionListener(this);
+        Stop = new JButton("Terminate");
+        Stop.addActionListener(this);
+
+        sub = new JPanel(); 
+        sub.add(Start);
+        sub.add(Stop);
+
+        main = new JPanel();
+        main.setLayout(new BorderLayout());          
+        main.setSize(600,600);
+        main.add(g1,BorderLayout.CENTER);
+        main.add(sub,BorderLayout.SOUTH);
+
+        c1.add(main);
+        f1.show();
+        f1.show();
+        c1.add(main);
+        runGame();
+    }
+
+    public void runGame()
+    {
+        Thread runner = new Thread();
+        while(stop == false)
+        {
+            try 
+            { 
+                runner.sleep(5); 
+            }
+            catch(InterruptedException e) {}  
+
+            if (StartGame==true)
+            { 
+                for(index=0;index<10;index++)
+                {
+                    if(pacx >= pex1[index]-25 && pacx <= pex1[index]+25 && pacy >=pey1[index]-25 && pacy <=pey1[index]+25 &&eat1 == false )    
+                    { 
+                        eat1 = true;
+                        score = score + 10;
+                        System.out.println("1");
+                    }
+                    index=index+1;
+                }
+
+                for( gindex=0;  gindex<4;gindex++)
+                {
+                    if(pacx >= ghx[gindex]-35 && pacx <= ghx[gindex]+35 && pacy >=  ghy[gindex]-35 && pacy <= ghy[gindex]+35)
+                    { 
+                        stop = true;
+                        g1.updatehitGhost(stop);}
+                }
+                /** if (pacx >= ghx[1]-35 && pacx <= ghx[1]+35 && pacy >=  ghy[1]-35 && pacy <= ghy[1]+35)
+                {stop = true;
+                g1.updatehitGhost(stop);}
+                if(pacx >= ghx[2]-35 && pacx <= ghx[2]+35 && pacy >=  ghy[2]-35 && pacy <= ghy[2]+35)
+                {stop = true; 
+                g1.updatehitGhost(stop);}
+                if (pacx >= ghx[3]-35 && pacx <= ghx[3]+35 && pacy >=  ghy[3]-35 && pacy <= ghy[3]+35)
+                {stop = true;
+                g1.updatehitGhost(stop);}*/
+
+                if (pacx > 600)       
+                {  
+                    pacxdir = 0;
+                    pacx = 600;   
+                }
+                if (pacx < 10)       
+                {
+                    pacxdir = 0;
+                    pacx =10;   
+                }
+                if (pacy < 80)       
+                {
+                    pacydir = 0;
+                    pacy= 80;   
+                }
+                if (pacy> 600)       
+                {
+                    pacydir = 0;
+                    pacy= 600;   
+                }
+
+                if(ghsteps[0] == 50)
+                {
+                    ghxdir[0] = 0;
+                    ghydir[0] = 0;
+                    ghrandomdir[0] = (int)(Math.random() * 2 + 1);     
+                    if(ghrandomdir[0] == 1)  ghxdir[0] = 1;               
+                    if(ghrandomdir[0] == 2)  ghxdir[0] =  -1;               
+                    ghsteps[0] = 0;
+                }
+                if(ghsteps[1] == 50)
+                {
+                    ghxdir[1] = 0;
+                    ghydir[1] = 0;
+                    ghrandomdir[1] = (int)(Math.random() * 2 + 1);     
+                    if(ghrandomdir[1] == 1) 
+                    {if(pacx < ghx[1]) ghxdir[1]= -1;
+                        if(pacx > ghx[1]) ghxdir[1]= 1; } 
+                    if(ghrandomdir[1] == 2)  ;               
+                    {if(pacy <ghy[1]) ghydir[1]= -1;
+                        if(pacy >ghy[1]) ghydir[1]= 1;} 
+                    ghsteps[1] = 0;
+                }
+                if(ghsteps[2] == 50)
+                {
+                    ghxdir[2] = 0;
+                    ghydir[2] = 0;
+                    ghrandomdir[2] = (int)(Math.random() * 4 + 1);     
+                    if(ghrandomdir[2] == 1)  ghxdir[2] = 1;               
+                    if(ghrandomdir[2] == 2)  ghxdir[2] =  -1;               
+                    if(ghrandomdir[2] == 3)  ghydir[2] =-1;               
+                    if(ghrandomdir[2] == 4)  ghydir[2] = 1;                
+                    ghsteps[2] = 0;
+                }
+                if(ghsteps[3] == 50)
+                {
+                    ghxdir[3] = 0;
+                    ghydir[3] = 0;
+                    ghrandomdir[3] = (int)(Math.random() * 2 + 1);     
+                    if(ghrandomdir[3] == 10)  ghydir[3] = 1;               
+                    if(ghrandomdir[3] == 2)  ghydir[3] =  -1;               
+                    ghsteps[3] = 0;
+                }
+
+                ghx[index]=ghx[index]+ghxdir[0];
+                ghy[0]=ghy[0]+ghydir[0];
+                ghsteps[0]=ghsteps[0]+50;
+
+                ghx[index]=ghx[index]+ghxdir[1];
+                ghy[1]=ghy[1]+ghydir[1];
+                ghsteps[1]=ghsteps[1]+50;
+
+                ghx[index]=ghx[index]+ghxdir[2];
+                ghy[2]=ghy[2]+ghydir[2];
+                ghsteps[2]=ghsteps[2]+50;
+
+                ghx[3]=ghx[3]+ghxdir[3];
+                ghy[3]=ghy[3]+ghydir[3];
+                ghsteps[3]=ghsteps[3]+50;
+
+                pacx = pacx + pacxdir;
+                pacy = pacy + pacydir;
+                g1.updateAlienEat(eat1,eat2,eat3,eat4,eat5);
+                g1.updatePlayerLocation(pacx,pacy,score);
+                g1.updateGhostLocation(ghx,ghy);
+                g1.updatehitGhost(stop);
+                g1.repaint();
+            }
+
+        }
+    }
+
+    public void actionPerformed (ActionEvent event)
+    {
+        if (event.getSource() == Start)
+        {
+            StartGame = true;
+            g1.requestFocus();
+        }
+
+        if (event.getSource() == Stop)
+        {
+            stop = true;
+        }
+    }
+
+    public void keyReleased(KeyEvent evt) {}
+
+    public void keyTyped(KeyEvent evt) {}
+
+    public void keyPressed(KeyEvent evt)
+    {
+
+        if (evt.getKeyCode() == 37)    
+        { pacxdir= - 1;
+            pacydir= 0;
+        }
+        if (evt.getKeyCode() ==39)    
+        {
+            pacxdir= +1;
+            pacydir = 0;
+        } 
+        if (evt.getKeyCode() ==38) 
+        {pacxdir=0;
+            pacydir= -1;
+        }
+        if (evt.getKeyCode() ==40)
+        {pacxdir=0;
+            pacydir=+1;
+        }
+    }
+}

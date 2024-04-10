@@ -1,0 +1,108 @@
+import javax.swing.JOptionPane;
+/**
+ * ##### # ########### ## ##### ######## ####.
+ * 
+ * @###### ###### ####### 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class MyVector
+{
+    private int xComponent; 
+    private int yComponent; 
+    private int randomNumber;
+    private static final double EPSILON=1E-14;
+    private boolean mode=true;
+    public MyVector()
+    { 
+        xComponent=(int)((Math.random()*200-100)/10);
+        yComponent=(int)((Math.random()*200-100)/10); 
+    }
+
+    public MyVector(int someX, int someY)
+    {
+        xComponent=someX;
+        yComponent=someY;
+    }
+
+    public int getFirstComponent()
+    {
+        return xComponent;
+    }
+
+    public int getSecondComponent()
+    {
+        return yComponent;
+    }
+
+    public String toString()
+    {
+        return "<"+xComponent+","+yComponent+">";
+    }
+
+    public void setComponents(int someX, int someY)
+    {
+        xComponent=someX;
+        yComponent=someY;
+    }
+
+    public double norm()
+    {
+        return (Math.sqrt((xComponent*xComponent)+(yComponent*yComponent)));
+    }
+
+    public int dot(MyVector someVector)
+    {
+        return ((this.xComponent*someVector.xComponent)+(this.yComponent*someVector.yComponent));
+    }
+
+    public double angle(MyVector someVector)
+    {
+        if (mode==true)
+        {
+            return (Math.round((Math.toDegrees(Math.acos((this.dot(someVector))/(this.norm()*someVector.norm()))))*100))/100;
+        }
+        else:
+        {
+            return (Math.round((Math.toRadians(Math.acos((this.dot(someVector))/(this.norm()*someVector.norm()))))*100))/100;
+        }
+    }
+
+    public double MyVectorSimulator()
+    {
+        String input=JOptionPane.showInputDialog("Enter (xComponent,yComponent): ");
+        int index=input.indexOf(",");
+        int length=input.length();
+        String tempXComponent=input.substring(0,index);
+        String tempYComponent=input.substring(index+1,length);
+        int newXComponent= Integer.parseInt(tempXComponent);
+        int newYComponent= Integer.parseInt(tempYComponent);
+        MyVector tempVector = new MyVector(newXComponent,newYComponent);
+        return this.angle(tempVector);
+    }
+
+    public boolean isOrthogonal(MyVector someVector)
+    {
+        int dotProduct= this.dot(someVector);        
+        boolean compare = (dotProduct==0);
+        return compare;
+    }
+
+    public boolean isParallel(MyVector someVector)
+    {
+        double compare=this.angle(someVector);
+        boolean answer=(compare<EPSILON);
+        return answer;
+    }
+    
+    public void changeMode()
+    {
+        if (mode==true)
+        {
+            mode=false;
+        }
+        else:
+        {
+            mode=true;
+        }
+    }
+}

@@ -1,0 +1,157 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.applet.Applet;
+/**
+ * ##### ######################### - ##### # ########### ## ### ##### ####
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ######)
+ */
+public class Graphics_Maze extends Applet implements ActionListener 
+{
+    private int xPos1,yPos1;
+    private int xPos2,yPos2;
+    private int xInc,yInc;
+    private Timer timer;
+    private Image image;
+    private int crossCounter1,crossCounter2;
+    private int level;
+    public void init()
+    {
+        xPos1=0;
+        yPos1=140;
+        xPos2=0;
+        yPos2=160;
+        xInc=3;
+        yInc=3;
+        crossCounter1=0;
+        crossCounter2=0;
+        level=1;
+
+        setBackground(Color.lightGray);
+        timer=new Timer(10,this);
+        timer.start();
+
+        image=getImage(getDocumentBase(),"Slime.jpg");
+
+    }
+
+    public void actionPerformed(ActionEvent ae){
+        repaint();
+    }
+
+    /**
+     * Paint method for applet.
+     * 
+     * @param  g   the Graphics object for this applet
+     */
+    public void paint(Graphics g)
+    {
+        if(level==1){
+            g.drawImage(image,xPos1,yPos1,80,80,this);
+
+            g.setColor(Color.ORANGE);
+            g.fillRect(0,0,120,140);
+            g.fillRect(120,0,200,60);
+            g.fillRect(280,0,220,140);
+            g.fillRect(0,220,120,200);
+            g.fillRect(120,380,300,40);
+
+            g.setColor(Color.BLACK);
+            g.drawLine(280,220,420,220);
+            g.drawLine(200,220,200,300);
+            g.drawLine(200,300,500,300);
+
+            g.drawString("x="+xPos1,20,40);
+            g.drawString("y="+yPos1,20,60);
+            g.drawString("Cross Counter="+crossCounter1,20,80);
+
+            if(yPos1==140 && xPos1>=0 && xPos1<=420 && crossCounter1==0){
+                xPos1+=xInc;             
+            }
+            if(xPos1==423 && yPos1>=140 && yPos1<=220){
+                yPos1+=yInc;
+                crossCounter1=1;
+            }
+            if(yPos1==221 && xPos1>=202 && xPos1<=423){
+                xPos1-=xInc;
+            }
+            if(xPos1==201 && yPos1>=60 && yPos1<=221 && crossCounter1==1){
+                yPos1-=yInc;
+            }
+            if(yPos1==59 && xPos1>=123 && xPos1<=201){
+                xPos1-=xInc;
+                crossCounter1=2;
+            }
+            if(xPos1==120 && yPos1>=59 && yPos1<=300 && crossCounter1==2){
+                yPos1+=yInc;
+            }
+            if(yPos1==302 && xPos1>=120 && xPos1<=417){
+                xPos1+=xInc;
+            }
+            if(xPos1==420 && yPos1>=302 && yPos1<=418){
+                yPos1+=yInc;
+            }
+            if(yPos1==419 && xPos1>=-80 && xPos1<=420){
+                xPos1-=xInc;
+            }
+            if(xPos1==-81 && yPos1==419){
+                level=2;
+            }
+        }
+        if(level==2){            
+            g.drawImage(image,xPos2,yPos2,80,80,this);
+
+            g.setColor(Color.CYAN);
+            g.fillRect(0,0,80,160);
+            g.fillRect(0,240,80,260);
+            g.fillRect(80,400,420,100);
+            g.fillRect(400,240,100,160);
+            g.fillRect(480,0,20,250);
+
+            g.setColor(Color.BLACK);
+            g.drawLine(160,160,160,80);
+            g.drawLine(160,80,400,80);
+            g.drawLine(400,80,400,160);
+            g.drawLine(240,160,320,160);
+            g.drawLine(160,240,160,320);
+            g.drawLine(160,320,320,320);
+            g.drawLine(320,320,320,240);
+            g.drawLine(320,240,240,240);
+
+            g.drawString("x="+xPos2,20,420);
+            g.drawString("y="+yPos2,20,440);
+            g.drawString("Cross Counter="+crossCounter2,20,460);
+
+            if(yPos2==160 && xPos2>=0 && xPos2<=400 && crossCounter2==0){
+                xPos2+=xInc;                        
+            }
+            if(xPos2==402 && yPos2>=4 && yPos2<=160){
+                yPos2-=yInc;
+            }
+            if(yPos2==1 && xPos2>=81 && xPos2<=402){   
+                xPos2-=xInc;
+                crossCounter2=1;
+            }
+            if(xPos2==78 && yPos2>=1 && yPos2<=319 && crossCounter2==1){
+                yPos2+=yInc;
+            }
+            if(yPos2==322 && xPos2>=78 && xPos2<=318){
+                xPos2+=yInc;
+                crossCounter2=2;
+            }
+            if(xPos2==321 && yPos2>=80 && yPos2<=322 && crossCounter2==2){
+                yPos2-=yInc;
+            }
+            if(yPos2==79 && xPos2>=160 && xPos2<=321){
+                xPos2-=xInc;
+                crossCounter2=3;
+            }
+            if(xPos2==159 && yPos2>=79 && yPos2<=240 && crossCounter2==3){
+                yPos2+=yInc;
+            }
+            if(yPos2==241 &&
+        }
+    }
+}

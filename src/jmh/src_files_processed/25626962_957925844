@@ -1,0 +1,78 @@
+
+/**
+ * ##### # ########### ## ##### ######### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import images.APImage;
+import images.Pixel;
+
+public class TestSepia
+{
+    public static void main(String[] args)
+    {
+    APImage image = new APImage( "smokey.jpg" );
+    
+    System.out.println("Width: " + image.getWidth());
+    System.out.println("Height: " + image.getHeight());
+     System.out.println(image.toString());
+       
+       for (Pixel p : image)
+       {
+           int red = p.getRed();
+           int green = p.getGreen();
+           int blue = p.getBlue();
+           int average = (red + green + blue) / 3;
+           if(average < 128)
+           {
+           p.setRed(average);
+           p.setGreen(average);
+           p.setBlue(average);
+        }
+        else
+        {
+           p.setRed(average);
+           p.setGreen(average);
+           p.setBlue(average);
+       }
+       
+       for(int y = 0; y < image.getHeight(); y++)
+       {
+           image.setPixel(0, y, new Pixel(0,0,225));
+       }
+         for(int y = 0; y < image.getHeight(); y++)
+       {
+           image.setPixel(image.getWidth()-1, y, new Pixel(0,0,225));
+       }
+         for(int x = 0; x < image.getWidth(); x++)
+       {
+           image.setPixel(x, 0, new Pixel(0,0,225));
+       }
+         for(int x = 0; x < image.getWidth(); x++)
+       {
+           image.setPixel(x, image.getHeight() -1, new Pixel(0,0,225));
+       }
+       
+   }
+   image.draw();
+   
+   if(red < 63)
+   {
+       red = (int) (red * 1.1);
+       blue = (int) (blue * 0.9);
+    }
+    else if(red < 1.15)
+    {
+       red = (int) (red * 1.15);
+       blue = (int) (blue * 0.85); 
+    }
+    else
+    {
+        red = Math.min(int(red * 1.08), 225);
+        blue = (int) (blue * 0.93);
+    }
+
+}
+}
+

@@ -1,0 +1,166 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.applet.Applet;
+
+/**
+ * ##### ######################### - ##### # ########### ## ### ##### ####
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ######)
+ */
+public class Game extends Applet implements KeyListener, MouseListener, ActionListener, MouseMotionListener
+{
+    private int x,y;
+    private Timer timer;
+    private Image image;
+    private int level;
+    private int xscreen, yscreen;
+    private Image backgroundImage;
+    private Image instructionImage;
+    private Image playerToken;
+    private int xinc, yinc;
+    private boolean end;
+    private int xPos, yPos;
+
+    public void init()
+    {
+        level=0;
+        timer=new Timer(10,this);
+        timer.start();
+        addKeyListener(this);
+        requestFocus();
+        xscreen=getWidth();
+        yscreen=getHeight();
+        addMouseListener(this);
+        addMouseMotionListener(this);
+        image=getImage(getDocumentBase(),"Snakes and Ladders.jpg");
+        instructionImage=getImage(getDocumentBase(),"Instructions.png");
+        backgroundImage=getImage(getDocumentBase(),"bgroundpic.jpg");
+        playerToken=getImage(getDocumentBase(),"gametoken.png");
+        end=true;
+        xPos=xscreen-(xscreen-25);
+        yPos=yscreen-(yscreen-(yscreen-35));
+        xinc=35;
+        yinc=35;
+
+    }
+
+    public void actionPerformed(ActionEvent ae){
+        repaint();
+    }
+
+    public void mouseExited(MouseEvent me){
+    }
+
+    public void mouseEntered(MouseEvent me){
+    }
+
+    public void mouseReleased(MouseEvent me){
+    }
+
+    public void mousePressed(MouseEvent me){
+    }
+
+    public void mouseClicked(MouseEvent me){
+        x=me.getX();
+        y=me.getY();
+        repaint();
+    }
+
+    public void mouseDragged(MouseEvent me){
+
+    }
+
+    public void mouseMoved(MouseEvent me){
+    }
+
+    public void update(Graphics g){
+        paint(g);
+    }
+
+    public void keyReleased(KeyEvent ke){
+
+    }
+
+    public void keyPressed(KeyEvent ke){
+        int zzz=ke.getKeyCode();
+        switch(zzz){
+            case(KeyEvent.VK_W):
+
+            break;
+            case(KeyEvent.VK_S):
+
+            break;
+            case(KeyEvent.VK_A):
+
+            break;
+            case(KeyEvent.VK_SPACE):
+
+            break;
+
+        }
+    }
+
+    public void keyTyped(KeyEvent ke){
+    }
+
+    /**
+     * Paint method for applet.
+     * 
+     * @param  g   the Graphics object for this applet
+     */
+    public void paint(Graphics g)
+    {
+        if(level==0){
+            xscreen=getWidth();
+            yscreen=getHeight();
+            g.drawImage(backgroundImage,0,0,xscreen,yscreen,this);
+            g.setFont(new Font("Times New Roman",Font.BOLD,55));
+            g.setColor(Color.GREEN);
+            g.drawString("Snakes and Ladders",150,80);
+            g.setColor(Color.MAGENTA);
+            g.setFont(new Font("Garamond",Font.PLAIN,40));
+            g.drawString("Play",80,300);
+            g.drawString("Instructions",80,375);
+            g.setColor(Color.YELLOW);
+            g.drawRect(70,265,79,48);
+            g.setColor(Color.RED);
+            g.drawRect(70,343,200,48);
+            if(x>=70 && x<=149 && y>=265 && y<=313){
+                level+=1;
+            }
+            if(x>=70 && x<=270 && y>=343 && y<=391){
+                level+=2;
+            }
+
+        }
+        int randomNumber=0;
+        if (level==1){ 
+            
+                while(end){
+                    xscreen=getWidth();
+                    yscreen=getHeight();            
+                    g.drawImage(image,0,0,xscreen,yscreen,this);
+                    g.setColor(ColorLIBSHAH.LIGHTPURPLE());
+                    g.drawImage(playerToken,xPos,yPos,32,32,this);
+                    if(x>=0 &&x <=500 && y>=0 && y<=500){
+                        randomNumber=(int)(Math.random()*6+1);
+                        xPos=randomNumber*xinc;
+                    }
+                }
+            }
+                
+            
+            
+
+        }
+        if (level==2){
+            xscreen=getWidth();
+            yscreen=getHeight();
+            g.drawImage(instructionImage,0,0,xscreen,yscreen,this);
+
+        }
+
+    }
+}

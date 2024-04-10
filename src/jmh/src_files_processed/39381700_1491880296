@@ -1,0 +1,81 @@
+/**
+ * #### ####### ########## ### ######### #######.
+ * 
+ * @###### (#### ######) 
+ * @####### (##.##.####)
+ */
+import java.awt.BorderLayout;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.awt.Container;
+import java.util.Scanner;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.Graphics;
+import java.awt.Image;
+import javax.swing.JFrame;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class BLA {
+    private int result;
+    public static void main(String[] args) {
+        JFrame window=new JFrame();
+        Dimension frameSize=new Dimension(800,400);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int top=(screenSize.height-frameSize.height)/2;
+        int left=(screenSize.width-frameSize.width)/2;
+        window.setSize(frameSize);
+        window.setLocation(left, top);
+        window.setTitle("Fibonacci-Rechner");
+        setupContent(window);
+
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setVisible(true);
+
+    }
+
+    private static void setupContent(JFrame window) {
+        JPanel content =new JPanel();
+        JLabel label=new JLabel("<html><i><H3>Geben Sie eine ganze Zahl für n ein und drücken Sie die Eingabetaste oder klicken Sie auf 'OK'!</H3></i></html>");
+        JTextField textField = new JTextField(3);
+        JButton button=new JButton("OK");
+        JLabel enteredText=new JLabel();
+        JLabel warnung=new JLabel("<html><p class="zentriert"><body bgcolor='#FF6600'<i><H3>Wählen Sie möglichst <em>kleine</em> Zahlen, da der Rechenprozess ab Werten über n=40 länger dauert.</H3></i></body></p></html>");
+        content.add(label);
+        content.add(warnung);
+        content.add(textField);
+        content.add(button);
+        content.add(enteredText);
+
+        window.setContentPane(content);
+
+        ActionListener submitAction = (e) -> {
+
+                String txt = textField.getText();
+                int entered = Integer.parseInt(txt);
+                int fib=fibonacci(entered);
+                textField.setText("");
+                enteredText.setText(("Ergebnis: F"+entered+" = "+String.valueOf(fib)));
+
+            };
+        button.addActionListener(submitAction);
+        textField.addActionListener(submitAction);
+    };
+
+    static int fibonacci(int i){
+        if(i<=0){
+            return 0;
+        }
+        else if(i==1){
+            return 1;
+        }
+        else{
+            return fibonacci(i-1)+fibonacci(i-2);
+        }
+    }
+}

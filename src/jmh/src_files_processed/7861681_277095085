@@ -1,0 +1,150 @@
+DAVID AZNAR GORGAS 513
+DIEGO ESCUDERO BRUN 513
+GUILLERMO ARPON GOMEZ 513
+GUILLERMO MONTAÑES PEGUERO 514
+RUBEN OIZ SERRANO 514
+
+import java.io.*;
+import java.util.*;
+
+/**
+ * Write a description of class AntiVirus here.
+ * 
+ * @author (your name) 
+ * @version (a version number or a date)
+ */
+public class AntiVirus
+{
+
+   Virus v;
+   int posVirus;
+
+    /**
+     * Constructor for objects of class AntiVirus
+     */
+    public AntiVirus( Virus v )
+    {
+        v = new Virus("virus");
+        this.posVirus=0;
+    }
+    public int getPosVirus(){
+    
+     return posVirus;
+    
+    
+    }
+    public void setPosVirus(int posicion){
+    
+         this.posVirus=posicion;
+    }
+    
+    /**
+     * Metodo escanear para conocer si un fichero binario se encuentra infectado por this.v
+     * 
+     * @param  nombre   fichero binario a escanear
+     * @return     true si el fichero se encuentra infectado, false en caso contrario 
+     */
+    public boolean escanear( String nombre )
+    {     
+        boolean infectado = false;
+        try {
+        File escaneado = new File ("nombre");
+        FileInputStream in = new FileInputStream (escaneado);
+        FileInputStream in2 = new FileInputStream (v.getFile());
+        
+        byte [] vinfectado = new byte[(int)escaneado.length()];
+        byte [] vvirus = new byte[100];
+        int contador = ((int)(escaneado.length()/100))*100;
+        
+        for(int i = 0; i <= vinfectado.length; i++){
+            vinfectado[i] =(byte) in.read();
+        }
+         for(int i = 0; i <= 99; i++){
+            vvirus[i] = (byte)in2.read();
+            
+        }
+         for(int i = 0; i <= contador ; i+=100){
+            
+            if(vinfectado [i] != vvirus [0] ){
+                return infectado;
+                
+            }
+            else{
+                for ( int j = 1; j<=99 ; j++ )
+                {
+                    if (vinfectado[j]!= vvirus[j]) {
+                        infectado=false;
+                    }
+                        else{ 
+                         infectado=true;
+                         setPosVirus(i);
+                    }
+                }
+            }
+              }
+              
+        
+         in.close();
+         in2.close();
+      } catch(FileNotFoundException e){
+        System.out.println("No existe fichero");}
+        catch(IOException e){
+            System.out.println("Error E/S");}
+         return infectado;   
+    }
+ 
+
+
+    /**
+     * Metodo para desinfectar un fichero binario infectado por this.v
+     * 
+     * @param  nombre   fichero binario a desinfectar
+     */    
+    public void desinfectar( String nombre )
+    {   
+       try{
+        File salida= new File("salida2.jpg");
+        FileOutputStream out= new FileOutputStream(salida);
+        
+        File infectado= new File("salida.jpg");
+        FileInputStream in= new FileInputStream(infectado);
+        
+        int leido=0;
+         while((leido=in.read()) != getPosVirus() ) {
+        
+            out.write(leido);
+        
+        }
+         while((leido=in.read()+(int)v.getFile().length()) != -1) {
+        
+            out.write(leido);
+        
+        }
+        out.close();
+        in.close();
+         } catch(FileNotFoundException e){
+        System.out.println("No existe fichero");}
+        catch(IOException e){
+            System.out.println("Error E/S");}
+        
+    }
+
+    
+   public static void main( String[] args )
+    {
+        Virus v = new Virus("Fundamentos.virus");
+        AntiVirus avast = new AntiVirus( v );
+        
+        if( avast.escanear("salida.jpg") )
+             {
+            System.out.println( "El fichero esta infectado" );
+            avast.desinfectar("salida2.jpg");}
+            
+                 else
+           { System.out.println( "El fichero no esta infectado" );}
+        }   
+    }       
+           
+    
+        
+        

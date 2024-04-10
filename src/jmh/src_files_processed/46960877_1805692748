@@ -1,0 +1,211 @@
+ 
+
+public class Game
+{
+    private Room aCurrentRoom;
+    private Parser aParser;
+ 
+    private void  createRooms()
+    {   
+        /**
+        * creation des lieux
+        * "Room" devant v*** est un lieux
+        */
+        Room vBateau = new Room(" Sur le bateau");
+        Room vPlage = new Room(" Sur la plage"); 
+        Room vLac     = new Room(" au bord du Lac des Zooloo's");
+        Room vChemin     = new Room(" Sur le chemin Koogar's");
+        Room vRocher  = new Room(" devant le rocher Espoir");
+        Room vArbre = new Room (" devant Arbre Centrale");
+        Room vTaniere = new Room (" dans la tanière de N'Golo");
+        Room vRadeau = new Room (" sur le radeau");
+        Room vPommier = new Room(" devant le pommier KA");
+        
+        vBateau.setExit("East", vPlage);
+        vPlage.setExit("South",vChemin);
+        vPlage.setExit("East",vLac);
+        vPlage.setExit("North",vArbre);
+        
+        vLac.setExit("East", vPommier);
+        vLac.setExit("South", vArbre);
+        vLac.setExit("West", vPlage);
+        
+        vPommier.setExit("South", vArbre);
+        vPommier.setExit("West", vLac);
+        
+        vChemin.setExit("East",vArbre);
+        vChemin.setExit("South", vRocher);
+        vChemin.setExit("North", vPlage);
+        
+        vRocher.setExit("West",vArbre);
+        vRocher.setExit("North",vChemin);
+        
+        vArbre.setExit("West",vRocher);
+        vArbre.setExit("NorthWest",vChemin);
+        vArbre.setExit("North",vLac);
+        vArbre.setExit("NorthEast", vPommier);
+        vArbre.setExit("East", vRadeau);
+        vArbre.setExit("South",vTaniere);
+        vArbre.setExit("SouthWest",vPlage);
+        
+        vTaniere.setExit("North", vArbre);
+        
+        vRadeau.setExit("West", vRadeau);
+        
+        
+    
+        
+     
+        
+        
+
+
+        this.aCurrentRoom= vBateau;
+    } 
+
+    public Game()
+    {
+        this.createRooms();
+    }  
+
+    private void goRoom(final Command pCommand)
+    {
+
+        boolean vTest = pCommand.hasSecondWord();
+       
+        String vDirection = pCommand.getSecondWord();
+        Room vNextRoom = this.aCurrentRoom.getExit(vDirection);
+
+
+
+    
+    
+    if (vNextRoom == null)
+    {
+        System.out.println("There is no door !");
+    }
+    else
+    {
+        this.aCurrentRoom = vNextRoom;
+        this.printLocationInfo();
+    }
+
+
+    
+
+
+
+   
+}
+
+private void printWelcome()
+{
+System.out.println("Bienvenue sur le jeu L'incroyable aventure de Bernard");
+System.out.println("le jeu tellement ennuyant");
+System.out.println("Type 'help' if tou need help.");
+System.out.println("You are outside the main entrance of the university");
+System.out.println("Exits : East South West North NorthEast NorthWest SouthWest SouthEa");
+
+
+}
+
+private void printHelp()
+{
+System.out.println("You are lost. You are alone.");
+System.out.println("You wander around at the university.");
+System.out.println("Your command words are :");
+System.out.println(" vos commandes sont: ");
+System.out.println(aParser.showCommand() + "\n");
+}
+
+private void printLocationInfo()
+{
+System.out.println (getLongDescription());
+
+
+}
+private String getLongDescription()
+    {
+        return " Vous êtes :" + aCurrentRoom.getDescription()+ "\n" + aCurrentRoom.getExitString();
+    }
+    
+    private void look()
+    {
+        System.out.println (getLongDescription());
+    }
+    
+    
+    
+public void play()
+{
+this.printWelcome();
+boolean vFinished = false;
+Command vCommand;
+while (vFinished == false)
+{
+ aParser = new Parser();
+ vCommand = this.aParser.getCommand();
+ vFinished =this.processCommand(vCommand);
+}
+System.out.println("Thank you for playing . Good bye.");
+
+}
+
+
+
+private boolean quit(final Command pCommandquit)
+{
+boolean vTest = pCommandquit.hasSecondWord();
+if(vTest == true)
+{
+System.out.println("Quit what"); 
+return false;
+}
+else  
+{
+return true ; 
+}
+}
+
+
+private boolean processCommand(final Command pPC)
+{
+if("go".equals(pPC.getCommandWord()))
+{
+this.goRoom(pPC);
+return false;
+}
+
+else if ("help".equals(pPC.getCommandWord()))
+{
+this.printHelp();
+return false;
+}
+
+else if ("quit".equals(pPC.getCommandWord()))
+{
+this.quit(pPC);
+return true;
+}
+else if ("eat".equals(pPC.getCommandWord()))
+{
+this.eat();
+return false;
+}
+else 
+{
+System.out.println("I don't know what you mean"); 
+return false;
+}
+}
+
+private void eat()
+{
+    System.out.println("Vous avez mangé et n'avez plus faim désormais");
+}
+private int[] Tabmap;
+Tabmap = new int [x5];
+int v6 = Tabmab.lenght;
+
+ 
+}

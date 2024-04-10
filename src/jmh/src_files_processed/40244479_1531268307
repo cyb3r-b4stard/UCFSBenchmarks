@@ -1,0 +1,88 @@
+import java.io.*;
+import java.util.Scanner;
+import java.util.Random;
+import java.util.ArrayList;
+/**
+ * ######## ### ####### ####
+ * 
+ * @###### ######## 
+ * @####### ####.##.##
+ */
+public class CapitalQuiz 
+{
+    private State[] states = new State[50];
+    
+    String state; 
+    String abbreviation;
+    String capital;
+    public CapitalQuiz(String) throws FileNotFoundException
+    {
+        File myFile = new File("stateData.txt");
+        states = new State[50];
+        
+        Scanner fileIn = new Scanner(new File("stateData.txt"));
+        fileIn.useDelimiter("[,\n]");
+        
+        for (int i = 0; i < 50; i++)
+        {
+            state = fileIn.next();
+            abbreviation = fileIn.next();
+            capital = fileIn.next();
+            states[i] = new State(state, abbreviation, capital); 
+        }  
+        
+        fileIn.close();
+    } 
+    
+    public void takeQuiz()
+    {
+        Scanner input = new Scanner(System.in);
+        
+        Random generator = new Random();
+        int gen; 
+        gen = generator.nextInt(50);
+        
+        ArrayList<Integer> repeated = new ArrayList<Integer>();
+        
+        int countCorrect = 0;
+        int countTotal = 0;
+        
+        String outcome = "";
+        
+        while (!outcome.equals("STOP") && countTotal <= 49)
+        {
+            System.out.println("What's the capital of " +
+                      states[gen].getName() + "? (STOP to quit)");
+                      
+            outcome = input.nextLine();
+                
+                
+                
+            if (outcome.equals(states[gen].getCapital()))
+            {
+                System.out.println("Right!");
+                    
+                countCorrect++;
+            }
+            else
+            {
+                if (!outcome.equals("STOP"))
+                {
+                    System.out.println("No, the answer is " +
+                        states[gen].getCapital());
+                }    
+                }
+            countTotal++;
+            
+            gen = generator.nextInt(50);
+        }
+        if (outcome.equals("STOP"))
+        {
+            System.out.println("You answered " + countCorrect +
+                                " out of " + countTotal + 
+                                " questions correctly");
+            System.out.println("That's " + (countCorrect * 100 / countTotal)
+                                + "%.");                    
+        }    
+    }    
+}

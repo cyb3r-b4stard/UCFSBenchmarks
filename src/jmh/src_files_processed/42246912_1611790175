@@ -1,0 +1,198 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.border.*;
+import java.util.Arrays;
+/**
+ * #### (###)
+ * 
+ * @###### ###### ########
+ * @####### ####.##.##
+ */
+public class View
+{   
+    private Controller controller;
+    
+    private JFrame frame;
+    private JPanel content;
+    private JPanel topContainer;
+    private JPanel selectionContainer;
+    private JPanel bottomContainer;
+    
+    private JComboBox<Film> filmList;
+    private JList<SimpleShowing> showingList;
+    
+    private JLabel selectionCounter;
+    private JLabel showingInfo;
+    
+    private JButton bookButton;
+    private JButton removeButton;
+    
+    private CinemaComponent seatSelection;
+    private reservationBookingWindow bookingWindow;
+    private reservationRemovalWindow removalWindow;
+
+    /**
+     *  initalize the Controller by setting the controller for the view
+     *  @param The controller from MVC design partern
+     */
+    public void setController(Controller controller)
+    {
+        this.controller = controller;
+        makeFrame();
+    }
+    
+    public void notifyException(Exception e)
+    {
+        JOptionPane.showMessageDialog(frame, e.toString());
+        System.out.println(e);
+    }
+    
+    /**
+     * Populate or update components with Data
+     */
+    public void updateView()
+    {
+        if(controller.isFilmSelected()) showingList.setListData(controller.getShowingList());
+        else showingList.setListData(new SimpleShowing[]{});
+
+        seatSelection.update();
+        
+        selectionCounter.setText("Seats Selected: " + seatSelection.getSelectedSeats().length);
+        
+        if(controller.isShowingSelected()) {
+            showingInfo.setText("Showing: " + controller.getShowing().getFilm() + "     on: " + controller.getShowing().getDate() + "     in auditorium: " + controller.getShowing().getAud().ID);
+            bookButton.setVisible(true);
+            removeButton.setVisible(true);
+        }
+        else{
+            showingInfo.setText(" ");
+            bookButton.setVisible(false);
+            removeButton.setVisible(false);
+        }
+        if(bookingWindow!= null)bookingWindow.cancel();
+        if(removalWindow!= null)removalWindow.cancel();
+        
+        frame.repaint();
+        frame.setVisible(true);
+    }
+    
+    /**
+     * Creates frame and initializes components
+     */
+    public void makeFrame()
+    {
+        frame = new JFrame("Biograf");
+        content = (JPanel)frame.getContentPane();
+        content.setLayout(new BorderLayout());
+        
+        topContainer = new JPanel();
+        topContainer.setBorder(new EtchedBorder());
+        content.add(topContainer, BorderLayout.NORTH);
+        
+        selectionCounter = new JLabel();
+        topContainer.add(selectionCounter);
+        
+        initFilmSelection();
+        initShowingSelection();
+        
+        selectionContainer = new JPanel();
+        selectionContainer.setLayout(new BorderLayout());
+        selectionContainer.setBorder(new EtchedBorder());
+        content.add(selectionContainer, BorderLayout.CENTER);
+        
+        seatSelection = new CinemaComponent(controller, this);
+        selectionContainer.add(seatSelection, BorderLayout.CENTER);
+        
+        showingInfo = new JLabel();
+        selectionContainer.add(showingInfo, BorderLayout.NORTH);
+        
+        bottomContainer = new JPanel();
+        bottomContainer.setBorder(new EtchedBorder());
+        content.add(bottomContainer, BorderLayout.SOUTH);
+        
+        
+        
+        bookButton = new JButton("Book");
+        bookButton.addActionListener(e -> bookReservation());
+        bottomContainer.add(bookButton);
+        
+        removeButton = new JButton("Remove Reservation");
+        removeButton.addActionListener(e -> removeReservation());
+        bottomContainer.add(removeButton);
+        
+        updateView();
+        
+        frame.pack();
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        frame.setLocation(d.width/2 - frame.getWidth()/2, d.height/2 - frame.getHeight()/2);
+    }
+    
+    
+    
+    private void initFilmSelection()
+    {
+        JPanel filmContainer = new JPanel();
+        
+        filmContainer.setLayout(new BorderLayout());
+        filmContainer.setBorder(new EtchedBorder());
+        
+        filmList = new JComboBox<Film>();
+        filmList.addActionListener(e -> selectFilm());
+        
+        filmContainer.add(new JLabel("Vælg film"), BorderLayout.NORTH);
+        filmContainer.add(filmList, BorderLayout.CENTER);
+        filmList.setModel(new DefaultComboBoxModel<Film>(controller.getFilms()));
+        topContainer.add(filmContainer);
+    }
+    
+    private void initShowingSelection()
+    {
+        JPanel showingContainer = new JPanel();
+        
+        showingContainer.setLayout(new BorderLayout());
+        showingContainer.setBorder(new EtchedBorder());
+        
+        showingList = new JList<SimpleShowing>();
+        showingList.addListSelectionListener(e -> selectShowing());
+        
+        
+        showingContainer.add(new JLabel("Vælg Forestilling"), BorderLayout.NORTH);
+        showingContainer.add(showingList, BorderLayout.CENTER);
+        
+        content.add(showingContainer, BorderLayout.WEST);
+    }
+    
+    private void selectFilm()
+    {
+        int filmID = controller.getFilms()[filmList.getSelectedIndex()].ID;
+        System.out.println(controller.getFilms()[filmList.getSelectedIndex()]);
+        controller.selectFilm(filmID);
+    }
+    
+    private void selectShowing()
+    {
+        if(!showingList.isSelectionEmpty()){
+            int showingID = controller.getShowingList()[showingList.getSelectedIndex()].ID;
+            System.out.println(controller.getShowingList()[showingList.getSelectedIndex()]);
+            controller.selectShowing(showingID);
+        }
+    }
+    
+    private void bookReservation()
+    {
+        if(controller.isShowingSelected() && seatSelection.getSelectedSeats().length > 0)
+        {
+            bookingWindow = new reservationBookingWindow(controller, seatSelection.getSelectedSeats(), controller.getShowing().ID);
+        }
+        else JOptionPane.showMessageDialog(frame, "Please select a seat and a showing");
+    }
+    
+    private void removeReservation()
+    {
+        if(controller.isShowingSelected()){
+            removalWindow = new reservationRemovalWindow(controller, controller.getShowing().ID, controller.getShowing().getReservationList());
+        }
+        else JOptionPane.showMessageDialog(frame, "Please select a showing");
+    } 
+}

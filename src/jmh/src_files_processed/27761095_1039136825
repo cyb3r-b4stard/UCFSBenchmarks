@@ -1,0 +1,142 @@
+
+/**
+ * #### ###### ### ######### ### ############## ### #########
+ * 
+ * @###### ### #############, #### ####### 
+ * @####### ##-##-####
+ */
+public class PatientenWarteschlange{
+    private Patient[] warteschlange;
+    private int anzahlPatienten;
+
+    private static final String MSG_WS_LAENGE = "Die Warteschlange muss zwischen 1 und 10 Plätzen haben!";
+    private static final String MSG_WS_VOLL = "Die Warteschlange ist voll!";
+    private static final String MSG_WS_LEER = "Die Warteschlange ist leer!";
+    private static final String MSG_KEIN_PATIENT = "Dieser Patient wurde nicht gefunden!";
+
+    /**
+     * Konstruktor zum Erstellen eines PatientenWarteschlange-Arrays
+     * 
+     * @param laenge_WS     Die Länge des Arrays mit der Vorgabe, dass das es > 0 und <= 10 sein muss
+     */
+    public PatientenWarteschlange(int laenge_WS){
+        check(laenge_WS > 0 && laenge_WS <=10, MSG_WS_LAENGE);
+        warteschlange = new Patient [laenge_WS];
+        anzahlPatienten = 0;
+    }
+
+    /**
+     * Methode check zur Überprüfung einer Bedingung
+     *
+     * @param bedingung     Ein Parameter für eine zu überprüfende Bedingung 
+     * @param msg           Ein Parameter für die entsprechende Fehlermeldung
+     */
+    private static void check(boolean bedingung, String msg) {
+        if (!bedingung)
+            throw new RuntimeException(msg);
+    }
+
+    /**
+     * Methode zum Überprüfen, ob die Warteschlange voll ist
+     *
+     * @return true, wenn die Warteschlange voll ist, sonst false
+     */
+    public boolean pruef_WS_voll(){
+        return(warteschlange.length <= anzahlPatienten);
+    }
+
+    /**
+     * Methode zum Hinzufügen eines neuen Patienten in die Warteschlange
+     *
+     * @param patientenNummer   Ein Parameter für die Patientennummer vom Typ int
+     * @param patientenName     Ein Parameter für den Patientannamen vom Typ String
+     */
+    public void neuerPatient(int patientenNummer, String patientenName){
+        check(!pruef_WS_voll(), MSG_WS_VOLL); 
+        warteschlange [anzahlPatienten] = new Patient (patientenNummer, patientenName);
+        anzahlPatienten++;
+    }
+
+    /**
+     * Methode zum Suchen nach einem bestimmten Patienten 
+     *
+     * @param patientenNummer Ein Parameter zur Bestimmung des zu suchenden Patienten nach Patientennummer
+     * @return Der Rückgabewert gibt einen Wert zur Überprüfung (>= 0) zurück
+     */
+    public boolean findePatient(int patientenNummer){
+        for(int i = 0; i < anzahlPatienten; i++){
+            if(warteschlange[i].getPatientenNummer() == patientenNummer){
+                return true;
+            }            
+        }
+        return false;          
+    }
+
+    /**
+     * Methode zum Überprüfen, ob die Warteschlange leer ist
+     *
+     * @return true, wenn die Warteschlange leer ist, sonst false
+     */
+    public boolean pruef_WS_leer(){
+        return(anzahlPatienten == 0);
+    }
+
+    /**
+     * Methode zum Entfernen eines Patienten aus der Warteschlange
+     * 
+     * @param patientenNummer   Ein Parameter für die Patientennummer vom Typ int
+     */
+    public void entfernePatient(int patientenNummer){
+        check(!pruef_WS_leer(), MSG_WS_LEER);
+        for(int i = 0; i < anzahlPatienten; i++){
+            if (findePatient(patientenNummer) == true){
+                warteschlange[i] = null;
+                warteschlangeAufruecken(i);
+                anzahlPatienten--;
+            }else{
+                throw new RuntimeException(MSG_KEIN_PATIENT);
+            }             
+        }
+
+        /**
+         * Methode zum Aufruecken von Patienten
+         * 
+         * @param  y   a sample parameter for a method
+         * @return     the sum of x and y 
+         */
+        public void warteschlangeAufruecken(int index){
+        for(int i = index; i < warteschlange.length-1; i++){
+            warteschlange [i] = warteschlange [i+1];
+        }
+    }
+
+    /**
+     * Methode fuer den naechsten Patienten
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public Patient derNaechsteBitte(){
+        Patient naechster = warteschlange [0];
+        entfernePatient(naechster.getPatientenNummer());
+
+        return naechster;
+    }
+
+    /**
+     * Methode zum Ausgeben der Warteschlange
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public String toString(){
+        StringBuilder ausgabe = new StringBuilder();
+        ausgabe.append("Warteliste \nPnr \tName \n");
+
+        for(int i = 0; i < anzahlPatienten; i++){
+            ausgabe.append(warteschlange [i].toString());
+            ausgabe.append("\n");
+        }
+        return ausgabe.toString();
+    }
+}

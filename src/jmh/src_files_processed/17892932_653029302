@@ -1,0 +1,61 @@
+import objectdraw.*;
+import java.awt.*;
+import java.util.Random;
+
+/**
+ * ##### ############ # ########### ######### ## # ####### '####'
+ * ### # ####### ########### #######.
+ * 
+ * ##### #######
+ */
+public class Thermometer {
+
+    private static final Color THERMOMETER_COLOR = Color.RED;
+
+    private static final int THERMOMETER_WIDTH = 40;
+
+    private static final int PIXELS_PER_DEGREE = 6;
+
+    private static final int MARKER_SPACING_DEGREES = 5;
+
+    private static final int MARKER_THICKNESS = 2;
+
+    private static final int THERMOMETER_FONT_SIZE = 18;
+    
+    private FramedRect tube;
+    private FilledRect mercury;
+    
+    private static final Color SKY_COLOR = new Color (200, 200, 200);
+    
+    private static final int SCREEN_HEIGHT = 450;
+    
+    private static final Location TUBE_LEFT_CORNER = new Location (0, 0);
+
+    
+    
+    public Thermometer (int startingHeight, DrawingCanvas canvas){
+        mercury = new FilledRect (TUBE_LEFT_CORNER.getX(), TUBE_LEFT_CORNER.getY() + SCREEN_HEIGHT - startingHeight, THERMOMETER_WIDTH, 0, canvas);
+        mercury.setColor (THERMOMETER_COLOR);
+        
+        tube = new FramedRect (TUBE_LEFT_CORNER, THERMOMETER_WIDTH, SCREEN_HEIGHT, canvas);
+        tube.setColor (SKY_COLOR);
+        
+        double nextMarkerTop = 0;
+        while (nextMarkerTop < canvas.getHeight()){
+            Filled Rect nextMarker = new FilledRect (0, nextMarkerTop, THERMOMETER_WIDTH, MARKER_THICKNESS, canvas);
+            nextMarkerTop = nextMarkerTop + MARKER_SPACING_DEGREES;
+        
+        }
+    }
+    
+    public void setMercuryLevel (double levelYCoord){
+        double mercuryHeight = tube.getY() + SCREEN_HEIGHT - levelYCoord;
+        mercury.moveTo (mercury.getX(), levelYCoord);
+        mercury.setHeight (mercuryHeight);
+    }
+    
+    public double getTemperature (double currentTemp){
+        return 1;
+    }
+
+}

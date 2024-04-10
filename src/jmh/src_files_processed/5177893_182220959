@@ -1,0 +1,546 @@
+import java.util.*;
+import java.awt.*;
+import javax.swing.*;
+import java.awt.event.*;
+import java.awt.image.*;
+
+/**
+ * ##### ####### - #### ####### ####### # ####### ####### ## ### #######
+ * ###### ####.  ####### ## ####-##### ### ### #### ### ######.
+ * 
+ * @###### ###### ######
+ * @###### ##### ####  
+ * @###### <### #### #### ####>
+ * 
+ * @####### ## ### #### :###: ########
+ * @####### ## ### #### ## ####### #/# ########## ## ###/### ##########; 
+ *                         #### #######, ########### #######;
+ *                         ########### ##### ####### #########;
+ *                         ######### ##### ##### ## ########, #######;
+ *                         ### ##### ####### ## #####()
+ * @####### ## ### #### ## ######### ###: ####### ##### ### ####### #####
+ */
+public class Mintris extends JPanel implements KeyListener
+{
+
+    /*======================================================================
+     * Constants
+     *----------------------------------------------------------------------
+     */
+
+    public static final int NUM_ROWS = 20;    
+    public static final int NUM_COLS = 10;    
+    public static final int BLOCK_SIZE = 20;  
+
+    public static final int NUM_COLORS    = 3;
+    public static final int INVALID_COLOR = 0;
+    public static final int RED_BLOCK     = 1;
+    public static final int GREEN_BLOCK   = 2;
+    public static final int BLUE_BLOCK    = 3;
+    public static final int EMPTY         = NUM_COLORS + 1;
+
+    public static final int LEFT         = -1;
+    public static final int DOWN         =  0;
+    public static final int RIGHT        =  1;
+
+    /*======================================================================
+     * Instance Variables
+     *----------------------------------------------------------------------
+     */
+    private int[][] field = new int[NUM_ROWS][NUM_COLS];
+
+    private int score = 0;      
+
+    /*======================================================================
+     * Methods
+     *----------------------------------------------------------------------
+     */
+
+    /**
+     * clearField
+     *
+     * creates a new playing field sets all cells in the field to EMPTY.
+     *
+     */
+    public void clearField()
+    {
+        for (int row = 0; row < NUM_ROWS; ++row)
+        {
+            for(int column = 0; column < NUM_COLS; ++column)
+            {    
+                field[row][column] = NUM_COLORS + 1;
+            }
+        }        
+    }
+
+    
+    /**
+     * rotate
+     *
+     * This method rotates a 2x2 block by 90 degrees. 
+     * It does not check that the rotation is valid.  
+     *
+     * @param row the row of the upper-left corner of the 2x2 block
+     * @param col the column of the upper-left block
+     *
+     */
+    public void rotate(int row, int col)
+    {
+       int upperLeft=field[row][col];
+       int upperRight=field[row][col+1];
+       int bottomLeft=field[row+1][col];
+       int bottomRight=field[row+1][col+1];
+       if (upperLeft==EMPTY || upperRight==EMPTY || bottomLeft==EMPTY || bottomRight==EMPTY)
+       {
+          field[row][col]=bottomLeft;
+          field[row+1][col]=bottomRight;
+          field[row+1][col+1]=upperRight;
+          field[row][col+1]=upperLeft;
+       }
+
+    }
+
+    /**
+     * move
+     *
+     * This method moves a 2x2 piece by one space (left, right, or down)
+     * This method does *not* check to make sure that the movement is valid; 
+     * it is up to the caller to verify the move before calling move.
+     *
+     * The block is moved as would be expected for a Tetris game.
+     * Specifically, if an empty space moves onto a block, then the block remains
+     * and is not replaced by the empty space.
+     *
+     * @param row the row of the upper-left corner of the block
+     * @param col the column of the upper-left corner of the block
+     * @param direction the direction to move (LEFT, DOWN, or RIGHT)
+     *        (see the constants defined at the top of this class)
+     *
+     */
+    public void move(int row, int col, int direction)
+    {
+       int upperLeft=field[row][col];
+       int upperRight=field[row][col+1];
+       int bottomLeft=field[row+1][col];
+       int bottomRight=field[row+1][col+1];
+        if (direction == LEFT)
+       {
+           if (upperRight==EMPTY)
+           {
+               field[row][col]=EMPTY;
+               field[row+1][col+1]=EMPTY;
+               field[row][col-1]=upperLeft;
+               field[row+1][col-1]=bottomLeft;
+           }
+           if (upperLeft==EMPTY)
+           {
+               field[row][col+1]=EMPTY;
+               field[row+1][col+1]=EMPTY;
+               field[row][col]=upperRight;
+               field[row+1][col-1]=bottomLeft;
+           }
+           if (bottomRight==EMPTY)
+           {
+               field[row][col+1]=EMPTY;
+               field[row+1][col]=EMPTY;
+               field[row][col-1]=upperRight;
+               field[row+1][col-1]=bottomLeft;
+           }
+           if (bottomLeft==EMPTY)
+           {
+               field[row][col+1]=EMPTY;
+               field[row+1][col+1]=EMPTY;
+               field[row][col-1]=upperRight;
+               field[row+1][col]=bottomRight;
+           }
+       }
+       if (direction == RIGHT)
+       {
+           if (upperRight==EMPTY)
+           {
+               field[row][col]=EMPTY;
+               field[row+1][col]=EMPTY;
+               field[row][col+1]=upperLeft;
+               field[row+1][col+2]=bottomRight;
+           }
+           if (upperLeft==EMPTY)
+           {
+               field[row+1][col]=EMPTY;
+               field[row][col+1]=EMPTY;
+               field[row][col+2]=upperRight;
+               field[row+1][col+2]=bottomRight;
+           }
+           if (bottomRight==EMPTY)
+           {
+               field[row][col]=EMPTY;
+               field[row+1][col]=EMPTY;
+               field[row+1][col+1]=bottomLeft;
+               field[row][col+2]=upperRight;
+           }
+           if (bottomLeft==EMPTY)
+           {
+               field[row][col]=EMPTY;
+               field[row+1][col+1]=EMPTY;
+               field[row][col+2]=upperRight;
+               field[row+1][col+2]=bottomRight;
+           }
+       }
+       if (direction==DOWN)
+       {
+           if (upperRight==EMPTY)
+           {
+               field[row][col]=EMPTY;
+               field[row+1][col+1]=EMPTY;
+               field[row+2][col]=bottomLeft;
+               field[row+2][col+1]=bottomLeft;
+           }
+           if (upperLeft==EMPTY)
+           {
+               field[row][col+1]=EMPTY;
+               field[row+1][col]=EMPTY;
+               field[row+2][col]=bottomLeft;
+               field[row+2][col+1]=bottomLeft;
+           }
+           if (bottomRight==EMPTY)
+           {
+               field[row][col]=EMPTY;
+               field[row][col+1]=EMPTY;
+               field[row+2][col]=bottomLeft;
+               field[row+1][col+1]=bottomLeft;
+           }
+           if (bottomLeft==EMPTY)
+           {
+               field[row][col]=EMPTY;
+               field[row][col+1]=EMPTY;
+               field[row+1][col]=bottomRight;
+               field[row+2][col+1]=bottomRight;
+           }
+       }
+    }
+
+
+    /**
+     * validMove
+     *
+     * This method calculates whether a block may be moved one space in a particular
+     * direction: left, right or down.  A move is invalid if there is another block in
+     * the target location, or if the movement would take the block off of the
+     * playing field
+     *
+     * @param row the row of the upper-left corner of the block
+     * @param col the column of the upper-left corner of the block 
+     * @param direction direction to move (LEFT, RIGHT, or DOWN)
+     *              (see the constants defined at the top of this class)
+     *
+     * @return    true if the movement is legal and false otherwise
+     * 
+     * known weakness: assumes that given initial position is valid
+     */
+    private boolean validMove(int row, int col, int direction)
+    {
+        if (direction == LEFT && col-1!=-1)
+             return true;  
+        else if (direction == RIGHT && col+2!=NUM_COLS+1)
+            return true;
+        else if (direction == DOWN && row+2!=NUM_ROWS+!)
+            return true;
+        else
+            return false;
+    }
+
+    
+    /**
+     * removeRows
+     *
+     * This method searches the field for any complete rows of blocks and
+     * removes them.  Rows above the removed show shift down one row.
+     * The score is incremented for each complete row that is removed.
+     */
+    private void removeRows()
+    {
+    }
+
+   
+
+    /*======================================================================
+     *                    ATTENTION STUDENTS!
+     *
+     * The code below this point should not be edited.  However, you are
+     * encouraged to examine the code to learn a little about how the rest
+     * of the game was implemented.
+     * ----------------------------------------------------------------------
+     */
+    /*======================================================================
+     * More Instance Variables and Constants
+     *
+     * ==> You should not modify the values of these variables <==
+     *----------------------------------------------------------------------
+     */
+    public static final int WINDOW_WIDTH = 230;
+    public static final int WINDOW_HEIGHT = 500;
+    public static final int WINDOW_MARGIN = 10;
+
+    private int currRow = 0;
+    private int currCol = 0;
+
+    private Random randGen = new Random();
+
+    
+    private Color[] blockColors = { 
+            Color.MAGENTA,          
+            Color.RED,              
+            new Color(0, 110, 0),   
+            new Color(0,0,170),     
+            Color.BLACK };          
+
+    /**
+     * createRandomPiece
+     *
+     * creates a new piece at the top of the Mintris board
+     *
+     */
+    public void createRandomPiece()
+    {
+        int col = randGen.nextInt(NUM_COLS - 1);
+        int type = randGen.nextInt(NUM_COLORS) + 1;
+
+        for(int x = 0; x < 2; ++x) 
+        {
+            for(int y = 0; y < 2; ++y) 
+            {
+                this.field[x][y + col] = type;
+            }
+        }
+
+        int which = randGen.nextInt(4);
+        int x = which / 2;
+        int y = which % 2;
+        field[x][y+col] = EMPTY;
+
+        this.currRow = 0;
+        this.currCol = col;
+
+    }
+
+    /**
+     * drawBlock
+     *
+     * a helper method for {@link paint}.  This method draws a Mintris block of a
+     * given color at a given x,y coordinate.
+     *
+     * @param  g          the Graphics object for this application
+     * @param  x, y       the coordinates of the block
+     * @param  blockColor the main color of the block
+     */
+    public void drawBlock(Graphics g, int x, int y, Color blockColor)
+    {
+        g.setColor(blockColor);
+        g.fillRect(x, y, BLOCK_SIZE, BLOCK_SIZE);
+
+        g.setColor(Color.white); 
+        g.drawLine(x, y+1, x + BLOCK_SIZE, y+1);
+        g.drawLine(x + BLOCK_SIZE - 1, y, x + BLOCK_SIZE - 1, y + BLOCK_SIZE);
+        g.setColor(blockColor.darker());
+        g.drawLine(x+1, y, x+1, y + BLOCK_SIZE);
+        g.drawLine(x+1, y + BLOCK_SIZE - 1, x + BLOCK_SIZE - 1, y + BLOCK_SIZE - 1);
+
+        g.setColor(Color.BLACK);
+        g.drawRect(x, y, BLOCK_SIZE, BLOCK_SIZE);
+
+    }
+
+    /**
+     * paint
+     *
+     * This methods draws the current state of the game on a given canvas.  The
+     * field occupies the bottom left corner.  A title is at the top and the
+     * current score is shown at right.
+     * 
+     * @param  g   the Graphics object for this application
+     */
+    public void paint(Graphics g)
+    {
+        Color bgColor = new Color(0x330088);  
+        g.setColor(bgColor);
+        g.fillRect(0,0,WINDOW_WIDTH,WINDOW_HEIGHT);
+
+        int margin = 5;
+        int topSide = WINDOW_HEIGHT - ( NUM_ROWS * BLOCK_SIZE + margin + WINDOW_MARGIN);
+        int bottomSide = topSide + NUM_ROWS * BLOCK_SIZE;
+        int leftSide = WINDOW_MARGIN + margin;
+        int rightSide = leftSide + NUM_COLS * BLOCK_SIZE;
+
+        Color fieldColor = new Color(0x9966FF);  
+        g.setColor(fieldColor);
+        g.fillRect(leftSide, topSide, NUM_COLS * BLOCK_SIZE, NUM_ROWS * BLOCK_SIZE);
+
+        g.setColor(Color.WHITE);
+        for(int i = 1; i <= 5; ++i)
+        {
+            g.drawRect(leftSide - i, topSide - i,
+                NUM_COLS * BLOCK_SIZE + margin , NUM_ROWS * BLOCK_SIZE + margin);
+        }
+
+        for(int row = 0; row < field.length; ++row)
+        {
+            for (int col = 0; col < field[row].length; ++col)
+            {
+                int xPos = leftSide + col * BLOCK_SIZE;
+                int yPos = topSide + row * BLOCK_SIZE;
+
+                if ( (field[row][col] < 0) || (field[row][col] > EMPTY))
+                {
+                    field[row][col] = INVALID_COLOR;
+                }
+
+                if (field[row][col] != EMPTY)
+                {
+                    drawBlock(g, xPos, yPos, blockColors[field[row][col]]);
+                }
+            }
+        }
+
+        g.setColor(Color.WHITE);
+        Font bigFont = new Font("SansSerif", Font.BOLD, 32);
+        g.setFont(bigFont);
+        g.drawString("Mintris",45,50);
+
+        g.setColor(Color.WHITE);
+        Font medFont = new Font("SansSerif", Font.PLAIN, 18);
+        g.setFont(medFont);
+        int leftMargin = rightSide + 15;
+        g.drawString("Score:" + this.score, 70, 75);
+
+    }
+
+    /**
+     * keyPressed
+     *
+     * when the user presses a key, this method examines it to see
+     * if the key is one that the program responds to and then calls the
+     * appropriate method.
+     */
+    public void keyPressed(KeyEvent e)
+    {
+        int key = e.getKeyCode();
+        switch(key)
+        {
+            case KeyEvent.VK_LEFT:
+            case KeyEvent.VK_KP_LEFT:
+            case 'a':
+            case 'A':
+            if (validMove(currRow, currCol, LEFT))
+            {
+                move(currRow, currCol, LEFT);
+                --currCol;
+            }
+            break;
+
+            case KeyEvent.VK_RIGHT:
+            case KeyEvent.VK_KP_RIGHT:
+            case 'd':
+            case 'D':
+            if (validMove(currRow, currCol, RIGHT))
+            {
+                move(currRow, currCol, RIGHT);
+                ++currCol;
+            }
+            break;
+
+            case KeyEvent.VK_DOWN:
+            case 's':
+            case 'S':
+            if (validMove(currRow, currCol, DOWN))
+            {
+                move(currRow, currCol, DOWN);
+                ++currRow;
+            }
+            break;
+
+            case ' ':
+            while (validMove(currRow, currCol, DOWN))
+            {
+                move(currRow, currCol, DOWN);
+                ++currRow;
+            }
+            break;
+
+            case KeyEvent.VK_UP:
+            case 'w':
+            case 'W':
+            rotate(currRow, currCol);
+            break;
+
+            case 'n':
+            case 'N':
+            clearField();
+            createRandomPiece();
+            score = 0;
+            break;
+
+            case 't':
+            case 'T':
+            clearField();
+            for(int i = 3; i < field.length; ++i)
+            {
+                field[i][NUM_COLS/2] = BLUE_BLOCK;
+            }
+            for(int x = field.length - 2; x < field.length; ++x)
+            {
+                for (int y = 0; y < field[x].length; ++y)
+                {
+                    field[x][y] = RED_BLOCK;
+                }
+            }
+            int lastRow = field.length - 1;
+            field[lastRow][0]   = EMPTY;
+            field[lastRow-1][1] = EMPTY;
+            field[lastRow-1][0] = EMPTY;
+            createRandomPiece();
+            break;
+
+            case 'q':
+            case 'Q':
+            System.exit(0);
+
+        }
+
+        if (! validMove(currRow, currCol, DOWN))
+        {
+            removeRows();
+            createRandomPiece();
+        }
+
+        repaint();
+    }
+
+    public void keyReleased(KeyEvent e){}
+
+    public void keyTyped(KeyEvent e){}
+
+    /**
+     * This method creates a window frame and displays the Mintris
+     * game inside of it.  
+     */
+    public static void main(String[] args)
+    {
+        final JFrame myFrame = new JFrame();
+        myFrame.setSize(WINDOW_WIDTH+10, WINDOW_HEIGHT+30);
+
+        myFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+                public void windowClosing(java.awt.event.WindowEvent e) {
+                    System.exit(0);
+                };
+            });
+
+        Mintris mintrisGame = new Mintris();
+        mintrisGame.clearField();
+        mintrisGame.createRandomPiece();
+        myFrame.addKeyListener(mintrisGame);
+        myFrame.getContentPane().add(mintrisGame);
+
+        myFrame.setVisible(true);
+
+    }
+
+}

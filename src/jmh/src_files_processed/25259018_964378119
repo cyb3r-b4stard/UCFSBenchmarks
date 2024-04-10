@@ -1,0 +1,93 @@
+
+import sum.kern.*;
+/**
+ * @###### 
+ * @####### 
+ */
+public class Spiel
+{
+    Bildschirm hatBildschirm;
+    Pfeil hatPfeil;
+    Zielscheibe hatZielscheibe;
+    Tastatur dieTastatur;
+    Maus dieMaus;
+    Buntstift derStift;
+    private int laenge;
+    private double x;
+    private double y;
+    private double richtung;
+
+    public Spiel()
+    {
+        hatBildschirm = new Bildschirm(800,600);
+        hatPfeil = new Pfeil(hatBildschirm);
+        hatZielscheibe = new Zielscheibe(hatBildschirm);
+        derStift = new Buntstift();
+        dieTastatur = new Tastatur();
+        dieMaus = new Maus();
+        hatPfeil.zeichne();
+        laenge =100;
+        x = 200;
+        y = 300;
+        richtung = 0;
+    }
+
+    public double Bleibstecken()
+    {
+        do
+        {
+            this.fliege();
+        }while(!hatPfeil.gibX>=hatZielscheibe.gibX()
+        &&
+        hatPfeil.gibY()>=hatZielscheibe.gibY()-52.5
+        &&
+        hatPfeil.gibY()>=hatZielscheibe.gibY()+52.5)
+    
+    }
+}
+public void TastaturAutomatik()
+    {
+       derStift.normal();
+       do
+       {
+           if(dieTastatur.wurdeGedrueckt())
+           {
+               switch(dieTastatur.zeichen())
+               {
+                   case 'q':
+                   case 'Q':hatPfeil.dreheautomatisch();
+                   break;
+                   case 'w':
+                   case 'W':hatPfeil.fliege();
+                   break;
+                   case 'e':
+                   case 'E':hatPfeil.gibX();
+                   break;
+                   case 'r':
+                   case 'R':hatPfeil.gibY();
+                   break;
+                }
+                dieTastatur.weiter();
+    }
+}while(this.Bleibstecken)
+}
+public void Automatik()
+    {
+       do
+       {
+           while(!dieMaus.istGedrueckt());
+           while(dieMaus.istGedrueckt())
+           {
+           hatPfeil.dreheautomatisch();
+           }
+           while(!dieMaus.istGedrueckt())
+           {
+            hatPfeil.fliege();
+           }
+       }while(x<650);
+    }
+public void Zuruecksetzen()
+{
+    
+}
+}

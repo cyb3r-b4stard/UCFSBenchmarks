@@ -1,0 +1,216 @@
+
+
+import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.*;
+import java.io.*; 
+
+/**
+ * ### #### ##### ########.
+ *
+ * @######  (#### ####)
+ * @####### (# ####### ###### ## # ####)
+ */
+@SuppressWarnings("unchecked")
+public class JSONTest
+{
+    /**
+     * Default constructor for test class JSONTest
+     */
+    public JSONTest()
+    {
+    }
+    
+    @Test
+    public void withDisk() throws IOException {
+        
+        JSON json = new JSON();
+        
+        String filename = "C:/Users/Brint/Desktop/garbage.txt";
+        
+        String str1 = "{\"fiz\":\"bat\",\"foo\":\"bar\",\"simple\":[\"1\",\"2\",\"3\"],\"yuk\":\"fu\"}"
+
+        
+        json.setFromJSONString(str1);  
+        
+        
+        json.withDisk("write", filename); 
+        String str2 = json.withDisk("read", filename); 
+        
+        System.out.println("str1:"+str1);
+        System.out.println("str2:"+str2);
+        
+        assert(str1.equals(str2)); 
+        
+        
+
+        
+        
+        
+    }
+    
+    @Test
+    public void beautify() {
+        JSON json = new JSON();
+        String str1 = "{`glossary`:{`title`:`example glossary`,`GlossDiv`:{`title`:`S`,`GlossList`:{`GlossEntry`:{`ID`:`SGML`,`SortAs`:`SGML`,`GlossTerm`:`Standard Generalized Markup Language`,`Acronym`:`SGML`,`Abbrev`:`ISO 8879:1986`,`GlossDef`:{`para`:`A meta-markup language, used to create markup languages such as DocBook.`,`GlossSeeAlso`:[`GML`,`XML`,`ABC`,`DEF`,`HIJ`]},`GlossSee`:`markup`}}}}}";
+        String text = json.beautify(str1);
+        assert ( text.length() > 0 );
+    }
+
+    @Test
+    public void addArrayItems() {
+        JSON json = new JSON();
+        json.addArrayItems("simple1","1,2,3");
+        json.addArrayItems("simple2","1,2,3");
+        json.addArrayItems("simple3","1,2,3");
+        json.addArrayItems("simple4","1,2,3");
+        
+        String text = ( json.toJSONString() );
+        String test = "{\"simple1\":[\"1\",\"2\",\"3\"],\"simple4\":[\"1\",\"2\",\"3\"],\"simple2\":[\"1\",\"2\",\"3\"],\"simple3\":[\"1\",\"2\",\"3\"]}";
+        assert ( text.equals(test) );
+        
+    }
+    
+    @Test
+    public void fromJSONString() {
+        JSON json = new JSON();
+
+        json.setFromJSONString( 
+            "{\"simple\":\"hello\"}" 
+        );
+        assert( json.toJSONString().equals("{\"simple\":\"hello\"}") );
+        
+        json.setFromJSONString( "{\"simple\":[\"1\",\"2\",\"3\"]}" );
+        assert( json.toJSONString().equals("{\"simple\":[\"1\",\"2\",\"3\"]}") );
+        
+    }
+    
+    @Test
+    public void slashIn() {
+        JSON json = new JSON();
+        String str1 = "{`simple`:[`1`,`2`,`3`]}";
+        str1 = json.slashIn(str1);
+        
+        assert(str1.equals("{\"simple\":[\"1\",\"2\",\"3\"]}"));
+       
+    }
+
+    @Test
+    public void slashOut() {
+        JSON json = new JSON();
+        String str1 = "{\"simple\":[\"1\",\"2\",\"3\"]}";
+        str1 = json.slashOut(str1);
+        
+        assert(str1.equals("{`simple`:[`1`,`2`,`3`]}"));
+
+       
+    }    
+    
+    /**
+     * Note: output is "[4, 5, 6]", not '["4", "5" ,"6"]', but this is easy enough
+     * to get into a string array using split() function.
+     */
+    @Test
+    public void get() {
+        
+        JSON json = new JSON();
+        json.addArrayItems("simple1","1,2,3");
+        json.addArrayItems("simple2","4,5,6");
+        assert(json.get("simple2").equals("[4, 5, 6]"));
+
+    }
+    
+    /**
+     * Get specific array value from supplied element
+     */
+    @Test
+    public void get3() {
+        JSON json = new JSON();
+        json.addArrayItems("simple1","1,2,3");
+        json.addArrayItems("simple2","4,5,6"); 
+        json.addArrayItems("simple3","7,8,9"); 
+        
+        assert( json.get("simple2",2).equals("6"));
+        assert( json.get("simple2",555).equals("")); 
+    }
+    
+    /**
+     * test failure
+     */
+    @Test
+    public void get2() {
+        
+        JSON json = new JSON();
+        json.addArrayItems("simple1","1,2,3");
+        json.addArrayItems("simple2","4,5,6");
+        assert(json.get("simple3").equals("")); 
+    }
+    
+    /**
+     * List version of put
+     * 
+     * output: {"THIRD":["one","two"],"SECOND":["one","two"],"FIRST":["one","two"]}
+
+     * 
+     */
+    @Test
+    public void put_aList() {
+        JSON json = new JSON();
+        List alist = json.createList();
+        alist.add("one");
+        alist.add("two");
+        
+        json.put("FIRST",alist); 
+        json.put("SECOND",alist);
+        json.put("THIRD",alist);
+        
+        
+        
+    }
+    
+    /**
+     * Map version of put
+     * <pre>
+      
+       output: {"MyMap":{"att1":"val1","att2":"val2","att3":"val3"}}
+       
+       beautfified: 
+        {  
+           "MyMap":{  
+              "att1":"val1",
+              "att2":"val2",
+              "att3":"val3"
+           }
+        }
+     * <pre>
+     */
+    @Test
+    public void put3_aMap() {
+        JSON json = new JSON();
+        Map aMap = json.createMap();
+        aMap.put("att1","val1");
+        aMap.put("att2","val2");
+        aMap.put("att3","val3");
+        
+        json.put("MyMap",aMap);
+        
+    }
+    
+    /**
+     * 
+     * output: {"THIRD":"three","SECOND":"two","FIRST":"one"}
+     */
+    @Test
+    public void put2() {
+        JSON json = new JSON();
+        
+        json.put("FIRST","one"); 
+        json.put("SECOND","two");
+        json.put("THIRD","three");
+        
+        
+    }
+}

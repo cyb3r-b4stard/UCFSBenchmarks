@@ -1,0 +1,206 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.event.*;
+import Console.*;
+
+public class GUIMain extends JFrame{
+
+    private JButton mascButton;
+    private JButton femButton;
+    private JLabel word, statusBar;
+    private Font fontStatusBar, wordFont;
+    private JPanel statusBarPanel;
+    private String[][] frDict = Dict.getFrDict();
+
+    private JMenuBar menuBar;
+    private JMenu file,help;
+    private JMenuItem genNewWord, viewScore, exit;
+    private JMenuItem helpItem,updates;
+
+    public GUIMain() {
+        super("French Articles");
+        setBackground(new Color(0xEEEEEE));        
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(100, 100, 350, 250);
+        setIconImage(Toolkit.getDefaultToolkit().getImage("favicon.png"));
+        setResizable(false);
+        setLayout(null);
+
+        menuBar();
+        statusBar();
+
+        wordFont = new Font("Serif", Font.PLAIN, 30);
+        word = new JLabel("Word array");
+        word.setBounds(0, 0, 344, 80);
+        word.setHorizontalAlignment(SwingConstants.CENTER);
+        word.setVerticalAlignment(SwingConstants.CENTER);
+        word.setFont(wordFont);
+
+        add(word);
+        mascButton = new JButton();
+        mascButton.setBounds(47,90, 100, 50);
+        femButton = new JButton();
+        femButton.setBounds(197, 90, 100, 50);
+
+        game();
+        add(mascButton);
+        add(femButton);
+    }
+
+    public void game()
+    {
+
+        int aNo;
+
+        int athe;
+
+        TheHandler handler = new TheHandler();
+        mascButton.addActionListener(handler);
+
+        femButton.addActionListener(handler);
+    }
+
+    private class TheHandler implements ActionListener
+    {
+        public void actionPerformed(ActionEvent event)
+        {
+            if(event.getSource() == mascButton)
+            {
+                System.out.println("Manly");
+
+            }
+            else
+            {
+                System.out.println("Yeah");
+            }
+        }
+
+        public int aOrThe(int x)
+        {
+            if(x == 0)
+            {
+                mascButton.setText("La");
+                femButton.setText("Le");
+            }
+
+            else
+            {
+                mascButton.setText("Une");
+                femButton.setText("Un");
+            }
+            return x;
+        }
+
+        public int mascOrFem(int x)
+        {
+            if(x == 0)
+            {
+                word.setText(frDict[0][Rng.rngArray(frDict[0].length)]);
+            }
+            else
+            {
+                word.setText(frDict[1][Rng.rngArray(frDict[1].length)]);      
+            }
+            return x;
+
+        }
+
+        public void statusBar()
+        {
+            fontStatusBar = new Font("Arial", Font.PLAIN, 12);
+            statusBar = new JLabel("Default text.");
+            statusBar.setVerticalAlignment(SwingConstants.CENTER);
+            statusBar.setFont(fontStatusBar);
+            statusBar.setBounds(5, 179, 344, 20);
+            add(statusBar);
+
+            statusBarPanel = new JPanel();
+            statusBarPanel.setBounds(0, 179, 344, 21);
+            statusBarPanel.setBackground(new Color(0xDDDDDD));
+            add(statusBarPanel);
+
+            JSeparator separator = new JSeparator();
+            separator.setBounds(0, 178, 344, 21);
+            separator.setForeground(new Color(0xAAAAAA));
+            add(separator);
+        }
+
+        public void menuBar()
+        {
+            menuBar = new JMenuBar();
+            file = new JMenu("File");
+            menuBar.add(file);
+
+            help = new JMenu("Help");
+            menuBar.add(help);
+
+            genNewWord = new JMenuItem("Generate a new word");
+            genNewWord.setEnabled(false);
+            genNewWord.addActionListener(
+                new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        int a = Rng.rngArray(2);
+                        word.setText(frDict[a][Rng.rngArray(frDict[a].length)]);
+                        if(a == 0)
+                        {
+                            statusBar.setText("Femininits");
+                        }
+                        else
+                        {
+                            statusBar.setText("Masculinkitty");
+                        }
+                    }
+                }
+            );
+            file.add(genNewWord);
+
+            viewScore = new JMenuItem("Your Score");
+            viewScore.setEnabled(false);
+            file.add(viewScore);
+
+            exit = new JMenuItem("Exit");
+            exit.addActionListener(
+                new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        System.exit(0);             
+                    }
+                }
+            );
+            file.add(exit);
+
+            helpItem = new JMenuItem("About Frans");
+            helpItem.addActionListener(
+                new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        Help var = new Help();   
+                        var.setVisible(true);
+                    }
+                }
+            );
+            help.add(helpItem);
+
+            updates = new JMenuItem("Updates");
+            updates.addActionListener(
+                new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        Update var = new Update();   
+                        var.setVisible(true);
+                    }
+                }
+            );
+            help.add(updates);
+
+            this.setJMenuBar(menuBar);
+
+        }
+
+    }

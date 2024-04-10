@@ -1,0 +1,152 @@
+
+/**
+ * ##### # ########### ## ##### ####### ####.
+ * 
+ * @###### ##### #######
+ * @####### ####### #, ####
+ * #### ### ###### ##############, ##### ####### # ###### ####### ### #### #### #### ##### ### ## #######
+ * #### #### # ### ##### ######, #### #### ## #######, #### ### ##### ## ### ##### ######### ### ###
+ * ####### ####### ## ##### ### #########. ### # ##### #####, ##### ###### ### #### ##### #### ######
+ * ### ###### ## # ####### ######. ### ####### ##### ######### #### #### ### # ## ### ##### ###### #### 
+ * ## ## # ###### ####### ######.
+ **/
+import java.util.*;
+public class Lottery  
+{
+   private static ArrayList <Integer> lottery = new ArrayList<Integer>();
+    private static int [] count = new int [43];
+    private static ArrayList<Integer> bonuses = new ArrayList<Integer>();
+   private static int jackpot = 0;
+   static ArrayList<Integer> numbers = new ArrayList<Integer>();
+ 
+    
+    public static void getLottery()
+    {
+        for (int i = 0; i<6; i++)
+            lottery.add(0);
+    }
+    public static void generateTicket()
+    {
+
+        int number = 0;
+        int first = 0;
+        int value = 0;
+        boolean found = false;
+        first =(int)(Math.random()*42 +1);
+        lottery.set(0,first);
+        count[first]++;
+
+        for (int i=1; i<6;)
+        {
+            number = (int)(Math.random()*42 +1);
+             
+            for(int k = 0; k<6; k++)
+            {
+                 
+                    if (lottery.contains(number))
+                    {
+                        found = true;
+                          
+                    }
+                    else
+                    {
+                        found = false;
+                    }
+                     
+                    if (found == true)
+                          { 
+                              number = (int)(Math.random()*42 +1);
+                               
+                          }
+                          else
+                          {
+                                k++;
+                 
+                        }
+                   
+                   
+                       
+                }
+               
+            if ( found == false)
+         
+                {
+                    count[number] ++;
+                    lottery.set(i, number); 
+                    i++;
+                }
+      
+         
+        
+            }
+      
+        int bonus =0;
+        number = 0;
+        found = false;
+        
+        number = (int)(Math.random()*42 +1);
+        for(int k = 0; k<6; )
+            {
+                    if (lottery.contains(number))
+                    {
+                        found = true;
+                         
+                    }
+                    else
+                    {
+                        found = false;
+                    }
+                    if (found == true)
+                          { 
+                              number = (int)(Math.random()*42 +1);
+                         
+                          }
+                          else 
+                          {
+                                k++;
+                
+                        } 
+                }  
+        if ( found == false)
+        
+        {
+                    bonus = number;
+                    bonuses.add(number);
+         }
+        System.out.println("Lottery picks" + lottery);
+        System.out.println("Bonus number: " + bonus);
+    }
+    
+   
+    public static void getCount()
+    {
+        numbers = Tester.getNumbers();
+         for (int i= 0; i < 6; i++)
+      {
+      
+         System.out.println("The number " + numbers.get(i).intValue() + " was picked " + (count[numbers.get(i)])+ " times.");
+        
+      }
+      
+    }
+    
+   
+    
+    
+    public static void getJackpot()
+    {
+       
+        if (lottery.containsAll(numbers)
+        {
+            jackpot++; 
+        }
+       
+        System.out.println(jackpot);
+            if (jackpot > 0)
+            {
+                System.out.println(" JACKPOT! You won!");
+            }
+
+    }
+    
+}

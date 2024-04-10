@@ -1,0 +1,202 @@
+import java.util.Scanner;
+/**
+ * ##### # ########### ## ##### ###### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Wheel2{
+
+    public static void main(String[] args) {
+
+        String playerGuess = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; 
+        String puzzle = "Gone With the Wind"; 
+        String[] parts = puzzle.split(" "); 
+        String part1 = parts[0]; 
+        String part2 = parts[1];
+        String part3 = parts[2];
+        String part4 = parts[4];
+        String workingpuzzle = part1.replaceAll("." , "_ ") + "  " + part2.replaceAll(".", "_ ") + " " + part3.replaceAll(".", "_ ") + part4.replaceAll(".", "_ ");
+        int[] prizes = {0,0,0}; 
+        String guess = "";
+        boolean solved = false; 
+        int turncounter = 0; 
+        int player = 0; 
+        int contains = 0; 
+        int switcher = 0; 
+        int currentprize = 0;
+        boolean invalidentry = false; 
+        int[] replaceAt;
+
+        StringBuilder workingPuzzle = new StringBuilder(workingpuzzle); 
+
+        Scanner input = new Scanner(System.in);
+
+        while ( solved == false ){
+            player = turncounter%3+1;
+            System.out.println(" Player " + player + " 1 to spin, 2 to solve or -1 to exit"); 
+            System.out.println("Current Scores");
+            System.out.println("Player 1: "+ prizes[0] + " Player 2: " + prizes[1] + " Player 3: "+ prizes[2]);
+            System.out.println("Category: Movie");
+            System.out.println(workingPuzzle);
+            System.out.println("Available letters: " + playerGuess); 
+
+            
+
+            
+                    System.out.println("You landed on " + currentprize);
+                    System.out.println("Please guess a letter");
+                    guess = input.nextLine(); 
+                    guess = guess.toUpperCase(); 
+
+                        replaceAt = checkGuess(guess, puzzle); 
+                        if (replaceAt[0] != -1){ 
+                            for (int i=0; i<replaceAt.length;i++){
+                                if ( replaceAt[i]>=0 ){
+                                    workingPuzzle.setCharAt(replaceAt[i]*2, guess.charAt(0)); 
+                                    playerGuess = playerGuess.replace(guess, "_");
+                                    turncounter++;
+                                    prizes[player] = prizes[player]+currentprize;
+                                    contains++;
+
+                                }
+
+
+                            }
+                            System.out.println("The puzzle contained " + contains + " " + guess);
+                            System.out.println("You earned " + currentprize*contains);
+
+                        }
+                        else{
+                            System.out.println("The puzzle does not contain any " + guess + "'s");
+                           playerGuess = playerGuess.replace(guess, "_");
+                            turncounter++;
+                        }
+                    }
+
+                        System.out.println("Invalid guess, please try again");
+                
+                        System.out.println(solved);
+
+
+                System.out.println("Enter Guess");
+                guess = input.nextLine();
+                if ( guess.equalsIgnoreCase(puzzle)){
+                    System.out.println("The solution was " + puzzle);
+                    System.out.println("Congratulations, you have won $" + prizes[player]);
+                    solved = true;
+                }
+                else{
+                    System.out.println("Your guess was incorrect");
+                    turncounter++;
+                }
+
+
+
+                if ( switcher == -1 ){
+                    System.out.println("Good Bye");
+                    solved = true; 
+                }
+                else{
+                    System.out.println("Please entry a valid option.");
+                }
+                
+            } 
+             switch{
+            case 1:
+                currentprize = spinWheel();
+                if ( currentprize == 0){
+                    System.out.println("You lose a turn");
+                    turncounter++;
+                }
+                else if ( currentprize == -1000){
+                    System.out.println("You lose $1000");
+                    prizes[player] = prizes[player] - 1000;
+                    turncounter++;
+                }
+                else {
+                    System.out.println("You landed on " + currentprize);
+                    System.out.println("Please guess a letter");
+                    guess = input.nextLine(); 
+                    guess = guess.toUpperCase(); 
+                    if (guesses.contains(guess) && guess.length() == 1){ 
+                        replaceAt = checkGuess(guess, puzzle); 
+                        if (replaceAt[0] != -1){
+                            for (int i=0; i<replaceAt.length;i++){
+                                if ( replaceAt[i]>=0 ){
+                                    workingPuzzle.setCharAt(replaceAt[i]*2, guess.charAt(0)); 
+                                    guesses = guesses.replace(guess, "_");
+                                    turncounter++;
+                                    prizes[player] = prizes[player]+currentprize;
+                                    contains++;
+
+           
+        
+        int wheelspin = rand.nextInt(10)+1;{
+        
+        if (wheelspin == 1){  
+            return 100;
+        }
+        else if (wheelspin == 2){
+            return 300;
+        }
+        else if (wheelspin == 3){
+            return 500;
+        }
+        else if (wheelspin == 4){
+            return 700;
+        }
+        else if (wheelspin == 5){
+            return 900;
+        }
+        else if (wheelspin == 6){
+            return 2000;
+        }
+        else if (wheelspin == 7){
+            return 3000;
+        }
+        else if (wheelspin == 8){
+            return 5000;
+        }
+        else if (wheelspin == 9){
+            return -1000; 
+        }
+        else{
+            return 0; 
+        }
+
+    }
+
+
+    public static boolean checkSolve(String guess, String puzzle){
+        guess = guess.toLowerCase();    
+        puzzle = puzzle.toLowerCase();  
+        if ( guess == puzzle){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+
+
+    public static int[] checkGuess(String guess, String puzzle){  
+        guess = guess.toLowerCase();    
+        puzzle = puzzle.toLowerCase();  
+        char guesschr = guess.charAt(0); 
+        int indexer = 0; 
+        int[] replacers = {-1,-1}; 
+        if (puzzle.contains(guess)){    
+            for (int i=0; i<puzzle.length();i++){
+                if (puzzle.charAt(i) == guesschr){
+                    replacers[indexer] = i;
+                    indexer++;
+                }
+            }
+            return replacers;
+        }
+        else{
+            return replacers;
+        }
+    }}

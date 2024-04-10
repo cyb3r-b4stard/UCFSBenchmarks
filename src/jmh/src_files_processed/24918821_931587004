@@ -1,0 +1,56 @@
+import static java.lang.Math.*;
+
+class HerbivoreModel
+{
+    static boolean areParametersValid(HerbivoreParameters h)
+    {
+        if((h.alpha<=1) || (h.beta<=0) || (h.gamma<=0) || (h.gamma>=1) || (h.x0<=0) || (h.y0<=0))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }    
+
+    static double[] solveModel(HerbivoreParameters h, int k)
+    {
+        double [] insectsol = new double[k];
+        double xn=h.x0;
+        double yn=h.y0;
+        
+        for(int n=0; n<k; n++)
+        {
+            insectsol[n]=yn;
+            double ynplus1=h.gamma*(xn+1)*yn;
+            double xnplus1=((h.alpha*xn)/((exp(yn))+(h.beta*xn)));
+            xn=xnplus1;
+            yn=ynplus1;
+           
+        }     
+        return insectsol;
+    }
+    static double minimizeM(double[] c, int k)
+    {
+        double [] insectsol = new double[k];
+        double alpha =3;
+        double beta =0.2;
+        double [] cj = c;
+        double x0=4;
+        double y0=0.5;
+        double xn =x0;
+        double yn=y0;
+        for(int n=0; n<k; n++)
+        {
+            insectsol[n]=yn;
+            double ynplus1=c[]*(xn+1)*yn;
+            double xnplus1=((alpha*xn)/((exp(yn))+(beta*xn)));
+            xn=xnplus1;
+            yn=ynplus1;
+           
+        }     
+        return insectsol;
+
+    }    
+}

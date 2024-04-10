@@ -1,0 +1,84 @@
+/**
+ *########## # ########## #(#) = ## + ###+...####.
+ *
+ * @######### ###
+ * 
+ * ##/##/####
+ */
+ 
+ /**
+  * ###### #### #######, ### #### ## ##### ### ###### ######. 
+  * ## ### #### ##### ######## ### #### ######.
+  * ### # #### ######
+  */
+ 
+ 
+public class Polynomial
+{
+    private double[] coefficient;
+    public double y;
+    public double y2;
+    public Polynomial(double[] a)
+    {
+      coefficient = new double [a.length-1];
+      for(int i = 0; i < a.length - 1; i++)
+        coefficient[i] = a[i];
+    }
+    public int degree()
+    {
+        int n = coefficient.length - 1;  
+        return n;
+    }
+    public double getValue (double x)
+    {
+        for(int i = 0; i<= coefficient.length - 1; i++)
+        { 
+        double temp = Math.pow(x, i);
+        y = y + coefficient[i] * temp;
+        } 
+        return y;
+    }
+    public String toString()
+    {
+        for(int i = 0; i<= coefficient.length - 1; i++)
+          return coefficient[i] + "x" + i + " + ";
+          
+    
+         return " = " + y;
+    }
+    public double getValue2 (double x)
+    {
+          for(int i = coefficient.length - 1; i > 0; i--)
+        { 
+          y2= coefficient[coefficient.length - 1]* x;
+          y2 += coefficient[i-1];
+          y2 *= x;
+        } 
+        return y2 / 2;
+    }
+    public Polynomial multiply (Polynomial other) 
+    {
+       double[][] coeff = new double [coefficient.length][other.coefficient.length];
+       double[] coeff2 = new double[2*(coefficient.length)-1];
+         Polynomial total = new Polynomial(coeff2);
+       for (int k = 0; k < coefficient.length; k++)
+       {
+           for (int i = 0; i < other.coefficient.length; i++)
+          {  
+            coeff[k][i] = coefficient[k] * other.coefficient[i];
+            coeff2[i+k] += coeff[k][i];
+            System.out.println(coeff[i+k]);
+          }
+        }
+        return total;
+    }
+    public static void main (String[] args)
+    {
+        Polynomial a = new Polynomial({1,2,3});
+        b = new Polynomial({ 3, 7, 2, 0});
+        System.out.print(a.toString());
+        System.out.print(b.toString());
+        System.out.print(a.multiply(b));
+    }
+}
+

@@ -1,0 +1,902 @@
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Random;
+/**
+ * ##### # ########### ## ##### #### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class FELD
+{
+    private Button start, kaempfen, statistik, nokemon, attacken;
+
+    private Button simsala,chaneira,austos,kokowei,gengar,geowaz,blitza,rossana,lapras,rizeros,lahmus,relaxo,starmie,tauros,zapdos;
+    private Button attacke1,attacke2,attacke3,attacke4;
+    private Button austausch1,austausch2,austausch3,austausch4,austausch5;
+
+    private BUTTON buttonEinfueger;Frame fenster;
+
+    private NOKEMON nokemonFeld[];
+    private NOKEMON teamFeld[];
+    private NOKEMON gegnerFeld[];
+    private ATTACKE attackenFeld[];
+    private int typenwechselwirkungen[][];
+    private int kämpfender,zweiter,dritter,vierter,fünfter,sechster,gegner,zweiter2,dritter2,vierter2,fünfter2,sechster2;
+
+    Random zufallsGenerator;
+
+    Label schrift, kp1label,kp2label;
+    /**
+     * Constructor for objects of class FELD
+     */
+    public FELD()
+    {
+        /**
+         * Gliederung:
+         * Fenster
+         * Labels
+         * Startseitenbutttons
+         * Nokemonbuttons
+         */
+
+        nokemonFeld=new NOKEMON[15];
+
+        nokemonsErstellen();
+
+        attackenFeld=new ATTACKE[25];
+
+        attackenErstellen();
+
+        teamFeld=new NOKEMON[6];
+
+        gegnerFeld=new NOKEMON[6];
+
+        typenwechselwirkungen=new int[14][14];
+
+        typenFeldFüllen();
+
+        zufallsGenerator = new Random();
+
+        kämpfender=0;
+        zweiter=1;
+        dritter=2;
+        vierter=3;
+        fünfter=4;
+        sechster=5;
+        gegner=0;
+        zweiter2=1;
+        dritter2=2;
+        vierter2=3;
+        fünfter2=4;
+        sechster2=5;
+        /**
+         * Fenster wird erstellt
+         */
+        fenster = new Frame("KAMPF!!!");    
+        fenster.setVisible(true);         
+        fenster.setSize(1350,800);          
+        fenster.setLocation(0,0);        
+        fenster.setLayout(null); 
+        fenster.addWindowListener(new WindowAdapter()
+            {
+                public void windowClosing(WindowEvent e) {
+                    System.exit(0);
+                }
+            });
+
+        /**
+         * Labels werden erstellt
+         */
+        schrift=new Label(); 
+        schrift.setText("Wähle deine Nokémon");  
+        schrift.setLocation(10,50); 
+        schrift.setVisible(true);  
+        schrift.setSize(1000,30); 
+        schrift.setForeground(new Color (255,0,0)); 
+        schrift.setBackground(new Color (255,255,0)); 
+
+        /**
+         * Startseitenbuttons werden erstellt
+         */
+        start = new Button();
+        buttonEinfueger=new BUTTON(start);
+        kaempfen= new Button();
+        buttonEinfueger.einfuegen(kaempfen,50,375,200,50,"Kämpfen");
+        statistik=new Button();
+        buttonEinfueger.einfuegen(statistik,300,375,200,50,"Statistik");
+        nokemon=new Button();
+        buttonEinfueger.einfuegen(nokemon,550,375,200,50,"Nokémon");
+        attacken=new Button();
+        buttonEinfueger.einfuegen(attacken,800,375,200,50,"Attacken");
+        fenster.add(start);
+
+        start.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    fenster.remove(start);
+                    fenster.add(kaempfen);
+                    fenster.add(statistik);
+                    fenster.add(nokemon);
+                    fenster.add(attacken);
+                }        
+            });
+
+        kaempfen.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    ersterButton();
+                    fenster.add(schrift);
+                    fenster.add(simsala);
+                    fenster.add(chaneira);
+                    fenster.add(austos);
+                    fenster.add(kokowei);
+                    fenster.add(gengar);
+                    fenster.add(geowaz);
+                    fenster.add(blitza);
+                    fenster.add(rossana);
+                    fenster.add(lapras);
+                    fenster.add(rizeros);
+                    fenster.add(lahmus);
+                    fenster.add(relaxo);
+                    fenster.add(starmie);
+                    fenster.add(tauros);
+                    fenster.add(zapdos);
+                }
+            });
+
+        statistik.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    ersterButton();
+                }
+            });
+
+        nokemon.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    ersterButton();
+                }
+            });
+
+        attacken.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    ersterButton();
+                }
+            });
+
+        attacke1= new Button();
+        buttonEinfueger.einfuegen(attacke1,50,375,200,50,"Attacke1");
+        attacke2=new Button();
+        buttonEinfueger.einfuegen(attacke2,300,375,200,50,"Attacke2");
+        attacke3=new Button();
+        buttonEinfueger.einfuegen(attacke3,550,375,200,50,"Attacke3");
+        attacke4=new Button();
+        buttonEinfueger.einfuegen(attacke4,800,375,200,50,"Attacke4");
+
+        austausch1= new Button();
+        buttonEinfueger.einfuegen(austausch1,50,450,200,50,"Austausch1");
+        austausch2=new Button();
+        buttonEinfueger.einfuegen(austausch2,300,450,200,50,"Austausch2");
+        austausch3=new Button();
+        buttonEinfueger.einfuegen(austausch3,550,450,200,50,"Austausch3");
+        austausch4=new Button();
+        buttonEinfueger.einfuegen(austausch4,800,450,200,50,"Austausch4");
+        austausch5=new Button();
+        buttonEinfueger.einfuegen(austausch5,1050,450,200,50,"Austausch5");
+
+        kp1label=new Label();
+        kp1label.setText("0 / 0");  
+        kp1label.setLocation(50,300); 
+        kp1label.setVisible(true);  
+        kp1label.setSize(140,30); 
+        kp1label.setForeground(new Color (255,0,0)); 
+        kp1label.setBackground(new Color (255,255,0));
+
+        kp2label=new Label();
+        kp2label.setText("0 / 0");  
+        kp2label.setLocation(550,300); 
+        kp2label.setVisible(true);  
+        kp2label.setSize(140,30); 
+        kp2label.setForeground(new Color (255,0,0)); 
+        kp2label.setBackground(new Color (255,255,0));
+
+        /**
+         * Nokemonbuttons werden erstellt
+         */    
+        nokemonButtonsErstellen();
+        nokemonButtonsAktionen();
+        attackenButtonsAktionen();
+        austauschButtonsAktionen();
+    }
+
+    public void ersterButton()
+    {
+        fenster.remove(kaempfen);
+        fenster.remove(statistik);
+        fenster.remove(nokemon);
+        fenster.remove(attacken);
+    }
+
+    public void nokemonButtonsErstellen()
+    {
+        simsala= new Button();
+        buttonEinfueger.einfuegen(simsala,50,375,200,50,"Simsala");
+        chaneira=new Button();
+        buttonEinfueger.einfuegen(chaneira,300,375,200,50,"Chaneira");
+        austos=new Button();
+        buttonEinfueger.einfuegen(austos,550,375,200,50,"Austos");
+        kokowei=new Button();
+        buttonEinfueger.einfuegen(kokowei,800,375,200,50,"Kokowei");
+        gengar= new Button();
+        buttonEinfueger.einfuegen(gengar,50,450,200,50,"Gengar");
+        geowaz=new Button();
+        buttonEinfueger.einfuegen(geowaz,300,450,200,50,"Geowaz");
+        blitza=new Button();
+        buttonEinfueger.einfuegen(blitza,550,450,200,50,"Blitza");
+        rossana=new Button();
+        buttonEinfueger.einfuegen(rossana,800,450,200,50,"Rossana");
+        lapras= new Button();
+        buttonEinfueger.einfuegen(lapras,50,525,200,50,"Lapras");
+        rizeros=new Button();
+        buttonEinfueger.einfuegen(rizeros,300,525,200,50,"Rizeros");
+        lahmus=new Button();
+        buttonEinfueger.einfuegen(lahmus,550,525,200,50,"Lahmus");
+        relaxo=new Button();
+        buttonEinfueger.einfuegen(relaxo,800,525,200,50,"Relaxo");
+        starmie=new Button();
+        buttonEinfueger.einfuegen(starmie,50,600,200,50,"Starmie");
+        tauros=new Button();
+        buttonEinfueger.einfuegen(tauros,300,600,200,50,"Tauros");
+        zapdos=new Button();
+        buttonEinfueger.einfuegen(zapdos,550,600,200,50,"Zapdos");
+    }
+
+    public void nokemonButtonsAktionen()
+    {
+        simsala.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    nokemonButtonsInDasTeam(0);
+                }
+            });
+        chaneira.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    nokemonButtonsInDasTeam(1);
+                }
+            });
+        austos.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    nokemonButtonsInDasTeam(2);
+                }
+            });
+        kokowei.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    nokemonButtonsInDasTeam(3);
+                }
+            });
+        gengar.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    nokemonButtonsInDasTeam(4);
+                }
+            });
+        geowaz.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    nokemonButtonsInDasTeam(5);
+                }
+            });
+        blitza.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    nokemonButtonsInDasTeam(6);
+                }
+            });
+        rossana.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    nokemonButtonsInDasTeam(7);
+                }
+            });
+        lapras.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    nokemonButtonsInDasTeam(8);
+                }
+            });
+        rizeros.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    nokemonButtonsInDasTeam(9);
+                }
+            });
+        lahmus.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    nokemonButtonsInDasTeam(10);
+                }
+            });
+        relaxo.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    nokemonButtonsInDasTeam(11);
+                }
+            });
+        starmie.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    nokemonButtonsInDasTeam(12);
+                }
+            });
+        tauros.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    nokemonButtonsInDasTeam(13);
+                }
+            });
+        zapdos.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    nokemonButtonsInDasTeam(14);
+                }
+            });
+    }
+
+    public void nokemonFeldFuellen()
+    {
+        nokemonFeld[0]=null;
+    }
+
+    public void nokemonButtonsInDasTeam(int a)
+    {
+        if(teamFeld[0]==null)
+        {
+            teamFeld[0]=nokemonFeld[a];
+        }
+        else if(teamFeld[1]==null)
+        {
+            teamFeld[1]=nokemonFeld[a];
+        }
+        else if(teamFeld[2]==null)
+        {
+            teamFeld[2]=nokemonFeld[a];
+        }
+        else if(teamFeld[3]==null)
+        {
+            teamFeld[3]=nokemonFeld[a];
+        }
+        else if(teamFeld[4]==null)
+        {
+            teamFeld[4]=nokemonFeld[a];
+        }
+        else
+        {
+            teamFeld[5]=nokemonFeld[a];
+            fenster.remove(simsala);
+            fenster.remove(chaneira);
+            fenster.remove(austos);
+            fenster.remove(kokowei);
+            fenster.remove(gengar);
+            fenster.remove(geowaz);
+            fenster.remove(blitza);
+            fenster.remove(rossana);
+            fenster.remove(lapras);
+            fenster.remove(rizeros);
+            fenster.remove(lahmus);
+            fenster.remove(relaxo);
+            fenster.remove(starmie);
+            fenster.remove(tauros);
+            fenster.remove(zapdos);
+            kampfStarten();
+        }
+    }
+
+    public void nokemonsErstellen()
+    {
+        nokemonFeld[0]=new NOKEMON(199, 189, 339, 369 ,314, 0, 1, 2, 3, "Simsala",1,0);
+        nokemonFeld[1]=new NOKEMON(109, 109, 199, 309 ,704, 4, 1, 2, 5, "Chaneira",2,0);
+        nokemonFeld[2]=new NOKEMON(289, 459, 239, 269 ,304, 6, 7, 8, 9, "Austos",3,4);
+        nokemonFeld[3]=new NOKEMON(289, 269, 209, 349 ,394, 10, 0, 9, 11, "Kokowei",5,1);
+        nokemonFeld[4]=new NOKEMON(229, 219, 319, 359 ,324, 12, 9, 5, 13, "Gengar",6,7);
+        nokemonFeld[5]=new NOKEMON(339, 359, 189, 209 ,364, 14, 15, 16, 9, "Geowaz",8,9);
+        nokemonFeld[6]=new NOKEMON(229, 219, 359, 319 ,334, 5, 2, 17, 14, "Blitza",10,0);
+        nokemonFeld[7]=new NOKEMON(199, 159, 289, 289 ,334, 10, 7, 0, 18, "Rossana",3,1);
+        nokemonFeld[8]=new NOKEMON(269, 259, 219, 289 ,464, 7, 5, 14, 19, "Lapras",3,4);
+        nokemonFeld[9]=new NOKEMON(359, 339, 179, 189 ,414, 15, 16, 20, 14, "Rizeros",8,9);
+        nokemonFeld[10]=new NOKEMON(249, 319, 159, 259 ,394, 21, 6, 2, 19, "Lahmus",1,4);
+        nokemonFeld[11]=new NOKEMON(319, 229, 159, 229 ,524, 14, 8,15, 22, "Relaxo",2,0);
+        nokemonFeld[12]=new NOKEMON(249, 269, 329, 299 ,314, 7, 5, 1, 2, "Starmie",1,4);
+        nokemonFeld[13]=new NOKEMON(299, 289, 319, 239 ,354, 14, 8, 15, 7, "Tauros",2,0);
+        nokemonFeld[14]=new NOKEMON(279, 269, 299, 349 ,384, 5, 23, 2, 24, "Zapdos",10,11);
+    }
+
+    public void attackenErstellen()
+    {
+        attackenFeld[0]=new ATTACKE(false,1,90,100,0,1,"Psychokinese");
+        attackenFeld[1]=new ATTACKE(false,0,0,100,0,2,"Genesung");
+        attackenFeld[2]=new ATTACKE(false,10,0,100,0,3,"Donnerwelle");
+        attackenFeld[3]=new ATTACKE(false,0,0,100,0,4,"Geowurf");
+        attackenFeld[4]=new ATTACKE(false,3,95,100,0,5,"Eisstrahl");
+        attackenFeld[5]=new ATTACKE(false,10,95,100,0,6,"Donnerblitz");
+        attackenFeld[6]=new ATTACKE(false,4,95,100,0,0,"Surfer");
+        attackenFeld[7]=new ATTACKE(false,3,120,90,0,5,"Blizzard");
+        attackenFeld[8]=new ATTACKE(true,2,150,90,0,7,"Hyperstrahl");
+        attackenFeld[9]=new ATTACKE(true,2,340,100,1000,0,"Explosion");
+        attackenFeld[10]=new ATTACKE(false,0,0,75,0,8,"Schlafpuder");
+        attackenFeld[11]=new ATTACKE(false,0,0,75,0,3,"Stachelspore");
+        attackenFeld[12]=new ATTACKE(false,0,0,60,0,8,"Hypnose");
+        attackenFeld[13]=new ATTACKE(false,5,40,100,-50,0,"Megasauger");
+        attackenFeld[14]=new ATTACKE(true,2,85,100,0,9,"Bodyslam");
+        attackenFeld[15]=new ATTACKE(true,8,100,100,0,0,"Erdbeben");
+        attackenFeld[16]=new ATTACKE(true,9,75,90,0,0,"Steinhagel");
+        attackenFeld[17]=new ATTACKE(true,12,42,85,0,0,"Nadelrakete");
+        attackenFeld[18]=new ATTACKE(false,0,0,100,0,10,"Metronom");
+        attackenFeld[19]=new ATTACKE(false,0,0,100,0,11,"Erholung");
+        attackenFeld[20]=new ATTACKE(true,13,80,80,25,0,"Überroller");
+        attackenFeld[21]=new ATTACKE(false,0,0,100,0,12,"Amnesie");
+        attackenFeld[22]=new ATTACKE(true,2,260,100,1000,0,"Finale");
+        attackenFeld[23]=new ATTACKE(true,11,80,100,0,0,"Bohrschnabel");
+        attackenFeld[24]=new ATTACKE(false,0,0,100,0,13,"Agilität");
+    }
+
+    public void typenFeldFüllen()
+    {
+        for(int i=0;i<14;i++)
+        {
+            for(int i1=0;i1<14;i1++)
+            {
+                typenwechselwirkungen[i][i1]=2;
+            }
+        }
+        typenwechselwirkungen[1][1]=1;
+        typenwechselwirkungen[1][7]=3;
+        typenwechselwirkungen[2][6]=0;
+        typenwechselwirkungen[2][9]=1;
+        typenwechselwirkungen[3][3]=1;
+        typenwechselwirkungen[3][4]=1;
+        typenwechselwirkungen[3][5]=3;
+        typenwechselwirkungen[3][8]=3;
+        typenwechselwirkungen[3][11]=3;
+        typenwechselwirkungen[4][4]=1;
+        typenwechselwirkungen[4][5]=1;
+        typenwechselwirkungen[4][8]=3;
+        typenwechselwirkungen[4][9]=3;
+        typenwechselwirkungen[5][4]=3;
+        typenwechselwirkungen[5][5]=1;
+        typenwechselwirkungen[5][7]=1;
+        typenwechselwirkungen[5][8]=3;
+        typenwechselwirkungen[5][9]=3;
+        typenwechselwirkungen[5][11]=1;
+        typenwechselwirkungen[8][5]=1;
+        typenwechselwirkungen[8][7]=3;
+        typenwechselwirkungen[8][9]=3;
+        typenwechselwirkungen[8][10]=3;
+        typenwechselwirkungen[8][11]=0;
+        typenwechselwirkungen[9][3]=3;
+        typenwechselwirkungen[9][8]=1;
+        typenwechselwirkungen[9][11]=3;
+        typenwechselwirkungen[10][4]=3;
+        typenwechselwirkungen[10][5]=1;
+        typenwechselwirkungen[10][8]=0;
+        typenwechselwirkungen[10][10]=1;
+        typenwechselwirkungen[10][11]=3;
+        typenwechselwirkungen[11][5]=3;
+        typenwechselwirkungen[11][9]=1;
+        typenwechselwirkungen[11][10]=1;
+        typenwechselwirkungen[12][1]=3;
+        typenwechselwirkungen[12][5]=3;
+        typenwechselwirkungen[12][6]=1;
+        typenwechselwirkungen[12][7]=3;
+        typenwechselwirkungen[12][11]=1;
+        typenwechselwirkungen[13][1]=1;
+        typenwechselwirkungen[13][2]=3;
+        typenwechselwirkungen[13][3]=3;
+        typenwechselwirkungen[13][6]=0;
+        typenwechselwirkungen[13][7]=1;
+        typenwechselwirkungen[13][9]=3;
+        typenwechselwirkungen[13][11]=1;
+    }
+
+    private int wuerfelwerkzeug(int a) 
+    {
+        return zufallsGenerator.nextInt(a);
+    }
+
+    private void kampfStarten()
+    {
+        for(int i=0;i<6;i++)
+        {
+            gegnerFeld[i]=nokemonFeld[wuerfelwerkzeug(15)];
+        }
+        buttonsFürKampfHinzufügen();
+        fenster.add(kp1label);
+        fenster.add(kp2label);
+        labelsFürKampfÄndern();
+        schrift.setText("Wähle eine Aktion");
+    }
+
+    public void buttonsFürKampfHinzufügen()
+    {
+        fenster.add(attacke1);
+        fenster.add(attacke2);
+        fenster.add(attacke3);
+        fenster.add(attacke4);
+        if(teamFeld[zweiter].gibKpVeränderung()>0)
+        {
+            fenster.add(austausch1);
+        }
+        if(teamFeld[dritter].gibKpVeränderung()>0)
+        {
+            fenster.add(austausch2);
+        }
+        if(teamFeld[vierter].gibKpVeränderung()>0)
+        {
+            fenster.add(austausch3);
+        }
+        if(teamFeld[fünfter].gibKpVeränderung()>0)
+        {
+            fenster.add(austausch4);
+        }
+        if(teamFeld[sechster].gibKpVeränderung()>0)
+        {
+            fenster.add(austausch5);
+        }
+    }
+
+    public void buttonsFürKampfEntfernen()
+    {
+        fenster.remove(attacke1);
+        fenster.remove(attacke2);
+        fenster.remove(attacke3);
+        fenster.remove(attacke4);
+        fenster.remove(austausch1);
+        fenster.remove(austausch2);
+        fenster.remove(austausch3);
+        fenster.remove(austausch4);
+        fenster.remove(austausch5);
+    }
+
+    public void labelsFürKampfÄndern()
+    {
+        attacke1.setLabel(attackenFeld[teamFeld[kämpfender].gibAttacke1()].gibName());
+        attacke2.setLabel(attackenFeld[teamFeld[kämpfender].gibAttacke2()].gibName());
+        attacke3.setLabel(attackenFeld[teamFeld[kämpfender].gibAttacke3()].gibName());
+        attacke4.setLabel(attackenFeld[teamFeld[kämpfender].gibAttacke4()].gibName());
+        austausch1.setLabel(teamFeld[zweiter].gibName());
+        austausch2.setLabel(teamFeld[dritter].gibName());
+        austausch3.setLabel(teamFeld[vierter].gibName());
+        austausch4.setLabel(teamFeld[fünfter].gibName());
+        austausch5.setLabel(teamFeld[sechster].gibName());
+        kp1label.setText(teamFeld[kämpfender].gibName()+": "+teamFeld[kämpfender].gibKpVeränderung()+" / "+teamFeld[kämpfender].gibKp());
+        kp2label.setText(gegnerFeld[gegner].gibName()+": "+gegnerFeld[gegner].gibKpVeränderung()+" / "+gegnerFeld[gegner].gibKp());
+    }
+
+    public void attackenButtonsAktionen()
+    {
+        attacke1.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    kampfAblauf(false,0,teamFeld[kämpfender].gibAttacke1());
+                }
+            });
+
+        attacke2.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    kampfAblauf(false,0,teamFeld[kämpfender].gibAttacke2());
+                }
+            });
+
+        attacke3.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    kampfAblauf(false,0,teamFeld[kämpfender].gibAttacke3());
+                }
+            });
+
+        attacke4.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    kampfAblauf(false,0,teamFeld[kämpfender].gibAttacke4());
+                }
+            });
+    }
+
+    public void austauschButtonsAktionen()
+    {
+        austausch1.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    kampfAblauf(true,zweiter,0);
+                }
+            });
+        austausch2.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    kampfAblauf(true,dritter,0);
+                }
+            });
+        austausch3.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    kampfAblauf(true,vierter,0);
+                }
+            });
+        austausch4.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    kampfAblauf(true,fünfter,0);
+                }
+            });
+        austausch5.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    kampfAblauf(true,sechster,0);
+                }
+            });
+    }
+
+    public void kampfAblauf(boolean austausch,int austauschNokemon,int attackenAuswahl)
+    {
+        buttonsFürKampfEntfernen();
+        if(austausch)
+        {
+            schrift.setText(teamFeld[kämpfender].gibName()+", komm zurück!"+" "+teamFeld[austauschNokemon].gibName()+", du bist dran!");
+            switch(austauschNokemon)
+            {
+                case 0:
+                kämpfender=0;
+                zweiter=1;
+                dritter=2;
+                vierter=3;
+                fünfter=4;
+                sechster=5;
+                break;
+                case 1:
+                kämpfender=1;
+                zweiter=0;
+                dritter=2;
+                vierter=3;
+                fünfter=4;
+                sechster=5;
+                break;
+                case 2:
+                kämpfender=2;
+                zweiter=0;
+                dritter=1;
+                vierter=3;
+                fünfter=4;
+                sechster=5;
+                break;
+                case 3:
+                kämpfender=3;
+                zweiter=0;
+                dritter=1;
+                vierter=2;
+                fünfter=4;
+                sechster=5;
+                break;
+                case 4:
+                kämpfender=4;
+                zweiter=0;
+                dritter=1;
+                vierter=2;
+                fünfter=3;
+                sechster=5;
+                break;
+                case 5:
+                kämpfender=5;
+                zweiter=0;
+                dritter=1;
+                vierter=2;
+                fünfter=3;
+                sechster=4;
+                break;
+            }
+            labelsFürKampfÄndern();
+            wait1();
+            if(gegnerFeld[gegner].gibStatus()==1)
+            {
+                if(0==wuerfelwerkzeug(4))
+                {
+                    gegnerAktion();
+                }
+                else
+                {
+                    schrift.setText(gegnerFeld[gegner].gibName()+" (geg) ist paralysiert und kann nicht angreifen!");
+                }
+            }
+            else if(gegnerFeld[gegner].gibStatus()==3)
+            {
+                schrift.setText(gegnerFeld[gegner].gibName()+" (geg) ist eingefroren und kann nicht angreifen!");
+            }
+            else if(gegnerFeld[gegner].gibStatus()==4)
+            {
+                if(0==wuerfelwerkzeug(7))
+                {
+                    gegnerFeld[gegner].änderStatus(0);
+                    schrift.setText(gegnerFeld[gegner].gibName()+" (geg) ist aufgewacht!");
+                    wait1();
+                    gegnerAktion();
+                }
+                else
+                {
+                    schrift.setText(gegnerFeld[gegner].gibName()+" (geg) schläft tief und fest!");
+                }
+            }
+            else
+            {
+                gegnerAktion();
+            }
+        }
+    }
+
+    public void gegnerAktion()
+    {   
+        int i=wuerfelwerkzeug(4);
+        switch(i)
+        {
+            case 0:
+            attackenAblauf2(gegnerFeld[gegner].gibAttacke1());
+            break;
+            case 1:
+            attackenAblauf2(gegnerFeld[gegner].gibAttacke2());
+            break;
+            case 2:
+            attackenAblauf2(gegnerFeld[gegner].gibAttacke3());
+            break;
+            case 3:
+            attackenAblauf2(gegnerFeld[gegner].gibAttacke4());
+            break;
+        }
+    }
+
+    public void attackenAblauf(int i)
+    {
+        if(attackenFeld[i].gibSchadensklasse())
+        {
+            if(attackenFeld[i].gibGenauigkeit()>wuerfelwerkzeug(100))
+            {
+                int iAngriff=teamFeld[kämpfender].gibAngriff();
+                if(teamFeld[kämpfender].gibAngriffVeränderung()<0)
+                {
+                    iAngriff=teamFeld[kämpfender].gibAngriff()*2/(teamFeld[kämpfender].gibAngriffVeränderung()-2)*(-1);
+                }
+                else if(teamFeld[kämpfender].gibAngriffVeränderung()>0)
+                {
+                    iAngriff=teamFeld[kämpfender].gibAngriff()*(2+teamFeld[kämpfender].gibAngriffVeränderung())/2;
+                }
+                int iVerteidigung=gegnerFeld[gegner].gibVerteidigung();
+                if(gegnerFeld[gegner].gibVerteidigungVeränderung()<0)
+                {
+                    iVerteidigung=gegnerFeld[gegner].gibVerteidigung()*2/(gegnerFeld[gegner].gibVerteidigungVeränderung()-2)*(-1);
+                }
+                else if(gegnerFeld[gegner].gibVerteidigungVeränderung()>0)
+                {
+                    iVerteidigung=gegnerFeld[gegner].gibVerteidigung()*(2+gegnerFeld[gegner].gibVerteidigungVeränderung())/2;
+                }
+                int iVolltreffer=1;
+                if(teamFeld[kämpfender].gibVolltreffer()>wuerfelwerkzeug(100))
+                {
+                    iVolltreffer=2;
+                }
+                else
+                {
+                    iVolltreffer=1;
+                }
+                int iStab=2;
+                if((teamFeld[kämpfender].gibTyp1==attackenFeld[i].gibTyp())||(teamFeld[kämpfender].gibTyp2()==attackenFeld[i].gibTyp()))
+                {
+                    iStab=3
+                }
+                int iTyp=1;
+                switch(typenwechselwirkungen[attackenFeld[i].gibTyp()][gegnerFeld[gegner].gibTyp1()])
+                {
+                    case 0:
+                    iTyp=0;
+                    break;
+                    case 1:
+                    switch(typenwechselwirkungen[attackenFeld[i].gibTyp()][gegnerFeld[gegner].gibTyp2()])
+                    {
+                        case 0:
+                        iTyp=0;
+                        break;
+                        case 1:
+                        iTyp=1;
+                        break;
+                        case 2:
+                        iTyp=2;
+                        break;
+                        case 3:
+                        iTyp=4;
+                        break;
+                    }
+                    break;
+                    case 2:
+                    switch(typenwechselwirkungen[attackenFeld[i].gibTyp()][gegnerFeld[gegner].gibTyp2()])
+                    {
+                        case 0:
+                        iTyp=0;
+                        break;
+                        case 1:
+                        iTyp=2;
+                        break;
+                        case 2:
+                        iTyp=4;
+                        break;
+                        case 3:
+                        iTyp=8;
+                        break;
+                    }
+                    break;
+                    case 3:
+                    switch(typenwechselwirkungen[attackenFeld[i].gibTyp()][gegnerFeld[gegner].gibTyp2()])
+                    {
+                        case 0:
+                        iTyp=0;
+                        break;
+                        case 1:
+                        iTyp=4;
+                        break;
+                        case 2:
+                        iTyp=8;
+                        break;
+                        case 3:
+                        iTyp=16;
+                        break;
+                    }
+                    break;
+                }
+                int iSchaden=()(42*attackenFeld[i].gibStärke()*iAngriff*iVerteidigung)/50+2)*iVolltreffer*(100-wuerfelwerkzeug(16))*iStab*iTyp)/800;
+                gegnerFeld[gegner].änderKp(iSchaden);
+            }
+        }
+    }
+
+    public void attackenAblauf2(int i)
+    {
+
+    }
+
+    private void wait1()
+    {
+        long time0, time1;
+        time0 = System.currentTimeMillis();
+        do time1 = System.currentTimeMillis();
+        while (time1 - time0 < 1 * 1000);
+    }
+}

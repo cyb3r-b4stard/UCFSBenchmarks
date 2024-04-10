@@ -1,0 +1,223 @@
+
+/* #### ### ########## #, #### ### 
+ * ####:
+ * ########:
+ * ##:
+ */
+
+import ecs100.*;
+import java.awt.Color;
+/**
+ * # ####### #### ##### # ######## #### ## ##### ### ########  "###### ##"
+ * # ###### ####### # ### ## (## ### ####### ### ### #### ######## #######),
+ * ### #### ##### ### ###### # ####### ###### ## ####### ## ##### ### ######(#). 
+ * ## ### ###### ####### ### ###### ###### ### ####### ###### ## #######, #### ### ######.
+ * ### ####### ###### ###### ### ###### ### #### #####, ### #### ####### #### #####
+ * ## # #### ## # "###### ####" ## ### ######## ####,
+ * ## ###### #### #### ### ###### ####### ### ##### ## #######, ## ### ### ## ### ####.
+ * 
+ * ### ### ###### (####) #######, 
+ *  ### ####### #### #### ###### ## ### #### ##### ### ###### #### #### #### ### ######.
+ *  ### #### #####, ### ###### ### # ####### ## ##### ### ######.
+ *  ##### #### #####, ### ####### #### ####### ### ##### ## #######, ### ###, ## ### ####.
+ *  ## ### ###### ####### ### ###### ###### ### # #######, ### ###### ##### # #####
+ *   #########, ### ###### ##### # ##### (### ### ##### ##### #### ##### #).
+ *  ## ### ###, ### ####### ####### ### ######'# #####
+ *  ## ### #### ##### ### ####,  ### ####### ###### #### #### #### #####
+ *   ## # ####### ## ### ######## ####.
+ *
+ * ### ### ########## #######,
+ *  - ### ####### ###### ##### ## ### (#########) ####### #### ##### ### ####
+ *    ### ####### # ##### ##### ## #### #### ### ####### ######, #######
+ *    #### ### ###### ######, ## ####### ### #######.
+ *    ### ###### #### #### ### ##### ## #### ##### #### ####### (### ## ####
+ *     ##### ### ###### #####!)
+ *    ### ####### ###### ##### ####### ### ####### ## ### ######## ####.
+ *    ### ####### ###### ######## ### ####### ####### ### ##### # ## ##, ### #### ###
+ *      ###### ##### ### ##### #####.
+ *  - ### ###### ##### # ##### ### ### ##### ## #### ##### #### #######, ####
+ *    ## ##### ##### ### #### ######### ##### #### #### ####'# ### ##.  ### ######
+ *    ##### # ##### ## #### ####'# ##### ###### ###### (###### ### ##### #####
+ *    ##### #### ##### #).
+ * 
+ * ### ### ######### #######,
+ *  - ### ####### ###### ####### ### ####### ## ### ###### #### #### ### ###
+ *    ##########. ### #######, ## ### ###### ####### # ### ### ####### #### ####
+ *    #### ## #### #### #### #######, #### ### ####### ######'# ## ####### # ### #,
+ *    ## ### ####### ###### ####### #### ###### ## ### #### ## "##########".
+ *  - #### ###### (###### #### ######## #### ######## ## #### #### ### ######## ####
+ *    ####### ## ###) ### ####### ###### ### ##### ### ###### ## #### # ##### ####
+ *    ## ## ### ## ### ########## ####### (##, ## ###### #### ### #### #### ## ##
+ *    ########## ### #### #### ##### # ##### #####).
+ *  - ### ### #### ## #### ### ###### #### ###### ### ## ### #### #### ########
+ *    #####. 
+ */
+public class GuessingGame{
+
+    public static final int maxValue = 40;
+    public static final int maxGuesses = 5;
+
+
+
+    public static final int barLeft = 50;
+    public static final int barTop = 100;
+    public static final int size = 10;   
+    
+
+    /** CORE
+     * Plays one round of the one-number version of the guessing game
+     * Computer randomly chooses an integer between 1 and maxValue (40)
+     * Draws a horizontal line in the graphics pane labeled with 1 at one end
+     *  and maxValue at the other end.
+     * Player is offered up to maxGuesses chances to guess this number
+     *    Whenever they guess outside the range 1 to maxValue, it asks them to try again
+     *    Displays their guess on the line by drawing a bar at the appropriate place
+     *     and putting the number above it.
+     *    Tells Player if their guess is higher or lower than the answer
+     *    Tells the player when they have guessed correctly and stops if they win
+     * Returns true if the player guessed correctly, else returns false.
+     */
+    public boolean playRound(){
+        
+        int Choose= 1+ (int) (Math.random()*39);
+        boolean Guess1= UI.askBoolean ( "Hello, do you want to play a guessing game?");
+        UI.println ("I've thought of a number between 1 and "+ maxValue + "; can you guess it?");
+        UI.println ("you have" + maxGuesses+ "chances.");
+        this.displayBar();
+        int attempt= 1;
+
+        while (attempt <= maxGuesses){
+             int guess= UI.askInt ("can you please guess a number between 1 to 40?");
+               int alreadyGuess=0;
+             while (guess<1|| guess> maxValue) {
+                guess= UI.askInt ("Sorry, you must guess between 1 and" + maxValue + "; please guess again:"); 
+            }
+        if (guess<Choose) {
+            this.displayGuess( guess, Color.green);
+            UI.println( "sorry, the number is too low");
+        }
+        else if (guess>Choose){ 
+            this.displayGuess(guess, Color.blue);
+            UI.println ("sorry, the number is too high");
+        }
+          else if  (guess==alreadyGuess){ 
+                guess= UI.askInt ("you've already guessed this before; please guess again:");
+            }
+         else if (alreadyGuess==0) { 
+             alreadyGuess= guess;
+            }
+            
+        else if (guess==Choose) {
+            this.displayGuess (guess,Color.red);
+            UI.println ("Congratulation! you've guessed correctly with "+ (maxGuesses-attempt)+ "guesses remaining"); 
+            return true; 
+   
+    }
+
+
+}
+ UI. println ("That is all your guesses; you have lost");
+ UI.println ("The number was" + Choose);
+ return false; 
+ if (alreadyGuess>0){
+     return 0;
+    }
+    else{
+        return -1;
+    }
+}
+}
+
+ /** CORE
+     * Plays the guessing game.
+     * Prints an introduction, then
+     * repeatedly calls playRound to play a single round of the game,
+     * keeping track of the score.
+     * After each round, it asks if they want to play again.
+     * When finished it prints the score (how many times they guessed and how
+     * many times they tried).
+     */
+    public void playGame(){
+        UI.initialise();
+        UI.println("-----CORE GAME-----------");
+        UI.println("Hello, let's play the guessing game");
+        UI.println("Each round, you must guess my number;");
+        
+        /*# YOUR CODE HERE */
+        int score= 0;
+        int count=0;
+        while (true){
+            if (this.playRound()){
+                score= score+1;
+            }
+            else { score = score -1;}
+            if (score<0) {
+                score=0;
+            }
+            count = count +1 ;
+             UI.println("----------------");
+             if (!UI.askBoolean("Wanna play again?")){break;}
+             
+    }
+     
+            UI.println("----------------");
+            UI.println ("your score was" + score+ "times out of "+count+"games"); 
+        }
+    /**
+     * Displays the bar.
+     * Clears the graphics pane then draws line labeled with 1 and maxValue at the ends
+     */
+    public void displayBar(){
+       UI.clearGraphics();
+       int width= maxValue*size;
+       UI.setColor(Color.black);
+       UI.fillRect(barLeft, barTop, width, 5); 
+       UI.drawString("1", barLeft, barTop-10);
+       UI.drawString(""+ maxValue, barLeft+width, barTop-10);
+    }
+
+    /**
+     * Displays a guess on the bar, using the specified color.
+     * Clears the graphics pane then draws line labeled with 1 and maxValue at the ends
+     */
+    public void displayGuess(int guess, Color col){
+        /*# YOUR CODE HERE */
+        int x = barLeft + ((guess-1)*size);
+        UI.setColor(col);
+        UI.fillRect(x-2, barTop-10, size-4, 15);
+        UI.drawString (""+guess, x, barTop-15);
+        UI.setColor(Color.black);
+        
+    }
+    public void displayRuleOut (int bot, int top){
+        Trace.println ("ruling out from" +bot+"to"+top);
+        int x = barLeft +(bot-1)*size;
+        int width= (top-bot+1)*size;
+        UI.setColor(Color.orange);
+        UI.fillRect(x, barTop, width, 5);
+        UI.setColor(Color.black);
+    }
+
+
+    /** playRound: COMPLETION
+     * Computer randomly chooses two different numbers between 1 and maxValue
+     * Draws a horizontal line in the graphics pane labeled with 1 at one end
+     *  and maxValue at the other end.
+     * User is offered up to maxGuesses chances to guess these two numbers 
+     *  Whenever they guess outside the range 1 to maxValue, it asks them to try again
+     *  Displays their guess on the line by drawing a bar at the appropriate place
+     *  After each guess, it tells the user whether  their guess is:
+     *  - correct,
+     *  - higher than both numbers,
+     *  - lower than both numbers, or
+     *  - between the two numbers.
+     * Stops when they have used up all their guesses, or have guessed both numbers correctly
+     * It returns a score which is
+     *  -1, if they guessed neither number,
+     *  0, if they guessed just one number
+     *  1 plus the number of remaining guesses that they didn't
+     *    use, if they guessed both numbers
+     */
+      
+
+}

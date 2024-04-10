@@ -1,0 +1,360 @@
+import javafx.application.*;
+import javafx.stage.*;
+import javafx.scene.*;
+import javafx.scene.canvas.*;
+import javafx.scene.control.*;
+import javafx.scene.control.Alert.*;
+import javafx.scene.effect.*;
+import javafx.scene.image.*;
+import javafx.scene.input.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import javafx.scene.shape.*;
+import javafx.scene.text.*;
+import javafx.beans.property.*;
+import javafx.beans.value.*;
+import javafx.event.*; 
+import javafx.animation.*;
+import javafx.geometry.*;
+import java.io.*;
+import java.time.LocalDate;
+import java.util.*;
+import javafx.util.*;
+import javafx.scene.media.*;
+import java.awt.Color;
+import javafx.scene.control.ScrollPane;
+
+import javafx.scene.control.Tooltip;
+import javafx.collections.*;
+import javafx.scene.control.cell.*;
+import javafx.scene.control.TableColumn.*;
+import javafx.util.converter.*;
+
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.scene.control.DatePicker;
+
+import org.apache.pdfbox.pdmodel.*;
+import org.apache.pdfbox.pdmodel.common.*;
+import org.apache.pdfbox.pdmodel.font.*;
+import org.apache.pdfbox.pdmodel.graphics.image.*;
+
+public class FinalProject extends Application
+{
+    public static void main(String[] args)
+    {
+        Locale.setDefault(Locale.US);
+        try {
+            launch(args);
+            System.exit(0);
+        }
+        catch (Exception error)
+        {
+            error.printStackTrace();
+            System.exit(0);
+        }
+    }
+
+    String clock = new String("");
+    String mins = new String("");
+    String M = new String("");
+    String cal = new String("");
+    String locs = new String("");
+    Label end = new Label("");
+    Label the = new Label("");
+    Label near = new Label("");
+    public void start(Stage Final)
+    {Final.setTitle("The Best Project Ever.EXE");
+        BorderPane MaxPayne = new BorderPane();
+        MenuBar Bar = new MenuBar();
+        Menu on = new Menu("Options");
+        MenuItem about = new MenuItem("About");
+        MenuItem quit = new MenuItem("Quit");
+        on.getItems().addAll(about,quit);
+        Bar.getMenus().add(on);
+        HBox hold = new HBox();
+        hold.setSpacing(16);
+        hold.setPadding(new Insets(16));
+        hold.setAlignment(Pos.CENTER_RIGHT);
+
+        MaxPayne.setTop(Bar);
+        MaxPayne.setCenter(hold);
+        quit.setOnAction(
+            new EventHandler<ActionEvent>()
+            {
+                public void handle (ActionEvent Uub)
+                {
+                    Final.close();
+                }
+            });
+        quit.setAccelerator(
+            new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
+        about.setOnAction(
+            new EventHandler<ActionEvent>()
+            {
+                public void handle(ActionEvent Buu)
+                {
+                    displayHelp();
+                }
+            });
+        about.setAccelerator(
+            new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN));
+        Scene Holiday = new Scene(MaxPayne, 800, 658);
+        Holiday.getStylesheets().add("Style.css");
+        Final.setScene(Holiday);
+
+       PDDocument eventCal = new PDDocument();
+       PDFont fontP = PDType1Font.HELVETICA;
+       PDFont fontBold = PDType1Font.HELVETICA_BOLD;
+       PDFont fontItalic = PDType1Font.HELVETICA_OBLIQUE;
+       PDFont fontMono = PDType1Font.COURIER;
+       
+       float fontSize = 12;
+       float leading = fontSize * 1.25f;
+       PDPage page1 = new PDPage(PDRectangle.LETTER);
+       eventCal.addPage(page1);
+       PDRectangle rect = page1;
+       float pageWidth = rect.getWidth();
+       float pageHeight = rect.getHeight();
+       float margin = 72;
+       float startX = margin;
+       PDPageContentStream pdfContext = new PDPageContentStream(eventCal, page1);
+        
+        
+
+        Button Ba = new Button("", new ImageView());
+        Button Bb = new Button("", new ImageView());
+        Button Bc = new Button("", new ImageView());
+        Button Bd = new Button("", new ImageView());
+
+        VBox toot = new VBox();
+        toot.setSpacing(16);
+        toot.setPadding(new Insets(16));
+        toot.setSpacing(16);
+        toot.setAlignment(Pos.CENTER_LEFT);
+
+
+
+        TabPane ten = new TabPane();
+        Tab tab1 = new Tab("Sounds");
+        tab1.setClosable(false);
+        Tab tab2 = new Tab("Comic");
+        tab2.setClosable(false);
+        Tab tab3 = new Tab("Events");
+        tab3.setClosable(false);
+        ten.getTabs().addAll(tab1,tab2,tab3);
+
+        hold.getChildren().addAll(toot,ten);
+        Label Sound = new Label ("Sound Board V3.0");
+        GridPane sounds = new GridPane();
+        sounds.setVgap(4);
+        sounds.setHgap(4);
+        tab1.setContent(sounds);
+        sounds.addRow(1,Sound);
+        sounds.addRow(2, Ba);
+        sounds.addRow(3,Bb);
+        sounds.addRow(4, Bc);
+        sounds.addRow(5,Bd);
+
+        ComboBox<String> m = new ComboBox<String>();
+        m.getItems().addAll("Am", "Pm");
+        m.setValue("Am");
+        m.valueProperty().addListener(
+            new ChangeListener<String>()
+            {
+                public void changed(ObservableValue ov, String oldValue, String newValue)
+                {
+                    M = ("" +newValue);
+                }
+            });
+        ComboBox<Integer> min = new ComboBox<Integer>();
+        min.getItems().addAll(0,01,02,03,04,05,06,07,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59);
+        min.setValue(12);
+        min.valueProperty().addListener(
+            new ChangeListener<Integer>()
+            {
+                public void changed(ObservableValue ov, Integer oldValue, Integer newValue)
+                {
+                    mins= ( ":" + newValue);
+                }
+            });
+
+        ComboBox<Integer> numbers = new ComboBox<Integer>();
+        numbers.getItems().addAll(12,11,10,9,8,7,6,5,4,3,2,1);
+        numbers.setValue(12);
+        numbers.valueProperty().addListener(
+            new ChangeListener<Integer>()
+            {
+                public void changed(ObservableValue ov, Integer oldValue, Integer newValue)
+                {
+                    clock = (""+ newValue);
+                }
+            });
+        TextField desc = new TextField("");
+        TextField loc = new TextField("");
+
+        Label t = new Label("Time");
+        Label l = new Label("Location");
+        Label ds = new Label("Details");
+        DatePicker dp = new DatePicker();
+        dp.setValue(LocalDate.now());
+        dp.setOnAction( event ->
+            { LocalDate date = dp.getValue();
+                cal = date.toString();
+                String text = (desc.getText());
+                String locs = (loc.getText());
+                String complete = (clock + mins + M); 
+                the.setText("You have an event on " + cal); 
+                end.setText("@ " + "" + locs + "" + complete);
+                near.setText("" + text);
+            });
+        GridPane events = new GridPane();
+        events.setVgap(4);
+        events.setHgap(4);
+        tab3.setContent(events);
+        events.addRow(1,t,numbers,min,m);
+        events.addRow(2,ds,desc);
+        events.addRow(3,dp);
+        events.addRow(4,the);
+        events.addRow(5,end, near);
+        Button savePDF = new Button("Save to PDF");
+        savePDF.setOnAction(
+            event ->
+            {
+                FileChooser choice = new FileChooser();
+                FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("PDF Files", "*.pdf");
+                choice.getExtensionFilters().add(filter);
+                File f = choice.showSaveDialog(Final);
+                LocalDate date = dp.getValue();
+                cal = date.toString();
+                String text = (desc.getText());
+                String complete = (clock + mins + M);
+                
+                try 
+                {
+                    if(desc.equals(""))
+                    {
+                        Alert infoAlert = new Alert(AlertType.INFORMATION);
+                        infoAlert.setTitle(" ");
+                        infoAlert.setHeaderText(null); 
+
+                        infoAlert.setContentText("Please Fill in Event description.");
+                        infoAlert.showAndWait();
+                    }
+                    else if(locs.equals(""))
+                    {
+                        Alert infoAlert = new Alert(AlertType.INFORMATION);
+                        infoAlert.setTitle(" ");
+                        infoAlert.setHeaderText(null); 
+
+                        infoAlert.setContentText("Please Fill in Event Location.");
+                        infoAlert.showAndWait();
+                    }
+                    else
+                    {
+                        if (f == null)
+                        {
+                            Alert infoAlert = new Alert(AlertType.INFORMATION);
+                            infoAlert.setTitle(" ");
+                            infoAlert.setHeaderText(null);
+
+                            infoAlert.setContentText("No file selected.");
+                            infoAlert.showAndWait();
+                        }
+                        try
+                        {
+                            PDImageXObject image = PDImageXObject.createFromFile("bits/face.png", eventCal);
+                            float imageWidth = image.getWidth();
+                            float imageHeight = image.getHeight();
+                            PDRectangle cropBox = page1.getCropBox();
+                            pdfContext.drawImage(image, margin,cropBox.getHeight()- 2*72);
+                        }
+                        catch (Exception error) 
+                        {
+                            System.out.println("Unable to open image file.");
+                            error.printStackTrace();
+                        }
+                        pdfContext.setLeading(leading);
+                        pdfContext.beginText();
+                        pdfContext.setFont(fontBold, fontSize);
+                        pdfContext.newLineAtOffset(startX, startY);
+                        pdfContext.showText("                                             EVENT INFORMATION");
+                        pdfContext.newLine();
+                        
+                        pdfContext.setFont(fontItalic, fontSize);
+                        pdfContext.showText("                                                                      Event Date ");
+                        pdfContext.setFont(fontBold, fontSize);
+                        pdfContext.showText(cal);
+                        pdfContext.newLine();
+
+                        pdfContext.setFont(fontItalic, fontSize);
+                        pdfContext.showText( "                                                                       Time: ");
+                        pdfContext.setFont(fontBold, fontSize);
+                        pdfContext.showText(complete);
+                        pdfContext.newLine();
+
+                        pdfContext.setFont(fontItalic, fontSize);
+                        pdfContext.showText( "                                                                           Location: ");
+                        pdfContext.setFont(fontBold, fontSize);
+                        pdfContext.showText(locs);
+                        pdfContext.newLine();
+
+                        pdfContext.setFont(fontItalic, fontSize);
+                        pdfContext.showText( "                                                                             Description: ");
+                        pdfContext.setFont(fontBold, fontSize);
+                        pdfContext.showText(text);
+                        pdfContext.endText();
+
+                    }
+                    pdfContext.close();
+                    String outputFilename = "New Event.pdf";
+                    eventCal.save(outputFilename);
+                    eventCal.close();
+                    System.out.println("File: " + outputFilename + " successfully created.");
+                }
+
+                catch (Exception error)
+                {
+                    Alert infoAlert = new Alert(AlertType.INFORMATION);
+                    infoAlert.setTitle("File Error");
+                    infoAlert.setHeaderText(null); 
+                    infoAlert.setContentText("Unable to open the file " + f.getName() );
+                    infoAlert.showAndWait();
+                }
+            });
+
+
+        Final.setResizable(false);
+        Final.show();
+    }
+
+    public void displayHelp()
+    {
+        Alert win = new Alert(AlertType.INFORMATION);
+        win.setTitle("BEHOLD MY COSMIC POWER!!!");
+        win.setHeaderText("I actually have no cosmic power, but anyway how can i help you today?");
+
+        Stage Final = (Stage) win.getDialogPane().getScene().getWindow();
+        Final.getIcons().add(new Image("bits/Face.png"));
+        win.setGraphic(new ImageView( new Image("bits/Face.png")));
+        win.initStyle(StageStyle.DECORATED);
+
+        GridPane willRobinson = new GridPane();
+        willRobinson.setHgap(16);
+        willRobinson.setVgap(16);
+
+        win.getDialogPane().setContent(willRobinson);
+
+        Label lb = new Label("Hi guys! Welcome to the Ultimate pocket app created by yours truly!");
+        Label lb2 = new Label("(If you don't know me i'm the weirdo in the picture...)");
+        Label lb2a = new Label( "This program has several functions, to access the application you want click one of the tab's in the upper right corner or press one of the buttons!");
+        Label lb3 = new Label("Well it's been one heck of a semester everyone best of luck to you all " 
+                + " and i hope you all enjoy your holidays! Special thanks to Professor Lee for the awesome class!");
+        willRobinson.add(lb,1,1);
+        willRobinson.add(lb2,1,2);
+        willRobinson.add(lb2a,1,3);
+        willRobinson.add(lb3,1,4);
+        Button okButton = (Button) win.getDialogPane().lookupButton(ButtonType.OK);
+        okButton.setText("Thanks!");
+        win.showAndWait();
+    }
+} 

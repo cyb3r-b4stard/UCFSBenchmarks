@@ -1,0 +1,71 @@
+/**
+ * ########### ####### ##### ### ### ### #### #### ### ####### #### ## # ####.
+ * 
+ */
+
+import edu.duke.*;
+import org.apache.commons.csv.*;
+
+public class ColdestTemp {
+    public void testColdestHourInFile() {
+        FileResource fr = new FileResource();
+        CSVParser parser = fr.getCSVParser();
+        System.out.println(coldestHourInFile(parser).get("TemperatureF"));
+    }
+    
+    public void testFileWithColdestTemperature() {
+        DirectoryResource dr = new DirectoryResource();
+    }
+    
+    private CSVRecord coldestHourInFile(CSVParser parser) {
+        CSVRecord coldestRecord = null;
+        for (CSVRecord record : parser) {
+            if (coldestRecordInDay == null) {
+                coldestRecordInDay = record;
+            }
+                
+            else {
+                double currentTemp = Double.parseDouble(record.get("TemperatureF"));
+                double coldestTempInDay = Double.parseDouble(coldestRecordInDay.get("TemperatureF"));
+                if (currentTemp < coldestTempInDay) {
+                    coldestTempInDay = currentTemp;
+                    coldestRecordInDay = record;
+                }
+            }
+        }
+        
+        return coldestRecordInDay;
+    }
+    
+    
+    private String fileWithColdestTemperature() {
+        CSVRecord coldestRecord = null;
+        DirectoryResource dr = new DirectoryResource();
+        
+        for (File file : dr.selectedFiles()) {
+            CSVParser parser = file.getCSVParser();
+            
+            if (coldestRecord == null) {
+                coldestDayFile = file;
+            
+            for (CSVRecord record : parser) {
+                if (coldestRecordInDay == null) {
+                    coldestRecordInDay = record;
+                }
+                    
+                else {
+                    double currentTemp = Double.parseDouble(record.get("TemperatureF"));
+                    double coldestTempInDay = Double.parseDouble(coldestRecordInDay.get("TemperatureF"));
+                    if (currentTemp < coldestTempInDay) {
+                        coldestTempInDay = currentTemp;
+                        coldestRecordInDay = record;
+                    }
+                }
+            }
+            
+            if (coldestTempInDay < Double.ParseDouble(coldestDayFile.get("TemperatureF"))) {
+                coldestDayFile = file;
+            }
+        }
+    }       
+}

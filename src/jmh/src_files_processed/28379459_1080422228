@@ -1,0 +1,95 @@
+public class Knoten extends Baumelement
+{
+    /** Attribute, Referenzattribute */
+    private Baumelement  linkerNF;
+    private Baumelement  rechterNF;
+    private Datenelement daten;
+
+    /** Konstruktor fuer Objekte der Klasse Knoten */
+    public Knoten(Datenelement d)
+    {
+        daten = d;
+        linkerNF = null;
+        rechterNF = null;
+    }
+
+    public Knoten(Datenelement d, Baumelement links, Baumelement rechts)
+    {
+        daten = d;
+        linkerNF = links;
+        rechterNF = rechts;
+    }
+
+    /** Methoden */
+    public Knoten einfuegen(Datenelement d)
+    {
+        if ( d.gibSchluessel().compareTo(daten.gibSchluessel()) == 0 )
+        {
+            System.out.println("Die Daten existeieren schon!");
+            return this;
+        }
+        else if ( d.gibSchluessel().compareTo(daten.gibSchluessel()) < 0 )
+        {
+            linkerNF = linkerNF.einfuegen(d);
+            return this;
+        }
+        else
+        {
+            rechterNF = rechterNF.einfuegen(d);
+            return this;
+        }
+    }
+
+    public Baumelement entfernen(String entf)
+    {
+        if ( entf.compareTo(daten.gibSchluessel()) == 0 )
+        {
+            if ( rechterNF.gibAnzahl() == 0 )
+                return linkerNF;
+            else if ( linkerNF.gibAnzahl() == 0 )
+                    return rechterNF;
+                else
+                {
+                    daten = linkerNF.sucheGroessten();
+                    linkerNF = linkerNF.entfernen( daten.gibSchluessel() );
+                    return this;
+                }
+        }
+        else if ( entf.compareTo(daten.gibSchluessel()) < 0 )
+                linkerNF = linkerNF.entfernen(entf);
+            else
+                rechterNF = rechterNF.entfernen(entf);
+            return this;
+    }
+    
+    public void inorder()
+    {
+        linkerNF
+        
+        rechterNF
+    }
+    
+    public int gibAnzahl()
+    {
+        return 1 + linkerNF.gibAnzahl() + rechterNF.gibAnzahl();
+    }
+    
+    public Datenelement sucheGroessten()
+    {
+        if ( rechterNF.gibAnzahl() == 0 )
+            return daten;
+        else 
+            return rechterNF.sucheGroessten();
+    }
+
+    public Datenelement suchen(String vgl)
+    {
+        if ( vgl.compareTo(daten.gibSchluessel()) == 0 )
+            return daten;
+        else 
+            if ( vgl.compareTo(daten.gibSchluessel()) < 0 )
+                return linkerNF.suchen(vgl);
+            else 
+                return rechterNF.suchen(vgl);
+    }
+}

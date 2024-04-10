@@ -1,0 +1,229 @@
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
+import java.awt.event.*;
+
+
+/**
+ * ##### # ########### ## ##### ######### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Besturing 
+{
+    
+   
+    
+
+
+    /**
+     * Constructor for objects of class Besturing
+     */
+    public Besturing()
+    {
+      
+       
+        
+    }
+       
+   
+    
+    public void scanVelden(DamButton deButton, DamButton[] dezeButtons, DamSchijf[] dezeLijst)
+    {
+        int x = deButton.getTheX();
+        int y = deButton.getTheY();
+        
+        
+        if(deButton.pakSchijf(dezeLijst).getStaat()==0)
+        {
+        
+            for (DamButton dezeButton : dezeButtons)
+            {
+            
+            
+                if (dezeButton.getTheX()== x-1 && dezeButton.getTheY()== y+1 && dezeButton.pakSchijf(dezeLijst)==null)
+                {
+                    dezeButton.zetKleur(Color.RED);
+                }
+                if (dezeButton.getTheX()== x+1 && dezeButton.getTheY()== y+1 && dezeButton.pakSchijf(dezeLijst)==null)
+                {
+                    dezeButton.zetKleur(Color.RED);
+                }
+            
+            }
+        }
+    }
+    
+    public void scanSlaMogelijkheden(DamButton[] dezeButtons, DamSchijf[] dezeLijst, int welkeSpeler) 
+    {
+       
+               
+        {
+        
+            for (DamButton dezeButton : dezeButtons)
+            {
+                
+                int x = dezeButton.getTheX();
+                int y = dezeButton.getTheY();
+                
+               if (welkeSpeler==0) 
+               { 
+                if (dezeButton.pakSchijf(dezeLijst)!=null && dezeButton.pakSchijf(dezeLijst).getStaat()==0)    
+                {
+                    checkAlles(x,y,dezeButton, dezeButtons, dezeLijst, 1);
+                }
+               }
+               
+               if (welkeSpeler==1) 
+               { 
+                   if (dezeButton.pakSchijf(dezeLijst)!=null && dezeButton.pakSchijf(dezeLijst).getStaat()==1)
+                   {
+                       checkAlles(x,y,dezeButton, dezeButtons, dezeLijst, 0);
+                   }
+               }
+                
+        }
+    }
+                
+                
+      
+        
+   
+    
+    
+    public void checkAlles(int x, int y, DamButton deButton, DamButton[] dezeButtons, DamSchijf[] dezeLijst, int wieMoetGeslagen) 
+    {
+        checkLinksBoven(x,y, dezeButtons, dezeLijst, wieMoetGeslagen);
+        checkRechtsBoven(x,y, dezeButtons, dezeLijst, wieMoetGeslagen);
+        checkLinksOnder(x,y, dezeButtons, dezeLijst, wieMoetGeslagen);
+        checkRechtsOnder(x,y, dezeButtons, dezeLijst, wieMoetGeslagen);
+    }
+    
+    public void checkLinksBoven(int x, int y, DamButton[] dezeButtons, DamSchijf[] dezeLijst, int wieMoetGeslagen)
+    {
+         
+        for (DamButton deButton : dezeButtons)
+        {
+        if ((deButton.getTheX()== x-2 && deButton.getTheY()== y+2 && deButton.pakSchijf(dezeLijst)==null) && (checkSchijf(x-1,y+1,dezeButtons,dezeLijst,wieMoetGeslagen)))
+                {
+                    deButton.zetKleur(Color.GREEN);
+                  
+                }
+        }
+     }
+     
+      public void checkRechtsBoven(int x, int y, DamButton[] dezeButtons, DamSchijf[] dezeLijst, int wieMoetGeslagen)
+    {
+         
+        for (DamButton deButton : dezeButtons)
+        {
+        if ((deButton.getTheX()== x+2 && deButton.getTheY()== y+2 && deButton.pakSchijf(dezeLijst)==null) && (checkSchijf(x+1,y+1,dezeButtons,dezeLijst,wieMoetGeslagen)))
+                {
+                    deButton.zetKleur(Color.GREEN);
+                  
+                }
+        }
+     }
+     
+      public void checkLinksOnder(int x, int y, DamButton[] dezeButtons, DamSchijf[] dezeLijst, int wieMoetGeslagen)
+    {
+         
+        for (DamButton deButton : dezeButtons)
+        {
+        if ((deButton.getTheX()== x-2 && deButton.getTheY()== y-2 && deButton.pakSchijf(dezeLijst)==null) && (checkSchijf(x-1,y-1,dezeButtons,dezeLijst,wieMoetGeslagen)))
+                {
+                    deButton.zetKleur(Color.GREEN);
+                  
+                }
+        }
+     }
+     
+      public void checkRechtsOnder(int x, int y, DamButton[] dezeButtons, DamSchijf[] dezeLijst, int wieMoetGeslagen)
+    {
+         
+        for (DamButton deButton : dezeButtons)
+        {
+        if ((deButton.getTheX()== x+2 && deButton.getTheY()== y-2 && deButton.pakSchijf(dezeLijst)==null) && (checkSchijf(x+1,y-1,dezeButtons,dezeLijst,wieMoetGeslagen)))
+                {
+                    deButton.zetKleur(Color.GREEN);
+                  
+                }
+        }
+     }
+        
+        
+    
+    
+    public boolean checkSchijf(int x, int y, DamButton[] dezeButtons, DamSchijf[] dezeLijst, int wieMoetGeslagen)
+    {
+        for (DamButton deButton : dezeButtons)
+        {
+            if (deButton.getTheX()==x && deButton.getTheY()==y && deButton.pakSchijf(dezeLijst)!=null && deButton.pakSchijf(dezeLijst).getStaat()==wieMoetGeslagen)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+            
+    
+   
+    
+    
+    public void zetSchijf(DamButton deButton, DamButton[] dezeButtons, DamSchijf[] dezeLijst)
+    {
+        for (DamSchijf deSchijf : dezeLijst)
+        {
+            if (deSchijf.getStartKlaar())
+            {
+                deSchijf.pakButton(dezeButtons).setIcon(null);
+                deButton.plaatsSchijf(deSchijf);
+                deSchijf.setX(deButton.getTheX()); 
+                deSchijf.setY(deButton.getTheY());   
+                zetInBeginstand(dezeButtons, dezeLijst);
+            }
+        }
+    
+    
+    
+    }
+        
+    
+    
+    
+    
+
+
+    
+    public void zetInBeginstand(DamButton[] dezeButtons, DamSchijf[] dezeLijst)
+    {
+        for (DamButton deButton : dezeButtons)
+        {
+            if (deButton.pakSchijf(dezeLijst) != null)
+            {
+                deButton.pakSchijf(dezeLijst).setStartKlaar(false);
+            }
+            
+            if (deButton.getBackground() == Color.RED || deButton.getBackground() == Color.GREEN)
+            {
+                deButton.zetKleur(Color.BLACK);
+            }
+        }
+        
+       
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+                
+    
+}
+    
+    

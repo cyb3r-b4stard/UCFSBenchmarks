@@ -1,0 +1,155 @@
+import java.io.*;
+import java.util.*;
+
+/**
+ * ##### ### ######## ### ##### ## ####### ########## ### ## ########### # 
+ * ######## ####### #### ######### #### #####
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class DatosPluviometro
+{
+    private ArrayList<MedidaPrecip[]> lista;
+
+    /**
+     * Constructor que lee los datos del fichero indicado y simula las
+     * precipitaciones horarias. Si el fichero no existe crea el array
+     * de tamano cero.
+     * @param nomFich   nombre del fichero del que se leen los datos
+     */
+    public DatosPluviometro(String nomFich)
+    {
+        Scanner in = null;
+
+        try {
+            in = new Scanner(new FileReader(nomFich));
+
+            in.useLocale(Locale.ENGLISH);
+
+            int linea=0;
+            
+            double lluvia;
+            
+            String fecha[];
+
+            ArrayList<MedidaPrecip> listaTemporal=new ArrayList<MedidaPrecip>();
+            
+            while (in.hasNext()) {
+                linea++;
+                String palabra = in.next();
+                fecha=palabra.trim().split("-");
+                if (fecha.length!=3) {
+                    System.out.println("Formto de linea incorrecto. Linea:"+
+                        linea+" fecha="+palabra);
+                }
+                
+                if (in.hasNextDouble()) {
+                    lluvia = in.nextDouble();
+                } else {
+                    lluvia=0;
+                    System.out.println("No encontrado numero en linea:"+linea);
+                }
+                
+                for (int hora=3; hora<=19; hora++) {
+                    listaTemporal.add(new MedidaPrecip(
+                       lluvia*hora/187.0,  
+                       Integer.parseInt(fecha[0]),
+                       Integer.parseInt(fecha[1]),
+                       Integer.parseInt(fecha[2]),
+                       hora));
+                }
+            } 
+            
+            lista=listaTemporal.toArrayList(new ArrayList<MedidaPrecip[listaTemporal.size()]>);
+
+        } catch (FileNotFoundException e) {
+            System.out.println("No se encuentra el fichero " + nomFich);
+            lista=new MedidaPrecip[0]; 
+        } finally {
+            if (in != null)
+                in.close();  
+        } 
+    }
+    
+    
+    /**
+     * Recorre la lista identificando medidas de precipitacion
+     * correspondientes al dia, mes y anyo indicados por los
+     * parametros. Suma las precipitaciones de todas estas medidas
+     * (que corresponden a diferentes horas) y retorna esa suma
+     * @param   dia  el dia
+     * @param   mes  el mes
+     * @param   year  el anyo
+     * @return   la precipitacion total del dia mes y anyo indicados, en l/m2
+     */
+    public double precipitacionDia(int dia, int mes, int year){
+       double precipitacion=0.0;
+       for(int i=0; i<lista.length; i++){
+       if(lista[i].getYear()==year && lista[i].getMes()==mes && lista[i].getDia()==dia){
+       for(int h=0; h<=24; h++){
+       if(lista[i].getHora()==h){
+        precipitacion=precipitacion+lista[i].getPrecipHora();}
+    }
+}
+}
+       return precipitacion;
+}
+       
+
+    
+    /**
+     * Escribe en la pantalla una lista de las precipitaciones de cada
+     * dia correspondiente al mes y anyo indicados obtenidas con
+     * sucesivas llamadas al metodo precipitacionDia().
+     * @param   mes  el mes
+     * @param   year  el anyo
+     */
+  public void listarMes(int mes, int year) {
+    System.out.println("Precipitacion del mes: " + mes +" , " + "anyo: " +year);
+    System.out.println("Dia Precipitacion(l/m2)");
+    for(int i=1; i<=31; i++){
+       System.out.println(i+ " " + precipitacionDia(i,mes,year));
+    }
+}
+
+    
+    
+    /**
+     * Calcula y retorna la precipitacion por hora maxima de todos los
+     * datos de la lista que correspondan al mes indicado en el
+     * parametro (para todos los anyos). Si no hay ningun dato para ese
+     * mes retorna Double.NaN
+     * @param   mes  el mes
+     * @return      la precipitacion por hora maxima, en l/m2     
+     */
+    public double precipitacionMaxEnMes(int mes){
+     double precipitacion=0.0;
+     boolean encontrado=false;
+     for(int i=0; i<lista.length; i++){
+     if(lista[i].getMes()==mes){
+       encontrado=true;
+     if(lista[i].getPrecipHora()>precipitacion){
+       precipitacion=lista[i].getPrecipHora();
+    }
+}
+}
+if(encontrado=false){
+     precipitacion=Double.NaN;
+}
+return precipitacion;
+}
+  /**
+     * Muestra en pantalla todos los datos almacenados
+     */
+    private void listarTodo()
+    {
+        if (lista.length==0) {
+            System.out.println("La lista esta vacia");
+        } else {
+            for (MedidaPrecip m:lista) {
+                System.out.println(m);
+            }
+        }
+    }
+}

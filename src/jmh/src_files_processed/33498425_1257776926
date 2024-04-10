@@ -1,0 +1,1282 @@
+import java.util.*;
+import java.io.*;
+import java.text.*;
+
+public class Menu {
+    private List<Student> studentList;
+    private List<Staff> staffList;
+    private List<Room> roomList;
+    private List<Equipment> equipmentList;
+    private List<Booking> bookingList;
+    private Scanner scan;
+
+    public Menu() {
+        studentList = new ArrayList<Student>();
+        staffList = new ArrayList<Staff>();
+        roomList = new ArrayList<Room>();
+        equipmentList = new ArrayList<Equipment>();
+        bookingList = new ArrayList<Booking>();
+        showMenu();
+    }
+
+    /**
+     * This is the method that can show the menu
+     */
+    public void showMenu() {
+        Scanner sstring = new Scanner(System.in);
+        readStudentFile();
+        readStaffFile();
+        readRoomFile();
+        readEquipmentFile();
+        readBookingFile();
+        Boolean flag = true;
+        while (flag = true)
+        {
+            System.out.println("\n\n********************************************");
+            System.out.println("Hello!");
+                flag = false;
+                String choice = "";
+                while (!choice.equals("7"))
+                {
+                    System.out.println("\nWelcome to FBS!");
+                    System.out.println("===========================");
+                    System.out.println("(1) Create a booking");
+                    System.out.println("(2) Cancel a booking");
+                    System.out.println("(3) Create a member");
+                    System.out.println("(4) report a member's information");
+                    System.out.println("(5) Create a facility");
+                    System.out.println("(6) List all facility booked by a member");
+                    System.out.println("(7) List all facility booked by all members");
+                    System.out.println("(8) Logout");
+                    System.out.print("Please choose an option: ");
+                    choice = sstring.nextLine();
+                    switch (choice)
+                    {
+                        case "1" : createBooking(); break;
+                        case "2" : cancelBooking(); break;
+                        case "3" : createMember(); break;
+                        case "4" : reportMember(); break;
+                        case "5" : createFacility(); break;
+                        case "6" : listByMember(); break;
+                        case "7" : listAll();break;
+                        case "8" : writeRoomFile();
+                        writeEquipmentFile();
+                        writeStudentFile();
+                        writeStaffFile();
+                        writeBookingFile();
+                        System.exit(0); break;
+                        default : System.out.println("\f\nPlease choice a number between 1 to 8");
+                    }
+                }
+            }    
+        }
+    
+
+    /**
+     * This is the method to create a booking
+     * 
+     * @param memberID
+     * @param bookingStartTime
+     * @param bookingEndTime
+     * @param bookingDate
+     */
+    private void createBooking() {
+        String choice;
+        System.out.println("Please input the member id");
+        String memberID = getUserInput();
+        Member member = checkMember(memberID);
+        System.out.println('\u000c');
+        if (member == null) {
+            System.out.println("no such member!");
+            return;
+        }
+        if (member instanceof Student){
+        System.out.println("What do you want to book?");
+        System.out.println("1. Equipment");
+        System.out.println("2. Room");
+        choice = getUserInput();
+        if (choice.equals("1")) {
+            String equipmentType = null;
+            do {
+                System.out.println("What equipment do you want to book?");
+                System.out.println("1. camera");
+                System.out.println("2. usb key");
+                System.out.println("3. projector");
+                System.out.println("4. laptop");
+                System.out.println("5. headphone");
+                choice = null;
+                choice = getUserInput();
+                switch (choice) {
+                    case "1":
+                    equipmentType = "camera";
+                    break;
+                    case "2":
+                    equipmentType = "usbkey";
+                    break;
+                    case "3":
+                    equipmentType = "projector";
+                    break;
+                    case "4":
+                    equipmentType = "laptop";
+                    break;
+                    case "5":
+                    equipmentType = "headphone";
+                }
+            } while (!validateEquipmentType(equipmentType));
+            Date date = null;
+            do {
+                System.out.println("Please input the booking date.format;yyyy/MM/dd:");
+                date = validateDateFormat(getUserInput());
+            }while (date == null);
+            List<Equipment> avaliableEquipment = getAvaliableEquipment(member, date, Equipment.Type.valueOf(equipmentType.toUpperCase()));
+            if (avaliableEquipment.size() == 0) {
+                System.out.println("No avaliable equipment of this type");
+                return;
+            }
+            System.out.println("Please choose an equipment");
+            int count = 1;
+            for (Equipment equipment : avaliableEquipment) {
+                System.out.print(count + ". " + "ID: " + equipment.getId() + ", ");
+                System.out.println(" Name: " + equipment.getName());
+                System.out.println("Description(Date of purchase): " + equipment.getDescription());
+                count++;
+            }
+            do {
+                System.out.print("Please choose an equipment: ");
+                choice = getUserInput();
+            } while (!validateChoiceBoundry(choice, count));
+            Equipment equipment = avaliableEquipment.get(Integer.valueOf(choice) - 1);
+            studentList.get(getStudentFromList(memberID)).bookingRoom();
+            generateBookingRecord(member, equipment, 0, 0, date);
+        }else {
+            String roomType = null;
+            do {
+                System.out.println("What room do you want to book?");
+                System.out.println("1. lab");
+                System.out.println("2. lecture room");
+                System.out.println("3. meeting room");
+                choice = null;
+                choice = getUserInput();
+                switch (choice) {
+                    case "1":
+                    roomType = "lab";
+                    break;
+                    case "2":
+                    roomType = "lecture";
+                    break;
+                    case "3":
+                    roomType = "meetingroom";
+                    break;
+                }
+            } while (!validateRoomType(roomType));
+            Date date = null;
+            String bookingStartTime;
+            String bookingEndTime;
+            do {
+                do {
+                    System.out.print("Which day you want to book? format;yyyy/MM/dd: ");
+                    date = validateDateFormat(getUserInput());
+                } while (date == null);
+                System.out.print("Please input the start time: ");
+                bookingStartTime = getUserInput();
+                System.out.print("Please input the end time: ");
+                bookingEndTime = getUserInput();
+            } while (!validatebookingStartTimeAndbookingEndTime(bookingStartTime, bookingEndTime));
+            List<Room> avaliableRooms = getAvaliableRooms(member, date, Integer.valueOf(bookingStartTime), Integer.valueOf(bookingEndTime), Room.Type.valueOf(roomType.toUpperCase()));
+            if (avaliableRooms != null && avaliableRooms.size() != 0) {
+                int count = 1;
+                for (Room room : avaliableRooms) {
+                    System.out.print(count + ". " + "Room name:" + room.getName() + ";");
+                    System.out.println("Room description(Capacity):" + room.getDescription());
+                    count++;
+                }
+                do {
+                    System.out.print("Please choose a room: ");
+                    choice = getUserInput();
+                } while (!validateChoiceBoundry(choice, count));
+                Room room = avaliableRooms.get(Integer.valueOf(choice) - 1);
+                generateBookingRecord(member, room, Integer.valueOf(bookingStartTime), Integer.valueOf(bookingEndTime), date);
+                studentList.get(getStudentFromList(memberID)).bookingEquip();
+            }
+            else
+            {
+                System.out.println("No avaliable choices, sorry.");
+            }
+        }
+    }
+     if (member instanceof Staff){
+        System.out.println("What do you want to book?");
+        System.out.println("1. Equipment");
+        System.out.println("2. Room");
+        choice = getUserInput();
+        if (choice.equals("1")) {
+            String equipmentType = null;
+            do {
+                System.out.println("What equipment do you want to book?");
+                System.out.println("1. camera");
+                System.out.println("2. usb key");
+                System.out.println("3. projector");
+                System.out.println("4. laptop");
+                System.out.println("5. headphone");
+                choice = null;
+                choice = getUserInput();
+                switch (choice) {
+                    case "1":
+                    equipmentType = "camera";
+                    break;
+                    case "2":
+                    equipmentType = "usbkey";
+                    break;
+                    case "3":
+                    equipmentType = "projector";
+                    break;
+                    case "4":
+                    equipmentType = "laptop";
+                    break;
+                    case "5":
+                    equipmentType = "headphone";
+                }
+            } while (!validateEquipmentType(equipmentType));
+            Date date = null;
+            do {
+                System.out.println("Please input the booking date. format;yyyy/MM/dd:");
+                date = validateDateFormat(getUserInput());
+            }while (date == null);
+            List<Equipment> avaliableEquipment = getAvaliableEquipment(member, date, Equipment.Type.valueOf(equipmentType.toUpperCase()));
+            if (avaliableEquipment.size() == 0) {
+                System.out.println("No avaliable equipment of this type");
+                return;
+            }
+            System.out.println("Please choose an equipment");
+            int count = 1;
+            for (Equipment equipment : avaliableEquipment) {
+                System.out.print(count + ". " + "ID: " + equipment.getId() + ", ");
+                System.out.println(" Name: " + equipment.getName());
+                System.out.println("Description(Date of purchase): " + equipment.getDescription());
+                count++;
+            }
+            do {
+                System.out.print("Please choose an equipment: ");
+                choice = getUserInput();
+            } while (!validateChoiceBoundry(choice, count));
+            Equipment equipment = avaliableEquipment.get(Integer.valueOf(choice) - 1);
+            generateBookingRecord(member, equipment, 0, 0, date);
+        }else {
+            String roomType = null;
+            do {
+                System.out.println("What room do you want to book?");
+                System.out.println("1. lab");
+                System.out.println("2. lecture room");
+                System.out.println("3. meeting room");
+                choice = null;
+                choice = getUserInput();
+                switch (choice) {
+                    case "1":
+                    roomType = "lab";
+                    break;
+                    case "2":
+                    roomType = "lecture";
+                    break;
+                    case "3":
+                    roomType = "meetingroom";
+                    break;
+                }
+            } while (!validateRoomType(roomType));
+            Date date = null;
+            String bookingStartTime;
+            String bookingEndTime;
+            do {
+                do {
+                    System.out.print("Which day you want to book? format;yyyy/MM/dd: ");
+                    date = validateDateFormat(getUserInput());
+                } while (date == null);
+                System.out.print("Please input the start time: ");
+                bookingStartTime = getUserInput();
+                System.out.print("Please input the end time: ");
+                bookingEndTime = getUserInput();
+            } while (!validatebookingStartTimeAndbookingEndTime(bookingStartTime, bookingEndTime));
+            List<Room> avaliableRooms = getAvaliableRooms(member, date, Integer.valueOf(bookingStartTime), Integer.valueOf(bookingEndTime), Room.Type.valueOf(roomType.toUpperCase()));
+            if (avaliableRooms != null && avaliableRooms.size() != 0) {
+                int count = 1;
+                for (Room room : avaliableRooms) {
+                    System.out.print(count + ". " + "Room name:" + room.getName() + ";");
+                    System.out.println("Room description(Capacity):" + room.getDescription());
+                    count++;
+                }
+                do {
+                    System.out.print("Please choose a room: ");
+                    choice = getUserInput();
+                } while (!validateChoiceBoundry(choice, count));
+                Room room = avaliableRooms.get(Integer.valueOf(choice) - 1);
+                generateBookingRecord(member, room, Integer.valueOf(bookingStartTime), Integer.valueOf(bookingEndTime), date);
+            }
+            else
+            {
+                System.out.println("No avaliable choices, sorry.");
+            }
+        }
+    }
+}
+
+    private void generateBookingRecord(Member member, Facility facility, int bookingStartTime, int bookingEndTime, Date date) {
+        String id = String.valueOf(bookingList.size() + 1);
+        Booking newBooking = new Booking(id, date, bookingStartTime, bookingEndTime, member, facility);
+        bookingList.add(newBooking);
+        System.out.println("booking successfully!!");
+    }
+   
+    private List<Equipment> getAvaliableEquipment(Member member, Date date, Equipment.Type equipmentType) {
+        List<Equipment> result = new ArrayList<>();
+            for (Equipment equipment : equipmentList) {
+                if (equipment.getStatus().equals(Equipment.Status.AVALIABLE) && equipment.getType().equals(equipmentType)) {
+                    boolean flag = false;
+                    for (Booking booking : bookingList) {
+                        if (booking.getFacility().getId().equals(equipment.getId()) && booking.getDate().compareTo(date) == 0)
+                            flag = true;
+                    }
+                    if (flag)
+                        continue;
+                    result.add(equipment);
+                }            
+        }
+        return result;
+    } 
+
+    private List<Room> getAvaliableRooms(Member member, Date date, int bookingStartTime, int bookingEndTime, Room.Type roomType) {      
+        List<Room> result = new ArrayList<>();
+           for (Room room : roomList) {
+                if (room.getStatus().equals(Room.Status.AVALIABLE) && room.getType().equals(roomType)) {
+                    boolean flag = false;
+                    for (Booking booking : bookingList) {
+                        if (booking.getFacility().getId().equals(room.getId()) && booking.getDate().compareTo(date) == 0 && booking.getBookingStartTime() == bookingStartTime
+                            && booking.getBookingEndTime() == bookingEndTime )
+                            flag = true;
+                        if (bookingStartTime < booking.getBookingStartTime()
+                        && bookingEndTime >= booking.getBookingStartTime())
+                            return null;                            
+                        if (bookingStartTime > booking.getBookingStartTime()
+                        && bookingStartTime <= booking.getBookingEndTime()) 
+                            return null;
+                    }
+                    if (flag)
+                        continue;
+                    result.add(room);
+                }            
+        }
+        return result;
+    }
+
+    private Member checkMember(String memberID) {
+        for (Student student : studentList) {
+            if (student.getId().equals(memberID))
+                return student;
+        }
+        for (Staff staff : staffList) {
+            if (staff.getId().equals(memberID))
+                return staff;
+        }
+        return null;
+    }
+
+    /**
+     * check Facility 
+     */
+    private Facility checkFacility(String facilityId) 
+    {
+        for (Room room : roomList)
+        {
+            if (room.getId().equals(facilityId))
+                return room;
+        }
+
+        for (Equipment equipment : equipmentList)
+        {
+            if (equipment.getId().equals(facilityId))
+                return equipment;
+        }
+        return null;
+    }
+
+    private String getUserInput() {
+        scan = new Scanner(System.in);
+        String input = scan.nextLine();
+        return input;
+    }
+
+    /**
+     * The method can cancel a booking
+     * by using member id and booking id.
+     */
+    private void cancelBooking() {
+        System.out.println('\u000c');
+        String choice;
+        Boolean flag = false;
+        System.out.println("Please input a member ID: ");
+        String memberID = getUserInput();
+        Booking rmBooking = bookingList.get(0);
+        Member member = checkMember(memberID);
+        if (member == null)
+        {
+            System.out.println("No such member!");
+            return;
+        }
+        else
+        {
+                System.out.println("Here are the booking records: ");
+                List<Booking> memberBookingList = new ArrayList<>();
+                for (Booking booking : bookingList)
+                {
+                    if (booking.getMember().getId().equals(memberID))
+                    {
+                        booking.getInformation();
+                        memberBookingList.add(booking);
+                    }
+                }
+                if (memberBookingList.size() == 0)
+                {
+                    System.out.println("This member didn't have a book!");
+                    return;
+                }
+                System.out.println("Please insert a booking ID: ");
+                String bookingId = getUserInput();
+                for (Booking booking : memberBookingList)
+                {
+                    if (bookingId.equals(booking.getBookingId()))
+                    {
+                        flag = true;
+                        rmBooking = booking;
+                        continue;
+                    }
+                    else
+                        flag = false;
+                }
+                    {if (rmBooking.getFacility() instanceof Room)
+                        roomList.get(getRoomFromList(rmBooking.getFacility().getId())).setStatus(Facility.Status.AVALIABLE);
+                    else
+                        equipmentList.get(getEquipmentFromList(rmBooking.getFacility().getId())).setStatus(Facility.Status.AVALIABLE);
+                    }
+                    bookingList.remove(rmBooking);
+                    System.out.println("This booking has been canceled!");
+                
+            }
+        }
+
+    /**
+     * Create a member
+     */
+    public void createMember()
+    {
+        System.out.println('\u000c');
+        String choice = "";
+        int totalbookingfee = 0;
+        while (!choice.equals("1") && !choice.equals("2"))
+        {
+            String id = " ";
+            do 
+            {
+                System.out.print("Please insert Member ID(8 digit and start with 1,2 or 9): ");
+                id = getUserInput();
+            }
+            while (checkMemberIdUnique(id) == false || id.length() != 8 || (id.charAt(0) != '1' && id.charAt(0) != '2' && id.charAt(0) != '9')) ;
+            System.out.print("Please insert Member first name: ");
+            String firstName = getUserInput();
+            System.out.print("Please insert Member Last name: ");
+            String lastName = getUserInput();
+            System.out.print("Please insert Member address: ");
+            String address = getUserInput();
+            System.out.print("Please insert Member phone: ");
+            String phone = getUserInput();
+            if (id.charAt(0) == '1' || id.charAt(0) =='2'){
+                Student member = new Student(id, firstName, lastName, address, phone, totalbookingfee);
+                studentList.add(member); 
+            }
+            else{
+                Staff member2 = new Staff(id, firstName, lastName, address, phone);
+                staffList.add(member2);
+            }
+            }
+        }
+    }
+
+    /**
+     * Create Facility
+     */
+    public void createFacility()
+    {
+        String choice = "";
+        System.out.println('\u000c');
+        while (!choice.equals("1") && !choice.equals("2"))
+        {
+            System.out.println("\nPlease choose a Facility type!");
+            System.out.println("(1) Room     (2) Equipment");
+            System.out.print("Choose an option: ");
+            choice = getUserInput();
+            switch (choice)
+            {
+            case "1" :
+                String id = " ";
+            do 
+            {
+                System.out.print("Please insert Facility ID: ");
+                id = getUserInput();
+            }
+            while (checkFacilityIdUnique(id) == false);
+                System.out.print("Please insert Room name: ");
+                String name = getUserInput();
+                System.out.print("Please insert Room description(capacity): ");
+                String description = getUserInput();System.out.println("(1) Lecture  (2) Lab  (3) Meeting");
+                System.out.print("Please choose the type: ");
+                String choice2 = getUserInput();
+                switch (choice2)
+                {
+                    case "1" : Room room = new Room(Room.Type.LECTURE, id, name, Facility.Status.AVALIABLE, description);
+                    roomList.add(room);
+                    break;
+                    case "2" : Room room2 = new Room(Room.Type.LAB, id, name,Facility.Status.AVALIABLE, description);
+                    roomList.add(room2);
+                    break;
+                    case "3" : Room room3 = new Room(Room.Type.MEETINGROOM, id, name,Facility.Status.AVALIABLE, description);
+                    roomList.add(room3);
+                    break;
+                }
+                System.out.println("Room added!");
+                break;
+            case "2" : 
+                String id2 = "";
+            do 
+            {
+                System.out.print("Please insert Equipment ID(Must be started with EQ and 8 numbers): ");
+                id2 = getUserInput();
+            }
+            while (checkFacilityIdUnique(id2) == false || id2.length() != 10 || id2.charAt(0) != 'E' || id2.charAt(1) != 'Q');
+                System.out.print("Please insert Equipment name: ");
+                String name2 = getUserInput();
+                System.out.print("Please insert Equipment description(date of purchase): ");
+                String description2 = getUserInput();
+                System.out.println("(1) Camera (2) USBkey (3) Projector (4) Laptop (5) Headphone");
+                System.out.print("Please choose the type: ");
+                String choice3 = getUserInput();
+                switch (choice3)
+                {
+                    case "1" : Equipment equipment = new Equipment(Equipment.Type.CAMERA, id2, name2, Facility.Status.AVALIABLE, description2);
+                    equipmentList.add(equipment);
+                    break;
+                    case "2" : Equipment equipment2 = new Equipment(Equipment.Type.USBKEY, id2, name2,Facility.Status.AVALIABLE, description2);
+                    equipmentList.add(equipment2);
+                    break;
+                    case "3" : Equipment equipment3 = new Equipment(Equipment.Type.PROJECTOR, id2, name2,Facility.Status.AVALIABLE, description2);
+                    equipmentList.add(equipment3);
+                    break;
+                    case "4" : Equipment equipment4 = new Equipment(Equipment.Type.LAPTOP, id2, name2, Facility.Status.AVALIABLE, description2);
+                    equipmentList.add(equipment4);
+                    break;
+                    case "5" : Equipment equipment5 = new Equipment(Equipment.Type.HEADPHONE, id2, name2,Facility.Status.AVALIABLE, description2);
+                    equipmentList.add(equipment5);
+                    break;
+                }
+                System.out.println("Equipment added!");
+                break;
+                default : System.out.println("You should choose an number!");
+                break;
+            }
+        }
+    }
+
+    /**
+     * Check Member ID unique
+     * return boolean
+     */
+    private boolean checkMemberIdUnique(String id)
+    {
+        boolean flag1 = false;
+        boolean flag2 = false;
+        boolean flag3 = false;
+        boolean flag4 = false;
+        if (studentList.size() == 0)
+            flag1 = false;
+        else 
+        {
+            for (Student student : studentList)
+            {
+                if (student.getId().equals(id))
+                    flag2 = true;
+            }
+        }
+
+        if (staffList.size() == 0)
+            flag3 = false;
+        else
+        {
+            for (Staff staff : staffList)
+            {
+                if (staff.getId().equals(id))
+                    flag4 = true;
+            }
+        }
+
+        if (flag1 == flag3 == false)
+            return true;
+
+        if (flag2 || flag4 == true)
+        {
+            System.out.println("This ID is used!");
+            return false;
+        }
+        else
+            return true;
+    }
+
+    /**
+     * Check facility ID unique
+     */
+    private boolean checkFacilityIdUnique(String id)
+    {
+        boolean flag1 = false;
+        boolean flag2 = false;
+        boolean flag3 = false;
+        boolean flag4 = false;
+        if (equipmentList.size() == 0)
+            flag1 = false;
+        else 
+        {
+            for (Equipment equipment : equipmentList)
+            {
+                if (equipment.getId().equals(id))
+                    flag2 = true;
+            }
+        }
+
+        if (roomList.size() == 0)
+            flag3 = false;
+        else
+        {
+            for (Room room : roomList)
+            {
+                if (room.getId().equals(id))
+                    flag4 = true;
+            }
+        }
+
+        if (flag1 == flag3 == false)
+            return true;
+
+        if (flag2 || flag4 == true)
+        {
+            System.out.println("This ID is used!");
+            return false;
+        }
+        else
+            return true;
+    }
+
+    /**
+     * Return the booking list for a member
+     */
+    public List<Booking> returnBookingMember(String memberId)
+    {
+        List<Booking> result = new ArrayList<>();
+        for (Booking booking : bookingList)
+        {
+            if (booking.getMember().getId().equals(memberId))
+                result.add(booking);
+            else
+                System.out.println("This member dones't have any booking record!");
+        }
+        return result;
+    }
+
+    /**
+     * Get method for studentList
+     * 
+     * @return the studentList
+     */
+    public List<Student> getStudentList() {
+        return studentList;
+    }
+
+    /**
+     * Get a Student from the student list
+     * @return index
+     */
+    public int getStudentFromList(String memberId)
+    {
+        int index = 0;
+        for (int number = 0; number < studentList.size(); number++)
+        {
+            if (studentList.get(number).getId().equals(memberId))
+                index = number;
+        }
+        return index;
+    }
+
+    /**
+     * Get a Equipment from the equipment list
+     * @return index
+     */
+    public int getEquipmentFromList(String facilityId)
+    {
+        int index = 0;
+        for (int number = 0; number < equipmentList.size(); number++)
+        {
+            if (equipmentList.get(number).getId().equals(facilityId))
+                index = number;
+        }
+        return index;
+    }
+
+    /**
+     * Get a room from the room list
+     * @Return index
+     */
+    public int getRoomFromList(String facilityId)
+    {
+        int index = 0;
+        for (int number = 0; number < roomList.size(); number++)
+        {
+            if (roomList.get(number).getId().equals(facilityId))
+                index = number;
+        }
+        return index;
+    }
+
+    /**
+     * Read the files to load Student
+     */
+    public void readStudentFile()
+    {
+        ArrayList<String> fileStudent = new ArrayList<String>();
+        String fileStudentName = ("students.txt");
+        try
+        {
+            FileReader inputFile = new FileReader(fileStudentName);
+            Scanner file = new Scanner(inputFile);
+            int index = 0;
+            while (file.hasNextLine())
+            {
+                fileStudent.add(file.nextLine());
+                String sString = fileStudent.get(index);
+                String[] sString2 = sString.split(",");
+                Student student = new Student(sString2[0], sString2[1], sString2[2], sString2[3], sString2[4], Integer.parseInt(sString2[5]));
+                studentList.add(student);
+                index++;
+            }
+            inputFile.close();
+        }
+        catch (FileNotFoundException exception)
+        {
+            System.out.println("\n" + fileStudentName + " not found!");
+        }
+        catch (IOException exception)
+        {
+            System.out.println("'\nUnexpected I/O error occured!");
+        }
+    }
+
+    /**
+     * Read the files to load Staff
+     */
+    public void readStaffFile()
+    {
+        ArrayList<String> fileStaff = new ArrayList<String>();
+        String fileStaffName = ("staffs.txt");
+        try
+        {
+            FileReader inputFile = new FileReader(fileStaffName);
+            Scanner file = new Scanner(inputFile);
+            int index = 0;
+            while (file.hasNextLine())
+            {
+                fileStaff.add(file.nextLine());
+                String sString = fileStaff.get(index);
+                String[] sString2 = sString.split(",");
+                Staff staff = new Staff(sString2[0], sString2[1], sString2[2], sString2[3], sString2[4]);
+                staffList.add(staff);
+                index++;
+            }
+            inputFile.close();
+        }
+        catch (FileNotFoundException exception)
+        {
+            System.out.println("\n" + fileStaffName + " not found!");
+        }
+        catch (IOException exception)
+        {
+            System.out.println("'\nUnexpected I/O error occured!");
+        }
+    }
+
+    /**
+     * Read the files to load Room
+     */
+    public void readRoomFile()
+    {
+        ArrayList<String> fileRoom = new ArrayList<String>();
+        String fileRoomName = ("rooms.txt");
+        try
+        {
+            FileReader inputFile = new FileReader(fileRoomName);
+            Scanner file = new Scanner(inputFile);
+            int index = 0;
+            while (file.hasNextLine())
+            {
+                fileRoom.add(file.nextLine());
+                String sString = fileRoom.get(index);
+                String[] sString2 = sString.split(",");
+                Room room = new Room(Room.Type.valueOf(sString2[0]), sString2[1], sString2[2], Facility.Status.valueOf(sString2[3]), sString2[4]);
+                roomList.add(room);
+                index++;
+            }
+            inputFile.close();
+        }
+        catch (FileNotFoundException exception)
+        {
+            System.out.println("\n" + fileRoomName + " not found!");
+        }
+        catch (IOException exception)
+        {
+            System.out.println("'\nUnexpected I/O error occured!");
+        }
+    }
+
+    /**
+     * Read the files to load Equipment
+     */
+    public void readEquipmentFile()
+    {
+        ArrayList<String> fileEquipment = new ArrayList<String>();
+        String fileEquipmentName = ("equipments.txt");
+        try
+        {
+            FileReader inputFile = new FileReader(fileEquipmentName);
+            Scanner file = new Scanner(inputFile);
+            int index = 0;
+            while (file.hasNextLine())
+            {
+                fileEquipment.add(file.nextLine());
+                String sString = fileEquipment.get(index);
+                String[] sString2 = sString.split(",");
+                Equipment equipment = new Equipment(Equipment.Type.valueOf(sString2[0]), sString2[1], sString2[2],  Facility.Status.valueOf(sString2[3]), sString2[4]);
+                equipmentList.add(equipment);
+                index++;
+            }
+            inputFile.close();
+        }
+        catch (FileNotFoundException exception)
+        {
+            System.out.println("\n" + fileEquipmentName + " not found!");
+        }
+        catch (IOException exception)
+        {
+            System.out.println("'\nUnexpected I/O error occured!");
+        }
+    }
+
+    /**
+     * Read the files to load booking
+     */
+    public void readBookingFile()
+    {
+        ArrayList<String> fileBooking = new ArrayList<String>();
+        String fileBookingName = ("booking.txt");
+        try
+        {
+            FileReader inputFile = new FileReader(fileBookingName);
+            Scanner file = new Scanner(inputFile);
+            int index = 0;
+            while (file.hasNextLine())
+            {
+                fileBooking.add(file.nextLine());
+                String sString = fileBooking.get(index);
+                String[] sString2 = sString.split(",");
+                SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy/MM/dd");
+                Booking booking = new Booking(sString2[0], dateFormat.parse(sString2[1]), Integer.parseInt(sString2[2]), Integer.parseInt(sString2[3]), checkMember(sString2[4]), checkFacility(sString2[5]));
+                bookingList.add(booking);
+                index++;
+            }
+            inputFile.close();
+        }
+        catch (FileNotFoundException exception)
+        {
+            System.out.println("\n" + fileBookingName + " not found!");
+        }
+        catch (IOException exception)
+        {
+            System.out.println("'\nUnexpected I/O error occured!");
+        }
+        catch (ParseException exception)
+        {
+            System.out.println("'\nInvalid value checked!");
+        }
+    }
+
+    /**
+     * write student file
+     */
+    public void writeStudentFile()
+    {
+        int index = 0;
+        String fileName = ("students.txt");
+        try
+        {
+            PrintWriter outputFile = new PrintWriter(fileName);
+            System.out.println("\nWriting to the Student file...");
+            while (index < studentList.size())
+            {
+                outputFile.println(studentList.get(index).getId() + ","
+                    + studentList.get(index).getFirstName() + ","
+                    + studentList.get(index).getLastName() + ","
+                    + studentList.get(index).getAddress() + ","
+                    + studentList.get(index).getPhone() + ","
+                    + Integer.toString(studentList.get(index).getTotalBookingFee()));
+                index++;
+            }
+            outputFile.close();
+        }
+        catch (IOException e)
+        {
+            System.out.println("/nSomething went wrong with access the file!");
+        }
+    }
+
+    /**
+     * write staff file
+     */
+    public void writeStaffFile()
+    {
+        int index = 0;
+        String fileName = ("staffs.txt");
+        try
+        {
+            PrintWriter outputFile = new PrintWriter(fileName);
+            System.out.println("\nWriting to the Staff file...");
+            while (index < staffList.size())
+            {
+                outputFile.println(staffList.get(index).getId() + ","
+                    + staffList.get(index).getFirstName() + ","
+                    + staffList.get(index).getLastName() + ","
+                    + staffList.get(index).getAddress() + ","
+                    + staffList.get(index).getPhone());
+                index++;
+            }
+            outputFile.close();
+        }
+        catch (IOException e)
+        {
+            System.out.println("/nSomething went wrong with access the file!");
+        }
+    }
+
+    /**
+     * write room file
+     */
+    public void writeRoomFile()
+    {
+        int index = 0;
+        String fileName = ("rooms.txt");
+        try
+        {
+            PrintWriter outputFile = new PrintWriter(fileName);
+            System.out.println("\nWriting to the Room file...");
+            while (index < roomList.size())
+            {
+                outputFile.println(roomList.get(index).getType().toString() + ","
+                    + roomList.get(index).getId() + ","
+                    + roomList.get(index).getName() + ","
+                    + roomList.get(index).getStatus().toString() + ","
+                    + roomList.get(index).getDescription());
+                index++;
+            }
+            outputFile.close();
+        }
+        catch (IOException e)
+        {
+            System.out.println("/nSomething went wrong with access the file!");
+        }
+    }
+
+    /**
+     * write equipment file
+     */
+    public void writeEquipmentFile()
+    {
+        int index = 0;
+        String fileName = ("equipments.txt");
+        try
+        {
+            PrintWriter outputFile = new PrintWriter(fileName);
+            System.out.println("\nWriting to the Equipment file...");
+            while (index < equipmentList.size())
+            {
+                outputFile.println(equipmentList.get(index).getType().toString() + ","
+                    + equipmentList.get(index).getId() + ","
+                    + equipmentList.get(index).getName() + ","
+                    + equipmentList.get(index).getStatus().toString() + ","
+                    + equipmentList.get(index).getDescription());
+                index++;
+            }
+            outputFile.close();
+        }
+        catch (IOException e)
+        {
+            System.out.println("/nSomething went wrong with access the file!");
+        }
+    }
+
+    /**
+     * write booking file
+     */
+    public void writeBookingFile()
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+        int index = 0;
+        String fileName = ("booking.txt");
+        try
+        {
+            PrintWriter outputFile = new PrintWriter(fileName);
+            System.out.println("\nWriting to the Booking file...");
+            while (index < bookingList.size())
+            {
+                outputFile.println(bookingList.get(index).getBookingId() + ","
+                    + sdf.format(bookingList.get(index).getDate()) + ","
+                    + Integer.toString(bookingList.get(index).getBookingStartTime()) + ","
+                    + Integer.toString(bookingList.get(index).getBookingEndTime()) + ","
+                    + bookingList.get(index).getMember().getId() + ","
+                    + bookingList.get(index).getFacility().getId());
+                index++;
+            }
+            outputFile.close();
+        }
+        catch (IOException e)
+        {
+            System.out.println("/nSomething went wrong with access the file!");
+        }
+    }
+
+    /**
+     * Set method for studentLis
+     * 
+     * @param studentList
+     *            new StudentList
+     */
+    public void setStudentList(List<Student> studentList) {
+        this.studentList = studentList;
+    }
+
+    /**
+     * Get method for staffList
+     * 
+     * @return the staffList
+     */
+    public List<Staff> getStaffList() {
+        return staffList;
+    }
+
+    /**
+     * Set method for staffList
+     * 
+     * @param staffList
+     *            new staffList
+     */
+    public void setStaffList(List<Staff> staffList) {
+        this.staffList = staffList;
+    }
+
+    /**
+     * Get method for roomList
+     * 
+     * @return the roomList
+     */
+    public List<Room> getRoomList() {
+        return roomList;
+    }
+
+    /**
+     * Set method for roomList
+     * 
+     * @param staffList
+     *            new staffList
+     */
+    public void setRoomList(List<Room> roomList) {
+        this.roomList = roomList;
+    }
+
+    /**
+     * Get method for equipmentList
+     * 
+     * @return the equipmentList
+     */
+    public List<Equipment> getEquipmentList() {
+        return equipmentList;
+    }
+
+    /**
+     * Set method for equipmentList
+     * 
+     * @param equipmentList
+     *            new EquipmentList
+     */
+    public void setEquipmentList(List<Equipment> equipmentList) {
+        this.equipmentList = equipmentList;
+    }
+
+    /**
+     * @return the bookingList
+     */
+    public List<Booking> getBookingList() {
+        return bookingList;
+    }
+
+    /**
+     * @param bookingList the bookingList to set
+     */
+    public void setBookingList(List<Booking> bookingList) {
+        this.bookingList = bookingList;
+    }
+   
+    /**
+     * this method can report one member's information
+     */
+    public void reportMember()
+    {
+        System.out.println("Please input the member ID: ");
+        String memberID = getUserInput();
+        Member member = checkMember(memberID);
+        if (member == null)
+        {
+            System.out.println("No such member!");
+            return;
+        }
+        else
+        {
+                System.out.println("Here are his/her booking records: ");
+                List<Booking> memberBookingList = new ArrayList<>();
+                for (Booking booking : bookingList)
+                {
+                    if (booking.getMember().getId().equals(memberID))
+                    {
+                        booking.getInformation();
+                        memberBookingList.add(booking);
+                    }
+                }   
+                System.out.println("Here is his/her individual information:");
+                if(member instanceof Student){
+                System.out.println('\u000c');
+                System.out.println("He/She is a student");
+                member.getInformation();
+                System.out.println("His/her total booking fee is: " + studentList.get(getStudentFromList(memberID)).getTotalBookingFee());
+            }
+                else{
+                System.out.println('\u000c');
+                System.out.println("He/She is a staff");
+                member.getInformation();
+            }
+    }
+    }
+
+    /**
+     * this method can list booking list by a member
+     */
+    public void listByMember()
+    {
+        System.out.println('\u000c');
+        System.out.println("Please input the member ID: ");
+        String memberID = getUserInput();
+        Member member = checkMember(memberID);
+        if (member == null)
+        {
+            System.out.println("No such member!");
+            return;
+        }
+        else
+        {
+                System.out.println("Here are his/her booking records: ");
+                List<Booking> memberBookingList = new ArrayList<>();
+                for (Booking booking : bookingList)
+                {
+                    if (booking.getMember().getId().equals(memberID))
+                    {
+                        booking.getInformation();
+                        memberBookingList.add(booking);
+                    }
+                }   
+    }
+    }
+    
+    /**
+     * this method can list all booking lists
+     */
+    public void listAll()
+    {
+       System.out.println('\u000c');
+       List<Booking> memberBookingList = new ArrayList<>();
+                for (Booking booking : bookingList)
+                    {
+                        booking.getAllInformation();
+                        memberBookingList.add(booking);
+    }
+    }
+
+    public static boolean validateRoomType(String type) {
+        try{
+            Room.Type.valueOf(type.toUpperCase());
+        }catch(IllegalArgumentException e) {
+            System.out.println("It's not a valid room type");
+            return false;
+        }
+        return true;
+      }
+    
+    public static boolean validateEquipmentType(String type) {
+        try{
+            Equipment.Type.valueOf(type.toUpperCase());
+        }catch(IllegalArgumentException e) {
+            System.out.println("It's not a valid equipment type");
+            return false;
+        }
+        return true;
+    }
+    
+    public static Date validateDateFormat(String date) {
+        Date result;
+        try {
+             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");   
+             result = sdf.parse(date);
+
+        }catch (Exception e) {
+             System.out.println("Wrong date format! Must be 'yyyy/MM/dd'");
+             return null;
+        }
+        return result;
+    }
+    
+    public static boolean validatebookingStartTimeAndbookingEndTime(String bookingStartTime, String bookingEndTime) {
+        int bookingStartTimeInt;
+        int bookingEndTimeInt;
+        try{
+            bookingStartTimeInt = Integer.valueOf(bookingStartTime);
+            bookingEndTimeInt = Integer.valueOf(bookingEndTime);
+        }catch (Exception e){
+            System.out.println("Please input a valid number!");
+            return false;
+        }
+        if((bookingEndTimeInt - bookingStartTimeInt) != 2 ) {
+            System.out.println("the time for a booking must be 2hr");
+            return false;
+        }
+        return true;
+    }
+    
+    
+    public static boolean validateChoiceBoundry (String choice, int boundry) {
+        try {
+            if (Integer.valueOf(choice) < 0 || Integer.valueOf(choice) > boundry) {
+                System.out.println("The choice is out of boundry!");
+                return false;
+            }
+        } catch (Exception e) {
+            System.out.println("Please input a number");
+            return false;
+        }
+        return true;
+    }
+}

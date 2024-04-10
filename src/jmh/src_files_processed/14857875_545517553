@@ -1,0 +1,144 @@
+import java.util.Scanner;
+import java.awt.event.KeyEvent;
+public class Main {
+    private static Sachovnica aSachovnica;
+    private static Manazer aManazer;
+    private static boolean aModryHracNaTahu = true;
+    private static boolean aCervenyHracNaTahu = true;
+
+    public static void main(String[] args){
+        aSachovnica = new Sachovnica();
+        aManazer = new Manazer();
+        System.out.print("\t\tVytajte v hre Dama. \n\nPrajete si zacat hru?\nano: 1\nnie: 0\n\n");
+        Scanner scan = new Scanner(System.in);
+        int vstup = scan.nextInt();
+        if(vstup == 0){
+            System.exit(5);
+        }
+        Main.modryHrac();
+    }   
+
+    private static void modryHrac(){
+        aModryHracNaTahu = true;
+        Scanner scan = new Scanner(System.in);
+        System.out.print("Na tahu je modry hrac");
+        while(aModryHracNaTahu == true){
+            System.out.print ('\f');
+            int odpoved = -1;
+            Main.vypisModrychPesiakov();
+            System.out.print("\nZadajte cislo pesiaka, ktorym chcete pohnut:\t");
+            int cisloPesiaka = scan.nextInt();
+            aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().zmenFarbu("yellow");
+            System.out.print('\f');
+            System.out.print("Ste si isty, ze chcete pohnut tymto pesiakom? (ano:1 ; nie:0):\t");
+            odpoved = scan.nextInt();       
+            while(odpoved == 0){
+                aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().zmenFarbu("blue");
+                System.out.print ('\f');
+                Main.vypisModrychPesiakov();
+                System.out.print("\nZadajte cislo pesiaka, ktorym chcete pohnut:\t");
+                cisloPesiaka = scan.nextInt();
+                aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().zmenFarbu("yellow");
+                System.out.print('\f');
+                System.out.print("Ste si isty, ze chcete pohnut tymto pesiakom? (ano:1 ; nie:0):\t");
+                odpoved = scan.nextInt();       
+                aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().zmenFarbu("blue");           
+
+            }
+
+            System.out.print("Do ktoreho smeru diagonalne chcete posunut pesiaka? (4: vlavo ; 6: vpravo) ");
+            int smer = scan.nextInt();
+            if(smer == 4){
+                aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().posunVlavo();
+                aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().posunDole();
+                aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().zmenFarbu("blue");
+            }
+            else if(smer == 6){
+                aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().posunVpravo();
+                aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().posunDole();
+                aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().zmenFarbu("blue");           
+            }
+            aModryHracNaTahu = false;
+        }
+        Main.cervenyHrac();
+    }
+
+    private static void cervenyHrac(){
+        aCervenyHracNaTahu = true;
+        Scanner scan = new Scanner(System.in);
+        System.out.print("Na tahu je cerveny hrac");
+        while(aCervenyHracNaTahu == true){
+            System.out.print ('\f');
+            int odpoved = -1;
+            Main.vypisCervenychPesiakov();
+            System.out.print("\nZadajte cislo pesiaka, ktorym chcete pohnut:\t");
+            int cisloPesiaka = scan.nextInt();
+            aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().zmenFarbu("yellow");
+            System.out.print('\f');
+            System.out.print("Ste si isty, ze chcete pohnut tymto pesiakom? (ano:1 ; nie:0):\t");
+            odpoved = scan.nextInt();       
+            while(odpoved == 0){
+                aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().zmenFarbu("blue");           
+                System.out.print ('\f');
+                Main.vypisCervenychPesiakov();
+                System.out.print("\nZadajte cislo pesiaka, ktorym chcete pohnut:\t");
+                cisloPesiaka = scan.nextInt();
+                aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().zmenFarbu("yellow");
+                System.out.print('\f');
+                System.out.print("Ste si isty, ze chcete pohnut tymto pesiakom? (ano:1 ; nie:0):\t");
+                odpoved = scan.nextInt();       
+                aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().zmenFarbu("red");           
+
+            }
+
+            System.out.print("Do ktoreho smeru diagonalne chcete posunut pesiaka? (4: vlavo ; 6: vpravo) ");
+            int smer = scan.nextInt();
+            if(smer == 4 
+            && aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().dajX() >= 0
+            && aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().dajY() >= 0
+            && aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().dajX() <= 180
+            && aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().dajY() <= 180){
+                aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().posunVlavo();
+                aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().posunHore();
+                aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().zmenFarbu("red");
+            }
+            else if(smer == 6
+            && aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().dajX() >= 0
+            && aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().dajY() >= 0
+            && aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().dajX() <= 180
+            && aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().dajY() <= 180){
+                aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().posunVpravo();
+                aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().posunHore();
+                aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().zmenFarbu("red");
+            }
+            else if(smer == 4 || smer == 6
+            && aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().dajX() < 0
+            && aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().dajY() < 0
+            && aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().dajX() > 180
+            && aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().dajY() > 180){
+                System.out.println("Tymto smerom sa nemozno hybat, bolo by to mimo hraciu plochu!");
+                aSachovnica.dajPesiaci().get(cisloPesiaka).getPesiak().zmenFarbu("red");
+            }
+            aCervenyHracNaTahu = false;
+        }
+        Main.modryHrac();
+    }
+
+    private static void vypisModrychPesiakov(){        
+        System.out.print("Na tahu je modry hrac, tahat moze s Pesiakmi cislo: ");
+        for (int i = 0; i < 12; i++){
+            if(aSachovnica.dajPesiaci().get(i).getPesiak().vyditelnost() == true){
+                System.out.print("\n"i + "," );
+            }
+        }
+    }
+
+    private static void vypisCervenychPesiakov(){        
+        System.out.print("Na tahu je cerveny hrac, tahat moze s Pesiakmi cislo: ");
+        for (int i = 12; i < 23; i++){
+            if(aSachovnica.dajPesiaci().get(i).getPesiak().vyditelnost() == true){
+                System.out.print("\n"i + "," );
+            }
+        }
+    }
+}

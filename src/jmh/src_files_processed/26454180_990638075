@@ -1,0 +1,191 @@
+/* ### #### ## ##### ## ###-# ########.
+ * #####: «##########», ####### ####-§, #########-©, #####-#, ####-#, #####-?
+ */
+package eu.pedu.oopa15p._1_1800.navd00_navratil;
+
+import eu.pedu.lib.canvasmanager.CanvasManager;
+import eu.pedu.lib.canvasmanager.Multishape;
+
+import eu.pedu.lib.util.Direction8;
+import eu.pedu.lib.util.IO;
+import eu.pedu.lib.util.IndentingReporter;
+import eu.pedu.lib.util.NamedColor;
+
+
+import java.util.Arrays;
+
+import java.util.function.Consumer;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+
+import org.junit.rules.TestName;
+
+/*******************************************************************************
+ * ######### ##### {@#### ########}
+ * ######## #### ############ ##### ############# ######## ####
+ * ################ ######### {@#### #############}.
+ *
+ * @######  ###### ########
+ * @####### #.##.#### — ####-##-##
+ */
+public class Car4Test
+  implements eu.pedu.oopa15p.vehicle.IVehicle4Test_10
+{
+    private static final CanvasManager CM = CanvasManager.getInstance();
+    
+    /** Zpravodaj zprostředkující odsazovaný tisk na standardní výstup. */
+    private static IndentingReporter IR;
+    
+    /** Objekt uchovávající některé informace o testovací metodě.
+     *  Musí být deklarován jako public s anotací {@link Rule @Rule}. */
+    @Rule
+    public TestName testName = new TestName();
+    
+    private Car4[] cars;
+    private int step;
+    
+    private eu.pedu.oopa15p._1_1800.navd00_navratil.Car4Factory car4Fact1;
+    private eu.pedu.oopa15p._1_1800.navd00_navratil.Car4Test car4Test1;
+   
+
+     /***************************************************************************
+     * Vrátí přepravku s vozidly obsaženými v přípravku dané testovací třídy.
+     *
+     * @return Přepravku s vozidly v přípravku
+     */
+    public eu.pedu.oopa15p.vehicle.Vehicle4Crate_10 getFixtureVehicles()
+    {
+        Car4 car1 = new Car4(0, 0, NamedColor.BLACK);
+        eu.pedu.oopa15p.vehicle.IVehicle4_10 vehicleE = car1;
+        
+        Car4 car2 = new Car4(0, 5, NamedColor.BLUE);
+        eu.pedu.oopa15p.vehicle.IVehicle4_10 vehicleN = car1;
+        
+        Car4 car3 = new Car4(5, 0, NamedColor.RED);
+        eu.pedu.oopa15p.vehicle.IVehicle4_10 vehicleW = car1;
+        
+        Car4 car4 = new Car4(5, 5, NamedColor.GOLD);
+        eu.pedu.oopa15p.vehicle.IVehicle4_10 vehicleS = car1;
+        
+        return new eu.pedu.oopa15p.vehicle.Vehicle4Crate_10(vehicleE, vehicleN, vehicleW, vehicleS);
+    }
+
+    /***************************************************************************
+     * Provede akce, které je třeba vykonat před spuštěním bloku testů
+     * definovaných v této třídě.
+     */
+    @BeforeClass
+    public static void setUpClass()
+    {
+        IR = IndentingReporter.getSystemReporter();
+        IR.reportStart(Car4Test.class.toString());
+    }
+
+    /***************************************************************************
+     * Provede akce, které je třeba vykonat po ukončení bloku testů
+     * definovaných v této třídě.
+     */
+    @AfterClass
+    public static void tearDownClass()
+    {
+        IR.reportEnd();
+        IndentingReporter.returnSystemOut();
+    }
+
+
+    /***************************************************************************
+     * Inicializace předcházející spuštění každého testu a připravující tzv.
+     * přípravek (fixture), což je sada objektů, s nimiž budou testy pracovat.
+     */
+    @Before
+    @Override
+    public void setUp()
+    {
+        int endColumn = CM.getColumns() - 1;
+        int endRow    = CM.getRows()    - 1;
+        step    = CM.getStep();
+        Car4Factory f = new Car4Factory();
+        cars = new Car4 {
+               f.newVehicle(        0, endRow, Direction8.EAST,  NamedColor.RED),
+               f.newVehicle(endColumn, endRow, Direction8.NORTH, NamedColor.BLACK),
+               f.newVehicle(endColumn,      0, Direction8.WEST,  NamedColor.GREEN),
+               f.newVehicle(        0,      0, Direction8.SOUTH, NamedColor.GOLD),
+        };
+                
+        String pkgName = this.getClass().getPackage().getName();
+        int    index   = pkgName.lastIndexOf('.') + 1;
+        String simple  = pkgName.substring(index);
+        car4Fact1 = new eu.pedu.oopa15p._1_1800.navd00_navratil.Car4Factory();
+        testReportedZigZag();
+    }
+
+
+
+
+    /***************************************************************************
+     * Provede akce, které je třeba vykonat po ukončení každého testu
+     * definovaného v této třídě.
+     */
+    @After
+    public void tearDown()
+    {
+        IO.inform("Konec testu " + testName.getMethodName());
+        CM.removeAll();
+        IR.reportEnd("END: " + testName.getMethodName());
+    }
+
+
+    /***************************************************************************
+     * Postupně provede s každým z vozidel zadanou otáčecí akci,
+     * oznámí provedení a pak popojede vpřed.
+     *
+     * @param message Zpráva, co se chystáme udělat
+     * @param action  Požadovaná otáčecí akce
+     */
+    private void perform(String message, Consumer<Car4> action)
+    {
+        /*reporter.report("Popojedeme", cars);
+        Arrays.stream(cars)
+              .forEach(v -> v.goForward(step));
+        reporter.report(message, cars);
+        Arrays.stream(cars)
+              .forEach(action);*/
+    };
+
+
+
+
+
+
+
+    /***************************************************************************
+     * Vyzkouší, jak jsou vozidla schopna se otáčet
+     * a po otočení popojíždět vpřed.
+     * Průběh testu hlásí prostřednictvím objektu typu {@link Reporter_06}.
+     */
+    @Override
+    public void testReportedZigZag()
+    {
+        perform("Otočíme vlevo",      Car4::turnLeft);
+        perform("Otočíme vpravo",     Car4::turnRight);
+        perform("Otočíme čelem vzad", Car4::turnAbout);
+        perform("Konec testu",        (v) -> {});
+    }
+        
+     /***************************************************************************
+     * Vyrobí uprostřed plátna vozidlo otočené na sever,
+     * postupně mu zadává nový směr tak,
+     * aby se otáčelo proti směru hodinových ručiček,
+     * a po každém zadání směru kontroluje výsledný směr vozidla
+     * porovnáním jeho směru se směrem, do nějž se mělo natočit.
+     */
+    public void testSetDirection()
+    {
+        
+    }
+    
+}

@@ -1,0 +1,68 @@
+import javax.swing.JFrame;
+
+public class Main
+{
+    int DELAY_TIME = 200,GRID_WIDTH = 16, GRID_HEIGHT = 16;
+    JFrame window;
+    Board canvas;
+    MouseInput mouseInput;
+    boolean[][] grid = new boolean[GRID_WIDTH][GRID_HEIGHT];
+    int[][] mineNum = new int[GRID_WIDTH][GRID_HEIGHT];
+    public Main()
+    {
+        window = new JFrame("Minesweeper");
+        canvas = new Board();
+        mouseInput = new MouseInput();
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setSize(600,600);
+        window.add(canvas);
+        window.setVisible(true);
+        canvas.makeSquares();
+ 
+        canvas.canvasGrid = grid;
+        canvas.canvasMineNum = mineNum;
+        
+       for( int i = 0; i < 41; i ++){
+            int r = (int)Math.floor((Math.random() * GRID_HEIGHT));
+            int c = (int)Math.floor((Math.random() * GRID_WIDTH));
+            if(!grid[r][c]){
+            grid[r][c] = true;
+        }
+    }
+         
+    
+        for(int j = 0;  r < canvas.canvasGrid.length; r++){
+                for(int c = 0; c < canvas.canvasGrid[0].length; c++){
+                    int mines = 0;
+                    if(r > 0 && c > 0 && grid[r-1][c-1])
+                    mines++;
+                    if(r>0 && grid[r-1][c])
+                    mines++;
+                    if(r>0 && c < grid[0].length-1 && grid[r-1][c+1])
+                    mines++;
+                    if(c>0 && grid[r][c-1])
+                    mines++;
+                    if(c<grid[0].length-1 && grid[r][c+1])
+                    mines++;
+                    if(r<grid.length -1 && c>0 && grid[r+1][c-1])
+                    mines++;
+                    if(r<grid.length-1 && grid[r+1][c])
+                    mines++;
+                    if(r<grid.length-1 && c <grid[0].length-1 && grid[r+1][c+1])
+                    mines++;                    
+                    if(!grid[r][c]){
+                        mineNum[r][c] = mines;
+                    }else if(grid[r][c]){
+                        mineNum[r][c] = 0;
+                    }
+                }
+            }
+        while(true)
+        {            
+            canvas.repaint();
+            try{ Thread.sleep(DELAY_TIME); }
+            catch(Exception e) {}
+        }
+    }
+}
+}

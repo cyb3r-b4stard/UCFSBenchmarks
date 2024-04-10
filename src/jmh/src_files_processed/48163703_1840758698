@@ -1,0 +1,147 @@
+import java.util.*;
+/**
+#### ######
+########
+########## #
+########
+########## ##### ####### # ######## ###### ###### #### #### # ########.
+#### ## #### ## ##### ######## ## #####.
+ **/
+public class LinkedList
+{
+    protected Node , data, sentinel;                 
+    public int size;                                        
+    public LinkedList()                                     
+    {
+        
+        data = null;
+        size = 0;
+        sentinel = new Node(null,null, null);
+    }
+
+    public void prepend(Polygon data)                        
+    {    
+        Node nptr = new Node(data,null, null);
+        if(size == 0)
+        {
+            nptr.setLinkNext(sentinel);
+            nptr.setLinkPrev(sentinel);
+            sentinel.setLinkNext(nptr);
+            sentinel.setLinkPrev(nptr);
+        }
+        else
+        {
+            nptr.setLinkPrev(sentinel);
+            nptr.setLinkNext(sentinel.getLinkNext());
+            sentinel.setLinkNext(nptr);
+            sentinel.getLinkNext().setLinkPrev(nptr);
+        }
+        size++;
+    }
+    
+    public int getSize()                                     
+    {
+        return size;
+    }
+
+    public void append(Polygon data)                         
+    {
+        Node nptr = new Node(data, null, null);
+        if(size == 0)
+        {
+            nptr.setLinkNext(sentinel);
+            nptr.setLinkPrev(sentinel);
+            sentinel.setLinkNext(nptr);
+            sentinel.setLinkPrev(nptr);
+        }
+        else
+        {
+            nptr.setLinkNext(sentinel);
+            nptr.setLinkPrev(sentinel.getLinkPrev());
+            sentinel.getLinkPrev().setLinkNext(nptr);
+            sentinel.setLinkPrev(nptr);
+            current = nptr;
+        }
+        size++;
+    }
+
+
+    
+    public Polygon takeFromHead()                            
+    {
+        return sentinel.getLinkNext().getData();
+    }
+
+    public void displayPolygons()                         
+    {
+        Node currentNode = sentinel.getLinkNext();
+        for(int i = 0; i < size; i++)
+        {
+            System.out.println(currentNode.getData());
+            currentNode = currentNode.getLinkNext();
+        }
+    }
+    
+    
+    public Iterator<Polygon> iterator()
+    {
+        return new SimpleIterator<Polygon>();
+    }
+    
+    private class SimpleIterator<Polygon> implements Iterator<Polygon>
+    {
+        private int curPos, expectedModCount, modCount, last;
+        /**
+         * Constructor for objects of class SimpleIterator
+         */
+        
+        private SimpleIterator()
+        {
+            curPos = 0;
+            last = 0;
+            expectedModCount = modCount;
+        }
+    
+        @Override
+        public boolean hasNext()
+        {
+            return curPos <= last;
+        }
+        
+        @Override
+        public Polygon next()
+        {
+            if (modCount != expectedModCount)
+            {
+                throw new ConcurrentModificationException("Cannot mutate in context of iterator");
+            }
+            if(! hasNext())
+            {
+                throw new NoSuchElementException("There are no more elements");
+            }
+            Polygon obj = Polygon[curPos];
+            curPos++;
+            return obj;
+        }
+        
+        @Override
+        public void remove()
+        {
+            if (lastRet < 0)
+            {
+                throw new IllegalStateException();
+                checkForComodification();
+            }
+            
+            try 
+            {
+                ArrayList.this.remove(lastRet);
+                cursor = lastRet;
+                lastRet = -1;
+                expectedModCount = modCount;
+            } catch (IndexOutOfBoundsException ex) {
+                throw new ConcurrentModificationException();
+            }
+        }
+    }
+}

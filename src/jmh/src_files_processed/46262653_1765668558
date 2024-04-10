@@ -1,0 +1,98 @@
+
+/**
+
+ */
+public class Card implements Comparable
+{
+    private int value;
+    private String suit,faceValue;
+    private static final String[] SUITS = {"\u2660", "\u2663", "\u2665", "\u2666"};
+    private static final String[] FACES = {" 2"," 3"," 4"," 5"," 6"," 7"," 8",
+                                           " 9","10"," J"," Q"," K"," A"};
+    /**
+     * Constructors for objects of class Card
+     * creates a random card value from 0 to 51 
+     * value/13 = suit (0: Spades, 1: Clubs, 2: Hearts, 3: Diamonds)
+     * value%13 = faceValue (0-8: "2" - "10", 9: "Jack", 10: "Queen", 11: "King", 12: "Ace")
+     */
+    public Card()
+    {
+        value = (int) (Math.random()*52) ;
+        suit = SUITS[value/13];
+        faceValue = FACES[value%13];
+    }
+    
+    /**
+     * @param val: value used to create a card, should be a value between 0 and 51 inclusive.
+     */
+    public Card(int val)
+    {
+        value = val;
+        suit = SUITS[value/13];
+        faceValue = FACES[value%13];
+    }
+    public static void shuffle()
+    {
+        ArrayList<Card> deck = new ArrayList<Card>();
+        while(!deck.isEmpty())
+        {
+        int loc = (int) (Math.random() * 25)());
+        deck.add(deck.get(loc));
+        deck.remove(loc);
+    }
+    
+    }
+    
+     
+  
+    /**
+     * Standard acccessor methods for the value, suit, and face of each card.
+     */
+    public int getValue()
+    {
+        return value;
+    }
+    
+    public String getSuit()
+    {
+        return suit;
+    }
+    
+    public String getFace()
+    {
+        return faceValue;
+    }
+    
+    /**
+     * Returns a message about the suit and face value of the card
+     */
+    public String toString()
+    {
+            return getFace() + " of " + getSuit();
+    }
+    
+    /** 
+     * Compares the face values of cards assuming that an Ace is the highest value.
+     * Returns the difference in the face values
+     * If this card has a higher face value than card c, a positive int is returned.
+     * If this card has a lower face value than card c, a negative int is returned.
+     * If this card has the same face value as card c, zero is returned.
+     * If the card reference is null, the assumed faceValue is -1.
+     */
+    public int compareTo (Object c)
+    {
+        Card card = (Card) c;
+        int myValue,otherValue;
+        
+        if (this == null)
+            myValue = -1;
+        else
+            myValue = value %13;
+        if (card == null)
+            otherValue = -1;
+        else
+            otherValue = card.getValue() % 13;
+        
+        return myValue - otherValue;
+    }
+}

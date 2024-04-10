@@ -1,0 +1,71 @@
+import java.io.*;
+/**
+ * @###### #### #####
+ * @####### ## ######### ####
+ */
+public class PhoneBook
+{
+    static final int MAX_RECORDS = 50000;
+    private Record list[];
+    private int length;
+
+    /**
+     * Constructor for objects of class PhoneBook
+     */
+    public PhoneBook(String file) throws FileNotFoundException
+    {
+        list = new Record[MAX_RECORDS];
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        try {
+            String s = br.readLine();
+            length = 0;
+            while (s != null) {
+                String[] args = s.split(" ", 2);
+                list[length] = new Record(args[1], args[0]);
+                s = br.readLine();
+                length++;
+            }
+        }
+        catch (IOException e) {
+        }
+    }
+    
+    /**
+     * Look a name and return the number or null if there is no match
+     */
+    public String search(String name, int start, int end)
+    {
+        if(name.compareTo(list[((start+end)/2)] < 0)
+        {
+           end = (start+end/2) - 1;
+           return search(name, start, end);
+        }
+        else if(name.compareTo(list[(start+end)/2)] > 0)
+        {
+            start = (start+end/2) - 1;
+            return search(name, start, end);
+        }
+        else
+        {
+            return list[(start+end)/2)];
+        }
+    }
+    
+    /**
+     * Test the search method by looking up each name in turn
+     */
+     public void testSearch()
+     {
+         for (int i = 0; i < length; i++) {
+             String name = list[i].getName();
+             String num_correct = list[i].getNumber();
+             String num_search = search(name);
+             
+             if (!(num_correct.equals(num_search))) {
+                 System.out.printf("Failed for %s - search returned %s instead of %s\n", name, num_search, num_correct);
+                 return;
+            }
+        }
+            System.out.println("Ok.");
+    }
+}

@@ -1,0 +1,161 @@
+import javafx.application.*;
+import javafx.event.*;
+
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.effect.*;
+import javafx.scene.image.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import javafx.scene.shape.*;
+import javafx.scene.text.*;
+
+import javafx.stage.*;
+
+import javafx.geometry.*;
+
+import javafx.beans.binding.*;
+import javafx.beans.property.*;
+import javafx.beans.value.*;
+
+public class TemperatureSlide extends Application
+{
+    /**
+     *   runs the application.
+     *   Note: Application is a Process, only one allowed per VM.
+     */
+    public static void main(String[] args) 
+    {
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage theStage) 
+    {
+        theStage.setTitle("Temperature Conversion");
+        
+        final Image display = new Image("pictures/ice.png");
+
+        Group root = new Group();
+        Scene theScene = new Scene(root, 800, 300);
+
+        theScene.setFill(Color.color(0.1, 0.4, 0.6));
+        
+        VBox mainBox = VBoxBuilder.create()
+            .padding(new Insets(10))     
+            .spacing(10)                 
+            .alignment(Pos.CENTER)       
+            .build();
+   
+         
+        String styleData = ""
+            + " -fx-font-family: Helvetica;     "
+            + " -fx-font-posture: regular;      "
+            + " -fx-font-weight: bold;      "
+            + " -fx-font-size: 25 px;        "
+            + " fx-text-fill: rgb(0%,0%,0%); ";
+        
+            
+        root.getChildren().add(mainBox);
+
+        
+        final Text intro = TextBuilder.create()
+        .text("Move the slider to change the temperature!")
+        .style(styleData)
+        .build();
+        
+        mainBox.getChildren().add(intro);
+
+        final ImageView displayer = new ImageView(new Image("pictures/ice.png")));
+        
+        mainBox.getChildren().add(displayer);
+            
+        Slider temperature = SliderBuilder.create()
+        .prefWidth(300)
+        .min(-50)
+        .max(250)
+        .value(0)
+        .showTickMarks(true)
+        .snapToTicks(true)
+        .style(styleData)
+        .build();
+        
+        mainBox.getChildren().add(temperature);
+        
+        temperature.valueProperty().addListener( new ChangeListener()
+        {
+            public void changed(ObservableValue o, Object oldValue, Object newValue)
+            {
+                Double d = (Double)newValue;
+                if (d <= 32)
+                display.setImage(new Image("pictures/ice.png"));
+                
+                if (d > 32 || d < 212)
+                display.setImage(new Image("pictures/water.png"));
+                
+                if (d >= 212)
+                display.setImage(new Image("pictures/steam.png"));
+                
+            }
+        });
+        
+        final Text farenheit = TextBuilder.create()
+        .text("Farenheit: 0")
+        .style(styleData)
+        .build();
+        
+        final Text celsius = TextBuilder.create()
+        .text("Celsius: -17.7778")
+        .style(styleData)
+        .build();
+        
+        HBox tempBox = HBoxBuilder.create()
+        .spacing(15)
+        .build();
+        
+        tempBox.getChildren().addAll(farenheit, celsius);
+        
+        mainBox.getChildren().add(tempBox);
+        
+        StringBinding toFarenheit = new StringBinding()
+        {
+            {
+            super.bind(temperature.valueProperty() );
+        }
+        
+        @Override
+        protected String computeValue()
+        {
+            String farenheit = " ";
+            double f = Math.round(temperature.getValue());
+            farenheit = f + " ";
+            return "Farenheit " + farenheit;
+        }
+    };   
+        farenheit.textProperty().bind(toFarenheit);
+        
+            
+        StringBinding convertFarenheit = new StringBinding()
+        {
+        {
+            super.bind(temperature.valueProperty() );
+        }
+        
+        @Override
+        protected String computeValue()
+        {
+        String newCelsius = " ";
+        double c = Math.round(temperature.getValue());
+        c = Math.round((((c - 32) * 5) / 9));
+        newCelsius = c + " ";
+        return "Celsius: " + newCelsius;
+        }
+    };
+        celsius.textProperty().bind(convertFarenheit);
+    
+        
+        
+        theStage.setScene(theScene);
+        theStage.show();
+    }
+}

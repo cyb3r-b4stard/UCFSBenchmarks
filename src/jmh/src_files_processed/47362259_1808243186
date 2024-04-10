@@ -1,0 +1,142 @@
+
+/**
+ * ##### # ########### ## ##### ####################### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class EjercicioCaseModificado {
+
+    /**
+     * @param args the command line arguments
+     */
+    public static String leer(){
+      String sdato = "";
+    try 
+      {
+        InputStreamReader isr = new InputStreamReader(System.in);
+        BufferedReader flujoE = new BufferedReader(isr);
+        sdato = flujoE.readLine();
+      }
+      catch(IOException e)
+      {
+         System.err.println("Error al leer  el dato " + e.getMessage());
+      }
+     return sdato;
+    }
+    public  static int getMonthDay(int month, Double year){
+        int numDays = 0;
+        switch (month) {
+            case 1: case 3: case 5:
+            case 7: case 8: case 10:
+            case 12:
+                numDays = 31;
+                break;
+            case 4: case 6:
+            case 9: case 11:
+                numDays = 30;
+                break;
+            case 2:
+                 numDays = getMonthYearBi(year);              
+                break;
+            case 13:
+                numDays = 40;
+            default:
+                System.out.println("Invalid month.");
+                break;
+        }
+        System.out.println("Number of Days = " + numDays);
+        return numDays;
+    }
+        
+    
+    public static int getMonthYearBi(Double year){
+        int numDays =0;
+        if (((year % 4 == 0) && 
+                     !(year % 100 == 0))
+                     || (year % 400 == 0))
+                    numDays = 29;
+                else
+                    numDays = 28;
+        return numDays;
+    }
+    
+    
+    public static int getMonthNumber(String month) {
+
+        int monthNumber = 0;
+
+        if (month == null) {
+            return monthNumber;
+        }
+
+        switch (month.toLowerCase()) {
+            case "january":
+                monthNumber = 1;
+                break;
+            case "february":
+                monthNumber = 2;
+                break;
+            case "march":
+                monthNumber = 3;
+                break;
+            case "april":
+                monthNumber = 4;
+                break;
+            case "may":
+                monthNumber = 5;
+                break;
+            case "june":
+                monthNumber = 6;
+                break;
+            case "july":
+                monthNumber = 7;
+                break;
+            case "august":
+                monthNumber = 8;
+                break;
+            case "september":
+                monthNumber = 9;
+                break;
+            case "october":
+                monthNumber = 10;
+                break;
+            case "november":
+                monthNumber = 11;
+                break;
+            case "december":
+                monthNumber = 12;
+                break;
+            case "desconocido"
+                monthNumber = 13;
+            default: 
+                monthNumber = 0;
+                break;
+        }
+
+        return monthNumber;
+    }
+    public static void main(String[] args) {
+        System.out.println("Bienvenidos  alos ejercicios del uso del case");
+        System.out.println("=================================================================");
+        System.out.println("Digite el nombre del mes");
+        String month = leer();
+        System.out.println("Digite el año (yyyy)");
+        Double anno = Double.parseDouble(leer());      
+        
+        int returnedMonthNumber =  EjercicioCase.getMonthNumber(month);
+        int returnedMonthDay = EjercicioCase.getMonthDay(returnedMonthNumber, anno);
+        
+        if (returnedMonthNumber == 0) {
+            System.out.println("Invalid month");
+        } else {
+            System.out.println("El  mes " + month + " ocupa el puesto  "+returnedMonthNumber+" en el año");
+            System.out.println("tiene  " + returnedMonthDay + " días  y el año es "+returnedMonthNumber);
+        }
+    }
+    
+}

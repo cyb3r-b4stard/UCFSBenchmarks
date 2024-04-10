@@ -1,0 +1,136 @@
+import java.awt.Color;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Ellipse2D.Double;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import javax.swing.JComponent;
+import javax.swing.Timer;
+/**
+ * ##### # ########### ## ##### #### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Ball extends JComponent
+{
+    private myFrame frame;
+    private Rectangle ball;
+    private Graphics graph;
+    private boolean intersected1;
+    private boolean intersected2;
+    private int dx;
+    private int dy;
+    public int x=;
+    public int y =;
+    /**
+     * Constructor for objects of class Paddle
+     */
+    public Ball(myFrame frame)
+    { 
+        this.frame = frame;
+        ball = new Rectangle(640,400, 25,25);
+        dx= 1;
+        dy=1;
+        int which = (int)(Math.random());
+        if(which = 0)
+        {
+            intersected1 = false;
+            intersected2 = true;
+            x = -1;
+            y = -1;
+        }
+        else
+        {
+            intersected1 = true;
+            intersected2 = false;
+            x = 1;
+            y = 1;
+        }
+    }
+    
+   public void paintComponent(Graphics g)
+   {  
+      Graphics2D g2 = (Graphics2D) g;
+      g2.draw(ball);
+      g2.setColor(Color.BLACK);
+      g2.fill(ball);
+    }
+   public void moveBall()
+   { 
+       
+       
+       
+       if(ball.getY()>0 && ball.getY()<800-55) 
+       {
+           ball.translate(x,y);
+           repaint();
+       }
+       else
+       {
+           if(ball.getY() <=0)
+           {
+               if(intersected1 && ball.getY()<=0) 
+               {
+                   x= 1;
+                   y= 1;
+                   ball.translate(x,y);
+                   repaint();
+               }
+               else if(intersected2 && ball.getY() <=0)
+               {
+                   x = -1;
+                   y = 1;
+                   ball.translate(x,y);
+                   repaint();
+               }
+               
+           }
+           else if(ball.getY()>=800-55){
+               if(intersected1 && ball.getY()>=800-55)
+               {
+                   x = 1;
+                   y = -1;
+                   ball.translate(x,y);
+                   repaint();
+                }
+               else if(intersected2 && ball.getY()>=800-55)
+               {
+                   x = -1;
+                   y = -1;
+                   ball.translate(x,y);
+                   repaint();
+               }
+               
+            }
+            else if(ball.intersects(frame.paddle.getRect()) || ball.intersects(frame.paddle1.getRect()))
+            {
+                if(ball.intersects(frame.paddle.getRect()) && (y==-1 || y ==1))
+               {
+                   intersected1 = true;
+                   intersected2 = false;
+                   x=1;
+                   ball.translate(x,y);
+                   repaint();
+               }
+               else if(ball.intersects(frame.paddle1.getRect()) && (y==1|| y ==-1))
+               {
+                   intersected1 = false;
+                   intersected2 = true;
+                   x=-1;
+                   ball.translate(x,y);
+                   repaint();
+               }
+            }
+       }
+   }
+   
+   private boolean collidesWithPaddle1() 
+   {
+        return frame.paddle.getBounds().intersects(ball.getBounds());
+   }
+   private boolean collidesWithPaddle2() 
+   {
+        return frame.paddle1.getBounds().intersects(ball.getBounds());
+   }
+}

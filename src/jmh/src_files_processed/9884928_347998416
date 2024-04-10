@@ -1,0 +1,280 @@
+package LinkedListHW;
+/*
+ * ############## ## # ###### ###### ####.
+ */
+
+public class BinarySearchTree<E extends Comparable<E>>
+{
+    private static class Node<E>
+    {
+    private E data;
+    private Node<E> left, right;
+    
+    public Node(E data, Node<E> left, Node<E> right)
+    {
+        this.data = data;
+        this.left = left;
+        this.right = right;
+    }
+    }
+    
+    private Node<E> root;
+    private E deleteReturn; 
+    
+    public void preOrderTraverse()
+    {
+    preOrderTraverse(root);
+    }
+
+    private void preOrderTraverse(Node<E> where)
+    {
+    if (where != null) {    
+        System.out.println(where.data);
+        preOrderTraverse(where.left);
+        preOrderTraverse(where.right);
+    }
+    }
+
+    public void inOrderTraverse()
+    {
+    inOrderTraverse(root);
+    }
+
+    private void inOrderTraverse(Node<E> where)
+    {
+    if (where != null) {    
+        inOrderTraverse(where.left);
+        System.out.println(where.data);
+        inOrderTraverse(where.right);
+    }
+    }
+    
+    public void add(E newItem)
+    {
+    if (root == null)   
+        root = new Node<E>(newItem, null, null);
+    else
+        add(newItem, root);
+    }
+    
+    private void add(E newItem, Node<E> where)
+    {
+    int compare = newItem.compareTo(where.data);
+    if (compare < 0 && where.left == null)          
+        where.left = new Node<E>(newItem, null, null);  
+    else if (compare > 0 && where.right == null)        
+        where.right = new Node<E>(newItem, null, null); 
+    else if (compare < 0)
+        add(newItem, where.left);               
+    else if (compare > 0)
+        add(newItem, where.right);              
+
+    }
+    
+    private void addIterative(E newItem)
+    {
+       int check = -1;
+       Node<E> new Node<E>(newItem, null, null);;
+       while (check==-1)
+       {
+       if (root == null){
+           root = new Node<E>(newItem, null, null);
+           temp=root;
+           check=1;
+       }
+       
+       
+       
+       if (newItem.compareTo(temp.data)<0){ 
+           
+           if(temp.left==null){ 
+               temp.left= new Node<E>(newItem, null, null);
+               check=1;
+            }
+            
+           else
+           {
+               temp=temp.left;
+               check=1;
+            }
+        
+        }
+        else if(newItem.compareTo(temp.data)>0){
+            
+            if(temp.right==null){ 
+               temp.right= new Node<E>(newItem, null, null);
+               check=1;
+            }
+            
+            else
+            {
+               temp=temp.right;
+               check=1;
+            }
+            
+        }
+        else if(newItem.compareTo(temp.data)==0){
+            
+        }
+        
+    }
+          
+              
+           
+       
+        
+     }
+    
+
+    public void add2(E newItem)
+    {
+    root = add2(newItem, root);
+    }
+    
+    private Node<E> add2(E newItem, Node<E> where)
+    {
+    if (where == null) {
+        return new Node<E>(newItem, null, null);
+    } else {
+        int compare = newItem.compareTo(where.data);
+        if (compare < 0) {
+        where.left = add2(newItem, where.left);
+        } else if (compare > 0) {
+        where.right = add2(newItem, where.right);
+        }
+        return where;
+    }
+    }
+    
+    public E find(E someItem)
+    {
+    return find(someItem, root);
+    }
+    
+    private E find(E someItem, Node<E> where)
+    {
+    if (where == null)  
+        return null;
+    else {
+        int compare = someItem.compareTo(where.data);
+        
+        if (compare == 0)   
+        return where.data;
+        else if (compare < 0)   
+        return find(someItem, where.left);
+        else            
+        return find(someItem, where.right);
+    }
+    }
+
+    public E delete(E someItem)
+    {
+    root = delete(someItem, root);
+    return deleteReturn;
+    }
+    
+    private Node<E> delete(E someItem, Node<E> where)
+    {
+    if (where == null) {    
+        deleteReturn = null;
+        return null;
+    }
+    
+    int compare = someItem.compareTo(where.data);
+    if (compare < 0) {
+        where.left = delete(someItem, where.left);
+        return where;
+    } else if (compare > 0) {
+        where.right = delete(someItem, where.right);
+        return where;
+    } else {    
+        deleteReturn = where.data;
+        if (where.left == null && where.right == null) {    
+        return null;
+        } else if (where.right == null) {           
+        return where.left;
+        } else if (where.left == null) {            
+        return where.right;
+        } else {                        
+        where.data = findAndDeleteIOP(where);
+        return where;
+        }
+    }
+    }
+    
+    private E findAndDeleteIOP(Node<E> where) {
+    Node<E> parent = where, temp = where.left;
+
+    while (temp.right != null) {
+        parent = temp;
+        temp = temp.right;
+    }
+    
+    if (parent == where)    
+        parent.left = temp.left;
+    else
+        parent.right = temp.left;
+    return temp.data;
+    }
+    
+    public String toString()
+    {
+    return toString(root, "");
+    }
+    
+    private String toString(Node<E> where, String offset)
+    {
+    if (where == null)
+        return offset + "null";
+    else
+        return offset + where.data + "\n" + toString(where.left, offset + " ") + "\n" + toString(where.right, offset + " ");
+    }
+    
+    public static void main(String[] args)
+    {
+        System.out.println("\n---------------------------CARS!-----------------------------\n");
+    BinarySearchTree<String> bst = new BinarySearchTree<>();
+    String[] stuff = {"Prius", "Aston Martin Vanquish", "Corvette C7 Stingray", "El Camino", "Panzer tank", "M1A1 Abrams", "Optimus Prime"};
+    for (String s : stuff)
+        bst.add2(s);
+    System.out.println(bst.delete("Prius"));
+    bst.inOrderTraverse();
+    System.out.println();
+    System.out.println(bst.delete("El Camino"));
+    bst.inOrderTraverse();
+    System.out.println();
+    System.out.println(bst.delete("Pinto"));
+    bst.inOrderTraverse();
+    
+    System.out.println("\n------------------------SOUP!!--------------------------------\n");
+    
+    BinarySearchTree<String> bst2 = new BinarySearchTree<>();
+    String[] stuff2 = {"minestrone", "clam chowder", "chicken noodle"};
+    String[] badStuff2 = {"black tar heroin", "100 kilos of cocaine"};
+    for (String s : stuff2)
+        bst2.add(s);
+
+    System.out.println(bst2);
+    System.out.println("\n--------------------------------------------------------\n");
+    
+    for (String s : stuff2)
+        System.out.println(bst2.find(s));
+        
+        System.out.println("\n--------------------------------------------------------\n");
+        
+        for (String s : badStuff2)
+       System.out.println(bst2.find(s));
+       
+       System.out.println("\n--------------------------------------------------------\n");
+         System.out.println("\n--------------------------------------------------------\n");
+         System.out.println("\n--------------------------------------------------------\n");
+        
+         BinarySearchTree<String> myBst = new BinarySearchTree<>();
+        String[] stuff3 = {"minestrone", "clam chowder", "chicken noodle"};
+    for (String s : stuff3)
+        myBst.addIterative(s);
+        
+       System.out.println(myBst);
+    }
+    
+    }

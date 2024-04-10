@@ -1,0 +1,88 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Simulation
+{
+    ArrayList<Passenger> passList; 
+    ArrayList<Car> carList; 
+    
+    public Simulation()
+    {
+        passList = new ArrayList<Passenger>();
+        carList = new ArrayList<Car>();
+        
+    }
+    
+    public void read(Scanner in)
+    {
+        boolean done = false;
+        System.out.println("Input data in the form \"n Name Destination\"");
+        System.out.println("n>0:Car   n=0:Passenger   n=-1:no more data");
+        while(!done)
+        {
+            int capacity = in.nextInt();
+            if(capacity < 0)
+            {
+                done = true;
+            }
+            else
+            {
+                String name = in.next();
+                int dest = in.nextInt();
+                if(capacity == 0)
+                {
+                    passList.add(new Passenger(name,dest));
+                }
+                else
+                {
+                    carList.add(new Car(capacity,dest,name));
+                }
+            }
+        }
+    }
+    
+    public void addPassenger()
+    {
+        for(Passenger p: passList)
+        {
+            boolean added = false;
+            int i = 0;
+            while(i < carList.size() && !added)
+            {
+                added = carList.get(i).tryToAddToCar(p);
+                i++;
+                if(added)
+                {
+                    System.out.println(c.getDriverName() + " picked up " + p.getName());
+                }
+            }
+        }
+    }
+    
+    public void driveCar()
+    {
+        while(carList.size() > 0)
+        {
+            int i = 0;
+            while(i < carList.size())
+            {
+                Car c = carList.get(i);
+                ArrayList<Passenger> p1 = c.drive();
+                if(c.getDestination()==c.getLocation())
+                {
+                    System.out.println(c.getDriverName() + " dropped off" + p.getName();
+                    carList.remove(i);
+                }
+                else
+                {
+                    i++;
+                }
+            }
+        }
+    }        
+}

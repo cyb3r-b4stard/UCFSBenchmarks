@@ -1,0 +1,77 @@
+
+
+import de.frangoll.nxt.std.*;
+
+/**
+ * ########## #### ### ###### ###############.
+ * 
+ * @###### (#### ####) 
+ * @####### (#### ############## #### ### #####)
+ */
+public class Stofftiersucher
+{
+    /**
+     * Die Methode "main" ist der Startpunkt für das Roboterprogramm.
+     * Der erste Teil des Programms ist bereits vollständig implementiert:
+     * Es werden alle zur Steuerung des Roboters erforderlichen Objekte erzeugt.
+     * Der zweite Teil der Methode enthält die eigentliche Robotersteuerung,
+     * die du selbst programmieren solltst.
+     */
+    public static void main(String[] args)
+    {
+        final EWartemodus STARTEN = EWartemodus.STARTEN;
+        final EWartemodus ABWARTEN = EWartemodus.ABWARTEN;
+        final ERichtung VORWAERTS = ERichtung.VORWAERTS;
+        final ERichtung RUECKWAERTS = ERichtung.RUECKWAERTS;
+        final EKlang FLOETE = EKlang.FLOETE;
+        final EKlang KLAVIER = EKlang.KLAVIER;
+        final EKlang XYLOPHON = EKlang.XYLOPHON;
+        final EStufe MAXIMAL = EStufe.MAXIMAL;
+        final EStufe SEHR_HOCH = EStufe.SEHR_HOCH;
+        final EStufe HOCH = EStufe.HOCH;
+        final EStufe MITTEL = EStufe.MITTEL;
+        final EStufe NIEDRIG = EStufe.NIEDRIG;
+        final EStufe SEHR_NIEDRIG = EStufe.SEHR_NIEDRIG;
+        final EStufe MINIMAL = EStufe.MINIMAL;
+        final ETendenz ZUNEHMEND = ETendenz.ZUNEHMEND;
+        final ETendenz KONSTANT = ETendenz.KONSTANT;
+        final ETendenz ABNEHMEND = ETendenz.ABNEHMEND;
+        final EMotorAusfuehrungsmodus SOFORT = EMotorAusfuehrungsmodus.SOFORT;
+        final EMotorAusfuehrungsmodus BEWEGUNG = EMotorAusfuehrungsmodus.BEWEGUNG;
+        final EMotorAusfuehrungsmodus EXPLIZIT = EMotorAusfuehrungsmodus.EXPLIZIT;
+        IObjektfabrik objektfabrik = XObjektfabrik.holeObjektfabrik();
+        IMotor linkerMotor = objektfabrik.erzeugeMotor(EMotorPort.C);
+        IMotor rechterMotor = objektfabrik.erzeugeMotor(EMotorPort.B);
+        IPilot pilot = objektfabrik.erzeugePiloten(EMotorPort.C, EMotorPort.B, 5.6f, 11.5f);
+        IDrucksensor drucksensor = objektfabrik.erzeugeDrucksensor(ESensorPort.S1);
+        ISensor schallsensor = objektfabrik.erzeugeSchallsensor(ESensorPort.S2);
+        ILichtsensor lichtsensor = objektfabrik.erzeugeLichtsensor(ESensorPort.S3);
+        ISensor ultraschallsensor = objektfabrik.erzeugeUltraschallsensor(ESensorPort.S4);
+        IUhr uhr = objektfabrik.erzeugeUhr();
+        IMonitor monitor = objektfabrik.erzeugeMonitor();
+        ILautsprecher lautsprecher = objektfabrik.erzeugeLautsprecher();
+        IDrucktaster eingabetaste = objektfabrik.erzeugeDrucktaster(EDrucktasterTyp.EINGABE);
+        IDrucktaster endetaste = objektfabrik.erzeugeDrucktaster(EDrucktasterTyp.ENDE);
+        IDrucktaster linkstaste = objektfabrik.erzeugeDrucktaster(EDrucktasterTyp.LINKS);
+        IDrucktaster rechtstaste = objektfabrik.erzeugeDrucktaster(EDrucktasterTyp.RECHTS);
+
+
+        uhr.warteZeit(2000); 
+      
+        int helligkeit = 0;
+        do
+        {
+                
+            lichtsensor.schalteLichtEin();
+            uhr.warteZeit(1000); 
+            do
+            {
+                helligkeit = lichtsensor.holeMesswert();
+                pilot.fahreGerade(VORWAERTS);
+            }
+            while(helligkeit>50);
+            
+        }
+        while(true)
+    }
+}

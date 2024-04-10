@@ -1,0 +1,134 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+import java.time.*;
+
+import java.util.*;
+
+public class HotelBeheer 
+{   
+
+    public String hotelNaam;
+    public ArrayList<Reservering>reserveringen;
+
+    public HotelBeheer(String naam)
+    {
+        hotelNaam=naam;
+        reserveringen = new ArrayList<Reservering>();
+    }
+
+    public int zoekLangsteReservering(Reservering)
+    {
+        int langste=0;
+        for(Reservering r:reserveringen)
+        {
+            if(r.getAantalNachten>langste)
+            {
+                langste=r.getAantalnachten;
+            }
+        }
+        return langste;
+        
+    }
+        
+    public int verwijderAlleReserveringVanKamer(int kamerNr)
+    {
+        int resultaat =0;
+        Iterator<Reservering> it = reserveringen.iterator();
+        while(it.hasNext())
+        { 
+            Reservering r = it.next();
+            if(r.getKamerNr()==kamerNr)
+            {
+                it.remove();
+                resultaat++;
+            }
+        }
+        return resultaat;
+    }
+
+    public boolean voegReserveringToe(Reservering nieuweKamer)
+    {
+        boolean ok=true;
+        for(Reservering r: reserveringen)
+        {
+
+            if(r.getKamerNr()==nieuweKamer.getKamerNr())
+            {
+                if(kamerVrij(nieuweKamer)==true)
+                {
+                    ok=true;
+
+                }
+                else
+                {
+                    ok=false;
+                }
+
+            }
+        }
+        if(ok==true)
+        {
+            reserveringen.add(nieuweKamer);
+        }
+        return ok;
+    }
+
+    public int aantalReserveringen()
+    {
+        return reserveringen.size();
+    }
+
+    public boolean kamerVrij(Reservering nieuwe)
+    {
+
+        LocalDate vertrekDag = nieuwe.getStartDag().plusDays(nieuwe.getAantalNachten());
+        for (Reservering r : reserveringen)
+        {
+            if ((r.getStartDag().isBefore(nieuwe.getStartDag()) ||
+                r.getStartDag().isEqual(nieuwe.getStartDag()))  &&
+            r.getStartDag().plusDays(r.getAantalNachten()).isAfter(nieuwe.getStartDag()))
+            {
+                return false;
+            }
+
+        }
+        for (Reservering r : reserveringen)
+        {
+            if (r.getStartDag().isBefore(vertrekDag) &&
+            (r.getStartDag().plusDays(r.getAantalNachten()).isAfter(vertrekDag) ||
+                r.getStartDag().plusDays(r.getAantalNachten()).isEqual(vertrekDag)))
+            {
+                return false;
+            }
+
+        }
+        for (Reservering r : reserveringen)
+        {
+            if ((r.getStartDag().isAfter(nieuwe.getStartDag()) ||
+                r.getStartDag().isEqual(nieuwe.getStartDag())) &&
+            (r.getStartDag().plusDays(r.getAantalNachten()).isBefore(vertrekDag) ||
+                r.getStartDag().plusDays(r.getAantalNachten()).isEqual(vertrekDag)))
+            {
+                return false;
+            }
+
+        }
+        return true;
+    }
+}
+
+/*      try
+{
+Scanner sc = new Scanner(new File(fileNaam));
+while (sc.hasNext()) 
+{
+
+}
+sc.close();
+}
+catch (FileNotFoundException fnfe)
+{
+System.out.println("File " + fileNaam + " not found");
+}
+ */

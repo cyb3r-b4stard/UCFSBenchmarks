@@ -1,0 +1,90 @@
+
+/**
+ * ########### ### #### ### ###### ######.
+ * 
+ * @###### (### ####) 
+ * @####### (#### ############## #### ### #####)
+ */
+public class ZIMMER extends SPIEL   
+{
+    private int x;
+    CHIP []chips;
+
+    RECHTECK randL;
+    RECHTECK randO;
+    RECHTECK randR;
+    RECHTECK randU;
+    STAUBSAUGER staubsauger;
+    /**
+     * Konstruktor für Objekte der Klasse ZIMMER
+     */
+    public ZIMMER()
+    {
+        super(800,600,true,true,false);
+        x = 0;
+        this.hintergrundgrafikSetzen("Boden.gif");
+        this.chips = new CHIP[50];
+        for(int z=0;z<50;z=z+1)
+        {this.chips[z]=new CHIP(zufallszahlVonBis(0, 800),zufallszahlVonBis(0, 600));
+        }
+        /*
+        this.chip1= new CHIP(zufallszahlVonBis(0, 700),zufallszahlVonBis(0, 700));
+        this.chip2= new CHIP(zufallszahlVonBis(0, 700),zufallszahlVonBis(0, 700));
+        this.chip3= new CHIP(zufallszahlVonBis(0, 700),zufallszahlVonBis(0, 700));
+         */
+        this.randU=new RECHTECK();
+        this.randU.setzeGroesse(800, 15);
+        this.randU.setzeMittelpunkt(400, 585);
+
+        this.randR=new RECHTECK();
+        this.randR.setzeGroesse(15, 600);
+        this.randR.setzeMittelpunkt(785, 300);
+
+        this.randO=new RECHTECK();
+        this.randO.setzeGroesse(800, 15);
+        this.randO.setzeMittelpunkt(400, 15);
+
+        this.randL=new RECHTECK();
+        this.randL.setzeGroesse(15, 600);
+        this.randL.setzeMittelpunkt(15, 300);
+
+        this.staubsauger= new STAUBSAUGER();
+    }
+
+    @Override
+    public void tasteReagieren( int code){
+        if(code==27){
+            this.staubsauger.drehenUm(10);}
+        if(code==29){
+            this.staubsauger.drehenUm(-10);}
+    }
+
+    @Override
+    public void tick(){
+        this.staubsauger.bewegen();
+        {
+            
+            for (int z=0;z<50;z++)
+            {if(this.staubsauger.schneidet(chips[z])){
+                    this.chips[z].verschieben(2000,2000);}
+            }
+            
+        }
+    
+   
+         if(staubsauger.schneidet(randL))
+        {this.staubsauger.drehenUm(this.zufallszahlVonBis(1, 359));this.staubsauger.bewegen();}
+         else if(staubsauger.schneidet(randR))
+        {this.staubsauger.drehenUm(this.zufallszahlVonBis(1, 359));this.staubsauger.bewegen();}
+         else if(staubsauger.schneidet(randO))
+        {this.staubsauger.drehenUm(this.zufallszahlVonBis(1, 359));this.staubsauger.bewegen();}
+         else if(staubsauger.schneidet(randU))
+        {this.staubsauger.drehenUm(this.zufallszahlVonBis(1, 359));this.staubsauger.bewegen();}
+        
+         if(staubsauger.bewegen()){
+             this.punkteLinksSetzen(this.punkteLinks+1);}
+         if(staubsauger.schneidet(chips)){
+             this. punkteRechtssetzen(this.punkteRechts+1;}
+            }
+}
+

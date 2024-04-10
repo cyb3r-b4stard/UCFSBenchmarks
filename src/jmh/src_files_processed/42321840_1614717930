@@ -1,0 +1,83 @@
+/**
+ * #### ### ###### #### ### ####### ###### ###### ########.
+ * 
+ * @###### ##### #. ###### ### ####### #######.
+ * @#######    ####.##.##
+ */
+public class LogAnalyzer
+{
+    private int[] hourCounts;
+    private LogfileReader reader;
+
+    /**
+     * Create an object to analyze hourly web accesses.
+     */
+    public LogAnalyzer()
+    { 
+        hourCounts = new int[24];
+        reader = new LogfileReader();
+    }
+
+    /**
+     * Analyze the hourly access data from the log file.
+     */
+    public void analyzeHourlyData()
+    {
+        while(reader.hasNext()) {
+            LogEntry entry = reader.next();
+            int hour = entry.getHour();
+            hourCounts[hour]++;
+        }
+    }
+
+    /**
+     * Print the hourly counts.
+     * These should have been set with a prior
+     * call to analyzeHourlyData.
+     */
+    public void printHourlyCounts()
+    {
+        System.out.println("Hr: Count");
+        for(int hour = 0; hour < hourCounts.length; hour++) {
+            System.out.println(hour + ": " + hourCounts[hour]);
+        }
+    }
+    
+    /**
+     * Print the lines of data read by the LogfileReader
+     */
+    public void printData()
+    {
+        reader.printData();
+    }
+    
+    public int numberOfAccesses()
+    {
+        analyzeHourlyData();
+        int total = 0;
+        
+        for(int add = 0; add < hourCounts.length; add++)
+        {
+            total += hourCounts[add];
+        }
+        return total;
+    }
+    
+    public void bussiestHour()
+    {
+        analyzeHourlyData();
+        int bussiest = 0;
+        
+        for(int add = 0; add < hourCounts.length; add++)
+        {
+            
+            if(bussiest < hourCounts[add])
+            {
+                bussiest = hourCounts[add];
+                hour = add;
+                
+            }
+        }
+        System.out.println("The bussiest is: " + add + " ,where the number is: " + bussiest;);
+    }
+}

@@ -1,0 +1,438 @@
+import info.graphics.*;
+import static info.utils.io.*;
+import static info.graphics.Color.*;
+import static info.graphics.Tools.*;
+import static java.lang.Math.*;
+
+/**
+ * #### ###### ####### ##### ###### ### ###
+ * 
+ * @######  ######
+ * @####### ######## ## ####
+ */
+class TP4 {
+    static int puissance(int n, int p) {
+        int res = 1;
+        int compteur = 0;
+        while (compteur < p) {
+            res = res * n;
+            compteur++;
+        }
+        return res;
+    }
+
+    /**
+     *Méthode <code>drawRandomShapes</code> permettant d'afficher un nombre de forme choisis par l'utilisateur dont toutes les caractéristiques sont aléatoires.
+     */
+    static void drawRandomShapes(int n) {
+        assert n > 0 : "Le nombre de formes doit être positif !";
+        int compteur = 0;
+        Window window = new Window(200, 200, "Random Shapes");       
+        window.setBackgroundColor(black);
+        while (compteur < n) {
+            TP3.drawRandomShape(window);
+            compteur++;
+        }
+    }
+
+    static void toss (int max) {
+        int nombreDeTrue = 0;
+        int nombreDeFalse = 0;
+        double pourcentage = 0.0;
+        int compteur =0;
+        boolean tirage;
+        while (compteur < max) {
+            tirage = random.nextBoolean();
+            if (tirage == true){
+                nombreDeTrue++;
+            }else{
+                nombreDeFalse++;
+            }
+            compteur++;
+        }
+        assert max == nombreDeTrue + nombreDeFalse : "Erreur dans la boucle";
+        pourcentage = (nombreDeTrue*100.)/max;
+        output.println("Nombre de tirage : " + max);
+        output.println(pourcentage + " true");
+        output.println((100-pourcentage) + " false");
+    }
+
+    static void toss (){
+        int nombreDeTrue = 0;
+        int nombreDeFalse = 0;
+        double pourcentage = 0.0;
+        int compteur =0;
+        boolean tirage;
+        while (compteur < 100 || nombreDeTrue!=nombreDeFalse) {
+            tirage = random.nextBoolean();
+            if (tirage == true){
+                nombreDeTrue++;
+            }else{
+                nombreDeFalse++;
+            }
+            compteur++;
+        }
+        assert nombreDeTrue + nombreDeFalse >= 100 : "Erreur dans la boucle";
+        assert nombreDeTrue==nombreDeFalse : "Pourcentage incorrect";        
+        pourcentage = (nombreDeTrue*100.)/compteur;
+        output.println("Nombre de tirage : " + (100 + compteur));
+        output.println(pourcentage + " true");
+        output.println((100-pourcentage) + " false");
+    }
+
+    static void row () {
+        int tailleCarre = 33;
+        int largeurFenetre = random.nextInt(800) + 200;
+        int hauteurFenetre = 245;
+        int x = 0;
+        int y = (hauteurFenetre/2)-(tailleCarre/2);
+        boolean b = true;
+        Color couleur;
+        Window window = new Window (largeurFenetre, hauteurFenetre, "Row");
+        while (x < largeurFenetre) {
+            if (b){
+                couleur = red;
+            }else {
+                couleur = blue;
+            }
+            window.drawRectangle(x,y,true,couleur,tailleCarre,tailleCarre);
+            x += tailleCarre;
+            b = !(b);
+        }
+    }
+
+    /**
+     *La méthode <code>chessboard<code> affiche un échiquier d'une taille aléatoire avec des cases de 33 pixels.
+     *
+     */
+    static void chessboard (){
+        int tailleCarre = 33;
+        int largeurFenetre = random.nextInt(800) + 200;
+        int hauteurFenetre = random.nextInt(800) + 200;
+        int x = 0;
+        int y = 0;
+        boolean b = true;
+        Color couleur;
+        Window window = new Window (largeurFenetre, hauteurFenetre, "Row");
+        while (x < largeurFenetre && y < hauteurFenetre) {
+
+            while (x < largeurFenetre && y < hauteurFenetre) {
+                if (b){
+                    couleur = black;
+                }else {
+                    couleur = white;
+                }
+                window.drawRectangle(x,y,true,couleur,tailleCarre,tailleCarre);
+                x += tailleCarre;
+                b = !b;
+            }
+            y += tailleCarre;
+            x = 0;
+        }
+    }
+
+    static void testTurtle() {
+        Window window = new Window(600, 400, "Turtle");  
+        int nbPas = 0;
+        Turtle turtle;
+        turtle = new Turtle(300, 200);
+        turtle.show(window);  
+        while (nbPas < 5) {
+            turtle.moveEast(window);
+            turtle.setPause(1000);
+            nbPas++;
+        }
+    }
+
+    static void goEast (int nbPas) {
+        Window window = new Window(600, 400, "Turtle"); 
+        int pas = 0;
+        Turtle turtle;
+        turtle = new Turtle(300, 200);
+        turtle.show(window);
+        while (pas < nbPas) {
+            output.print(turtle.moveEast(window));
+            turtle.setPause(500);
+            pas++;
+        }
+    }
+
+    static void goEast () {
+        Window window = new Window(600, 400, "Turtle"); 
+        int pas = 0;
+        boolean b = true;
+        Turtle turtle;
+        turtle = new Turtle(300, 200);
+        turtle.show(window);
+        while (b) {
+            b = turtle.moveEast(window);
+            turtle.setPause(500);
+            pas++;
+        }
+    }
+
+    static boolean goEast (Window window, Turtle turtle, int nbPas){
+        int pas = 0;
+        turtle.show(window);
+        while (pas < nbPas) {
+            turtle.moveEast(window);
+            turtle.setPause(500);
+            pas++;
+        }
+        return turtle.moveEast(window);
+    }
+
+    static void testGo() {
+        Window window = new Window(600, 400, "Turtle");  
+        Turtle turtle = new Turtle(300, 200);
+        output.println(goDirection(window, turtle, 'N', 10));
+        output.println(goDirection(window, turtle, 'E', 4));
+    }
+
+    static boolean goDirection (Window window, Turtle turtle, char direction, int nbPas) {
+        int pas = 0;
+        turtle.show(window);
+        boolean b = true;
+        assert direction == 'N' || direction == 'E' || direction == 'S' || direction == 'W' : "Direction non valide !";
+        if (direction == 'N') {
+            while (pas < nbPas &&  b) {
+                b = turtle.moveNorth(window);
+                turtle.setPause(500);
+                pas++;
+            }
+        }else if (direction == 'E') {
+            while (pas < nbPas &&  b) {
+                b = turtle.moveEast(window);
+                turtle.setPause(500);
+                pas++;
+            }
+        }else if (direction == 'S') {
+            while (pas < nbPas &&  b) {
+                b = turtle.moveSouth(window);
+                turtle.setPause(500);
+                pas++;
+            }
+        } else {
+            while (pas < nbPas &&  b) {
+                b = turtle.moveWest(window);
+                turtle.setPause(500);
+                pas++;
+            }
+        }
+        return b;
+    }
+
+    static void square (int size) {
+        Window window = new Window(400,300,"Square turtle");
+        Turtle turtle = new Turtle(60,60);
+        int pas = 0;
+        boolean b = true;
+        for (int cote = 0; cote < 4;cote++){
+            if (cote == 0 && b) {
+                while (pas < size &&  b) {
+                    b = turtle.moveEast(window);
+                    turtle.setPause(500);
+                    pas++;
+                }
+                pas = 0;
+            }else if (cote == 1 && b) {
+                while (pas < size &&  b) {
+                    b = turtle.moveSouth(window);
+                    turtle.setPause(500);
+                    pas++;
+                }
+                pas = 0;
+            }else if (cote == 2 && b) {
+                while (pas < size &&  b) {
+                    b = turtle.moveWest(window);
+                    turtle.setPause(500);
+                    pas++;
+                }
+                pas = 0;
+            }else if (cote == 3 && b) {
+                while (pas < size &&  b) {
+                    b = turtle.moveNorth(window);
+                    turtle.setPause(500);
+                    pas++;
+                }
+                pas = 0;
+            }
+        }
+    }
+
+    static void spiral () {
+        Window window = new Window(600,600,"Spiral turtle");
+        Turtle turtle = new Turtle(270,270);
+        int pas = 0;
+        boolean b = true;
+        int size = 1;
+        int cote = 0;
+        while  (b){
+            if (cote == 0 && b) {
+                while (pas < size &&  b) {
+                    b = turtle.moveEast(window);
+                    turtle.setPause(100);
+                    pas++;
+                }
+                pas = 0;
+                size++;
+                cote++;
+            }else if (cote == 1 && b) {
+                while (pas < size &&  b) {
+                    b = turtle.moveSouth(window);
+                    turtle.setPause(100);
+                    pas++;
+                }
+                pas = 0;
+                size++;
+                cote++;
+            }else if (cote == 2 && b) {
+                while (pas < size &&  b) {
+                    b = turtle.moveWest(window);
+                    turtle.setPause(100);
+                    pas++;
+                }
+                pas = 0;
+                size++;
+                cote++;
+            }else if (cote == 3 && b) {
+                while (pas < size &&  b) {
+                    b = turtle.moveNorth(window);
+                    turtle.setPause(100);
+                    pas++;
+                }
+                pas = 0;
+                size++;
+                cote = 0;
+            }
+        }
+    }
+
+    static void turtlePingPong () {
+        Window window = new Window(600,200,"Ping pong turtle");
+        Turtle turtle = new Turtle(270,100);
+        boolean b = true;
+        while (true) {
+            while (b){
+                b = turtle.moveEast(window);
+                turtle.setPause(100);
+            }
+            b = true;
+            while (b){
+                b = turtle.moveWest(window);
+                turtle.setPause(100);
+            }
+            b = true;
+        }
+    }
+
+    static void roundabout () {
+        Window window = new Window(300,180,"Roundabout turtle");
+        Turtle turtle = new Turtle(0,0);
+        boolean b = true;
+        while (true) {
+            while (b){
+                b = turtle.moveEast(window);
+                turtle.setPause(100);
+            }
+            b = true;
+            while (b){
+                b = turtle.moveSouth(window);
+                turtle.setPause(100);
+            }
+            b = true;
+            while (b){
+                b = turtle.moveWest(window);
+                turtle.setPause(100);
+            }
+            b = true;
+            while (b){
+                b = turtle.moveNorth(window);
+                turtle.setPause(100);
+            }
+            b = true;
+        }
+    }
+
+    static void circles (int distance) {
+        Window window = new Window(800,240,"Circles");
+        int x = 0;
+        Color couleur = TP3.randomColor();
+        while (x<740) {
+            window.drawEllipse(x,90,false,couleur,60,60);
+            x+=distance;
+            couleur = TP3.randomColor();
+        }
+    }
+
+    static void circles2 (int distance) {
+        Window window = new Window(800,240,"Circles");
+        int x = 0;
+        int boucle = 0;
+        while (x<740) {
+            if (boucle == 0) {
+                window.drawEllipse(x,90,false,black,60,60);
+                x+=distance;
+            }
+            boucle++;
+            if (boucle == 1) {
+                window.drawEllipse(x,90,false,red,60,60);
+                x+=distance;
+            }
+            boucle++;
+            if (boucle == 2) {
+                window.drawEllipse(x,90,false,blue,60,60);
+                x+=distance;
+            }
+            boucle = 0;
+        }     
+    }
+
+    static void firstBall() {
+        Window window = new Window(800, 240, "First Ball"); 
+        int diameter = 60;   
+        Ellipse ball; 
+        ball = new Ellipse(0, 90, true, red, diameter, diameter); 
+        window.draw(ball); 
+        pause(2000);
+        ball.setX(300); 
+        pause(2000);
+        ball.setX(600); 
+    }
+
+    static void ball () {
+        Window window = new Window((random.nextInt(800)+200), 240, "First Ball"); 
+        int diameter = 60; 
+        int x = window.getWidth();
+        Ellipse ball = new Ellipse(0, 90, true, red, diameter, diameter);
+        window.draw(ball);
+        pause(2000);
+        ball.setX((x - 60));
+    }
+
+    static void bouncingBall (int delai) {
+        Window window = new Window((random.nextInt(400)+600), 240, "First Ball"); 
+        int diameter = 60; 
+        int x = window.getWidth();
+        boolean b = true;
+        Color couleur;
+        Ellipse ball = new Ellipse(0, 90, true, red, diameter, diameter);
+        window.draw(ball);
+        pause(delai);
+        while (true) {
+            if (b) {
+                ball.setX((x - 60));
+                b = !b;
+                couleur = TP3.randomColor();
+                Ellipse.setColor(color)
+                pause (delai);
+            }else {
+                ball.setX(0);
+                b = !b;
+                Color couleur = TP3.randomColor();
+                Ellipse.setColor(color)
+                pause (delai);
+            }
+        }
+    }
+}

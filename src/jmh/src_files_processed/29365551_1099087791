@@ -1,0 +1,186 @@
+
+/**
+ * ##### # ########### ## ##### ############ ####.
+ * 
+ * @###### ###### #####
+ * @####### (# ####### ###### ## # ####)
+ */
+public class MyBattleship{
+    private int rows, cols, num_ships = 0;
+    private int[][] myShips; 
+
+    /**
+     * Constructor for objects of class MyBattleship
+     * @param rows    the number of rowss this board should have
+     * @param cols    the number of columns this board should have
+     */
+    public MyBattleship(int rows, int cols){
+        this.rows = rows;
+        this.cols = cols;
+    }
+
+    /**
+     * @return    the number of ships on this board
+     */
+    public int shipsPlaced(){
+        return num_ships;
+    }
+    
+    /**
+     * Return a 2D array of all possible ship endpoints
+     * @param row    the row of the first point
+     * @param col    the column of the first point
+     * @return    all valid end points
+     */
+    public int[][] startShip(int row, int col){
+        int shiplength = (num_ships + 1) * 2;
+        int count = 0;
+        boolean up = false,
+                down = false,
+                left = false,
+                right = false;
+        if(isOpen(row, col, row+shiplength, col)){
+            count++;
+            up = true;
+        }
+        if(isOpen(row, col, row-shiplength, col)){
+            count++;
+            down = true;
+        }
+        if(isOpen(row, col, row, col+shiplength)){
+            count++;
+            right = true;
+        }
+        if(isOpen(row, col, row, col-shiplength)){
+            count++;
+            left = true;
+        }
+        int[][] possible_ships = new int[count][];
+        int index = 0;
+        if(up){
+            possible_ships[index] = int[2] {row+shiplength, col};
+            index++;
+        }
+        if(down){
+            possible_ships[index] = {row-shiplength, col};
+            index++;
+        }
+        if(right)){
+            possible_ships[index] = {row, col+shiplength};
+            index++;
+        }
+        if(left){
+            possible_ships[index] = {row, col-shiplength};
+            index++;
+        }
+    }
+    
+    /**
+     * Checks for a clear path between two points
+     * @param row1    row of point 1
+     * @param col1    column of point 1
+     * @param row2    row of point 2
+     * @param col2    column of point 2
+     * @retrun    is the path clear?
+     */
+    private boolean isOpen(int row1, int col1, int row2, int col2){
+
+        if(row1 < 1 || col1 < 1 || row1 > rows || col1 > cols){
+            return false;
+        }
+        else{ 
+            for(int[] ship : myShips){
+                if(ship[0] == row1 && ship[2] == row1){
+                    if(ship[0] <= row1 && row1 <= ship[2]){
+                        return false;
+                    }
+                    else if(ship[0] >= row1 && row1 >= ship[2]){
+                        return false;
+                    }
+                }
+                else if(ship[1] == col1 && ship[3] == col1){
+                    if(ship[1] <= col1 && col1 <= ship[3]){
+                        return false;
+                    }
+                    else if(ship[1] >= col1 && col1 >= ship[3]){
+                        return false;
+                    }
+                }
+            }
+        }
+        if(row1 == row2 && col1 == col2){
+            return true;
+        }
+        if(row1 > row2){
+            row1 -= 1;
+        }
+        else if (row1 < row2){
+            row1 += 1;
+        }
+        if(col1 > col2){
+            col1 -= 1;
+        }
+        else if(col1 < col2){
+            col1 += 1;
+        } 
+        isOpen(row1, col1, row2, col2);
+    }
+    
+    /**
+     * Set the endpoint of a ship
+     * @param choice    the index of the chosen point from startShip()
+     */
+    public void endShip(int choice){
+        
+    }
+    
+    /**
+     * Display this player's board and ships
+     */
+    public void showShips(){
+        
+    }
+    
+    /**
+     * Checks if this player has any ships left
+     * @return    Has this player lost?
+     */
+    public boolean lost(){
+        
+    }
+    
+    /**
+     * Displays the board with hits and misses, but no ships
+     */
+    public void displayGameBoard(){
+        
+    }
+    
+    /**
+     * Checks if a guess is off the board or already used
+     * @param row    row of the guess
+     * @param col    column of the guess
+     * @return    Is this guess valid?
+     */
+    public boolean isValidGuess(int row, int col){
+        
+    }
+    
+    /**
+     * Attack (row,col) and return if it was a hit or miss. If a ship was sunk, return its name
+     * @param row    row of the target
+     * @param col    column of the target
+     * @return    feedback on the result of the attack
+     */
+    public String strike(int row, int col){
+        
+    }
+    
+    /**
+     * How many turns have gone by + 1 for current turn
+     * @return   turn count
+     */
+    public int getTurn(){
+        
+    }
+}

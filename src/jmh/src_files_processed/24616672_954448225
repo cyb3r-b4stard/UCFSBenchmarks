@@ -1,0 +1,96 @@
+import java.util.Arrays;
+
+/**
+ * #### ##### ### ## #### ## #### ########'# ### ## # #####
+ * ########### ## ## ######## ###### (# ### ########### ### #####).
+ */
+public class Dijkstra {
+
+    private int[][] graph;
+    private int[] distance;
+    private boolean[] vertices;
+    private int[] tree;
+    
+    /**
+     * the constructor requires a reference to the adjaceny matrix, for the graph, as a parameter
+     */
+    Dijkstra (int[][] graph)
+    {
+        this.graph = graph;
+    } 
+
+    /**
+     * This is the method that you are to complete. It takes, as a paramter, the root of the SPT
+     * to be calculated. It returns an array containing the predecessors to each vertex in the tree.
+     */
+    public int[] shortestPath(int root)
+    {
+
+        /** STEP 1: declare the variables you will need here. These include the
+         * boolean array to indicate if a vertex is in the tree or not (Hint: vertices),
+         * an int array of distances that vertices are from the root via the tree (Hint: distances)
+         * and an int array of the vertex predecessor that make up the solution, the SPT, which is
+         * given here.....
+         */
+
+        distance = new int[graph.length];
+        vertices = new boolean[graph.length];
+        tree = new int[graph.length]; 
+
+        for( int i =0 ; i < graph.length; i++) {
+            distance[i] = graph[root][i]; 
+            vertices[i] = true;
+            tree[i] = root;
+        }
+
+        vertices[root] = false; 
+
+        Integer min = Integer.MAX_VALUE;
+        int j = 0;
+        for (int i =0; i < graph.length; i++) {
+            if (vertices[i]) {
+                if (distance[i] < min) {
+                    min = distance[i];
+                   j = i;
+                }
+            }
+        }
+        vertices[j] = false; 
+
+        for (int i = 0; i < graph.length; i++) {
+            if (vertices[i]) {
+                if (distance[i] > distance[j] + graph[i][j]) {
+                    distance[i] = distance[j] + graph[i][j];
+                    tree[i] = j;
+                }
+            }
+        }
+
+       
+        
+        for (int i = 0; i < graph.length; i++) {
+            System.out.println("Vertex " + i + " is closest to at distance = " + min "" + j  );
+            
+        
+        }
+        
+        /** STEP 2: write the statements needed to initialise the "distances", "vertices" and the "tree".
+         * Also include a statement to add the "root" to the "tree".
+         */
+
+        /** STEP 3: Now you get into the main procedure, the body of the algorithm.
+         * 
+         * For each vertex in the graph, you have to do the following:
+         *      1.  Find the vertex closest to the root via any vertex already in the tree.
+         *      2.  Add that vertex to the tree.
+         *      3.  Update the distances to the root of any vertex not already in the tree,
+         *          via the vertex just added to the tree
+         */
+
+        /** Step 4: return the tree predecessor array.
+         */
+
+        return graph[root];
+    }     
+
+}

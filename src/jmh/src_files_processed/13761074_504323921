@@ -1,0 +1,103 @@
+
+  /**
+  * ##### # ########### ## ##### ###_## ####.
+  * 
+  * @###### (#### ####) 
+  * @####### (# ####### ###### ## # ####)
+  * 
+  * ###### ### #### ##### ## #### ## ##### ### ####### ### ### ### ####
+  * ######## ##### #### ### ##### #### ######### ####### ### #### ### #####.
+  * 
+  */
+
+   import java.io.FileReader;
+   import java.io.IOException;
+   import java.util.Scanner;
+public class Ex6_15
+{
+
+
+    private String current;
+    private FileReader aFile;
+    private Scanner inFile;
+    
+    public CollegeClassKey() throws IOException { setUp(); }
+    
+    private void setUp() throws IOException
+    {
+        aFile = new FileReader( "college.txt");
+        inFile = new Scanner(aFile);
+        current = inFile.nextLine();
+    }
+    
+    public boolean getNext() throws IOException
+    {
+        current = inFile.nextLine();
+        if (currentIsValid()) return (true);
+        else return (false);
+    }
+    
+    private int find(String s)
+    {
+        int len = current.length();
+        for (int c = 0; c < len; c++) {
+            String t = current.substring(c);
+            if (t.equals(s)) return (c);
+        }
+        return (-1);
+    }
+    
+    public boolean currentIsValid()
+    {
+        if (find("END" ) >= 0) return (false);
+        else return (true);
+    }
+    
+    public void reset() throws IOException
+    {
+        aFile.close();
+        setUp();
+    }
+    
+    public String getName() { return (current.substring(21,21+25)); }
+    
+    public String getTown() { return (current.substring(46, 46+20)); }
+    
+    public String getState() { return (current.substring(66,66+2)); }
+    
+    public String getPubOrPri() { return (current.substring(68, 68+3)); }
+    
+    public long getTuition() { return (Long.parseLong(current.substring(8,8+5).trim())); }
+    
+    public long getRoomAndBoard() { return (Long.parseLong(current.substring(16, 16+4))); }
+    
+    public static void topTypes(CollegeClassKey myCollege, String type) throws IOException
+    {
+        final int listSize = 5;
+        TopListClass enrollmentList = new TopListClass("enroll.txt", listSize);
+        enrollmentList.clear();
+        int count = 0;
+        long sum = 0;
+        do {
+            if (type.equals(myCollege.getPubOrPri())) {
+                count++;
+                long cost = myCollege.getTuition() + myCollege.getRoomAndBoard();
+                sum += cost;
+                enrollmentList.addItem(cost,myCollege.getName());
+            }
+        } while (myCollege.getNext());
+        System.out.print("Average tuition and room and board costs over "
+            + count + " colleges: ");
+        System.out.println(String.format("%1.2f", ((double) sum)/count));
+        writeTopColleges(enrollmentList, true);
+        enrollmentList.destruct();
+    }
+    
+    public static void main (String []args)
+    {
+        topTypes(college, "PUB");
+        college.reset();
+        topTypes(college, "PRI");
+    }
+}
+}

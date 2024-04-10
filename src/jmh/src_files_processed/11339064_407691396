@@ -1,0 +1,44 @@
+import java.util.regex.*;
+import java.util.Scanner;
+public class EmailValidate2 {
+        public static void main(String[] args){
+            Scanner sc = new Scanner(System.in);
+            System.out.println("Please enter a valid email");
+            String email = sc.nextLine();
+            int failCounter = 1;
+            Pattern p = Pattern.compile("([a-zA-Z0-9]+@[a-zA-Z0-9]+.[a-zA-Z0-9]+())");
+            Pattern p3 = Pattern.compile(.+@);
+            /* This is the pattern that checks for the questiions defintion of an email. It checks for a undefined length of
+               alphanumeric characters, until it finds a @ symbol. It then accepts an undefined length of alphanumeric characters
+               until it finds a dot. There is another undefined length of alphanumeric characters, and then the pattern ends */
+            Pattern p2 = Pattern.compile("([a-zA-Z0-9.]+@[a-zA-Z0-9.]+.[a-zA-Z0-9.])");
+            /* This pattern checks if there are .s in the email where there shouldn’t be, otherwise an invalid email could be
+             * called valid
+             */
+            Matcher m = p.matcher(email);
+            System.out.println("p is:" +p);  
+            System.out.println("m is:" +m);  
+            System.out.println("m.find is " + m.find()); 
+            
+
+            Matcher m2 = p2.matcher(email);
+            System.out.println("p2 is:" +p2);  
+            System.out.println("m2 is:" +m2);  
+            System.out.println("m2.find is " + m2.find());  
+            
+            
+            Matcher m3 = p3.matcher(email);
+            System.out.println("p3 is:" +p3);  
+            System.out.println("m3 is:" +m3);  
+            System.out.println("m3.find is " + m3.find());  
+
+            while ((m.find()) && !(m2.find())) {
+                System.out.println("VALID");
+                failCounter = 0;
+            }
+            if (failCounter == 1){
+                System.out.println("INVALID");
+            
+            }
+        }
+}

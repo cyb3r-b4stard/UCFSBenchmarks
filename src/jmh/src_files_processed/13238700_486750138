@@ -1,0 +1,87 @@
+/**
+ * #### ### ###### #### ### #######
+ * ###### ###### ########.
+ * 
+ * @###### ##### #. ###### ### ####### #######.
+ * @####### ####.##.##
+ */
+
+import java.util.*;
+public class LogAnalyzer
+{
+    private int[] hourCounts;
+    private LogfileReader reader;
+
+    /**
+     * Create an object to analyze hourly web accesses.
+     */
+    public LogAnalyzer()
+    { 
+        hourCounts = new int[24];
+        reader = new LogfileReader();
+           }
+
+    /**
+     * Analyze the hourly access data from the log file.
+     */
+    public void analyzeHourlyData()
+    {
+        while(reader.hasNext()) {
+            LogEntry entry = reader.next();
+            int hour = entry.getHour();
+            hourCounts[hour]++;
+        }
+    }
+
+    /**
+     * Print the hourly counts.
+     * These should have been set with a prior
+     * call to analyzeHourlyData.
+     */
+    public void printHourlyCounts()
+    {
+        System.out.println("Hr: Count");
+        /*for(int hour = 0; hour < hourCounts.length; hour++) {
+            System.out.println(hour + ": " + hourCounts[hour]);
+        */
+       int hour = 0;
+       while (hour <hourCounts.length) {
+           System.out.println(hour + ": " + hourCounts[hour]);
+           hour++;
+               
+    }
+    }
+    
+    /**
+     * Print the lines of data read by the LogfileReader
+     */
+    public void printData()
+    {
+        reader.printData();
+    }
+    /**
+     * Retourneer het aantal hits dat in het logbestand is opgeslagen
+     * 
+     */
+    public int numberOfAccesses()
+    {
+        int total = 0;
+        for (int index = 0; index < hourCounts.length; index++)
+        {
+            total += hourCounts[index];
+        }
+        
+        return total;
+    }
+    /**
+     * Retourneert het drukste uur dat in het logbestand is opgeslagen
+     */
+    public int busiestHour()
+    {   
+        int index = 0;
+        for (int hour : hourCounts){
+            return int Math.max(hour);
+        }
+    }
+    
+}

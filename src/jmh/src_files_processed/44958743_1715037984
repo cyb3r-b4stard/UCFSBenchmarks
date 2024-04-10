@@ -1,0 +1,758 @@
+import java.io.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class NewGame extends WindowAdapter implements WindowListener
+{
+    private JFrame frame;
+    private Dimension screenSize, frameSize;
+    private int a, b;
+    int steigerungspunkte, steigerungspunkteZuBeginn;
+    int spalten, reihen;
+    int startwert;
+    JButton reset;
+    JButton stPlus, stMinus, gePlus, geMinus, koPlus, koMinus, inPlus, inMinus, wePlus, weMinus, chPlus, chMinus;
+    JTextField stAnzeige, geAnzeige, koAnzeige, inAnzeige, weAnzeige, chAnzeige;
+    JTextField stBezeichner, geBezeichner, koBezeichner, inBezeichner, weBezeichner, chBezeichner;
+    JTextField stKlassenBonus, geKlassenBonus, koKlassenBonus, inKlassenBonus, weKlassenBonus, chKlassenBonus;
+    JTextField stRassenBonus, geRassenBonus, koRassenBonus, inRassenBonus, weRassenBonus, chRassenBonus;
+    JTextField stGesamt, geGesamt, koGesamt, inGesamt, weGesamt, chGesamt;
+    JTextField stMod, geMod, koMod, inMod, weMod, chMod;
+    JTextField rassenbonus, klassenbonus, gesamt, mod;
+    JTextField attribute;
+    JTextField klassenBeschriftung, rassenBeschriftung, steigerungspunkteBeschriftung;
+    JTextField steigerungspunkteAnzeige;
+    JComboBox klassenAuswahl, rassenAuswahl;
+    JPanel attributsanzeige, boniberechnung, überschriften, alles;
+    JPanel überschriftenhelfer;
+    JPanel alleshelfer1, alleshelfer2, alleshelfer3, alleshelfer4, alleshelfer5;
+    String klasse, rasse;
+    public NewGame(int schwierigkeit)
+    {
+        frame=new JFrame("Attributswertermittlung");
+        screenSize=Toolkit.getDefaultToolkit().getScreenSize();
+        frameSize=new Dimension((int)(800),(int)(600));
+        int x=(int)((screenSize.width/2)-(frameSize.width/2));
+        int y=(int)((screenSize.height/2)-(frameSize.height/2));
+        frame.setBounds(x,y,frameSize.width,frameSize.height);
+        spalten = 8;
+        reihen = 9;
+        startwert = 10;
+        klasse = "Barbar";
+        rasse = "Elf";
+        if(schwierigkeit == 1){
+            steigerungspunkte = 10;
+        }
+        else if(schwierigkeit == 2){
+            steigerungspunkte = 15;
+        }
+        else if(schwierigkeit == 3){
+            steigerungspunkte = 20;
+        }
+        else if(schwierigkeit == 4){
+            steigerungspunkte = 25;
+        }
+        steigerungspunkteZuBeginn = steigerungspunkte;
+        this.attributstafel();
+        this.boniberechnung();
+        this.überschriften();
+        this.auswahlfelderUndPunkteanzeige();
+        this.fensterbau();
+        this.klassenboniAktualisierung();
+        this.rassenboniAktualisierung();
+        this.werteAktualisieren();
+    }
+
+    private void attributstafel(){
+        stPlus = new JButton("+");
+        stMinus = new JButton("-");
+        gePlus = new JButton("+");
+        geMinus = new JButton("-");
+        koPlus = new JButton("+");
+        koMinus = new JButton("-");
+        inPlus = new JButton("+");
+        inMinus = new JButton("-");
+        wePlus = new JButton("+");
+        weMinus = new JButton("-");
+        chPlus = new JButton("+");
+        chMinus = new JButton("-");
+        stPlus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        stMinus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        gePlus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        geMinus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        koPlus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        koMinus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        inPlus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        inMinus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        wePlus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        weMinus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        chPlus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        chMinus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        stPlus.addActionListener(new buttonhandlerStPlus());
+        stMinus.addActionListener(new buttonhandlerStMinus());
+        gePlus.addActionListener(new buttonhandlerGePlus());
+        geMinus.addActionListener(new buttonhandlerGeMinus());
+        koPlus.addActionListener(new buttonhandlerKoPlus());
+        koMinus.addActionListener(new buttonhandlerKoMinus());
+        inPlus.addActionListener(new buttonhandlerInPlus());
+        inMinus.addActionListener(new buttonhandlerInMinus());
+        wePlus.addActionListener(new buttonhandlerWePlus());
+        weMinus.addActionListener(new buttonhandlerWeMinus());
+        chPlus.addActionListener(new buttonhandlerChPlus());
+        chMinus.addActionListener(new buttonhandlerChMinus());
+        stBezeichner = new JTextField("Stärke");
+        geBezeichner = new JTextField("Geschicklichkeit");
+        koBezeichner = new JTextField("Konstitution");
+        inBezeichner = new JTextField("Intelligenz");
+        weBezeichner = new JTextField("Weisheit");
+        chBezeichner = new JTextField("Charisma");
+        stBezeichner.setEditable(false);
+        geBezeichner.setEditable(false);
+        koBezeichner.setEditable(false);
+        inBezeichner.setEditable(false);
+        weBezeichner.setEditable(false);
+        chBezeichner.setEditable(false);
+        stBezeichner.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        geBezeichner.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        koBezeichner.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        inBezeichner.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        weBezeichner.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        chBezeichner.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        stAnzeige = new JTextField(String.valueOf(startwert));
+        geAnzeige = new JTextField(String.valueOf(startwert));
+        koAnzeige = new JTextField(String.valueOf(startwert));
+        inAnzeige = new JTextField(String.valueOf(startwert));
+        weAnzeige = new JTextField(String.valueOf(startwert));
+        chAnzeige = new JTextField(String.valueOf(startwert));
+        stAnzeige.setEditable(false);
+        geAnzeige.setEditable(false);
+        koAnzeige.setEditable(false);
+        inAnzeige.setEditable(false);
+        weAnzeige.setEditable(false);
+        chAnzeige.setEditable(false);
+        stAnzeige.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        geAnzeige.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        koAnzeige.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        inAnzeige.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        weAnzeige.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        chAnzeige.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        attributsanzeige = new JPanel();
+        attributsanzeige.setOpaque(true);
+        attributsanzeige.setBackground(Color.black);
+        attributsanzeige.setLayout(new GridLayout (6,4,10,10));
+        attributsanzeige.add(stBezeichner);
+        attributsanzeige.add(stPlus);
+        attributsanzeige.add(stAnzeige);
+        attributsanzeige.add(stMinus);
+        attributsanzeige.add(geBezeichner);
+        attributsanzeige.add(gePlus);
+        attributsanzeige.add(geAnzeige);
+        attributsanzeige.add(geMinus);
+        attributsanzeige.add(koBezeichner);
+        attributsanzeige.add(koPlus);
+        attributsanzeige.add(koAnzeige);
+        attributsanzeige.add(koMinus);
+        attributsanzeige.add(inBezeichner);
+        attributsanzeige.add(inPlus);
+        attributsanzeige.add(inAnzeige);
+        attributsanzeige.add(inMinus);
+        attributsanzeige.add(weBezeichner);
+        attributsanzeige.add(wePlus);
+        attributsanzeige.add(weAnzeige);
+        attributsanzeige.add(weMinus);
+        attributsanzeige.add(chBezeichner);
+        attributsanzeige.add(chPlus);
+        attributsanzeige.add(chAnzeige);
+        attributsanzeige.add(chMinus);
+    }
+
+    private void boniberechnung(){
+        stKlassenBonus = new JTextField("0");
+        geKlassenBonus = new JTextField("0");
+        koKlassenBonus = new JTextField("0");
+        inKlassenBonus = new JTextField("0");
+        weKlassenBonus = new JTextField("0");
+        chKlassenBonus = new JTextField("0");
+        stRassenBonus = new JTextField("0");
+        geRassenBonus = new JTextField("0");
+        koRassenBonus = new JTextField("0");
+        inRassenBonus = new JTextField("0");
+        weRassenBonus = new JTextField("0");
+        chRassenBonus = new JTextField("0");
+        stKlassenBonus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        geKlassenBonus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        koKlassenBonus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        inKlassenBonus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        weKlassenBonus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        chKlassenBonus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        stRassenBonus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        geRassenBonus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        koRassenBonus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        inRassenBonus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        weRassenBonus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        chRassenBonus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        stKlassenBonus.setEditable(false);
+        geKlassenBonus.setEditable(false);
+        koKlassenBonus.setEditable(false);
+        inKlassenBonus.setEditable(false);
+        weKlassenBonus.setEditable(false);
+        chKlassenBonus.setEditable(false);
+        stRassenBonus.setEditable(false);
+        geRassenBonus.setEditable(false);
+        koRassenBonus.setEditable(false);
+        inRassenBonus.setEditable(false);
+        weRassenBonus.setEditable(false);
+        chRassenBonus.setEditable(false);
+        stGesamt = new JTextField("0");
+        geGesamt = new JTextField("0");
+        koGesamt = new JTextField("0");
+        inGesamt = new JTextField("0");
+        weGesamt = new JTextField("0");
+        chGesamt = new JTextField("0");
+        stMod = new JTextField("0");
+        geMod = new JTextField("0");
+        koMod = new JTextField("0");
+        inMod = new JTextField("0");
+        weMod = new JTextField("0");
+        chMod = new JTextField("0");
+        stGesamt.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        geGesamt.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        koGesamt.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        inGesamt.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        weGesamt.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        chGesamt.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        stMod.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        geMod.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        koMod.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        inMod.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        weMod.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        chMod.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        stGesamt.setEditable(false);
+        geGesamt.setEditable(false);
+        koGesamt.setEditable(false);
+        inGesamt.setEditable(false);
+        weGesamt.setEditable(false);
+        chGesamt.setEditable(false);
+        stMod.setEditable(false);
+        geMod.setEditable(false);
+        koMod.setEditable(false);
+        inMod.setEditable(false);
+        weMod.setEditable(false);
+        chMod.setEditable(false);
+        boniberechnung = new JPanel();
+        boniberechnung.setOpaque(true);
+        boniberechnung.setBackground(Color.black);
+        boniberechnung.setLayout(new GridLayout (6,4,10,10));
+        boniberechnung.add(stKlassenBonus);
+        boniberechnung.add(stRassenBonus);
+        boniberechnung.add(stGesamt);
+        boniberechnung.add(stMod);
+        boniberechnung.add(geKlassenBonus);
+        boniberechnung.add(geRassenBonus);
+        boniberechnung.add(geGesamt);
+        boniberechnung.add(geMod);
+        boniberechnung.add(koKlassenBonus);
+        boniberechnung.add(koRassenBonus);
+        boniberechnung.add(koGesamt);
+        boniberechnung.add(koMod);
+        boniberechnung.add(inKlassenBonus);
+        boniberechnung.add(inRassenBonus);
+        boniberechnung.add(inGesamt);
+        boniberechnung.add(inMod);
+        boniberechnung.add(weKlassenBonus);
+        boniberechnung.add(weRassenBonus);
+        boniberechnung.add(weGesamt);
+        boniberechnung.add(weMod);
+        boniberechnung.add(chKlassenBonus);
+        boniberechnung.add(chRassenBonus);
+        boniberechnung.add(chGesamt);
+        boniberechnung.add(chMod);
+    }
+
+    private void überschriften(){
+        rassenbonus = new JTextField("Rassenbonus");
+        klassenbonus = new JTextField("Klassenbonus");
+        gesamt = new JTextField("Gesamt");
+        mod = new JTextField("Modifikator");
+        attribute = new JTextField("Attribute");
+        rassenbonus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        klassenbonus.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        gesamt.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        mod.setSize((frameSize.width/spalten), (frameSize.height/reihen));
+        attribute.setSize((frameSize.width/2), (frameSize.height/reihen));
+        rassenbonus.setEditable(false);
+        klassenbonus.setEditable(false);
+        gesamt.setEditable(false);
+        mod.setEditable(false);
+        attribute.setEditable(false);
+        überschriften = new JPanel();
+        überschriften.setOpaque(true);
+        überschriften.setBackground(Color.black);
+        überschriften.setLayout(new GridLayout (1,2,10,10));
+        überschriftenhelfer = new JPanel();
+        überschriftenhelfer.setOpaque(true);
+        überschriftenhelfer.setBackground(Color.black);
+        überschriftenhelfer.setLayout(new GridLayout (1,4,10,10));
+        überschriftenhelfer.add(klassenbonus);
+        überschriftenhelfer.add(rassenbonus);
+        überschriftenhelfer.add(gesamt);
+        überschriftenhelfer.add(mod);
+        überschriften.add(attribute);
+        überschriften.add(überschriftenhelfer);
+    }
+
+    private void auswahlfelderUndPunkteanzeige(){
+        String klassenListe[] = {"Barbar","Barde","Druide","Hexenmeister","Kämpfer","Kleriker","Magier","Mönch","Paladin","Schurke","Waldläufer"};
+        String rassenListe[] = {"Elf","Gnom","Halbling","Halb-Elf","Halb-Ork","Mensch","Zwerg"};
+        klassenAuswahl = new JComboBox(klassenListe);
+        rassenAuswahl = new JComboBox(rassenListe);
+        klassenAuswahl.setSize((frameSize.width/(spalten*2)), (frameSize.height/reihen));
+        rassenAuswahl.setSize((frameSize.width/(spalten*2)), (frameSize.height/reihen));
+        klassenAuswahl.addActionListener(new comboboxhandlerKlassenAuswahl());
+        rassenAuswahl.addActionListener(new comboboxhandlerRassenAuswahl());
+        rassenBeschriftung = new JTextField("Rasse:");
+        klassenBeschriftung = new JTextField("Klasse:");
+        rassenBeschriftung.setSize((frameSize.width/(spalten*2)), (frameSize.height/reihen));
+        klassenBeschriftung.setSize((frameSize.width/(spalten*2)), (frameSize.height/reihen));
+        rassenBeschriftung.setEditable(false);
+        klassenBeschriftung.setEditable(false);
+        alleshelfer1 = new JPanel();
+        alleshelfer1.setOpaque(true);
+        alleshelfer1.setBackground(Color.black);
+        alleshelfer1.setLayout(new GridLayout(2,2,10,10));
+        alleshelfer1.add(rassenBeschriftung);
+        alleshelfer1.add(rassenAuswahl);
+        alleshelfer1.add(klassenBeschriftung);
+        alleshelfer1.add(klassenAuswahl);
+
+        steigerungspunkteBeschriftung = new JTextField("Verbliebene Punkte:");
+        steigerungspunkteAnzeige = new JTextField(String.valueOf(steigerungspunkte));
+        steigerungspunkteBeschriftung.setSize((frameSize.width/(spalten*2)), (frameSize.height/reihen));
+        steigerungspunkteAnzeige.setSize((frameSize.width/(spalten*2)), (frameSize.height/reihen));
+        steigerungspunkteAnzeige.setEditable(false);
+        steigerungspunkteBeschriftung.setEditable(false);
+        alleshelfer2 = new JPanel();
+        alleshelfer2.setOpaque(true);
+        alleshelfer2.setBackground(Color.black);
+        alleshelfer2.setLayout(new GridLayout(2,1,10,10));
+        alleshelfer2.add(steigerungspunkteBeschriftung);
+        alleshelfer2.add(steigerungspunkteAnzeige);
+
+        ImageIcon bild = new ImageIcon(System.getProperty("user.dir") + "/data/Kantholz93.jpg");
+        bild.setImage(bild.getImage().getScaledInstance(frameSize.width/(spalten*2),-frameSize.height/(reihen*2),Image.SCALE_DEFAULT));
+        reset = new JButton(bild);
+        reset.setSize((frameSize.width/(spalten*2)), (frameSize.height/(reihen*2)));
+        reset.addActionListener(new buttonhandlerReset());
+        alleshelfer3 = new JPanel();
+        alleshelfer3.setOpaque(true);
+        alleshelfer3.setBackground(Color.black);
+        alleshelfer3.setLayout(new GridLayout(1,2,10,10));
+        alleshelfer3.add(alleshelfer2);
+        alleshelfer3.add(reset);
+
+        alleshelfer4 = new JPanel();
+        alleshelfer4.setOpaque(true);
+        alleshelfer4.setBackground(Color.black);
+        alleshelfer4.setLayout(new GridLayout(1,2,10,10));
+        alleshelfer4.add(alleshelfer1);
+        alleshelfer4.add(alleshelfer3);    
+
+    }
+
+    private void fensterbau(){
+        alleshelfer5 = new JPanel();
+        alleshelfer5.setOpaque(true);
+        alleshelfer5.setBackground(Color.black);
+        alleshelfer5.setLayout(new GridLayout(1,2,10,10));
+        alleshelfer5.add(attributsanzeige);
+        alleshelfer5.add(boniberechnung);
+
+        überschriften.setSize((frameSize.width), (frameSize.height/(reihen)));
+        alleshelfer5.setSize((frameSize.width), (frameSize.height/(reihen*6)));
+        alleshelfer4.setSize((frameSize.width), (frameSize.height/(reihen*2)));
+        überschriften.setAlignmentX(Component.CENTER_ALIGNMENT);
+        alleshelfer5.setAlignmentX(Component.CENTER_ALIGNMENT);
+        alleshelfer4.setAlignmentX(Component.CENTER_ALIGNMENT);
+        frame.setUndecorated(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Container pane = frame.getContentPane();
+        pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
+        frame.add(überschriften);
+        frame.add(alleshelfer5);
+        frame.add(alleshelfer4);
+        frame.addWindowListener(this);
+        frame.setResizable(false); 
+        frame.pack();
+        frame.getContentPane().setBackground(Color.BLACK);
+        frame.setVisible(true);
+    }
+
+    private void werteÄnderung(int attribut, boolean erhöhen){
+        if(attribut == 1){
+            if(erhöhen){
+                if(istErhöhbar(Integer.parseInt(stAnzeige.getText()))){
+                    stAnzeige.setText(String.valueOf(this.erhöheAttribut(Integer.parseInt(stAnzeige.getText()))));
+                }
+            }else{
+                if(istErniederbar(Integer.parseInt(stAnzeige.getText()))){
+                    stAnzeige.setText(String.valueOf(this.verringereAttribut(Integer.parseInt(stAnzeige.getText()))));
+                }
+            }
+        }
+        else if(attribut == 2){
+            if(erhöhen){
+                if(istErhöhbar(Integer.parseInt(geAnzeige.getText()))){
+                    geAnzeige.setText(String.valueOf(this.erhöheAttribut(Integer.parseInt(geAnzeige.getText()))));
+                }
+            }else{
+                if(istErniederbar(Integer.parseInt(geAnzeige.getText()))){
+                    geAnzeige.setText(String.valueOf(this.verringereAttribut(Integer.parseInt(geAnzeige.getText()))));
+                }
+            }
+        }
+        else if(attribut == 3){
+            if(erhöhen){
+                if(istErhöhbar(Integer.parseInt(koAnzeige.getText()))){
+                    koAnzeige.setText(String.valueOf(this.erhöheAttribut(Integer.parseInt(koAnzeige.getText()))));
+                }
+            }else{
+                if(istErniederbar(Integer.parseInt(koAnzeige.getText()))){
+                    koAnzeige.setText(String.valueOf(this.verringereAttribut(Integer.parseInt(koAnzeige.getText()))));
+                }
+            }
+        }
+        else if(attribut == 4){
+            if(erhöhen){
+                if(istErhöhbar(Integer.parseInt(inAnzeige.getText()))){
+                    inAnzeige.setText(String.valueOf(this.erhöheAttribut(Integer.parseInt(inAnzeige.getText()))));
+                }
+            }else{
+                if(istErniederbar(Integer.parseInt(inAnzeige.getText()))){
+                    inAnzeige.setText(String.valueOf(this.verringereAttribut(Integer.parseInt(inAnzeige.getText()))));
+                }
+            }
+        }
+        else if(attribut == 5){
+            if(erhöhen){
+                if(istErhöhbar(Integer.parseInt(weAnzeige.getText()))){
+                    weAnzeige.setText(String.valueOf(this.erhöheAttribut(Integer.parseInt(weAnzeige.getText()))));
+                }
+            }else{
+                if(istErniederbar(Integer.parseInt(weAnzeige.getText()))){
+                    weAnzeige.setText(String.valueOf(this.verringereAttribut(Integer.parseInt(weAnzeige.getText()))));
+                }
+            }
+        }
+        else if(attribut == 6){
+            if(erhöhen){
+                if(istErhöhbar(Integer.parseInt(chAnzeige.getText()))){
+                    chAnzeige.setText(String.valueOf(this.erhöheAttribut(Integer.parseInt(chAnzeige.getText()))));
+                }
+            }else{
+                if(istErniederbar(Integer.parseInt(chAnzeige.getText()))){
+                    chAnzeige.setText(String.valueOf(this.verringereAttribut(Integer.parseInt(chAnzeige.getText()))));
+                }
+            }
+        }
+        buttonBenutzbar();
+        werteAktualisieren();
+    }   
+
+    private void buttonBenutzbar(){
+        if(!istErhöhbar(Integer.parseInt(stAnzeige.getText()))){
+            stPlus.setText("X");
+            stPlus.setEnabled(false);
+        }else{
+            stPlus.setText("+");
+            stPlus.setEnabled(true);
+        }
+        if(!istErniederbar(Integer.parseInt(stAnzeige.getText()))){
+            stMinus.setText("X");
+            stMinus.setEnabled(false);
+        }else{
+            stMinus.setText("-");
+            stMinus.setEnabled(true);
+        }
+        if(!istErhöhbar(Integer.parseInt(geAnzeige.getText()))){
+            gePlus.setText("X");
+            gePlus.setEnabled(false);
+        }else{
+            gePlus.setText("+");
+            gePlus.setEnabled(true);
+        }
+        if(!istErniederbar(Integer.parseInt(geAnzeige.getText()))){
+            geMinus.setText("X");
+            geMinus.setEnabled(false);
+        }else{
+            geMinus.setText("-");
+            geMinus.setEnabled(true);
+        }
+        if(!istErhöhbar(Integer.parseInt(koAnzeige.getText()))){
+            koPlus.setText("X");
+            koPlus.setEnabled(false);
+        }else{
+            koPlus.setText("+");
+            koPlus.setEnabled(true);
+        }
+        if(!istErniederbar(Integer.parseInt(koAnzeige.getText()))){
+            koMinus.setText("X");
+            koMinus.setEnabled(false);
+        }else{
+            koMinus.setText("-");
+            koMinus.setEnabled(true);
+        }
+        if(!istErhöhbar(Integer.parseInt(inAnzeige.getText()))){
+            inPlus.setText("X");
+            inPlus.setEnabled(false);
+        }else{
+            inPlus.setText("+");
+            inPlus.setEnabled(true);
+        }
+        if(!istErniederbar(Integer.parseInt(inAnzeige.getText()))){
+            inMinus.setText("X");
+            inMinus.setEnabled(false);
+        }else{
+            inMinus.setText("-");
+            inMinus.setEnabled(true);
+        }
+        if(!istErhöhbar(Integer.parseInt(weAnzeige.getText()))){
+            wePlus.setText("X");
+            wePlus.setEnabled(false);
+        }else{
+            wePlus.setText("+");
+            wePlus.setEnabled(true);
+        }
+        if(!istErniederbar(Integer.parseInt(weAnzeige.getText()))){
+            weMinus.setText("X");
+            weMinus.setEnabled(false);
+        }else{
+            weMinus.setText("-");
+            weMinus.setEnabled(true);
+        }
+        if(!istErhöhbar(Integer.parseInt(chAnzeige.getText()))){
+            chPlus.setText("X");
+            chPlus.setEnabled(false);
+        }else{
+            chPlus.setText("+");
+            chPlus.setEnabled(true);
+        }
+        if(!istErniederbar(Integer.parseInt(chAnzeige.getText()))){
+            chMinus.setText("X");
+            chMinus.setEnabled(false);
+        }else{
+            chMinus.setText("-");
+            chMinus.setEnabled(true);
+        }
+    }
+
+    private void werteAktualisieren(){
+        steigerungspunkteAnzeige.setText(String.valueOf(steigerungspunkte));
+        int st = Integer.parseInt(stAnzeige.getText())+Integer.parseInt(stRassenBonus.getText())+Integer.parseInt(stKlassenBonus.getText());
+        int ge = Integer.parseInt(geAnzeige.getText())+Integer.parseInt(geRassenBonus.getText())+Integer.parseInt(geKlassenBonus.getText());
+        int ko = Integer.parseInt(koAnzeige.getText())+Integer.parseInt(koRassenBonus.getText())+Integer.parseInt(koKlassenBonus.getText());
+        int in = Integer.parseInt(inAnzeige.getText())+Integer.parseInt(inRassenBonus.getText())+Integer.parseInt(inKlassenBonus.getText());
+        int we = Integer.parseInt(weAnzeige.getText())+Integer.parseInt(weRassenBonus.getText())+Integer.parseInt(weKlassenBonus.getText());
+        int ch = Integer.parseInt(chAnzeige.getText())+Integer.parseInt(chRassenBonus.getText())+Integer.parseInt(chKlassenBonus.getText());
+        stGesamt.setText(String.valueOf(st));
+        geGesamt.setText(String.valueOf(ge));
+        koGesamt.setText(String.valueOf(ko));
+        inGesamt.setText(String.valueOf(in));
+        weGesamt.setText(String.valueOf(we));
+        chGesamt.setText(String.valueOf(ch));
+        stMod.setText(String.valueOf(this.ermittleModifikator(st)));
+        geMod.setText(String.valueOf(this.ermittleModifikator(ge)));
+        koMod.setText(String.valueOf(this.ermittleModifikator(ko)));
+        inMod.setText(String.valueOf(this.ermittleModifikator(in)));
+        weMod.setText(String.valueOf(this.ermittleModifikator(we)));
+        chMod.setText(String.valueOf(this.ermittleModifikator(ch)));
+    }
+
+    private int ermittleModifikator(int wert){
+        if(wert>11){
+            return ((wert-10)/2);
+        }else{
+            return ((wert-11)/2);
+        }
+    }
+
+    private int erhöheAttribut(int wert){
+        if(wert == 17){
+            steigerungspunkte = steigerungspunkte -4;
+        }else if(wert == 15||wert == 16){
+            steigerungspunkte = steigerungspunkte -3;
+        }else if(wert == 7||wert == 13||wert == 14){
+            steigerungspunkte = steigerungspunkte -2;
+        }else if(wert == 8||wert == 9||wert == 10||wert == 11||wert == 12){
+            steigerungspunkte = steigerungspunkte -1;
+        }
+        return wert+1;
+    }
+
+    private int verringereAttribut(int wert){
+        if(wert == 18){
+            steigerungspunkte = steigerungspunkte +4;
+        }else if(wert == 16||wert == 17){
+            steigerungspunkte = steigerungspunkte +3;
+        }else if(wert == 8||wert == 14||wert == 15){
+            steigerungspunkte = steigerungspunkte +2;
+        }else if(wert == 9||wert == 10||wert == 11||wert == 12||wert == 13){
+            steigerungspunkte = steigerungspunkte +1;
+        }
+        return wert-1;
+    }
+
+    private boolean istErhöhbar(int wert){
+        if(wert >= 18){
+            return false;
+        }else{
+            if(wert == 17){
+                if(steigerungspunkte >= 4){
+                    return true;
+                }else{
+                    return false;
+                }
+            }else if(wert == 15||wert == 16){
+                if(steigerungspunkte >= 3){
+                    return true;
+                }else{
+                    return false;
+                }
+            }else if(wert == 7||wert == 13||wert == 14){
+                if(steigerungspunkte >= 2){
+                    return true;
+                }else{
+                    return false;
+                }
+            }else if(wert == 8||wert == 9||wert == 10||wert == 11||wert == 12){
+                if(steigerungspunkte >= 1){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean istErniederbar(int wert){
+        if(wert == 7){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    private void reset(){
+        steigerungspunkte = steigerungspunkteZuBeginn;
+        stAnzeige.setText(String.valueOf(startwert));
+        geAnzeige.setText(String.valueOf(startwert));
+        koAnzeige.setText(String.valueOf(startwert));
+        inAnzeige.setText(String.valueOf(startwert));
+        weAnzeige.setText(String.valueOf(startwert));
+        chAnzeige.setText(String.valueOf(startwert));
+        this.werteAktualisieren();
+    }
+
+
+    klassenboniAktualisierung(){
+        try {
+            klasse = String.valueOf(klassenAuswahl.getSelectedItem());
+        } catch (NumberFormatException e1) {
+            e1.printStackTrace();
+        }
+        if(klasse.equals("BarBar"){
+        
+        }
+    }
+
+    rassenboniAktualisierung(){
+
+    }
+
+    /* 1 => Stärke
+     * 2 => Geschicklichkeit
+     * 3 => Konstitution
+     * 4 => Intelligenz
+     * 5 => Weisheit
+     * 6 => Charisma
+     * true  => +
+     * false => -
+     */
+    public class buttonhandlerStPlus implements ActionListener{ 
+        public void actionPerformed(ActionEvent e){        
+            werteÄnderung(1,true);
+        }
+    }
+    public class buttonhandlerStMinus implements ActionListener{ 
+        public void actionPerformed(ActionEvent e){        
+            werteÄnderung(1,false);
+        }
+    }
+    public class buttonhandlerGePlus implements ActionListener{ 
+        public void actionPerformed(ActionEvent e){        
+            werteÄnderung(2,true);
+        }
+    }
+    public class buttonhandlerGeMinus implements ActionListener{ 
+        public void actionPerformed(ActionEvent e){        
+            werteÄnderung(2,false);
+        }
+    }
+    public class buttonhandlerKoPlus implements ActionListener{ 
+        public void actionPerformed(ActionEvent e){        
+            werteÄnderung(3,true);
+        }
+    }
+    public class buttonhandlerKoMinus implements ActionListener{ 
+        public void actionPerformed(ActionEvent e){        
+            werteÄnderung(3,false);
+        }
+    }
+    public class buttonhandlerInPlus implements ActionListener{ 
+        public void actionPerformed(ActionEvent e){        
+            werteÄnderung(4,true);
+        }
+    }
+    public class buttonhandlerInMinus implements ActionListener{ 
+        public void actionPerformed(ActionEvent e){        
+            werteÄnderung(4,false);
+        }
+    }
+    public class buttonhandlerWePlus implements ActionListener{ 
+        public void actionPerformed(ActionEvent e){        
+            werteÄnderung(5,true);
+        }
+    }
+    public class buttonhandlerWeMinus implements ActionListener{ 
+        public void actionPerformed(ActionEvent e){        
+            werteÄnderung(5,false);
+        }
+    }
+    public class buttonhandlerChPlus implements ActionListener{ 
+        public void actionPerformed(ActionEvent e){        
+            werteÄnderung(6,true);
+        }
+    }
+    public class buttonhandlerChMinus implements ActionListener{ 
+        public void actionPerformed(ActionEvent e){        
+            werteÄnderung(6,false);
+        }
+    }
+    public class buttonhandlerReset implements ActionListener{ 
+        public void actionPerformed(ActionEvent e){        
+            reset();
+        }
+    }
+    public class comboboxhandlerKlassenAuswahl implements ActionListener{ 
+        public void actionPerformed(ActionEvent e){        
+            klassenboniAktualisierung();
+        }
+    }
+
+    public class comboboxhandlerRassenAuswahl implements ActionListener{ 
+        public void actionPerformed(ActionEvent e){        
+            rassenboniAktualisierung();
+        }
+    }
+}

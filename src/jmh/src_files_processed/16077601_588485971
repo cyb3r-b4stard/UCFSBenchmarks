@@ -1,0 +1,105 @@
+
+/**
+ * @###### 
+ * @####### 
+ */
+public class Wettkampfliste extends List
+{
+
+
+    public Wettkampfliste()
+    {
+        super();
+    }
+
+    public Wettkampfkarte aktuelleKarte(){
+        return (Wettkampfkarte)this.getObject();
+    }
+    public Wettkampfkarte besteKarte(int pArt){
+        Wettkampfkarte lBeste, lVergleichskarte;
+        if(this.isEmpty()){
+            return null;
+        }
+        else {
+            this.toFirst();
+            lBeste = this.aktuelleKarte();
+            this.next();
+            while(this.hasAccess()){
+                lVergleichskarte = this.aktuelleKarte();
+                switch(pArt){
+                    case 1 : if(lVergleichskarte.lauf() > lBeste.lauf())
+                                lBeste = lVergleichskarte;
+                             break;
+                    case 2 : if(lVergleichskarte.wurf() > lBeste.wurf())
+                                lBeste = lVergleichskarte;
+                             break;
+                    case 3 : if(lVergleichskarte.sprung() > lBeste.sprung())
+                                lBeste = lVergleichskarte;
+                             break;
+                    case 4 : if(lVergleichskarte.summe() > lBeste.summe())
+                                lBeste = lVergleichskarte;
+                             break;
+                }
+                this.next();
+            }
+            return lBeste;
+        }
+    }
+    public String toString(){
+        String lOutput =  "";
+        this.toFirst();
+        while(this.hasAccess()){
+            lOutput += this.aktuelleKarte().toString() + "\n";
+            this.next();
+        }
+        return lOutput;
+    }
+    public void bubblesort(int pDisziplin){
+        boolean lGetauscht = false;
+        do {
+            lGetauscht = false;
+            this.toFirst();
+            while(this.hasAccess()){
+                Wettkampfkarte lSafe1 = (Wettkampfkarte)this.getObject();
+                this.next();
+                if(this.hasAccess())
+                    Wettkampfkarte lSafe2 = (Wettkampfkarte)this.getObject();
+                                
+                if(lSafe1.punkte(pDisziplin) > lSafe2.punkte(pDisziplin)){
+                    this.remove();
+                    this.toFirst();
+                    while(this.getObject() != lSafe1){
+                        this.next(); 
+                    }
+                    this.insert(lSafe2);
+                    lGetauscht = true;
+                }
+            }
+        }while(lGetauscht == true);
+        this.toFirst();
+    }
+    public void insertionsort(){
+    }
+    public void selectionsort(){    
+    }
+    public void quicksort(int pDisziplin){
+        
+    }
+    public Wettkampfliste quicksort(Wettkampfliste pList, int pSortierparameter){
+        /*
+        int i = 0;
+        pList.toFirst();
+        while(pList.hasAccess()){
+            i++;
+            pList.next();
+        }
+        pList.toFirst();
+        for(int j = 0; i < j; j++){
+            pList.next();
+        }
+        Wettkampfliste lListe = new List();
+        Wettkampfkarte lSafe1 = (Wettkampfkarte)pList.getObject();
+        pList.next();
+        */
+    }
+}

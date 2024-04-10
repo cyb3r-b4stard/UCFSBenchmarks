@@ -1,0 +1,146 @@
+import java.util.*;
+import java.io.*;
+import org.apache.commons.cli.*; 
+
+/**
+ * ##### # ########### ## ##### ########### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class CollapseApp
+{
+
+    /** Local main to launch the Application.
+     * Constructs the application then calls layoutGUI() and setVisible(). 
+     * @param args command line arguments. 
+     * If provided, the first argument is the name of a file containing a 
+     * predefined board configuration to use as the first 
+     * board when the game begins. 
+     * 
+     */
+    public static void main(String[] args) 
+    {
+
+        int argNum = 0;
+        boolean console = false;
+        boolean gui = false;
+        Gameboard board = new Gameboard();
+        Game game = new Game(board);
+        board.setDefaultSize(8); 
+        CollapseGUI frame;
+        Controller controller = new Controller(game, board);
+
+        CollapseConsole cConsole; 
+
+        if (args.length != 0)
+        {
+            Options options = new Options();
+            options.addOption("c", false, "run the console");
+            options.addOption("g", false, "run the gui");
+            options.addOption("cg", false, "run both the console and gui"); 
+
+            options.addOption("b", "board", true, "set up the board from a file");
+            options.addOption("i", "infile", true, "read from this file instead");
+            options.addOption("o", "outfile", true, "write to this file instead");
+
+            CommandLineParser parser = new DefaultParser();
+            CommandLine cmd = parser.parse( options, args); 
+
+            if(cmd.hasOption("b"))
+            {
+                try
+                {
+                    File file = new File(cmd.getOptionValue("b"));
+                    Scanner inputScanner;
+                    PrintWriter write;
+
+                    if(cmd.hasOption("c"))
+                    {
+                        
+                        if (cmd.hasOption("i"))
+                        {
+                            inputScanner= new Scanner(new File(
+                                cmd.getOptionValue("i")));
+                        }
+                        if(cmd.hasOption("o"))
+                        {
+                            write = new PrintWriter(new File(
+                                cmd.getOptionValue("o"))); 
+                        }
+                        cConsole = new CollapseConsole(inputScanner, 
+                            game, board, controller);
+                        game.initialize(true, new Scanner(file));
+                        
+                    }
+                    else if(cmd.hasOption("g"))
+                    {
+
+                        frame = new CollapseGUI(new Scanner(file), 
+                            controller, game, board);
+                        frame.setIsSile(true);
+                        frame.setScanner(new Scanner(file));
+                        frame.layoutGUI();
+                        frame.setBackgroundImage();
+                        frame.pack();
+                        frame.setVisible(true);
+                        
+                    }
+                    else if(cmd.hasOption("cg"))
+                    {
+                        if (cmd.hasOption("i")
+                        {
+                            inputScanner(new File(cmd.getOptionValue("i")));
+                        }
+                        if(cmd.hasOption("o"))
+                        {
+                            write = new PrintWriter(new File(
+                                cmd.getOptionValue("o"))); 
+                        }
+                        cConsole = new CollapseConsole(inputScanner, 
+                            game, board, controller);
+                        game.initialize(true, new Scanner(file));
+                        
+                    }
+                }
+                catch(FileNotFoundException ex)
+                {
+                    System.out.println("The file was not found...");
+                }
+            }
+            else
+            {
+            }
+
+            /*
+            if(args.length != 0)
+            {
+            while(args[argNum] != null)
+            {
+            if(args[argNum].equals("-c"))
+            {
+            console = true;
+            CollapseConsole cConsole = new CollapseConsole(controller);
+            argNum++;
+            }
+            {
+            }
+            }
+
+            }
+             */
+            cConsole = new CollapseConsole(game, board, controller);
+
+            game.addObserver(cConsole);
+            cConsole.update(game, null);
+            cConsole.run();
+
+        }
+    }
+
+    public void useConsole()
+    {
+
+    }
+
+}

@@ -1,0 +1,113 @@
+
+/**
+ * * #### ## ### ## ########### # ##### #######
+ * 
+ * #. 
+ * 
+ * @######:  ##### #####
+ * @#######: ######## ### ##
+ */
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.Scanner;               
+import java.text.DecimalFormat;         
+
+
+public class Lab13_Calculating_a_Class_Average
+{
+    /**
+     * main() method
+     * 
+     */
+    
+    public static void main(String[] args) throws FileNotFoundException
+    {
+        System.out.println("************************************************");
+        System.out.println("*                                              *");
+        System.out.println("*                   Lab 13                     *");
+        System.out.println("*                                              *");
+        System.out.println("************************************************\n");
+        
+        DecimalFormat formatter = new DecimalFormat("#0.00");
+        Scanner textReader = new Scanner(System.in);    
+        String inputFileName;
+        
+        try throws FileNotFoundException
+        {
+            
+            System.out.print("\nInput file name (from your computer): ");
+            inputFileName = textReader.next();
+        }
+    
+        catch (FileNotFoundException exception)
+        {
+            System.out.print("***** ERROR *****");
+            System.out.print("\nInput file name (from your computer): ");
+        
+            inputFileName = textReader.next();
+        }
+        
+        
+        System.out.print("\nWhat would you like to call your output file: ");
+        String outputFileName = textReader.next();
+        
+        File inputFile = new File(inputFileName);
+        Scanner in = new Scanner(inputFile);
+        PrintWriter out = new PrintWriter(outputFileName);
+        
+        double count = 0;
+        double total = 0;
+        double average = 0;
+        String feedback;
+        
+        out.printf("Here is the class average for mstu4031:\n\n");
+        
+        while (in.hasNextDouble())
+        {
+            double value = in.nextDouble();
+            out.println(value);
+            count = count + 1;
+            total = total + value;
+        }
+        average = total / count;
+        
+        if (average >= 90)
+        {
+            feedback = "great";
+        }
+        else if (average >= 80)
+        {
+            feedback = "good";
+        }
+        else if (average >= 70)
+        {
+            feedback = "not bad";
+        }
+        else if (average >= 60)
+        {
+            feedback = "acceptable";
+        }
+        else
+        {
+            feedback = "poor";
+        }
+        
+        out.println("\nNumber of grades: " + count);
+        out.println("\nAverage: " + formatter.format(average));
+        out.println("\nFeedback - the class average is " + feedback);
+        
+        in.close();
+        out.close();
+        
+        System.out.println("\n******** INPUT FILE FOUND, OUTPUT FILE GENERATED ********\n");
+        System.out.println("\nYour input file, " + inputFileName + ", has been found and accepted.");
+        System.out.println("\nYour outpt file, " + outputFileName + ", has been created.");
+        System.out.println("\n" + outputFileName + " is living in your BlueJ project directory.");
+        System.out.println("\nPlease open " + outputFileName + " for the class's average and feedback.");
+    
+        
+        
+    }
+}

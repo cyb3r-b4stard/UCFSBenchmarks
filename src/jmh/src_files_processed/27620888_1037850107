@@ -1,0 +1,79 @@
+
+import java.util.Scanner;
+
+
+public class Lab09
+{
+	private static int numerator, denominator;  
+
+	public static void main (String[] args)
+	{
+		enterData();
+		Rational r = new Rational(numerator,denominator);
+		r.displayData();
+	}
+
+	public static void enterData()
+	{
+		Scanner input = new Scanner(System.in);
+		System.out.print("Numerator is ");
+		numerator = input.nextInt();
+		System.out.print("Denominator is ");
+		denominator = input.nextInt();
+	}
+}
+
+class Rational
+{
+
+	private int secondNumerator,firstNum;
+	private int secondDenominator,firstDen;
+    private int gcf;
+
+	public Rational(int n, int d)
+	{
+		firstNum = secondNumerator = n;
+		firstDen = secondDenominator = d;
+		reduce();
+	}
+
+	public double getDecimal() {return (double) firstNum/firstDen;}
+
+	public String getReduced() {return secondNumerator + "/" + secondDenominator;}
+
+	public String getOriginal() { eturn firstNum + "/" + firstDen;}
+
+	public void reduce()
+	{
+		getGCF(firstNum,firstDen);
+		secondNumerator /= gcf;
+		secondDenominator /= gcf;
+	}
+
+	public void displayData()
+	{
+		System.out.println();
+		System.out.println(getOriginal() + " equals " + getDecimal());
+		System.out.println();
+		System.out.println("which simplifies to " + getReduced());
+		System.out.println();
+	}
+
+	private void getGCF(int n1,int n2)
+	{
+		int remainder = 0;
+		gcf = 1;
+		do
+		{
+			remainder = n1 % n2;
+			if (remainder == 0)
+				gcf = n2;
+			else
+			{
+				n1 = n2;
+				n2 = remainder;
+			}
+		}
+		while (remainder != 0);
+	}
+}

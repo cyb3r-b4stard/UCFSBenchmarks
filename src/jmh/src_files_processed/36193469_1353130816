@@ -1,0 +1,215 @@
+import javax.swing.JFrame;
+import java.awt.Graphics;
+import java.awt.Color;
+import static java.lang.Math.*;
+
+/**
+ * ##### ###### ########## ##, #### ######## ########## ################ ### ### ########## ##########.
+ * ### ###### ####### ### ### # ### #######, ### ######## ####### #### #### ####. ### ###### ###### ######
+ * ##### #### ########### ############ ######, ##### ### ##### ##### ##### ## ### ########### (#,#) #####.
+ * 
+ * @###### ########## #####
+ * @####### ####-##-##
+ */
+public class RasterZeichnung extends JFrame 
+{
+    public static final int anzahlPunkteX = 100;
+    public static final int anzahlPunkteY = 100;
+    private boolean[][] raster = new boolean[anzahlPunkteX][anzahlPunkteY];
+    
+    /**
+     * Gibt eine Farbe mit den gegebenen Werten für rot, grün
+     * und blau zurück.
+     * 
+     * @param r Rotanteil (Wert zwischen 0 und 1)
+     * @param g Grünanteil (Wert zwischen 0 und 1)
+     * @param b Blauanteil (Wert zwischen 0 und 1)
+     * @return Farbe als Color-Objekt
+     */
+    private Color gibFarbeRGB(double r, double g, double b) {
+        return new Color((float)r,(float)g,(float)b); 
+    }
+    
+    /**
+     * Gibt die Farbe für die gegebenen Koordinaten zurück.
+     * 
+     * @param x Koordinate auf der horizontalen Achse
+     * @param y Koordinate auf der vertikalen Achse
+     * @return Farbe als Color-Objekt
+     */
+    private Color gibFarbeXY(int x, int y) {
+        return gibFarbeRGB(0,0,0);
+    }
+    
+    private Color gibFarbeHSV(double ton, double saettigung,double helligkeit)
+    {
+        double h=Math.floor(ton/60);
+        double f=(ton/60)-h;
+        
+        double p=helligkeit*(1-saettigung);
+        double q=helligkeit*(1-(f*saettigung));
+        double t=helligkeit*(1-saettigung*(1-f));
+        
+        double r=0;
+        double g=0;
+        double b=0;
+        
+        if(h=0||h=6){
+            r=helligkeit;
+            g=t;
+            b=p;
+        }
+        
+        if(h=1){
+            r=q;
+            g=helligkeit;
+            b=p;
+        }
+        
+        if(h=2){
+            r=p
+            g=helligkeit;
+            b=t;
+        }
+        
+        if(h=3){
+            r=p;
+            g=q;
+            b=helligkeit;
+        }
+        
+        if(h=4){
+            r=t;
+            g=p;
+            b=helligkeit;
+        }
+        
+        if(h=5){
+            r=helligkeit;
+            g=p;
+            b=q;
+        }
+        
+        return RasterZeichnung.gibFarbeRGB(r,g,b);
+            
+    }
+    
+    public void zeichnePolygon(int[] punkte) {
+		int len = punkte.length;
+        for (int i = 0; i <= len - 2; i+=2) {
+            zeichneLinie(punkte[i], punkte[i+1], punkte[(i+2) % len], punkte[(i+3) % len]);
+        }
+    }
+    
+    public void zeichneRechteck(int x1, int y1, int breite, int hoehe) {
+        for (int x=x1; x<x1+breite; x++)
+            for (int y=y1; y<y1+hoehe; y++)
+                zeichnePunkt(x,y);
+    }
+    
+    public void zeichneLinie(int x1, int y1, int x2, int y2) {     
+        boolean steil = abs(y2-y1)>abs(x2-x1);
+        if (steil) { 
+            int temp = x1;
+            x1 = y1;
+            y1 = temp;
+            temp = x2;
+            x2 = y2;
+            y2 = temp;
+        }
+        
+        if (x1 > x2){
+            int temp = x1;
+            x1 = x2;
+            x2 = temp;
+            temp = y1;
+            y1 = y2;
+            y2 = temp;
+        }
+        
+        int dx = x2-x1;
+        int dy = abs(y2-y1);
+        
+        int x = x1;
+        int y = y1;
+        
+        zeichnePunkt(x,y);
+        int fehler = dx/2;
+        
+        while (x < x2) {
+            x++;
+            fehler = fehler - dy;
+            if (fehler<0) {
+                if (y1<y2) y++;
+                else y--;
+                fehler = fehler + dx;
+            }
+            if (steil) zeichnePunkt(y,x); 
+            else zeichnePunkt(x,y);
+        }
+    }
+    
+    /**
+     * Zeichnet an der gegebenen Koordinate (x,y) einen
+     * Punkt.
+     * 
+     * @param x Koordinate auf der horizontalen Achse
+     * @param y Koordinate auf der vertikalen Achse
+     */
+    public void zeichnePunkt(int x, int y) {
+        this.raster[x][y] = true;
+        this.repaint();
+    }
+    
+    /**
+     * Entfernt an der gegebenen Koordinate (x,y) den
+     * Punkt.
+     * 
+     * @param x Koordinate auf der horizontalen Achse
+     * @param y Koordinate auf der vertikalen Achse
+     */
+    public void entfernePunkt(int x, int y) {
+        this.raster[x][y] = false;
+        this.repaint();
+    }
+    
+    /**
+     * Überprüft, ob an der gegebenen Koordinate (x,y)
+     * ein Punkt gezeichnet wurde.
+     * 
+     * @return true, wenn ein Punkt gezeichnet wurde;
+     * false, wenn kein Punkt gezeichnet wurde
+     */
+    public boolean gibPunkt(int x, int y) {
+        return this.raster[x][y];
+    }
+    
+    @Override
+    public void paint(Graphics g) {
+        int rand = 50;
+        int hoehe = this.getHeight()-rand*2;
+        int breite = this.getWidth()-rand*2;
+        g.clearRect(0, 0, breite, hoehe);
+        
+        double blockbreite = (double) breite / raster.length;
+        double blockhoehe = (double) hoehe / raster[0].length;
+        
+        for(int x=0; x<raster.length; x++)
+            for(int y=0; y<raster[x].length; y++) {
+                g.setColor(gibFarbeXY(x,y));
+                if(raster[x][y])
+                    g.fillRect( (int) floor(x*blockbreite)+rand, 
+                                (int) floor(y*blockhoehe)+rand, 
+                                (int) ceil(blockbreite), 
+                                (int) ceil(blockhoehe));
+        
+        }
+    }
+    
+    public RasterZeichnung() {
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(500, 500);
+        setVisible(true);
+        
+    }
+}

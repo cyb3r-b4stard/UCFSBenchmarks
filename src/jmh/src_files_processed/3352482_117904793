@@ -1,0 +1,85 @@
+import java.util.*;
+public class TaxTime{
+   private static Scanner keyboard = new Scanner(System.in);
+   
+   public static void main(String[] args){
+      double input;
+      double income =0;
+      double deduction =0;
+      double taxable;
+      char group;
+      double tax;
+      System.out.print("Enter next amount  :");
+      input = keyboard.nextDouble();
+       while(input != 0.0){
+         if (input >0){
+            income+=input;
+            }else{    
+            deduction+=input;
+            }  
+         System.out.print("Enter next amount:");   
+         input = keyboard.nextDouble();
+       } 
+       
+       taxable = computeTaxable(income,deduction);
+       group = computeGroup(taxable);
+       tax = computeTax(group);
+       displayResults(income,deduction,taxable,group,tax);
+       
+   }
+   
+   private static double computeTaxable(double income, double deduction){
+       double taxable;
+       if(income>=deduction){
+       taxable = income - deduction;
+      }else{
+       taxable = 0.0 ;
+        }   
+       return(taxable);
+   }
+   
+   private static char computeGroup(double taxable){
+      char group;
+      
+       if (taxable >= 500000){
+       group = 'S';} else
+       if (taxable >= 200000){
+       group = 'Q';} else
+       if (taxable >= 100000){
+       group = 'M';} else
+       if (taxable >= 50000){
+       group = 'A';} else
+       if (taxable >= 20000){
+       group = 'R';} else{
+       group = 'P';}
+       
+       return(group);
+    
+   }
+    
+   private static double computeTax(char group){
+       double tax;
+       switch(group){
+           case 'S':
+              tax = .25;
+           case 'Q':
+              tax = .25;
+           case 'M':
+              tax = .1;
+           case 'A':
+              tax = .03;
+           case 'R':
+              tax = .03;
+           case 'P':
+              tax = 0.0;
+           default:
+              System.out.println("Error!");
+       
+       return(tax);
+   }
+   
+   private static void displayResults(double income, double deduction, double taxable,char group, double tax){
+       
+    }    
+    
+}

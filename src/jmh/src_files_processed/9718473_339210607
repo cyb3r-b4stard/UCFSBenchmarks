@@ -1,0 +1,283 @@
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+import javax.swing.Timer;
+import javax.swing.event.*;
+import javax.swing.*;
+import java.awt.*;
+public class Esqueleto extends JPanel implements ActionListener
+{
+    protected final int LARGURA = 400;
+    protected final int ALTURA = 400;
+    protected final int TAMANHO_PONTO = 10;
+    protected final int TODOS_PONTOS = 100;
+    protected final int GERAR_POSICAO = 29;
+    protected final int DELAY = 10;
+    
+    protected int[] x = new int[TODOS_PONTOS];
+    protected int[] y = new int[TODOS_PONTOS];
+    
+    protected int pontos;
+    protected int açucar_x;
+    protected int açucar_y;
+    
+    protected String nome=JOptionPane.showInputDialog("Digite seu nome: ");;
+    Font nome_FONT = new Font("Consolas", Font.BOLD, 12);
+    FontMetrics nome_METRICA = this.getFontMetrics(nome_FONT);
+    
+    protected int PONTUAÇÃO = 0;
+    String SCORE = "PONTUAÇÃO: " + PONTUAÇÃO;
+    Font SCORE_FONT = new Font("Consolas", Font.BOLD, 12);
+    FontMetrics SCORE_METRICA = this.getFontMetrics(SCORE_FONT);
+    
+    protected boolean left = false;
+    protected boolean right = true;
+    protected boolean up = false;
+    protected boolean down = false;
+    
+    protected boolean estaJogando = true;
+    
+    protected Timer tempo;
+    
+    protected Image corpo;
+    protected Image açucar;
+    protected Image cabeça;
+    protected JButton cima;
+    protected JButton baixo;
+    protected JButton esquerda;
+    protected JButton direita;
+    protected JPanel panel1;
+    protected JPanel panel2;
+    protected JLabel n;
+    protected JLabel pont;
+    
+    public Esqueleto()
+    {
+        addMouseListener(new TAdapter());
+        panel1 = new JPanel();
+        panel2=new JPanel();
+        pont = new JLabel(SCORE);
+        cima= new JButton("CIMA");
+        baixo= new JButton("BAIXO");
+        esquerda= new JButton("ESQUERDA");
+        direita= new JButton("DIREITA");
+        panel1.add(cima);
+        panel1.add(baixo);
+        panel1.add(esquerda);
+        panel1.add(direita);
+        panel2.add(pont);
+        cima.addMouseListener(new MouseAdapter()
+        {
+		    public void mouseClicked(MouseEvent me){
+			    left = false;
+                up = true;
+                right=false;
+                down = false;
+			}
+	    }); 
+        panel1.add(baixo);
+        baixo.addMouseListener(new MouseAdapter()
+        {
+		    public void mouseClicked(MouseEvent me){
+			    left = false;
+                up = false;
+                right=false;
+                down = true;
+			}
+	    }); 
+        panel1.add(esquerda);
+        esquerda.addMouseListener(new MouseAdapter()
+        {
+		    public void mouseClicked(MouseEvent me){
+			    left = true;
+                up = false;
+                right=false;
+                down = false;
+			}
+	    }); 
+	    
+        panel1.add(direita);
+        direita.addMouseListener(new MouseAdapter()
+        {
+		    public void mouseClicked(MouseEvent me){
+			    left = false;
+                up = false;
+                right=true;
+                down = false;
+			}
+	    }); 
+	    add(panel1,BorderLayout.SOUTH);
+        add(panel2,BorderLayout.NORTH);
+        
+        setBackground(Color.PINK);
+        
+        ImageIcon corpo_ = new ImageIcon("corpo.png");
+        corpo = corpo_.getImage();
+        ImageIcon açucar_ = new ImageIcon("açucar.png");
+        açucar = açucar_.getImage();
+        ImageIcon cabeça_ = new ImageIcon("cabeça.png");
+        cabeça = cabeça_.getImage();
+        
+        setFocusable(true);
+        setSize(LARGURA, ALTURA);
+        começaJogo();
+    }
+    
+    public void começaJogo()
+    {
+        pontos = 3;
+        for (int i = 0; i < pontos; i++)
+        {
+            x[i] = 50 - i*10;
+            y[i] = 50;
+        }
+        gerarAçucar();
+        
+        tempo = new Timer(200, this);
+        if (SCORE == Integer.ParseInt(int 3))
+        tempo = new Timer(300, this);
+        
+        tempo.start();
+        mover();
+    }
+    
+    @Override
+    public void paint (Graphics g)
+    {
+        super.paint(g);
+        if (estaJogando)
+        {
+            g.drawImage(açucar, açucar_x, açucar_y, this);
+            
+            for (int i = 0; i < pontos; i++)
+            {
+                if (i == 0)
+                { g.drawImage(cabeça, x[i], y[i], this); }
+                else
+                { g.drawImage(corpo, x[i], y[i], this); }
+            }
+            desenharPontuacao(g);
+            Toolkit.getDefaultToolkit().sync();
+            g.dispose();
+        }
+        else
+        {
+            FimDeJogo(g);
+        }
+    }
+    
+    public void desenharPontuacao (Graphics g)
+    {
+        SCORE = "PONTUAÇÃO: " + PONTUAÇÃO;
+        
+        SCORE_METRICA = this.getFontMetrics(SCORE_FONT);
+
+        g.setColor(Color.white);
+        g.setFont(SCORE_FONT);
+        g.drawString(SCORE, (LARGURA - SCORE_METRICA.stringWidth(SCORE)) - 10, ALTURA - 10);
+        g.drawString("Jogador: "+nome, (LARGURA - SCORE_METRICA.stringWidth(SCORE)) - 20, ALTURA - 20);
+    }
+    public void FimDeJogo (Graphics g)
+    {
+        String mensagem = "FIM DE JOGO! Sua pontuação: " + PONTUAÇÃO;
+        Font pequena = new Font("Consolas", Font.BOLD, 14);
+        FontMetrics metrica = this.getFontMetrics(pequena);
+        g.setColor(Color.black);
+        g.setFont(pequena);
+        g.drawString(mensagem, (LARGURA - metrica.stringWidth(mensagem)) / 2, ALTURA / 2);
+    }
+    
+    public void confereAçuçar ()
+    {
+        if ((x[0] == açucar_x) && (y[0] == açucar_y))
+        {
+            pontos++;
+            PONTUAÇÃO++;
+            gerarAçucar();
+        }
+    }
+    
+    public void mover()
+    {
+        for (int i = pontos; i > 0; i--)
+        {
+            x[i] = x[(i - 1)];
+            y[i] = y[(i - 1)];
+        }
+        
+        if (left)
+        {
+            x[0] -= TAMANHO_PONTO;
+        }
+        if (right)
+        {
+            x[0] += TAMANHO_PONTO;
+        }
+        if (up)
+        {
+            y[0] -= TAMANHO_PONTO;
+        }
+        if (down)
+        {
+            y[0] += TAMANHO_PONTO;
+        }
+        tempo = new Timer(DELAY, this);
+    }
+    
+    public void testarBorda ()
+    {
+        for (int i = pontos; i > 0; i--)
+        {
+            if ((i > 4) && (x[0] == x[i]) && (y[0] == y[i]))
+            { estaJogando = false; }
+            
+        }
+        if (y[0] > ALTURA)
+        { estaJogando = false; }
+
+        if (y[0] < 0)
+        { estaJogando = false; }
+
+        if (x[0] > LARGURA)
+        { estaJogando = false; }
+
+        if (x[0] < 0)
+        { estaJogando = false; }
+    }
+    
+    public void gerarAçucar ()
+    {
+        int random = (int) (Math.random() * GERAR_POSICAO);
+        açucar_x = (random * TAMANHO_PONTO);
+        random = (int) (Math.random() * GERAR_POSICAO);
+        açucar_y = (random * TAMANHO_PONTO);
+    }
+    
+    public void actionPerformed (ActionEvent e)
+    {
+        if (estaJogando)
+        {
+            confereAçuçar();
+            testarBorda();
+            mover();
+        }
+        repaint();
+    }
+    
+    private class TAdapter extends MouseAdapter
+    {
+        public void MousePressed (MouseEvent e)
+        {
+        }
+    }
+}

@@ -1,0 +1,104 @@
+import ea.*;
+
+/**
+ * ###### #### ### ###########. ### #### #### ### ########### ### ######## ######.
+ * @######      #. #######
+ * @#######     ####-##-##
+ */
+public class WELT extends Game implements Ticker {
+
+    private Bild boden;
+
+    private int breite;
+    private int hoehe;
+
+    private CHIP [] chips;
+    
+    private CHIP chip1;
+    private CHIP chip2;
+    private CHIP chip3;
+
+    private ROBOTER roboter;
+    
+    int chipsInWelt;
+
+    /**
+     * Konstruktor fuer Objekte der Klasse WELT
+     */
+    public WELT() {
+        super(806,630);
+       
+        this.breite = 800;
+        this.hoehe = 600;
+
+        boden = new Bild (0,0,"Boden.gif");
+        this.sichtbarMachen(boden);
+
+        chips = new CHIP[500];
+        
+        for (int i = 0; i < chips.length; i++) {
+            chips[i] = new CHIP (this, i * 10,i * 10;
+        }
+        
+        /*
+        chips[0] = new CHIP (this,zufallsZahl(800),zufallsZahl(600));
+        chips[1] = new CHIP (this,zufallsZahl(800),zufallsZahl(600));
+        chips[2] = new CHIP (this,zufallsZahl(800),zufallsZahl(600));
+        chips[3] = new CHIP (this,zufallsZahl(800),zufallsZahl(600));
+        chips[4] = new CHIP (this,zufallsZahl(800),zufallsZahl(600));
+        chips[5] = new CHIP (this,zufallsZahl(800),zufallsZahl(600));
+        chips[6] = new CHIP (this,zufallsZahl(800),zufallsZahl(600));
+        chips[7] = new CHIP (this,zufallsZahl(800),zufallsZahl(600));
+        chips[8] = new CHIP (this,zufallsZahl(800),zufallsZahl(600));
+        chips[9] = new CHIP (this,zufallsZahl(800),zufallsZahl(600));
+        */
+       
+        roboter = new ROBOTER(this);
+
+        this.manager.anmelden(this,20);
+    }
+
+    public int nenneBreite () {
+        return this.breite;
+    }
+
+    public int nenneHoehe () {
+        return this.hoehe;
+    }
+
+    @Override
+    /**
+     * Methode tick zum Reagieren auf Ticker-Signale. 
+     * Diese Methode wird bei jedem Tick automatisch aufgerufen. 
+     * Dann wird das, was im Rumpf dieser Methode steht, automatisch ausgefuehrt. 
+     * Der Abstand zwischen den Tick-Signalen kann mit der Methode 
+     * tickerIntervallSetzen(int neuesIntervall) veraendert werden.
+     */
+    public void tick() {
+
+        roboter.bewegen();
+        roboter.saugen(chips);
+    }
+    
+    /**
+     * Macht ein beliebiges Raum-Objekt sichtbar.<br />
+     * Dank der Vererbungshierarchie koennen ueber 
+     * diese Methode Texte wie Bilder und andere 
+     * grafische Elemente mit einer Methode behandelt werden.<br />
+     * Diese Methode muss noch nicht verstanden werden. Sie wird 
+     * im Kapitel 'Knoten' behandelt und erklaert.
+     * @param   m   Das sichtbar zu machende Raum-Objekt
+     */
+    public void sichtbarMachen(Raum objekt) {
+        wurzel.add(objekt);
+    }
+
+    public void tasteReagieren(int code) {
+        if (code == 0) {
+            this.roboter.drehen(-10);
+        }
+        if (code == 3) {
+            this.roboter.drehen(10);
+        }
+    }
+}

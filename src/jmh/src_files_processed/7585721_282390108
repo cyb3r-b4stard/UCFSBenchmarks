@@ -1,0 +1,499 @@
+
+/**
+ * ##### # ########### ## ##### #### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+
+import java.io.ObjectOutputStream;
+import java.lang.Integer;
+import java.lang.String;
+import java.util.ArrayList;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.Scanner;
+import java.util.StringTokenizer;
+import java.util.Iterator;
+import java.util.Map;
+import java.lang.StringBuilder;
+
+import java.io.*;
+
+
+public class Main
+{
+    
+    
+    public static void imprimirNomes (TreeSet <String> nomes) {
+        
+        int i = 0;
+        String leitura = " ";
+        Iterator it = nomes.iterator();
+        Scanner input = new Scanner (System.in);
+        
+        
+        while (it.hasNext()) {
+            if (leitura.length()!=0 && leitura.charAt(0)=='0') break;
+            System.out.println (it.next());
+            if ((++i%20)==0) {
+                System.out.println ("\t\t\tENTER: continuar\n\t\t\t0+ENTER: sair");
+                leitura = input.nextLine();
+            }
+        }
+        
+        if (i>19 && leitura.length()==0) {
+            System.out.println ("\t\t\tENTER: voltar ao menu");
+            leitura = input.nextLine();
+        }
+    }
+    
+    
+    
+    public static void opcaoArtigosDosAnos (RedeGeral gest) {
+        
+        TreeMap <Integer, Integer> aux = gest.artigosDosAnos();
+        
+        System.out.println ("ANOS       ARTIGOS");
+        
+        for (Map.Entry<Integer, Integer> entry : aux.entrySet()) {    
+            System.out.println (entry.getKey() + "  <--->  " + entry.getValue());
+        }
+        
+    }
+    
+    
+    
+    
+    
+    
+    public static ArrayList<String> separaNomes (String linha) {
+        
+        String nome = new String ();
+        StringTokenizer st = new StringTokenizer(linha);
+        ArrayList <String> res = new ArrayList <>();
+        Scanner ler = new Scanner (System.in);
+        
+        while (st.hasMoreTokens()) {
+         nome = st.nextToken(",").trim();
+         
+             res.add(nome);
+        }
+        
+        return res;
+    }
+    
+    
+    
+    public static ArrayList<String> lerFicheiro (String nomeDoFicheiro) {
+        
+        ArrayList<String> texto = new ArrayList<String> ();
+        Scanner scan = null;
+        
+        try {
+            
+            scan = new Scanner (new FileReader (nomeDoFicheiro));
+            scan.useDelimiter (System.getProperty("line.separator"));
+            while (scan.hasNext()) texto.add(scan.next());
+            
+        } catch (IOException e){
+            System.out.println (e.getMessage());
+            return null;
+        }
+        
+        return texto;
+    }
+    
+    
+    
+    public static void guardarDados (RedeGeral gest) {
+        
+          try
+          {
+            FileOutputStream fileOut = new FileOutputStream("publicx.obj");
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(gest);
+            out.close();
+            fileOut.close();
+          }
+          catch(IOException i)
+          {
+            i.printStackTrace();
+          }
+        
+    }
+    
+    
+    
+    public static RedeGeral carregarDados () {
+        
+        RedeGeral gest = new RedeGeral();
+        
+        try
+      {
+          FileInputStream fileIn = new FileInputStream("publicx.obj");
+          ObjectInputStream in = new ObjectInputStream(fileIn);
+          gest = (RedeGeral) in.readObject();
+          in.close();
+          fileIn.close();
+      } 
+      
+      catch(IOException e1)
+      {
+         System.out.println (e1.getMessage());
+         return null;
+      }
+      
+      catch(ClassNotFoundException e2)
+      {
+         System.out.println (e2.getMessage());
+         return null;
+      }
+        
+      return gest;
+    }
+    
+    
+    
+    public static void imprimeMenu () {
+        
+        StringBuilder sb = new StringBuilder ("\n\n--------------------------------------------------------------\n");
+        
+        sb.append("\tMENU\n");
+        sb.append(" 1. Ler um ficheiro de texto ou carregar dados existentes\n");
+        sb.append(" 2. Dados referentes à estrutura\n");
+        sb.append(" 3. Tabela com numero de artigos em cada ano\n");
+        sb.append(" 4. !!!  X autores com maior numero de publicaçoes num intervalo de anos   !! NOT SURE !!\n");
+        sb.append(" 5. CARREGAR DADOS DA MEMORIA\n");
+        sb.append(" 6. !!!  Co-autores comuns a 2 ou 3 autores num intervalo de anos  !! NOT SURE !!\n");
+        sb.append(" 7. Autores que publicaram em todos os anos num intervalo de anos\n");
+        sb.append(" 8. Numero de linhas duplicadas no ficheiro\n");
+        sb.append(" 9. Autores cujo nome se inicia por dada letra\n");
+        sb.append(" 10. Co-autores de um dado autor num dado ano\n");
+        sb.append(" 11. Co-autores de um dado autor\n");
+        sb.append(" 12. Guardar dados em ficheiro\n");
+        sb.append(" 13. Outros\n");
+        sb.append(" 14. Teste\n");
+        sb.append(" 0. Sair\n");
+        sb.append("--------------------------------------------------------------\n");
+        
+        System.out.println (sb);
+        
+    }
+    
+    
+    
+    public static int lerOpcao () {
+        
+        System.out.print ("Opcao: ");
+        int res = Input.lerInt();
+        
+        /*  
+         *     !!!!    CUIDADO COM O CICLO WHILE, DEFINIR O RES CONFORME O NUMERO DE OPÇOES DO MENU    !!!!  
+         */
+        while (res<0 || res >14){
+            System.out.print ("Escolha uma opcao entre 0 e 14\nOpcao: ");
+            res = Input.lerInt();
+        }
+        
+        return res;        
+    }
+
+    
+    
+    
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public static void main ()
+    {
+        int i, q6, opcao=30, numeroDeNomes = 0, ano, anoMenor, anoMaior, intervalo [], q2[];
+        boolean lido = false, carregado = false;
+        String nome = new String (), nomes [] = new String [3];
+        char letra;
+        Scanner input = new Scanner (System.in);
+        String nomeDoFicheiro = new String (), ler;
+        ArrayList <String> texto, al = new ArrayList<String>();
+        RedeGeral gest = new RedeGeral();
+        TreeSet <String> autoresDaLetra, autoresDoIntervalo;            
+        TreeSet <String> coAutsDoAutor, coAutsDoAno;
+        String [] coAutsDosAuts = new String [3];
+        
+        
+        System.out.println ("\tBem-vindo ao GESTAUTS!\n\n\n----------------------------");
+        System.out.println ("1. Ler um ficheiro de texto\n2. Carregar dados de memória\n0. Sair\n----------------------------");
+        if ((opcao=lerOpcao())==2) opcao=5;
+        
+        
+        do {
+            
+                                   
+            switch (opcao) {
+                
+                case 1: {
+                            gest = new RedeGeral();
+                            
+                            numeroDeNomes=0;
+                                
+                            do {
+                                System.out.print ("\nIntroduza o nome do ficheiro: ");
+                                nomeDoFicheiro = Input.lerString();
+                                    /**   
+                                      *      !!! CUIDADO !!!
+                                      *      O nome do ficheiro está pré-definido!
+                                      *      
+                                      */
+                                Crono.start();
+                                texto = lerFicheiro("publicx.txt");
+                                    
+                            } while (texto == null);
+                
+                            for(Iterator it = texto.iterator(); it.hasNext();) {
+                                al = separaNomes ((String) it.next());
+                                numeroDeNomes += al.size()-1;
+                                gest.inserirLinha (al);
+                            }
+                            
+                            System.out.println (Crono.stop());
+                            Crono.print();
+                            
+                            lido = true;
+                            carregado=false;
+                            
+                            intervalo = gest.intervaloDeAnos();
+                                
+                            System.out.println ("\nNome do ficheiro: " + nomeDoFicheiro);
+                            System.out.println ("Numero de artigos: " + texto.size());
+                            System.out.println ("Numero de nomes: " + numeroDeNomes);
+                            System.out.println ("Numero de autores: " + gest.numeroDeAutores());
+                            System.out.println ("Intervalo de anos = [" + intervalo[0] + ", " + intervalo [1] + "]");
+                            
+                            break;
+                        }
+                        
+                
+                case 2: {
+                            System.out.println ("\nNumero de autores: " + gest.numeroDeAutores());
+                            System.out.println ("Numero de artigos com um autor: " + gest.numeroDeArtigosComUmAutor()); /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+                            System.out.println ("Numero de 'solos': " + gest.numeroDeAutoresASolo());
+                            System.out.println ("Numero de 'só acompanhados': " + gest.numeroDeAutoresAcompanhados());
+                            System.out.println ("\n(Introduza o numero de artigos a considerar): ");
+                            do {
+                                i = Input.lerInt();
+                            } while (i<0);
+                            System.out.println ("Numero de autores com mais de " + i + " artigos: " + gest.numeroDeAutoresComMaisDeXArtigos (i));
+                            
+                            q2 = gest.query2 ();
+                            System.out.println (q2[0] + "\t" + q2[1] + "\t" + q2[2] + "\t" + q2[3]);
+                            System.out.println ("\nNumero de autores: " + q2[0]);
+                            System.out.println ("Numero de artigos com um autor: " + q2[1]); /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+                            System.out.println ("Numero de 'solos': " + q2[2]);
+                            System.out.println ("Numero de 'só acompanhados': " + q2[3]);
+                            
+                            break;
+                        }
+                        
+                        
+                case 3: {
+                            opcaoArtigosDosAnos (gest);
+                            System.out.println ("\t\t\tENTER: voltar ao menu");
+                            ler = input.nextLine();
+                            break;
+                        }
+                        
+                        
+                case 4: {
+                            do {
+                                System.out.print ("\nIntroduza o ano menor: ");
+                                anoMenor = Input.lerInt();
+                                System.out.print ("Introduza o ano maior: ");
+                                anoMaior = Input.lerInt();
+                                
+                            } while (anoMenor>=anoMaior || gest.getAno(anoMenor)==null || gest.getAno (anoMaior)==null);
+                            
+                            System.out.print ("Introduza o numero de autores a considerar: ");
+                            i = Input.lerInt();
+                            
+                            System.out.println ();
+                            imprimirNomes (gest.xAutoresComMaisArtigos (i, anoMenor, anoMaior));
+                    
+                            break;
+                        }
+                        
+                        
+                case 5: {
+                            System.out.println ("\nPor favor aguarde...");
+                            if (!carregado) {   
+                                if ((gest = carregarDados ())==null) System.out.println ("Nao ha dados em memória!!!");
+                                else carregado = true;
+                            }
+                            else System.out.println ("Os dados já foram carregados!");
+                            
+                            break;
+                        }
+                        
+                        
+                case 6: {
+                            do {
+                                System.out.print ("\nIntroduza o ano menor: ");
+                                anoMenor = Input.lerInt();
+                                System.out.print ("Introduza o ano maior: ");
+                                anoMaior = Input.lerInt();
+                                
+                            } while (anoMenor>=anoMaior || gest.getAno(anoMenor)==null || gest.getAno (anoMaior)==null);
+                            /*
+                            coAutsDosAuts[0]="Yan Lei";
+                            coAutsDosAuts[1]="Chengsong Wang";
+                            coAutsDosAuts[2]=null;
+                            */
+                            do {
+                                System.out.print ("Introduza o numero de nomes (2 ou 3): ");
+                                q6=Input.lerInt();
+                            } while (q6!=2 && q6!=3);
+                            
+                            System.out.print ("Introduza os nomes dos autores: \n\n");
+                            for (i=0; i<3; i++) coAutsDosAuts[i]=null;
+                            for (i=0; i<q6; i++) {
+                                coAutsDosAuts[i]=Input.lerString();
+                            }
+                            
+                            System.out.println ("\nCo-autores em comum: \n"); 
+                            imprimirNomes (gest.coAutoresDosAutores(coAutsDosAuts, q6, anoMenor, anoMaior));
+                    
+                            break;
+                        }
+                
+                        
+                case 7: {
+                            do {
+                                System.out.print ("\nIntroduza o ano menor: ");
+                                anoMenor = Input.lerInt();
+                                System.out.print ("Introduza o ano maior: ");
+                                anoMaior = Input.lerInt();
+                                
+                            } while (anoMenor>=anoMaior || gest.getAno(anoMenor)==null || gest.getAno (anoMaior)==null);
+                            
+                            System.out.println ("\nAutores que publicaram em todos os anos entre " + anoMenor + " e " + anoMaior + ": \n");
+                            imprimirNomes (gest.autoresDoIntervalo (anoMenor, anoMaior));
+                            
+                            break;
+                        }
+                        
+                        
+                case 8: {
+                            nomeDoFicheiro = "publicx.txt";
+                            System.out.println ("\nNumero de linhas duplicadas no ficheiro: " + Ficheiro.numeroDeLinhasDuplicadas ("publicx.txt"));
+                    
+                            break;
+                        }  
+                        
+                        
+                case 9: {
+                            System.out.print ("Introduza a letra: ");
+                            letra = Input.lerString().charAt(0);
+                            if (letra>='a') letra-=32;
+                            autoresDaLetra = gest.autoresDaLetra(letra);
+                            System.out.println ("\nAutores cujo nome se inicia pela letra " + letra + " (" + autoresDaLetra.size() + "): \n");
+                            imprimirNomes (autoresDaLetra);
+                            
+                                                       
+                            break;
+                        }  
+                        
+                        
+                case 10: {
+                            System.out.print ("Introduza o nome: ");
+                            nome = Input.lerString();
+                            System.out.print ("Introduza o ano: ");
+                            ano = Input.lerInt();
+                    
+                            System.out.println ("\nNumero de artigos no total das suas parcerias de " + nome + " no ano " + ano + ": " + gest.numeroDeArtigosAcompanhadoDoAno (nome, ano));
+                            imprimirNomes (gest.coAutoresDoAutorDoAno (nome, ano));
+                            
+                            break;
+                        }  
+                        
+                        
+                case 11: {
+                            System.out.print ("\nIntroduza o nome: ");
+                            nome = Input.lerString();
+                            coAutsDoAutor = gest.coAutoresDoAutor (nome);
+                            if (coAutsDoAutor.size()==0) System.out.println ("Nao foram encontrados co-autores.");
+                            else System.out.println ("\nCo-autores de " + nome + " (" + coAutsDoAutor.size() + "):\n");
+                            imprimirNomes (coAutsDoAutor);
+                            
+                            break;
+                        }
+                        
+                        
+                case 12: {
+                            System.out.println ("\nOs dados serão guardados no ficheiro publicx.obj\nO processo demora alguns segundos. Por favor aguarde...");
+                            guardarDados (gest);
+                        }
+                            
+                            break;
+                        }
+                
+                        
+                case 13: {
+                                    System.out.println ("Numero de artigos do autor \"Shlomo Shamai\": " + gest.numeroDeArtigosDoAutor ("Shlomo Shamai"));
+         
+                                    /*
+                                    System.out.println ("\nCo-autores de \"Ziyng Dai\": " + gest.coAutoresDoAutor ("Ziying Dai"));
+                                    System.out.println ("Co-autores de \"Yan Lei\": " + gest.coAutoresDoAutor ("Yan Lei"));
+                                    System.out.println ("Co-autores de \"Xiaoguang Mao\": " + gest.coAutoresDoAutor ("Xiaoguang Mao"));
+                                    System.out.println ("Co-autores de \"Chengsong Wang\": " + gest.coAutoresDoAutor ("Chengsong Wang"));
+                                    */
+                                   
+                                    coAutsDoAutor = gest.coAutoresDoAutor ("Shlomo Shamai");
+                                    System.out.println ("\nCo-autores de \"Shlomo Shamai\" (" + coAutsDoAutor.size() + "):");
+                                    imprimirNomes (coAutsDoAutor);
+                                    
+                                    coAutsDoAutor = gest.coAutoresDoAutor ("Riccardo Sisto");
+                                    System.out.println ("\nCo-autores de \"Riccardo Sisto\" (" + coAutsDoAutor.size() + "):");
+                                    imprimirNomes (coAutsDoAutor);
+                                    
+     
+                                    System.out.println ("\nNumero de artigos no total das suas parcerias de \"Yan Lei\" no ano 2012: " + gest.numeroDeArtigosAcompanhadoDoAno ("Yan Lei", 2012));
+                                    System.out.println (gest.coAutoresDoAutorDoAno ("Yan Lei", 2012));
+        
+        
+                                    coAutsDosAuts[0]="Yan Lei";
+                                    coAutsDosAuts[1]="Chengsong Wang";
+                                    coAutsDosAuts[2]=null;
+                                    System.out.println ("\nCo-autores de alguns autores: " + gest.coAutoresDosAutores(coAutsDosAuts, 2, 1994, 2013) + "\n");
+                            
+                                    gest.xAutoresComMaisArtigos (50, 1968, 1968);
+                            
+                            break;
+                        }  
+                        
+                case 14: {
+                          for (i=0; i<50; i++) System.out.println (gest.numeroDeAutoresComMaisDeXArtigos (i)); 
+                        }
+                        
+            }
+            
+            imprimeMenu();
+            
+        } while ((opcao=lerOpcao())!=0);
+        
+        
+        /*
+        System.out.println ("\n\nO programa está a guardar os dados...");
+        
+        
+               ESCREVER AQUI O CÓDIGO DE GUARDAR OS DADOS EM FICHEIRO OBJETO  ??????????
+               PARECE QUE NAO. MAS É MELHOR CONFIRMAR!
+         
+        
+        guardarDados (gest);
+        */
+      
+        System.out.println ("\nO programa terminou.\n");
+        
+    }
+}

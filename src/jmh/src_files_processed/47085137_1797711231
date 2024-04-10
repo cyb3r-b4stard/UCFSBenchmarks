@@ -1,0 +1,149 @@
+import java.awt.Color; import java.awt.Dimension; import java.awt.Graphics;  import java.awt.Toolkit;
+import java.awt.event.KeyEvent; import java.awt.event.MouseEvent; import java.awt.event.KeyListener; import java.awt.event.MouseListener;
+import javax.swing.JFrame; import javax.swing.JPanel; import javax.swing.Timer;
+import java.util.ArrayList; import java.util.Stack;
+/**
+ * ########.####  
+ *
+ * @######: ###### #######
+ *
+ */
+public class MazeDemo 
+{
+    public static void main(String[] args){
+        MazeDemo test=new MazeDemo(new JOptionPanePlus().createOptionDialog("What speed do you want the generation to run at?", "Speed", 1, new String[]{"Slow","Medium","Fast"}, null)
+            , new JOptionPanePlus().createOptionDialog("How many cells per row do you want?","Number of Cells", 1, new String[]{"2","4","8","16","32"},null)
+            );
+        new JOptionPanePlus().createMessageDialog("Click to pause the simulation. Press escape to change speeds.", "Info", 2, null);
+        test.setup();     
+    }
+
+    private int WINDOW_WIDTH=801, WINDOW_HEIGHT=801;
+    private JFrame window = new JFrame("Maze Demo");
+    private Panel panel;
+    private Timer eventTimer;
+
+    private boolean paused=false;
+    private int mazeWidth=800, mazeHeight=800, numCells, speed;
+    private int[] sizes=new int[]{2,4,8,16,32};
+    private DemoCell[][] cells;
+    private Stack<DemoCell> visited=new Stack<DemoCell>();
+    private DemoCell current;
+
+    public MazeDemo(int speed, int cells){
+        switch(speed){
+            case 0: this.speed=10; break;
+            case 1: this.speed=30; break;
+            case 2: this.speed=60; break;
+        }
+        numCells=sizes[cells];
+        this.cells=new DemoCell[numCells][numCells];
+    }
+
+    public void setup(){
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); window.setResizable(false);
+        window.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/2-WINDOW_WIDTH/2, Toolkit.getDefaultToolkit().getScreenSize().height/2-WINDOW_HEIGHT/2);        
+        window.setSize(WINDOW_WIDTH, WINDOW_HEIGHT); 
+
+        panel=new Panel(); window.add(panel); window.addMouseListener(panel);
+
+        window.pack(); 
+        if(window.getContentPane().getWidth() > WINDOW_WIDTH)
+            window.pack();
+        window.setVisible(true);
+
+        for(int r=0; r<numCells; r++)
+            for(int c=0; c<numCells; c++)
+                cells[r][c]=new DemoCell(c*mazeHeight/numCells, r*mazeWidth/numCells, mazeWidth/numCells);
+        current=cells[0][0]; 
+
+        eventTimer=new Timer(1000/speed, e->{updateWindow();});          
+        eventTimer.start();
+    }
+
+    public void updateWindow(){      
+        if(!paused){
+            current.visited=true;      
+            current.current=false;
+            DemoCell next=getNeighbor(current.y/current.width, current.x/current.width);
+            if(next != null){
+                next.visited=true;
+                visited.push(current);
+                removeWall(current, next);
+                current=next;
+            }
+            else if(visited.size()>0){
+                current=visited.pop();
+            }
+            current.current=true;
+        }
+        panel.repaint();
+    }
+
+    public DemoCell getCell(int row, int col){
+        return (row >=0 && row < cells.length && col >=0 && col< cells[0].length) ? cells[row][col]:null;
+    }
+
+    public DemoCell getNeighbor(int row, int col){
+        ArrayList<DemoCell> neighbors=new ArrayList<DemoCell>();
+        DemoCell[] possible=new DemoCell[]{getCell(row,col-1), getCell(row, col+1), getCell(row-1,col), getCell(row+1,col)};
+        for(DemoCell dc: possible)
+            if(dc != null && !dc.visited)
+                neighbors.add(dc);
+        return (neighbors.size()>0) ? neighbors.get((int)(Math.random()*neighbors.size())):null;
+    }
+
+    public void removeWall(DemoCell a, DemoCell b){
+        switch(a.x/a.width-b.x/b.width){
+            case 1: a.walls[3]=false; b.walls[1]=false; break;
+            case -1: a.walls[1]=false; b.walls[3]=false; break;
+        }
+        switch(a.y/a.width-b.y/b.width){        
+            case -1: a.walls[2]=false; b.walls[0]=false; break;
+            case 1: a.walls[0]=false; b.walls[2]=false; break;
+        }
+    }
+
+    public class Panel extends JPanel implements KeyListener, MouseListener
+    {
+        public Panel(){
+            setPreferredSize(new Dimension(WINDOW_WIDTH,WINDOW_HEIGHT));
+            setBackground(new Color(57,57,57));
+        }       
+
+        public void paintComponent(Graphics g){
+            super.paintComponent(g);
+            for(DemoCell[] row: cells)
+                for(DemoCell col: row)
+                    col.show(g);
+        }
+
+        public void mouseClicked(MouseEvent e){
+            paused=!paused;
+        }
+
+        public void keyPressed(KeyEvent e){}
+
+        public void keyReleased(KeyEvent e){
+            if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
+                switch(new JOptionPanePlus().createOptionDialog("What speed do you want the generation to run at?", "Speed", 1, new String[]{"Slow","Medium","Fast"}, null)){
+                    case 0: this.speed=10; break;
+                    case 1: this.speed=30; break;
+                    case 2: this.speed=60; break;
+                }
+            }
+        }
+
+        public void keyTyped(KeyEvent e){
+            System.out.println("Hey");
+        }
+
+        public void mousePressed(MouseEvent e){}
+
+        public void mouseReleased(MouseEvent e){}
+
+        public void mouseEntered(MouseEvent e){}
+
+        public void mouseExited(MouseEvent e){}
+    }
+}

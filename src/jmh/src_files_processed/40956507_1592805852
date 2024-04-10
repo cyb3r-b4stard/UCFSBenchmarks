@@ -1,0 +1,75 @@
+import java.util.ArrayList;
+import java.util.Random;
+/**
+ * ##### # ########### ## ##### ######## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class SnackBar
+{
+    private Random generator; 
+    private String[] flavours;
+    private SnackMachine dmachine;
+    private ArrayList<Student> students;
+    
+    public static void main(String[] args)
+    {
+        SnackBar.add(new snackBar(int StudentCap, int crispCap, int maxCost));
+    }
+
+    /**
+     * Constructor for objects of class SnackBar
+     */
+    public SnackBar(int studentCap, int crispCap, int maxCost  )
+    {
+        generator = new Random();
+        flavours = new String[5];
+        flavours[0] = "plain_crisps";
+        flavours[1] = "salt_vinegar";
+        flavours[2] = "cheese_onion";
+        flavours[3] = "prawn_cocktail";
+        flavours[4] = "chicken";
+        
+        dmachine = new SnackMachine(crispCap, maxCost);
+        for (int c = 0 ; c < crispCap; c++)
+        {
+            dmachine.addPack(new PackOfCrisps(randomFlavour()));
+            
+        }
+        students = new ArrayList<Student>();        
+        for (int s = 0 ; s < studentCap; s++)
+        {
+            students.add(new Student(randomFlavour(),dmachine)); 
+        }
+    }
+
+    private String randomFlavour()
+    {
+        int randomIndex = generator.nextInt(flavours.length);
+        return flavours[randomIndex];
+    }
+    
+    public void describe()
+    {
+         System.out.println("The SnackBar has " + students.size() + " hungry students");
+         System.out.println("The SnackMachine has:");
+         System.out.println("The SnackMachine has " + dmachine.countPacks("plain_crisps") + " plain_crisps");
+         System.out.println("The SnackMachine has " + dmachine.countPacks("salt_vinegar") + " salt_vinegar");
+         System.out.println("The SnackMachine has " + dmachine.countPacks("cheese_onion") + " cheese_onion");
+         System.out.println("The SnackMachine has " + dmachine.countPacks("prawn_cocktail") + " prawn_cocktail");
+         System.out.println("The SnackMachine has " + dmachine.countPacks("chicken") + " chicken");
+    }
+    
+    public void runSnackBar(int nSteps)
+    {
+        for (int i = 1  ; i <= nSteps; i++)
+        {
+           System.out.println("This is step number: " + i);
+           describe();
+           Student student = students.get(generator.nextInt(students.size()));
+           student.snackTime();
+           System.out.println("*****************:------>***************");
+        }
+    }
+}

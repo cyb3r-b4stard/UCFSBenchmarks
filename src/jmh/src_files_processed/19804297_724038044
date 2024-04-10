@@ -1,0 +1,427 @@
+import java.util.HashMap;
+import java.util.Stack;
+import java.util.Scanner;
+
+/**<####><#### #######="###-#"></####>
+ * ##### ###### ########## ### ###### ## ### ## ### ####### 
+ * #### #'###### ##### #'########### ### ######### ####### ### ## ######.
+ * 
+ * @######  ####### ####### ### ##### #. ######, 
+ * @######  ####### ### ########## #######.
+ * @####### ####/##/##
+ */
+public class GameEngine
+{
+    private Parser parser;
+    private Player aJoueur;
+    private HashMap<String,Room> allRooms;
+    private HashMap<String,Item> allItems;
+    private UserInterface gui;
+    private Stack<Room> previousRooms;
+
+    /**
+     * Constructeur. 
+     * Initialise l'attribut Parser, 
+     * lance les méthodes créant les Rooms et les Items du jeu.
+     */
+    public GameEngine()
+    {
+        parser = new Parser();
+        createRooms();
+        createPlayer();
+        createItems();
+    }
+
+    /**
+     * Initialise l'attribut UserInterface avec le paramètre userInterface.
+     * @param userInterface Devient le GUI de l'objet GameEngine.
+     */
+    public void setGUI(UserInterface userInterface)
+    {
+        gui = userInterface;
+        printWelcome();
+    }
+
+    private void createPlayer()
+    {
+        aJoueur = new Player("Barryl",allRooms.get("portail"), 0.5, 20 );
+    }
+
+    /**
+     * Affiche le message de bienvenue lors du démarrage du jeu.
+     */
+    private void printWelcome()
+    {
+        gui.print("\n");
+        gui.println("Bienvenue a vous, joueur de PikaPika!");
+        gui.println("l'aventure PikaPika vous fera vivre des momment inoubliable dans le personnage de Barryl.");
+        gui.println("taper '"+ CommandWord.AIDE +"' si vous avez besoin d'aide");
+        gui.print("");
+        gui.println((aJoueur.getCurrentRoom()).getLongDescription());
+        gui.showImage((aJoueur.getCurrentRoom()).getImageName());
+    }
+
+    /**
+     * Permet d'afficher la description de la piece actuel
+     */
+    private void look(){
+        gui.println(aJoueur.getCurrentRoom().getLongDescription());
+    }  
+
+    /**
+     * Permet d'afficher que le personnage a tuer 2 crocodille a l'ecran
+     */
+    private void kill(){
+        if(aJoueur.getCurrentRoom()==allRooms.get("marécage")){
+            gui.println("Vous venez de tuer trois crocodilles, *une clé vient d'apparaitre*");
+            this.allRooms.get("marécage").addItem("clé",allItems.get("Une clé"));
+            gui.println(aJoueur.getCurrentRoom().itemDescription());
+        }
+        else{gui.println("Il n'y a rien a tuer ici ! ");}
+    } 
+
+    private void open(){
+        if(aJoueur.getCurrentRoom()==allRooms.get("coffre")){
+            gui.println("Vous venez d'ouvrire le coffre, *une corde se trouve dedans*");
+            this.allRooms.get("coffre").addItem("corde",allItems.get("Une corde"));
+            gui.println(aJoueur.getCurrentRoom().itemDescription());
+        }
+        else{gui.println("Il n'y a rien à ouvrire ici ! ");}
+    } 
+
+    private void prendre(Command command){
+        if (! command.hasSecondWord()) {
+            gui.println("\n Prendre quoi ?\n"); return;
+        }
+
+        String vCommand2 = command.getSecondWord();
+        Item vItemRoom =
+            aJoueur.getCurrentRoom().getItems().get(vCommand2);
+
+        if (vItemRoom == null) {
+            gui.println("\n Je ne vois pas cet objet ici...\n");
+            return;
+        }
+        else {
+            if (aJoueur.placepouritem(vItemRoom)) {
+                aJoueur.putInventory(vCommand2, vItemRoom);
+                aJoueur.getCurrentRoom().getItems().remove(vCommand2);
+                gui.println("\n J'ai pris " +
+                    vItemRoom.getDescription() + ".\n" );
+            }
+            else {gui.println("\n Je n'ai plus de place\n");} 
+        }
+    }
+
+    private void poser(Command command){
+        if (! command.hasSecondWord()) {
+            gui.println("\n Déposer quoi ?\n"); return;
+        }
+
+        String vCommand2 = command.getSecondWord();
+        Item vItemJoueur = aJoueur.getInventory().get(vCommand2);
+
+        if (vItemJoueur == null) {
+            gui.println("\n Je n'ai pas ça sur moi...\n");
+            return;
+        }
+        else {
+            aJoueur.getCurrentRoom().getItems().put(vCommand2,
+                vItemJoueur);
+            aJoueur.removeInventory(vCommand2);
+            gui.println("\n J'ai déposé " +
+                vItemJoueur.getDescription() + ".\n");
+        }
+    } 
+
+    private void manger(final Command pC){
+        if (! pC.hasSecondWord()) {
+            gui.println ("\n"
+                + " Vous avez mangé, vous n'avez plus faim.\n");
+        }
+        else {
+            if (pC.getSecondWord().equals("cookie")
+            && this.aJoueur.hasItem("cookie")) {
+                this.aJoueur.setPoidsMax(1.0);
+                gui.println(
+                    "\n Ce cookie était étrange, je me sens plus fort...\n");
+                this.aJoueur.removeInventory("cookie");
+            }
+            else {
+                gui.println("\n Où ai-je la tête ?\n");
+            }
+        }
+    }
+
+    private void afficherInventaire(){
+        gui.print( "\n Inventaire :\n"
+            + aJoueur.InventaireString()
+            + "\n Poids total : " + aJoueur.poidsTotal() + "kg " );
+        if(aJoueur.poidsTotal()==aJoueur.getPoidsMax()){
+            gui.println(" ( Vous avez atteint votre poids max )\n");
+        }
+        else{
+            gui.println("\n");
+        }
+    }
+
+    /**
+     * Permet lors de  l'appelle de la methode si la list  "Stack" n'est pas vide d'associer la 
+     * room actuel a la room precedament memoriser dans la list
+     * On modifie alors l'image de la piece 
+     */
+    private void back()
+    {
+        if (! previousRooms.empty() ){
+            aJoueur.setCurrentRoom(previousRooms.pop());}
+        else {previousRooms.push(aJoueur.getCurrentRoom()); }
+
+        gui.println("\n"+aJoueur.getCurrentRoom().getLongDescription()+"\n");
+        if (aJoueur.getCurrentRoom().getImageName() != null){
+            gui.showImage(aJoueur.getCurrentRoom().getImageName());}
+    }
+
+    /**
+     * Crée toutes les pièces du plan du jeu et les lie à leurs sorties.
+     */
+    private void createRooms()
+    {
+
+        allRooms = new HashMap<String , Room>();     
+        Room vPortail,vDebutforet,vMilieuforet,vTeleporteur,vMarécage,vCloseporte,vCaissehaut,vCaissedroit,vfeu,vCoffre,vGouffregauche,vGouffredroit,vButtehaut,vButtebas,vAnge,vFinal;
+        vPortail= new Room("portail","devant la Foret","img/devantforet.jpg");
+        vDebutforet= new Room("debut foret","au debut de la foret","img/debutforet.jpg");
+        vMilieuforet= new Room("milieuforet","au milieu de la foret","img/milieuForet.jpg");
+        vTeleporteur= new Room("teleporteur","dans la salle du téléporteur","img/teleporteur.jpg");
+        vMarécage= new Room("marécage","dans le marecage au crocodile","img/marecage.jpg");
+        vCloseporte= new Room("portefermé","a la salle de la porte vérrouillé","img/porteverrouille.jpg"); 
+        vCaissehaut= new Room("caissehaut","dans la salle de la caisse au Nord","img/zonecaisse.jpg");
+        vCaissedroit= new Room("caissedroit","dans la salle de la caisse a Droite","img/zonecaisse.jpg");
+        vfeu= new Room("feu","dans la zone enflamé","img/enflame.jpg");
+        vCoffre= new Room("coffre","dans la zone du coffre","img/coffre.jpg");
+        vGouffregauche= new Room("gouffre gauche","dans la zone du gouffre gauche","img/gouffre.jpg");
+        vGouffredroit= new Room("gouffre droit","dans la zone du gouffre droit","img/gouffre.jpg");
+        vButtehaut= new Room("buttehaut","a la butté en haut","img/butte.jpg");
+        vButtebas= new Room("buttebas","a la butté en bas","img/butte.jpg");
+        vAnge= new Room("ange","dans la salle  de l'ange","img/ange.jpg"); 
+        vFinal= new Room("zonefinal","la ou vous attend votre animal","img/animal.jpg");
+
+        previousRooms = new Stack<Room>();
+
+        vPortail.setExit("nord",vDebutforet);        
+        vDebutforet.setExit("nord",vMilieuforet);
+        vDebutforet.setExit("sud",vPortail);
+        vDebutforet.setExit("est",vMarécage);
+        vDebutforet.setExit("ouest",vTeleporteur);        
+        vMilieuforet.setExit("sud",vDebutforet);
+        vMilieuforet.setExit("est",vCloseporte);
+        vMilieuforet.setExit("ouest",vCaissedroit);        
+        vTeleporteur.setExit("est",vDebutforet);        
+        vMarécage.setExit("ouest",vDebutforet);        
+        vCloseporte.setExit("nord",vfeu);
+        vCloseporte.setExit("ouest",vMilieuforet);        
+        vCaissehaut.setExit("nord",vButtebas);        
+        vCaissedroit.setExit("est",vMilieuforet);     
+        vfeu.setExit("nord",vCoffre);
+        vfeu.setExit("sud",vCloseporte);
+        vfeu.setExit("ouest",vGouffredroit);      
+        vCoffre.setExit("sud",vfeu);        
+        vGouffregauche.setExit("est",vGouffredroit);
+        vGouffregauche.setExit("ouest",vButtebas);                
+        vGouffredroit.setExit("est",vfeu);
+        vGouffredroit.setExit("ouest",vGouffregauche);       
+        vButtehaut.setExit("nord",vAnge);
+        vButtehaut.setExit("sud",vButtebas);        
+        vButtebas.setExit("nord",vButtehaut); 
+        vButtebas.setExit("sud",vCaissehaut); 
+        vButtebas.setExit("est",vGouffregauche);         
+        vAnge.setExit("sud",vButtehaut);    
+        vAnge.setExit("est",vFinal);           
+        vFinal.setExit("ouest",vAnge);
+
+        allRooms.put(vPortail.getNom() ,vPortail);
+        allRooms.put(vDebutforet.getNom() ,vDebutforet);
+        allRooms.put(vMilieuforet.getNom() , vMilieuforet);
+        allRooms.put(vTeleporteur.getNom() , vTeleporteur);
+        allRooms.put(vMarécage.getNom() , vMarécage);
+        allRooms.put(vCloseporte.getNom() , vCloseporte);
+        allRooms.put(vCoffre.getNom() , vCoffre);
+        allRooms.put(vCaissehaut.getNom() ,vCaissehaut);
+        allRooms.put(vCaissedroit.getNom() , vCaissedroit);
+        allRooms.put(vfeu.getNom() , vfeu);
+        allRooms.put(vGouffregauche.getNom() , vGouffregauche);
+        allRooms.put(vGouffredroit.getNom() ,vGouffredroit);
+        allRooms.put(vButtehaut.getNom() , vButtehaut);
+        allRooms.put(vButtebas.getNom() , vButtebas);
+        allRooms.put(vAnge.getNom() , vAnge);
+        allRooms.put(vFinal.getNom() , vFinal);
+
+    }
+
+    /**
+     * Crée tous les items du jeu et les place dans leurs Rooms.
+     */
+    public void createItems(){
+        Item cle  = new Item("une clé",0.5);
+        Item corde = new Item("une corde qui vient du coffre",0.5);
+        Item caisse = new Item("une caisse trouver par terre",0.5);
+        Item cookie = new Item("un cookie magique sans poids",0.0);
+
+        this.allItems = new HashMap<String,Item>();
+
+        this.allItems.put("Une clé",cle);
+        this.allItems.put("Une corde",corde);
+        this.allItems.put("Un cookie",cookie);
+        this.allItems.put("Une caisse",caisse);
+
+        this.allRooms.get("caissedroit").addItem("cookie",cookie);
+        this.allRooms.get("caissehaut").addItem("Caisse",caisse);
+
+    }
+
+    /**
+     * Affiche la commande interprêtée puis lance la méthode execute() de la Command-class associée à la commande tapée.
+     * Si la commande n'est pas reconnue, affiche "Quoi ?".
+     */
+    public void interpretCommand(final String pcommand) 
+    {
+        gui.println(pcommand);
+        Command command = parser.getCommand(pcommand);
+        CommandWord commandWord = command.getCommandWord();
+        switch (commandWord){
+            case INCONNUE : gui.println("je ne sais pas ce que vous voulez dire..."); break;
+            case AIDE : printHelp(); break;
+            case ALLER : goRoom(command); break;
+            case QUITTER :  if(command.hasSecondWord()) gui.println("Quitter quoi?"); else  endGame();  break; 
+            case REGARDER:look();break; 
+            case POSER:poser(command);break; 
+            case PRENDRE:prendre(command);break; 
+            case ITEMS:afficherInventaire();break; 
+            case MANGER:manger(command);break; 
+            case RETOUR: back();break; 
+            case TUER:kill();break; 
+            case OUVRIRE: open();break;
+            case TEST:test(command);break; 
+            default : System.out.println("Ce n'est pas une commande valide ! Try Again ;)") ;
+
+        }
+
+    }
+    /**
+     * Print out some help information.
+     * Here we print some stupid, cryptic message and a list of the 
+     * command words.
+     */
+    private void printHelp() 
+    {
+        gui.println("Vous etes perdu, vous etes seul");
+        gui.println("Vous etes a côté de la foret et vous venez d'y perdre votre animal, récuperez le!");
+        gui.println("Les commandes possibles sont: "+ parser.showCommands());
+        gui.print("Il vous reste " + aJoueur.getMove()+ " mouvement avant que votre animal  ne s'enfuit");
+    }
+
+    /** 
+     * Essaye d'aller dans une direction, si il n'y a pas de second retourner une message d'erreur
+     * sinon si la commande est comprise mais la sortit n'existe pas alors l'afficher,
+     * si le deuxieme mot est corect alors changer la piece courante par celle indiqué.
+     */
+    private void goRoom(Command command) 
+    {
+        if(!command.hasSecondWord()) {
+            gui.println("Ou voulez vous aller ?");
+            return;
+        }
+
+        String direction = command.getSecondWord();
+
+        Room nextRoom = aJoueur.getCurrentRoom().getExit(direction);
+        boolean portailClose = true;
+        boolean gouffreClose = true;
+
+        if (nextRoom == null)
+            gui.println("Il n'y a pas de porte");
+        else if(nextRoom == allRooms.get("portail")){
+            gui.println("La salle de départ n'est plus accesible");
+        }
+        else if(nextRoom == allRooms.get("feu") && !aJoueur.hasItem("clé") && portailClose ){
+            portailClose = false;
+            gui.println(if(portailClose){"true"});
+            gui.println("Vous ne pouvez pas passer tant que vous n'avez pas la clé");
+        }
+        else if(nextRoom == allRooms.get("gouffre gauche") && !aJoueur.hasItem("corde") && gouffreClose){
+            gouffreClose = false;
+            gui.println("Vous ne pouvez pas passer tant que vous n'avez pas la corde");
+        }
+        else  {
+            if(aJoueur.canMove()){
+                aJoueur.setMove((aJoueur.getMove())-1);
+                if(aJoueur.getCurrentRoom() != allRooms.get("portail")){
+                    previousRooms.push(aJoueur.getCurrentRoom()); 
+                }
+                aJoueur.setCurrentRoom(nextRoom);
+                gui.println("Il vous reste " + aJoueur.getMove() + " mouvement avant que votre animal ne s'enfuit.\n" + aJoueur.getCurrentRoom().getLongDescription());
+                if(aJoueur.getCurrentRoom().getImageName() != null)
+                    gui.showImage(aJoueur.getCurrentRoom().getImageName());
+            }
+            else{
+                gui.println("Vous avez perdu, votre animal c'est enfuit");
+                endGame();
+            }
+        }
+    }
+
+    /**
+     * Methode de test des commandes via fichier texte.
+     * On accede a un fichier texte pour en lire les instructions
+     * automatiquement et verifiez que les commandes fonctionnent.
+     */
+    private void test(Command command)
+    {
+
+        if(!command.hasSecondWord())
+        {
+            gui.println("Veuillez ajouter le nom du fichier de test à la suite de la commande.");
+        }
+        else
+        {
+            String fichier = command.getSecondWord();
+
+            Scanner sc = new Scanner(
+                    this.getClass().getClassLoader().getResourceAsStream("./"+fichier+".txt") );
+
+            String str = sc.nextLine();
+            while(sc.hasNextLine())
+            {
+                interpretCommand(str);
+                str = sc.nextLine();
+            }
+            sc.close();
+        } 
+    } 
+
+    /**
+     * Afficher message de fin de jeu 
+     */
+    private void endGame()
+    {
+        gui.println("Merci d'avoir jouer, Aurevoir.");
+        gui.enable(false);
+    }
+
+    /**
+     * @return La HashMap contenant toutes les Rooms du jeu. (accesseur)
+     */
+    public HashMap<String,Room> getAllRooms()
+    {
+        return this.allRooms;
+    }
+
+    /**
+     * @return La HashMap contenant tous les Items du jeu.(accesseur)
+     */
+    public HashMap<String,Item> getAllItems()
+    {
+        return this.allItems;
+    }
+
+}

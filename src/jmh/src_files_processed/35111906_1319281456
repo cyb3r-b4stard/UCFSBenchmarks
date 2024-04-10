@@ -1,0 +1,275 @@
+package TaskApplication;
+
+import TaskApplication.Person;
+import TaskApplication.Task;
+ 
+import java.util.Scanner;
+import java.util.Date;
+import java.util.ArrayList;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+/** ####### ## ####### ##### ## #### ##, ####.
+ * ## ######: ######### 
+ */
+public class TaskManager
+{
+    static Scanner input;
+    static ArrayList<Person> persons;
+               public static void main (String[]args)
+    {       
+        input = new Scanner(System.in);
+        
+        boolean program = true;
+        
+        char final optionA = 'A';
+        char final optionB = 'B';
+        char final optionC = 'C';
+        char final optionS = 'S';
+        
+        String name;
+        String address;
+        String userAns;
+                
+        persons = new ArrayList<Person>();
+        System.out.println("*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*");
+        System.out.println("####$$$$####$$$$####$$$$####$$$$####$$$$####$$$$####$$$$####$$$$####$$$$");
+        System.out.println("*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*");
+        System.out.println("\t\t\t\tHELLO! :)");
+        System.out.println("");
+        System.out.println("\t\t\tWELCOME TO BREENA'S TASK MANAGER");
+        System.out.println("*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*");
+        System.out.println("####$$$$####$$$$####$$$$####$$$$####$$$$####$$$$####$$$$####$$$$####$$$$");
+        System.out.println("*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*");
+        System.out.println("");
+        System.out.println("");
+        
+        while (program)
+        {
+        
+            System.out.println("Select one of the following options");
+            System.out.println("A:- Create a new user \nB:- Create a new task \nC:- View the tasks of an existing user \nS:- Exit the program ");
+            userAns = input.next();
+            String stringVariable  = userAns.toUpperCase();
+            char charAns = stringVariable.charAt(0);
+        
+            System.out.println();
+            System.out.println("processing.....");
+            System.out.println();
+            System.out.println("-------------------------------------------------------------------------------");
+            System.out.println("*******************************************************************************");
+            System.out.println("-------------------------------------------------------------------------------");
+                        
+            if (charAns.equals(optionA))  
+            {
+                persons.add(createPersonMenu());
+            }
+            else if (charAns.equals(optionB))
+            {
+                (Person(typeTask)).add(createTask());
+            }                       
+            else if (charAns.equals(optionC))
+            {
+                System.out.println("Enter the user's ID number: ");
+                userNum = Integre.parseInt(input.nextInt());
+                System.out.println("Thank you for that information!");
+                System.out.println("These are your tasks");
+                System.out.println("");
+                System.out.println(Person.getTasksString());                
+            }
+            else if (charAns.equals(optionS))
+            {
+                program = false;
+            }
+            else
+            {
+                try{
+                    int index = Integer.parseInt(userAns);
+                    
+                    Menu(persons.get(index-1));
+
+                }
+                catch (NumberFormatException e)
+                {
+                    System.out.println("Please check to see if you entered a valid ID number");
+                }
+                catch (IndexOutOfBoundsException e)
+                {
+                    System.out.println("This person does not exist");
+                }                
+            }
+         }
+                           
+        System.out.println("*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*");
+        System.out.println("####$$$$####$$$$####$$$$####$$$$####$$$$####$$$$####$$$$####$$$$####$$$$");
+        System.out.println("*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*");
+        System.out.println();
+        System.out.print("\t\t\tThank you for using Breena's Task Manager. \n\t\t\t\tHave a nice day.");
+        System.out.println();
+        System.out.println("*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*");
+        System.out.println("####$$$$####$$$$####$$$$####$$$$####$$$$####$$$$####$$$$####$$$$####$$$$");
+        System.out.println("*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*");
+        System.out.println();
+    }
+         
+    private static void createTask(Person variablePerson)
+    {
+        Task s = createTypeTask();
+        variablePerson.addTask(s);
+    }
+    
+    private static void createPerson(Person sumbody)
+    {
+        persons.add(sumbody);
+    }
+    
+    private static void createTypeTask()
+    {
+        ArrayList<Task> typeTask2 = new ArrayList<Task>();
+        System.out.println("Please select from the following options");
+        System.out.println("Please enter \"ERRAND\" to create an errand");
+        System.out.println("Please enter \"NORMAL\" to create an normal");
+        System.out.println("Please enter \"MEETING\" to create an meeting");
+        userAns = input.next();
+        
+        try
+        {
+            if (userInput.equalsIgnoreCase("ERRAND"))
+            {
+                typeTask.addTask(createErrand());
+            }
+            else if (userInput.equalsIgnoreCase("MEETING"))
+            {
+                typeTask.addTask(createMeeting());
+            }
+            else if (userInput.equalsIgnoreCase("NORMAL"))
+            {
+                typeTask.addTask(createNormal());         
+            }
+        }
+        catch (ParseException e)
+        {
+            System.out.println("Oops You've entered an invalid word or letter. Please try again");
+            System.out.println(Menu());
+        }
+    }
+    
+    private static String createErrand()
+    {
+        try
+        {
+            System.out.println("Enter the time the errand should end");
+            eTime = input.nextLine();
+        
+            System.out.println("Enter the date the task should end");
+            eDate = input.nextLine();   
+        
+            System.out.prontln("Enter a description of the task");
+            description = input.nextLine(); 
+        }
+        catch (ParseException e)
+        {
+            System.out.println("You entered an invalid date. Please check the date try again.");
+        }
+        
+    }
+    
+    private static String createNormal()
+    {
+        System.out.println("How many hours from now should the task end?");
+        int num = Integer.parseInt(input.nextLine());
+                
+        System.out.println("Enter a description of the task");       
+        description = input.nextLine();
+            
+    }
+    
+     private static String createMeeting()
+    {
+        try
+        {
+            System.out.println("Enter the time the meeting should end");
+            eTime = input.next();
+        
+            System.out.println("Enter the date the meeting should end");
+            sTime = input.next();  
+        
+            System.out.println("Enter the location of the meeting");
+            location = input.next();
+        
+            System.out.println("Enter the participants");
+            participants = input.next();
+        }
+        catch (ParseException e)
+        {
+            System.out.println("The date you entered is invalid.");
+        }
+    }
+    
+    public static ArrayList<Person> createPersonMenu()
+    {
+        System.out.println("Enter your information below.");
+        System.out.println("Name: ");
+        name = input.nextLine();
+                          
+        System.out.println("Address: ");
+        address = input.nextLine();                                
+              
+        System.out.println("");
+        System.out.println("Thank you for that information!");
+        
+        return createPerson(name, address);
+    }
+    
+    private static ArrayList<Task> ctreateTask()
+    {
+         boolean frequent;
+        
+                System.out.println("Enter your name");
+                name = input.nextLine();
+        
+                System.out.println("Enter your ID number");
+                ID = input.nextInt();
+        
+                System.out.println("What type of task would you like to create? \n Type \"ERRAND\" to select an Errand \nType \"MEETING\" to select a meeting \nType \"NORMAL\" to select a normal task");
+                String userInput = input.next();
+    }
+    
+    private static void Menu()
+    {
+        System.out.println("Select one of the following options");
+            System.out.println("A:- Create a new user \nB:- Create a new task \nC:- View the tasks of an existing user \nS:- Exit the program ");
+            userAns = input.next();
+            stringVariable  = userAns.toUpperCase();
+            charAns = stringVariable.charAt(0);
+        
+            System.out.println();
+            System.out.println("processing.....");
+            System.out.println();
+            System.out.println("-------------------------------------------------------------------------------");
+            System.out.println("*******************************************************************************");
+            System.out.println("-------------------------------------------------------------------------------");
+                        
+            if (charAns.equals(optionA))  
+            {
+                persons.add(createPerson());
+            }
+            else if (charAns.equals(optionB))
+            {
+                (Person(typeTask)).add(createTask());
+            }                       
+            else if (charAns.equals(optionC))
+            {
+                System.out.println("Enter the user's ID number: ");
+                userNum = Integer.parseInt(input.nextInt());
+                System.out.println("Thank you for that information!");
+                System.out.println("These are your tasks");
+                System.out.println("");
+                System.out.println(Person.getTasksString());                
+            }
+            else if (charAns.equals(optionS))
+            {
+                program = false;
+            }
+    }
+}

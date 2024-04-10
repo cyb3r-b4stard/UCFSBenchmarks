@@ -1,0 +1,177 @@
+import java.io.*; 
+import java.util.*;
+import java.*.*;
+
+/**
+ * ####### ######## ### : ####### ## ##### ## ######## #### ### #### #####.
+ * ######## # ### ######## #### ######### ### #########.
+ * 
+ * @###### ##### #######
+ * @####### #.#
+ */
+public class Machine
+{
+
+    /**
+     * Method #1 : Read a StopWords file and create an arraylist of words that we will not want.
+     */
+    public List readFromFile(String StopWordsFilePath) throws IOException {
+        {
+             System.out.print ('\f');
+             
+             List<String> myStopArrayList = new ArrayList<String>();
+             
+             BufferedReader lecteurAvecBuffer=null; String line;
+                
+                try {
+                    lecteurAvecBuffer = new BufferedReader (new FileReader(StopWordsFilePath));
+                }
+                
+                catch(FileNotFoundException exc)
+                {
+                    System.out.println("Document not found");
+                }
+                
+                while ((line = lecteurAvecBuffer.readLine())!=null)
+                
+                myStopArrayList.add(line);
+                
+                
+                lecteurAvecBuffer.close();
+                
+                return myStopArrayList;
+                    
+        }
+    }
+    
+    /**
+     * Method #2 : Read some files and extract only the "wanted" words (compare with stopwords arraylist).
+     * 
+     */
+    public void extractWantedWords(String FolderPath, String StopWordsFilePath) throws IOException {
+        
+        System.out.print ('\f');
+        
+        
+                List<String> myStopArrayList = new ArrayList<String>();
+             
+                BufferedReader lecteurAvecBuffer=null; String line;
+                
+                try {
+                    lecteurAvecBuffer = new BufferedReader (new FileReader(StopWordsFilePath));
+                }
+                
+                catch(FileNotFoundException exc)
+                {
+                    System.out.println("Document not found");
+                }
+                
+                while ((line = lecteurAvecBuffer.readLine())!=null)
+                
+                myStopArrayList.add(line);
+                
+                
+                lecteurAvecBuffer.close();
+                
+                
+        String files;
+       
+        File folder = new File(FolderPath);
+        File[] listOfFiles = folder.listFiles();
+
+        for (int i = 0; i < listOfFiles.length; i++) 
+        {
+            if (listOfFiles[i].isFile()) 
+            {
+                files = listOfFiles[i].getName();
+                if (files.endsWith(".txt") || files.endsWith(".TXT"))
+                {
+                    String currentLine="";
+                    File textFile = new File(folder.getAbsolutePath() + File.separator + files);
+                    try {
+                        BufferedReader br = new BufferedReader(new FileReader(textFile)); 
+
+                        while ((currentLine = br.readLine()) != null) { 
+                            currentLine = currentLine.toLowerCase(); 
+                            StringTokenizer parser = new StringTokenizer(currentLine, " .,;:!?'"); 
+                            
+                            while (parser.hasMoreTokens()) {
+                                
+                                String temp = parser.nextToken();
+                                
+                                if(!myStopArrayList.contains(temp) ) {
+                                   System.out.println(temp);
+                                }
+                                
+                            }
+                            
+                        }
+                        
+                        br.close(); 
+                    } catch (FileNotFoundException e) {
+                        System.out.println(e.getMessage());
+                    } catch (IOException e) {
+                       e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Method #3 : Read files from a folder, and for each word (1) calculate Hash and add to HashTable (2) Add DocumentName to the word's list
+     * 
+     */
+    public void method3(String FolderPath) {
+        
+        System.out.print ('\f');
+             
+        String files;
+       
+        File folder = new File(FolderPath);
+        File[] listOfFiles = folder.listFiles();
+
+        for (int i = 0; i < listOfFiles.length; i++) 
+        {
+            if (listOfFiles[i].isFile()) 
+            {
+                files = listOfFiles[i].getName();
+                if (files.endsWith(".txt") || files.endsWith(".TXT"))
+                {
+                    String currentLine="";
+                    File textFile = new File(folder.getAbsolutePath() + File.separator + files);
+                    try {
+                        BufferedReader br = new BufferedReader(new FileReader(textFile)); 
+
+                        while ((currentLine = br.readLine()) != null) { 
+                            currentLine = currentLine.toLowerCase(); 
+                            StringTokenizer parser = new StringTokenizer(currentLine, " .,;:!?'"); 
+                            
+                            while (parser.hasMoreTokens()) {
+                                
+                                String temp = parser.nextToken();
+                                
+                                HashMap<String, Integer> map = new HashMap<String, Integer>();
+                                
+                                map.put(21, "Twenty One");
+                                
+                                System.out.println("Does HashMap contains 21 as key: " + map.containsKey(21));
+                                
+                                
+                                
+                            }
+                            
+                        }
+                        
+                        br.close(); 
+                    } catch (FileNotFoundException e) {
+                        System.out.println(e.getMessage());
+                    } catch (IOException e) {
+                       e.printStackTrace();
+                    }
+                }
+            }
+        }
+                    
+    }
+}

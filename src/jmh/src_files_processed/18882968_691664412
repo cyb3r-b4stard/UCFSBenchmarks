@@ -1,0 +1,390 @@
+import java.util.ArrayList;
+
+/**
+ * ##### #### ###### # ###### ##### ## ### ###.
+ *
+ * #### ## ###### ### ####### ## ####### ## ## ##### ### #########
+ * ## ###### #### ######'# ########## ## ### ### ##### ##########
+ * ## ### #####.
+ *
+ * ####### ....
+ *
+ * ### ####
+ *    #####
+ *    #########
+ * ### #### ####
+ *    #####
+ *    #########
+ * ##### ####
+ *    #####
+ *    ######### ##### #######
+ *    ######### ##### #########
+ *
+ * @###### ###### ##/##/####
+ */
+public class StateFinalReview
+{
+    /**
+     * State's two character abbreviation
+     */
+    private String abbreviation;
+
+    /**
+     * State's full name
+     */
+    private String name;
+
+    /**
+     * State's motto
+     */
+    private String motto;
+
+    /**
+     * ArrayList of Counties that make up the State
+     */
+    private ArrayList<County> countiesAsArrayList;
+
+    /**
+     * array of Counties that make up the State
+     */
+    private County [] countiesAsArray;
+
+    /**
+     * Constructor.
+     *
+     * @param abbrieviation
+     * @param name
+     * @param motto
+     */
+    public StateFinalReview(String abbrieviation, String name, String motto)
+    {
+        this.abbreviation = abbrieviation;
+        this.name = name;
+        this.motto = motto;
+
+        this.countiesAsArray = new County[10];
+        this.countiesAsArrayList = new ArrayList< County >();
+    }
+
+    /**
+     * @return the abbreviation
+     */
+    public String getAbbrieviation()
+    {
+        return abbreviation;
+    }
+
+    /**
+     * @param abbrieviation the abbreviation to set
+     */
+    public void setAbbrieviation(String abbrieviation)
+    {
+        this.abbreviation = abbrieviation;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName()
+    {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    /**
+     * @return the motto
+     */
+    public String getMotto()
+    {
+        return motto;
+    }
+
+    /**
+     * @param motto the motto to set
+     */
+    public void setMotto(String motto)
+    {
+        this.motto = motto;
+    }
+
+    /**
+     * @return the countiesAsArrayList
+     */
+    public ArrayList< County > getCountiesAsArrayList()
+    {
+        return countiesAsArrayList;
+    }
+
+    /**
+     * Add a County object to the ArrayList
+     * @param county to add
+     */
+    public void addCountyToArrayList(County county)
+    {
+        this.countiesAsArrayList.add(county);
+    }
+
+    /**
+     * @return the countiesAsArray
+     */
+    public County[] getCountiesAsArray()
+    {
+        return countiesAsArray;
+    }
+
+    /**
+     * Add a County object to the Array.  If the array is full then print
+     * an error message.
+     *
+     * @param county to add.
+     */
+    public void addCountyToArray(County county)
+    {
+        for(int index = 0; index < countiesAsArray.length; index++)
+        {
+            if(countiesAsArray[index] == null)
+            {
+                countiesAsArray[index] = county;
+                return;
+            }
+        }
+
+        System.out.println("Error: Can't add county since array is full: " + county);
+    }
+
+
+    /**
+     * @return State's total population by summing up each county's population
+     */
+    public int getPopulationFromArrayUsingForLoop()
+    {
+
+        return 0;
+    }
+
+    /**
+     * @return State's total population by summing up each county's population
+     */
+    public int getPopulationFromArrayUsingWhileLoop()
+    {
+
+        int index = 0;
+        int totPop = 0;
+        while (index < countiesAsArray.length)
+        {
+            if( countiesAsArray[index]!= null)
+            {
+                totPop += countiesAsArray[index].getPopulation();
+            }
+
+            index++;
+        }
+
+        return totPop;
+    }
+
+    /**
+     * @return State's total population by summing up each county's population
+     */
+    public int getPopulationFromArrayUsingForEachLoop()
+    {
+        int pop = 0;
+        for(County c: countiesAsArrayList)
+        {
+            pop+= c.getPopulation();
+        }
+
+        return pop;
+    }
+
+    /**
+     * Given a county name try to find it within the array
+     * while ignoring case.
+     *
+     * @param countyName The county to find in the Array
+     * @return Either the County given the name or NULL
+     */
+    private County findCountyFromArrayUsingName(String countyName)
+    {
+       String local = " ";
+       for(County c: countiesAsArrayList)
+       {
+           String secondLocal = c.getName();
+           if(secondLocal.equals(local))
+           {
+               return c;
+            }
+            
+            else
+            {
+                System.out.println("sorry the county you searched for was not found, please enter a new county");
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Add population to a county in the Array version given a name and 
+     * a population.
+     *
+     * @param name The county's name to update
+     * @param population The amount of population to add
+     */
+    public void addPopulationToCountyArray(String name, int population)
+    {
+        County c = findCountyFromArrayListUsingName(name)
+        if(c!=null)
+        {
+            int currentPop = c.getPopulation();
+            c.setPopulation(currentPop + population);
+        }
+        else
+        {
+            System.out.println("error: couonty" + name + "istn in the list");
+        }
+
+    }
+
+    /**
+     * Concatenate the county names found in the Array like
+     *       DeKalb, Kane, Cook, Lake
+     *
+     *       NOT like any of the following:
+     *       DeKalb, Kane, Cook, Lake,
+     *       ,DeKalb, Kane, Cook, Lake
+     *       DeKalb, Kane, Cook, Lake, null, null, null, null, null, null
+     *      
+     * @return The counties as a comma separated list of names
+     */
+    public String getCountyNamesAsStringFromArray()
+    {
+        return "Array    : Yet to be done!";
+    }
+
+
+    /**
+     * @return State's total population by summing up each county's population
+     */
+    public int getPopulationFromArrayListUsingWhileLoopWithIndexes()
+    {
+
+        return 0;
+    }
+
+    /**
+     * @return State's total population by summing up each county's population
+     */
+    public int getPopulationFromArrayListUsingForLoopWithIndexes()
+    {
+        int pop = 0;
+        for(int index = 0; index<countiesAsArrayList.size();index++)
+        {
+            pop+= countiesAsArrayList.get(index).getPopulation();
+        }
+
+        return pop;
+    }
+
+    /**
+     * @return State's total population by summing up each county's population
+     */
+    public int getPopulationFromArrayListUsingForEachLoop()
+    {
+        int pop = 0;
+        for(County c: countiesAsArrayList)
+        {
+            pop+= c.getPopulation();
+        }
+        return pop;
+    }
+
+    /**
+     * @return State's total population by summing up each county's population
+     */
+    public int getPopulationFromArrayListUsingWhileLoopWithIterators()
+    {
+        return 0;
+    }
+
+    /**
+     * Given a county name try to find it within the array
+     * while ignoring case.
+     *
+     * @param countyName The county to find in the Array
+     * @return Either the County given the name or NULL
+     */
+    private County findCountyFromArrayListUsingName(String countyName)
+    {
+        String local = countyName;
+        for(County c: countiesAsArrayList)
+        {
+            String secondLocal = c.getName();
+            if(secondLocal.equals(local))
+            {
+                return c ;
+            }
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @param name The county's name to update
+     * @param population The amount of population to add
+     */
+    public void addPopulationToCountyArrayList(String name, int population)
+    {
+        County c = findCountyFromArrayListUsingName(name);
+        if (c !=null)
+        {
+            int pop = c.getPopulation();
+            c.setPopulation(pop + population);
+        }
+        else
+        {
+            System.out.println("Error Counnty:" + name + " is not not in the collection, please enter a different county");
+
+        }
+
+    }
+
+    /**
+     * Concatenate the county names found in the ArrayList like
+     *       DeKalb, Kane, Cook, Lake
+     *
+     *       NOT like any of the following:
+     *       DeKalb, Kane, Cook, Lake,
+     *       ,DeKalb, Kane, Cook, Lake
+     *       DeKalb, Kane, Cook, Lake, null, null, null, null, null, null
+     *      
+     * @return The counties as a comma separated list of names
+     */
+    public String getCountyNamesAsStringFromArrayList()
+    {
+        String local = " ";
+        for(County c: countiesAsArrayList)
+        {
+            local += c + ", ";
+
+        }
+        return local;
+    }
+
+    /**
+     * return the String representation of the State object.
+     */
+    public String toString()
+    {
+        return "\n\nState: " + this.name + " abbr: " + this.abbreviation + " motto: " + this.motto + 
+        "\nCountyListArray    : " + this.getCountyNamesAsStringFromArray() +
+        "\nCountListArrayList : " + this.getCountyNamesAsStringFromArrayList();
+    }
+
+}

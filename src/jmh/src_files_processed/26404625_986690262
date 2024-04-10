@@ -1,0 +1,282 @@
+/**
+ * ########## ### ### ########## ### ######.
+ */
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JInternalFrame;
+import javax.swing.JToolBar;
+import javax.swing.JDesktopPane;
+import javax.swing.JTextField;
+import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JList;
+import javax.swing.AbstractListModel;
+import javax.swing.ListSelectionModel;
+import javax.swing.JScrollPane;
+import java.awt.Canvas;
+import javax.swing.JRadioButton;
+
+import java.awt.*;
+import javax.swing.border.*;
+import javax.swing.*;
+import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import java.util.List;
+import java.util.Vector;
+import java.util.ArrayList;
+
+public class NewOrderManager extends JFrame implements ActionListener {
+
+    private MainController mainController;
+    private UserSearch userSearch;
+
+    private JPanel contentPane;
+    private JTextField txtPhone;
+    private JTextField txtName;
+    private JTextField txtAdress;
+    private JTextField txtCity;
+    private JTextField txtPLZ;
+    private JTextField txtPizzaID;
+    private JButton btnSubmitOrderShipment;
+    private JButton btnSubmitOrderSelf;
+    private JButton btnPizzaChoose;
+    private JButton btnEditOrderPizza;
+    private JButton btnDeleteOrderPizza;
+    private JButton btnSearch;
+    private JButton btnAbholung;
+    private JLabel lblOrderPrize;
+    JList<OrderPizza> listOrderPizzas;
+    ArrayListModel<OrderPizza> orderModel;
+    JComboBox<Pizza> comboBoxPizzaChoose;
+    ComboBoxModel<Pizza> pizzaModel;
+
+    private String[] pizzas;
+    private Order finalOrder = new Order(false);
+    private User finalUser = null;
+
+    public NewOrderManager(MainController mainController, UserSearch userSearch) {
+        this.mainController = mainController;
+        this.userSearch = userSearch;
+
+        getData();
+        createNewOrderView();
+    }
+
+    private void createNewOrderView() {
+
+        setTitle("Pizzabestellung erfassen");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setBounds(100, 100, 732, 624);
+        contentPane = new JPanel();
+        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setContentPane(contentPane);
+        contentPane.setLayout(null);
+
+        JButton btnSubmitOrderShipment = new JButton("Bestellung tätigen - liefern - (F8)");
+        btnSubmitOrderShipment.setBounds(381, 539, 282, 25);
+        contentPane.add(btnSubmitOrderShipment);
+
+        JInternalFrame internalFrameCustomer = new JInternalFrame("Erfassung Kundendaten");
+        internalFrameCustomer.setBounds(12, 4, 688, 166);
+        contentPane.add(internalFrameCustomer);
+        internalFrameCustomer.getContentPane().setLayout(null);
+
+        txtPhone = new JTextField();
+        txtPhone.setToolTipText("Telefonnummer");
+        txtPhone.setBounds(131, 12, 277, 19);
+        internalFrameCustomer.getContentPane().add(txtPhone);
+        txtPhone.setColumns(10);
+
+        JLabel lblPhone = new JLabel("Telefonnummer");
+        lblPhone.setBounds(12, 14, 116, 15);
+        internalFrameCustomer.getContentPane().add(lblPhone);
+
+        btnSearch = new JButton("Suchen");
+        btnSearch.setBounds(420, 9, 117, 25);
+        btnSearch.addActionListener(this);
+        internalFrameCustomer.getContentPane().add(btnSearch);
+
+        btnAbholung = new JButton("Abholung");
+        btnAbholung.setBounds(549, 9, 117, 25);
+        internalFrameCustomer.getContentPane().add(btnAbholung);
+
+        JLabel lblName = new JLabel("Name");
+        lblName.setBounds(12, 45, 70, 15);
+        internalFrameCustomer.getContentPane().add(lblName);
+
+        txtName = new JTextField();
+        txtName.setToolTipText("Name");
+        txtName.setBounds(131, 43, 535, 19);
+        internalFrameCustomer.getContentPane().add(txtName);
+        txtName.setColumns(10);
+
+        txtAdress = new JTextField();
+        txtAdress.setToolTipText("Adresse");
+        txtAdress.setBounds(131, 74, 535, 19);
+        internalFrameCustomer.getContentPane().add(txtAdress);
+        txtAdress.setColumns(10);
+
+        JLabel lblAdress = new JLabel("Adresse");
+        lblAdress.setBounds(12, 76, 101, 15);
+        internalFrameCustomer.getContentPane().add(lblAdress);
+
+        JLabel lblCity = new JLabel("Stadt");
+        lblCity.setBounds(12, 107, 70, 15);
+        internalFrameCustomer.getContentPane().add(lblCity);
+
+        txtCity = new JTextField();
+        txtCity.setToolTipText("Stadt");
+        txtCity.setText("");
+        txtCity.setBounds(131, 105, 211, 19);
+        internalFrameCustomer.getContentPane().add(txtCity);
+        txtCity.setColumns(10);
+
+        JLabel lblPLZ = new JLabel("PLZ");
+        lblPLZ.setBounds(376, 107, 36, 15);
+        internalFrameCustomer.getContentPane().add(lblPLZ);
+
+        txtPLZ = new JTextField();
+        txtPLZ.setToolTipText("PLZ");
+        txtPLZ.setText("");
+        txtPLZ.setBounds(420, 105, 246, 19);
+        internalFrameCustomer.getContentPane().add(txtPLZ);
+        txtPLZ.setColumns(10);
+
+        JInternalFrame internalFrameOrder = new JInternalFrame("Erfassung Bestellung (Direkte Order)");
+        internalFrameOrder.setBounds(12, 182, 688, 307);
+        contentPane.add(internalFrameOrder);
+        internalFrameOrder.getContentPane().setLayout(null);
+
+        pizzaModel = new DefaultComboBoxModel<>(new Vector<>(mainController.getPizzas().values()));
+        comboBoxPizzaChoose = new JComboBox<>();
+        comboBoxPizzaChoose.setBounds(217, 12, 449, 24);
+        comboBoxPizzaChoose.setToolTipText("Pizza-Auswahl");
+        comboBoxPizzaChoose.setModel(pizzaModel);
+        internalFrameOrder.getContentPane().add(comboBoxPizzaChoose);
+
+        JLabel lblPizzaID1 = new JLabel("Pizza-ID");
+        lblPizzaID1.setBounds(12, 17, 57, 15);
+        internalFrameOrder.getContentPane().add(lblPizzaID1);
+
+        txtPizzaID = new JTextField();
+        txtPizzaID.setBounds(78, 15, 69, 19);
+        txtPizzaID.setToolTipText("Pizza-ID");
+        internalFrameOrder.getContentPane().add(txtPizzaID);
+        txtPizzaID.setColumns(10);
+
+        JLabel lblPizzaID2 = new JLabel("oder");
+        lblPizzaID2.setBounds(161, 17, 38, 15);
+        internalFrameOrder.getContentPane().add(lblPizzaID2);
+
+        btnPizzaChoose = new JButton("Pizza auswählen (F6)");
+        btnPizzaChoose.setBounds(12, 44, 654, 25);
+        internalFrameOrder.getContentPane().add(btnPizzaChoose);
+
+        JScrollPane scrollPaneOrderPizzas = new JScrollPane();
+        scrollPaneOrderPizzas.setBounds(12, 78, 654, 146);
+        internalFrameOrder.getContentPane().add(scrollPaneOrderPizzas);
+
+        orderModel = new ArrayListModel<>(finalOrder.pizzas);
+        listOrderPizzas = new JList<>(orderModel);
+        scrollPaneOrderPizzas.setViewportView(listOrderPizzas);
+        listOrderPizzas.setValueIsAdjusting(true);
+        listOrderPizzas.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+
+        btnEditOrderPizza = new JButton("Bearbeiten");
+        btnEditOrderPizza.setBounds(12, 236, 117, 25);
+        internalFrameOrder.getContentPane().add(btnEditOrderPizza);
+
+        btnDeleteOrderPizza = new JButton("Löschen");
+        btnDeleteOrderPizza.setBounds(142, 236, 117, 25);
+        internalFrameOrder.getContentPane().add(btnDeleteOrderPizza);
+
+        lblOrderPrize = new JLabel("Gesamtpreis: 00,00€");
+        lblOrderPrize.setBounds(500, 241, 166, 15);
+        internalFrameOrder.getContentPane().add(lblOrderPrize);
+
+        btnSubmitOrderSelf = new JButton("Bestellung tätigen - abholen");
+        btnSubmitOrderSelf.setBounds(60, 539, 282, 25);
+        contentPane.add(btnSubmitOrderSelf);
+
+        btnSubmitOrderShipment.addActionListener(this);
+        btnSubmitOrderSelf.addActionListener(this);
+        btnPizzaChoose.addActionListener(this);
+        btnEditOrderPizza.addActionListener(this);
+        btnDeleteOrderPizza.addActionListener(this);
+
+        btnAbholung.addActionListener(this);
+
+        internalFrameOrder.setVisible(true);
+        internalFrameCustomer.setVisible(true);
+        setVisible(true);
+    }
+
+    public void getData() {
+        pizzas = mainController.getPizzas().values().stream()
+        .map(pizza -> pizza.name)
+        .toArray(String[]::new);
+    }
+
+    public void setSelectedUser(User user) {
+        this.finalUser = user;
+
+        txtPhone.setText(String.valueOf(user.tel));
+        txtName.setText(user.name);
+        txtAdress.setText(user.address);
+        txtCity.setText(user.city);
+        txtPLZ.setText(String.valueOf(user.plz));
+
+        txtPhone.setEditable(false);
+        txtName.setEditable(false);
+        txtAdress.setEditable(false);
+        txtCity.setEditable(false);
+        txtPLZ.setEditable(false);
+        btnSearch.setEnabled(false);
+        btnAbholung.setEnabled(false);
+    }
+
+    public void changedOrderPizza() {
+        orderModel.fireChanged();
+        lblOrderPrize.setText("Gesamtpreis: " + String.valueOf(finalOrder.getPrice()) + "€");
+    }
+    
+    public void submitOrder(Boolean shipment) {
+        if (finalUser == null) {
+            finalUser == new User(txtName.getText(), txtPhone.getText(), txtAdress.getText(), txtPLZ.getText(), txtCity.getText());
+        }
+        finalOrder.user = finalUser;
+        finalOrder.isDelivery = shipment;
+        
+        mainController.createOrder(finalOrder);
+        
+        dispose();
+    }
+
+    public void actionPerformed(ActionEvent event) {
+        if (event.getSource() == btnSubmitOrderShipment) {
+            submitOrder(true);
+        } else if (event.getSource() == btnSubmitOrderSelf) {
+            submitOrder(false);
+        } else if (event.getSource() == btnPizzaChoose) {
+            OrderPizza orderPizza;
+            if (txtPizzaID.getText() != "" && mainController.getPizzas().get(Integer.parseInt(txtPizzaID.getText())) != null) {
+                orderPizza = new OrderPizza(OrderPizza.Size.MEDIUM, new ArrayList<>(mainController.getPizzas().get(Integer.parseInt(txtPizzaID.getText())).ingredients));
+            } else {
+                Pizza pizza = (Pizza) pizzaModel.getSelectedItem();
+                orderPizza = new OrderPizza(OrderPizza.Size.MEDIUM, new ArrayList<>(pizza.ingredients));
+            }
+            finalOrder.pizzas.add(orderPizza);
+            changedOrderPizza();
+        } else if (event.getSource() == btnEditOrderPizza) {
+            new OrderPizzaEditView(mainController, this, (OrderPizza) listOrderPizzas.getSelectedValue());
+        } else if (event.getSource() == btnDeleteOrderPizza) {
+            finalOrder.pizzas.remove(listOrderPizzas.getSelectedValue());xtPLZ.getTe

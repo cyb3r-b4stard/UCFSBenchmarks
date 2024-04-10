@@ -1,0 +1,396 @@
+
+/**
+ * # # # # # # #
+ *
+ * #�###### ##### ###### ####### ###.
+ * 
+ * @###### (##### ###) 
+ * @####### (### ####)
+ *
+ * (##### #### #########)
+ * (##### ####### ## ########)
+ */
+import java.io.*;
+
+public class Tp3Gr20 {
+    public static int indicePizza = 1;
+    
+   public static void main (String[] params) {
+       final String FIC_CMD_TRAITEMENT = "CommandesEnTraitement.txt";
+       final String FIC_COURS_LIVRAISON = "CommandesEnCoursDeLivraison.txt";
+       final String CMD_LIVREES = "CommandesLivrees.txt";
+       FileWriter writer = null;
+        PrintWriter print = null;
+        FileWriter writer1 = null;
+        PrintWriter print1 = null;
+        int choixPizza = 0;
+       
+        Pizza p;
+        int ch =0;
+        int choixOption;
+        Pizza [] tab = new Pizza [10]; 
+        Pizza [] tabLivraisonPizza = new Pizza [10];  
+        Pizza [] tabCommandeLivree = new Pizza [10];  
+        
+        
+        fichierCommande ( tab,  writer,  print, String msgErr, FIC_CMD_TRAITEMENT);
+        ficherLivraison (tabLivraisonPizza,  writer,  print,  FIC_COURS_LIVRAISON);
+         
+       
+        
+           
+   } 
+    
+    public static void presentation (){
+        System.out.println("Presentation du programme");
+    }
+    
+    public static int validationMenu (){ 
+        int choix = 0;
+        final int CHOIX_MIN = 1;
+        final int CHOIX_MAX = 8;
+        System.out.println("MENU PRINCIPAL");
+        System.out.println("1 – Commander une pizza");
+        System.out.println("2 – Afficher les commandes en cours de traitements ");
+        System.out.println("3 – Modifier une pizza (commande en cours de traitement seulement) ");
+        System.out.println("4 – Envoyer une pizza a la livraison");
+        System.out.println("5 – Afficher les livraisons en cours ");
+        System.out.println("6 – Confirmer une livraison");
+        System.out.println("7 – Afficher les pizzas qui ont ete livrees ");
+        System.out.println("8 – Quitter le programme");    
+        validationChoix (CHOIX_MIN,CHOIX_MAX, "Entrez un entier entre 1 et 8", "Erreur! Entrez un entier entre 1 et 8");
+        return choix;
+    }
+    
+    public static void verficationInformation (int max, String nomAttribut, String valeur){        
+        for (int i = 0; i <= max; i++){
+            System.out.println(nomAttribut + " : " + valeur + " : " + "(" + i + ")");
+        }        
+    }
+        
+    public static int validationChoix (int min, int max, String msgInvite, String msgErr){
+        int rep = 0;
+        int choix = 0;
+        boolean verifier = false;
+        do {
+            System.out.println(msgInvite);
+            try {
+                choix = Clavier.lireIntLn();
+                verifier = true;
+                if (choix < min || choix > max){
+                    System.out.println(msgErr);                    
+                } else{
+                    rep = choix;
+                }
+            } catch (NumberFormatException e){
+                System.out.println("La valeur saisie doit etres un entier");
+            }
+        } while (!verifier || choix < min || choix > max);
+        return rep;
+    }
+    
+    public static Pizza [] augmenterTailleTableauCinq ( Pizza [] tab ) {
+        
+        if (tab != null && tab.length > 0){
+            Pizza [] tableaudeTravail = new Pizza [tab.length + 5];              
+            for (int i = 0; i < tab.length; i++){                
+                 tableaudeTravail [i] = tab [i];               
+            }
+            tab = tableaudeTravail;
+       }
+        return tab;
+    }
+    
+    public static void commanderPizza (Pizza [] tab ){          
+        System.out.println("Option 1 : Commander une pizza");        
+        if (tab != null && tab.length > 0){
+            if (tab.length == indicePizza){
+                augmenterTailleTableauCinq (tab); 
+            }
+            
+            verficationInformation (Pizza.MAX_GRANDEUR, "Grandeur", Pizza.grandeur(indicePizza -1));
+            int grandeur = validationChoix ( Pizza.MIN_GRANDEUR, Pizza.MAX_GRANDEUR,"Entrez un entier entre 0 et 4", "Erreur! Entrez un entier entre 0 et 4");
+            
+            
+            verficationInformation (Pizza.MAX_VIANDE, "Viande", Pizza.viande(indicePizza - 1));
+            int viande = validationChoix ( Pizza.MIN_VIANDE, Pizza.MAX_VIANDE,"Entrez un entier entre 0 et 6", "Erreur! Entrez un entier entre 0 et 6");
+            
+            
+            verficationInformation (Pizza.MAX_VIANDE, "ExraViande", Pizza.viande(indicePizza - 1));
+            int extraViande  = validationChoix ( Pizza.MIN_VIANDE, Pizza.MAX_VIANDE,"Entrez un entier entre 0 et 6", "Erreur! Entrez un entier entre 0 et 6");
+            
+            
+            verficationInformation (Pizza.MAX_GARN, "Garniture", Pizza.garniture(indicePizza - 1));
+            int garniture = validationChoix ( Pizza.MIN_GARN, Pizza.MAX_GARN,"Entrez un entier entre 0 et 5", "Erreur! Entrez un entier entre 0 et 5");
+           
+            
+            verficationInformation (Pizza.MAX_GARN, "ExtraGarniture", Pizza.garniture(indicePizza - 1));
+            int extraGarniture = validationChoix ( Pizza.MIN_GARN, Pizza.MAX_GARN,"Entrez un entier entre 0 et 5", "Erreur! Entrez un entier entre 0 et 5");
+            
+        
+            verficationInformation (Pizza.MAX_CROUTE, "Croute", Pizza.croute(indicePizza - 1));
+            int croute = validationChoix ( Pizza.MIN_CROUTE, Pizza.MAX_CROUTE,"Entrez un entier entre 0 et 4", "Erreur! Entrez un entier entre 0 et 4"); 
+            
+            Pizza pizza = new Pizza (viande, garniture, grandeur, croute, extraViande, extraGarniture);   
+            
+                tab [indicePizza - 1]  = pizza;             
+                    
+
+
+                        
+        } 
+        indicePizza = indicePizza + 1;
+        
+    }
+
+    public static void afficherCommandes(Pizza [] tab){
+        System.out.println("Option 2 : Afficher les commandes en cours de traitements");
+        afficherTableauPizza (tab, "Il n y'a aucune commande en traitement");       
+    }
+    
+    public static char choixValide (){
+        char reponse = ' ';
+        char choix = ' ';
+        do {
+            System.out.println("Entrez un choix valide o/O ou n/N");
+            choix = Clavier.lireCharLn();
+            choix = Character.toLowerCase(choix);
+            if (choix != 'n' && choix != 'o'){
+                System.out.println("Erreur! Entrez un choix valide o/O ou n/N");
+            } else {
+                reponse = choix;
+            }
+        } while (choix != 'n' && choix != 'o');
+        return reponse;
+    }
+       
+   public static void modification (Pizza [] tab){
+       System.out.println("Option 3 : Modifier une pizza (commande en cours de traitement seulement)");
+       int choix = 0;
+       int position = 0;
+       char reponse = ' ';
+       boolean verifier = false;
+       boolean ok = false;
+       int indice = 0;
+       Pizza  p;
+       if(tab != null && tab.length > 0){
+           for (int i = 0; i < tab.length; i++){
+               if (tab [i] != null){                 
+                  verifier = true;             
+               } 
+           }
+           if (verifier == false) {
+               System.out.println("Impossible de modifier une pizza car il n y'a aucune commande en cours");
+           } else {                          
+               choix = validationChoix (1, tab.length, "Entrer une valeur superieur ou egal a 1", "Erreur! Entrer une valeur superieur ou egal a 1");
+               for (int i = 0; i < tab.length; i++){
+                   if (tab [i] != null){                   
+                       indice = tab [i].getNumeroIdentificatin ();
+                       if (indice == choix){
+                           ok = true;
+                           position = i;
+                        }
+                    } 
+                }
+                if (ok == false){
+                    System.out.println("Impossible de modifier cette pizza car cette pizza n'est pas dans les commandes en cours de traitement");
+                } else {
+                    p = obtenirPizza (tab, choix);
+                    if (p != null){
+                        System.out.println(p.toString());
+                        reponse = choixValide ();
+                        if(reponse == 'o'){
+                            verficationInformation (Pizza.MAX_GRANDEUR, "Grandeur", Pizza.grandeur(position));
+                            System.out.println("La grandeur est " + tab [position].getGrandeur() + " (" + tab [position].grandeur (tab [position].getGrandeur()) + ")." + "Entrez la nouvelle taille :");
+                            int grandeur = validationChoix ( Pizza.MIN_GRANDEUR, Pizza.MAX_GRANDEUR,"Entrez un entier entre 0 et 4", "Erreur! Entrez un entier entre 0 et 4");
+        
+                            verficationInformation (Pizza.MAX_VIANDE, "Viande", Pizza.viande(position));
+                            System.out.println("La viande est " + tab [position].getViande() + " (" + tab [position].viande (tab [position].getViande()) + ")." + "Entrez la nouvelle viande :");
+                            int viande = validationChoix ( Pizza.MIN_VIANDE, Pizza.MAX_VIANDE,"Entrez un entier entre 0 et 6", "Erreur! Entrez un entier entre 0 et 6");
+        
+                            verficationInformation (Pizza.MAX_VIANDE, "ExraViande", Pizza.viande(position));
+                            System.out.println("Le ExtraViande est " + tab [position].getExtraViande() + " (" + tab [position].viande (tab [position].getExtraViande()) + ")." + "Entrez la nouvelle ExtraViande  :");
+                            int extraViande = validationChoix ( Pizza.MIN_VIANDE, Pizza.MAX_VIANDE,"Entrez un entier entre 0 et 6", "Erreur! Entrez un entier entre 0 et 6");
+        
+                            verficationInformation (Pizza.MAX_GARN, "Garniture", Pizza.garniture(position));
+                            System.out.println("La Garniture est " + tab [position].getGarniture() + " (" + tab [position].garniture (tab [position].getGarniture()) + ")." + "Entrez la nouvelle Garniture  :");                        
+                            int garniture = validationChoix ( Pizza.MIN_GARN, Pizza.MAX_GARN,"Entrez un entier entre 0 et 5", "Erreur! Entrez un entier entre 0 et 5");
+        
+                            verficationInformation (Pizza.MAX_GARN, "ExtraGarniture", Pizza.garniture(position));
+                            System.out.println("Le ExtraViande est " + tab [position].getExtraViande() + " (" + tab [position].viande (tab [position].getExtraViande()) + ")." + "Entrez la nouvelle ExtraViande  :");
+                            int extraGarniture = validationChoix ( Pizza.MIN_GARN, Pizza.MAX_GARN,"Entrez un entier entre 0 et 5", "Erreur! Entrez un entier entre 0 et 5");
+        
+                            verficationInformation (Pizza.MAX_CROUTE, "Croute", Pizza.croute(position));
+                            System.out.println("La croute est " + tab [position].getCroute() + " (" + tab [position].croute (tab [position].getCroute()) + ")." + "Entrez la nouvelle croute :");
+                            int croute = validationChoix ( Pizza.MIN_CROUTE, Pizza.MAX_CROUTE,"Entrez un entier entre 0 et 4", "Erreur! Entrez un entier entre 0 et 4");  
+                            System.out.println("Voulez vous enregistrer les informations");
+                            if (choixValide () == 'n'){
+                                System.out.println("Modifiction annulee");
+                            } else {                               
+                                tab [position].setViande(viande);
+                                tab [position].setGarniture(garniture);
+                                tab [position].setGrandeur(grandeur);
+                                tab [position].setCroute(croute);
+                                tab [position].setExtraViande(extraViande);
+                                tab [position].setExtraGarniture(extraGarniture);
+                                System.out.println(tab [position]);
+                                System.out.println("Modification effectuee");                                
+                            }    
+                        } else {
+                            System.out.println("Modification annulee");
+                        }
+                    }
+                }
+            
+            
+            
+            }
+        }
+    }
+    
+  
+
+    
+    public static void envoiPizzaLivraison (Pizza [] tab, Pizza [] tabLivraisonPizza){
+        System.out.println("Option 4 : Envoyer une pizza a la livraison");
+        confirmationEnvoi (tab, tabLivraisonPizza, "Impossible de livrer cette pizza car cette pizza n'est pas dans les commandes en cours de traitement", "Envie en livraison annule", 
+                            "Impossible d'envoyer une pizza a la livraison car il n y'a aucune commande en cours");
+    }
+    
+    public static void confirmationEnvoi (Pizza [] tab, Pizza [] tabLivraisonPizza, String msgErr, String msgErr1, String msgErr2){
+        boolean verifier = false;
+        boolean ok = false;
+        int choix = 0;
+        int posTabLiv = 0; 
+        int position = 0;
+        char reponse = ' ';
+        int indice = 0;
+        Pizza pp;
+        if(tab != null && tab.length > 0){
+            for (int i = 0; i < tab.length; i++){
+                if (tab [i] != null ){
+                    verifier = true;
+                }
+            }
+            if(verifier == false){
+                System.out.println("Impossible d'envoyer une pizza a la livraison car il n y'a aucune commande en cours");
+            } else {
+                choix = validationChoix (1, tab.length, "Entrer une valeur superieur ou egal a 1", "Erreur! Entrer une valeur superieur ou egal a 1");
+                for (int i = 0; i < tab.length; i++){
+                    if (tab [i] != null ){
+                        indice = tab [i].getNumeroIdentificatin();
+                        if (indice == choix){
+                            ok = true;
+                            position = i;
+                        }
+                    }
+                }
+                if (ok == false){   
+                    System.out.println("Impossible de livrer cette pizza car cette pizza n'est pas dans les commandes en coures de traitement");                    
+                } else {
+                    pp = obtenirPizza (tab, choix);
+                    if (pp != null){
+                        System.out.println(pp.toString());
+                        reponse = choixValide ();
+                        if (reponse == 'n'){
+                            System.out.println("Envoie en livraison annule");
+                        } else {
+                            if(tabLivraisonPizza.length == choix){
+                                augmenterTailleTableauCinq (tabLivraisonPizza);
+                            }
+                            tabLivraisonPizza [posTabLiv] = tab [position];
+                            System.out.println(tabLivraisonPizza [posTabLiv]);
+                            posTabLiv = posTabLiv + 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    
+    
+
+public static void afficherLivraison (Pizza [] tabLivraisonPizza){
+    System.out.println("Option 5 : Afficher les livraison en cours");
+    afficherTableauPizza (tabLivraisonPizza,  "Il n y'a aucune livraison en cours");    
+}
+
+public static void confirmationLivraison (Pizza [] tabLivraisonPizza , Pizza [] tabCommandeLivree){
+    System.out.println("Option 6 : Confirmer une livraison");
+    confirmationEnvoi (tabLivraisonPizza, tabCommandeLivree, "Impossible de confirmer la livraison car cette pizza n'est pas en cours de livraison", "Confirmation de livraison annulee", 
+                       "Impossible de confirmer une livraison car il n y'a aucune livraison en cours");
+}
+
+public static void afficherPizzaLivree (Pizza [] tabCommandeLivree){
+    System.out.println("Option 7 : Afficher les pizzas qui ont ete livrees");
+    afficherTableauPizza (tabCommandeLivree, "Il n y'a aucune commande qui a ete livree");
+}
+
+public static Pizza obtenirPizza (Pizza [] tab, int no){
+    int indice = 0;
+    Pizza pizza = null;
+    if (tab != null && tab.length > 0){
+        for (int i = 0; i < tab.length; i++){
+            if (tab [i] != null){
+                indice = tab [i].getNumeroIdentificatin();
+                if (no == indice){
+                    pizza = tab [i];
+                }
+            }
+        }
+    } 
+    return pizza;
+}
+
+
+
+public static void afficherTableauPizza (Pizza [] tab, String msgTabVide){
+    boolean trouve = false;
+    if (tab != null){
+        for (int i = 0; i < tab.length; i++){                                                 
+            if (tab [i] != null){
+                System.out.println(tab [i]);
+                System.out.println("Appuyer sur ENTRER pour continuer");
+                Clavier.lireFinLigne();
+                trouve = true;
+            } 
+        }
+        if (trouve == false) {
+            System.out.println(msgTabVide);
+        }
+    }  
+}
+
+ public static void enregistrer (Pizza [] tableau, FileWriter ecrivain, PrintWriter lecteur, String msgErr, String nomFichier){ 
+     boolean verifier = false;
+        try {
+            ecrivain = new FileWriter (nomFichier);
+            lecteur = new PrintWriter (ecrivain);          
+            for (int i = 0; i < tableau.length; i++){
+                if (tableau[i] != null){
+                    verifier = true;
+                    lecteur.println(tableau[indicePizza]);
+                    lecteur.println();
+                }
+            }
+            if (verifier == false){
+                lecteur.println(msgErr);
+            }
+            ecrivain.close();
+            lecteur.close();  
+        } catch (Exception e){            
+            e.toString();
+        }
+ }
+ 
+ public static void fichierCommande (Pizza [] tab, FileWriter writer, PrintWriter print, String msgErr, String FIC_CMD_TRAITEMENT){
+     enregistrer (tab, writer, print, "Il n y'a pas de commande en traitement", FIC_CMD_TRAITEMENT);
+ }
+ 
+ public static void fichierLivraison (Pizza [] tabLivraisonPizza, FileWriter writer1, PrintWriter print1,  String msgErr, String FIC_COURS_LIVRAISON){
+     enregistrer (tabLivraisonPizza, writer1, print1, "Il n y'a pas de commande en cours de livraison", FIC_COURS_LIVRAISON);
+ }
+
+} 

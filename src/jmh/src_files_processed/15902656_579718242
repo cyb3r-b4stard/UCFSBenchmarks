@@ -1,0 +1,106 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import java.applet.AudioClip;
+import java.net.URL;
+public class ListPanel extends JPanel
+{
+    private JLabel robotLabel;
+    private JList robotList;
+    
+    private final int ROBOT_CONSTANT = 14;
+    private String audioFile, imageFile;
+    
+    private AudioClip [] voices;
+    private AudioClip current;
+    private JButton playButton;
+    
+    private int selectedIndex;
+    protected String [] robotNames = {"Bender","Bishop","C3PO","Data","ED209","Johnny5","LostInSpace",
+                                "Marvin","R2D2","Robocop","T101","TWIKI", "U87", "VINCENT"};
+    protected Picture [] robots = new Picture [ROBOT_CONSTANT];
+    public ListPanel (JLabel imageLabel)
+    {
+        robotLabel = imageLabel;
+                             
+        for ( int i = 0; i < ROBOT_CONSTANT; i ++)
+        {
+           imageFile = robotNames[i] + ".jpg";
+           audioFile = robotNames[i] + ".wav";
+           robots [i] = new Picture (imageFile, audioFile); 
+        }
+        
+        URL [] url = new URL [14];
+        try
+        {
+            for ( int i = 0; i < ROBOT_CONSTANT; i++)
+            {
+                url [i] = new URL ("file","localhost", robots[i].getAudio());
+                voices [i] = JApplet.newAudioClip(url[i]);
+            }            
+        }
+        catch (Exception exception) {}
+        
+        playButton = new JButton ("Play");
+        playButton.setBackground(Color.white);
+        playButton.setMnemonic('p');
+        
+        JPanel button = new JPanel();
+        button.setLayout(new BoxLayout(button, BoxLayout.X_AXIS));
+        button.add(playButton);
+        button.add(Box.createRigidArea(new Dimension(5,0)));
+        
+        robotList = new JList(robotNames);
+        robotList.addListSelectionListener(new ListListener());
+        robotList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        add(robotList);
+        add(button);
+        playButton.addActionListener(new ButtonListener());
+        setBackground(Color.white);
+        current = null;
+    }
+    private class ListListener implements ListSelectionListener
+    {
+        public void valueChanged(ListSelectionEvent event)
+        {
+            if( robotList.isSelectionEmpty())
+            {   
+                 robotLabel.setIcon(null);
+            }
+            else
+            {
+                selectedIndex = robotList.getSelectedIndex();
+                System.out.println(robots[1]);
+                ImageIcon robotImage = new ImageIcon( robots [selectedIndex].getImage());
+                robotLabel.setIcon(robotImage);
+                current = voices[selectedIndex]; 
+            }
+        }
+    }
+    private class ButtonListener implements ActionListener
+    {
+        public void actionPerformed (ActionEvent e)
+        {
+            if(e.getSource()== playButton)
+            {
+                if(current != null)
+                    current.play();
+                }            
+     }
+}    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+  

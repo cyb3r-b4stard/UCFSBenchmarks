@@ -1,0 +1,656 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.JOptionPane;
+
+
+public class OnlineShop extends JFrame implements ActionListener
+{
+   JButton b1,b2,b3,b4;
+   JPanel container;
+   Panel1 p1;
+   Panel2 p2;
+   Panel3 p3;
+   Panel4 p4;
+   DefaultListModel model;
+   CardLayout c1;
+   JTextField t1, t2, t3, t4, t5;
+   JLabel l1,l2,l3,l4,l5;
+   JLabel clientName = new JLabel();   
+   static Software [] softwareList= new Software [100];
+   static Book [] bookList= new Book [100];
+   static Orders [] orderList= new Orders [100];
+   static int currentSoftware=0;
+   static int currentBook=0;
+   static int currentOrder=0;
+   
+
+
+   public static void main (String [] args)
+   {
+       new OnlineShop ();
+       
+       
+    }
+    
+   OnlineShop ()
+   {
+      super ("OnlineShop");
+      setSize(1005,805);
+      setLayout(new FlowLayout());
+      
+      b1=new JButton("Books");
+      b2=new JButton("Software");
+      b3=new JButton("View Products");
+      b4=new JButton("Client Details");
+      add(b1);
+      add(b2);
+      add(b3);
+      add(b4);
+      b1.addActionListener(this);
+      b2.addActionListener(this);
+      b3.addActionListener(this);
+      b4.addActionListener(this);
+      
+      
+     
+      p1=new Panel1();
+      p2=new Panel2();
+      p3=new Panel3();
+      p4=new Panel4();
+      
+      
+      
+      container=new JPanel();
+      container.setPreferredSize(new Dimension(1000,800));
+      container.setBackground(Color.GREEN);
+      c1=new CardLayout();
+      container.setLayout(c1);
+      container.add(p1, "card1");
+      container.add(p2, "card2");
+      container.add(p3, "card3");
+      container.add(p4, "card4");
+      add(container);
+
+      setVisible(true);
+   }
+   
+   public void actionPerformed(ActionEvent e){
+       if(e.getSource()== b1)
+       {
+          c1.show(container, "card1"); 
+       }
+       if(e.getSource()== b2)
+       {
+          c1.show(container, "card2");
+       }
+       if(e.getSource()== b3)
+       {
+           c1.show(container, "card3");
+       }
+       if(e.getSource()==b4)
+       {
+           c1.show(container, "card4");
+       }
+   }
+
+
+class Panel1 extends JPanel implements ActionListener
+{  
+  JButton b1,b2;
+  JTextField t1, t2, t3, t4, t5,t6,t7,t8;
+  JLabel l1,l2,l3,l4,l5,l6,l7,l8;
+  DefaultListModel model; 
+  JList list1;
+   
+   
+  public Panel1()
+  {
+    setLayout(null);
+    setSize(900,800);
+    setBackground(Color.GREEN);
+    
+    
+    l1 =new JLabel("Product ID");
+    l1.setSize(150,100);
+    l1.setLocation(5,10);
+    add(l1);
+    
+    t1 = new JTextField();
+    t1.setSize(100,20);
+    t1.setLocation(150,50);
+    add(t1);
+     
+    l2 =new JLabel("Product Name");
+    l2.setSize(150,100);
+    l2.setLocation(5,50);
+    add(l2);
+       
+    t2 = new JTextField();
+    t2.setSize(100,20);
+    t2.setLocation(150,90);
+    add(t2);
+    
+    l3 =new JLabel("Cost");
+    l3.setSize(150,100);
+    l3.setLocation(5,90);
+    add(l3);
+       
+    t3 = new JTextField();
+    t3.setSize(100,20);
+    t3.setLocation(150,130);
+    add(t3);
+    
+    l4 =new JLabel("Year of Publication");
+    l4.setSize(150,100);
+    l4.setLocation(5,130);
+    add(l4);
+       
+    t4 = new JTextField();
+    t4.setSize(100,20);
+    t4.setLocation(150,170);
+    add(t4);
+    
+    l5 =new JLabel("Publishing House");
+    l5.setSize(150,100);
+    l5.setLocation(5,170);
+    add(l5);
+       
+    t5 = new JTextField();
+    t5.setSize(100,20);
+    t5.setLocation(150,210);
+    add(t5);
+    
+    l6 =new JLabel("Author");
+    l6.setSize(150,100);
+    l6.setLocation(5,210);
+    add(l6);
+       
+    t6 = new JTextField();
+    t6.setSize(100,20);
+    t6.setLocation(150,250);
+    add(t6);
+    
+    l7 =new JLabel("ISBN");
+    l7.setSize(150,100);
+    l7.setLocation(5,250);
+    add(l7);
+    
+    t7 = new JTextField();
+    t7.setSize(100,20);
+    t7.setLocation(150,290);
+    add(t7);
+    
+    l8 =new JLabel("Number of pages");
+    l8.setSize(150,100);
+    l8.setLocation(5,290);
+    add(l8);
+    
+    t8 = new JTextField();
+    t8.setSize(100,20);
+    t8.setLocation(150,330);
+    add(t8);
+    
+    
+    b1 = new JButton("Submit");
+    b1.setSize(100,30);
+    b1.setLocation(150,370);
+    add(b1);
+    b1.addActionListener(this);
+    
+    
+    model=new DefaultListModel(); 
+    list1=new JList(model);
+    list1.setSize(200,220);
+    list1.setLocation(100,420);
+    add(list1);
+        
+    b2 = new JButton("Show");
+    b2.setSize(100,30);
+    b2.setLocation(150,670);
+    add(b2);
+    b2.addActionListener(this);
+  }
+  
+  public void actionPerformed(ActionEvent e)
+  {
+     if(e.getSource()== b1)
+     {
+       try {  
+            int productId=Integer.parseInt(t1.getText());
+            String productName=t2.getText();
+            double cost=Double.parseDouble(t3.getText());
+            int yearOfPublication=Integer.parseInt(t4.getText());
+            String publishingHouse=t5.getText();
+            String author=t6.getText();
+            int ISBN=Integer.parseInt(t7.getText());
+            int pages=Integer.parseInt(t8.getText());
+            
+            OnlineShop.bookList[OnlineShop.currentBook]=new Book(productId,productName,cost,yearOfPublication,publishingHouse,author,ISBN,pages);
+            OnlineShop.currentBook++;
+           
+             
+       }catch(IllegalArgumentException f){
+            
+            JOptionPane.showMessageDialog(null, "Empty Field Error!");
+            
+       } 
+       t1.setText("");
+       t2.setText("");
+       t3.setText("");
+       t4.setText("");
+       t5.setText("");
+       t6.setText("");
+       t7.setText("");
+       t8.setText("");
+     
+     }
+     
+     if(e.getSource()== b2){
+        model.removeAllElements(); 
+        int x=0; 
+            
+        while(x < OnlineShop.currentBook){
+          model.addElement(OnlineShop.bookList[x].getProductId()); 
+          x++;
+        }
+     } 
+  }
+}
+ 
+class Panel2 extends JPanel implements ActionListener
+{
+  JButton b1,b2;
+  JTextField t1,t2,t3,t4,t5,t6,t7;
+  DefaultListModel model;
+  JList list2;
+  JLabel l1,l2,l3,l4,l5,l6,l7;
+  
+ public Panel2()
+ {
+    setLayout(null);
+    setSize(200,200);
+    setBackground(Color.YELLOW);
+        
+      
+    l1 =new JLabel("Product ID");
+    l1.setSize(150,100);
+    l1.setLocation(5,10);
+    add(l1);
+    
+    t1 = new JTextField();
+    t1.setSize(100,20);
+    t1.setLocation(150,50);
+    add(t1);
+     
+    
+    l2 =new JLabel("Product Name");
+    l2.setSize(150,100);
+    l2.setLocation(5,50);
+    add(l2);
+       
+    t2 = new JTextField();
+    t2.setSize(100,20);
+    t2.setLocation(150,90);
+    add(t2);
+    
+    
+    l3 =new JLabel("Cost");
+    l3.setSize(150,100);
+    l3.setLocation(5,90);
+    add(l3);
+       
+    t3 = new JTextField();
+    t3.setSize(100,20);
+    t3.setLocation(150,130);
+    add(t3);
+    
+    
+    l4 =new JLabel("Year of Publication");
+    l4.setSize(150,100);
+    l4.setLocation(5,130);
+    add(l4);
+       
+    t4 = new JTextField();
+    t4.setSize(100,20);
+    t4.setLocation(150,170);
+    add(t4);
+    
+    
+    l5 =new JLabel("Publishing House");
+    l5.setSize(150,100);
+    l5.setLocation(5,170);
+    add(l5);
+       
+    t5 = new JTextField();
+    t5.setSize(100,20);
+    t5.setLocation(150,210);
+    add(t5);
+      
+    
+    l6=new JLabel("RAM");
+    l6.setSize(150,100);
+    l6.setLocation(5,210);
+    add(l6);
+        
+    t6= new JTextField();
+    t6.setSize(100,20);
+    t6.setLocation(150,250);
+    add(t6);
+    
+    
+    l7=new JLabel("Processor");
+    l7.setSize(150,100);
+    l7.setLocation(5,250);
+    add(l7);
+    
+    t7= new JTextField();
+    t7.setSize(100,20);
+    t7.setLocation(150,290);
+    add(t7);
+    
+    
+    b1 = new JButton("Submit");
+    b1.setSize(100,30);
+    b1.setLocation(150,370);
+    add(b1);
+    b1.addActionListener(this);
+       
+    model=new DefaultListModel(); 
+    list2=new JList(model);
+    list2.setSize(200,220);
+    list2.setLocation(100,420);
+    add(list2);
+        
+    b2 = new JButton("Show");
+    b2.setSize(100,30);
+    b2.setLocation(150,670);
+    add(b2);
+    b2.addActionListener(this);
+    
+ }
+ public void actionPerformed(ActionEvent e)
+ {
+   if(e.getSource()== b1)
+   {
+    try{
+      int productId=Integer.parseInt(t1.getText());
+      String productName=t2.getText();
+      double cost=Double.parseDouble(t3.getText());
+      int yearOfPublication=Integer.parseInt(t4.getText());
+      String publishingHouse=t5.getText();
+      int RAM=Integer.parseInt(t6.getText());
+      String Processor=t7.getText();
+        
+      OnlineShop.softwareList[OnlineShop.currentSoftware]=new Software(productId,productName,cost,yearOfPublication,publishingHouse,RAM,Processor);
+      OnlineShop.currentSoftware++;
+      
+    }catch(IllegalArgumentException f){
+            
+     JOptionPane.showMessageDialog(null, "Empty Field Error!");
+            
+   } 
+      t1.setText("");
+      t2.setText("");
+      t3.setText("");
+      t4.setText("");
+      t5.setText("");
+      t6.setText("");
+      t7.setText("");
+      
+   }
+     
+   if(e.getSource()== b2){
+     model.removeAllElements();  
+     int x=0; 
+            
+     while(x < OnlineShop.currentSoftware){ 
+            model.addElement(OnlineShop.softwareList[x].getProductId());
+            model.addElement(OnlineShop.softwareList[x].getProductName());
+            x++
+            
+     }
+   } 
+ }
+}
+
+class Panel3 extends JPanel implements ActionListener
+{  
+  JButton b1,b2,b3;
+  JTextField t1, t2, t3, t4, t5,t6,t7,t8;
+  JLabel l1,l2,l3,l4,l5,l6,l7,l8;
+  DefaultListModel model, model2; 
+  JList list3,orderList;
+   
+   
+  public Panel3()
+  {
+    setLayout(null);
+    setSize(900,800);
+    setBackground(Color.ORANGE);
+    
+    l7=new JLabel("Client Name:");
+    l7.setSize(150,100);
+    l7.setLocation(100,250);
+    add(l7);
+    
+    l8=new JLabel("Shopping Cart");
+    l8.setSize(150,100);
+    l8.setLocation(400,250);
+    add(l8);
+    
+    clientName.setText("");
+    clientName.setSize(150,100);
+    clientName.setLocation(180,250);
+    add(clientName);
+    
+    model=new DefaultListModel(); 
+    list3=new JList(model);
+    list3.setSize(200,220);
+    list3.setLocation(100,320);
+    add(list3);
+        
+    b2 = new JButton("View Products");
+    b2.setSize(130,30);
+    b2.setLocation(130,570);
+    add(b2);
+    b2.addActionListener(this);
+    
+    
+    model2=new DefaultListModel(); 
+    orderList=new JList(model2);
+    orderList.setSize(200,220);
+    orderList.setLocation(400,320);
+    add(orderList);
+    
+    b3 = new JButton("Add to Cart");
+    b3.setSize(130,30);
+    b3.setLocation(420,570);
+    add(b3);
+    b3.addActionListener(this);
+  }
+  
+  public void actionPerformed(ActionEvent e)
+  {
+         
+     if(e.getSource()== b2){
+        model.removeAllElements(); 
+        int x=0; 
+        int y=0;
+        
+        /**
+         * This will loop on all books added print the header books and list the Product ID's
+         */
+        
+        model.addElement("Books");    
+        while(x < OnlineShop.currentBook){
+           
+           model.addElement(OnlineShop.bookList[x].getProductId()); 
+           x++;
+        }
+        
+        /**
+         * This will loop on all books added print the header Software and list the Product ID's
+         */
+        model.addElement("Software");
+        while(y < OnlineShop.currentSoftware){
+           
+           model.addElement(OnlineShop.softwareList[y].getProductId()); 
+           y++;
+        }
+     } 
+     
+     if(e.getSource()== b3){
+        model2.addElement(list3.getSelectedValue());
+     } 
+     
+  }
+}
+
+
+class Panel4 extends JPanel implements ActionListener
+{
+  JButton b1,b2;
+  JTextField t1,t2,t3,t4,t5,t6,t7;
+  DefaultListModel model;
+  JList list2;
+  JLabel l1,l2,l3,l4,l5,l6,l7;
+  
+ public Panel4()
+ {
+    setLayout(null);
+    setSize(200,200);
+    setBackground(Color.PINK);
+        
+      
+    l1 =new JLabel("Client ID");
+    l1.setSize(150,100);
+    l1.setLocation(5,10);
+    add(l1);
+    
+    t1 = new JTextField();
+    t1.setSize(100,20);
+    t1.setLocation(150,50);
+    add(t1);
+     
+    
+    l2 =new JLabel("Client Name");
+    l2.setSize(150,100);
+    l2.setLocation(5,50);
+    add(l2);
+       
+    t2 = new JTextField();
+    t2.setSize(100,20);
+    t2.setLocation(150,90);
+    add(t2);
+    
+    
+    l3 =new JLabel("Client Address");
+    l3.setSize(150,100);
+    l3.setLocation(5,90);
+    add(l3);
+       
+    t3 = new JTextField();
+    t3.setSize(100,20);
+    t3.setLocation(150,130);
+    add(t3);
+    
+    b1 = new JButton("add Client");
+    b1.setSize(100,30);
+    b1.setLocation(150,370);
+    add(b1);
+    b1.addActionListener(this);
+       
+    model=new DefaultListModel(); 
+    list2=new JList(model);
+    list2.setSize(500,220);
+    list2.setLocation(100,420);
+    add(list2);
+        
+    b2 = new JButton("Show Clients");
+    b2.setSize(120,30);
+    b2.setLocation(150,670);
+    add(b2);
+    b2.addActionListener(this);
+    
+ }
+ public void actionPerformed(ActionEvent e)
+ {
+   if(e.getSource()== b1)
+   {
+       
+    try{
+      
+      int orderID=Integer.parseInt(t1.getText());
+      String cName=t2.getText();
+      String cAddress=t3.getText();
+        
+      OnlineShop.orderList[OnlineShop.currentOrder]=new Orders(orderID,cName,cAddress);
+      clientName.setText(OnlineShop.orderList[OnlineShop.currentOrder].getCName());
+      OnlineShop.currentOrder++;
+      
+    }catch(IllegalArgumentException f){
+            
+     JOptionPane.showMessageDialog(null, "Empty Field Error!");
+            
+   } 
+      t1.setText("");
+      t2.setText("");
+      t3.setText("");
+      
+      
+   }
+     
+   if(e.getSource()== b2){
+     model.removeAllElements();  
+     int x=0; 
+            
+     while(x < OnlineShop.currentOrder){ 
+            model.addElement("Client ID: "+OnlineShop.orderList[x].getOrderId()+", Client Name: "+ OnlineShop.orderList[x].getCName()+", Address: "+ OnlineShop.orderList[x].getCAddress());
+            x++;
+            
+     }
+   } 
+ }
+}
+
+public class Orders 
+{
+   private int orderID;
+   private String cName;
+   private String cAddress;
+   
+public Orders(int orderID,String cName,String cAddress)
+{
+   this.orderID=orderID;
+   this.cName=cName;
+   this.cAddress=cAddress;
+}
+public void setOrderID(int orderID)
+{
+   this.orderID=orderID;
+}
+public int getOrderId ()
+{
+   return orderID;
+}
+
+public void setCName(String cName)
+{
+    this.cName=cName;
+}
+public String getCName()
+{
+    return cName;
+}
+
+public void setCAddress(String cAddress)
+{
+    this.cAddress=cAddress;
+}
+public String getCAddress()
+{
+    return cAddress;
+}
+}
+}

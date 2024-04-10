@@ -1,0 +1,630 @@
+import java.util.ArrayList;
+ import java.io.*;
+ import org.joda.time.DateTime;
+ import org.joda.time.format.DateTimeFormat; 
+ import org.joda.time.format.DateTimeFormatter; 
+ import org.joda.time.format.ISODateTimeFormat;
+
+
+public class Clinica
+{
+   private   ArrayList<Servicos_Medicos> ServicosMedicos = new ArrayList<Servicos_Medicos>();
+   private   ArrayList<Funcionario> funcionarios = new ArrayList<Funcionario>();
+   private   ArrayList<Paciente> pacientes = new ArrayList<Paciente>();
+
+  
+                public Clinica()
+                {
+            
+                    funcionarios.add(new Medicos("Sandra", 25));
+                    funcionarios.add(new Medicos("Gustavo", 32));
+                    funcionarios.add(new Medicos("Andre", 45));
+                    funcionarios.add(new Medicos("Ana", 54));
+                    funcionarios.add(new Tecnicos("Jonas", 44));
+                    funcionarios.add(new Tecnicos("Henrique", 45));
+            
+                
+                }
+                
+                public void MarcarServicos()
+                {
+                  ArrayList<String> DadosDosPacientes = new ArrayList<String>();
+               
+                   try
+                   {
+                       FileReader fileReader = new FileReader("dados.txt");
+                        BufferedReader bufferedReader = new BufferedReader(fileReader); 
+                                String linha = bufferedReader.readLine() ;
+                                    DadosDosPacientes.add(linha);
+                                        while ( ( linha = bufferedReader.readLine() ) != null) 
+                                                {
+                                                        DadosDosPacientes.add(linha);
+                                                    }
+                                                        fileReader.close();
+                                                            bufferedReader.close();
+                    } 
+                                    catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                           
+                                            
+                                            DateTime Inicio = new DateTime();
+                                            DateTime fim = new DateTime();  
+                                            
+                                            DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM/YYYY - HH:mm"); 
+                                            Inicio = fmt.parseDateTime(DadosDosPacientes.get(4)+" - "+DadosDosPacientes.get(5));  
+                                            
+                                            Paciente p = NovoPaciente(DadosDosPacientes , 3 , 2); 
+                                                           
+                                           
+                                            
+                                           
+                                            
+                                         
+                                            
+                                             if(DadosDosPacientes.get(0).equals("Exame"))
+                      { 
+                                                           
+                                                           if(DadosDosPacientes.get(1).equals("Biopsia"))
+                                                           {
+                                                               fim = Inicio.plusMinutes(20); 
+                                                         
+                                                         
+                                                            }
+                                                            
+                                                            else
+                                                            {
+                                                                 fim = Inicio.plusMinutes(30);
+                                                                
+                                                            }
+                                                        
+
+                                                            VerificaExame(p,Inicio,fim,DadosDosPacientes); 
+                    }
+
+
+
+                   
+                   
+                   
+                   
+            }
+            
+    void VerificaExame(Paciente p, DateTime inicio, DateTime fim, ArrayList<String> DadosDosPacientes)
+            {
+                
+                
+                                                System.out.println("Solicitando Exame para Sr(a) :  "+ p.getNome() + " Com data e horario inicial " + inicio.toString("dd/MM/YYYY - HH:mm")+ " horario final"+fim.toString("dd/MM/YYYY - HH:mm") +" \r\n");
+                                                        
+                                                     
+                                                int i=0; 
+                                                int funcionario = 4;
+                                                int funcionario_prox=5; 
+                                                if(HorarioFuncionamento(p,inicio,fim,DadosDosPacientes) == true) 
+                                                
+                                                    {
+                                                       
+                                                           while(i < 1)
+                                                            {
+                                                      
+                                                            if(funcionarios.get(funcionario).getDisponibilidade(inicio,fim) == true  && funcionarios.get(funcionario_prox).getDisponibilidade(inicio,fim) == true ) 
+                                                                      {
+                                                                          if(funcionarios.get(funcionario).getAgenda().size() <= funcionarios.get(funcionario_prox).getAgenda().size()) 
+                                                                           {
+                                                                            funcionario_prox = funcionario_prox+1; 
+                                                                            i++;
+                                                                             
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                 funcionario = funcionario_prox; 
+                                                                                 funcionario_prox = funcionario_prox+1;
+                                                                                 i++;
+                                                                               
+                                                                                }
+                                                                        }
+                                                                   else if(funcionarios.get(funcionario).getDisponibilidade(inicio,fim) == true  && funcionarios.get(funcionario_prox).getDisponibilidade(inicio,fim) == false ) 
+                                                                        {
+                                                                            funcionario_prox = funcionario_prox+1;
+                                                                            i++;
+                                                                            
+                                                                        }
+                                                                   else if(funcionarios.get(funcionario).getDisponibilidade(inicio,fim) == false  && funcionarios.get(funcionario_prox).getDisponibilidade(inicio,fim) == true )
+                                                                        {
+                                                                             funcionario = funcionario_prox;
+                                                                             funcionario_prox = funcionario_prox+1;
+                                                                             i++;
+                                                                             
+                                                                            }
+                                                                  else{ 
+                                                                      
+                                                                                 if(funcionarios.get(funcionario).Retorna_Servico_Imcompativel(inicio,fim).getPaciente() instanceof Idoso  &&   funcionarios.get(funcionario).Retorna_Servico_Imcompativel(inicio,fim).getPaciente() instanceof Nao_Idoso) 
+                                                                               { 
+                                                                                funcionario = funcionario_prox;
+                                                                                funcionario_prox = funcionario_prox+1;
+                                                                                i++;
+                                                                                 
+                                                                                }
+                                                                                else 
+                                                                                {
+                                                                                    funcionario_prox = funcionario_prox+1;
+                                                                                    i++;
+                                                                                }
+                                                                                
+                                                                             
+                                                                            }
+                                                                        }
+                                                                    
+                                                                    
+                                                                    
+                                                            if(funcionarios.get(funcionario).getDisponibilidade(inicio,fim) == false  )
+                                                                       {
+                                                                         if(p instanceof Idoso) 
+                                                                             {
+                                                                           
+                                                                              if(funcionarios.get(funcionario).Retorna_Servico_Imcompativel(inicio, fim).getPaciente() instanceof Idoso) 
+                                                                               {
+                                                                                  inicio = funcionarios.get(funcionario).NovoHorario(inicio,fim); 
+                                                                                  System.out.println("Impossivel Troca de horario Outro paciente Idoso..  "+"\r\n");
+                                                                                  System.out.println("NOVA DATA OBTIDA INICIAL "+inicio.toString("dd/MM/YYYY - HH:mm")+"\r\n");
+                                                                                  
+                                                                                   if(DadosDosPacientes.get(1).equals("Biopsia")) 
+                                                                                       {
+                                                                                           fim = inicio.plusMinutes(20);
+                                                                                     
+                                                                                     
+                                                                                        }
+                                                                                        
+                                                                                        else
+                                                                                        {
+                                                                                             fim = inicio.plusMinutes(30);
+                                                                                            
+                                                                                        }
+                                                                                      VerificaExame(p, inicio, fim, DadosDosPacientes); 
+                                                                               
+                                                                               
+                                                                                }
+                                                                               else 
+                                                                                {
+                                                                                Paciente novo = funcionarios.get(funcionario).Retorna_Servico_Imcompativel(inicio,fim).getPaciente(); 
+                                                                                
+                                                                                ArrayList<String> DadosPaciente = new ArrayList<String>(); 
+                                                                                DadosPaciente.add(0, "Exame");
+                                                                                DateTime Inicio2 = new DateTime(); 
+                                                                                DateTime fim2 = new DateTime();   
+                                                                                
+                                                                                Inicio2 = funcionarios.get(funcionario).Retorna_Servico_Imcompativel(inicio,fim).getDataInicio();
+                                                                                fim2 =funcionarios.get(funcionario).Retorna_Servico_Imcompativel(inicio,fim).getDataFim();
+                                                                                  
+                                                                                    if(funcionarios.get(funcionario).Retorna_Servico_Imcompativel(inicio,fim) instanceof Biopsia)
+                                                                                        {
+                                                                                            DadosPaciente.add(1 , "Biopsia");
+                                                                                        }
+                                                                                        else if(funcionarios.get(funcionario).Retorna_Servico_Imcompativel(inicio,fim) instanceof Endoscopia)
+                                                                                        {
+                                                                                            DadosPaciente.add(1 , "Endoscopia");
+                                                                                        }
+                                                                                        else{
+                                                                                            
+                                                                                            DadosPaciente.add(1 , "Ressonancia");
+                                                                                        }
+
+                                                                                
+                                                                                    for (int j=0; j<ServicosMedicos.size(); j++) 
+                                                                                    {
+                                                                                          if (ServicosMedicos.get(j).getPaciente().getNome().equals(novo.getNome())) {
+                                                                                                                        ServicosMedicos.remove(j);
+                                                                                                                    }
+                                                                                 
+                                                                                                                }
+                                                                                                                
+                                                                                    for (int k=0; k<funcionarios.get(funcionario).getAgenda().size(); k++) 
+                                                                                        {
+                                                                                          if (funcionarios.get(funcionario).getAgenda().equals(funcionarios.get(funcionario).Retorna_Servico_Imcompativel(inicio, fim).getPaciente())) {
+                                                                                                                       funcionarios.get(funcionario).getAgenda().remove(k);
+                                                                                                                    }
+                                                                                                                }                          
+                                                                                    
+                                                                                    AdicionarNovoExame(p, inicio, fim , DadosDosPacientes, funcionarios.get(funcionario)); 
+                                                                                    
+                                                                                    System.out.println("O Paciente "+novo.getNome()+ "Precisou ser removido por motivo de preferencia de Idosos Tentando Realocar "+"\r\n");
+                                                                                    
+                                                                                    VerificaExame(novo, Inicio2, fim2, DadosPaciente); 
+                                                                                    
+                                                                                                    }
+                                                                                                    
+                                                                              }
+                                                                                                
+                                                                                                
+                                                                                       else 
+                                                                                       {
+                                                                                       inicio = funcionarios.get(funcionario).NovoHorario(inicio,fim); 
+                                                                                       System.out.println("NOVA DATA OBTIDA INICIAL "+inicio.toString("dd/MM/YYYY - HH:mm")+"\r\n"); 
+                                                                                       
+                                                                                            if(DadosDosPacientes.get(1).equals("Biopsia"))
+                                                                                            {
+                                                                                               fim = inicio.plusMinutes(20);
+                                                                                         
+                                                                                         
+                                                                                            }
+                                                                                            
+                                                                                            else
+                                                                                            {
+                                                                                                 fim = inicio.plusMinutes(30);
+                                                                                                
+                                                                                            }
+                                                                                          VerificaExame(p, inicio, fim, DadosDosPacientes); 
+                                                                                          
+                                                                                        }
+                                                                      
+                                                                        }
+                                                                   
+                                                                   
+                                                                    
+                                                                    else
+                                                                    
+                                                                    {
+                                                                        
+                                                                        AdicionarNovoExame(p,inicio, fim, DadosDosPacientes,funcionarios.get(funcionario));
+                                                                        
+                                                                    }
+                                                                }
+                                                            
+                    
+     
+                                                    
+                                                    
+                                                }
+                                            
+    
+                                        
+
+
+        
+                     public void AdicionarNovoExame(Paciente p, DateTime c, DateTime aux, ArrayList<String> DadosDosPacientes , Funcionario f) 
+                     {
+                
+                                            if(DadosDosPacientes.get(1).equals("Endoscopia"))
+                                        {
+                                            
+                                               
+                                               ServicosMedicos.add(new Endoscopia(p, c , aux ,f)); 
+                                               f.AddServico(ServicosMedicos.get(ServicosMedicos.size()-1)); 
+                                               System.out.println("Exame Marcaco com sucesso para "+ c.toString("dd/MM/YYYY - HH:mm")+ " com Tecnico " + f.getNome()+"\r\n");
+                                               System.out.println("------------------------------------------------------------------------------------------------------------"+"\r\n");
+                                               
+                                               
+                                           
+                                           
+                                            }
+                                              if(DadosDosPacientes.get(1).equals("Biopsia"))
+                                               {
+                                                   
+                                                   ServicosMedicos.add(new Biopsia(p, c , aux, f));
+                                                   f.AddServico(ServicosMedicos.get(ServicosMedicos.size()-1));
+                                                   System.out.println("Exame Marcaco com sucesso para "+ c.toString("dd/MM/YYYY - HH:mm") + " com Tecnico " + f.getNome()+"\r\n");
+                                                   System.out.println("------------------------------------------------------------------------------------------------------------"+"\r\n");
+                                           
+                                                    
+                                                   
+                                               
+                                               
+                                            }
+                                                  if(DadosDosPacientes.get(1).equals("Ressonancia"))
+                                               {
+                                                  
+                                               
+                                                   ServicosMedicos.add(new Ressonancia(p,c,aux, f));
+                                                   f.AddServico(ServicosMedicos.get(ServicosMedicos.size()-1));
+                                                   System.out.println("Exame Marcaco com sucesso para "+c.toString("dd/MM/YYYY - HH:mm") + " com Tecnico " + f.getNome() +"\r\n");
+                                                   System.out.println("------------------------------------------------------------------------------------------------------------"+"\r\n");
+                                                  
+                                               
+                                            }
+                                            
+                                        }
+    
+                                        public boolean HorarioFuncionamento(Paciente p, DateTime inicio, DateTime fim, ArrayList<String> DadosDosPacientes)
+                     {
+                                    if( fim.getHourOfDay()>=18 ) 
+                            {
+                                System.out.println("Impossivel marcar a consulta horario incompativel...."+"\r\n"); 
+                                return false;
+                            
+                            
+                            
+                          }
+                          else if(inicio.getHourOfDay()>=12 && inicio.getHourOfDay()<14 || fim.getHourOfDay()>12  && fim.getHourOfDay()<14 && fim.getMinuteOfHour()>0 ) 
+                                    {
+                                        DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM/YYYY - HH:mm");
+                                        System.out.println("Horario de almoço Hora ajustada para 14:"+"\r\n");
+                                        inicio = fmt.parseDateTime(DadosDosPacientes.get(4)+" - "+"14:00");
+                                       if(DadosDosPacientes.get(1).equals("Biopsia")) 
+                                                                               {
+                                                                                   fim = fmt.parseDateTime(DadosDosPacientes.get(4)+" - "+"14:20");
+                                                                             
+                                                                             
+                                                                                }
+                                                                                
+                                                                                else
+                                                                                {
+                                                                                     fim = fmt.parseDateTime(DadosDosPacientes.get(4)+" - "+"14:30");
+                                                                                    
+                                                                                }
+                                                                            VerificaExame( p,  inicio,  fim,  DadosDosPacientes); 
+                                                                            return false;
+                                                                           
+                                                                        }
+                    
+                                                           else  
+                                                           return true;            
+                    
+        
+        
+        
+                    }
+    
+    
+    
+            public boolean Paciente_Cadastrado(String nome) 
+                {
+                    for(int i=0; i<pacientes.size(); i++)
+                    {
+                        if(pacientes.get(i).getNome().equals(nome))
+                        {
+                            return true;
+                        
+                        
+                    }
+                }
+                return false;
+                    
+                    
+            }
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            public Paciente NovoPaciente(ArrayList<String> DadosDosPacientes, int indice_idade , int indice_nome) 
+            {
+                          
+                            Paciente p;
+                            int i=0;
+               
+              if(Paciente_Cadastrado(DadosDosPacientes.get(2))==false) 
+                  {
+                               System.out.println("Paciente nao cadastrado, Cadastrando novo " +"\r\n");
+                                            int idade = Integer.parseInt(DadosDosPacientes.get(indice_idade));
+                       
+                                                if(idade >65) 
+                                        {
+                                            p = new Idoso(DadosDosPacientes.get(indice_nome), idade);
+                                            pacientes.add(p);
+                                                     
+                                                        
+                                                    }
+                                                        else 
+                                                            {
+                                                                p = new Nao_Idoso(DadosDosPacientes.get(indice_nome), idade);
+                                                                pacientes.add(p);
+                                                                        
+                                                                       
+                             
+                             
+                                        } 
+                            
+                            return p;
+                        }
+                        else{   
+                                        System.out.println("Paciente ja Cadastrado , Buscando Registro... " +"\r\n");
+                                        
+                                          
+                                            while((!pacientes.get(i).getNome().equals(DadosDosPacientes.get(indice_nome))))
+                                                    {
+                                                            i++;
+                        
+                        
+                                                        }
+                                       
+                                             System.out.println("Registro Encontrado com sucesso!"+"\r\n");
+                                             return pacientes.get(i);
+                                                }
+
+                                            }
+                                            
+                                            
+                                            void VerificaConsulta(Paciente p, DateTime inicio, DateTime fim, ArrayList<String> DadosDosPacientes)
+            {
+                
+                
+                                                System.out.println("Solicitando Consulta para Sr(a) :  "+ p.getNome() + " Com data e horario inicial " + inicio.toString("dd/MM/YYYY - HH:mm")+ " horario final"+fim.toString("dd/MM/YYYY - HH:mm") +" \r\n");
+                                                        
+                                                     
+                                                int i=0; 
+                                                int funcionario = 0;
+                                                int funcionario_prox=1; 
+                                                
+                                                if(p.getAgenda().size() == 0)
+                                                {
+                                                    
+                                                                                                    if(HorarioFuncionamento(p,inicio,fim,DadosDosPacientes) == true) 
+                                                
+                                                    {
+                                                       
+                                                           while(i < 3)
+                                                            {
+                                                      
+                                                            if(funcionarios.get(funcionario).getDisponibilidade(inicio,fim) == true  && funcionarios.get(funcionario_prox).getDisponibilidade(inicio,fim) == true ) 
+                                                                      {
+                                                                          if(funcionarios.get(funcionario).getAgenda().size() <= funcionarios.get(funcionario_prox).getAgenda().size()) 
+                                                                           {
+                                                                            funcionario_prox = funcionario_prox+1; 
+                                                                            i++;
+                                                                             
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                 funcionario = funcionario_prox; 
+                                                                                 funcionario_prox = funcionario_prox+1;
+                                                                                 i++;
+                                                                               
+                                                                                }
+                                                                        }
+                                                                   else if(funcionarios.get(funcionario).getDisponibilidade(inicio,fim) == true  && funcionarios.get(funcionario_prox).getDisponibilidade(inicio,fim) == false ) 
+                                                                        {
+                                                                            funcionario_prox = funcionario_prox+1;
+                                                                            i++;
+                                                                            
+                                                                        }
+                                                                   else if(funcionarios.get(funcionario).getDisponibilidade(inicio,fim) == false  && funcionarios.get(funcionario_prox).getDisponibilidade(inicio,fim) == true )
+                                                                        {
+                                                                             funcionario = funcionario_prox;
+                                                                             funcionario_prox = funcionario_prox+1;
+                                                                             i++;
+                                                                             
+                                                                            }
+                                                                  else{ 
+                                                                      
+                                                                                 if(funcionarios.get(funcionario).Retorna_Servico_Imcompativel(inicio,fim).getPaciente() instanceof Idoso  &&   funcionarios.get(funcionario).Retorna_Servico_Imcompativel(inicio,fim).getPaciente() instanceof Nao_Idoso) 
+                                                                               { 
+                                                                                funcionario = funcionario_prox;
+                                                                                funcionario_prox = funcionario_prox+1;
+                                                                                i++;
+                                                                                 
+                                                                                }
+                                                                                else 
+                                                                                {
+                                                                                    funcionario_prox = funcionario_prox+1;
+                                                                                    i++;
+                                                                                }
+                                                                                
+                                                                             
+                                                                            }
+                                                                        }
+                                                    
+                                                }
+                                                
+                                                
+                                                
+
+                                                                    
+                                                                    
+                                                                    
+                                                            if(funcionarios.get(funcionario).getDisponibilidade(inicio,fim) == false  )
+                                                                       {
+                                                                         if(p instanceof Idoso) 
+                                                                             {
+                                                                           
+                                                                              if(funcionarios.get(funcionario).Retorna_Servico_Imcompativel(inicio, fim).getPaciente() instanceof Idoso) 
+                                                                               {
+                                                                                  inicio = funcionarios.get(funcionario).NovoHorario(inicio,fim); 
+                                                                                  System.out.println("Impossivel Troca de horario Outro paciente Idoso..  "+"\r\n");
+                                                                                  System.out.println("NOVA DATA OBTIDA INICIAL "+inicio.toString("dd/MM/YYYY - HH:mm")+"\r\n");
+                                                                                  
+                                                                                   if(DadosDosPacientes.get(1).equals("Biopsia")) 
+                                                                                       {
+                                                                                           fim = inicio.plusMinutes(20);
+                                                                                     
+                                                                                     
+                                                                                        }
+                                                                                        
+                                                                                        else
+                                                                                        {
+                                                                                             fim = inicio.plusMinutes(30);
+                                                                                            
+                                                                                        }
+                                                                                      VerificaExame(p, inicio, fim, DadosDosPacientes); 
+                                                                               
+                                                                               
+                                                                                }
+                                                                               else 
+                                                                                {
+                                                                                Paciente novo = funcionarios.get(funcionario).Retorna_Servico_Imcompativel(inicio,fim).getPaciente(); 
+                                                                                
+                                                                                ArrayList<String> DadosPaciente = new ArrayList<String>(); 
+                                                                                DadosPaciente.add(0, "Exame");
+                                                                                DateTime Inicio2 = new DateTime(); 
+                                                                                DateTime fim2 = new DateTime();   
+                                                                                
+                                                                                Inicio2 = funcionarios.get(funcionario).Retorna_Servico_Imcompativel(inicio,fim).getDataInicio();
+                                                                                fim2 =funcionarios.get(funcionario).Retorna_Servico_Imcompativel(inicio,fim).getDataFim();
+                                                                                  
+                                                                                    if(funcionarios.get(funcionario).Retorna_Servico_Imcompativel(inicio,fim) instanceof Biopsia)
+                                                                                        {
+                                                                                            DadosPaciente.add(1 , "Biopsia");
+                                                                                        }
+                                                                                        else if(funcionarios.get(funcionario).Retorna_Servico_Imcompativel(inicio,fim) instanceof Endoscopia)
+                                                                                        {
+                                                                                            DadosPaciente.add(1 , "Endoscopia");
+                                                                                        }
+                                                                                        else{
+                                                                                            
+                                                                                            DadosPaciente.add(1 , "Ressonancia");
+                                                                                        }
+
+                                                                                
+                                                                                    for (int j=0; j<ServicosMedicos.size(); j++) 
+                                                                                    {
+                                                                                          if (ServicosMedicos.get(j).getPaciente().getNome().equals(novo.getNome())) {
+                                                                                                                        ServicosMedicos.remove(j);
+                                                                                                                    }
+                                                                                 
+                                                                                                                }
+                                                                                                                
+                                                                                    for (int k=0; k<funcionarios.get(funcionario).getAgenda().size(); k++) 
+                                                                                        {
+                                                                                          if (funcionarios.get(funcionario).getAgenda().equals(funcionarios.get(funcionario).Retorna_Servico_Imcompativel(inicio, fim).getPaciente())) {
+                                                                                                                       funcionarios.get(funcionario).getAgenda().remove(k);
+                                                                                                                    }
+                                                                                                                }                          
+                                                                                    
+                                                                                    AdicionarNovoExame(p, inicio, fim , DadosDosPacientes, funcionarios.get(funcionario)); 
+                                                                                    
+                                                                                    System.out.println("O Paciente "+novo.getNome()+ "Precisou ser removido por motivo de preferencia de Idosos Tentando Realocar "+"\r\n");
+                                                                                    
+                                                                                    VerificaExame(novo, Inicio2, fim2, DadosPaciente); 
+                                                                                    
+                                                                                                    }
+                                                                                                    
+                                                                              }
+                                                                                                
+                                                                                                
+                                                                                       else 
+                                                                                       {
+                                                                                       inicio = funcionarios.get(funcionario).NovoHorario(inicio,fim); 
+                                                                                       System.out.println("NOVA DATA OBTIDA INICIAL "+inicio.toString("dd/MM/YYYY - HH:mm")+"\r\n"); 
+                                                                                       
+                                                                                            if(DadosDosPacientes.get(1).equals("Biopsia"))
+                                                                                            {
+                                                                                               fim = inicio.plusMinutes(20);
+                                                                                         
+                                                                                         
+                                                                                            }
+                                                                                            
+                                                                                            else
+                                                                                            {
+                                                                                                 fim = inicio.plusMinutes(30);
+                                                                                                
+                                                                                            }
+                                                                                          VerificaExame(p, inicio, fim, DadosDosPacientes); 
+                                                                                          
+                                                                                        }
+                                                                      
+                                                                        }
+                                                                   
+                                                                   
+                                                                    
+                                                                    else
+                                                                    
+                                                                    {
+                                                                        
+                                                                        AdicionarNovoExame(p,inicio, fim, DadosDosPacientes,funcionarios.get(funcionario));
+                                                                        
+                                                                    }
+                                                                }
+                                            }

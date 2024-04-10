@@ -1,0 +1,96 @@
+import java.util.*;
+public class Ex4
+{
+    public static void main(String[] args) 
+    {
+        Scanner input = new Scanner(System.in);
+        Cell<Integer> list1;
+        System.out.print("Enter a list (of integers): ");
+        String line = input.nextLine();
+        list1 = parseIntLinkedList(line);
+        System.out.println("The list you entered is: ");
+        System.out.println(linkedListToString(list1));
+        list1 = deleteItem(list1,7);
+        System.out.println(linkedListToString(list1));
+    }
+
+    public static <T> Cell<T> deleteItem(Cell<T> list,T item)
+    {
+        Cell<T> temp = list;
+        Cell<T> ref = null;
+        int count = 0;
+        while(temp.next != null )
+        {
+            if(temp.next.first.equals(item)) 
+            {
+                ref = temp.next;
+                count++;
+            }
+
+            temp = temp.next;
+
+        }
+
+        for(int j=0; j<count;)
+        {
+            if(j == count)
+                list.next = ref;
+            if(list.next.first.equals(item))
+                j++
+
+            list = list.next;
+        }
+        System.out.println(count);
+        return list;
+
+    }
+
+    private static Cell<Integer> parseIntLinkedList(String str)
+    {
+        Cell<Integer> list=null;
+        String line = str.trim();
+        String contents = line.substring(1,line.length()-1).trim();
+        if(contents.length()==0)
+            return null;
+        String[] nums = contents.split(",");
+        for(int i=nums.length-1; i>=0; i--)
+        {
+            String num = nums[i].trim();
+            list = new Cell<Integer>(new Integer(num),list);
+        }
+        return list;
+    }
+
+    private static <T> String linkedListToString(Cell<T> list)
+    {
+        String str="[";
+        if(list!=null)
+        {
+            str+=list.first;
+            for(Cell<T> ptr=list.next; ptr!=null; ptr=ptr.next)
+                str+=","+ptr.first;
+        }
+        return str+"]";
+    }
+
+    private static <T> void destChange(T n,T m,Cell<T> list)
+    {
+        for(Cell<T> ptr=list; ptr!=null; ptr=ptr.next)
+            if(ptr.first.equals(n))
+                ptr.first=m;
+    }
+
+    private static <T> Cell<T> constChange(T n,T m,Cell<T> list)
+    {
+        Cell<T> temp=null;
+        for(;list!=null; list=list.next)
+            if(list.first.equals(n))
+                temp = new Cell<T>(m,temp);
+            else
+                temp = new Cell<T>(list.first,temp);
+        for(;temp!=null; temp=temp.next)
+            list = new Cell<T>(temp.first,list);
+        return list;
+    }
+
+}

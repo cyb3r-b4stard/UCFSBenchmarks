@@ -1,0 +1,91 @@
+
+/**
+ * ##### # ########### ## ##### #### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Game
+{
+   
+    private Room aCurrentRoom;
+    private Command aPaser;
+    private Command vCommand;
+    private boolean vFinished;
+    
+    
+    
+    /**
+     * Constructor for objects of class Game
+     */
+    public Game()
+    {
+        this.createRooms();
+        this.printWelcome();
+        this.printHelp();
+
+    }
+    
+    private void createRooms()
+    {
+        Room vCouloir= new Room("dans le couloir");
+        Room vSallec= new Room("dans la salle de classe");
+        Room vSallep= new Room("dans la salle des professeurs");
+        Room vLabo= new Room("dans le laboratoire");
+        Room vCantine= new Room( "dans la cantine");
+        Room vSalleg= new Room ("dans la grande salle")
+        
+        vCouloir.setExits(vSalleg, null, vSallep, vSallec);
+        vSallec.setExits(null, vCantine,null,null);
+        vSallep.setExits(vLabo ,null, null, null);
+        vLabo.setExits(vPub, null, null, null);
+        vCantine.setExits(null, null, vCouloir,null);
+        vSalleg.setExits(null,vCouloir, null, null)
+
+        aCurrentRoom= vCouloir;
+        
+    }
+  
+    private void goRoom(final Command pCommand)
+    {
+        if(pCommand.hasSecondWord()!=true)
+        { System.out.println("go");return;
+        }
+        if(pCommand.isUnknown()!=false)
+        { System.out.println("go where");return;
+        }
+        
+        aCurrentRoom = aCurrentRoom.getExit(pCommand.getSecondWord());
+    }
+    
+     private void printWelcome()
+    {  
+        System.out.println("Welcome to the World of Zuul!World of Zuul is a new, incredibly boring adventure game.Type 'help' if you need help.You are outside the main entrance of the university.Exits: east south west");
+
+    }
+     private void printHelp()
+    {  
+        System.out.println("You are lost. You are alone. You wander around at the university. Your command words are: go quit help");
+
+    }
+    
+    private void printHelp(final Command pCommand)
+    {
+        if(pCommand.hasSecondWord()!=true)
+        { System.out.println("Quit what ?");return;
+        }
+        if(pCommand.hasSecondWord()!=false)
+        { return;
+        }
+    }
+    
+    private void processCommand(final Command pCommand)
+    {
+        if(pCommand.isUnknown()!=true)
+        { System.out.println("I don't know what you mean...");return;
+        }
+        if(pCommand.quit()!=true)
+        { return ; 
+        }
+    }
+}

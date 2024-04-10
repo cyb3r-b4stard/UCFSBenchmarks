@@ -1,0 +1,132 @@
+package Estoque;
+
+import java.util.*;
+import java.util.Collections.sort;
+
+
+import Livre.*;
+public abstract class URE implements Dist{
+    
+    private int indice; 
+    private ArrayList<Produto> estoque;
+    private Gerente_de_Estoque gerente;
+    private Bebida bebida;
+    private Feira feira;
+    private Higiene_Perfumaria higPerf;
+    private Mercearia mercearia;
+    private Limpeza limpeza;
+    
+    
+    public URE(int i){
+        estoque = new ArrayList<Produto>();
+        Organiza(); 
+        bebida = new Bebida("b11", 0); 
+        feira = new Feira("f11", 0); 
+        higPerf = new Higiene_Perfumaria("h11", 0); 
+        mercearia = new Mercearia("m11", 0); 
+        limpeza = new Limpeza("l11", 0); 
+        
+    }
+    
+    public int getIndice(){return indice;}
+    
+    private boolean Produto_Cadastrado (String c){
+            if(c == bebida.getCodigo()){ return true;}
+            if(c == feira.getCodigo() ){return true;}
+            if(c == limpeza.getCodigo()){return true;}
+            if(c == higPerf.getCodigo()){ return true;}
+            if(c == mercearia.getCodigo()){return true;}
+            
+        
+        return false;
+    }
+    
+    private int Tem_Produto (String c){
+        if(c == bebida.getCodigo()){ return bebida.getQuantidade();}
+        if(c == mercearia.getCodigo()){return mercearia.getQuantidade() ;}
+        if(c == limpeza.getCodigo()){return limpeza.getQuantidade();}
+        if(c == higPerf.getCodigo()){ return higPerf.getQuantidade();}
+        if(c == feira.getCodigo()){return feira.getQuantidade();}
+        
+    
+    return 0;
+}
+    private void atualiza_Quantid(int quant, String c){
+        if(c == bebida.getCodigo()){ bebida.setQuantidade(bebida.getQuantidade() + quant);}
+        if(c == mercearia.getCodigo()){ mercearia.setQuantidade(mercearia.getQuantidade() + quant);}
+        if(c == limpeza.getCodigo()){ limpeza.setQuantidade(limpeza.getQuantidade() + quant);}
+        if(c == higPerf.getCodigo()){ higPerf.setQuantidade(higPerf.getQuantidade() + quant);}
+        if(c == feira.getCodigo()){ feira.setQuantidade(feira.getQuantidade() + quant);}
+    }
+    
+    public void solicitaProduto(Produto p, int quant){       
+        if(Produto_Cadastrado(p)){              
+                int d=0, i=0, q1=0, it=0;
+                URE aux;        ;
+                ArrayList<Produto> help = new ArrayList<Produto>();
+                while(i < tam && q1 < quant){
+                        it = Estoque[indice][i].getDistancia();
+                        if(it == 0){ i++;}
+                        d = Estoque[indice] [i].getIndice();
+                        aux = unidades_estoque.get(d);
+                        if(!unidades_em_deficit.contains(aux.getIndice())){
+                            help = aux.Transferencia_de_Produto(p, quant-q1);
+                            q1 = help.size();}
+                        else{ i++;}
+                }
+                
+            if(q1 < quant){/**comprar de fornecedor*/}
+            atualiza_Quantid(quant, p);         
+            }
+        else{ /**reporta erro 
+        }
+    
+        
+    public ArrayList<Produto> Transferencia_de_Produto(Produto p, int quantidade){
+        int i= Tem_Produto(p);
+        ArrayList<Produto> prod = new ArrayList<Produto>();
+        if(i>limite){
+            Iterator<Produto> it = estoque.iterator();          
+            Produto aux = null;         
+            while(it.hasNext()){
+                aux = it.next();
+                if(aux.getCodigo() == p.getCodigo() && i<quantidade){
+                    prod.add(aux);
+                    estoque.remove(aux);
+                    i++;
+                }
+                    
+        
+            else{
+                atualiza_Quantid(-i, p);
+                int tam = Tem_Produto(p);
+                if(tam < limite){
+                    unidades_em_deficit.add(this.indice);
+                    solicitaProduto(p, limite-tam);
+                    }
+                }
+            }
+        }
+        else{/**reporta erro*/}
+        
+            return prod;
+    
+}
+
+private void Organiza(){
+    ArrayList<Distancia> aux = new ArrayList<Distancia>();
+        aux.add(Estoque[indice][i]);
+    }
+        OrdenaDist ord = new OrdenaDist();
+        
+    java.util.Collections.sort(aux, ord);
+    
+    
+     
+    Estoque[indice] = aux.toArray(Estoque[indice]);
+}
+
+
+public void getGerente(Gerente_de_Estoque x){ gerente = x;}
+
+}

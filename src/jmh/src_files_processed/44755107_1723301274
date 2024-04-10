@@ -1,0 +1,125 @@
+import java.awt.*;
+import objectdraw.*;
+public class World extends ActiveObject
+{
+    private DrawingCanvas myCanvas;
+
+    private Paddle paddle1, paddle2;
+    private boolean gameOver;
+    private ScoreBox sBox;
+    private int click, temp;
+    private ResetBox rBox1;
+    private Potates potat1;
+    private int dx, dy;
+    private FilledOval[] lights = new FilledOval[5];
+    private RandomIntGenerator randy;
+    private int x;
+    private int xChange, yChange;
+
+    public World(DrawingCanvas c)
+    {
+        myCanvas = c;
+        xChange = 1;
+        yChange = 0;
+        paddle1 = new Paddle(10, myCanvas.getHeight()-10, 60, 10, c);
+        paddle1.setColor(Color.BLUE);
+        potat1 = new Potates(800, paddle1.getY(), 20, 20, c);         
+        sBox = new ScoreBox("Score= ", 0, 0, 80, 15, Color.YELLOW, c);
+        rBox1 = new ResetBox("RESET", myCanvas.getWidth()-80, 0,
+            myCanvas.getWidth(), 15 ,Color.BLUE, c);
+        potat1.setCanMove(false);
+        gameOver=false;
+        for(int i = 0; i < lights.length; i++)
+        {
+            lights[i] = new FilledOval(20 + x, 50, 65, 65, myCanvas);
+            lights[i].setColor(Color.BLUE);
+            x = x + 80;
+        }
+        
+        start();
+    }
+
+    public void onMouseClick(Location point)
+    {
+        potat1.setColor(Color.RED);
+        potat1.moveTo(paddle1.getX() + paddle1.getWidth()/2, paddle1.getY());
+        potat1.move(-potat1.getWidth()/2, 0);
+        
+        potat1.setCanMove(true);
+        potat1.setdy(-4);
+        if (rBox1.contains(point))
+        {
+            sBox.setScore(0);
+            potat1.moveTo(500, paddle1.getY());
+        }
+    }
+
+    public void run()
+    {
+        pause(1);
+
+        while (gameOver == false)
+        {
+            pause(1);
+
+            if (potat1.getY() <= 0)
+            {
+                potat1.reverseY();
+                potat1.move(); 
+                
+                pause(1);
+            }
+            
+            if (potat1.getY() >= myCanvas.getHeight())
+            {  
+                potat1.setCanMove(false);
+                
+                
+            }
+            for(int i = 0; i < lights.length; i++)
+            {
+                pause(1);
+                lights[i].move(xChange, yChange);
+               
+            
+            }
+            
+            if(lights[4].getWidth() + lights[4].getX() > myCanvas.getWidth() || lights[0].getX() < 0 )
+            {
+                xChange = -xChange;
+                for( int i = 0; i < lights.length; i++)
+                {
+                    lights[i].move(0, 3);
+                }
+            }
+            
+           
+        }
+        
+
+    }
+
+    public void onMouseMove(Location point)
+    {
+        paddle1.moveTo(point.getX(), myCanvas.getHeight()-10);
+        
+    }
+    
+    public void checkForHit()
+    {
+        if(potat1.getObject().overlaps(lights[i].getObject()))
+        {
+            lights[i].setColor(Color.RED);
+        
+        }
+        if(potat1.getColor() == Color.RED && potat1.getObject().overlaps(lights[i].getObject()))
+        {
+        
+        }
+        if(
+        {
+        
+        
+        }
+    }
+}

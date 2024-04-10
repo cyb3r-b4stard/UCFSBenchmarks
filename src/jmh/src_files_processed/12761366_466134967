@@ -1,0 +1,80 @@
+import java.util.Random;
+/**
+ * ##### # ########### ## ##### ######## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Ahorcado
+{
+    private String[]acertadas;
+    private int oportunidades;
+    private String averiguar;
+    private String jugador;
+    public Ahorcado(String nombre)
+    {
+        generarPalabra();
+        acertadas=new String[averiguar.length()];
+        jugador=nombre;
+        oportunidades=6;
+    }
+    public String adivinaLaPalabra(char letra)
+    {
+       String respondidas = correctas();
+       String ltr ="";
+       ltr=ltr+letra;
+       String respuesta="";
+       
+        if(respondidas.equals(averiguar)){
+            respuesta = jugador +" usted gano";
+                
+        else if(adivino(ltr)==true){   
+            respuesta = correctas();
+            }        
+        else if(oportunidades==0){
+            respuesta= "Perdedor";
+        }else{
+         oportunidades--;
+         respuesta="le quedan "+ oportunidades +"intentos";
+       }
+    }
+       return respuesta;
+    }
+     private String correctas()
+    {
+        String res="";
+        for(int ind=0;ind<acertadas.length;ind++)
+        {
+            if(acertadas[ind]!=null)
+            {
+                res+=acertadas[ind];
+            }else{
+                res+=" _ ";
+            }
+        }
+        return res;
+    }
+    private boolean adivino(String letra)
+    {
+        boolean res=false;
+        for(int ind=0;ind<averiguar.length();ind++)
+        {
+            String ltr=""+averiguar.charAt(ind);
+            if(ltr.equals(letra))
+            {
+                acertadas[ind]=ltr;
+                res=true;
+            }
+        }
+        return res;
+    }
+    
+    private void generarPalabra(){
+            Random rnd = new Random ();
+            String []aux = {"manzana","trabajo","arbol","holamundo","perro"};
+            averiguar= aux[rnd.nextInt(aux.length)];
+            
+        }
+}        
+        
+    

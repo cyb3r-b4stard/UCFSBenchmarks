@@ -1,0 +1,217 @@
+import java.util.*;
+/**
+ * ######### # #### ## ##### #####. #### #### #### #####, ####### ## ####### ## ## ### ## #### ### #### 
+ * #### # ###### ##### ## #### ### ####'# ##### #### ##.
+ * 
+ * @###### ##### #### 
+ * @####### ##/##/####
+ */
+public class Tester
+{
+    static ArrayList<Cards> hand = new ArrayList<Cards>();
+    static int token = 0;
+    /**
+     * Evaluates which reward the hand will give you. 
+     */
+    public static void grade(){
+        int count = 0; 
+        int royalCount = 0; 
+        int lowest = 14; 
+        int highest = 0; 
+        int multiple = 0; 
+
+        boolean done = false;
+        boolean pair = false;
+        boolean three = false;
+        boolean four = false;
+        boolean twoPairs= false;
+        boolean straight = false;
+        boolean flush = false;
+        boolean fullHouse= false;
+        boolean royal = false;
+
+        if (hand.get(0).getSuit() == hand.get(1).getSuit() && hand.get(0).getSuit() == hand.get(2).getSuit() && 
+        hand.get(0).getSuit() == hand.get(3).getSuit() && hand.get(0).getSuit() == hand.get(4).getSuit()){
+            flush = true;
+        }
+
+        for (int i = 0; i < 5; i++){
+            if (hand.get(i).getValue() < lowest){
+                lowest = hand.get(i).getValue();
+            } 
+        }
+        for (int i = 0; i < 5; i++){
+            int times = 0;
+            for (int j = 0; j < 5; j++){
+                if (hand.get(j).getValue() == lowest + i && times < 1) {
+                    count++;
+                    times++;
+                }
+            }
+        }
+        if (count == 5) {
+            straight = true;
+        }
+        if (lowest == 10) {
+            for (int i = 0; i < 4; i++) {
+                int times = 0;
+                int timesAce = 0;
+                for (int j = 0; j < 5; j++) {
+                    if (hand.get(j).getValue() == 10 + i && times < 1){
+                        royalCount++;
+                        times++;
+                    } else if (hand.get(j).getValue() == 1 && timesAce < 1){
+                        royalCount++;
+                        timesAce++;
+                    }
+                }
+            }
+        }
+        if (royalCount == 5) {
+            royal = true;
+        }
+
+        for (int i = 0; i < 5; i++){
+            Cards element = hand.get(i);
+            for (int j = i + 1; j < 5; j++) {
+                if (element.getValue() == hand.get(j).getValue()){
+                    for (int k = i + 1; k < 5; k++){
+                        Cards element2 = hand.get(k);
+                        for (int l = k + 1; l < 5; l++){
+                            if (element2.getValue() == hand.get(l).getValue()){
+                                twoPairs = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < 5; i++){
+            Cards element = hand.get(i);
+            int same = 1;
+            for (int j = i + 1; j < 5; j++){
+                if (element.getValue() == hand.get(j).getValue()){
+                    same++;
+                    multiple = element.getValue();
+                }            
+            }
+            if (same > highest) {
+                highest = same;
+            }
+        }
+        if (highest == 4) {
+            four = true;
+        } else if (highest == 3) {
+            three = true;
+        } else if (highest == 2) {
+            pair = true;
+        }
+
+        if (three) {
+            for (int i = 0; i < 5; i++){
+                Cards element = hand.get(i);
+                for (int j = i + 1; j < 5; j++){
+                    if (element.getValue() == hand.get(j).getValue() && element.getValue() != multiple){
+                        fullHouse = true;
+                    }            
+                }
+            }
+        }
+
+        if (royal && flush) {
+            System.out.println("You have a royal flush. Payout: 250");
+            token = token + 250;
+        } else if (straight && flush) {
+            System.out.println("You have a straight flush. Payout: 50");
+            token = token + 50;
+        } else if (four) {
+            System.out.println("You have four of a kind. Payout: 25");
+            token = token + 25;
+        } else if (fullHouse) {
+            System.out.println("You have a full house. Payout: 6");
+            token = token + 6;
+        } else if (flush) {
+            System.out.println("You have a flush. Payout: 5");
+            token = token + 5;
+        } else if (straight || royal) {
+            System.out.println("You have a straight. Payout: 4");
+            token = token + 4;
+        } else if (three) {
+            System.out.println("You have three of a kind. Payout: 3");
+            token = token + 3;
+        } else if (twoPairs) {
+            System.out.println("You have two pairs. Payout: 2");
+            token = token + 2;
+        } else if (pair) {
+            System.out.println("You have a pair. Payout: 1");
+            token = token + 1;
+        } else {
+            System.out.println("You stink at poker. Find a better hobby.");
+        }
+    }
+
+    /**
+     * Prints out the 
+     */
+    public static void main(String args[]){
+        while (token > 0){
+            token - 1;
+            boolean done = false;
+            Scanner in = new Scanner(System.in);
+            int counter = 0;
+            Deck deck = new Deck();
+            deck.shuffle();
+            System.out.print("Your hand is:"); 
+            for (int i = 0; i < 5; i++){  
+                hand.add(deck.getCard(counter));  
+                counter++;
+            }
+
+            for (int i = 0; i < 5; i++){
+                if (hand.get(i).getValue() == 1) {
+                    System.out.print(" Ace of " + hand.get(i).getSuit()); 
+                } else if (hand.get(i).getValue() == 11) {
+                    System.out.print(" Jack of " + hand.get(i).getSuit());
+                } else if (hand.get(i).getValue() == 12) {
+                    System.out.print(" Queen of " + hand.get(i).getSuit());
+                } else if (hand.get(i).getValue() == 13) {
+                    System.out.print(" King of " + hand.get(i).getSuit());
+                } else {
+                    System.out.print(" " + hand.get(i));
+                }
+            }
+            System.out.println("");
+
+            System.out.println("Which cards would you like to get rid of");
+            System.out.print("use positions 0-4, use decreasing order and use -1 to stop: ");
+            while (!done){
+                int x = in.nextInt();
+                if (x == -1){
+                    done = true;
+                } else {
+                    hand.remove(x);
+                    hand.add(deck.getCard(counter + 1));
+                    counter++;
+                }
+            }
+
+            System.out.print("Your new hand is:");
+            for (int i = 0; i < 5; i++){
+                if (hand.get(i).getValue() == 1) {
+                    System.out.print(" Ace of " + hand.get(i).getSuit()); 
+                } else if (hand.get(i).getValue() == 11) {
+                    System.out.print(" Jack of " + hand.get(i).getSuit());
+                } else if (hand.get(i).getValue() == 12) {
+                    System.out.print(" Queen of " + hand.get(i).getSuit());
+                } else if (hand.get(i).getValue() == 13) {
+                    System.out.print(" King of " + hand.get(i).getSuit());
+                } else {
+                    System.out.print(" " + hand.get(i));
+                }
+            }
+            System.out.println("");
+
+            grade();
+        }
+    } 
+}

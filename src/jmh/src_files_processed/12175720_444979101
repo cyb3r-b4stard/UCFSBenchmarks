@@ -1,0 +1,51 @@
+/** ##### #############.
+ *  ######## # - ### - ######-###.
+ *  
+ *  @######
+ *  @####### ##### ####/##
+ */
+import java.util.*;
+public class VentaEntradas {
+  public static void main(String [] args) {
+    Scanner teclado = new Scanner(System.in).useLocale(Locale.US);
+
+	System.out.println("Datos de la entrada: ");
+    System.out.print("   Titulo: ");
+    String titulo = teclado.nextLine();
+    System.out.print("   Cine: ");
+    String cine = teclado.nextLine();
+    System.out.print("   Hora de la sesión: ");
+    int hs = teclado.nextInt();
+    System.out.print("   Minuto de la sesión: ");
+    int ms = teclado.nextInt(); 
+     
+    Entrada e = new Entrada (titulo, cine, hs, ms); 
+    
+    boolean diaEspectador = false, festivo = false, vispera = false, tarjetaCliente = false;
+    
+    System.out.print("Edad? ");
+    int edad = teclado.nextInt(); teclado.nextLine();
+    
+    if (edad < 65) {
+    System.out.print("Es el dia del espectador? (SI/NO) "); 
+    String res = teclado.next().toUpperCase();
+    if (res.equals("SI") ) diaEspectador = true;
+    } else {
+    System.out.print("Es dia festivo? (SI/NO) ");
+    String res1 = teclado.next ().toUpperCase();
+    if (res1.equals("SI") ) festivo = true;
+    } else {
+    System.out.print("Es vispera de festivo? (SI/NO) ");
+    String res2 = teclado.next ().toUpperCase();
+    if (res2.equals("SI") ) vispera = true;
+    
+    System.out.print("Tarjeta de cliente? (SI/NO) ");
+    String res3 = teclado.next ().toUpperCase();
+    if (res3.equals("SI") ) tarjetaCliente = true;
+    
+	
+	double pFinal = e.precioFinal(edad, diaEspectador, festivo, vispera, tarjetaCliente);
+	
+    System.out.println("El precio final para la entrada es: " + String.format("%.2f", pFinal) + " euros");
+  }
+}

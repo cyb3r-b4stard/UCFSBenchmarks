@@ -1,0 +1,321 @@
+import java.util.*;
+import java.util.stream.Stream;
+import java.io.*;
+import java.nio.*;
+
+public class Proj5 {
+
+    
+    
+    /*
+     * fileRecognition
+     * 
+     * Reads in a file name by user input and then stores the contents into a
+     * string array
+     * 
+     * @String[] String[]
+     * 
+     * @returns the content of the text file into a string array by turning each
+     * line into a string and then adding the line to the index of the array
+     */
+    public static String[] fileRecognition() throws IOException {
+        boolean run = true;
+        Scanner keyboard = new Scanner(System.in);
+
+        System.out.print("Enter name of quiz file(i.e. QuizScores.txt): ");
+        String filename = keyboard.nextLine();
+        File file = new File(filename);
+        do {
+            if (!file.exists()) {
+                run = true;
+                System.out.println("File does not exist");
+                System.out
+                .print("Enter name of quiz file(i.e. QuizScores.txt): ");
+                filename = keyboard.nextLine();
+                file = new File(filename);
+            } else {
+                run = false;
+            }
+        } while (run != false);
+
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        List<String> lines = new ArrayList<String>();
+        String line = null;
+        while ((line = br.readLine()) != null) {
+            lines.add(line);
+        }
+        br.close();
+        return lines.toArray(new String[lines.size()]);
+    }
+
+    
+    
+    /*
+     * fileRead
+     * 
+     * Object[]
+     * String[]wid, String[] answers
+     * 
+     * Reads in the array from the fileRecognition method and then turns the
+     * contents into two arrays named wid and answers. It then stores these two
+     * arrays in an object array that will be later called in the grading method
+     * and used
+     * 
+     * 
+     * Returns arrays[0] and arrays[1], two arrays that hold both the wid's and
+     * answers arrays.
+     */
+    public static Object[] fileRead(String[]wid,String[]answers) throws IOException {
+        String [] arr = fileRecognition();
+        String numbers = (Arrays.toString(arr));
+        String[] array = numbers.replaceAll("\\[", "").replaceAll("\\]", " ").split(",");
+        answers = new String[array.length];
+        wid = new String[array.length];
+
+        Object[] arrays = new Object[2];
+
+        for (int i = 0; i < array.length; i++) {
+            if (i % 2 == 0)
+            {   
+                answers[i] = array[i];
+
+            } else 
+            {
+                wid[i] = array[i];
+            }
+
+        }
+        List<String> list = new ArrayList<String>(Arrays.asList(wid));
+        list.removeAll(Collections.singleton(null));
+        wid = list.toArray(new String[list.size()]);
+        List<String> list2 = new ArrayList<String>(Arrays.asList(answers));
+        list2.removeAll(Collections.singleton(null));
+        answers = list2.toArray(new String[list2.size()]);
+        arrays[0] = wid;
+        arrays[1] = answers;
+        return arrays;
+    }
+
+    
+    
+    /*
+     * getValue;
+     * 
+     * method used to gain the total point value for each question
+     */
+    
+    public static int getValue()
+    {
+        Scanner keyboard = new Scanner(System.in);
+        System.out.print("Please enter the number of points per questions: ");
+        int amountPerQ = keyboard.nextInt();
+
+        return amountPerQ;
+    }
+    
+    /*
+     * getQuestions();
+     * 
+     * Seperate method used to gain the number of questions needed for the key created;
+     * 
+     */
+    
+    public static int getQuestions()
+    {
+        Scanner keyboard = new Scanner(System.in);
+        System.out.print("Please enter the number of questions on the exam: ");
+        int numQuestions = keyboard.nextInt();
+        
+        return numQuestions;
+    }
+   
+    
+    /*
+     * get Total()
+     * 
+     * 
+     * Method used to easily obtain the total sum for the questions and point value;
+     * 
+     */
+    
+    public static int getTotal()
+    {
+        int points =0;
+        int questions = 0;
+        points = getValue();
+        questions = getQuestions();
+        int sum = points * questions;
+        
+        return sum;
+    }
+    
+    
+    
+    
+    /*
+     * key()
+     * 
+     * char[] questions int sum
+     * 
+     * throws IOException
+     * integer[]
+     * int []questions, int sum
+     * 
+     * This method ask the user for the amount of questions that were on the
+     * quiz with a user enter a character either being (t)rue, (f)alse, a, b, c,
+     * d, or e. This input is then put into a char array which will be later
+     * used in another method.
+     * 
+     * What is returned is the length of the array questions based on the
+     * content entered and the index of the array also converted into numberical value.
+     */
+    public static int[]  key(int[] questions) throws IOException {
+        int numQuestions = getQuestions();
+        int amountPerQ = getValue();
+        char answer;
+        Scanner keyboard = new Scanner(System.in);
+        System.out.print("\nPlease enter the answers for the following questions");
+        System.out
+        .print("\nwhere 'T' = true, 'F' = false, or A,B,C,D,E for multiple choice"
+            + "\n");
+        questions = new int[numQuestions];
+        for (int i = 0; i < numQuestions; i++) 
+        {
+            System.out.print(i + 1 + ") ");
+            String ans = keyboard.nextLine();
+            answer = ans.charAt(0);
+            questions[i] = answer;
+        }
+        for(int j =0; j< questions.length; j++)
+        {
+            if(questions[j] == 't')
+            {
+                questions[j] = 1;
+            }
+            if(questions[j] == 'f')
+            {
+                questions[j] = 2;
+            }
+            if(questions[j] == 'a')
+            {
+                questions[j] = 1;
+            }
+            if(questions[j] == 'b')
+            {
+                questions[j] = 2;
+            }
+            if(questions[j] == 'c')
+            {
+                questions[j] = 3;
+            }
+            if(questions[j] == 'd')
+            {
+                questions[j] = 4;
+            }
+            if(questions[j] == 'e')
+            {
+                questions[j] = 5;
+            }
+        }
+        return questions;
+    }
+
+    
+    
+    
+    /*
+     * grade()
+     * 
+     * char[]
+     * String answer, char[] key
+     * 
+     * This method takes the contents of the fileRead method and the key method to compare the values of the array to grade the quiz's
+     * 
+     * This returns the 
+     * 
+     * 
+     */
+    public static double grade(double graded) throws IOException {
+        String [] wid = new String[0];
+        String [] answers = new String[0];
+        Object[] studentData = fileRead(wid,answers);
+        wid = (String[]) studentData[1];
+        answers = (String[]) studentData[0];
+        List<String> string = new ArrayList<String>();
+        for(String str : answers)
+        {
+            for(String s: str.split(" ");
+            {
+                string.add(s);
+            }
+        }
+        String[] output = string.toArray(new String[string.size()]);
+        int[] numbers = new int[output.length];
+        for(int i = 0; i<output.length; i++)
+        {
+            numbers[i] = Integer.parseInt(output[i]);
+        }
+        
+        int[] questions = new int [0];
+        int[] ans = key(questions);
+        return graded;
+    }
+
+    
+    public static char letterGrade(double percentage) throws IOException {
+        double graded = 0.0;
+        char gLetter = '0';
+        int[] key = new int[0];
+        double jerry = grade(graded);
+
+        if(percentage < 100 && percentage > 90)
+        {
+            gLetter = 'A';
+        }
+        else if(percentage <89.9 && percentage > 80)
+        {
+            gLetter = 'B';
+        }
+        else if(percentage<79.9 && percentage > 70)
+        {
+            gLetter = 'C';
+        }
+        else if(percentage<69.9 && percentage > 60)
+        {
+            gLetter = 'D';
+        }
+        else if(percentage < 60)
+        {
+            gLetter = 'F';
+        }
+
+        char animal = 't';
+        return animal;
+    }
+
+    
+    
+    /*
+     * public double average(int totalRight,int st) 
+     * {
+     * } 
+     * public static void display (String[]wid, int score) { }
+     */
+
+    
+    
+    
+    public static void main(String[] args) throws IOException {
+        /*
+        String[] wid = new String[0];
+        String[] answers = new String[0];
+        fileRead(wid,answers);
+
+        int[] questions = new int[0];
+        int sum = 0;
+        int [] q = key(questions,sum);
+         */
+        double graded = 0.0;
+        double jackson = grade(graded);
+    }
+}

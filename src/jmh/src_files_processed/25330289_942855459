@@ -1,0 +1,180 @@
+import java.awt.event.*;
+import javax.swing.*;
+import java.awt.*;
+import java.lang.*;
+
+public class Aplikasi_Antrian {
+    
+        String x,y;
+        private JFrame frame;
+        private JTextArea textArea;
+        private String password;
+        private int AntrianCS , AntrianTeller;
+        JButton tambahCS      = new JButton("CS");
+        JButton tambahTeller  = new JButton("Teller");
+        JButton reset         = new JButton("Keluar");
+
+        JLabel ATeller        = new JLabel("Antrian Teller Saat ini");
+        JLabel ACS            = new JLabel("Antrian CS Saat ini");
+        JLabel CS             = new JLabel("100");
+        JLabel Teler         = new JLabel("300");
+        JLabel background     = new JLabel(new ImageIcon("contoh.jpg"));
+        JFrame Security       = new JFrame();
+        public static void main(String[] args){
+        try{
+            Aplikasi_Antrian window = new Aplikasi_Antrian();
+            window.frame.setVisible(true);
+        }catch (Exception e)  {
+        }    
+
+        public Aplikasi_Antrian(){
+            password ="abcd";
+            AntrianCS = 100;
+            AntrianTeller = 300;
+            makeFrame();
+        }
+
+        private void makeFrame(){
+            frame = new JFrame("Mesin Tiket Antrian");
+            frame.setSize(600,400);
+            frame.setLocationRelativeTo(null);
+            frame.setResizable(false);
+
+        }
+
+        private void ukuran(){
+            JPanel panel = (JPanel)frame.getContentPane();
+
+            panel.setLayout(null);
+
+            panel.add(ATeller);
+            ATeller.setBounds(170,15,130,20);
+
+            panel.add(Teler);
+            Teler.setBounds(170,40,100,20);
+
+            panel.add(ACS);
+            ACS.setBounds(170,100,130,20);
+
+            panel.add(CS);
+            CS.setBounds(170,125,100,20);
+
+            panel.add(tambahTeller);
+            tambahTeller.setBounds(40,15,100,45);
+
+            panel.add(tambahCS);
+            tambahCS.setBounds(40,100,100,45);
+
+            panel.add(reset);
+            reset.setBounds(200,200,140,50);
+
+            panel.add(background);
+            background.setBounds(0,0,600,400);
+
+        }
+
+        private void panggil(){
+            tambahAntrianTeller();
+            tambahAntrianCS();
+            cetakAntrianCS();
+            cetakAntrianTeller();
+        }
+
+        public void resetAntrianCS(){
+            this.AntrianCS=100;
+        }
+
+        public void resetAntrianTeller(){
+            this.AntrianTeller=300;
+        }
+
+        public void tambahAntrianCS(){
+            tambahCS.addActionListener(new ActionListener(){      
+                    public void actionPerformed(ActionEvent h){
+                        AntrianCS++;
+                        y = Integer.toString(AntrianCS);
+                        CS.setText(y);
+                    }
+                });
+        }
+
+        public void tambahAntrianTeller(){
+            tambahTeller.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent h){
+                        AntrianTeller++;
+                        x = Integer.toString(AntrianTeller);
+                        Teler.setText(x);
+                    }
+                });  
+        }
+
+        public int getAntrianCS(){
+            return this.AntrianCS;
+        }
+
+        public int getAntrianTeller(){
+            return this.AntrianTeller;
+        }
+
+        public void cetakAntrianCS(){
+            textArea.setText("====|Tiket CS|====\n"+"\n\n Nomor Antrian Anda:"+"\n\t  C"+getAntrianCS()+"\n\n--------------");
+        }
+
+        public void cetakAntrianTeller(){
+            textArea.setText("====|Tiket Teller|====\n"+"\n\n Nomor Antrian Anda:"+"\n\t  T"+getAntrianTeller()+"\n\n--------------");
+            keluar();
+        }
+
+        public void setPassword(String password){
+        this.password = password;
+
+    }
+
+    private void keluar(){
+        reset.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e){
+                    JPasswordField pass1 = new JPasswordField(32); 
+                    JOptionPane.showConfirmDialog(null, pass1,"Admin's Password",JOptionPane.PLAIN_MESSAGE); 
+                    String inputPass= new String(pass1.getPassword());  
+
+                    if(password.equals(inputPass)){
+                        JOptionPane.showConfirmDialog(null, "PASSWORD BENAR!!","Admin",JOptionPane.PLAIN_MESSAGE);
+                        resetAntrianTeller();
+                        resetAntrianCS();
+                        CS.setText("");
+                        Teler.setText("");
+
+                        int gantiPass = JOptionPane.showConfirmDialog(null, "Klik Yes Atau NO","Ganti Password",JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+                        if(gantiPass == JOptionPane.YES_OPTION){
+                            JPasswordField pass2 = new JPasswordField(15);
+                            JPasswordField pass3 = new JPasswordField(15);
+                            JPasswordField pass4 = new JPasswordField(15);
+                            JOptionPane.showConfirmDialog(null, pass2,"Masukkan password lama",JOptionPane.PLAIN_MESSAGE);
+                            String inputPass2= new String(pass2.getPassword());
+
+                            if(inputPass2.equals(password)){
+                                JOptionPane.showConfirmDialog(null, pass3, "Masukkan password baru",JOptionPane.PLAIN_MESSAGE);
+                                String inputPass3= new String(pass3.getPassword());
+                                JOptionPane.showConfirmDialog(null, pass4, "Konfirmasi password baru",JOptionPane.PLAIN_MESSAGE);
+                                String inputPass4= new String(pass4.getPassword());
+
+                                if(inputPass3.equals(inputPass4)){
+                                    setPassword(inputPass4);
+                                    JOptionPane.showConfirmDialog(null, "PASSWORD BERHASIL DIGANTI!!","Admin",JOptionPane.PLAIN_MESSAGE);
+                                }else 
+                                    JOptionPane.showConfirmDialog(null, "PASSWORD TIDAK SAMA","Admin",JOptionPane.PLAIN_MESSAGE); 
+                            }else 
+                                JOptionPane.showConfirmDialog(null, "Gagal Ganti password","Admin",JOptionPane.PLAIN_MESSAGE); 
+                        }
+                    }else {
+                        JOptionPane.showConfirmDialog(null, "PASSWORD SALAH","Admin",JOptionPane.PLAIN_MESSAGE);
+                    }              
+                }
+            });
+    }
+
+    public String getPassword(){
+        return this.password;
+    }
+}

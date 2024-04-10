@@ -1,0 +1,326 @@
+import java.util.Random;
+
+public class MyAgent extends Agent
+{
+    Random r;
+
+    /**
+     * Constructs a new agent, giving it the game and telling it whether it is Red or Yellow.
+     * 
+     * @param game The game the agent will be playing.
+     * @param iAmRed True if the agent is Red, False if the agent is Yellow.
+     */
+    public MyAgent(Connect4Game game, boolean iAmRed)
+    {
+        super(game, iAmRed);
+        r = new Random();
+    }
+
+    /**
+     * The move method is run every time it is this agent's turn in the game. You may assume that
+     * when move() is called, the game has at least one open slot for a token, and the game has not
+     * already been won.
+     * 
+     * By the end of the move method, the agent should have placed one token into the game at some
+     * point.
+     * 
+     * After the move() method is called, the game engine will check to make sure the move was
+     * valid. A move might be invalid if:
+     * - No token was place into the game.
+     * - More than one token was placed into the game.
+     * - A previous token was removed from the game.
+     * - The color of a previous token was changed.
+     * - There are empty spaces below where the token was placed.
+     * 
+     * If an invalid move is made, the game engine will announce it and the game will be ended.
+     * 
+     */
+    public void move()
+    {
+        if (ICanWin() > -1) {
+            moveOnColumn(ICanWin());
+        } else if (theyCanWin(0, 0, false) > -1) {
+            moveOnColumn(theyCanWin(0, 0, false));
+        } 
+        
+    }
+
+    /**
+     * Drops a token into a particular column so that it will fall to the bottom of the column.
+     * If the column is already full, nothing will change.
+     * 
+     * @param columnNumber The column into which to drop the token.
+     */
+    public void moveOnColumn(int columnNumber)
+    {
+        int lowestEmptySlotIndex = getLowestEmptyIndex(myGame.getColumn(columnNumber));   
+        if (lowestEmptySlotIndex > -1)  
+        {
+            Connect4Slot lowestEmptySlot = myGame.getColumn(columnNumber).getSlot(lowestEmptySlotIndex);  
+            if (iAmRed) 
+            {
+                lowestEmptySlot.addRed(); 
+            }
+            else 
+            {
+                lowestEmptySlot.addYellow(); 
+            }
+        }
+    }
+
+    /**
+     * Returns the index of the top empty slot in a particular column.
+     * 
+     * @param column The column to check.
+     * @return the index of the top empty slot in a particular column; -1 if the column is already full.
+     */
+    public int getLowestEmptyIndex(Connect4Column column) {
+        int lowestEmptySlot = -1;
+        for  (int i = 0; i < column.getRowCount(); i++)
+        {
+            if (!column.getSlot(i).getIsFilled())
+            {
+                lowestEmptySlot = i;
+            }
+        }
+        return lowestEmptySlot;
+    }
+
+    /**
+     * Another simplified getLowestEmptyIndex.
+     * Returns the index of the top empty slot in a particular column, or -1 if the column is already full.
+     * 
+     * @param column The column to check.
+     * 
+     * @return the index of the top empty slot in a particular column
+     */
+     public int getLowestEmptyIndex(int columnIndex) {
+        Connect4Column column = myGame.getColumn(columnIndex);
+        return getLowestEmptyIndex(column);
+    }
+    
+    /**
+     * Returns a random valid move. If your agent doesn't know what to do, making a random move
+     * can allow the game to go on anyway.
+     * 
+     * @return a random valid move.
+     */
+    public int randomMove()
+    {
+        int i = r.nextInt(myGame.getColumnCount());
+        while (getLowestEmptyIndex(myGame.getColumn(i)) == -1)
+        {
+            i = r.nextInt(myGame.getColumnCount());
+        }
+        return i;
+    }
+
+    /**
+     * Returns the column that would allow the agent to win.
+     * 
+     * You might want your agent to check to see if it has a winning move available to it so that
+     * it can go ahead and make that move. Implement this method to return what column would
+     * allow the agent to win.
+     *
+     * @return the column that would allow the agent to win.
+     */
+    public int ICanWin() {
+    	return anyoneCanWin(iAmRed, 0, 0, false);
+    }
+
+    /**
+     * Returns the column that would allow the opponent to win.
+     * 
+     * You might want your agent to check to see if the opponent would have any winning moves
+     * available so your agent can block them. Implement this method to return what column should
+     * be blocked to prevent the opponent from winning.
+     *
+     * @return the column that would allow the opponent to win.
+     */
+    public int theyCanWin(int colDef, int rowDef, boolean immediate) {
+    	return anyoneCanWin(!iAmRed, colDef, rowDef, immediate);
+    }
+
+    
+       /**
+     * Returns the column that would allow anyone to win, either MyAgent or the opponent.
+     * Either returns the column that would allow a person win in this turn, 
+     * or returns the column that would allow a person win in next turn 
+     * (For example, to establish two routes that have 3 slots)
+     * 
+     * @param myColor Whether to check my color or the opponent's color
+     * @param colDef the starting column. The method would check from this column to the rightmost column
+     * @param rowDef 1 if I want to make the lowest empty index be one slot higher, 0 otherwise
+     * @param immediate To control whether to return the column that would make a person win in next turn or not (true if not)
+     * 
+     * @return the column index that would allow the agent to win. If there is no chance to win, return -1
+     */        
+    public int anyoneCanWin(boolean myColor, int colDef, int rowDef, boolean immediate) {
+    	int chance = -1; 
+    	for (int i = colDef; i < myGame.getColumnCount(); i++) {
+    		int j = getLowestEmptyIndex(i) - rowDef;
+    		if (j > -1) {    			
+    			if (longestRoute(i, myColor, rowDef)[0] >= 3) {
+    				return i;
+    			} else if (!immediate && longestRoute(i, myColor, rowDef)[0] == 2 && (longestRoute(i, myColor, rowDef)[2] == 2 ||
+    					  (longestRoute(i, myColor, rowDef)[1] > 1 && longestRoute(i, myColor, rowDef)[2] == 1))) {
+    				chance = i;
+    			}
+    		}
+    	}
+  
+    	if (myColor == iAmRed) {
+	    	HashSet<Integer> dangerous = dangerousMove();
+			if (dangerous.contains(chance) || TheyCanWin(0, 0, true) > -1) {
+				chance = -1;
+			}
+    	}
+        return chance;
+    }
+    
+    /**
+     * Returns the name of this agent.
+     *
+     * @return the agent's name
+     */
+    public String getName()
+    {
+        return "My Agent";
+    }
+}
+
+/**
+     * If a token is placed in a column, what is the longest routes that it will linked together,
+     * how many are the routes (of the same length), and how many ends that are ready to be filled.
+     * (A route has two ends. If an end is the lowest empty slot in that column, then it is ready to be filled.)
+     * 
+     * @param columnIndex the index of the column, in which a token might be placed
+     * @param color true if red, false, if yellow
+     * @param rowDef 1 if I want to make the lowest empty index be one slot higher, 0 otherwise
+     * 
+     * @return an array of three elements (0: the length of the longest routes, 2: the number of the longest routes, 3: number of ends
+     * that are ready to be filled.)
+     */
+    private Integer[] longestRoute(int columnIndex, boolean color, int rowDef) {
+    	int longest = 0; 
+    	int count = 0; 
+    	int potential = 0; 
+    	for (int i = 1; i <= 4; i++) {
+    		int length = routeLength(columnIndex, color, i, rowDef)[0];
+        	if (length > longest) {
+        		longest = length;
+        		count = 0;
+        		potential = routeLength(columnIndex, color, i, rowDef)[1];
+        	}
+        	if (longest != 0 && length == longest) {
+        		count++;
+        		potential = Math.max(routeLength(columnIndex, color, i, rowDef)[1], potential);
+        	}
+    	}
+    	return new Integer[]{longest, count, potential};   
+
+    }
+   
+    /**
+     * If a token is placed in a column, how long is the route (slots with the same color) that are linked to it.
+     * There are four patterns: vertical, horizontal, ascending slope, descending slope.
+     * A route has two ends. If an end is the lowest empty slot in that column, then it is ready to be filled.
+     * 
+     * @param columnIndex the index of the column, in which a token might be placed
+     * @param color true if red, false, if yellow
+     * @param pattern 1 if vertical, 2 if horizontal, 3 if descending slope, 4 if ascending slope
+     * @param rowDef 1 if I want to make the lowest empty index be one slot higher, 0 otherwise
+     * 
+     * @return return an array of two elements (0: length of the route, 1: how many ends that are ready to be filled)
+     */
+    private Integer[] routeLength(int columnIndex, boolean color, int pattern, int rowDef) {
+    	int x = 0;
+    	int y = 0;
+    	if (pattern == 1) {
+    		y = 1;
+    	} else if (pattern == 2) {
+    		x = 1;
+    	} else if (pattern == 3) {
+    		x = 1;
+    		y = 1;
+    	} else {
+    		x = 1;
+    		y = -1;
+    	}
+    	
+    	int length = 0; 
+    	int potential = 0; 
+    	Integer[] whichSide = new Integer[]{1, -1}; 
+    	for (int side : whichSide) {
+        	int i = 1;
+        	boolean finished = false;
+	    	while (!finished) {
+	    		int deltaX = x * i * side; 
+	    		int deltaY = y * i * side; 
+	    		if (!outOfBound(columnIndex, deltaX, deltaY, rowDef) && getIsFilled(columnIndex, deltaX, deltaY, rowDef) &&
+	    			checkColor(columnIndex, deltaX, deltaY, rowDef) == color) {
+	    			length++;
+	    		} else if (!outOfBound(columnIndex, deltaX, deltaY, rowDef) && !getIsFilled(columnIndex, deltaX, deltaY, rowDef) && 
+	    				   getLowestEmptyIndex(columnIndex + deltaX) == getLowestEmptyIndex(columnIndex) + deltaY - rowDef) {
+	    			potential++;
+	    			finished = true; 
+	    		}
+	    		else
+	    		{
+	    			finished = true; 
+	    		}
+	    		i = i + 1; 
+	    	}
+    	}
+    	return new Integer[] {length, potential};
+    }
+    
+    /**
+     * To check if the slot I want to check is out of the game panel (index is out of bound).
+     * 
+     * @param columnIndex the index of the column, in which a token might be placed
+     * @param x the horizontal distance from the lowest empty slot of the column to the slot which you want to check color
+     * @param y the vertical distance from the lowest empty slot of the column to the slot which you want to check color
+     * @param rowDef 1 if I want to make the lowest empty index be one slot higher, 0 otherwise
+     * 
+     * @return true if index is out of bound, false if index is valid.
+     */
+    private boolean outOfBound(int columnIndex, int x , int y, int rowDef) {
+    	int currentX = columnIndex;
+    	int currentY = getLowestEmptyIndex(columnIndex) - rowDef;
+    	return currentX + x >= myGame.getColumnCount() || currentY + y >= myGame.getRowCount() || currentX + x < 0 || currentY + y < 0;
+    }    
+    
+    /**
+     * To check if the neighbors of the lowest empty slot of a column is filled.
+     * 
+     * @param columnIndex the index of the column, in which a token might be placed
+     * @param x the horizontal distance from the lowest empty slot of the column to the slot which you want to check color
+     * @param y the vertical distance from the lowest empty slot of the column to the slot which you want to check color
+     * @param rowDef 1 if I want to make the lowest empty index be one slot higher, 0 otherwise
+     * 
+     * @return true if filled, false if empty.
+     */
+    private boolean getIsFilled(int columnIndex, int x, int y, int rowDef) {
+    	int currentX = columnIndex;
+    	int currentY = getLowestEmptyIndex(columnIndex) - rowDef;
+    	return myGame.getColumn(currentX + x).getSlot(currentY + y).getIsFilled();
+    }
+    
+    /**
+     * To check if the neighbors of the lowest empty slot of a column is the same color.
+     * 
+     * @param columnIndex the index of the column, in which a token might be placed
+     * @param x the horizontal distance from the lowest empty slot of the column to the slot which you want to check color
+     * @param y the vertical distance from the lowest empty slot of the column to the slot which you want to check color
+     * @param rowDef 1 if I want to make the lowest empty index be one slot higher, 0 otherwise
+     * 
+     * @return color of the slot. True if red, false if yellow (or empty).
+     */
+    private boolean checkColor(int columnIndex, int x , int y, int rowDef) {
+    	int currentX = columnIndex;
+    	int currentY = getLowestEmptyIndex(columnIndex) - rowDef;
+    	Connect4Slot toCheck = myGame.getColumn(currentX + x).getSlot(currentY + y);
+    	return toCheck.getIsRed();
+    }
+}

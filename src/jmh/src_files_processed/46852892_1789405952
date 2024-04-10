@@ -1,0 +1,82 @@
+
+/* #### ### ####### - ######
+ * ####:
+ * ########:
+ * ##:
+ */
+
+import ecs100.*;
+
+/** ####### ### ########### ### #### ### ### #### ## #### ##### #### */
+
+public class PowerCalculator{
+
+    public static final double priceKWh = 0.2034;         
+    public static final int incandescentLifeSpan = 1000; 
+    public static final int ledLifeSpan = 25000;         
+    public static final double incandescentPrice = .99;   
+
+    /** Constructor: set up the user interface (already written for you) */ 
+    public PowerCalculator(){
+        UI.initialise();
+        UI.addButton("Core", this::doCalculateCostSaverCore); 
+        UI.addButton("Completion", this::doCalculateCostSaverCompletion );
+        UI.addButton("Quit", UI::quit);
+        UI.setDivider(1);    
+    }
+
+    /** Calculates and prints how long it would take you to amortise your cost of switching
+     *  to energy saving bulbs
+     */
+    public void doCalculateCostSaverCore(){
+       double OldBulb = UI.askDouble("How many watts old bulb used?:"); 
+       double NewBulb = UI.askDouble("How many watts New bulb uses?:");
+       double nBulb = UI.askDouble("How many bulbs you want to replace?:");
+       double wattSaved = ((OldBulb - NewBulb)*nBulb)/1000;
+       UI.println("You have saved around " + wattSaved + " kilowatts") ;
+       double Hours = UI.askDouble("How many hours per day are the lights on for?:");
+       double Days = UI.askDouble("How many days in a week are the lights on for?:");
+       double Weeks = UI.askDouble("How many weeks in a year are the lights used?:");
+       double reduction = wattSaved*Hours*Days*Weeks;
+       UI.println("The total Power saved per year is " + reduction + " kilowatt") ;
+       UI.println("The total dollars saved per year is $" + (reduction*priceKWh) ) ;
+       double CostLED = UI.askDouble("What is the price per each led light?:");
+       double savings = (nBulb*CostLED)/(reduction*priceKWh);
+       UI.println("The number of years to break even is " + savings + " years" ) ; 
+  
+       
+    }
+
+    /** Calculates and prints how long it would take you to amortise your cost of switching
+     *  to energy saving bulbs
+     *  For the Completion part consider the life span of each type of bulbs and prints
+     *  how much saving will be done after numYears years
+     *  
+     */
+    public void doCalculateCostSaverCompletion(){
+       double OldBulb = UI.askDouble("How many watts old bulb used?:"); 
+       double NewBulb = UI.askDouble("How many watts New bulb uses?:");
+       double nBulb = UI.askDouble("How many bulbs you want to replace?:");
+       double wattSaved = ((OldBulb - NewBulb)*nBulb)/1000;
+       UI.println("You have saved around " + wattSaved + " kilowatts") ;
+       double Hours = UI.askDouble("How many hours per day are the lights on for?:");
+       double Days = UI.askDouble("How many days in a week are the lights on for?:");
+       double Weeks = UI.askDouble("How many weeks in a year are the lights used?:");
+       double time = Hours*Days*Weeks;
+       double reduction = wattSaved*time;
+       UI.println("The total Power saved per year is " + reduction + " kilowatt") ;
+       UI.println("The total dollars saved per year is $" + (reduction*priceKWh) ) ;
+       double CostLED = UI.askDouble("What is the price per each led light?:");
+       double breakeven = (nBulb*CostLED)/(reduction*priceKWh);
+       UI.println("The number of years to break even is " + breakeven + " years" ) ; 
+       
+       double yearsSaving = UI.askDouble("How many years do want to look at the savings for:");      
+       double ORT = (time/incandescentLifeSpan); 
+       UI.println("You will have to replace each lightbulb  "  + (ORT*yearsSaving)  + " times in "+yearsSaving+ " years" ) ;
+       double ORC = ((OldBulb*nBulb*time*priceKWh)/1000)+(incandescentPrice*ORT))*yearsSaving;
+       UI.println("You will have to replace each lightbulb  "  + (ORC) ) ;
+       
+    }
+
+
+}

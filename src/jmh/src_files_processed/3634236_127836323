@@ -1,0 +1,146 @@
+package question1;
+
+import java.lang.reflect.Method;
+import java.lang.Math;
+import java.util.*;
+import java.util.Map;
+
+/** ####### ### ############# ### ######## ## ## ###### ####.####.####,<##>
+ *  ###### #### ########## :### ######## ########## ## ###### ## #'##### # ## #<#>
+ *   #### : ###### ## ####### ######### #### ##### #####, ########## ########## ## ####### ### ### ##########<#>
+ * ## ########## ## ####### ### ## ######## :
+ *        ## "###" ## ## ######## ##### ## "(######)"  ####### : "####(######)"
+ *  ## ## "###" ## ## ######## ##### ## "(######, ######)"  ####### : "#############(######, ######)"
+ */
+
+final public class TableMethodesJavaLangMath{
+  /** Singleton */
+  private static TableMethodesJavaLangMath instanceUnique = null;
+
+  public static TableMethodesJavaLangMath getInstance(){
+    synchronized(TableMethodesJavaLangMath.class){
+      if (instanceUnique==null){
+        instanceUnique = new TableMethodesJavaLangMath();
+      }
+      return instanceUnique;
+    }
+  }
+        
+  private TableMethodesJavaLangMath(){
+  } 
+  
+  /** 
+   * @param  nomDeLaMéthode Nom de la fonction + "(double)" ou "(double, double)"
+   * @return true si la fonction est présente
+   */
+  public boolean cetteMethodeEstPresente(String nomDeLaMethode){
+      return tableDesMethodes.containsKey(nomDeLaMethode);
+  }
+  
+  /** 
+   * @param  nomDeLaMéthode Nom de la fonction + "(double)" ou "(double, double)"
+   * @return true si la fonction est binaire, d'arité 2
+   * @throws NoSuchElementException si la méthode demandée n'existe pas
+   */
+  public boolean cetteMethodeAttendDeuxParametres(String nomDeLaMethode)throws ClassNotFoundException{
+      boolean b = false;
+      Class c = Class.forName("java.lang.Math");
+      String[] result = nomDeLaMethode.split("\\(");
+      String nommethod = result[0];
+      try {
+          Method m = c.getMethod(nommethod,new Class<?>[]{double.class,double.class});
+          b = true;
+      }catch (NoSuchMethodException e) {
+          b = false;
+      }
+      return b;
+  }
+  
+  /** 
+   * @param  nomDeLaMéthode Nom de la fonction + "(double)" ou "(double, double)"
+   * @return true si la fonction est unaire, d'arité 1
+   * @throws NoSuchElementException si la méthode demandée n'existe pas 
+   */
+  public boolean cetteMethodeAttendUnSeulParametre(String nomDeLaMethode)throws ClassNotFoundException{
+      boolean b = false;
+      Class c = Class.forName("java.lang.Math");
+      String[] result = nomDeLaMethode.split("\\(");
+      String nommethod = result[0];
+      try {
+          Method m = c.getMethod(nommethod,new Class<?>[]{double.class});
+          b = true;
+      }catch (NoSuchMethodException e) {
+          b = false;
+      }
+      return b;
+  }
+  
+  /** 
+   * Obtention de la liste ordonnée des méthodes
+   * @return la liste triée des fonctions issues de java.lang.Math
+   */  
+  public String[] listeDesMethodes()throws ClassNotFoundException{
+    ArrayList<String> a_list = new ArrayList<String>(tableDesMethodes.keySet());
+    String[] liste = new String[a_list.size()];
+    liste = a_list.toArray(liste);
+    return liste;
+  }
+  
+ /** Invocation d'une méthode de la table
+   * @param  nomDeLaMéthode Nom de la fonction + "(double)"
+   * @param arg1 l'opérande
+   * @return un résultat
+   * @throws NoSuchElementException si la méthode demandée n'existe pas ou une exception levée par la fonction appelée
+   */
+  public double invoquer(String nomDeLaMethode,double arg1) throws Exception{
+    Method m = tableDesMethodes.get(nomDeLaMethode);
+    double d = (double)m.invoke(null, arg1);
+    return d;
+  }
+  
+ /** Invocation d'une méthode de la table
+   * @param  nomDeLaMéthode Nom de la fonction + "(double, double)"
+   * @param arg1 l'opérande
+   * @return un résultat
+   * @throws NoSuchElementException si la méthode demandée n'existe pas ou une exception levée par la fonction appelée
+   */  
+  public double invoquer(String nomDeLaMethode, double arg1, double arg2) throws Exception{
+    return 0.0;
+  }
+    
+
+  /**
+   * Le dictionnaire contient la liste des méthodes disponibles.
+   * un choix de dictionnaire pourrait étre pour la Clé une String soit le Nom de la fonction + "(double)" ou "(double, double)".<br>
+   *  et en Valeur =  la Method correspondante.
+   *  ou tout autre choix
+   */
+  private static Map<String,Method> tableDesMethodes = new HashMap<String,Method>();
+
+  /** bloc statique d'intialisation de la table des méthodes */
+  static{
+        try {
+            Class c = Class.forName("java.lang.Math");
+            for(Method m : c.getDeclaredMethods()){
+                if (m.getReturnType() == double.class && (m.getParameterTypes() == new Class[]{Double.TYPE} || m.getParameterTypes() == new Class[]{Double.TYPE,Double.TYPE} ){
+                    int i = 0;
+                    String param = m.getName() + "(";
+                    for (Class<?> p : m.getParameterTypes() ) {
+                        if (i != 0){
+                            param = param + ", " + p.getName();
+                        }else{
+                            param = param + p.getName();
+                        }
+                        i++;
+                    }
+                    param = param + ")";
+                    System.out.println(param);
+                    tableDesMethodes.put(param,m);
+                }
+            }
+        }catch(ClassNotFoundException e){
+        }
+  }
+  
+
+}

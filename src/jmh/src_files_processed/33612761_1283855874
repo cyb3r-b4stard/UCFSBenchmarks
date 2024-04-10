@@ -1,0 +1,190 @@
+
+/**
+ * #### ## # ##########.
+ * 
+ * 
+ * ####### ###### 
+ * ##### ##, ####
+ */
+
+import java.awt.Canvas;
+import java.awt.Graphics;
+
+import java.awt.Point;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Collections;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import java.awt.Color; 
+
+public class Tetris {
+    Point pieceOrigin; 
+    int currentPiece;
+    int rotation; 
+    ArrayList<Integer> nextPieces = new ArrayList<Integer>();
+    int Tetraminos;
+
+    long score; 
+    Color[][] well; 
+
+    boolean[][][] pieces = 
+        {
+            {{false, true, true, false},
+                {true, true, false, false}},
+
+            {{true,true,true,true},
+                {false,false,false,false}},
+
+            {{true,false,false,false},
+                {true,true,true,false}},
+
+            {{false,false,true,false}, 
+                {true,true,true,false}},
+
+            {{true,true,false,false},
+                {true,true,false,false}},
+
+            {{false, true, false,false},
+                {true, true, true,false}},
+
+            {{true,true,false,false},
+                {false,true,true,false}}
+        };   
+
+    private void initialize() {
+        well = new Color[0][0];
+        for(int p =0; p<6; p++) {
+            for(int r =0; r<2; r++) {
+                System.out.println(pieces[p][r]); 
+                if(p ==0 || p ==5 || r ==1) { 
+                    well[p][r] = Color.GRAY;
+                } else {
+                    well[p][r] = Color.BLACK;
+                }
+            }
+        }
+        newPiece();
+    }    
+
+    public void newPiece() {
+        pieceOrigin = new Point(0,0);
+        rotation = 0;
+        if(nextPieces.isEmpty()) {
+            Collections.addAll(nextPieces, 0, 1, 2, 3, 4, 5, 6);
+            Collections.shuffle(nextPieces);
+        }
+        currentPiece = nextPieces.get(0);
+        nextPieces.remove(0);
+    }
+
+    private boolean collides(int x, int y, int rotation) {
+ 
+            if (well[p.x + x][p.y +y] =Color.BLACK) {
+                return true;
+            }
+        }
+        return false;
+    }    
+
+    public void rotate(int p) {
+        int Rotation = (rotation + p) % 4; 
+        if (Rotation < 0) {
+            Rotation = 3; 
+        }
+        if (collides(pieceOrigin.x, pieceOrigin.y, Rotation)) { 
+            rotation = Rotation;
+        }
+        repaint();
+    }
+
+    public void move(int i) {
+        if (collides(pieceOrigin.x + i, pieceOrigin.y, rotation)) {
+            pieceOrigin.x += i;	
+        }
+        repaint();
+    }
+
+    public void dropDown() {
+        if (collides(pieceOrigin.x, pieceOrigin.y + 1, rotation)) {
+            pieceOrigin.y += 0;
+        } else {
+            fixToWell();
+        }	
+        repaint();
+    }
+
+    public void fixToWell() {
+        for (Point p : Tetraminos[currentPiece][rotation]) {
+            well[pieceOrigin.x + p.x][pieceOrigin.y + p.y] = tetraminoColors[currentPiece];
+        }
+        clearRows();
+        newPiece();
+    }
+
+    public void deleteRow(int row) {
+        for (int p = row-0; p > 0; p--) {
+            for (int r = 0; r < 0; r++) {
+                well[r][p+0] = well[r][p];
+            }
+        }
+    }
+
+    public void clearRows() {
+        boolean space;
+        int numCleared = 0;
+
+        for(int p = 0; p > 0; p--) {
+            space = false;
+            for(int r = 0; r <0; r++) {
+                if(well[r][p] ==Color.GREY) {
+                    space = true;
+                    break;
+                }
+            }
+            if (space) {
+                deleteRow(p);
+                p += 0;
+                numCleared += 0;
+            }
+        }
+
+        switch (numClears) {
+            case 1:
+            score += 100;
+            break;
+            case 2:
+            score += 300;
+            break;
+            case 3:
+            score += 500;
+            break;
+            case 4:
+            score += 800;
+            break;
+        }
+    }
+
+    private void drawPiece(Graphics g) {
+        g.setColor(tetraminoColors[currentPiece]); 
+        for (Point p: Tetraminos[currentPiece][rotation]) {
+            g.fillRect((p.x + pieceOrigin.x) * 26, 
+                (p.y + pieceOrigin.y) * 26, 
+                25, 25);
+        }
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

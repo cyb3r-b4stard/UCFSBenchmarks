@@ -1,0 +1,134 @@
+
+/* #### ### ####### ########## #  
+ * ####:
+ * ########:
+ * ##:
+ */
+
+import ecs100.*;
+import java.awt.Color;
+
+/**
+ * ##### # ##### ##### (# #### #########), ### #### ##### # ##### #####
+ *  ####### ### ###### ## ### ##### ## ##### ## ### ##.
+ * ### ##### #### ## ####### ### #### ## #### #### ## ### #######
+ *  #########, ### ##### ### "####" (## ####### ##### ## ###, ######
+ *  ### ####, ### ######### ######).
+ * #### ## ## ##### ## #### # ####, ### ####### #### ##### ####
+ *  ## ###'# ## #### ##### ## ### #####, ### ###### ### #########
+ *  ## # ### ###### ######### ## ## ##### ## #### ### ####.
+ *
+ * #####:
+ *   - ### ### ### ####.######() ## ###### # ###### ###### (####### #.# ### #.#)
+ *
+ *   - ## ### ##### ##### ## #### # ######## # ## ### ######### #, #### ## ###
+ *     #### ### ### ####### ## #### ## ### # ### # ########## ############ #####
+ *     ##### ############:
+ *       # * ####.###(# * ####.##/###)   ###   # * ####.###(# * ####.##/###)
+ *     (######## #### # ## ######## ## ####### #### # ## ###)
+ *
+ *   - ##### ### ###### #### ### #### ####, ### # ######## ###### ###
+ *     ####### ### ##### #######. ## ###### #### ### ######### ###
+ *     ##### ####### ## ####### ## #### ###. 
+ */
+
+public class FloorCleaner{
+    public static final double Left = 50;
+    public static final double Right = 550;
+    public static final double Top = 50;
+    public static final double Bot = 420;
+    public static final double Radius = 30;
+    public static final double Diam = 2*Radius;
+    private double botX = 100;
+    private double botY = 100;
+    private double d = 70;
+    private double s = 1;
+
+    /** cleanFloor
+     *  The main simulation loop,
+     *  Draws the floor area
+     *  Initialises the position and direction of the floor cleaning robot and draws it
+     *  Loops forever
+     *    erase the robot from its current position
+     *    work out position of one step in the current direction
+     *    check if it is hitting a wall or not
+     *    then either move it to the new position, or change its direction
+     *    redraw
+     *    sleep for a short time.
+     */
+    public void cleanFloor(){
+        /*# YOUR CODE HERE */
+        UI.setColor(Color.blue);
+        UI.fillRect(Left, Top, Right, Bot);
+        while(true){
+            this.draw(botX,botY,d);
+        }
+    }
+
+    /**
+     * Draws the robot as a red circle at the specified position and direction
+     */
+
+    public void draw(double x, double y, double dir) {
+        /*# YOUR CODE HERE */
+        if(!collision(x,y)){
+            UI.setColor(Color.gray);
+            UI.fillOval(x, y, this.Diam,this.Diam);
+            this.botX=botX+s * Math.sin(d * Math.PI/180);
+            this.botY=botY+s * Math.cos(d * Math.PI/180);
+            UI.setColor(Color.red);
+            UI.fillOval(botX, botY, this.Diam,this.Diam);
+            UI.setColor(Color.black);
+        }
+        UI.sleep(1);
+    }
+
+    public boolean collision(double x, double y){
+        double bounce = 1;
+        if(botX<=Left){
+            this.d=this.d+Math.random()*100;
+            if(d>=360)this.d=this.d-360;
+            if(d>180)this.d=this.d-180;
+            UI.setColor(Color.gray);
+            UI.fillOval(x, y, this.Diam,this.Diam);
+            this.botX=this.botX+bounce;
+            return true;
+        }
+        else if(botX>=Right-10){
+            this.d=Math.random()*500;
+            if(d>=360)this.d=this.d-360;
+            if(d<180)this.d=this.d+180;
+            UI.setColor(Color.gray);
+            UI.fillOval(x, y, this.Diam,this.Diam);
+            this.botX=this.botX-bounce;
+            return true;
+        }
+        else if(botY<=Top){
+            this.d=Math.random()*500;
+            if(d>=360)this.d=this.d-360;
+            if(d>90&&d<270)this.d=this.d+180;
+            UI.setColor(Color.gray);
+            UI.fillOval(x, y, this.Diam,this.Diam);
+            this.botY=this.botY+bounce;
+            return true;
+        }
+        else if(botY>=Bot-10){
+            this.d=Math.random()*500;
+            if(d>=360)this.d=this.d-360;
+            if(d<90||d>270)this.d=this.d+180;
+            UI.setColor(Color.gray);
+            UI.fillOval(x, y, this.Diam,this.Diam);
+            this.botY=this.botY-bounce;
+            return true;
+        }
+        else{return false;}
+    }
+    /** Create a new FloorCleaner object and call cleanFloor.   */
+    public static void main(String[] arguments){
+        FloorCleaner fc =new FloorCleaner();
+        UI.addButton("Quit", UI::quit);
+        UI.setDivider(0);
+        fc.cleanFloor();
+    }        
+
+}

@@ -1,0 +1,199 @@
+
+/* #### ### ####### - ######
+ * ####: #### #######
+ * ########: ##########
+ * ##: #########
+ */
+
+import ecs100.*;
+import java.awt.Color;
+
+public class CircuitDrawer{
+
+    private double startPosX, startPosY, endPosX, endPosY;
+    private String currentButton;
+    private boolean horizontal;
+
+
+    /** Sets up the user interface - mouselistener, buttons, and (completion only) textField */
+    public CircuitDrawer(){
+        UI.setMouseListener( this::doMouse );
+        UI.addButton("Clear", UI::clearGraphics); 
+        UI.addButton("Resistor", this::doSetResistor);
+        UI.addButton("Wire", this::doSetWire);
+        UI.addButton("Capacitor", this::doSetCapacitor);
+        UI.addButton("Source", this::doSetSource);
+        UI.addTextField("Label", this::doSetLabel);
+        UI.addButton("Eraser", this::doSetEraser);
+        UI.addButton("Horizontal", this::doSwitchDirection);
+
+        UI.addButton("Quit", UI::quit);
+        UI.setDivider(0.0);  
+    }
+
+    /** Respond to the resistor button */
+    public void doSetResistor(){
+        this.currentButton = "Resistor";
+
+    }
+
+    /** Respond to the wire button */
+    public void doSetWire(){
+        this.currentButton = "Wire";
+
+    }
+
+    /** Respond to the capacitor button */
+    public void doSetCapacitor(){
+        this.currentButton = "Capacitor";
+
+    }
+
+    /** Respond to the source button */
+    public void doSetSource(){
+        this.currentButton = "Source";
+
+    }
+
+    /** Respond to the eraser button */
+    public void doSetEraser(){
+        this.currentButton = "Eraser";
+
+    }
+
+    /** Respond to the text field (completion only) */
+    public void doSetLabel(String v){
+        this.currentButton = "Label";
+    }
+
+    /**
+     * Respond to the horiz/vert button (completion only)
+     * Switches the mode from horizontal to vertical, or back
+     * Ideally, (Challenge) it should show the user what the current state is,
+     * eg by drawing a horizonal/vertical bar in the top left corner,
+     * or by calling setText on the button to change the label
+     */
+    public void doSwitchDirection(){
+        this.currentButton = "Horizontal";
+
+    }
+
+    /**
+     * Respond to mouse events
+     * When pressed, remember the position.
+     * When released, draw what is specified by current tool
+     * Uses the value stored in the field to determine which kind of component to draw (or to erase)
+     *  It should call the drawWire, drawResistor, drawCapacitor, drawSource, drawLabel, 
+     *  or doErase, methods passing the x and y where the mouse was released.
+     */
+    public void doMouse(String action, double x, double y) {
+        if(action.equals("pressed")){
+            startPosX = x;
+            startPosY = y;
+        }
+        if(action.equals("released")){
+            endPosX = x;
+            endPosY = y;
+            if(this.currentButton.equals("Resistor")){
+                this.drawResistor(x,y);
+            }
+            if(this.currentButton.equals("Wire")){
+                this.drawWire(x,y);
+            }
+            if(this.currentButton.equals("Capacitor")){
+                this.drawCapacitor(x,y);
+            }
+            if(this.currentButton.equals("Source")){
+                this.drawSource(x,y);
+            }
+            if(this.currentButton.equals("Eraser")){
+                this.doErase(x,y);
+            }
+        }
+    }
+
+    /**
+     * Draw a resistor centered at the point x, y.
+     * (either a thin rectangle with short wires, or a zig-zag.)
+     * Core: only horizontal required
+     * Completion: horizontal or vertical depending on the mode.
+     */
+    public void drawResistor(double x, double y){
+        double length = 31;    
+        double width = 11;     
+        double stub = 10;      
+        
+        UI.setLineWidth(3);
+        UI.setColor(Color.black);
+        UI.drawLine(startPosX - length/2 - stub, startPosY, startPosX + length/2 + stub, startPosY);
+        UI.setColor(Color.white);
+        UI.fillRect(startPosX - length/2, startPosY - width/2, length, width);
+        UI.setColor(Color.black);
+        UI.drawRect(startPosX - length/2, startPosY - width/2, length, width);
+
+    }
+
+    /**
+     * Draw a wire from the point where the user pressed the mouse to the point x,y.
+     * Core: may be a straight line.
+     * Completion: The wire should have a horizontal part followed by a vertical part
+     * If the distance between the two points is very small, it just puts a circle at (x y)
+     */
+    public void drawWire(double x, double y){
+        UI.setLineWidth(3);
+        UI.drawLine(startPosX, startPosY, endPosX, endPosY);
+
+    }
+
+    /**
+     * Draw a capacitor centered at the point x, y.
+     *  (Two parallel lines with wires on each side)
+     * Core: only horizontal required
+     * Completion: horizontal or a vertical, depending on the mode.
+     */
+    public void drawCapacitor(double x, double y){
+        double width = 11;
+        double height = 31;
+        double stub = 10;
+        
+        UI.setLineWidth(3);
+        UI.setColor(Color.black);
+        UI.drawLine(start.PosX - width/2 - stub, startPosY, startPosX + width/2 + stub, startPosY);
+
+    }
+
+    /**
+     * Draw a source centered at the point x, y.
+     *  (Circle with wires on each side)
+     * Core: only horizontal required
+     * Completion: horizontal or vertical, depending on the mode.
+     */
+    public void drawSource(double x, double y){
+        /*# YOUR CODE HERE */
+
+    }
+
+    /**
+     * Erase a circular region around the position x, y
+     * Should be big enough to erase a single component.
+     */
+    public void doErase(double x, double y){
+        /*# YOUR CODE HERE */
+
+    }
+
+    /**
+     * Draw a label at position x, y.  Always horizontal.
+     * Uses the label that was stored in a field.
+     * Completion only.
+     */
+    public void drawLabel(double x, double y){
+        /*# YOUR CODE HERE */
+
+    }
+
+    public static void main(String[] arguments){
+        new CircuitDrawer();
+    }   
+
+}

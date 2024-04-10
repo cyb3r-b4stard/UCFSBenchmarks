@@ -1,0 +1,299 @@
+import java.util.*;
+import java.io.*;
+/**
+ * ##### # ########### ## ##### ####################### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class StudentManagementSystem
+{
+    private Student student;
+    private StudentCollection studentCollection;
+    private SubjectCollection subjects;
+    public StudentManagementSystem()
+    {
+        student = new Student();
+
+    }
+
+    public void displayMenu()
+    {
+        System.out.println("(1) Add new student");
+        System.out.println("(2) Delete a student");
+        System.out.println("(3) Find student By Name");
+        System.out.println("(4) List Students By Subject");
+        System.out.println("(5) List All Students");
+        System.out.println("(6) Exist System");
+        System.out.println("Please choose an option");
+    }
+
+    public void start()
+    {
+        boolean stopLoop = false;
+        while(!stopLoop)
+        {
+            displayMenu();
+            Scanner typeNumber = new Scanner(System.in);
+            String number = typeNumber.nextLine();
+            if(!number.isEmpty())
+            {
+
+                switch(number)
+                {
+                    case "1":addNewStudent(); break;
+                    case "2":deleteStudent(); break;
+                    case "3":findStudentByName(); break;
+                    case "4":listStudentBySubject(); break;
+                    case "5":listAllStudents(); break;
+                    case "6":existSystem(); stopLoop = true; break;
+                    default: System.out.println("You have to choose a right option!");
+                }
+            }
+            else
+                System.out.println("You have to choose a right option!");
+
+        }
+    }
+
+    public void addNewStudent()
+    {
+        System.out.println("Please enter a name");
+        Scanner type = new Scanner(System.in);
+        String name = type.nextLine();
+        name = name.toLowerCase();
+        while(!checkName(name))
+        {
+            name = type.nextLine();
+        }
+        System.out.println("Please enter a telephoen");
+        String telephone = type.nextLine();
+        while(!checkTelephone(telephone))
+        {
+            telephone = type.nextLine();
+        }
+        System.out.println("Please enter a subject");
+        String subject = type.nextLine();
+        while(!checkSubject(subject))
+        {
+            subject = type.nextLine();
+        }
+        studentCollection.addStudent(new Student(name, telephone, subject));
+        System.out.println("This student is enrolled");
+
+    }
+
+    public boolean checkName(String name)
+    {
+        if(name.isEmpty())
+        {
+            System.out.println("Please enter a name!");
+            return false;
+        }
+        else
+        {
+            int index = 0;
+            boolean stopLoop = false;
+            while(index < studentCollection.getStudentFile().size() && !stopLoop)
+            {
+                if(name.equals(name))
+                {
+                    System.out.println("This name is exist!");
+                    stopLoop = true;
+                    return false;
+                }
+                else
+                    index++;
+            }
+            return true;
+        }
+    }
+
+    public boolean checkTelephone(String telephone)
+    {
+        if(telephone.isEmpty())
+        {
+            System.out.println("Please enter a telephone!");
+            return false;
+        }
+        else
+        {
+            if(!isStringNumeric(telephone))
+            {
+                System.out.println("Telephone should be digital!");
+                return false;
+            }
+            else
+            {
+                if(telephone.length() != 9)
+                {
+                    System.out.println("Telephone should have 9 numbers!");
+                    return false;
+                }
+                else
+                {
+                    if(telephone.charAt(0) != '9')
+                    {
+                        System.out.println("The first number should be 9");
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean isStringNumeric(String telephone)
+    {
+        int index = 0;
+        while(index < telephone.length())
+        {
+            if(Character.isDigit(telephone.charAt(index)))
+                index ++;
+            else
+                return false; 
+        }
+        return true;
+    }
+
+    public boolean checkSubject(String subject)
+    {
+        if(subject.isEmpty())
+        {
+            System.out.println("Please enter a subject!");
+            return false;
+        }
+        if(subject != student.getSubject().getSubject())
+        {
+            System.out.println("Subject must be Computering, Math or English");
+            return false;
+        }
+        else
+            return true;
+    }
+
+    public void deleteStudent()
+    {
+        System.out.println("Please enter a name");
+        Scanner type = new Scanner (System.in);
+        String name = type.nextLine();
+        while(!studentCollection.removeStudent(name))
+        {
+            if(name.isEmpty())
+            {
+                System.out.println("Please enter a name");
+            }
+            if(!studentCollection.removeStudent(name))
+            {
+                System.out.println("This student is not in the system!");
+            }
+        }
+        studentCollection.removeStudent(name);
+        System.out.println("Student has been deleted!");
+    }
+
+    public void findStudentByName()
+    {
+        System.out.println("Please enter a name");
+        Scanner type = new Scanner (System.in);
+        String name = type.nextLine();
+        while(name != null)
+        {
+            if(name.isEmpty())
+            {
+                System.out.println("Please enter a name!");
+            }
+            if(name != null)
+            {
+                System.out.println("This student is not in the system!");
+            }
+        }
+        studentCollection.searchStudentByName(name);
+    }
+
+    public void listStudentBySubject()
+    {
+        System.out.println("Please enter a subject");
+        Scanner type = new Scanner (System.in);
+        String subject = type.nextLine();
+        while(!checkSubject(subject))
+        {
+            if(subject.isEmpty())
+            {
+                System.out.println("Please enter a subject");
+            }
+            if(!checkSubject(subject))
+            {
+                System.out.println("This student is not in the system!");
+            }
+        }
+        studentCollection.searchStudentBySubject(subject);
+    }
+
+    public void listAllStudents()
+    {
+        if(studentCollection.getStudentFile().size() == 0)
+            System.out.println("There is no student");
+        else
+            studentCollection.listAllStudentDetails();
+    }
+
+    public void existSystem()
+    {
+        System.out.println("See you again!");
+        System.exit(0);
+    }
+
+    private void writeToFile()
+    {
+        String filename = ("Students.txt");
+        try
+        {
+            PrintWriter outputFile = new PrintWriter(filename);
+            for(Student EveryStudent : StudentCollection.getStudentFile())
+            {
+                String Information = EveryStudent.displayDetails();
+                outputFile.println(Information);
+            }
+            outputFile.close();
+        }
+        catch(IOException e)
+        {
+            System.out.println("Sorry, there is no such file.");
+        }
+    }
+    }
+
+    public void readFile()
+    {
+        String filename = ("Student.txt");
+        try
+        {
+            FileReader inputFile = new FileReader(filename);
+            Scanner parser = new Scanner(inputFile);
+            while(parser.hasNextLine())
+            {
+                String Student = parser.nextLine();
+                String[] StudentList = Student.split(",");
+                if(StudentList.length == 3)
+                {
+                    String StudentName = StudentList[0];
+                    String TelephoneNumber = StudentList[1];
+                    String ChosenSubject = StudentList[2];
+                    if(checkIfNameValid(StudentName) && checkIfTelenumberValid(TelephoneNumber) && isStringNumeric(TelephoneNumber) && checkIfSubjectValid(ChosenSubject))
+                        StudentCollection.getStudentFile().add(new Student(StudentName,TelephoneNumber,ChosenSubject));
+                }
+            }
+            inputFile.close();
+        }
+        catch(FileNotFoundException exception)
+        {
+            System.out.println(filename + " not found.");
+        }
+        catch(IOException exception)
+        {
+            System.out.println("Unexpected I/O error occured.");
+        }
+    }
+
+}

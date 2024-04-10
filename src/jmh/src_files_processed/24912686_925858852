@@ -1,0 +1,114 @@
+import java.math.BigInteger;
+
+public class MATHE
+{
+ 
+    
+    MATHE math = new MATHE();
+    
+    
+    public MATHE()
+    { 
+      
+      
+    }
+    /**
+     * p und q müssen Primzahlen sein(siehe eine Liste aller Primzahlen auf
+     */
+    
+  
+    public String verschlüsseln(int p,int q,int e,String PIN)
+    {
+        int n = p*q;
+        int m1 = math.phi(n);
+        int d = 1%m1 /e;
+        int l = PIN.length();
+        int[] array = new int[l]
+        for(int i = 0;i <= l ;i++)
+        {char ch1 = PIN.charAt(i);
+         int ch2 = (int)ch1;
+         ch2 = ch2^e % n;   
+         int[i] array = {ch2};
+         
+        }
+        
+    }
+    public int ggT1(int a, int b)
+    {
+        int z1 = a;
+        int z2 = b;
+        int h = z1;
+        
+        while(z1 % z2 != 0)
+        {
+            h = z2;
+            z2 = z1 % z2;
+            z1 = h;
+        }
+        return z2;
+    }
+    
+    public int phi(int z)
+    {
+        int i = 1;
+        int res = 0;
+        while(i < z) {
+            if(ggT1(i, z) == 1) {
+                res++;
+            }
+            i++;
+        }
+        return res;
+    }
+    
+    public BigInteger ggT2(BigInteger z1, BigInteger z2)
+    {
+        if (z1.equals(z2)) {
+            return z1;
+        }
+        else if (z1.compareTo(z2)==1) {
+            return ggT2(z2, z1);
+        }
+
+        else {
+            return ggT2(z1, z2.subtract(z1));
+        }
+    }
+    
+    public BigInteger ggT(BigInteger a, BigInteger b)
+    {
+        BigInteger z1 = a;
+        BigInteger z2 = b;
+        BigInteger h = z1;
+        
+        
+        while(!z1.mod(z2).equals(BigInteger.ZERO))
+        {
+            h = z2;
+            z2 = z1.mod(z2);
+            z1 = h;
+        }
+        return z2;
+    }
+    
+    public String [] factor(String s)
+    {
+        BigInteger z = new BigInteger(s);
+        BigInteger i = BigInteger.ONE;
+        int idx = 1;
+        String [] res = new String[100];
+        res[0] = s;
+        while(i.compareTo(z) < 0) {
+            if(!ggT(z, i).equals(BigInteger.ONE)) {
+                res[idx] = i.toString();
+                z = z.divide(i);
+                idx++;
+                res[idx] = z.toString();
+                i = BigInteger.ONE;
+            }
+            i = i.add(BigInteger.ONE);
+        }
+        return res;
+    }
+    
+}

@@ -1,0 +1,176 @@
+
+
+/** #########: #### ###########
+ * ####### ## - #### ##### #######
+ * #### ##### ########## ### ###### #### ##### ## ### 
+ * #### ##### ####.
+ * @###### ########## ###########, ###
+ * @####### #.#
+*/
+
+import javax.swing.*;
+import java.awt.GridLayout;
+import java.awt.event.*;
+import java.util.*;
+
+public class GameBoard
+{
+	static public final int NUM_ROWS = 9;
+	static public final int NUM_COLS = 9;
+	
+	private int GameSquare[][] squares;
+	
+	public GameBoard(JPanel boardPanel, ActionListener listener)
+	{
+		GridLayout layout = new GridLayout(NUM_COLS,NUM_ROWS);
+		
+		layout.setHgap(0);
+		layout.setVgap(0);
+		
+		boardPanel.setLayout(layout);
+
+		squares = new GameSquare[NUM_COLS][NUM_ROWS];
+		
+		for (int row = 0; row < NUM_ROWS; row++)
+		{
+			for (int col = 0; col < NUM_COLS; col++)
+			{
+				squares[col][row] = new GameSquare(col,row,boardPanel,listener);
+			}
+		}
+
+		squares[4][4].setType(GameSquare.TYPE_JAIL);
+
+		squares[0][3].setType(GameSquare.TYPE_CAMP);
+		squares[0][4].setType(GameSquare.TYPE_CAMP);
+		squares[0][5].setType(GameSquare.TYPE_CAMP);
+		squares[1][4].setType(GameSquare.TYPE_CAMP);
+
+		squares[8][3].setType(GameSquare.TYPE_CAMP);
+		squares[8][4].setType(GameSquare.TYPE_CAMP);
+		squares[8][5].setType(GameSquare.TYPE_CAMP);
+		squares[7][4].setType(GameSquare.TYPE_CAMP);
+
+		squares[3][0].setType(GameSquare.TYPE_CAMP);
+		squares[4][0].setType(GameSquare.TYPE_CAMP);
+		squares[5][0].setType(GameSquare.TYPE_CAMP);
+		squares[4][1].setType(GameSquare.TYPE_CAMP);
+
+		squares[3][8].setType(GameSquare.TYPE_CAMP);
+		squares[4][8].setType(GameSquare.TYPE_CAMP);
+		squares[5][8].setType(GameSquare.TYPE_CAMP);
+		squares[4][7].setType(GameSquare.TYPE_CAMP);
+	}
+
+	public void reset()
+	{
+		for (int col = 0; col < NUM_COLS; col++)
+		{
+			for (int row = 0; row < NUM_ROWS; row++)
+			{
+				squares[col][row].clearSquare();
+				squares[col][row].deselect();
+			}
+		}
+	}
+
+	public void setPiece(int col, int row, AbstractGamePiece piece)
+	{
+		if ((col >= 0) && (col < NUM_COLS) &&
+		    (row >= 0) && (row < NUM_ROWS))
+		{
+			squares[col][row].setPiece(piece);
+		}
+	}
+	
+	public GameSquare getClickedSquare(Object source)
+	{
+		for (int col = 0; col < NUM_COLS; col++)
+		{
+			for (int row = 0; row < NUM_ROWS; row++)
+			{
+				GameSquare square = squares[col][row];
+				
+				if (square.isClicked(source))
+				{	
+					return square;	
+				}
+			}
+		}
+		
+		return null;	
+	}	
+	
+	AbstractGamePiece getPiece(int col, int row)
+	{
+		if ((col >= 0) && (col < NUM_COLS) &&
+		    (row >= 0) && (row < NUM_ROWS))
+		{
+			return squares[col][row].getPiece();
+		}
+		
+		return null;	
+	}
+
+	public void removePiece(AbstractGamePiece piece)
+	{
+		int col = piece.getCol();
+		int row = piece.getRow();
+		
+		GameSquare square = squares[col][row];
+		
+		square.clearSquare();
+	}
+	
+	public List<GameSquare> buildPath(GameSquare startingSquare, GameSquare targetSquare)
+	{
+		List<GameSquare> path = new ArrayList<GameSquare>();
+		
+		int currentCol = startingSquare.getCol();
+		int currentRow = startingSquare.getRow();
+		
+		int endCol = targetSquare.getCol();
+		int endRow = targetSquare.getRow();
+		
+        if ((currentCol == endCol) && (currentRow == endRow))
+            return path;       
+
+        if ((currentCol != endCol) && (currentRow != endRow))
+            return path;       
+
+        if ((currentCol == endCol) && (currentRow < endRow))
+        {
+            while (currentRow < endRow)
+            {
+            	currentRow++; 
+                path.add(squares[currentCol][currentRow]);
+            }
+        }
+        else if ((currentCol == endCol) && (currentRow > endRow))
+        {
+            while (currentRow > endRow)
+            {
+            	currentRow--; 
+                path.add(squares[currentCol][currentRow]);
+            }
+        }
+        else if ((currentCol > endCol) && (currentRow == endRow))
+        {
+            while (currentCol > endCol)
+            {
+            	currentCol--; 
+                path.add(squares[currentCol][currentRow]);
+            }
+        }
+        else if ((currentCol < endCol) && (currentRow == endRow))
+        {
+            while (currentCol < endCol)
+            {
+            	currentCol++; 
+                path.add(squares[currentCol][currentRow]);
+            }
+        }
+
+        return path;
+	}
+}

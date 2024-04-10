@@ -1,0 +1,735 @@
+import javax.swing.*;
+import javax.swing.text.*;
+import javax.swing.event.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.regex.*;
+import javax.tools.*;
+import java.net.*;
+import java.lang.reflect.*;
+import java.lang.ProcessBuilder.*;
+import java.util.*;
+
+/**
+ * # ########## #### ####### ###########- ## #### ## #### # ### ## ### ######### ########## ## ### #### ########.
+ */
+public class Playground {
+    static JSplitPane splitter;
+    static JFrame frame;
+
+    static JScrollPane textScroll;
+    static JTextPane text;
+    static StyledDocument doc;
+
+    static JScrollPane outputScroll;
+    static JTextPane outputText;
+    static boolean consoleDisplayed = true;
+    static TextOutputStream out, err;
+
+    static SimpleAttributeSet error; 
+    static SimpleAttributeSet warning; 
+    static SimpleAttributeSet progErr; 
+
+    static File file; 
+    static JFileChooser chooser;
+
+    static JavaCompiler compiler;
+    static boolean JVMrunning;
+    static Process JVM;
+    static IOHandlerThread redirectErr, redirectOut, redirectIn;
+
+    static double defaultSliderPosition;
+
+    public static void main(String[] args) {
+        frame = new JFrame("Java Playground");
+        frame.setSize(640, 480);
+        frame.addComponentListener(new ComponentAdapter(){public void componentResized(ComponentEvent c){splitter.setDividerLocation(defaultSliderPosition);}});
+        frame.addWindowListener(new WindowAdapter(){public void windowClosed(WindowEvent w){kill();}});
+
+        bind(KeyEvent.VK_R);
+
+        bind(KeyEvent.VK_K);
+
+        bind(KeyEvent.VK_E);
+
+        bind(KeyEvent.VK_S);
+        bind(KeyEvent.VK_N);
+        bind(KeyEvent.VK_O); 
+        bind(KeyEvent.VK_P);
+
+        bind(KeyEvent.VK_SLASH);
+
+        frame.getRootPane().getActionMap().put("console",new FrameAction());
+
+        text = new JTextPane();
+        textScroll = new JScrollPane(text);
+        textScroll.setBorder(null);
+        textScroll.setPreferredSize(new Dimension(640, 480));
+
+        doc = text.getStyledDocument();
+        doc.addDocumentListener(new DocumentListener() 
+            {
+                public void changedUpdate(DocumentEvent d) {}
+
+                public void insertUpdate(DocumentEvent d) {}
+
+                public void removeUpdate(DocumentEvent d) {}
+            });
+
+        ((AbstractDocument)doc).setDocumentFilter(new HighlightFilter());
+
+        outputText = new JTextPane();
+        outputScroll = new JScrollPane(outputText);
+        outputScroll.setBorder(null);
+        DefaultCaret caret = (DefaultCaret)outputText.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+
+        error = new SimpleAttributeSet();
+        error.addAttribute(StyleConstants.CharacterConstants.Italic, Boolean.TRUE);
+        error.addAttribute(StyleConstants.Foreground, Color.RED);
+
+        warning = new SimpleAttributeSet();
+        warning.addAttribute(StyleConstants.CharacterConstants.Italic, Boolean.TRUE);
+        warning.addAttribute(StyleConstants.Foreground, Color.PINK);
+
+        progErr = new SimpleAttributeSet();
+        progErr.addAttribute(StyleConstants.Foreground, Color.BLUE);
+
+        out = new TextOutputStream(outputText, null);
+        err = new TextOutputStream(outputText, error);
+        System.setOut(new PrintStream(out));
+        System.setErr(new PrintStream(err));
+
+        outputText.setEditable(false);
+        outputScroll.setVisible(true);
+
+        chooser = new JFileChooser();
+
+        compiler = ToolProvider.getSystemJavaCompiler();
+        JVMrunning = false;
+        redirectErr = null;
+        redirectOut = null;
+        redirectIn = null;
+
+        defaultSliderPosition = .8;
+
+        splitter = new JSplitPane(JSplitPane.VERTICAL_SPLIT, textScroll, outputScroll);
+        consoleDisplayed = false;
+        splitter.setOneTouchExpandable(true);
+        frame.add(splitter);
+        frame.setVisible(true);
+
+        splitter.setDividerLocation(.999); 
+
+
+        final String[] quotes = new String[] {
+                "If you use this program to code itself, I wish you luck on your journey\n\t-George, October 26, 2014",
+                "Now I am become death, the destroyer of worlds\n\t-Robert Oppenheimer, July 16, 1945",
+                "Words - so innocent and powerless as they are, how potent for good and evil they become in " +
+                "the hands of one who knows how to combine them.\n\t-Nathaniel Hawthorn",
+                "The true sign of intelligence is not knowledge, but imagination.\n\t-Albert Einstein",
+                "loop zoop\n\t-internet",
+                "Ding the Bell! Neeeyh! See! Neeeyh!\n\t-TotalBiscut",
+                "It's only a game.  Why you heff to be med?\n\t-Some Hockey Guy",
+                "This is full of undocumented features.\n\t-Adam Rzadkowski",
+                "\"null\" would this throw a null-pointer exception, George?\n\t-Adam Rzadkowski"
+
+            };
+        println(quotes[(int)(Math.random() * quotes.length)], warning);
+    }
+
+    private static void bind(int Character) {
+        frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(Character,
+                Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),"console");    
+    }
+
+    private static void println(String message) {
+        println(message, null);
+    }
+
+    private static void print(String message) {
+        print(message, null);
+    }
+
+    private static void println(String message, SimpleAttributeSet settings) {
+        print(message + "\n", settings);
+    }
+
+    private static void print(String message, SimpleAttributeSet settings) {
+        try {
+            outputText.getDocument().insertString(outputText.getDocument().getLength(), message, settings);
+        } catch (BadLocationException e) {
+            try {
+                outputText.getDocument().insertString(outputText.getDocument().getLength(), "Couldn't insert message \"" + message + "\".", progErr);
+            } catch (BadLocationException b) {
+            }
+        }
+    }
+
+    private static void displayLog() {
+        if (!consoleDisplayed) {
+            splitter.setDividerLocation(defaultSliderPosition);
+            consoleDisplayed=true;
+        }
+    }
+
+    private static void highlightAll() {
+        try {
+            doc.setCharacterAttributes(0, doc.getLength(), new SimpleAttributeSet(), true); 
+
+            String s = doc.getText(0, doc.getLength());
+            ArrayList<Integer> locations = new ArrayList<>();
+            int i = -1;
+            do {
+                i = s.indexOf("public", i+1);
+                if (i != -1) {
+                    locations.add(i);
+                    locations.add(i+6); 
+                }
+            } while(i != -1 && i < doc.getLength());
+
+            for(int j = 0; j < locations.size(); j+=2) {
+                doc.setCharacterAttributes(locations.get(j), locations.get(j+1), error, true);
+            }
+        } catch (BadLocationException e) {
+
+        }
+    }
+
+    private static void compileAndRun(String fileName, String code) {
+        compile(fileName, code);
+    }
+
+    private static void compile(String fileName, String code) {
+
+        println("Deleting old temp files...", progErr);
+        new File(fileName + ".java").delete();
+        new File(fileName + ".class").delete();
+
+        println("Creating source file...", progErr);
+        file = new File(fileName + ".java");
+
+        println("Writing code to source file...", progErr);
+        try {
+            new FileWriter(file).append(code).close();
+        } catch (IOException i) {
+            println("Had an IO Exception when trying to write the code. Stack trace:", error);
+            i.printStackTrace();
+            return; 
+        }
+
+        println("Compiling code...", progErr);
+        if (compiler == null) {
+            println("Fatal Error: JDK not installed. Go to java.sun.com and install.", error);
+            return;
+        }
+
+        int result = compiler.run(null, null, null, file.getAbsolutePath()); 
+        if (result != 0) {
+            displayLog();
+            println("Failed to compile.", error);
+            return; 
+        }
+
+        println("Code compiled with 0 errors.", progErr);
+
+        println("Attempting to run code...", progErr);
+        try {
+            if(JVMrunning) 
+                kill();
+
+            String separator = System.getProperty("file.separator");
+            String path = System.getProperty("java.home")
+                + separator + "bin" + separator + "java";
+
+            ProcessBuilder builder = new ProcessBuilder(path, fileName);
+
+            println("Build succeeded on " + java.util.Calendar.getInstance().getTime().toString(), progErr);
+            println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", progErr);                
+
+            JVM = builder.start();
+            JVMrunning = true;
+
+            Reader errorReader = new InputStreamReader(JVM.getErrorStream());
+            Reader outReader = new InputStreamReader(JVM.getInputStream());
+
+            redirectErr = redirectIOStream(errorReader, err);
+            redirectOut = redirectIOStream(outReader, out);
+
+        } catch (IOException e) {
+            println("IOException when running the JVM.", progErr);
+            e.printStackTrace();
+            displayLog();
+            return;
+        }
+    }
+
+    private static void kill() {
+        if (redirectErr != null) {
+            redirectErr.close();
+            redirectErr.interrupt();
+        }
+
+        if (redirectOut != null) {
+            redirectOut.close();
+            redirectOut.interrupt();
+        }
+
+        if (JVM != null) {
+            JVM.destroy();
+            JVM = null;
+        }
+
+        JVMrunning = false;
+
+        println("JVM reset on " + java.util.Calendar.getInstance().getTime().toString(), progErr);
+    }
+
+    private static IOHandlerThread redirectIOStream(Reader reader, TextOutputStream writer) {
+        IOHandlerThread thr = new IOHandlerThread(reader, writer);
+        thr.start();
+        return thr;
+    }
+
+    private static class FrameAction extends AbstractAction {
+        public void actionPerformed(ActionEvent a) {
+
+            String command = a.getActionCommand();
+            if (command.equals("e")) {
+                if (consoleDisplayed = !consoleDisplayed) {
+                    splitter.setDividerLocation(defaultSliderPosition);
+                } else {
+                    splitter.setDividerLocation(.999);
+                }
+            } else if (command.equals("r")) {
+                String code = text.getText();
+
+                ArrayList<Integer> dirtyBounds = getDirty(code);
+
+                if (text.getText().contains("class")) {
+
+                    int firstPos = code.indexOf("class");
+                    while(isDirty(dirtyBounds, firstPos)) 
+                        firstPos = code.indexOf("class", firstPos + 1);
+
+                    int secondPos = code.indexOf("{"); 
+                    String name = code.substring(firstPos + "class".length() + 1, secondPos).trim();
+
+                    if (name.equals("Playground")) {
+                        println("Self-compiling. You were warned.", warning); 
+                    }
+
+                    compileAndRun(name, code);
+                } else {
+
+                    String importDump = new String();
+                    importDump+=(
+                        "import javax.swing.*;\n" + 
+                        "import javax.swing.event.*;\n" +
+                        "import java.awt.*;\n" + 
+                        "import java.awt.event.*;\n" + 
+                        "import java.io.*;\n");
+
+                    String methodDump = new String();
+
+
+                    int i = code.indexOf("import");
+                    while(i >= 0) {
+                        if (isDirty(dirtyBounds, i)) {
+                            i = code.indexOf("import", i+1);
+                            continue;
+                        }
+
+                        String s = code.substring(i, code.indexOf(";", i) + 1); 
+                        code = code.replaceFirst(s, "");
+                        importDump+=s+"\n";
+                        i = code.indexOf("import", i+1);
+                    }
+
+                    i = code.indexOf("(");
+                    while(i >= 0) {
+                        if (isDirty(dirtyBounds,i)) {
+                            i = code.indexOf("(", i+1); continue;
+                        }
+
+                        char temp = 0; int pos = i;
+                        boolean shouldSkip = false;
+                        while(--pos > 0) {
+                            temp = code.charAt(pos);
+                            if (temp == '.') {shouldSkip = true; break;} 
+                            if (temp == ';') {++pos; break;} 
+                        }
+                        if (shouldSkip || isDirty(dirtyBounds, pos) || 
+                        code.substring(pos, i).contains("while") || code.substring(pos, i).contains("for") ||
+                        code.substring(pos, i).contains("new")) {i=code.indexOf("(", i+1); continue;} 
+
+                        int start = pos;
+                        temp = 0; pos = code.indexOf("{", i+1);
+                        int count = 1; shouldSkip = false;
+                        if(pos != -1) {
+                            if (code.indexOf(";", i+1) > pos || code.indexOf(";", i+1) == -1) {
+                                while(++pos < code.length()) {
+                                    if (count == 0) 
+                                        break;
+
+                                    temp = code.charAt(pos);
+                                    if (temp == '{') 
+                                        count++;
+                                    if (temp == '}') 
+                                        count--;
+                                }
+                            } else {
+                                i = code.indexOf("(", i+1);
+                                continue;
+                            }
+                        } else {
+                            i = code.indexOf("(", i+1);
+                            continue;
+                        }
+
+                        int end = pos;
+                        String s = code.substring(start,end);
+                        code = code.replace(s, ""); 
+
+                        s = s.trim();
+
+
+                        if (!s.substring(0,s.indexOf("(")).contains("static")) {
+                            s = "static " + s;
+                        }
+
+                        methodDump+=(s + "\n");
+                        i = code.indexOf("(", i+1);
+                    }
+
+                    code = "
+                    + importDump
+                    + "
+                    + "public class Main {\n" 
+                    + "public static void main(String[] args) {\n"
+                    + code
+                    + "}\n"
+                    + methodDump 
+                    + "}";
+
+                    compileAndRun("Main", code);
+                }
+            } else if (command.equals("k")) {
+                kill();  
+            } else if (command.equals("o")) {
+                new OptionFrame(frame);
+            } else if (command.equals("/")) {
+                new HelpFrame(frame);
+            }
+        }
+
+        private ArrayList<Integer> getDirty(String code) {
+            ArrayList<Integer> dirtyBounds = new ArrayList<>();
+
+            int j = -1;
+            while(true) {
+                j = code.indexOf("\"", j+1);
+                if (j < 0) break;
+                if (!code.substring(j-1, j).equals("\\")) 
+                    dirtyBounds.add(j);
+            }
+
+            j = -1;
+            while(true) {
+                j = code.indexOf("
+                if (j < 0) break;
+                dirtyBounds.add(j);
+                dirtyBounds.add(
+                    code.indexOf("\n", j+1) == -1 ? code.length() : code.indexOf("\n", j+1)); 
+            }
+
+            j = -1;
+            while(true) {
+                j = code.indexOf("/*", j+1);
+                if (j < 0) break;
+                dirtyBounds.add(j);
+                dirtyBounds.add(code.indexOf("*/", j+1));
+            }
+
+            return dirtyBounds;
+        }
+
+        private boolean isDirty(ArrayList<Integer> dirty, int position) {
+            for (int k = 0; k < dirty.size(); k+=2) 
+                if (position > dirty.get(k) && position < dirty.get(k+1)) 
+                    return true;
+            return false;
+        }
+    }
+
+    /**
+     * This is the main writer for the log. You write to either "err" or "out" to write to the log.
+     * Note that System.out and System.err are also linked to this, as well as println().
+     */
+    private static class TextOutputStream extends OutputStream {
+        final JTextPane pane;
+        final SimpleAttributeSet properties;
+        public TextOutputStream(JTextPane p, SimpleAttributeSet s) {
+            pane = p; properties=s;
+        }
+
+        public void write(byte[] buffer, int offset, int length) {
+            String text = new String(buffer, offset, length);
+            SwingUtilities.invokeLater(()->{try{pane.getDocument().insertString(pane.getDocument().getLength(), text, properties);}catch(Exception e){}});
+        }
+
+        public void write(char[] buffer, int offset, int length) {
+            String text = new String(buffer, offset, length);
+            SwingUtilities.invokeLater(()->{try{pane.getDocument().insertString(pane.getDocument().getLength(), text, properties);}catch(Exception e){}});
+        }
+
+        public void write(int b) {
+            write(new byte[]{(byte)b},0,1);
+        }
+    }
+
+    /**
+     * A normal ClassLoader will use the JVM cache to load files. This is good for most programs, but when you're trying to recompile and 
+     * run a new program, it won't work past the first time without a JVM reset. This overrides the behavior of the default ClassLoader to
+     * force the JVM to always reload the new class definition.
+     */
+    private static class Reloader extends ClassLoader {
+        public static void reload() {
+            new Reloader().loadClass("Main");
+        }
+
+        public Class<?> loadClass(String s) {
+            return findClass(s);
+        }
+
+        public Class<?> findClass(String s) {
+            try {
+                byte[] bytes = loadClassData(s);
+                return defineClass(s, bytes, 0, bytes.length);
+            } catch (IOException ioe) {
+                try {
+                    return super.loadClass(s);
+                } catch (ClassNotFoundException ignore) { }
+                ioe.printStackTrace(System.out);
+                return null;
+            }
+        }
+
+        private byte[] loadClassData(String className) throws IOException {
+            Playground.println("Loading class " + className + ".class", warning);
+            File f = new File(System.getProperty("user.dir") + "/" + className + ".class");
+            byte[] b = new byte[(int) f.length()];
+            new FileInputStream(f).read(b);
+            return b;
+        }
+    }
+
+    /**
+     * Acts as a connection pipe between a reader and a writer. This allows a link between a JVM's output and
+     * our program's input; our input is then read to the log.
+     */
+    private static class IOHandlerThread extends Thread {
+        private Reader reader;
+        private TextOutputStream writer;
+        private volatile boolean keepRunning = true;
+        IOHandlerThread(Reader reader, TextOutputStream writer) {
+            super();
+            this.reader = reader;
+            this.writer = writer;
+        }
+
+        public void close() {keepRunning = false;}
+
+        public void run()
+        {
+            try {
+                char [] chbuf = new char[4096];
+
+                while (keepRunning) {
+                    int numchars = reader.read(chbuf);
+                    if (numchars == -1) {
+                        keepRunning = false;
+                    }
+                    else if (keepRunning) {
+                        writer.write(chbuf, 0, numchars);
+                        if (! reader.ready()) {
+                            writer.flush();
+                        }
+                    }
+                }
+            }
+            catch (IOException ex) {
+                println("Error when linking JVM output to terminal window input.");
+            }
+        }
+    }
+
+    private static class HighlightFilter extends DocumentFilter {
+        final String[] red = new String[]{"void","short","int","long","float","double","byte","boolean","char","class","interface","enum","extends","implements","assert"};
+        final String[] purple = new String[]{"public","private","protected","abstract","for","while","do","continue","break",
+                "default","static","final","const","native","volatile","transient","synchronized","strictfp"}; 
+        final String[] blue = new String[]{"if","else","try","catch","finally","goto","switch","case","return","throws","throw","this","new","instanceof","true","false"};
+
+        SimpleAttributeSet r = new SimpleAttributeSet();
+        SimpleAttributeSet p = new SimpleAttributeSet();
+        SimpleAttributeSet b = new SimpleAttributeSet();
+        SimpleAttributeSet none = new SimpleAttributeSet();
+
+        public HighlightFilter() {
+            r.addAttribute(StyleConstants.Foreground, Color.RED);
+            p.addAttribute(StyleConstants.Foreground, new Color(66,0,110)); 
+            b.addAttribute(StyleConstants.Foreground, Color.BLUE);
+            none.addAttribute(StyleConstants.Foreground, Color.BLACK);
+        }
+
+        public void insertString(FilterBypass fb, int offset, int length, String s, AttributeSet set) {
+            System.out.println("Hello");
+            try {
+                fb.insertString(offset, s, set);
+
+                String all = fb.getDocument().getText(0, fb.getDocument().getLength());
+                highlightArea(fb, all, huntLeft(all,offset), huntRight(all,offset+length));
+            } catch (BadLocationException b) {
+                b.printStackTrace();
+            }
+        }
+
+        public void replace(FilterBypass fb, int offset, int length, String s, AttributeSet set) {
+            try {
+                fb.replace(offset, length, s, set);
+
+                String all = fb.getDocument().getText(0, fb.getDocument().getLength());
+                System.out.println("Char at offset: " + all.charAt(offset));
+                int l = huntLeft(all,offset), r = huntRight(all,offset+length);
+                System.out.println("Left whitespace pos: " + l);
+                System.out.println("Right whitespace pos: " + r);
+                highlightArea(fb, all,l,r);
+
+            } catch (BadLocationException b) {
+                b.printStackTrace();
+            }         
+        }
+
+        public void remove(FilterBypass fb, int offset, int length) {
+            try {
+                fb.remove(offset, length);
+
+                String all = fb.getDocument().getText(0, fb.getDocument().getLength());
+                removeHighlights(fb, all, huntLeft(all,offset), huntRight(all,offset+length));
+                highlightArea(fb, all, huntLeft(all,offset), huntRight(all,offset+length));
+            } catch (BadLocationException b) {
+                b.printStackTrace();
+            }
+        }
+
+        private int huntLeft(String in, int offset) {
+            char temp = 0;
+            for(int i = offset - 1; i >= 0; i--) {
+                temp = in.charAt(i);
+                if(temp == ' ' || temp == '\n' || temp == '\r')
+                    return i;
+            }
+            return 0; 
+        }
+
+        private int huntRight(String in, int offset) {
+            char temp = 0;
+            for(int i = offset + 1; i < in.length(); i++) {
+                temp = in.charAt(i);
+                if(temp == ' ' || temp == '\n' || temp == '\r')
+                    return i;
+            }
+            return in.length(); 
+        }
+
+        private void highlightArea(FilterBypass fb, String s, int left, int right) {
+            String sub = s.substring(left, right);
+            String whitespace = new String(" \n\r");
+            println("String to update: '" + s.substring(left, right) + "'");
+
+            for(String st : red) {
+                int i = -1;
+                while ((i = sub.indexOf(st,i+1)) != -1) {
+                    if (i > 0 && s.charAt(i+left-1) != ' ' && s.charAt(i+left-1) != '\n') {} 
+                    else {
+                        if (i < s.getLength() && s.charAt(i+left+sub.length()+1) != ' ' && s.charAt(i+left+sub.length()+1) != '\n') {} 
+                        else {
+                            println("Making " + st + " at " + (i+left) + "-" + (i+left+st.length()) + " red.");
+                            ((StyledDocument)fb.getDocument()).setCharacterAttributes(i+left, st.length()+left, r, true);
+                        }
+                    }
+                }
+            }
+
+            for(String st: purple) {
+                int i = -1;
+                while ((i = sub.indexOf(st,i+1)) != -1) {
+                    ((StyledDocument)fb.getDocument()).setCharacterAttributes(i+left, st.length()+left, p, true);
+                }
+            }
+
+            for(String st: blue) {
+                int i = -1;
+                while ((i = sub.indexOf(st,i+1)) != -1) {
+                    ((StyledDocument)fb.getDocument()).setCharacterAttributes(i+left, st.length()+left, b, true);
+                }
+            }
+        }
+
+        private void removeHighlights(FilterBypass fb, String s, int left, int right) {
+            ((StyledDocument)fb.getDocument()).setCharacterAttributes(left, (right-left), none, true);
+        }
+    }
+
+    private static class OptionFrame extends JFrame {
+        static JTabbedPane options;
+        static JPanel op1;
+        static JPanel op2;
+
+        public OptionFrame(JFrame f) {
+            super("Options");
+            setSize(320, 240);
+            setResizable(false);
+            options = new JTabbedPane();
+            op1 = new JPanel();
+            op1.setLayout(new GridLayout(6,2));
+            op1.add(new JLabel("Run:"));
+            op1.add(new JTextField());
+            op1.add(new JLabel("Reset JVM:"));
+            op1.add(new JTextField());
+            op1.add(new JLabel("Open options:"));
+            op1.add(new JTextField());
+            op1.add(new JLabel("Toggle terminal:"));
+            op1.add(new JTextField());
+            op1.add(new JLabel("Help menu:"));
+            op1.add(new JTextField());
+
+            op2 = new JPanel();
+            options.addTab("Key bindings", op1);
+            options.addTab("Preferences", op2);
+            add(options);
+            setLocationRelativeTo(f); 
+            setVisible(true);
+        }
+    }
+
+    private static class HelpFrame extends JFrame {
+        public HelpFrame(JFrame f) {
+            super("Help menu");
+            setSize(320, 240);
+            setLocationRelativeTo(f);
+            setResizable(false);
+
+            JTextArea message = new JTextArea();
+            message.setEditable(false);
+            message.setText("Default keybindings:\n     -Cmd+e to toggle terminal\n     -Cmd+r to run\n     -Cmd+k to reset JVM\n" +
+                "     -Cmd+/ to show help\n     -Cmd+o for options\n\n" + 
+                "Special notes: \n     -Import statements can be typed anywhere \n     -Type methods anywhere and they'll work\n\n" +
+                "Other: \n     -You can also use this for normal Java editing!");
+
+            add(message, "Center");
+            setVisible(true);
+        }
+    }
+}

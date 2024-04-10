@@ -1,0 +1,122 @@
+/*
+ * ######### (#) #### ### ###### <####@##############.##>
+ * ### ###### ########.
+ *
+ * ############## ### ### ## ###### ### ###### #####, #### ## #######
+ * ############, ### ######### ######## #### ### ######### ##########
+ * ### ###:
+ * #. ############### ## ###### #### #### ###### ### ##### #########
+ *    ######, #### #### ## ########## ### ### ######### ##########.
+ * #. ############### ## ###### #### #### ######### ### ##### #########
+ *    ######, #### #### ## ########## ### ### ######### ########## ## ###
+ *    ############# ###/## ##### ######### ######## #### ### ############.
+ * #. ### #### ## ### ###### ### ### ## #### ## ####### ## ####### ########
+ *    ####### #### #### ######## ####### ######## ##### ####### ##########.
+ *
+ * #### ######## ## ######## ## ### ###### ``## ##'' ### ### ####### ##
+ * ####### ##########, #########, ### ### ####### ##, ### ####### ########## 
+ * ## ############### ### ####### ### # ########## ####### ### ##########.
+ * ## ## ##### ##### ### ###### ## ###### ### ### ######, ########,
+ * ##########, #######, #########, ## ############# ####### (#########, ###
+ * ### ####### ##, ########### ## ########## ##### ## ########; #### ## ###,
+ * ####, ## #######; ## ######## ############) ####### ###### ### ## ###
+ * ###### ## #########, ####### ## ########, ###### #########, ## ####
+ * (######### ########## ## #########) ####### ## ### ### ### ## ### ### ##
+ * #### ########, #### ## ####### ## ### ########### ## #### ######.
+ */
+
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.table.*;
+import javax.swing.event.*;
+import java.awt.event.*;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyleConstants;
+
+public class PU_Markt extends B_PopUp 
+{
+    private JPanel panel1;
+    private JLabel label1;
+    private String levelx;
+    private BackGroundPane bg2;
+    private JLabel label2;
+    private BackGroundPane banner;
+    private JButton shopb;
+    private HF hf;
+    private JTextPane tf;
+
+    public PU_Markt(int x,int y,JFrame frame, String level, HF hfx)
+    {
+        super(x,y,frame,1);
+        hf = hfx;
+        levelx = level;
+        initPanel();
+        setContentPane(panel1);
+    }
+    
+    private void shopbActionPerformed(ActionEvent e) {
+        hf.setVisible(true);
+        hf.tabbedPane1.setSelectedIndex(1);
+    }
+
+    public void initPanel()
+    {
+        panel1 = new JPanel();
+        tf = new JTextPane();
+        label1 = new JLabel("Willkommen auf dem Markt!",SwingConstants.CENTER);
+        panel1.setLayout(null);
+        panel1.setOpaque(false);
+        panel1.setBorder(new EtchedBorder(EtchedBorder.RAISED, Color.black, Color.gray));
+        label1.setForeground(Color.black);
+        label1.setFont(new Font("Trajan Pro", Font.BOLD, 14)); 
+        
+        shopb = new JButton("Markt verbessern");
+        shopb.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        shopb.setForeground(Color.black);
+        shopb.addActionListener(e -> shopbActionPerformed(e));
+        shopb.setFocusPainted(false);
+        shopb.setBorder(UIManager.getBorder("ToggleButton.border"));
+        shopb.setBounds(185, 340, 200, 28);
+        panel1.add(shopb);
+        
+        panel1.add(tf);
+        StyleContext.NamedStyle centerStyle = StyleContext.getDefaultStyleContext().new NamedStyle();
+        StyleConstants.setAlignment(centerStyle,StyleConstants.ALIGN_CENTER);
+        tf.setLogicalStyle(centerStyle);
+        String text;
+        if(Integer.parseInt(levelx)<10) text = "Bei Markt Stufe "+(Integer.parseInt(levelx)+1)+": \n"+(new O_Markt(""+(Integer.parseInt(levelx)+1)).giveUM())+" - "+(int)(((1-new O_Markt(""+(Integer.parseInt(levelx)+1)).giveUM())*100))+"%";
+        else {
+            text = "\nMaximale Stufe erreicht.";
+            shopb.setEnabled(false);
+        }
+        tf.setText("Auf dem Marktplatz können deine Dorfbewohner Ressourcen und Nahrung ersteigern!\n\nAktuelle Reduzierung: \n"+(new O_Markt(levelx).giveUM())+" - "+(int)((100.0-(new O_Markt(levelx).giveUM()*100.0)))+"%\n"+text+"\n\nDurch das Ausbauen des Marktplatzes werden die Ausbaukosten aller Gebäude um einen bestimmten Faktor reduziert.");
+        tf.setBounds(86,140,400,200);
+        tf.setMinimumSize(new Dimension(400,200));
+        tf.setOpaque(false);
+        tf.setEditable(false);
+        tf.setSelectionColor(new Color(128, 128, 128, 0));
+        tf.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        tf.setSelectedTextColor(Color.black);
+
+        label2 = new JLabel("Markt [Stufe: "+levelx+"]",SwingConstants.CENTER);
+        label2.setFont(new Font("Trajan Pro", Font.BOLD, 24));
+        label2.setForeground(new Color(240, 167, 0, 243));
+        panel1.add(label2);
+        label2.setBounds(130,27,302,30);
+
+        banner = new BackGroundPane("Daten/Icons/Game/banner.png",0);
+        banner.setOpaque(false);
+        panel1.add(banner);
+        banner.setBounds(20,20,522,81);
+
+        bg2 = new BackGroundPane("Daten/Backgrounds/Menu.png",0);
+        bg2.setOpaque(false);
+        bg2.setLayout(null);
+        panel1.add(bg2);
+        bg2.setBounds(61,100,445,300);
+
+        bg2.add(label1);
+        label1.setBounds(0,20,445,20);        
+    }
+}

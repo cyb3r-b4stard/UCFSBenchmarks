@@ -1,0 +1,90 @@
+
+import java.util.*;
+
+public class ClassRoster
+{
+    private String teacher;
+    private Student[] students;
+    
+    public ClassRoster(String inputteacher, int numberofstudents)
+    {
+        teacher = inputteacher;
+        students = new Student[numberofstudents];
+        Scanner scan = new Scanner(System.in);
+        for (int index=0; index<students.length; index++)
+        {
+            System.out.print("Enter name of student #" + index + "-->");
+            String name = scan.next();
+            System.out.print("Enter number of grades of student #" + index + "-->");
+            int grades = scan.nextInt();
+            System.out.print("What kind of student?  Enter H for honors, R for regular-->");
+            String type = scan.next();
+            if (type.equals("H"))
+            {
+                students[index] = new HonorsStudent(name, grades);
+            }
+            else
+            {
+                students[index] = new RegularStudent(name, grades);
+            }
+        }
+    } 
+
+    public int numberOfAStudents()
+    {
+        int count= 0;
+        for(int i=0; i<students.length; i++)
+        {
+            if(students[i].computeGPA()>=3.5)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    public ArrayList<String> failingStudents()
+    {
+        ArrayList<String> a = new ArrayList<String>();
+        for(int i=0; i<students.length; i++)
+        {
+            if(students[i].computeGPA()<=2.0)
+            {
+                a.add(students[i].getName());
+            }
+        }
+        return a;
+    }
+    
+    public double computeClassGPA()
+    {
+        double sum=0.0;
+        for(int i=0; i<students.length; i++)
+        {
+            sum=sum+ students[i].computeGPA();
+        }
+        sum=sum/students.numberOfGrades()
+    }
+    
+    public Student bestStudent()
+    {
+        Student bestsofar=students[0];
+        for(int i=0; i<students.length; i++)
+        {
+            if(students[i].computeGPA()>bestsofar.computeGPA())
+            {
+                bestsofar=students[i];
+            }
+        }
+        return bestsofar;
+    }
+    
+    public void printClassInfo()
+    {
+    }
+    
+    public String myName()   
+    {
+        return "Conor";     
+    }
+}

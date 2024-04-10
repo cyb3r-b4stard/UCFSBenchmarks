@@ -1,0 +1,231 @@
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.JPanel;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import java.util.*;
+import java.io.File;
+import java.io.IOException;
+public class Zombie_Game{
+    public static char[][]maps=new char[50][50];
+    public static boolean[][]canMove=new boolean[50][50];
+    Zombie_Game()throws IOException{
+        JFrame jf=new JFrame();
+        jf.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                System.exit(0);
+            }
+        });
+        setMap("wild");
+        for(int i=0;i<50;i++){
+                for(int a=0;a<50;a++){
+                    if(canMove[i][a])
+                    System.out.print(1);
+                    else
+                    System.out.print(0);
+                }
+                System.out.println();
+            }
+        viewer you=new viewer(maps,canMove);
+        jf.add(you);
+        jf.setSize(you.getSize());
+        jf.setVisible(true);
+    }
+    public void setMap(String name)throws IOException{
+        try{
+            Scanner sc=new Scanner(new File(name+".map"));
+            for(int i=0;i<50;i++){
+                String content=sc.nextLine();
+                for(int a=0;a<50;a++){
+                    maps[i][a]=content.charAt(a);
+                    if(!(content.charAt(a)=='1'||content.charAt(a)=='4')){
+                        canMove[i][a]=true;
+                    }
+                }
+            }
+            
+        }catch(Exception e){
+             System.out.println("The Map is Not Found or Format is wrong!");
+        }
+    }
+}
+class viewer extends JPanel implements Runnable,KeyListener,MouseListener, ActionListener{
+    double x=25*50;
+    double y=25*50;
+    double XDirection=0;
+    double YDirection=0;
+    char[][]world;
+    boolean[]isPressing=new boolean[100];
+    Map<Character,Image>pictures=new HashMap<Character,Image>();
+    Image dog=ImageIO.read(new File("people1.jpg"));
+    boolean[][]canMove;
+    viewer(char[][]world,boolean[][]MovAble)throws IOException{
+        initGraphics();
+        canMove=MovAble;
+        setFocusable(true);
+        addKeyListener(this);
+        setSize(500,500);
+        this.world=world;
+        setBackground(Color.white);
+        Thread t = new Thread(this);
+        t.start();
+    }
+    public void initGraphics()throws IOException{
+        Image id0=ImageIO.read(new File("id0.jpg"));
+        Image id1=ImageIO.read(new File("id1.jpg"));
+        Image id2=ImageIO.read(new File("id2.jpg"));
+        Image id3=ImageIO.read(new File("id3.jpg"));
+        Image id4=ImageIO.read(new File("id4.jpg"));
+        Image id5=ImageIO.read(new File("id5.jpg"));
+        Image id6=ImageIO.read(new File("id6.jpg"));
+        Image id7=ImageIO.read(new File("id7.jpg"));
+        Image id8=ImageIO.read(new File("id8.jpg"));
+        Image id9=ImageIO.read(new File("id9.jpg"));
+        Image ida=ImageIO.read(new File("ida.jpg"));
+        Image idb=ImageIO.read(new File("idb.jpg"));
+        Image idc=ImageIO.read(new File("idc.jpg"));
+        Image idd=ImageIO.read(new File("idd.jpg"));
+        Image ide=ImageIO.read(new File("ide.jpg"));
+        Image idf=ImageIO.read(new File("idf.jpg"));
+        pictures.put('0',id0);
+        pictures.put('1',id1);
+        pictures.put('2',id2);
+        pictures.put('3',id3);
+        pictures.put('4',id4);
+        pictures.put('5',id5);
+        pictures.put('6',id6);
+        pictures.put('7',id7);
+        pictures.put('8',id8);
+        pictures.put('9',id9);
+        pictures.put('a',ida);
+        pictures.put('b',idb);
+        pictures.put('c',idc);
+        pictures.put('d',idd);
+        pictures.put('e',ide);
+        pictures.put('f',idf);
+    }
+    public void run(){
+        while(true){
+            try{
+                Thread.sleep(50);
+            }catch(Exception e){
+
+            }
+            move();
+            repaint();
+        }
+    }
+    public void move(){
+        /*if(isPressing[87]){
+            if(XDirection<=21)
+            XDirection+=3;
+        }else{
+            if(XDirection>0){
+                XDirection*=0.9;
+            }
+        }
+        if(isPressing[83]){
+            if(XDirection>=-21)
+            XDirection-=3;
+        }else{
+            if(XDirection<0){
+                XDirection*=0.9;
+            }
+        }
+        if(isPressing[65]){
+            if(YDirection<=21)
+            YDirection+=3;
+        }else{
+            if(YDirection>0){
+                YDirection*=0.9;
+            }
+        }
+        if(isPressing[68]){
+            if(YDirection>=-21)
+            YDirection-=3;
+        }else{
+            if(YDirection<0){
+                XDirection*=0.9;
+            }
+        }*/
+        if(canMove[(int)(XDirection+x)/50][(int)(YDirection+y)/50]){
+            x+=XDirection;
+            y+=YDirection;
+            XDirection*=0.92;
+            YDirection*=0.92;
+        }else{
+            XDirection=-XDirection*0.2;
+            YDirection=-YDirection*0.2;
+        }
+        }
+    public void paintComponent(Graphics g){
+         for(int i=Math.max(0,(int)(y/50)-10);i<Math.min(11+(int)(y/50)-10,49);i++){
+             for(int a=Math.max(0,(int)(x/50)-8);a<Math.min(49,12+(int)(x/50)-8);a++){
+                  g.drawImage(pictures.get(world[i][a]),400+a*50-(int)x,500+i*50-(int)y,50,50,null);
+                  System,out.println(" g "+(Math.max(0,(int)(y/50)-10)+5)+" "+Math.max(0,(int)(x/50)-8)+5);
+             }
+         }
+         g.drawImage(dog,250,250,null);
+    }
+    public void keyPressed(KeyEvent e){
+        System.out.println(e.getKeyCode());
+        if((e.getKeyCode()==KeyEvent.VK_UP||e.getKeyCode()==87)&&YDirection>-25){
+            if(YDirection>-2)YDirection-=3;
+            YDirection-=4;
+        }
+        if((e.getKeyCode()==KeyEvent.VK_DOWN||e.getKeyCode()==83)&&YDirection<25){
+            if(YDirection<2)YDirection+=3;
+            YDirection+=4;
+        }
+        if((e.getKeyCode()==KeyEvent.VK_LEFT||e.getKeyCode()==65)&&XDirection>-25){
+            if(XDirection>-2)XDirection-=3;
+            XDirection-=4;
+        }
+        if((e.getKeyCode()==KeyEvent.VK_RIGHT||e.getKeyCode()==68)&&XDirection<25){
+            if(XDirection<2)XDirection+=3;
+            XDirection+=4;
+        }
+        if(e.getKeyCode()==32){
+            if(XDirection>0)
+            XDirection+=20;
+            else
+            XDirection-=2;
+            if(YDirection>0)
+            YDirection+=100;
+            else
+            YDirection-=100;
+        }
+    }
+    public void keyReleased(KeyEvent e){
+    }
+    public void keyTyped(KeyEvent e){
+    }
+    
+    public void mousePressed(MouseEvent e){}
+    public void mouseReleased(MouseEvent e){}
+    public void mouseClicked(MouseEvent e){}
+    public void mouseEntered(MouseEvent e){}
+    public void mouseExited(MouseEvent e){}
+    
+    public void actionPerformed(ActionEvent e){}
+}
+class block{
+    int startX,startY;
+    double centerY,centerX;
+    Image img;
+    block(int x,int y,Image img){
+        startX=x;
+        startY=y;
+        centerX=startX+0.5;
+        centerY=startY+0.5;
+        this.img=img;
+    }
+    public void draw(Graphics g){
+        g.drawImage(img,startX,startY,null);
+    }
+}
+class hover{
+    
+}

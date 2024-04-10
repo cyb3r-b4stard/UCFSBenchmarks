@@ -1,0 +1,199 @@
+
+/**
+ * ##### # ########### ## ##### ###### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import java.util.HashMap;
+import java.util.Set;
+import java.util.Stack;
+
+public class Player
+{
+    private Parser parser;
+    public Room currentRoom;   
+    private UserInterface gui;
+    private Stack<Room> aBackRoom;
+    private ItemList aItem;     
+    private double aPoidsMax ; 
+
+    /**
+     * Constructor for objects of class GameEngine
+     */
+    public Player(final double pPoidsMax)
+    {
+        parser = new Parser();
+        aBackRoom = new Stack<Room> ();
+        aItem = new ItemList();
+        this.aPoidsMax = pPoidsMax ;
+    }
+
+    public void setGUI(UserInterface gui)
+    {
+        this.gui = gui;
+    }
+
+    /**
+     * 
+     * Print out the opening message for the player.
+     */
+    public void printWelcome()
+    {
+        gui.print("\n");
+        gui.println("Welcome to the World of Zuul!");
+        gui.println("World of Zuul is a new, incredibly boring adventure game.");
+        gui.println("Type 'help' if you need help.");
+        gui.print("\n");
+        gui.println(currentRoom.getLongDescription());
+        gui.showImage(currentRoom.getImageName());
+    }
+
+    /** 
+     * 
+     * Try to go to one direction. If there is an exit, enter the new
+     * room, otherwise print an error message.
+     *
+     */
+    public void goRoom(Command command)
+
+    {
+        if(!command.hasSecondWord()) {
+            gui.println("Go where?");
+            return;
+        }
+
+        String direction = command.getSecondWord();
+
+        Room nextRoom = currentRoom.getExit(direction);
+
+        if (nextRoom == null)
+            gui.println("There is no door!");
+        else {
+            aBackRoom.push(currentRoom);
+            currentRoom = nextRoom;
+            gui.println(currentRoom.getLongDescription());
+            if(currentRoom.getImageName() != null)
+                gui.showImage(currentRoom.getImageName());
+        }
+    }
+
+    public void back(Command pCommand)
+    {
+
+        if (pCommand.hasSecondWord()){
+            gui.println("I don't know what you mean...");}
+
+        if (aBackRoom.empty() && aBackRoom.size()==1)
+        {gui.println("You don't know from where you're coming !");}
+
+        currentRoom = aBackRoom.pop();
+        gui.println(currentRoom.getLongDescription());
+        if(currentRoom.getImageName() != null)
+            gui.showImage(currentRoom.getImageName());
+        
+        if(currentRoom = vAutoroute)
+        
+    }
+
+    public void drop (final Command pCommand)
+    {
+        Item vItem = null;
+
+        if (aItem.isEmpty()) 
+        {
+            gui.println("Your bag is empty");
+            return;
+        }
+
+        if (!pCommand.hasSecondWord())
+        {
+            gui.println("What do you want to drop ?");
+            return;
+        }
+
+        if (aItem.containsKey(pCommand.getSecondWord())) 
+        {   vItem = this.aItem.get(pCommand.getSecondWord());
+
+            gui.println("You've just dropped" + vItem.getaName());
+            this.currentRoom.addItemToRoom(vItem);
+            this.aItem.removeItem (pCommand.getSecondWord());
+            return;
+        }
+
+    }
+
+    public void take (final Command pCommand)
+    {
+        if (currentRoom.getItem()!= null)
+        {
+            if (pCommand.hasSecondWord()) {
+                if(currentRoom.hasItem(pCommand.getSecondWord()))
+                {
+                    Item vItem = currentRoom.getItem().get(pCommand.getSecondWord());
+                    aItem.put( vItem.getaName(),vItem);
+                    gui.println("You've just taken an item"); 
+                } else
+                    gui.println("There is no such a thing here !");
+            } else
+                gui.println("Take what ?");
+        }
+        else
+            gui.println("There is no item in this room.");
+    }
+
+    public void addItemToRoom(final Item pItem)
+    {
+        this.aItem.put(pItem.getaName(), pItem);
+    }
+
+    public boolean hasItem(final String pNameItem)
+    {
+        return this.aItem.containsKey(pNameItem);
+
+    }
+
+    public Item getItem(final String pNameItem)
+    {
+        return this.aItem.get(pNameItem);
+    }
+
+    public double getPoidsMax()
+    {
+        return this.aPoidsMax;
+    }
+
+    public void setPoidsMax(final double pPoidsMax)
+    {
+        this.aPoidsMax = pPoidsMax;
+    }
+
+    public String inventaire()
+    {
+        return aItem.listItem();
+    }
+
+    public void detruire(String pName)
+    {
+        aItem.removeItem(pName);
+    }
+
+    public String look(Command pCommand)
+    {
+        if (pCommand.hasSecondWord())
+        {
+            if (currentRoom.hasItem(pCommand.getSecondWord()))
+            {
+                return currentRoom.getItem(pCommand.getSecondWord()).getLongDescriptionItem();
+            }
+            else
+                return "This room doesn't have this object" ; 
+        }
+        else
+            return currentRoom.getLongDescription();
+    }
+
+    public Room getCurrentRoom() {
+        return currentRoom;
+    }
+}

@@ -1,0 +1,121 @@
+import java.util.Iterator;
+
+/**
+ * ##### ##### - ### ######## ###### ########### ## ########## ########
+ * 
+ * @###### ###### #####
+ * @####### #
+ */
+public class Graph extends Triangular<Integer> implements Cloneable
+{
+    Graph(int order) { super(order); }
+
+    public Graph clone() { 
+        Graph fresh=new Graph(0);
+        copy(fresh);
+        return fresh;
+    }
+
+    public Graph pathGraph(Graph g) {
+        Graph pg=g.clone();
+        pg.computeDistances();
+        return pg;
+    }
+
+    /** modifies the graph by adding all shortest paths as edges
+     * 
+     */ 
+    private void computeDistances()
+    {
+        int n=indexRange();
+        for (int k=0; k<n; k++) {
+            for (int i=0; i<n; i++) {
+                Integer v1=get(i,k);
+                if (v1==null) continue;
+                for (int j=i; j<n; j++) {
+                    Integer v2=get(k,j);
+                    if (v2==null) continue;
+                    int newval=v1+v2;
+                    Integer v3=get(i,j);
+                    if (v3==null || v3>newval) {
+                        set(i,j,newval);
+                    }
+                }
+            }
+        }                    
+    }
+
+    /**
+     * computes the node in the graph that is "closest" to all others
+     * this means: in the shortest-path graph of this graph,
+     * (i) no vertex has a larger degree
+     * (ii) all vertices with the same degree as this have
+     * larger or the same average distance to all nodes they are connected to
+     */
+    public int centre() {
+        Graph shortestPath = pathGraph(this);  
+        int d = indexRange();
+        int curCentre = -1;
+        int centAvg = 0;
+        int centEdgesAmt = 0;
+
+        for (int x=0; x<d; x++) {
+            int curEdges = 0;
+            int curAvg = 0;
+            for(int y=0; y<d; y++) {
+                int dist = get(x,y);
+            if(dist!=null) {
+                curAvg += dist;
+                curEdges++;
+            }
+
+            curAvg /= curEdges;
+
+            if(curEdges > centEdgesAmt) {
+                curCentre = x ;
+            } else if (curEdges == centEdgesAmt && curAvg < centAvg) {
+                curCentre = x;
+            }
+        }
+        return curCentre;
+    }
+
+    /**		
+     * @param x e legal index into the matrix
+     * @returns the number of edges adjacent to x
+     */
+    public int degree(int x) throws IndexOutOfBoundsException
+    {
+
+        int d=indexRange();
+        if ( x < 0 || x >= d) {
+            throw new IndexOutOfBoundsException("Your entry is invalid. Please enter an index larger than or equal to 0, and within the indexRange.");
+        }
+
+        int degCount = 0;
+
+        for (int y=0; y<d; y++)
+        { 
+            if (get(x,y)!=null){
+                degCount++;
+            }
+        }
+
+        return degCount;
+
+    }
+
+    /** for testing purposes:
+     *  prints all the edges of a graph
+     */
+    public void printEdges() {
+        int d=indexRange();
+        for (int i=0; i<d; i++)
+            for (int j=i; j<d; j++)
+            { 
+                Integer x=get(i,j);
+                if (x!=null) System.out.println(i + " <--" + x + "--> " + j);
+            }
+    }
+
+}

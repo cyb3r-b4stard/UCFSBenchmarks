@@ -1,0 +1,346 @@
+/**
+ * ##### ###### #/#/#### ## #
+ * #### ## (## ####### ### # ### ## ############ ## ### ### ### ## ### #### ### #### ## #### ## ## ##########)
+ * ########## ############ 
+ * #### - #### #### ####
+ * ####### - ##### ###### ## #### ##### ### #### ## #### #####  
+ * 
+ */
+import java.awt.*;
+import java.lang.*;
+import java.applet.*;
+import javax.imageio.*;
+import java.net.*;     
+import java.io.*;      
+import java.awt.image.*;
+import java.applet.*;
+
+import java.awt.*; 
+import java.lang.*;
+import java.applet.*; 
+import java.awt.event.*; 
+
+import java.awt.Graphics;
+import java.util.*;
+import java.text.DateFormat;
+import java.applet.Applet;
+public class BrewerJ_IdleGame extends Applet implements MouseListener, Runnable 
+{ 
+    AudioClip target;
+    AudioClip pistol;
+    AudioClip shotgun;
+    AudioClip smg;
+    AudioClip minigun;
+    
+    BufferedImage photo1 = null;
+    BufferedImage photo2 = null;
+    BufferedImage photo3 = null;
+    BufferedImage photo4 = null;
+    BufferedImage photo5 = null;
+    
+    int mouseClickX; 
+    int mouseClickY;
+    
+    private Thread clockThread = null;
+    int x=10;
+    
+    Graphics bufferGraphics; 
+    Image offscreen; 
+    Dimension dim; 
+    
+    int targetX,targetY,targetWidth,targetHeight; 
+    boolean targetClicked; 
+    
+    int pistolX,pistolY,pistolWidth,pistolHeight; 
+    boolean pistolClicked; 
+    
+    
+    int shotgunX,shotgunY,shotgunWidth,shotgunHeight; 
+    boolean shotgunClicked;
+    
+    int smgX,smgY,smgWidth,smgHeight; 
+    boolean smgClicked;
+    
+    int minigunX,minigunY,minigunWidth,minigunHeight; 
+    boolean minigunClicked;
+    
+    
+    
+    int money=999999;
+    int pistols=0;
+    int shotguns=0;
+    int smgs=0;
+    int miniguns=0;
+    
+    
+
+    public void init()  
+    {
+        resize(950,500);
+            target = getAudioClip(getDocumentBase(), "target.au");
+        try{
+            URL u = new URL(getCodeBase(),"target.jpg");
+                photo1 = ImageIO.read(u);
+            }   
+            catch (IOException e){
+            }
+            pistol = getAudioClip(getDocumentBase(), "pistol.au");
+        try{
+            URL u2 = new URL(getCodeBase(),"pistol.jpg");
+                photo2 =  ImageIO.read(u2);
+            }   
+            catch (IOException e){
+        }
+            shotgun = getAudioClip(getDocumentBase(), "shotgun.au");
+                try{
+            URL u3 = new URL(getCodeBase(),"shotgun.jpg");
+                photo3 =  ImageIO.read(u3);
+            }   
+            catch (IOException e){
+        }
+            smg = getAudioClip(getDocumentBase(), "smg.au");
+                 try{
+            URL u4 = new URL(getCodeBase(),"smg.jpg");
+                photo4 =  ImageIO.read(u4);
+            }   
+            catch (IOException e){
+        }
+            minigun = getAudioClip(getDocumentBase(), "minigun.au");
+                 try{
+            URL u5 = new URL(getCodeBase(),"minigun.jpg");
+                photo5 =  ImageIO.read(u5);
+            }   
+            catch (IOException e){
+        }
+        
+        
+        targetX = 20; 
+        targetY = 50; 
+        targetWidth = 380; 
+        targetHeight = 380; 
+        pistolX = 750; 
+        pistolY = 50; 
+        pistolWidth = 120; 
+        pistolHeight = 80;
+        shotgunX = 750; 
+        shotgunY = 150; 
+        shotgunWidth = 120; 
+        shotgunHeight = 80;
+        smgX = 750; 
+        smgY = 250; 
+        smgWidth = 120; 
+        smgHeight = 80;
+        minigunX = 750; 
+        minigunY = 350; 
+        minigunWidth = 120; 
+        minigunHeight = 80;
+        
+        dim = getSize(); 
+        setBackground(Color.black); 
+        offscreen = createImage(dim.width,dim.height); 
+        bufferGraphics = offscreen.getGraphics();
+        
+        addMouseListener(this); 
+    } 
+    
+    public void start() {
+        if (clockThread == null) {
+            clockThread = new Thread(this, "Clock");
+            clockThread.start();
+        }
+    }
+    
+    public void run() {
+        Thread myThread = Thread.currentThread();
+        while (clockThread == myThread) {
+            repaint();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
+        }
+    }
+    
+    public void paint(Graphics g)  
+    { 
+        
+        bufferGraphics.clearRect(0,0,dim.width,dim.width); 
+        
+        bufferGraphics.drawImage(photo1,targetX,targetY,targetWidth,targetHeight,null);
+        bufferGraphics.drawImage(photo2,pistolX,pistolY,pistolWidth,pistolHeight,null);
+        bufferGraphics.drawImage(photo3,shotgunX,shotgunY,shotgunWidth,shotgunHeight,null);
+        bufferGraphics.drawImage(photo4,smgX,smgY,smgWidth,smgHeight,null);
+        bufferGraphics.drawImage(photo5,minigunX,minigunY,minigunWidth,minigunHeight,null);
+        
+        Calendar cal = Calendar.getInstance();
+        Date date = cal.getTime();
+        x+=3;
+        DateFormat dateFormatter =
+                DateFormat.getTimeInstance();
+        bufferGraphics.drawString(dateFormatter.format(date), 500, 220);
+        
+        
+        
+        if(!pistolClicked&&!shotgunClicked&&!smgClicked&&!minigunClicked&&!targetClicked){
+            money=money+(pistols*10);
+            money=money+(shotguns*20);
+            money=money+(smgs*30);
+            money=money+(miniguns*100);
+            
+            
+           
+        }
+        if(pistolClicked&&money>=50){
+            money=money-50;
+            pistols=pistols+1;
+            pistolClicked = false;
+            pistol.play();
+            
+        }
+            
+          if(smgClicked&&money>=250){
+            money=money-100;
+            smgs=smgs+1;
+            smgClicked = false;
+            smg.play();
+        }
+        
+           if(shotgunClicked&&money>=100){
+            money=money-75;
+            shotguns=shotguns+1;
+            shotgunClicked = false;
+            shotgun.play();
+        }
+        
+        if(targetClicked ){
+            money=money+1;
+            target.play();
+            targetClicked = false;
+            
+        }
+        
+        if(minigunClicked&&money>=1000000){
+            money=money-1000000;
+            miniguns=miniguns+1;
+            minigunClicked=false;
+            minigun.play();
+        }
+        
+        if (miniguns>=100 && smgs>=100 && shotguns>=100 && pistols>=100 && money>= 1000000){
+            bufferGraphics.drawStwing ("You won" ,500,200)
+        }
+            
+            
+         
+        Font Impact = new Font("Impact",Font.BOLD, 15);
+        bufferGraphics.setFont(Impact); 
+        
+        
+        bufferGraphics.setColor(Color.red);
+        bufferGraphics.drawString("Money = $"+money,500,235);
+        bufferGraphics.drawString("Pistols = "+pistols,500,250);
+        bufferGraphics.drawString("Shotguns = "+shotguns,500,265);
+        bufferGraphics.drawString("Smgs = "+smgs,500,280);
+        bufferGraphics.drawString("Miniguns = "+miniguns,500,295);
+        bufferGraphics.drawString("$50",750,120);
+        bufferGraphics.drawString("$100",750,220);
+        bufferGraphics.drawString("$250",750,320);
+        bufferGraphics.drawString("$1,000,000",750,370);
+        
+        bufferGraphics.drawString("Money per second = "+(10*pistols+20*shotguns+30*smgs+100*miniguns),500,310);
+        bufferGraphics.drawString("By.Jacob Brewer",488,116);
+        
+        
+        Font Impact2 = new Font("Impact2",Font.BOLD, 42);
+        bufferGraphics.setFont(Impact2);
+        bufferGraphics.setColor(Color.red);
+        bufferGraphics.drawString("Bull's-eye",485,100);
+        
+        bufferGraphics.drawString("CLICK!",150,225);
+        /*
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         */
+            g.drawImage(offscreen,0,0,this);
+             
+             
+    } 
+    
+    public void update(Graphics g) 
+    { 
+        Font Impact3 = new Font("Impact3",Font.BOLD, 15);
+        bufferGraphics.setFont(Impact3);
+         paint(g); 
+    } 
+    
+        public void stop() {
+        clockThread = null;
+    }
+    
+    public void mouseClicked (MouseEvent me) { 
+        mouseClickX = me.getX();
+        mouseClickY = me.getY(); 
+
+        if (mouseClickX>targetX&&mouseClickX<targetX+targetWidth&&
+                    mouseClickY>targetY&&mouseClickY<targetY+targetHeight)
+        {
+            target.play();
+            targetClicked = true;
+            
+        }
+        else  
+            targetClicked = false; 
+        
+        if (mouseClickX>pistolX&&mouseClickX<pistolX+pistolWidth&&
+                    mouseClickY>pistolY&&mouseClickY<pistolY+pistolHeight)
+        {
+            pistolClicked = true;
+            
+            
+            
+        }
+        else  
+            pistolClicked = false; 
+        if (mouseClickX>shotgunX&&mouseClickX<shotgunX+shotgunWidth&&
+                    mouseClickY>shotgunY&&mouseClickY<shotgunY+shotgunHeight)
+        {
+            shotgunClicked = true;
+            
+            
+        }
+        else  
+            shotgunClicked = false; 
+        
+        if (mouseClickX>smgX&&mouseClickX<smgX+smgWidth&&
+                    mouseClickY>smgY&&mouseClickY<smgY+smgHeight)
+        {
+            smgClicked = true;
+            
+            
+        }
+        else  
+            smgClicked = false; 
+        
+        if (mouseClickX>minigunX&&mouseClickX<minigunX+minigunWidth&&
+                    mouseClickY>minigunY&&mouseClickY<minigunY+minigunHeight)
+        {
+            minigunClicked = true;
+            
+            
+        }
+        else  
+            minigunClicked = false; 
+        
+        
+    } 
+    public void mousePressed (MouseEvent me) {}
+    public void mouseReleased (MouseEvent me) {}  
+    public void mouseEntered (MouseEvent me) { 
+    } 
+    public void mouseExited (MouseEvent me) { 
+    }  
+}  

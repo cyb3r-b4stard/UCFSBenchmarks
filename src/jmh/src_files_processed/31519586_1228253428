@@ -1,0 +1,406 @@
+/**
+ * ####### ##### ######
+ * 
+ * @###### ###### ###
+ * @####### #/##/##
+ */
+public class BowlingScore
+{
+    private String bowler;
+    private char firstScore;
+    private char secondScore;
+    private String scoreCard[][];
+
+    public BowlingScore(String bowler)
+    {
+        this.bowler = bowler;
+        scoreCard = new String[10] [ ];
+        for (int i = 0; i < 9; i++)
+        {
+            scoreCard[i] = new String[2];
+        }
+        scoreCard[9] = new String[3]; 
+    }
+
+    public BowlingScore(String bowler, String [] game)
+    {
+        this.bowler = bowler;
+        scoreCard = new String[10] [ ];
+        for (int i = 0; i < 9; i++)
+        {
+            scoreCard[i] = new String[2];
+        }
+        scoreCard[9] = new String[3]; 
+
+        for(int i = 0; i < scoreCard.length - 1; i ++)
+        {
+            if(game[i] != null)
+            {
+                scoreCard[i][0] = game[i].substring(0,1);
+                scoreCard[i][1] = game[i].substring(1);
+            } else {
+                scoreCard[i][0] = null;
+                scoreCard[i][1] = null;
+            }
+        }
+        if(game[9] != null)
+        {
+            scoreCard[9][0] = game[9].substring(0,1);
+            scoreCard[9][1] = game[9].substring(1,2);
+            scoreCard[9][2] = game[9].substring(2);
+        }
+    }
+
+    public int getScore()
+    {
+        int totalScore = 0;
+        int rowIndex = 0;
+        while(rowIndex < 10)
+        {
+            if(Character.isDigit(scoreCard[rowIndex][0].charAt(0)) && Character.isDigit(scoreCard[rowIndex][1].charAt(0)))
+            {
+                totalScore += Integer.parseInt(scoreCard[rowIndex][0]) + Integer.parseInt(scoreCard[rowIndex][1]);
+            }
+            else if(scoreCard[rowIndex][0].equals("-") && Character.isDigit(scoreCard[rowIndex][1].charAt(0)))
+            {
+                totalScore += Integer.parseInt(scoreCard[rowIndex][1]);
+            }
+            else if(Character.isDigit(scoreCard[rowIndex][0].charAt(0)) && scoreCard[rowIndex][1].equals("-"))
+            {
+                totalScore += Integer.parseInt(scoreCard[rowIndex][1]);
+            }
+            else if(scoreCard[rowIndex][0].toUpperCase().equals("X"))
+            {
+                if(scoreCard[rowIndex + 1][0].toUpperCase().equals("X"))
+                {
+                    if(scoreCard[rowIndex + 2][0].toUpperCase().equals("X"))
+                    {
+                        totalScore += 30; 
+                    }
+                    else if(scoreCard[rowIndex + 2][0].equals("-"))
+                    {
+                        totalScore += 20;
+                    } 
+                    else {
+                        totalScore += 20 + Integer.parseInt(scoreCard[rowIndex + 2][0]);
+                    }
+                }
+                else if(scoreCard[rowIndex + 1][1].equals("/"))
+                {
+                    totalScore += 20;
+                } 
+                else if(Character.isDigit(scoreCard[rowIndex + 1][0].charAt(0)) && scoreCard[rowIndex + 1][1].equals("-"))
+                {
+                    totalScore += 10 + Integer.parseInt(scoreCard[rowIndex + 1][0]);
+                }
+                else if(scoreCard[rowIndex + 1][0].equals("-") && Character.isDigit(scoreCard[rowIndex + 1][1].charAt(0)))
+                {
+                    totalScore += 10 + Integer.parseInt(scoreCard[rowIndex + 1][1]);
+                } 
+                else 
+                {
+                    totalScore += 10 + Integer.parseInt(scoreCard[rowIndex + 1][0]) + Integer.parseInt(scoreCard[rowIndex][1]);
+                }
+            }
+            rowIndex++;
+        }
+
+        if(rowIndex == 10)
+        {
+            if(Character.isDigit(scoreCard[9][0].charAt(0)) && Character.isDigit(scoreCard[9][1].charAt(0)))
+            {
+                totalScore += Integer.parseInt(scoreCard[9][0]) + Integer.parseInt(scoreCard[9][1]);
+            }
+            else if(scoreCard[9][0].toUpperCase().equals("X"))
+            {
+                if(scoreCard[9][1].toUpperCase().equals("X"))
+                {
+                    if(scoreCard[9][2].toUpperCase().equals("X"))
+                    {
+                        totalScore += 30;
+                    }
+                    else if(scoreCard[9][2].equals("-"))
+                    {
+                        totalScore += 20;
+                    }
+                    else{
+                        totalScore += 20 + Integer.parseInt(scoreCard[9][2]);
+                    }
+                }
+                else if(scoreCard[9][2].equals("/"))
+                {
+                    totalScore += 20;
+                } 
+                else if(scoreCard[9][1].equals("-") && Character.isDigit(scoreCard[9][2].charAt(0)))
+                {
+                    totalScore += 10 + Integer.parseInt(scoreCard[9][2]);
+                }
+                else if(Character.isDigit(scoreCard[9][1].charAt(0)) && scoreCard[9][2].equals("-"))
+                {
+                    totalScore += 10 + Integer.parseInt(scoreCard[9][1]);
+                }
+                else
+                {
+                    totalScore += 10 + Integer.parseInt(scoreCard[9][1]) + Integer.parseInt(scoreCard[9][2]);
+                }
+            }
+            else if(scoreCard[9][1].equals("/"))
+            {
+                if(scoreCard[9][2].toUpperCase().equals("X"))
+                {
+                    totalScore += 20;
+                }
+                else if(scoreCard[9][2].equals("-"))
+                {
+                    totalScore += 10;
+                }
+                else
+                {
+                    totalScore += 10 + Integer.parseInt(scoreCard[9][2]);
+                }
+            }
+        }
+        return totalScore;
+    }
+
+    public int compareTo(BowlingScore other)
+    {
+        BowlingScore o = (BowlingScore) other;
+        if(other instanceof BowlingScore)
+        {
+            if(o.getScore() > this.getScore())
+            {    
+                return 1;
+            }
+        }
+        return -1;
+    }
+
+    public boolean addFrame(String firstRoll, String secondRoll)
+    {
+        if(Character.isDigit(firstRoll.charAt(0)))
+        {
+            if(Character.isDigit(secondRoll.charAt(0)) && secondRoll.charAt(0) < 10 - firstRoll.charAt(0))
+            {
+                int frame = this.getFrame();
+                scoreCard[frame][0] = firstRoll;
+                scoreCard[frame][1] = secondRoll;
+                return true;
+            }
+            else if (secondRoll.equals("/"))
+            {
+                int frame = this.getFrame();
+                scoreCard[frame][0] = firstRoll;
+                scoreCard[frame][1] = secondRoll;
+                return true;
+            }
+            return false;
+        }
+        else if(Character.isLetter(firstRoll.charAt(0)))
+        {
+            if(firstRoll.equals("X") || firstRoll.equals("x"))
+            {
+                if(Character.toString(secondRoll.charAt(0)).equals(" "))
+                {
+                    int frame = this.getFrame();
+                    scoreCard[frame][0] = firstRoll;
+                    scoreCard[frame][1] = secondRoll;
+                    return true;
+                }
+            }
+            else if(firstRoll.equals("-"))
+            {
+                if(secondRoll.equals("/") || secondRoll.charAt(0) < 10)
+                {
+                    int frame = this.getFrame();
+                    scoreCard[frame][0] = firstRoll;
+                    scoreCard[frame][1] = secondRoll;
+                    return true;
+                }
+            }
+        }
+        return false;    
+    }
+
+    public boolean addFrame(String firstRoll, String secondRoll, String thirdRoll)
+    {
+        if(Character.isDigit(firstRoll.charAt(0)))
+        {
+            if(Character.isDigit(secondRoll.charAt(0)) && secondRoll.charAt(0) < 10 - firstRoll.charAt(0))
+            {
+                int frame = this.getFrame();
+                scoreCard[frame][0] = firstRoll;
+                scoreCard[frame][1] = secondRoll;
+                return true;
+            }
+            else if (secondRoll.equals("/"))
+            {
+                int frame = this.getFrame();
+                scoreCard[frame][0] = firstRoll;
+                scoreCard[frame][1] = secondRoll;
+                return true;
+            }
+            return false;
+        } 
+        else if(Character.isLetter(firstRoll.charAt(0)))
+        {
+            if(firstRoll.equals("X") || firstRoll.equals("x"))
+            {
+                if((secondRoll.equals(" ") || secondRoll.equals("/") || secondRoll.equals("X") || secondRoll.equals("x") || secondRoll.equals("-") || secondRoll.charAt(0) < 10))
+                {
+                    if(thirdRoll.equals(" ") || thirdRoll.equals("/") || thirdRoll.equals("X") || thirdRoll.equals("x") ||  thirdRoll.equals("-") ||thirdRoll.charAt(0) < 10)
+                    {
+                        int frame = this.getFrame();
+                        scoreCard[frame][0] = firstRoll;
+                        scoreCard[frame][1] = secondRoll;
+                        scoreCard[frame][2] = thirdRoll;
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        return false;
+    }
+
+    public boolean isValidGame()
+    {
+        int rowIndex = 0;
+        while(rowIndex < 9)
+        {
+            if(scoreCard[rowIndex][0].toUpperCase().equals("X"))
+            {
+                if(!scoreCard[rowIndex][1].equals(""))
+                {
+                    return false;
+                }
+            }
+            else if(scoreCard[rowIndex][0].equals("-"))
+            {
+                if(!(Character.isDigit(scoreCard[rowIndex][1].charAt(0)) && Integer.parseInt(scoreCard[rowIndex][1]) < 10))
+                {
+                    if(!scoreCard[rowIndex][1].equals("/"))
+                    {
+                        if(!scoreCard[rowIndex][1].equals("-")) 
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            else if(Character.isDigit(scoreCard[rowIndex][0].charAt(0)) && Integer.parseInt(scoreCard[rowIndex][0]) < 10)
+            {
+                if(!(Character.isDigit(scoreCard[rowIndex][1].charAt(0)) && (Integer.parseInt(scoreCard[rowIndex][0]) + Integer.parseInt(scoreCard[rowIndex][1]) < 10)))
+                {
+                    if(!scoreCard[rowIndex][1].equals("/"))
+                    {
+                        if(!scoreCard[rowIndex][1].equals("-"))
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            rowIndex++;
+        }
+
+        if(rowIndex == 9)
+        {
+            if(Character.isDigit(scoreCard[9][0].charAt(0)) && Integer.parseInt(scoreCard[9][0]) < 10)
+            {
+                if(!(Character.isDigit(scoreCard[9][1].charAt(0)) && (Integer.parseInt(scoreCard[9][0] + Integer.parseInt(scoreCard[9][1])) < 10)))
+                {
+                    if(!scoreCard[9][1].equals("-"))
+                    {
+                        if(!scoreCard[9][1].equals("/"))
+                        {   
+                            return false;
+                        }
+                        else
+                        {
+                            if(!scoreCard[9][2].toUpperCase().equals("X"))
+                            {
+                                if(!scoreCard[9][1].equals("-"))
+                                {
+                                    if(!(Character.isDigit(scoreCard[9][2].charAt(0)) && Integer.parseInt(scoreCard[9][2]) < 10))
+                                    {
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            else if(scoreCard[9][0].toUpperCase().equals("X"))
+            {
+                if(scoreCard[9][1].toUpperCase().equals("X"))
+                {
+                    if(!scoreCard[9][2].toUpperCase().equals("X"))
+                    {
+                        if(!scoreCard[9][2].toUpperCase().equals("-"))
+                        {
+                            if(!(Character.isDigit(scoreCard[9][2].charAt(0)) && Integer.parseInt(scoreCard[9][2]) < 10))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+                else if(scoreCard[9][1].equals("-"))
+                {
+                    if(!scoreCard[9][2].toUpperCase().equals("X"))
+                    {
+                        if(!scoreCard[9][2].equals("/"))
+                        {
+                            if(!scoreCard[9][2].equals("-"))
+                            {
+                                if(!(Character.isDigit(scoreCard[9][2].charAt(0)) && (Integer.parseInt(scoreCard[9][1]) < 10 + Integer.parseInt(scoreCard[9][2]) < 10)))
+                                {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+                else if((Character.isDigit(scoreCard[9][1].charAt(0)) && Integer.parseInt(scoreCard[9][0]) < 10))
+                {
+                    if(!scoreCard[9][2].toUpperCase().equals("X"))
+                    {
+                        if(!scoreCard[9][2].equals("/"))
+                        {
+                            if(!scoreCard[9][2].equals("-"))
+                            {
+                                if(!(Character.isDigit(scoreCard[9][2].charAt(0)) && Integer.parseInt(scoreCard[9][2]) < 10))
+                                {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if(scoreCard[9][0].equals("-"))
+            {
+                if(!(Character.isDigit(scoreCard[9][1].charAt(0)) && Integer.parseInt(scoreCard[9][1]) < 10))
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public int getFrame()
+    {
+        for(int i = 0; i < 9; i++)
+        {
+            if(scoreCard[i][0] == null)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+}

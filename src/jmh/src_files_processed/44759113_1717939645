@@ -1,0 +1,87 @@
+import java.util.Scanner;
+import java.util.Random;
+
+public class Matrix2    {
+    public static void main(String[] args)  {
+        Scanner in = new Scanner(System.in);
+        Random rand = new Random();
+        
+        System.out.println("Enter array dimentions");
+        int size = in.nextInt();
+        int[][] arr = new int[size][size];
+        
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = 0; j < arr[i].length; j++) {
+                arr[i][j] = rand.nextInt((1 - 0) + 1) + 0;
+                System.out.print(arr[i][j] + " ");
+            }
+            System.out.println();
+        }
+        
+        for (int i = 0; i < arr.length; i++) {
+              if (sumArr(arr[i]) == size)   {
+                  System.out.println("All 1's at row " + i);
+              }
+              else if (sumArr(arr[i]) == 0) {
+                  System.out.println("All 0's at row " + i);
+              }
+        }
+        
+        for (int i = 0; i < arr.length; i++) {
+              if (sumArr(sumCol(arr, i)) == size)   {
+                  System.out.println("All 1's at column " + i);
+              }
+              else if (sumArr(sumCol(arr, i)) == 0) {
+                  System.out.println("All 0's at column " + i);
+              }
+        }
+        
+        
+        if (sumArr(sumDiagonal(arr, false)) == size) {
+            System.out.println("All 1's at left-to-right diagonal");
+        }
+        else if (sumArr(sumDiagonal(arr, false)) == 0) {
+            System.out.println("All 0's at left-to-right diagonal");
+        }
+        if (sumArr(sumDiagonal(arr, true)) == size) {
+            System.out.println("All 1's at right-to-left diagonal");
+        }
+        else if (sumArr(sumDiagonal(arr, true)) == 0) {
+            System.out.println("All 0's at right-to-left diagonal");
+        }
+        }
+    }
+    
+    private static int sumArr(int[] arr)    {
+        int sum = 0;
+        for (int i : arr)   {
+            sum += i;
+        }
+        return sum;
+    }
+    
+    private static int[] sumCol(int[][] arr, int colNum)  {
+        int[] col = new int[arr.length];
+        for (int i = 0; i < arr.length; i++)    {
+            col[i] = arr[i][colNum];
+        }
+        return col;
+    }
+    
+    private static int[] sumDiagonal(int[][] arr, boolean diagonal)   {
+        int dia[] = new int[arr.length];
+        
+        if (!diagonal)  {
+            for (int i = 0; i < arr.length; i++)    {
+                dia[i] = arr[i][i];
+            }
+        }
+        else {
+            for (int i = 0; i < arr.length; i++)    {
+                dia[i] = arr[arr.length - i - 1][i]; 
+            }
+        }
+        
+        return dia;
+    }
+}

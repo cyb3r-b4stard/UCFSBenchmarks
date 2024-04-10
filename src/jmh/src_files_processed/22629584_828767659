@@ -1,0 +1,161 @@
+
+/* #### ### ####### ##########
+ * ####:#### ########
+ * ########:
+ * ##:#########
+ */
+
+import ecs100.*;
+import java.util.*;
+
+    /**
+     * ### ########## ### # ######### ####.
+     * ### #### ## ### ########## ## ### ######(###### ######) ######
+     * ##### ## ###### ## ### #### ##### #### # ######
+     * ## #########.
+     *
+     * ####, #### #### ########## ## #######, ### #### #### ## ## ##### # #### ### ##### ######.
+     * ### ###### ### ### ####### ##### ## ### ########## ## ##### ####.
+
+     */
+public class LiftController {
+        
+    /**
+     * The field that stores the current state of the FSM
+     */
+    private String state = "waitingAt1";
+    private boolean atF1 = true;
+    private boolean atF2 = false;
+    private boolean atF3 = false;
+    /*# YOUR CODE HERE */
+    
+    
+
+         
+    /**
+     * The field containing the Lift.
+     * The signal method will call methods on the lift to operate it
+     */
+    private Lift lift;  
+
+
+    
+    /**
+     * The Constructor is passed the lift that it is controlling.
+     */
+    public LiftController(Lift lift) {
+        this.lift = lift;
+    }
+        
+    /**
+     * Receives a change in a sensor value that may trigger an action and state change.
+     * If there is a transition out of the current state associated with this
+     * sensor signal, 
+     * - it will perform the appropriate action (if any)
+     * - it will transition to the next state
+     *   (by calling changeToState with the new state).
+     *
+     * Possible sensor values that you can respond to:
+     * (note, you may not need to respond to all of them)
+     *   "request1"   "request2"   "request3"
+     *   "atF1"   "atF2"   "atF3"
+     *   "startUp"   "startDown"
+     *    "doorClosed"   "doorOpened"   "doorMoving"
+     *    "timerExpired"
+     *    "doorSensor"
+     *    "withinCapacity"   "overCapacity"
+     * 
+     * You can either have one big method, or you can break it up into
+     * a separate method for each state 
+     */
+    public void signal(String sensor){
+               UI.printf("In state: %s, got sensor: %s%n", state, sensor);
+        /*# YOUR CODE HERE */
+        String s = sensor;
+
+        if (state.equals("waitingAt1")){
+            
+            if (sensor.equals("request1") ){
+               lift.openDoor();  
+               atF2 = false;
+               state = "waitingAt1"; 
+                
+              }else if (sensor.equals("request2") ){
+                  
+                lift.closeDoor();
+                
+                lift.moveUp();
+                
+                atF2 = true;
+                state ="MoveUp";
+                
+              }else if(sensor.equals("timerExpired")){
+                   lift.closeDoor();
+              }
+              
+        }
+        
+        else if (state.equals("waitingAt2")){
+             if(sensor.equals("request2")){
+
+  
+                 
+              }else if((sensor.equals("request1")){
+                     lift.closeDoor();
+                     lift.moveDown();
+                     lift.restartTimer(3000);
+                     atF1 = true;
+                     atF2 = false;
+                     state = "MoveDown";
+
+                }else if(sensor.equals("timerExpired")){
+                    
+                    lift.closeDoor();
+                    
+                }
+           
+
+        }else if(state.equals("waiting3")){
+            
+           
+            
+        }else if(state.equals("MoveUp")){
+            
+             if(sensor.equals("atF2")){
+                
+                lift.stop();
+                lift.openDoor();
+                 state ="waiting2";
+                lift.restartTimer(3000);
+               
+            }
+            
+            
+        }else if(state.equals("MoveDown")){
+            
+              if(sensor.equals("atF1")){
+                
+                lift.stop();
+                 lift.openDoor();
+                  state ="waiting1";
+                 lift.restartTimer(3000);
+                
+            }
+        }
+    }
+    
+    
+    public void doorMoving(String sensor){
+        
+        lift.openDoor();
+         
+    }
+      
+            
+
+
+
+
+
+
+}

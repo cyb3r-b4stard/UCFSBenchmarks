@@ -1,0 +1,70 @@
+import ecs100.*;
+import java.io.*;
+import java.util.*;
+
+public class WordCount{
+
+    private Map <String,Integer> words;
+    private int count;
+
+    public WordCount(){
+        UI.setDivider(1);
+
+        UI.addButton("Read", ()-> readFromFile(UIFileChooser.open()));
+        UI.addButton("Print Words", this::print);
+        UI.addButton("Find Word", ()-> findWord(UI.askString("Word to find: ").toLowerCase()));
+    }
+
+    public void readFromFile(String fname){
+        if(fname == null)return;
+
+        words = new HashMap<String,Integer>();
+        count = 0;
+
+        try {
+            UI.println("--Reading From File, Please Wait--");
+            
+            Scanner scan = new Scanner(new File(fname));
+            scan.useDelimiter("[^-a-zA-Z']"); 
+            
+            long start = System.currentTimeMillis();
+            
+            while(scan.hasNext()){
+                String word = scan.next();
+                Integer frequency = words.get(word);
+                if(word.length() > 0){
+                    words.put(word.toLowerCase(), frequency == null ? 1, count++ : frequency+1);
+                    if(frequency == null)count++;
+                }
+            }
+            scan.close();
+            
+            long end = System.currentTimeMillis();
+            
+            UI.println("--File Reading Completed in "+(end-start)+" milliseconds--");
+        }
+        catch(IOException ex) {
+            UI.println("File loading failed: " + ex);
+        } 
+    }
+
+    public void print(){
+        UI.clearText();
+        if(count == 0) return;        
+        for(String w : words.keySet())
+            UI.println(words.get(w)+" - "+w);
+        UI.println("----------------------");
+        UI.println("Total unique entrys: "+count);
+    }
+
+    public void findWord(String word){
+        if(!words.keySet().contains(word)){
+            UI.println("No matching words"); return;
+        }
+        UI.println(words.get(word)+" - "+word);
+    }
+
+    public static void main(String[] args){
+        new WordCount();
+    }
+}

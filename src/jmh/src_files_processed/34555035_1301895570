@@ -1,0 +1,250 @@
+/***********************************************************************
+ * ######:  ######.####
+ * ######:  #####, #######, #########, ######, ########, ############
+ * ####### : ##/##/##
+ * #######: ####### ### ##### ######
+ ***********************************************************************/
+
+import java.lang.annotation.*;
+import java.util.*;
+import info.graphics.Image;
+import info.graphics.KeyCode;
+import java.time.Instant;
+/** @##### ########-####-####-####-############ */
+public class Player extends Character {
+    /** @pdOid 24d87977-0132-4dd2-a9e1-74a73fa1ac57 */
+    private static int HPMAX = 3;
+    /** @pdOid 769368e9-6cd1-4299-965b-b0d9a86a7cb6 */
+    private static int timeOfInvincibility = 1500;
+    /** @pdRoleInfo migr=no name=Armor assc=porter mult=1 type=Composition */
+    private Armor armor;
+
+    private Instant lastInstantHit;
+
+    /** Constructor player
+     * Complete constructor of the player
+     * @param appearance 
+     * @param position 
+     * @param armor
+     * @pdOid 800480fc-0a49-446f-b823-90b585641aec */
+    public Player(Image appearance, Position position, Armor armor) {
+        super(appearance,position,TypePattern.LINE_RIGHT);
+        this.armor = armor;
+    }
+
+    /** Method getHPMax
+     * @return hPMax
+     * @pdOid f60afcd2-b0e1-4e6a-8cba-8e96ceb854cf */
+    @Override
+    public int getHpMax() {
+        return Player.HPMAX;
+    }
+
+    /** Method getTimeOfInvicibility
+     * Accessor to timeOfInvicibility
+     * @return Class timeOfInvicibility
+     * @pdOid 53c5603c-b766-470e-ac75-457044f44ae0 */
+    public static int getTimeOfInvincibility() {
+        return Player.timeOfInvincibility;
+    }
+
+    /**
+     * Method getArmor
+     * Accessor to armor
+     * @return armor
+     */
+    public Armor getArmor(){
+        return this.armor;
+    }
+
+    /** Method getSpeed
+     * Accessor toSpeed
+     * @return speed
+     * @pdOid 03ace3c5-dd0a-4505-9cc4-eb6e37549695 */
+    public int getSpeed() {
+        return this.armor.getSpeed();
+    }
+
+    /** Method getAttackSpeed
+     * Getter to attackSpeed
+     * @return attackSpeed of the player
+     * @pdOid 23290638-621e-446f-a6e0-3cc4dc2383dc */
+    @Override
+    public double getAttackSpeed() {
+        return this.armor.getAttackSpeed();
+    }
+
+    /**
+     * Method setArmor
+     * set armor
+     * display the new armor 
+     * @return armor of the player
+     */
+    public void setArmor(Armor armor){
+        this.erase(
+        this.armor=armor;
+        Image newArmor = new Image(this.getPosition().getX(),this.getPosition().getY(),armor.getTitle());
+        this.setAppearance(newArmor);   
+        
+    }
+
+    
+
+    /**
+     * Method setHpLeft
+     * Set hp left. If they're equals of superior to Player.HPMAX, change Player.HPMAX to the value
+     * @param hpleft
+     */
+    @Override
+    public void setHpLeft(int hpLeft)
+    {
+        if(this.getHpLeft() >= this.getHpMax())
+        {
+            Player.HPMAX = hpLeft;
+        }
+        super.setHpLeft(hpLeft);
+    }
+
+    /** Method shoot
+     * Make this to shoot a projectile
+     * @pdOid 4012a458-d9ed-4443-842e-dec7f8951225 */
+    @Override
+    public ArrayList<Projectile> shoot() {
+        if(this.isAllowedToShoot())
+        {
+            return this.armor.shoot(this.getPosition(),this.getWidth(),this.getHeight());
+        }
+        else return new ArrayList<Projectile>();
+    }
+
+    /** Method receiveBoost not written
+     * Act depending a boost received
+     * @param boost this receiveABoost
+     * @pdOid 3d4bbf5c-19c9-44dd-adec-5cd12424180f */
+    public void receiveBoost(Boost boost) {
+        switch (boost.getType())
+        {
+            case HEAL:
+            this.setHpLeft(this.getHpLeft());
+            break;
+            case RED:
+            this.setArmor(Armor.RED);
+            break;
+            case YELLOW:
+            this.setArmor(Armor.YELLOW);
+            break;
+        }
+    } 
+
+    /** Method receiveProjectile
+     * Act depending the projectile received
+     * @param projectile a projectile
+     * 
+     * @pdOid 7328a17a-dda1-4fd3-86e7-7a6a14989bab */
+    @Override
+    public void receiveProjectile(TypeProjectile projectile) {
+        this.setHpLeft(this.getHpLeft()-projectile.getDamages());
+    }
+
+    /**
+     * Method isAllowedToReceiveDamages
+     * Test if this is allowed to receive damage, and if it can, change the last timeStamp of damage received
+     * @return true if you this can receive damages, false otherwise
+     */
+    public boolean isAllowedToReceiveDamages()
+    {
+        if(this.lastInstantHit == null){
+            this.lastInstantHit = Instant.now();
+            return true;
+        }  
+        else if(this.lastInstantHit.plusMillis(timeOfInvincibility).compareTo(Instant.now())<0){
+            this.lastInstantHit=Instant.now();
+            return true;
+        }
+        return false;
+    }
+
+    /** 
+     * Method move
+     * Compute the next position considering a key code
+     * @pdOid d23c53cd-0390-411a-9df1-b6d75410f27b */
+    public Position move(KeyCode key) {
+        Position pos = this.getPosition();;
+        switch(key){
+            case DOWN :
+            case NUMPAD2 :
+            pos = new Position(this.getPosition().getX(), this.getPosition().getY() + this.armor.getSpeed());
+            break;
+            case NUMPAD8 :
+            case UP :
+            pos = new Position(this.getPosition().getX(), this.getPosition().getY() - this.armor.getSpeed());
+            break;
+            case NUMPAD4 :
+            case LEFT :
+            pos = new Position(this.getPosition().getX() - this.armor.getSpeed(), this.getPosition().getY());
+            break;
+            case NUMPAD6 :
+            case RIGHT :
+            pos = new Position(this.getPosition().getX() + this.armor.getSpeed(), this.getPosition().getY());
+            break;
+            case NUMPAD1 :
+            pos = new Position(this.getPosition().getX() - this.armor.getSpeed(), this.getPosition().getY() + this.armor.getSpeed());
+            break;
+            case NUMPAD3 :
+            pos = new Position(this.getPosition().getX() + this.armor.getSpeed(), this.getPosition().getY() + this.armor.getSpeed());
+            break;
+            case NUMPAD7 :
+            pos = new Position(this.getPosition().getX() - this.armor.getSpeed(), this.getPosition().getY() - this.armor.getSpeed());
+            break;
+            case NUMPAD9 :
+            pos = new Position(this.getPosition().getX() + this.armor.getSpeed(), this.getPosition().getY() - this.armor.getSpeed());
+            break;
+        }
+        return pos;
+    }
+
+    /**
+     * Method receiveEntity
+     * Act depending the received entity
+     * @param entity received
+     */
+    public void receiveEntity(Entity entity)
+    {   
+        if(entity instanceof Boost)
+        {
+            this.receiveBoost((Boost) entity);
+        }
+        else if(this.isAllowedToReceiveDamages())
+        {
+            if(entity instanceof Projectile)
+            {
+                this.receiveProjectile(((Projectile) entity).getType());
+            }
+            else {
+                this.setHpLeft(this.getHpLeft()-1);
+            }
+        }
+    }
+
+    /**
+     * Method getHeight
+     * supposed to return the height of the picture. Is a cheat due to Image inizialisation trouble
+     * @return the height
+     */
+    @Override
+    public int getHeight()
+    {
+        return 64;
+    }
+
+    /**
+     * Method getWidth
+     * supposed to return the width of the picture. Is a cheat due to Image inizialisation trouble
+     * @return the width
+     */
+    @Override
+    public int getWidth()
+    {
+        return 64;
+    }
+}

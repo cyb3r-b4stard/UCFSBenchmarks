@@ -1,0 +1,96 @@
+import java.util.Scanner;
+import java.io.*;
+/**
+ * ##### # ########### ## ##### ##### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Query
+{
+    private Hash hash = new Hash();
+    private Xref xref = new Xref();
+    private PrintWriter pw;
+    private Scanner scanner;
+    private Scanner keyboard = new Scanner(System.in);
+    public Query(PrintWriter newPW, Scanner newScanner)
+    {
+        pw = newPW;
+        scanner = newScanner;
+    }
+    public boolean searchHash(String word)
+    {
+        return hash.isPresent(word);
+    }
+    public void getXrefOutput()
+    {
+        pw.println(xref.output(xref.getTreeRoot()));
+        System.out.println(xref.output(xref.getTreeRoot()));
+    }
+    public void searchXref(String word)
+    {
+        Word wordObj = new Word(word);
+        if(xref.search(wordObj) == null)
+        {
+            System.out.println("Not found");
+        }
+        else
+        {
+            System.out.println((xref.search(wordObj)).output());
+            pw.println((xref.search(wordObj)).output());
+        }
+    }
+
+    public void getInput()
+    {
+        String hashInput;
+        do
+        {
+            System.out.println("Enter a word to be put into the hash table, or enter \"esc\" to continue");
+            pw.println("Enter a word to be put into the hash table, or enter \"esc\" to continue");
+        }
+        while(hashInput.equalsIgnoreCase("esc")
+        int linePos = 0;
+        int lineNum = 0;
+        while(scanner.hasNextLine())
+        {
+            lineNum++;
+            String string = scanner.nextLine();
+            int x = 0;
+            while(x < string.length())
+            {
+                int y = x;
+                while(string.charAt(y) != ' ')
+                {
+                    y++;
+                }
+                String string2 = string.substring(x, y);
+                linePos++;
+                for(int z = 0; z < string2.length(); z++)
+                {
+                    if((string2.charAt(z) == '.') || (string2.charAt(z) == ',') || (string2.charAt(z) == '-') || (string2.charAt(z) == ';'))
+                    {
+                        if(z == string2.length()-1)
+                            string2 = string2.substring(z);
+                        else
+                        {
+                            string2 = string2.substring(z) + string2.substring(z+1,string.length());
+                        }
+                    }
+                }
+                if((!string2.equalsIgnoreCase(" ")) && !hash.isPresent(string2))
+                {
+                    LinePosition linePosition = new LinePosition(lineNum, linePos);
+                    Word wordObj = new Word(string2, linePosition);
+                    xref.insert(wordObj);
+                }
+            }
+        }
+    }
+
+    public void getHashOutput()
+    {
+        pw.println(hash.output());
+        System.out.println(hash.output());
+    }
+}

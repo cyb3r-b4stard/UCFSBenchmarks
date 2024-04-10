@@ -1,0 +1,223 @@
+import java.util.Scanner;
+import java.util.Vector;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.io.EOFException;
+
+
+public class gestioneBiblioteca
+{
+    
+    public static void main (String[] args)
+    {
+        Scanner ingresso = new Scanner(System.in);
+        
+        String parola;
+        boolean uscire;
+        int scelta, nUtente, nLibro;
+
+        
+        
+        
+        Libro libroImola [];
+        libroImola = new Libro [40];
+        libroImola[0]= new Libro("la legge del deserto","Wilbur Smith");
+        libroImola[1]= new Libro("critica della ragion pura","kant");
+        libroImola[2]= new Libro("meccanica celeste","Maurizio Maggiani");
+        libroImola[3]= new Libro("Frankestein","Mary Shelley");
+        
+       
+      
+        
+        Utente utenteImola [];
+        utenteImola = new Utente [40];
+        utenteImola[0]= new Utente("Mario","Rossi",1998);
+        utenteImola[1]= new Utente("Serena", "Benvenuti", 1998);
+        utenteImola[2]= new Utente("Alessandro", "Bonzi", 1998);
+        utenteImola[3]= new Utente("Lorenzo", "Cavina", 1997);
+        utenteImola[4]= new Utente("Andrea", "Cortecchia", 1998);
+        utenteImola[5]= new Utente("Bianca", "Drudi",1998);
+        utenteImola[6]= new Utente("Federico", "Fiumi", 1998);
+        utenteImola[7]= new Utente("Marco", "Gambetti", 1998);
+        utenteImola[8]= new Utente("Lorenza", "Geminiani", 1998);
+        utenteImola[9]= new Utente("Flavio","Graziani",1999);
+        utenteImola[10]= new Utente("Matteo","Maccaferri",1998);
+        utenteImola[11]= new Utente("Gaia", "Martello", 1998);
+        utenteImola[12]= new Utente("Celeste", "Mastria", 1998);
+        utenteImola[13]= new Utente("Andrea", "Melandri", 1998);
+        utenteImola[14]= new Utente("Lorenzo", "Mirandola", 1998);
+        utenteImola[15]= new Utente("Alessandro", "Mongardi", 1997);
+        utenteImola[16]= new Utente("Riccardo","Moro",1998);
+        utenteImola[17]= new Utente( "Veronica", "Narsilio",1998);
+        utenteImola[18]= new Utente( "Gaetano", "Paldino",1998);
+        utenteImola[19]= new Utente("Giacomo", "Pasini", 1998);
+        utenteImola[20]= new Utente("Elena", "Righini", 1998);
+        utenteImola[21]= new Utente("Matteo", "Romagnoli", 1998);
+        
+        
+        
+   
+        uscire=false;
+        System.out.println("GESTIONE BIBLIOTECA");
+                
+        do 
+        {
+            System.out.println("MENU'");
+            System.out.println("1) elenca utenti");
+            System.out.println("2) elenca libri");
+            System.out.println("3) vedi utente");
+            System.out.println("4) vedi libro");
+            System.out.println("5) salva situazione attuale");
+            System.out.println("6) aggiungi libro ");
+            System.out.println("7) prestito libro");
+            System.out.println("8) restituzione libro"); 
+            System.out.println("9) aggiungi utente");
+            System.out.println("10) esci");
+            System.out.println();
+            System.out.print("scegli e premi invio: ");
+            
+            scelta=ingresso.nextInt();
+            
+            if(scelta==1)
+            {
+                int i=1;
+                while(utenteImola[i]!=null)
+                {
+                    System.out.println(i+"  "+utenteImola[i].getNome()+ "  "+utenteImola[i].getCognome());
+                    i++;
+                }
+                
+                
+            }
+            
+            if(scelta==2)
+            {
+                 int i=0;
+                while(libroImola[i]!=null)
+                {
+                    System.out.println(i+"titolo:  "+libroImola[i].getTitolo()+ ".   autore:  "+libroImola[i].getAutore());
+                    i++;
+                }
+                
+            }
+            
+            if(scelta==3)
+            {
+                {
+                int nutente;
+                System.out.println("Utente numero= ");
+                nutente=ingresso.nextInt();
+                System.out.println(utenteImola[nutente].getNome());
+                System.out.println(utenteImola[nutente].getCognome());
+            }
+
+                
+                
+            }
+            
+            
+            
+            if(scelta==4)
+            {  int nlibro;
+                System.out.println("Libro numero= ");
+                nlibro=ingresso.nextInt();
+                System.out.println(libroImola[nlibro].getTitolo());
+                System.out.println(libroImola[nlibro].getAutore());
+
+            }
+            
+            
+            if(scelta==5)
+            {
+                try
+               {
+                    FileOutputStream flusso= new FileOutputStream("datiStudenti.dat");
+                   ObjectOutputStream flussoUscita= new ObjectOutputStream(flusso);
+                   
+                   for(int i=1; i<22; i++)
+                   {
+                       flussoUscita.writeObject(utenteImola[i]);
+                   }
+                   
+                   
+                   flussoUscita.flush();
+                   flusso.close();
+                   
+                   System.out.println("...fatto !");
+
+               }
+               catch (Exception e) {}
+              
+            }
+            
+            
+            if(scelta==6)
+            {   String autore, titolo;
+                
+                System.out.print("titolo libro ? ");
+                titolo=ingresso.next();
+                System.out.print("autore libro ? ");
+                autore=ingresso.next();
+                
+                
+                int i=1;
+                while(libroImola[i]!=null)
+                {
+                   i++;
+                }
+                libroImola[i]= new Libro(autore, titolo);
+                
+            }
+            
+            if(scelta==7)
+            { boolean prestito;
+                if(prestito=false)
+                { System.out.print("non può prendere il libro");}
+                else { 
+                    
+                
+                
+                
+            }
+            
+            if(scelta==8)
+            {
+                
+            }
+            
+            if(scelta==9)
+            {
+                String nome, cognome;
+                int anno;
+                System.out.print("nome utente ? ");
+                nome=ingresso.next();
+                System.out.print("cognome utente ? ");
+                cognome=ingresso.next();
+                System.out.print("anno nascita ? ");
+                anno=ingresso.nextInt();
+                
+                int i=1;
+                while(utenteImola[i]!=null)
+                {
+                   i++;
+                }
+                utenteImola[i]= new Utente(nome, cognome, anno);
+                
+            }
+            
+            if(scelta==10)
+            {
+                uscire=true; 
+            }
+           
+            System.out.println();   
+        
+            
+        
+        while(! uscire );}}}}
+        
+        
+    
+

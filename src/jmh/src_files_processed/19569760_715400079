@@ -1,0 +1,102 @@
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.border.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import java.time.*;
+
+/**
+ * ##### # ########### ## ##### ################# ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class ShowMemberBookingsDialog extends JDialog
+{
+    private Club club;
+    private GUI parent;
+    
+    JLabel lMemberID;
+    JTextField tMemberID;
+    
+    JLabel lInfoPanel;
+    
+    JList<String> listBookings;
+    DefaultListModel<String> listModelBookings;
+    
+    JButton bShowMemberBookings;
+    JButton bClose;
+        
+    public ShowMemberBookingsDialog(GUI parent, Club club) {
+        super(parent, "Show Member Bookings");
+        
+        this.club = club;
+        this.parent = parent;
+        
+        setLocationRelativeTo(parent);
+        setModal(true);
+        setResizable(false);
+
+        JPanel outerPanel = new JPanel(new BorderLayout(10,10));
+        JPanel p = new JPanel(new GridLayout(0,2,10,10));
+        getContentPane().add(outerPanel);
+        outerPanel.add(p, BorderLayout.NORTH);
+        outerPanel.setBorder(new EmptyBorder(15,15,15,15));
+           
+        lMemberID = new JLabel("Member ID");
+        tMemberID = new JTextField();
+        p.add(lMemberID);
+        p.add(tMemberID);
+        
+        bShowMemberBookings = new JButton("Show Member Bookings");
+        bShowMemberBookings.addActionListener(ae->showMemberBookings());
+        bClose = new JButton("Close");
+        bClose.addActionListener(ae -> {
+            parent.setStatusText(" ");
+            dispose();
+        });
+        p.add(bShowMemberBookings);
+        p.add(bClose);
+        
+        lInfoPanel = new JLabel(" ");
+        outerPanel.add(lInfoPanel, BorderLayout.CENTER);
+        
+        listModelBookings = new DefaultListModel();
+        listBookings = new JList(listModelBookings);
+        listBookings.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        outerPanel.add(listBookings, BorderLayout.SOUTH);
+        
+        pack();
+        setVisible(true);
+    }
+    
+    private void showMemberBookings() {
+        String memNo = (String) tMemberID.getText();
+        if ( memNo == null || memNo.equals("")) {
+            lInfoPanel.setText("Please enter a Member!");
+            return;
+        }
+            
+        Member m = club.findMember(memNo);
+        
+        if ( m == null ) {
+            lInfoPanel.setText("Member not found!");
+            return;
+        }
+        lInfoPanel.setText("The member has no bookings.");
+        listModelBookings.removeAllElements();
+        int i = 0;
+        for ( Booking b : m.getBookings() ) {
+            lInfoPanel.setText("The bookings for this court are listed below.");
+            String booking = (i + 1) + ". " + b.getMember().getName() + 
+                                ", (Mem ID " + b.getMember().getId() + ")" +
+                                "  at Court " + b.getCourt().getNumber() +
+                                "  Start Time: " + b.getStartTime() + 
+                                "  Duration: " + ( b.getDuration()/60) + " mins.\n";
+            listModelBookings.add(i, booking);
+            i++;
+        }
+        pack();
+    }
+}

@@ -1,0 +1,441 @@
+import acm.program.*;
+import acm.graphics.*;
+import acm.util.*;
+import java.awt.*;
+import java.awt.event.*;
+
+/**
+ * ##### # ########### ## ##### ############# ####.
+ * 
+ * 
+ * 
+ * 
+ */
+public class BubbleTrouble extends GraphicsProgram {
+    private static final double
+    TOP_GAP = 0, 
+    GAP = 2,
+    BRICK_WIDTH = 66,
+    BRICK_HEIGHT = 20, 
+    DELAY = 20;
+    
+    public static int
+    APPLICATION_WIDTH = 600, 
+    APPLICATION_HEIGHT = 625, 
+    ROW = 30, 
+    COL = 10, 
+    SIZE = 60, 
+    BALL_SIZE = 70,
+    HOOK_SIZE = 70,
+    MAX_BUBBLE = 1,
+    SPEED = 5; 
+    
+    private RandomGenerator rand = RandomGenerator.getInstance(); 
+    private GLabel label, winLabel, loseLabel, clickToStart, speedBoostLabel, invincibleBoostLabel, timeLabel; 
+    private double width, height; 
+    private GImage mario, marioRunningRight, marioRunningLeft, door;
+    private boolean gameOver = false;
+    private GPoint mousePoint;
+    private GRect floor;
+    private GRect[][] brick = new GRect[ROW][COL];
+    private GImage torch;
+    private GImage speed;
+    private boolean readyToFire = true;
+    private Hook hook;
+    private int ballNumber = MAX_BUBBLE;
+    private int MARIO_LEFT_SPEED = -5, MARIO_RIGHT_SPEED = 5;
+    private double AVATAR_SPEED;
+    private double AVATAR_DIRECTION;
+    private int ballSpeed = 5;
+    private boolean isInvincible;
+    private Timer timer;
+    private GLabel scoreDisplay, nextLevel;
+    private int score;
+    private boolean isFast, levelOver;
+   
+    
+   /**The run method controls the program*/
+    public void run() {
+     drawGraphics();
+     waitForClick();
+     drawInitialBubble();
+     label.setVisible(true);
+     clickToStart.setVisible(false);
+     addKeyListeners();
+     while(!gameOver) {
+       oneTimeStep();
+       pause(DELAY);
+     }  
+     label.setVisible(false);
+     speedBoostLabel.setVisible(false);
+    }    
+    
+   private void drawGraphics() {
+    width =  getWidth();
+    height = getHeight();
+       
+    drawBricks();
+ 
+    label = new GLabel("Pop all of the bubbles to win", 100, 150);
+    label.setFont(new Font("Sanserif", Font.BOLD, 20));
+    label.setColor(Color.WHITE);
+    label.setVisible(false);
+    add(label);
+    
+    clickToStart = new GLabel("Click to Start", width/2, 150);
+    clickToStart.setFont(new Font("Sanserif", Font.BOLD, 40));
+    clickToStart.setColor(Color.GREEN);
+    clickToStart.setVisible(true);
+    add(clickToStart);
+    clickToStart.move(-clickToStart.getWidth()/2, 0);    
+    
+    floor = new GRect(0, 500, width, 200);
+    floor.setFilled(true);
+    floor.setFillColor(Color.DARK_GRAY);
+    add(floor);
+    
+    timeLabel = new GLabel("Time Remaining", 20, 520);
+    timeLabel.setFont(new Font("Sanserif", Font.BOLD, 20));
+    timeLabel.setColor(Color.WHITE);
+    timeLabel.setVisible(true);
+    add(timeLabel);
+       
+    mario = new GImage("SuperMario.PNG");
+    mario.setVisible(true);
+    mario.setSize((SIZE*2)/3, (SIZE));
+    add(mario, width/2, 440);
+    
+    marioRunningRight = new GImage("SuperMarioRunningRight.GIF");
+    marioRunningRight.setSize((SIZE*2)/3, (SIZE));
+    marioRunningRight.setVisible(false);
+    add(marioRunningRight, mario.getX(), 440);
+    
+    marioRunningLeft = new GImage("SuperMarioRunningLeft.GIF");
+    marioRunningLeft.setSize((SIZE*2)/3, (SIZE));
+    marioRunningLeft.setVisible(false);
+    add(marioRunningLeft, mario.getX(), 440);
+    
+    winLabel = new GLabel("You Win!", width/2, 150);
+    winLabel.setFont(new Font("Sanserif", Font.BOLD, 40));
+    winLabel.setColor(Color.GREEN);
+    winLabel.setVisible(false);
+    add(winLabel);
+    winLabel.move(-winLabel.getWidth()/2, 0);
+    
+    loseLabel = new GLabel("You Lose!", width/2, 150);
+    loseLabel.setFont(new Font("Sanserif", Font.BOLD, 40));
+    loseLabel.setColor(Color.RED);
+    loseLabel.setVisible(false);
+    add(loseLabel);
+    loseLabel.move(-loseLabel.getWidth()/2, 0);
+    
+    speedBoostLabel = new GLabel("SPEED BOOST!", width/2, 200);
+    speedBoostLabel.setFont(new Font("Sanserif", Font.BOLD, 40));
+    speedBoostLabel.setColor(Color.BLUE);
+    speedBoostLabel.setVisible(false);
+    add(speedBoostLabel);
+    speedBoostLabel.move(-speedBoostLabel.getWidth()/2, 0);
+    
+    invincibleBoostLabel = new GLabel("INVINCIBLE!", width/2, 250);
+    invincibleBoostLabel.setFont(new Font("Sanserif", Font.BOLD, 40));
+    invincibleBoostLabel.setColor(Color.YELLOW);
+    invincibleBoostLabel.setVisible(false);
+    add(invincibleBoostLabel);
+    invincibleBoostLabel.move(-invincibleBoostLabel.getWidth()/2, 0);
+    
+    scoreDisplay = new GLabel("", 40, 50);
+    scoreDisplay.setFont(new Font("Sanserif", Font.BOLD, 20));
+    scoreDisplay.setColor(Color.CYAN);
+    scoreDisplay.setVisible(true);
+    add(scoreDisplay);
+    updateScoreLabel();
+    
+    nextLevel = new GLabel("Enter through the door to proceed", width/2, 150);
+    nextLevel.setFont(new Font("Sanserif", Font.BOLD, 20));
+    nextLevel.setColor(Color.WHITE);
+    nextLevel.setVisible(false);
+    add(nextLevel);
+    nextLevel.move(-nextLevel.getWidth()/2, 0);
+    
+    for( int i=0; i<6; i++) {
+     torch = new GImage("torch.GIF");
+     torch.setSize(SIZE, SIZE);
+     add(torch, 25 + (i*100), 50);
+    }    
+    }
+    
+   private void drawInitialBubble() {
+    for (int i=0; i< MAX_BUBBLE; i++) {
+     Bubble bubble = new Bubble(BALL_SIZE/2, SPEED, 45, this);
+     add(bubble, 90, 100);
+     new Thread(bubble).start();
+    }       
+    
+    timer = new Timer(width, this);
+    add(timer, 0, 530);
+    new Thread(timer).start();    
+    }
+    
+  private void drawBricks() {
+    for (int i = 0; i < ROW; i++) {
+      for (int j = 0; j < COL; j++) { 
+        double x = GAP + j*(BRICK_WIDTH+GAP);
+        double y = TOP_GAP + i*(BRICK_HEIGHT+GAP);        
+        if (i%2 == 0) x += BRICK_WIDTH/2; 
+
+        brick[i][j] = new GRect(BRICK_WIDTH, BRICK_HEIGHT);
+
+        add(brick[i][j], x-BRICK_WIDTH, y);
+        brick[i][j].setFilled(true);
+        brick[i][j].setFillColor(Color.GRAY);
+        brick[i][j].sendToBack();
+      }
+    }
+  }    
+  
+  private void oneTimeStep() {
+    label.movePolar(SPEED/2, 0);  
+    mario.movePolar(AVATAR_SPEED, AVATAR_DIRECTION);
+    marioRunningLeft.movePolar(AVATAR_SPEED, AVATAR_DIRECTION);
+    marioRunningRight.movePolar(AVATAR_SPEED, AVATAR_DIRECTION);
+    checkCollision();
+    }
+    
+  public void keyPressed(KeyEvent e){
+    if(gameOver) {return;}
+    if(e.getKeyCode() == KeyEvent.VK_UP) {
+        fire();
+    }
+    if(e.getKeyCode() == KeyEvent.VK_LEFT){
+       mario.setVisible(false);
+       marioRunningLeft.setVisible(true);
+       marioRunningRight.setVisible(false);
+       if(!isFast) {
+       AVATAR_SPEED = 5;
+      }
+      else {
+       AVATAR_SPEED = 10; 
+        }
+      
+       AVATAR_DIRECTION = 180;
+    }
+    if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
+       mario.setVisible(false);
+       marioRunningRight.setVisible(true);
+       marioRunningLeft.setVisible(false);
+       if(!isFast) {
+       AVATAR_SPEED = 5;
+      }
+      else {
+       AVATAR_SPEED = 10; 
+        }
+       AVATAR_DIRECTION = 0;       
+    }
+  }
+  
+  public void keyReleased(KeyEvent e) {
+    marioRunningRight.setVisible(false);
+    marioRunningLeft.setVisible(false);
+    mario.setVisible(true);
+    AVATAR_SPEED = 0;
+    }
+  
+  private void checkCollision() {
+    if (label.getX() > width) {
+      label.setLocation(-label.getWidth(), 150);
+    }
+    }
+    
+  public void checkCollision(Hook hook) {
+    if (hook.getY() < 0) {
+      hook.kill();
+      readyToFire = true;
+    }    
+  }
+  
+  public void checkCollision(Bubble ball){
+    width =  getWidth();
+    height = getHeight();    
+    double x = ball.getX();
+    double y = ball.getY();
+    double angle = ball.getAngle();
+    double ballSize = ball.getBallSize();
+    
+    if(y+ballSize > 500) {
+      ball.setLocation(x, 500-ballSize);  
+      ball.setAngle(-ball.getAngle());  
+      ball.setSpeed(ballSpeed*4); 
+    }
+    
+    if(x < 0) {
+      ball.setLocation(0, y);  
+      ball.setAngle(180-angle);
+    }
+    
+    if(x + ballSize > width) {
+     ball.setLocation(width-ballSize, y);   
+     ball.setAngle(180-angle); 
+    }
+    
+    if (y < 0) {
+      ball.kill();    
+    }
+    
+    if(!readyToFire) {
+        if(hook.getBounds().intersects(ball.getBounds())) {
+      hook.kill();
+      readyToFire = true;
+      splitBubble(ball.getBallSize(), ball);
+      ballNumber--;
+     }
+    }
+    
+    if(!isInvincible) {
+    if(ball.getBounds().intersects(mario.getBounds())) {
+     gameOver = true;    
+     loseLabel.setVisible(true); 
+    }
+    }
+    
+    if(ballNumber < 1) {
+     nextLevel.setVisible(true);
+     levelOver = true;
+     label.setVisible(false);
+     speedBoostLabel.setVisible(false);
+     invincibleBoostLabel.setVisible(false);
+     
+     door = new GImage("door.PNG");
+     door.setVisible(true);
+     door.setSize((SIZE*4)/3, (SIZE*2));
+     add(door, 500, 500-door.getHeight());
+     
+     door.sendToFront();
+     mario.sendToFront();
+     marioRunningLeft.sendToFront();
+     marioRunningRight.sendToFront();
+     
+     if(mario.getX() < door.getX() && mario.getX() < door.getX()+door.getWidth();) {
+       removeAll(); 
+
+     }
+
+    }
+
+   }
+  
+  public void checkCollision(PowerUp powerup) {
+    if (mario.getBounds().intersects(powerup.getBounds()) && powerup.isSpeed()) {
+     powerup.remove();
+      for(int i = 0; i < 10; i++) { 
+      if(!gameOver) {
+       isFast = true;
+       speedBoostLabel.setVisible(true);
+       pause(1000);
+      }
+     }
+     speedBoostLabel.setVisible(false);
+     isFast = false;
+    }
+    if (mario.getBounds().intersects(powerup.getBounds()) && powerup.isInvincible()) {
+     powerup.remove();
+     for(int i = 0; i < 10; i++) { 
+      if(!gameOver) {
+      isInvincible = true;
+      invincibleBoostLabel.setVisible(true);
+      pause(1000);
+      }
+     }
+     invincibleBoostLabel.setVisible(false);    
+     isInvincible = false;
+    }
+    if (mario.getBounds().intersects(powerup.getBounds()) && powerup.isTimeBoost()) {
+      powerup.remove(); 
+      timer.activateTimePowerUp();
+    }
+    }
+   
+  private void splitBubble(double size, Bubble ball) {
+    if(size < 10) {
+     ball.kill();
+     return;
+    }
+    score += 200;
+    updateScoreLabel();    
+    
+    Bubble bubble = new Bubble(size/2, SPEED, 45, this);
+    add(bubble, ball.getX()+16, ball.getY());
+    new Thread(bubble).start();
+    ballNumber++;
+    
+    Bubble bubble2 = new Bubble(size/2, SPEED, 135, this);
+    add(bubble2, ball.getX()-16, ball.getY());
+    new Thread(bubble2).start();
+    ball.kill();
+    ballNumber++;
+   
+    dropPowerUp(ball);
+    
+    }
+   
+  private void dropPowerUp(Bubble ball) {
+    double chance = rand.nextInt(5);
+      
+    if(chance == 1){
+     PowerUp speed = new PowerUp(SIZE/2, true, false, false, this);
+     add(speed, ball.getX(), ball.getY());
+     new Thread(speed).start();     
+     while(speed.getY()+SIZE/2 < floor.getY()) {
+        speed.move(0, 5);
+        pause(100);
+        }
+    }
+    else  if(chance == 2) {
+     PowerUp invincibility = new PowerUp(SIZE/2, false, true, false, this);
+     add(invincibility, ball.getX(), ball.getY());
+     new Thread(invincibility).start();
+     while(invincibility.getY()+SIZE/2 < floor.getY()) {
+        invincibility.move(0, 5);
+        pause(100);
+        }
+    }
+    else if(chance == 3) { 
+     PowerUp TimeBoost = new PowerUp(SIZE/2, false, false, true, this);
+     add(TimeBoost, ball.getX(), ball.getY());
+     new Thread(TimeBoost).start();
+     while(TimeBoost.getY()+SIZE/2 < floor.getY()) {
+        TimeBoost.move(0, 5);
+        pause(100);
+        }
+    }
+    }
+    
+  private void fire() {
+    if (!readyToFire) {
+     return;
+    }
+    hook = new Hook(HOOK_SIZE, SPEED, this);
+    add(hook, mario.getX() + ((SIZE*2)/3)/2, floor.getY());
+    new Thread(hook).start(); 
+    floor.sendToFront();
+    timeLabel.sendToFront();
+    timer.sendToFront();
+    readyToFire = false;
+  }
+  
+  private void updateScoreLabel() {
+    scoreDisplay.setLabel("Score: "+score);
+    }
+  
+  public boolean getLevelOver() {
+    return levelOver;
+    }
+    
+  public boolean getGameOver() {  
+    return gameOver; 
+    }
+    
+  public void endGame() {
+    gameOver = true;    
+    loseLabel.setVisible(true);  
+    }
+}

@@ -1,0 +1,47 @@
+public class Time extends Object
+{
+    private int itsHour;
+    private int itsMin;
+    private String itsDay;
+    /** Create an object for the given hour and minute. If min
+     * is negative, adjust the values to make 0 <= min < 60. */
+    public Time (int hour, int min, String day)  
+    { 
+        super();
+        itsHour = hour;
+        itsDay = day;
+        for (itsMin = min; itsMin < 0; itsMin = itsMin + 60)
+            itsHour--;
+        for (itsMin = min; itsMin > 60; itsMin = itsMin - 60)
+            itsHour++;
+        for (itsHour; itsHour > 24; itsHour = itsHour - 24)
+        for (itsHour; itsHour < 0; itsHour = itsHour + 24)
+    } 
+    /** Return the time expressed in military time.
+       I added a semicolon and a space to make it easyer to read and added a 0 to its min if it is */
+    public String toString()
+    { if (itsHour < 10)
+           if(itsMin ==0)
+                return ("0" + itsHour) + ":" + (itsMin + "0") + " "+ itsDay;
+           else
+                return ("0" + itsHour) + ":" + itsMin + " "+ itsDay;
+        else
+           if(itsMin ==0)
+                return itsHour + ":" + (itsMin + "0") + " "+ itsDay;
+           else
+                return itsHour + ":" + itsMin + " "+ itsDay;
+    } 
+    /** Return the result of adding this Time to that Time. */
+    public int timeInMinutes()
+    {
+      int valueToReturn = ((itsHour*60) + itsMin);
+      return valueToReturn;
+    }
+    public Time subtract (Time that)
+    {
+        Time valueToReturn = new Time(this.itsHour - that.itsHour, this.itsMin - that.itsMin, this.itsDay);
+        if(valueToReturn.itsHour < 0)
+            valueToReturn.itsHour = valueToReturn.itsHour + 24;
+        return valueToReturn;
+    }
+}

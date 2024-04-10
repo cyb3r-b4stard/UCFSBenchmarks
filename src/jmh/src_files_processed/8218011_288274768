@@ -1,0 +1,73 @@
+import java.util.*;
+import java.math.*;
+public class LuKwaMeting
+{
+    private String GPSCoord;
+    private float temperature;
+    private int PM10;
+    private boolean genormaliseerd;
+ 
+    public LuKwaMeting(String where,float temp, int value)
+    {
+        GPSCoord = where;
+        if(value >= 0)
+        {
+            PM10 = value;
+        }
+        else
+        {
+            PM10 = -value;
+        }
+        
+        temperature = temp;
+        
+        if(temp == 20.0f)
+        {
+            genormaliseerd = true;
+        }
+        else
+        {
+            genormaliseerd = false;
+        }
+   
+    }
+
+   
+    public String getGPSCoord()
+    {
+         return GPSCoord;
+    }
+    
+    public float getTemperature()
+    {
+        return temperature;
+    }
+    
+    public int getPM10()
+    {
+        return PM10;
+    }
+    
+    public boolean getGenormaliseerd()
+    {
+        return genormaliseerd;
+    }
+    
+    public String toString()
+    {
+        System.out.println("Meting gedaan te " +GPSCoord+ ", bij een temperatuur van "+temperature);
+        if(genormaliseerd = false)
+        {
+            System.out.println("--- waarde is NIET genormaliseerd")
+        }
+    }
+    
+    public void normaliseer()
+    {
+        float a = (-(20.0f-temperature)/100.0f);
+        float b = PM10;
+        PM10 = (int)(b*Math.exp(a));
+    }
+
+    
+}

@@ -1,0 +1,77 @@
+
+/**
+ * ##### # ########### ## ##### ######## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class LRUCache
+{
+    int[] Cache_key;
+    int[] Cache_value;
+    int[] Counter;
+    int cap;
+
+    /**
+     * Constructor for objects of class LRUCache
+     */
+    public LRUCache(int capacity)
+    {
+        int[] Cache_key = new int[capacity];
+        int[] Cache_value = new int[capacity];
+        int[] Counter = new int[capacity];
+        int cap = capacity;
+        for (int i = 0; i < cap; i++){
+            Counter[i] = i;
+            Cache_key[i] = 999999999;
+            Cache_value[i] = 999999999;
+        }
+    }
+
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public int get(int key) {
+        for (int i = 0; i < cap; i++){
+            System.out.print("Content : ");
+            System.out.print(i);
+            System.out.print("  ");
+            System.out.println(Cache_key[i]);
+            if(Cache_key[i] == key){
+                for(int j = 0; j < cap; j++){
+                    if(Counter[j] < Counter[i]){
+                        Counter[j]++;
+                    }
+                }
+                Counter[i] = 0;
+                return Cache_value[i];
+            }
+        }
+        return -1;
+    }
+    
+    public void set(int key, int value) {
+        for (int i = 0; i < cap; i++){
+            if(Counter[i] != cap - 1){
+                Counter[i]++;
+                System.out.println("Incremental");
+                System.out.print(i);
+                System.out.print("   ")
+                System.out.println(Counter[i]);
+            }
+            else{
+                System.out.println("Find");
+                Counter[i] = 0;
+                Cache_key[i] = key;
+                Cache_value[i] = value;
+                System.out.print("Key ");
+                System.out.print(i); System.out.print("   "); System.out.println(Cache_key[i]);
+                System.out.print("Value ");
+                System.out.print(i); System.out.print("   "); System.out.println(Cache_value[i]);
+            }
+        }
+    }
+}

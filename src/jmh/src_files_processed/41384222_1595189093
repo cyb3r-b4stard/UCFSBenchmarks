@@ -1,0 +1,81 @@
+package FracCalcStarter.src.fracCalc;
+
+
+package FracCalcStarter.src.fracCalc;
+
+import java.util.Scanner;
+
+public class FracCalc {
+
+    public static void main(String[] args) 
+    {
+        Scanner in = new Scanner(System.in);
+        System.out.print("Enter an equation: ");
+        String eq = in.nextLine();
+        System.out.println(produceAnswer(eq));
+        while (!eq.equals("quit"))
+        {
+            System.out.print("Enter an equation: ");
+            eq = in.nextLine();
+            System.out.println(produceAnswer(eq));
+        }
+
+    }
+    
+    public static String produceAnswer(String input)
+    { 
+        String frac1 = "";
+        String operator = "";
+        String frac2 = "";
+        
+       
+        for (int i=0; i<input.length(); i++)
+        {
+            if (input.substring(i, i+1).equals(" ") && (input.substring(i+2, i + 3).equals(" ")))
+            {
+                if (input.substring(i+1, i+2).equals("+") || input.substring(i+1, i+2).equals("-") || input.substring(i+1, i+2).equals("*") || input.substring(i+1, i+2).equals("/"))
+                {  
+                    operator = input.substring(i+1, i+2);
+                    frac1 = input.substring(0, i+1);
+                    frac2 = input.substring(i+3, input.length());
+                }
+            }
+        }
+        
+        
+        
+        String denominator = "";
+        String numerator = "";
+        String whole = "";
+        
+        for (int i=0; i < frac2.length(); i++)
+        {
+            if (frac2.substring(i, i+1).equals("/"))
+            {
+                denominator = frac2.substring(i+1, frac2.length());
+                for (int j=0; j < frac2.substring(0, i).length(); j++)
+                {
+                    if (input.substring(j, j+1).equals("_"))
+                    {
+                        whole = frac2.substring(0, j);
+                        numerator = frac2.substring(j+1, frac2.substring(0,i).length());
+                    }
+                } 
+            }
+        }
+        if (whole.equals(""))
+        {
+            whole = frac2;
+            numerator = "0";
+            denominator = "1";
+        }
+        
+        
+        
+        
+        return ("whole:" + whole + " numerator:" + numerator + " denominator:" + denominator) ;
+    
+    }
+
+    
+}

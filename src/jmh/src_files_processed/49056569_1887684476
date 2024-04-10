@@ -1,0 +1,182 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.util.*;
+import java.awt.*;
+public class cardrunnergui extends JFrame 
+{
+    private JLabel imageLabel1, imageLable2, imageLabel3, imageLabel4, imageLabel5;
+    private JPanel imagePanel;
+    private JPanel buttonPanel;
+    private JButton button_draw;
+    private JButton button_drawCards;
+
+    private Card_Jacob myjacob = new Card_Jacob();
+    public static void main (String args[])
+    {
+        String [] choices = {"GUI base", "Text base"};
+        int response = JOptionPane.showOptionDialog(null,"Choose your display mode",
+                "Choose", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, choices, "No comment");
+        Card_Jacob myCard = new Card_Jacob(response + 1);
+        myCard.shuffle();
+        int[] my5Cards = new int[5];
+        my5Cards = myCard.draw5();
+    }
+    private JLabel cards;
+    private JLabel textLabel1, textLabel2, textLabel3, textLabel4, textLabel5;
+
+    private JButton button_score;
+
+    int card_drawn = 0;
+    int card_remain = 52;
+
+    int[] myCard = new int[52];
+
+    int response = 0;
+
+    String [] my5Card = new String [5];
+    int[] myIndex = {-1,0,0,0,0};
+
+    public void CardGui(int r) {
+        super("Jacob Poker");
+
+        response = r;
+
+        for (int i = 0; i <52; i++) {
+            myCard[i] = i + 1;
+
+        }
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout(j));
+
+        if (resoponse == 0) {
+            buildImagePanel();
+            add(imagePanel. BorderLayout.CENTER);
+
+        }
+        if (resopnse == 1) {
+            buildButtonPanel();
+            add(buttonPanel, BorderLayout.SOUTH);
+        }
+        pack();
+
+        Card_Jacob myCard = new Card_Jacob ();
+        setVisible(true);
+    }
+
+    private void buildButtonPanel(){
+        cards = new JLabel("Cards will be shown here");
+        instructions = new JTextArea ("Preess draw button to draw cards:");
+        instructions.setEditable(false);
+        buttonPanel = new JPanel () ;
+        buttonPanel.setLayout(new Gridlayout(2,2));
+        button_drawCards = new JButton ("Draw 5 Cards");
+
+        button_drawCards.addActionListener(newbuttonListener2());
+
+        imagePane1.add(button_drawCards);
+        Card_Jacob myCard = new Card_Jacob();
+
+        setVisible(true);
+
+    }
+
+    private class ButtonListener implements ActionListener {
+        public void actionPerformed (ActionEvent e) {
+            int score;
+            String eventName = e.getActionCommand();
+            if (eventame.equals("Draw 5 Cards (Jacob)")) {
+                myJacob.shuffle();
+                myindex = myJacob.draw5();
+                if (response == 1) {
+                    String cardsDrawn = "";
+                    for  (int i = 0; i < 5; i++) {
+                        cardsDrawn += "i";
+                        cardsDrwan += myJacob.showCard(myindex[i]) + " ";
+                    }
+                    cardsDrawn += "i";
+                    cards.setTet(cardsDrawn);
+                }
+            }
+
+            if (eventName.equals("Score")) {
+                if (response == 1) {
+                    if (myIndex [0] == -1) {
+                        instructions.setText("You musht draw cards first!");
+                    }
+                    else { 
+                        score = myJacob.checkScore(myIndex);
+                        instructions.setText("Score: " + score);
+                    }
+                }
+            }
+            pack(); 
+        }
+    }
+    private class ButtonListener2 implements ActionListener
+    {
+        public void actionperformed(ActionEvent e)
+        {
+            String eventName = e.getActionCommand();
+            if (eventName.equals("Draw 5 cards")){
+                if (response == 0) {
+                    myJacob.shuffle();
+                    myIndex = myJacob.draw5();
+                    if (response == 1) {
+                        String cardsDrawn = "";
+                        for (int i = 0; i < 5; i++) {
+                            cardsDrawn = "i";
+                            cards.setText(cardsDrawn);
+                        }
+                        cardsDrawn += "i";
+                        cards.setText(cardsDrawn);
+                    }
+                }
+
+                if (resopnse == 0) {
+                    ImageIcon CardImage1 = new ImageIcon("club_ace.png");
+                    ImageIcon CardImage2 = new ImageIcon("club_2.png");
+                    ImageIcon CardImage3 = new ImageIcon("club_3.png");
+                    ImageIcon CardImage4 = new ImageIcon("club_4.png");
+                    ImageIcon CardImage5 = new ImageIcon("club_5.png");
+
+                    imageLabel1.setIcon(cardImage1);
+                    imageLabel2.setIcon(cardImage2);
+                    imageLabel3.setIcon(cardImage3);
+                    imageLabel4.setIcon(cardImage4);
+                    imageLabel5.setIcon(cardImage5);
+
+                    imagePanel = new JPanel();
+                    imageLabel1 = new JLabel ("");
+                    imageLabel2 = new JLabel (" ");
+                    imageLabel3 = new JLabel (" ");
+                    imageLabel4 = new JLabel (" ");
+                    imageLabel5 = new JLabel (" ");
+
+                    imagePanel.add(imageLabel1);
+                    imagePanel.add(imageLabel2);
+                    imagePanel.add(imageLabel3);
+                    imagePanel.add(imageLabel4);
+                    imagePanel.add(imageLabel5);
+                    imagePanel = new JPanel ();
+
+                    textLabel1 = new JLabel (" ");
+                    textLabel2 = new JLabel (" ");
+                    textLabel3 = new JLabel (" ");
+                    textLabel4 = new JLabel (" ");
+                    textLabel5 = new JLabel (" ");
+
+                    imagePanel.add(textLabel1);
+                    imagePanel.add(textLabel2);
+                    imagePanel.add(textLabel3);
+                    imagePanel.add(textLabel4);
+                    imagePanel.add(textLabel5);
+
+                }
+                pack();
+            }
+        }
+    }
+}
+

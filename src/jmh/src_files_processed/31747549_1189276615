@@ -1,0 +1,121 @@
+package v1;
+
+public class Game
+{
+    private Room aCurrentRoom;
+    private Parser aParser;
+    public Game()
+    {
+        this.createRooms();
+        aParser = new Parser();
+    }
+    
+    private void createRooms()
+    {
+        Room vTaniere = new Room("in your mouse den!");
+        Room vCuisine = new Room("in the kitchen");
+        Room vSalon = new Room("in the living room");
+        Room vCouloir = new Room("in the corridor");
+        Room vChambre = new Room("in the bedroom");
+        Room vToilette = new Room("in the toilets");
+        vTaniere.setExits(null, vCuisine, null, null);
+        vCuisine.setExits(vTaniere, vSalon, vToilette, null);
+        vSalon.setExits(vCuisine, vCouloir, null, null);
+        vCouloir.setExits(vSalon, vChambre, null, null);
+        vChambre.setExits(vCouloir, null, null, null);
+        vToilette.setExits(null, null, null, vCuisine);
+        this.aCurrentRoom = vTaniere;
+    }
+    
+    private void goRoom(final Command pCommand)
+    {
+       if(!pCommand.hasSecondWord()) 
+       {
+           System.out.println("Go where?");
+           return;
+       }
+        Room vNextRoom = null;
+        
+            if(pCommand.getSecondWord().equals("north")) vNextRoom = this.aCurrentRoom.aNorthExit;
+            if(pCommand.getSecondWord().equals"south")vNextRoom = this.aCurrentRoom.aSouthExit;
+            if(pCommand.getSecondWord().eq"east")vNextRoom =this.aCurrentRoom.aEastExit;
+            if(pCommand.getSecondWord()=="west")vNextRoom =this.aCurrentRoom.aWestExit;
+        
+        
+        
+        if(vNextRoom == null) System.out.println("There is no door!");
+        else
+        {    this.aCurrentRoom = vNextRoom;
+            System.out.println("You are " + aCurrentRoom.getDescription());
+            System.out.print("Exit(s): ");
+            if(aCurrentRoom.aNorthExit != null) System.out.print("north ");
+            if(aCurrentRoom.aSouthExit != null) System.out.print("south ");
+            if(aCurrentRoom.aWestExit != null) System.out.print("west ");
+            if(aCurrentRoom.aEastExit != null) System.out.print("east");
+            System.out.println();
+        }
+     }
+     
+     private void printWelcome()
+     {
+            System.out.println("Welcome to Mouse Hunt!");
+            System.out.println("House Hunt is an incredible game where you will play Mourrior the Warrior mouse!" );
+            System.out.println("In this game the hunter become the hunted.");
+            System.out.println("Type 'help' if you need help");
+            System.out.println("You are in your mouse den");
+            System.out.println("Exit: south");
+     }
+     
+     private void printHelp()
+     {
+         System.out.println("You are angry. You want to make them pay");
+         System.out.println("You wander around the house");
+         System.out.println("Your command words are: go, quit, help");
+     }
+     
+     private boolean quit(final Command pCommand)
+     {
+         if(pCommand.hasSecondWord()) 
+         {
+             System.out.println("Quit what?"); 
+             return false;
+         }
+         else return true;
+     }
+     private boolean processCommand(final Command pCommand)
+     {
+         String vCommandWord = pCommand.getCommandWord();
+         
+        if(vCommandWord.equals("go")){ 
+                this.goRoom(pCommand); 
+                return false;
+            }
+        else {
+            if(vCommandWord.equals("quit")) {
+                this.quit(pCommand); return this.quit(pCommand);
+            } 
+            else {
+                if(vCommandWord.equals("help"))
+                {
+                    this.printHelp(); 
+                    return false;
+                }
+                else 
+                { System.out.println("I don't know what you mean..."); 
+                 return false;}
+                }
+            } 
+       return false;
+     }
+     public void play()
+     {
+         this.printWelcome();
+         boolean vFinished = false;
+         while(vFinished == false)
+         {
+             Command vCommand = aParser.getCommand();
+             vFinished = processCommand(vCommand);
+         }
+         System.out.println("Thank you for playing. Good Bye.");
+     }
+}

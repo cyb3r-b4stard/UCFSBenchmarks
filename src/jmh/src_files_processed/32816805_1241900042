@@ -1,0 +1,205 @@
+/**
+ *  #### ### ### ########### ### ######### "### #### ### ####".
+ *  "### #### ### ####" ### ### #### #########, #############
+ *  #########-####. ### ####### #### #### ## ##### ######## #######,
+ *  #### #####. ### ##### ###### ### ##### #### ######### ######,
+ *  ##### ## ############# ####!
+ * 
+ *  ### ####### #### #### ####### ###### ###### ####### ###### ###
+ *  ## ### ### ####### "#######" ########## ######.
+ * 
+ *  ##### ####### ###### ###### ####### ### ############# ####
+ *  ####### ####### ### #########: ### #### #### ##### ### #####
+ *  ###### ## ### ####### ### #####. ### ###### #### ### #######
+ *  ###, ### ### ###### ####### ### ##### ### #### ##########.
+ * 
+ * @######  ####### ####### ### ##### #. ######
+ * @####### ##.##.####
+ */
+
+class Spiel 
+{
+    private Parser parser;
+    private Raum aktuellerRaum;
+    private <String> Gegenstände;
+        
+    /**
+     * Erzeuge ein Spiel und initialisiere die interne Raumkarte.
+     */
+    public Spiel() 
+    {
+        raeumeAnlegen();
+        parser = new Parser();
+    }
+
+    /**
+     * Erzeuge alle Räume und verbinde ihre Ausgänge miteinander.
+     */
+    private void raeumeAnlegen()
+    {
+        Raum draussen,eingang, flur1, flur2, flur3, mensa, labor, schleuse, buero, kontrollraum, kernreaktor, werkraum, notversorgung;;
+      
+        draussen = new Raum("Der Eingang befindet sich im Westen. ");
+        
+        flur1 = new Raum("im ersten Teil des Flurs ");
+        flur2 = new Raum("im zweitem Teil des Flurs ");
+        flur3 = new Raum("im dritten Teil des Flurs ");
+        mensa = new Raum("in der Mensa des Atomkraftwerks");
+        labor = new Raum("im Labor des verrücktem Professor");
+        buero = new Raum("Machtbereich des Boss");
+        schleuse = new Raum("Schleuse auf dem Weg in den Kernreaktor");
+        kernreaktor = new Raum("!!Achtung sie setzen sich grade der Strahlung aus!!");
+        werkraum = new Raum("Werkraum");
+        notversorgung = new Raum("Notstromversorung");
+        kontrollraum = new Raum("Geniessen sie den Ausblick, hier kannst du die Katastrophe beobachten.");
+        
+        draussen.setzeAusgang("west", flur1);
+        
+        
+        flur1.setzeAusgang("north", buero);
+        flur1.setzeAusgang("east", draussen);
+        flur1.setzeAusgang("south", labor);
+        flur1.setzeAusgang("west", flur2);
+        
+        flur2.setzeAusgang("north", mensa);
+        flur2.setzeAusgang("east", flur1);
+        flur2.setzeAusgang("south", schleuse);
+        flur2.setzeAusgang("west", flur3);
+        
+        
+        flur3.setzeAusgang("east", flur2);
+        flur3.setzeAusgang("south", kontrollraum);
+        flur3.setzeAusgang("west", werkraum);
+        
+        mensa.setzeAusgang("south", flur2);
+        
+        buero.setzeAusgang("south", flur1);
+        buero.setzeAusgang("west", mensa);
+
+        labor.setzeAusgang("north", flur1);
+        
+        schleuse.setzeAusgang("north", flur2);
+        schleuse.setzeAusgang("south", kernreaktor);
+        
+        kontrollraum.setzeAusgang("north", flur3);
+        
+        werkraum.setzeAusgang("north", notversorgung);
+        werkraum.setzeAusgang("east", flur3);
+        
+        notversorgung.setzeAusgang("south", werkraum);
+        aktuellerRaum = draussen;  
+    }
+
+    /**
+     * Die Hauptmethode zum Spielen. Läuft bis zum Ende des Spiels
+     * in einer Schleife.
+     */
+    public void spielen() 
+    {            
+        willkommenstextAusgeben();
+
+                
+        boolean beendet = false;
+        while (! beendet) {
+            Befehl befehl = parser.liefereBefehl();
+            beendet = verarbeiteBefehl(befehl);
+        }
+        System.out.println("Danke für dieses Spiel. Auf Wiedersehen.");
+    }
+
+    /**
+     * Einen Begrüßungstext für den Spieler ausgeben.
+     */
+    private void willkommenstextAusgeben()
+    {
+        System.out.println();
+        System.out.println("Willkommen zu Zuul!");
+        System.out.println("Zuul ist ein neues, unglaublich langweiliges Spiel.");
+        System.out.println("Tippen sie 'help', wenn Sie Hilfe brauchen.");
+        System.out.println();
+        System.out.println(aktuellerRaum.gibLangeBeschreibung());
+    }
+
+    /**
+     * Verarbeite einen gegebenen Befehl (führe ihn aus).
+     * @param befehl Der zu verarbeitende Befehl.
+     * @return 'true', wenn der Befehl das Spiel beendet, 'false' sonst.
+     */
+    private boolean verarbeiteBefehl(Befehl befehl) 
+    {
+        boolean moechteBeenden = false;
+
+        if(befehl.istUnbekannt()) {
+            System.out.println("Ich weiss nicht, was Sie meinen...");
+            return false;
+        }
+
+        String befehlswort = befehl.gibBefehlswort();
+        if (befehlswort.equals("help")) {
+            hilfstextAusgeben();
+        }
+        else if (befehlswort.equals("go")) {
+            wechsleRaum(befehl);
+        }
+        else if (befehlswort.equals("quit")) {
+            moechteBeenden = beenden(befehl);
+        }
+        return moechteBeenden;
+    }
+
+
+    /**
+     * Gib Hilfsinformationen aus.
+     * Hier geben wir eine etwas alberne und unklare Beschreibung
+     * aus, sowie eine Liste der Befehlswörter.
+     */
+    private void hilfstextAusgeben() 
+    {
+        System.out.println("Sie haben sich verlaufen. Sie sind allein.");
+        System.out.println("Sie irren auf dem Unigelände herum.");
+        System.out.println();
+        System.out.println("Ihnen stehen folgende Befehle zur Verfügung:");
+        parser.zeigeBefehle();
+    }
+
+    /**
+     * Versuche, in eine Richtung zu gehen. Wenn es einen Ausgang gibt,
+     * wechsele in den neuen Raum, ansonsten gib eine Fehlermeldung
+     * aus.
+     */
+    private void wechsleRaum(Befehl befehl) 
+    {
+        if(!befehl.hatZweitesWort()) {
+            System.out.println("Wohin möchten Sie gehen?");
+            return;
+        }
+
+        String richtung = befehl.gibZweitesWort();
+
+        Raum naechsterRaum = aktuellerRaum.gibAusgang(richtung);
+
+        if (naechsterRaum == null) {
+            System.out.println("Dort ist keine Tür!");
+        }
+        else {
+            aktuellerRaum = naechsterRaum;
+            System.out.println(aktuellerRaum.gibLangeBeschreibung());
+        }
+    }
+
+    /**
+     * "quit" wurde eingegeben. Überprüfe den Rest des Befehls,
+     * ob das Spiel wirklich beendet werden soll.
+     * @return 'true', wenn der Befehl das Spiel beendet, 'false' sonst.
+     */
+    private boolean beenden(Befehl befehl) 
+    {
+        if(befehl.hatZweitesWort()) {
+            System.out.println("Was soll beendet werden?");
+            return false;
+        }
+        else {
+            return true;  
+        }
+    }
+}

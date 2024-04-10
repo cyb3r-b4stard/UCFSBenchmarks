@@ -1,0 +1,120 @@
+import java.awt.*;
+import javax.swing.*;
+import java.awt.image.BufferedImage;
+import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+/**
+ * ######## # ###### ###### ## ### ######
+ */
+public class Display extends JPanel{
+    Image icon = new ImageIcon("EnemyMedium.gif").getImage();
+    Image icon1 = new ImageIcon("PlayerMedium.gif").getImage();
+    Image iconS = new ImageIcon("Shot.gif").getImage();
+    Image iconD = new ImageIcon("Enemy_DeathMedium.gif").getImage();
+    Image iconD1 = new ImageIcon("Enemy_DeathMedium_End.gif").getImage();
+    Image iconC = new ImageIcon("grid.png").getImage();
+    final int SCREEN_WIDTH = 675;  
+    final int SCREEN_HEIGHT = 800;
+
+    boolean movingRight = true;
+    boolean shoot = false;
+    boolean movingRightP = false;
+    boolean movingLeftP = false;
+
+    int x = 500;
+    int y = 500;
+    int xBul = x;
+    int xLoc = 42;
+    int yLoc = 100;
+    int xAdd = 0;
+    int shotY = y;
+    final int NUM1 = 10;
+    final int NUM2 = 4;
+
+    KeyListener k;
+    Enemy e = new Enemy(xLoc + xAdd, yLoc);
+    Enemy[][] enemies;
+    Player player;
+    public Display(Enemy[][] e)
+    {
+        enemies = e;
+        setBackground(new Color(0, 0, 0));              
+        setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));  
+    }
+
+    /** WHEN YOU CALL THE REPAINT() METHODS, THIS IS CALLED 
+     *  ...ALSO CALLED WHEN THE WINDOW IS FIRST MADE VISIBLE
+     */
+    @Override
+    public void paintComponent(Graphics g) 
+    {
+        for (int r = 0; r < NUM1; r++)   
+        {                              
+            for (int c = 0; c < NUM2; c++)  
+            {
+                if (enemies[r][c].alive)
+                    g.drawImage(icon, enemies[r][c].x, enemies[r][c].y, this); 
+                else if (enemies[r][c].alive == false)
+                {
+                    g.drawImage(iconD, enemies[r][c].x, enemies[r][c].y, this);
+                    g.drawImage(iconD1, enemies[r][c].x, enemies[r][c].y, this);
+                }
+            }
+        }
+
+        g.drawImage(icon1, x, y, this);
+        g.drawImage(iconS, xBul, shotY, this);
+    }
+
+    /**
+     * Updates positions of everything
+     * called in the Window class within the timer, so it periodically moves randomly
+     */
+
+    public void update()
+    {
+
+        for (int r = 0; r < NUM1; r++)   
+        {                              
+            for (int c = 0; c < NUM2; c++)  
+            {
+                if (enemies[r][c].x == SCREEN_WIDTH)
+                {
+                    movingRight = false;
+                    for (int h = 0; h < NUM1; h++) enemies[h][c].y += 32;
+                }
+
+                if (enemies[r][c].x <= 0)
+                {
+                    movingRight = true;
+                    for (int h = 0; h < NUM1; h++) enemies[h][c].y += 32;
+                }
+
+                if (movingRight == true) 
+                    enemies[r][c].x++;
+                else{
+                    enemies[r][c].x--;
+                }
+
+                if (movingRightP == true) 
+                    x + 0.25; 
+
+                if (movingLeftP == true) 
+                    x -= 0.25; 
+
+                if (shoot == true)
+                    shotY--;
+
+                if (shoot == false)
+                {
+                    shotY = y;
+                    xBul = x + 10;
+                }
+
+                if (shotY <= 0)
+                    shoot = false;
+            }
+        }
+    }
+}

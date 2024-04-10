@@ -1,0 +1,178 @@
+import java.util.AbstractCollection;
+import java.util.AbstractList;
+import java.util.AbstractSequentialList;
+import java.util.LinkedList;
+import java.util.Iterator;
+import java.lang.StringBuilder;
+import java.util.ArrayList;
+/**
+ * ##### ####### ## #### ###########.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Club
+{
+    private LinkedList<Membership> listOfMember;
+   
+    
+    /**
+     * Constructor for objects of class Club
+     */
+    public Club()
+    {
+        listOfMember = new LinkedList<Membership>();
+    }
+
+    /**
+     * Add a new member to the club's list of members.
+     * @param member The member object to be added.
+     * @return true if member was added, false ow.
+     */
+    public boolean join(Membership member) {
+        Iterator<Membership> iterator = listOfMember.iterator();
+
+        
+        if (member != null){
+            while (iterator.hasNext()){ 
+                
+                if (iterator.next().getEmail().equals(member.getEmail())){
+                    return false;
+                } 
+            }
+
+                listOfMember.add(member);
+                return true;
+        }
+          return false;
+    }
+
+    /**
+     * Return the number of members in this club.
+     * @return The number of stored Membership objects.
+     */
+    public int numberOfMembers()
+    {
+        return listOfMember.size();
+    }
+    
+        /**  
+     * Return how many members joined in the given month.  
+     * @param month  The month we are interested in. 
+     * @param year  The year of the Membership. 
+     * @return How many members joined in the given month.  
+     */ 
+    public int joinedInMonth(int month, int year){
+        System.out.print('\u000C');
+        if (month < 1 || month > 12){
+            return 0;
+        }
+        
+        int i = 0;
+        for(Membership m: listOfMember){
+             if (m.getMonth() == month && m.getYear() == year){        
+                 System.out.println(m.toString());
+                 i++;
+             }
+        }
+        return i;
+    }
+    
+        /**  
+     * Search for a member with a given email address. 
+     * @param email  the email address of the searched member. 
+     * @return A matching membership object if found,  
+     *         null otherwise.  
+     */ 
+    public Membership findMember(String email){
+        System.out.print('\u000C');
+        for(Membership m: listOfMember){
+            if (m.getEmail().equals(email)){
+                return m;
+            }
+        }
+            return null;
+        }
+            
+        /**  
+     * Return the email addresses of all the club members. 
+     * @return A comma separated string of email addresses.  
+     */ 
+    public String getEmailAdresses(){
+        System.out.print('\u000C');
+        StringBuilder sb = new StringBuilder(256);
+        String s = "";
+        
+        for(Membership m: listOfMember){
+            sb.append(m.getEmail() + "\n");
+             s = sb.toString();
+        }
+        return s;
+    }
+    
+    /** 
+     * Delete a member from the club.
+     */
+    public boolean delete(String email){
+        
+        if( email==null || email.equals("")  ){
+            return false;
+        }
+        Iterator<Membership> itr = listOfMember.iterator();
+        while (itr.hasNext() ) {
+            Membership m ;
+            m =  itr.next();
+            if( m.getEmail().equals(email) ){
+           
+               
+                itr.remove();
+            
+                return true;
+            
+            }
+            
+            
+            
+        }
+            
+            
+        return false;
+         
+    }
+     
+    /** 
+     * Remove from the club's collection all members who joined 
+     * in the given month, and return them stored in a separate collection object.
+     */
+    public ArrayList<Membership> purge(int month,int year){
+        if(month < 1 || month > 12 || year < 0) {
+            System.out.println( " Ogiltigt månad och/eller år");
+            return null;
+        }
+       ArrayList<Membership> arryList = new ArrayList<Membership> ();
+       Iterator<Membership> itr = listOfMember.iterator();
+        while (itr.hasNext() ) {
+            Membership m 
+            m =  itr.next();
+           if ( m.getYear() == year &&  m.getMonth() == month ) {
+               arryList.add(m);
+               itr.remove();
+            }
+            
+        }
+        return arryList;
+        
+        
+    }
+    
+    /** 
+     * Print membership info about all members in this club.
+     */
+    public void printAll()
+    {
+        System.out.print('\u000C');
+        for(Membership m: listOfMember){
+            System.out.println(m.toString());
+        }
+    }  
+}

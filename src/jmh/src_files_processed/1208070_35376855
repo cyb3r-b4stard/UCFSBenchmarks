@@ -1,0 +1,108 @@
+import java.util.Scanner;
+
+/**
+ * ####_######_##########_##########: # ##### ## ####### ####### ### ####-###### ###### ## ##### ### ## ##### ##### ## ######## #### ########## ########### ## ######### ##### ########## 
+ *                                    ###### ### ##### ######## #####.
+ * @##### #######
+ * @####_######_##########_########## ##.#
+ * 
+ * ##########: #
+ * ######: ####-####
+ * #######: #
+ * #### #######: ####### ###, ####
+ * #### #######: ####### ###, ####
+ */
+public class test
+{
+    public static void main (String[] args)
+    {
+        char codeChar;
+        boolean error;
+        boolean loop = true;
+        double sellingPrice;
+        double percent;
+        double propertyCommission;
+        double totalSales;
+        double totalCommission;
+
+        Scanner keyboard = new Scanner(System.in);
+
+        System.out.println ("Real-Estate Commission Calculator");
+        System.out.println ("---------------------------------");
+
+        for (totalSales = 0, totalCommission = 0; loop; totalSales) 
+        {
+
+            do
+            { 
+                System.out.print ("\nEnter the property's selling price: ");
+                sellingPrice = keyboard.nextDouble();
+
+                error = false;
+
+                if(sellingPrice <= 0)
+                {
+                    System.out.println ("\n**Error** - Selling price must be greater than zero");
+
+                    error = true;
+                }
+            }while (error);
+
+            System.out.println ();
+            System.out.println ("Residential      R");
+            System.out.println ("Multi-Dwelling   M");
+            System.out.println ("Commercial       C");
+            System.out.println ();
+
+            do
+            {
+                System.out.print ("Enter property code: ");
+                codeChar = keyboard.next().charAt(0);
+
+                error = false;
+                if((codeChar != 'R') && (codeChar != 'r') && (codeChar != 'M') && (codeChar != 'm') && (codeChar != 'C') && (codeChar != 'c'))
+                {
+                    System.out.println ("\n**Error** - Property code must be R, M or C");
+                    error = true;
+                }
+                else if((codeChar == 'R') || (codeChar == 'r'))
+                {
+                    propertyCommission = .07 * sellingPrice;
+                    System.out.println ("\nTotal commission on this property is $" + propertyCommission);
+                    error = false;
+                }
+                else if((codeChar == 'M') || (codeChar == 'm'))
+                {
+                    propertyCommission = .06 * sellingPrice;
+                    System.out.println ("\nTotal commission on this property is $" + propertyCommission);
+                    error = false;
+                }
+                else if((codeChar == 'C') || (codeChar == 'c'))
+                {
+                    propertyCommission = .035 * sellingPrice;
+                    System.out.println ("\nTotal commission on this property is $" + propertyCommission);
+                    error = false;
+                }
+
+            }while (error);
+
+            System.out.print ("\nCalculate another commission? (y/n): ");
+            codeChar = keyboard.next().charAt(0);
+            if((codeChar == 'Y') || (codeChar == 'y'))
+            {
+                loop = true;
+            }
+            else if((codeChar == 'N') || (codeChar == 'n'))
+            {
+                loop = false;
+            }
+            totalSales += sellingPrice;
+        } 
+        
+        
+        System.out.println ("\nTransaction Summary");
+        System.out.println ("-------------------");
+        System.out.println ("Total property sales: $" + totalSales);
+        System.out.println ("Total Commissions: $");
+    }
+}

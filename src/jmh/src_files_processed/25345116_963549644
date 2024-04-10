@@ -1,0 +1,328 @@
+import java.util.ArrayList;
+
+/** # ##### ##### ################## ## ##### ####### ############ ### # ######### ####### #######
+*#.#. (####, #####, #### ##### ####### ########### ## #######, #### ##### ####### ########### ## #######,
+*###### ## #### ## ### #####, ##### ####### ## ##, ##### ##### ## ########.)
+ */
+
+public class WeatherObservation{
+    private int year;
+    private int month;
+    private int airFrostDays; 
+    private Double maxTemp; 
+    private Double minTemp; 
+    private Double totalRainfall; 
+    private Double totalHoursOfSunshine; 
+    private boolean provision = false;
+
+ /** constructor that initialize the values of the observations data for a weather station 
+ *
+ * @param max which is the mean daily maximum temperature in Celsius e.g 6.3
+ * @param min which is the mean daily miniimum temperature in Celsius e.g 0.7
+ * @param rain which is the total rainfall in mm e.g. 258.2
+ * @param sunshine which is the total hours of sunshine e.g. 42.0
+ * @param days which is number of days of air frost e.g. 6 
+ */ 
+    public WeatherObservation(Double max,Double min, Double rain,Double sunshine,int days){
+    this.maxTemp = max;
+    this.minTemp = min;
+    this.airFrostDays = days;
+    this.totalRainfall = rain;
+    this.totalHoursOfSunshine = sunshine;
+    this.provision = provision;
+   } 
+
+ /** constructor that initialize the month and year of the observations data for a weather station 
+ *
+ * @param month of the observation / int
+ * @param year of the observation
+ */ 
+   public WeatherObservation(int year, int month) throws DataOutOfSensibleLimitsException{
+if(year >= 1880 && year =< 2015)
+{
+    this.year = year;
+} else throw new DataOutOfSensibleLimitsException("The year you entered is not in the records");
+if(month > 1880 && year < 2015)
+{
+    this.year = year;
+} else throw new DataOutOfSensibleLimitsException("The year you entered is not in the records");
+    }
+
+ /** Set mean daily maximum temperature in Celsius, if data is out of sensible limits throws an exception
+ * 
+ * @param max 
+ * @throws DataOutOfSensibleLimits if the mean daily maximum temperature out of sensible limits
+ */
+    public void setMaxTemp(Double max) throws DataOutOfSensibleLimitsException{
+        if (max >= -100 && max <= 100) {
+            maxTemp = max;
+        } 
+        else throw new DataOutOfSensibleLimitsException("The data you entered is out of sensible limits");
+    }
+
+ /** Get mean daily maximum temperature
+ * 
+ * @return maxTemp
+ */
+    public Double getMaxTemp(){
+        return maxTemp;
+    }
+
+ /** Set mean daily minimum temperature in Celsius, if data is out of sensible limits throws an exception
+ * 
+ * @param min
+ * @throws DataOutOfSensibleLimits if the mean daily minimum temperature out of sensible limits
+ */
+   public void setMinTemp(Double min) throws DataOutOfSensibleLimitsException{
+        if (min >= -100 && min <= 100) { 
+            minTemp = min;
+        } else
+            throw new DataOutOfSensibleLimitsException("The data you entered is out of sensible limits");
+     }
+
+ /** Get mean daily minimum temperature 
+ * 
+ * @return minTemp
+ */
+    public Double getMinTemp(){
+        return minTemp;
+    }
+
+
+/** Set air frost days , throws an exception if data is out of sensible limits
+*
+* @param frost
+* @throws DataOutOfSensibleLimits if the air frost days is out of sensible limits
+*/ 
+public void setAirFrostDays(int frost) throws DataOutOfSensibleLimitsException{
+        if (frost >= 0 && frost <= 31) {
+            airFrostDays= frost; 
+        } else
+            throw new DataOutOfSensibleLimitsException(" numer of air frost days is out of sensible limits");
+    }
+    
+/** get air frost days 
+*
+* @return airFrostDays
+*/
+    public Integer getAirFrostDays() {
+        return airFrostDays;
+    }
+
+
+/** Set total rainfall in mm , throws an exception if data is out of sensible limits
+*
+* @param rain
+* @throws DataOutOfSensibleLimits if the total rainfall is out of sensible limits
+*/ 
+public void setTotalRainFall(Double rain) throws DataOutOfSensibleLimitsException {
+         if(rain >= 0 && rain <= 20000) { 
+            totalRainfall = rain;
+        } else
+            throw new DataOutOfSensibleLimitsException(" total rainfall is out of sensible limits");
+    }
+
+/** get total rainfall in mm
+*
+* @param totalRainFall
+*/
+    public Double getTotalRainFall() {
+        return totalRainfall;
+    }
+
+
+
+/** Set total hours of sunshine , throws an exception if data is out of sensible limits
+*
+* @param sunshine
+* @throws DataOutOfSensibleLimits if the total hours of sunshine is out of sensible limits
+*/
+public void setTotalHoursOfSunshine(Double sunshine) throws DataOutOfSensibleLimitsException{
+         if( sunshine >= 0 || sunshine <= 744) { 
+            totalHoursOfSunshine = sunshine;
+        } else
+            throw new DataOutOfSensibleLimitsException(" total hours of sunshine is out of sensible limits");
+    }
+
+/**Get total hours of sunshine
+*
+* @return totahHoursOfSunshine
+*/
+    public Double getTotalHoursOfSunshine() {
+        return totalHoursOfSunshine;
+    }
+
+
+/** set provision to true or false
+*
+* @param prov
+*/
+public void setProvision(boolean prov){
+    provision = prov;
+}
+
+/** get year of an observation
+*
+* @return year
+*/
+public int getYear(){
+   return year;
+}
+
+/** get month of an observation
+*
+* @return month
+*/
+public int getMonth(){
+   return month;
+}
+ 
+/** find average of mean maximum and minimum daily temperature
+*
+* @return avg which is the average
+*/
+public Double meanTemp() {
+Double avg = 0.0;
+
+    if(maxTemp != null && minTemp != null)
+{
+ avg = (maxTemp+minTemp)/2;
+   }
+
+else if(maxTemp == null && minTemp != null)
+{ maxTemp = 0.0;
+  avg = (maxTemp+minTemp)/2;
+}
+
+else if(maxTemp != null && minTemp == null)
+{ minTemp =0.0;
+  avg = (maxTemp+minTemp)/2;
+}
+
+else if(maxTemp == 0.0 || minTemp == 0.0)
+{   avg = (maxTemp+minTemp)/2;
+ }
+
+else if (maxTemp == null && minTemp == null)
+    {
+     maxTemp = 0.0;
+     minTemp = 0.0;
+     avg = (maxTemp+minTemp)/2;
+      }
+return avg;
+}
+
+
+/** A method to pass the current month as a parameter, that will return the next month
+*
+* @return nextMonth
+*/
+public int nextMonth(int m)
+{
+int nextMonth = m + 1;
+return nextMonth;
+}
+
+/** A method to pass the current year as a parameter, that will return the next year
+*
+* @return nextYear
+*/
+public int nextYear(int y)
+{
+int nextYear = y + 1;
+return nextYear;
+}
+
+/** A toString method to show observations as a string record similer to the one in theUK grid system
+* ex. 1950  11    6.0     0.0    ---    122.8    57.0
+* if an observation is missing show that by replacing it with --- 
+*
+* @return year + " " + month + " " + max + " " + min + " " + air + " " + rain + " " + sun + " provisional" 
+* @return year + " " + month + " " + max + " " + min + " " + air + " " + rain + " " + sun  
+*/
+public String toString(){
+      
+      String max;
+       if(maxTemp == null)
+       { max = "---";
+        }
+      else 
+       { String maxTemperature = Double.toString(maxTemp);
+         max = maxTemperature; }
+
+      String min;
+       if(minTemp == null)
+       { min = "---";
+        }
+      else 
+       { String minTemperature = Double.toString(minTemp);
+         min = minTemperature; }
+    
+      String air;
+       if(airFrostDays == 0 )
+       { air = "---";
+        }
+      else 
+       { String airFrost = Integer.toString(airFrostDays);
+         air = airFrost; }
+
+      String rain;
+      if(totalRainfall == null)
+       { rain = "---";
+        }
+      else 
+       { String rainFall = Double.toString(totalRainfall);
+         rain = rainFall; }
+
+     String sun;
+      if(totalHoursOfSunshine == null)
+       { sun = "---";
+        }
+      else 
+       { String sunshine = Double.toString(totalHoursOfSunshine);
+         sun = sunshine; }
+
+       if(provision == true)
+     {
+        return year + " " + month + " " + max + " " + min + " " + air + " " + rain +
+      " " + sun + " provisional" ; }
+
+     else { return year + " " + month + " " + max + " " + min + " " + air + " " + rain +
+      " " + sun + " " ;
+
+     }
+}
+
+/** method that finds the proportion of data completion for the observation
+*
+* if an observtion is null add 0.0 , else add 0.20 so that if all fields have values 
+* the total proportion of data completion will be 1.0 , if one field is empty the proportion will be 0.80 and so on.
+*
+* @return percentage which is the proportion of data completion for the observation
+*/
+public double proportionOfDateCompletion(){ 
+double percentage = 0.0;
+  if(maxTemp != null)
+    {percentage = percentage + 0.20;}
+else {percentage = percentage;}
+
+  if(minTemp != null)
+    {percentage = percentage + 0.20;}
+else {percentage = percentage;}
+
+  if(airFrostDays != 0)
+    {percentage = percentage + 0.20;}
+else {percentage = percentage;}
+
+  if(totalRainfall != null)
+    {percentage = percentage + 0.20;}
+else {percentage = percentage;}
+
+  if(totalHoursOfSunshine != null)
+    {percentage = percentage + 0.20;}
+else {percentage = percentage;}
+
+return percentage;
+ }
+
+}

@@ -1,0 +1,281 @@
+import java.net.*;
+import java.util.Scanner;
+import java.io.*;
+import javax.imageio.*;
+import javax.swing.*;
+import java.util.ArrayList;
+import java.awt.event.*;
+import java.awt.*;
+public class Client extends Smoothen implements KeyListener
+{
+    MainMenu mm;
+    
+    boolean pause = false;
+    boolean pause2 = false;
+    boolean escPressed = false;
+    boolean connected = false;
+    
+    ArrayList<Player> players = new ArrayList<>();
+    ArrayList<Bullet> bullets = new ArrayList<>();
+    ArrayList<Enemy> wave = new ArrayList<>();
+    ArrayList<Power> powers = new ArrayList<>();
+    ArrayList<Integer> keys = new ArrayList<>();
+    public String data = "";
+    static Socket s;
+    String t = " : : ";
+    String[] data2 = new String[]{" "," "," "};
+    javax.swing.Timer dataCreate = new javax.swing.Timer(50, new ActionListener()
+    {
+        public void actionPerformed(ActionEvent ae){
+            createData();
+            try{
+                if (s != null){
+                    PrintStream out = new PrintStream(s.getOutputStream());
+                    out.println(data);
+                    out.flush();
+                }
+            }
+            catch (IOException exception){
+            }
+        }
+    }
+    );
+    javax.swing.Timer dataStream = new javax.swing.Timer(50, new ActionListener()
+    {
+        public void actionPerformed(ActionEvent ae){
+            try{
+                Scanner in = new Scanner(new InputStreamReader(s.getInputStream()));
+                if (in.hasNextLine()){
+                    t = in.nextLine();
+                    data2 = t.split("\\:");
+                    if (data2[0].equals("1")){
+                        pause = true;
+                    }
+                    else if (data2[0].equals("0")){
+                        pause = false;
+                    }
+                    animate();
+                }
+                else nullAnimate();
+                System.out.println(t);
+            }
+            catch (IOException exception){
+            }
+        }
+    }
+    );
+    public void animate(){
+        if (!pause2){
+            wave.clear();
+            wave.trimToSize();
+            bullets.clear();
+            bullets.trimToSize();
+            players.clear();
+            players.trimToSize();
+            powers.clear();
+            powers.trimToSize();
+            if (data2.length >= 2){
+            if (!data2[1].equals(" ")){
+                String subData = data2[1].trim();
+                String[] playerData = subData.split("\\|");
+                for (String q : playerData){
+                    String[] p = q.split("\\,");
+                    Player player = new Player(Integer.parseInt(p[4]));
+                    player.x = Integer.parseInt(p[0]);
+                    player.y = Integer.parseInt(p[1]);
+                    player.health = Integer.parseInt(p[2]);
+                    player.mHealth = Integer.parseInt(p[3]);
+                    if (Integer.parseInt(p[5]) > 0 && Integer.parseInt(p[5]) < 15) player.m = new Melee(player.x, player.y, player.r);
+                    player.invi = p[6].equals("1");
+                    player.inviCount = Integer.parseInt(p[7]);
+                    player.dead = p[8].equals("1");
+                    player.animCount = Integer.parseInt(p[9]);
+                    players.add(player);
+                }
+            }}
+            else nullPlayerAnimate;
+            
+            if (data2.length >= 3){
+            if (!data2[2].equals(" ")){
+                String subData = data2[2].trim();
+                String[] bulletData = subData.split("\\|");
+                for (String q : bulletData){
+                    String[] b = q.split("\\,");
+                    boolean enemy = b[3].equals("1");
+                    Bullet bullet = new Bullet(0,0);
+                    if (enemy){
+                        bullet = new Bullet(Integer.parseInt(b[0]), Integer.parseInt(b[1]));
+                    }
+                    else{
+                        bullet = new Bullet(Integer.parseInt(b[0]), Integer.parseInt(b[1]), new Player(Integer.parseInt(b[7])),Integer.parseInt(b[8]));
+                    }
+                    bullet.s = Integer.parseInt(b[2]);
+                    bullet.regCount = Integer.parseInt(b[4]);
+                    bullet.moveX = Double.parseDouble(b[5]);
+                    bullet.moveY = Double.parseDouble(b[6]);
+                    bullets.add(bullet);
+                }
+            }}
+            else nullBulletAnimate();
+            
+            if (data2.length >= 4)
+            if (!data2[3].equals(" ")){
+                String subData = data2[3].trim();
+                String[] enemyData = subData.split("\\|");
+                for (String q : enemyData){
+                    String[] e = q.split("\\,");
+                    Enemy enemy = new Enemy(Integer.parseInt(e[0]),Integer.parseInt(e[1]),e[4],Integer.parseInt(e[3]));
+                    enemy.health = Integer.parseInt(e[2]);
+                    wave.add(enemy);
+                }
+            }
+            
+            if (data2.length >= 5)
+            if (!data2[4].equals(" ")){
+                String subData = data2[4].trim();
+                String[] powerData = subData.split("\\|");
+                for (String q : powerData){
+                    String[] e = q.split("\\,");
+                    Power power = new Power(Integer.parseInt(e[0]),Integer.parseInt(e[1]),Integer.parseInt(e[2]));
+                    power.fade = Integer.parseInt(e[3]);
+                    powers.add(power);
+                }
+            }
+        }
+        repaint();
+    }
+    public void nullPlayerAnimate(){
+        Player p = new Player(0);
+        if (players.size() > 2) p = players.get(1);
+        for (int i = 0; i < keys.size(); i++){
+            switch (keys.get(i)){
+                case KeyEvent.VK_W:
+                    if (p.y > 0)
+                        p.up();
+                break;
+                case KeyEvent.VK_S:
+                    if (p.y < 575)
+                        p.down();
+                break;
+                case KeyEvent.VK_A:
+                    if (p.x > 0)
+                        p.left();
+                break;
+                case KeyEvent.VK_D:
+                    if (p.x < 435)
+                        p.right();
+                break;
+                case KeyEvent.VK_SPACE:
+                    p.shoot();
+                    for (Bullet b : p.bullets){
+                        bullets.add(b);
+                    }
+                    p.bullets.clear();
+                    if (!p.dead) p.counter += 1;
+                break;
+                case KeyEvent.VK_SHIFT:
+                    for (Enemy e : wave){
+                        p.attack(e);
+                    }
+                    if (!p.dead) p.cooldown += 1;
+                break;
+            }
+        }
+    }
+    public void nullBulletAnimate(){
+        for (Bullet b : bullets) b.animate();
+    }
+    public void nullEnemyAnimate(){
+        for (int i = wave.size()-1; i >= 0; i--) wave.get(i).animate();
+    }
+    public void nullAnimate(){
+        nullPlayerAnimate();
+        nullBulletAnimate();
+        nullEnemyAnimate();
+    }
+    public Client(){
+        setSize(480,640);
+        addKeyListener(this);
+        setBackground(new Color(0,160,0));
+    }
+    public void start(){
+        dataCreate.start();
+        dataStream.start();
+    }
+    public void overwrite(Graphics g){
+        for (Bullet b : bullets)
+            if (!b.type.equals("explode"))
+                b.draw(g);
+        for (int i = wave.size()-1; i >= 0; i--)
+            wave.get(i).draw(g);
+        for (Power p : powers)
+            p.draw(g);
+        for (int i = 0; i < players.size(); i++){
+            Player p = players.get(i);
+            if (p.m != null){
+                p.m.x = p.x;
+                p.m.y = p.y;
+            }
+            p.draw(g);
+        }
+        for (Bullet b : bullets)
+            if (b.type.equals("explode"))
+                b.draw(g);
+        if (pause || pause2){
+            g.setColor(new Color(0,0,0,120));
+            g.fillRect(0,0,480,640);
+        }
+    }
+    public void keyPressed(KeyEvent k){
+        int key = k.getKeyCode();
+        if (!keys.contains(key))
+            keys.add(key);
+        if ((key == KeyEvent.VK_ESCAPE && !escPressed && !pause)){
+            if (!pause2){
+                pause2 = true;
+            }
+            else{
+                pause2 = false;
+            }
+            repaint();
+            escPressed = true;
+        }
+    }
+    public void keyTyped(KeyEvent k){
+    }
+    public void keyReleased(KeyEvent k){
+        int key = k.getKeyCode();
+        for (int i = 0; i < keys.size(); i++){
+            if (keys.get(i) == key){
+                keys.remove(i);
+                keys.trimToSize();
+            }
+        }
+        if (key == KeyEvent.VK_ESCAPE)
+            escPressed=false;
+    }
+    public void createData(){
+        data = "";
+        if (!pause2)
+            data += "unpaused,";
+        else
+            data += "paused,";
+        for (int i = 0; i < keys.size(); i++){
+            data += keys.get(i);
+            if (i < keys.size() -1)
+                data += ",";
+        }
+    }
+    public static void main(String[] args) throws IOException{
+        JFrame f = new JFrame();
+        f.setVisible(true);
+        f.setTitle("Player2");
+        f.setSize(480, 640);
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        f.setResizable(false);
+        Client c = new Client();
+        c.s = new Socket("192.168.43.26", 8888);
+        f.add(c);
+        c.start();
+    }
+}

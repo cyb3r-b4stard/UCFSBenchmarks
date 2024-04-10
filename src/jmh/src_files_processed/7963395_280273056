@@ -1,0 +1,239 @@
+package librerias.estructurasDeDatos.grafos;
+
+import librerias.estructurasDeDatos.modelos.*;
+import librerias.estructurasDeDatos.lineales.*;
+import librerias.estructurasDeDatos.jerarquicos.PriorityQColaPrioridad;
+import java.util.ArrayList;
+
+/** ##### ######### #####: #### ## ## ######### #####, ### ###### ## ##############
+ *  ## ## #####.<##> 
+ *  ## ## ### ######## ###### ####### ## ###### ## ######## ########### ## ## ##### 
+ *  ### ### ############## ##### ## ## #### #### ## ## ##############.<##>
+ *  
+ *  @####### #### ####
+ */
+public abstract class Grafo {
+    protected int visitados[];          
+    protected int ordenVisita;          
+    protected Cola<Integer> q;          
+    
+    protected double distanciaMin[];    
+    protected int caminoMin[];          
+    
+    protected static final int INFINITO = (Integer.MAX_VALUE)/3; 
+        
+    /** Devuelve el numero de vertices del grafo
+      * @return int numero de vertices del grafo
+      */
+    public abstract int numVertices();
+    
+    /** Devuelve el numero de aristas del grafo
+      * @return int numero de aristas del grafo
+      */
+    public abstract int numAristas();
+    
+    /** Comprueba si la arista (i,j) esta en un grafo.
+      * @param i    Vertice origen
+      * @param j    Vertice destino
+      * @return boolean true si (i,j) est� en el grafo y false en caso contrario
+      */
+    public abstract boolean existeArista(int i, int j);
+    
+    /** Devuelve el peso de la arista (i,j) de un grafo, 0 si dicha arista 
+      * no esta en el grafo.
+      * @param i    Vertice origen
+      * @param j    Vertice destino
+      * @return double Peso de la arista (i,j), 0 si no existe.
+      */
+    public abstract double pesoArista(int i, int j);
+    
+    /** Si no est�, inserta la arista (i, j) en un grafo no Ponderado.
+     *  @param i    Vertice origen
+     *  @param j    Vertice destino
+     */
+    public abstract void insertarArista(int i, int j);
+    
+    /** Si no est�, inserta la arista (i, j) de peso p en un grafo Ponderado.
+       * @param i    Vertice origen
+       * @param j    Vertice destino
+       * @param p    Peso de la arista (i,j)
+     */
+    public abstract void insertarArista(int i, int j, double p);
+
+    /** Devuelve una Lista Con PI que contiene los adyacentes al vertice i de un grafo.
+      * @param i Vertice del que se obtienen los adyacentes
+      * @return ListaConPI con los vertices adyacentes a i
+     */
+    public abstract ListaConPI<Adyacente> adyacentesDe(int i);
+       
+    /** Devuelve un String con cada uno de los vertices de un grafo y sus adyacentes, en orden de insercion 
+     * @return  String que representa a un grafo
+     */               
+    public String toString(){
+        String res = "" ;  
+        for (int  i = 0 ; i < numVertices() ; i++) {
+            res += "Vertice: " + i;
+            ListaConPI<Adyacente> l = adyacentesDe(i);
+            res += (l.esVacia()) ? " sin Adyacentes " :  " con Adyacentes: ";
+            for (l.inicio(); !l.esFin() ; l.siguiente()) {
+                res +=  l.recuperar() + " ";  
+            }
+            res += "\n";  
+        }
+        return res;      
+     }  
+     
+     /**ejercicio del examen
+      * 
+      *
+      */
+public int verticeMasLejano(int v){ 
+ dijkstra(v);
+ int max=0; 
+ int verticeLej=0; 
+ for (int i =0;i<numVertices();i++){ 
+ /*this.aristas=0; */
+ trayectoria(i); 
+ /*if (this.aristas>max) { 
+ max=this.aristas; 
+ verticeLej=i;*/
+}    
+ } 
+/* return verticeLej; 
+} 
+public void trayectoria (int i){ 
+ k=P[i]; 
+ if (k!=-1){ 
+ trayectoria(k); 
+ this.aristas++ ;
+ } */
+} 
+    /** Devuelve un array con los vertices (int) de un grafo en orden DFS
+      *  @return int[] Array con los vertices recorridos de un grafo en orden DFS
+      */          
+    public int[] toArrayDFS() {
+         int res[] = new int[numVertices()];
+         visitados = new int[numVertices()];
+         ordenVisita = 1;
+         for (int  i = 0; i < numVertices(); i++) 
+             if ( visitados[i] == 0 ) res = toArrayDFS(i, res); 
+         return res;
+    }
+    protected int[] toArrayDFS(int origen, int res[]) { 
+         res[ordenVisita] = origen;
+         visitados[origen] = ordenVisita++;
+         ListaConPI<Adyacente> l = adyacentesDe(origen);
+         for (l.inicio(); !l.esFin(); l.siguiente()) {
+             Adyacente a = l.recuperar();
+             if (visitados[a.destino] == 0) res = toArrayDFS(a.destino, res);
+         }
+         return res;
+    }
+
+    /** Devuelve un array con los vertices (int) de un grafo en orden BFS
+      *  @return int[] Array con los vertices recorridos de un grafo en orden BFS
+      */
+    public int[] toArrayBFS() {
+        int res[] = new int[numVertices()];
+        visitados = new int[numVertices()]; 
+        ordenVisita = 1;  
+        q = new ArrayCola<Integer>();
+        for ( int  i = 0; i < numVertices(); i++ )
+            if (visitados[i] == 0) res = toArrayBFS(i, res); 
+        return res;
+    }  
+    protected int[] toArrayBFS(int origen, int res[]) { 
+         res[ordenVisita] = origen;
+         visitados[origen] = ordenVisita++;
+         q.encolar(new Integer(origen));
+         while (!q.esVacia()) {
+             int u = q.desencolar().intValue(); 
+             ListaConPI<Adyacente> l = adyacentesDe(u); 
+             for (l.inicio(); !l.esFin(); l.siguiente()) {
+                 int v = l.recuperar().destino;
+                 if ( visitados[v]==0 ){
+                    res[ordenVisita] = v;
+                    visitados[v] = ordenVisita++;
+                    q.encolar(new Integer(v));
+                 }
+             }  
+         }
+         return res;
+    }
+    
+    protected void dijkstra(int origen) {
+    distanciaMin=new double[numVertices()];
+    caminoMin = new int[numVertices()];
+    visitados= new int[numVertices()];
+    int u;
+    for(int i=0;i<distanciaMin.length;i++){
+    distanciaMin[i]=INFINITO;
+    caminoMin[i]=-1;
+    visitados[i]=0;
+}           
+    distanciaMin[origen] =0;
+    
+    ColaPrioridad<VerPes> c = new PriorityQColaPrioridad<VerPes>();
+    for(int i=0;i<numVertices();i++){
+    VerPes aux = new VerPes(i,distanciaMin[i]);
+    c.insertar(aux);
+    }
+    
+    
+    while(!c.esVacia()){
+    u=c.eliminarMin().getVertice();
+    if(visitados[u]==0){
+        visitados[u]=1;
+        ListaConPI<Adyacente> adyacentes = adyacentesDe(u);
+        for(adyacentes.inicio();!adyacentes.esFin();adyacentes.siguiente()){
+        int w=adyacentes.recuperar().getDestino();
+        double pesoUW=adyacentes.recuperar().getPeso();
+        if ( distanciaMin[w] > distanciaMin[u] + pesoUW) {
+            distanciaMin[w] = distanciaMin[u] + pesoUW;
+            caminoMin[w] = u;
+            c.insertar(new VerPes(w, distanciaMin[w]));
+        }
+    }
+    
+    
+    }
+    
+    
+    
+    
+    
+    }
+    
+    }
+    
+    /**Devuelve la distancia minima entre los vertices origen y destino de un grafo.
+      * @param origen  Vertice origen 
+      * @param destino Vertice destino 
+      * @return Distancia minima desde origen hasta destino
+     */
+    public double distanciaMinima(int vOrigen, int vDestino) {
+        dijkstra(vOrigen);
+        return distanciaMin[vDestino];
+    }
+    
+    /** Devuelve decodificado en una Lista Con PI el camino minimo con pesos entre los vertices origen y 
+      * destino de un grafo.
+      * @param origen  Vertice origen del camino a decodificar
+      * @param destino Vertice destino del camino a decodificar     
+      * @return ListaConPI<Integer> con los vertices que componen el camino minimo entre origen y destino
+      */
+    public ListaConPI<Integer> caminoMinimo(int origen, int destino) {
+         dijkstra(origen);
+         ListaConPI<Integer> res = new LEGListaConPI<Integer>();
+         Integer pos = new Integer(destino);
+         while(pos!=origen){
+           if(pos<0)return new LEGListaConPI<Integer>();
+           res.insertar(pos);
+           res.inicio();
+           pos=new Integer(caminoMin[pos]);
+         }
+         if(pos<0)return new LEGListaConPI<Integer>();
+         res.insertar(pos);
+         return res;
+    }    
+}

@@ -1,0 +1,519 @@
+/**
+* #### ## ##### ## # ###### #### ###### ####### ####### # & #
+* #### ####### ######### ## ######## ## ####### #####
+* ##### ## ### ## ##### ###### ########## ## #### ## ####### ## ### #### ## ### ##### #####(######### ## #####)
+* ## #### ######## ##### #, #### # ### ## ##### ###### ## ####### ## ##### #
+* ######### ###### ## ##### ## # ## #### ##### ## ##### #####
+* ###### ##### ##### #####
+* ### ## ##### #### #### ###### #### #### ### ##### ### ##### ###### ## ### #####
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* #############:
+* ###### ###### # ####### # & #
+* ### ## ## ### #####(#### ## ##### #### ######## #### ## ####)(###### ### ######## ## ##### #### ######### #####)
+* ######### #### ##### ######
+* ##### ## ### ## ##### ####### ## ## ### ##### #####
+* ## ####### #####, #### #### ### ####### ##### ### ### "##### #" ## ### ##### ### ###### ##### ############
+* ## #####, #### ###### ### ###### ## ### ### ##### "#### ####" ## ##### ### ###### ##### ############
+* ##### #### ### #### #### # ######## #######, ## ### ######## ## # ##### #####
+* ### ## ### #### ####### ### ########, ############, ### ######## ##### ##### #### #### ## ## ######
+* 
+*/
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Timer;
+public class SimonPuzzleGame extends JFrame{
+    private JButton redButton, blueButton, greenButton, yellowButton, startButton;
+    private JPanel redPanel, bluePanel, greenPanel, yellowPanel, instructionPanel;
+    private JFrame frame;
+    private JLabel instructions1, instructions2;
+    private JMenuBar menubar;
+    private JMenu menu;
+    private JMenuItem start, quit;
+    private int pick;
+    private int roundSize = 4;
+    private int pickCount=0;
+    private int correctCount=0;
+    public Timer timer;
+    private int counter;
+    private int i = 0;
+    private int onRound = 1;
+    private ArrayList<Integer> arrayPattern = new ArrayList<Integer>();
+    private ArrayList<Integer> pickedPattern = new ArrayList<Integer>();
+    public SimonPuzzleGame(){
+        Container pane = this.getContentPane();
+        pane.setLayout(new GridLayout(0, 2, 5, 5));
+
+        menubar = new JMenuBar();
+        setJMenuBar(menubar); 
+        menu = new JMenu("Options");
+        menubar.add(menu); 
+        StartMenuItemClass smi = new StartMenuItemClass();
+        start = new JMenuItem("Start");
+        start.addActionListener(smi);
+        menu.add(start); 
+        QuitMenuItemClass qmi = new QuitMenuItemClass();
+        quit = new JMenuItem("Quit");
+        quit.addActionListener(qmi);
+        menu.add(quit);
+
+        redButton = new JButton("");
+        redButton.setOpaque(false);
+        redButton.setContentAreaFilled(false);
+        redButton.setBorderPainted(false);
+        redButton.setEnabled(false);
+        redButton.setPreferredSize(new Dimension(176, 180));
+        RedButtonClass rb = new RedButtonClass();
+        redButton.addActionListener(rb);
+        redPanel = new JPanel();
+        redPanel.setBackground(Color.RED);
+        redPanel.add(redButton);
+        pane.add(redPanel);
+
+        blueButton = new JButton("");
+        blueButton.setOpaque(false);
+        blueButton.setContentAreaFilled(false);
+        blueButton.setBorderPainted(false);
+        blueButton.setEnabled(false);
+        blueButton.setBackground(Color.BLUE);
+        blueButton.setPreferredSize(new Dimension(176, 180));
+        BlueButtonClass bb = new BlueButtonClass();
+        blueButton.addActionListener(bb);
+        bluePanel = new JPanel();
+        bluePanel.setBackground(Color.BLUE);
+        bluePanel.add(blueButton);
+        pane.add(bluePanel);
+
+        greenButton = new JButton("");
+        greenButton.setOpaque(false);
+        greenButton.setContentAreaFilled(false);
+        greenButton.setBorderPainted(false);
+        greenButton.setEnabled(false);
+        greenButton.setBackground(Color.GREEN);
+        greenButton.setPreferredSize(new Dimension(176, 180));
+        GreenButtonClass gb = new GreenButtonClass();
+        greenButton.addActionListener(gb);
+        greenPanel = new JPanel();
+        greenPanel.setBackground(Color.GREEN);
+        greenPanel.add(greenButton);
+        pane.add(greenPanel);
+        
+        yellowButton = new JButton("");
+        yellowButton.setOpaque(false);
+        yellowButton.setContentAreaFilled(false);
+        yellowButton.setBorderPainted(false);
+        yellowButton.setEnabled(false);
+        yellowButton.setBackground(Color.YELLOW);
+        yellowButton.setPreferredSize(new Dimension(176, 180));
+        YellowButtonClass yb = new YellowButtonClass();
+        yellowButton.addActionListener(yb);
+        yellowPanel = new JPanel();
+        yellowPanel.setBackground(Color.YELLOW);
+        yellowPanel.add(yellowButton);
+        pane.add(yellowPanel);
+        
+        pane.setBackground(Color.BLACK);
+    }
+
+
+    public class StartMenuItemClass implements ActionListener{
+        public void actionPerformed(ActionEvent smi){
+            StartPopupMenu popup = new StartPopupMenu();
+            popup.setSize(400, 150);
+            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            popup.setResizable(false);
+            popup.setVisible(true);
+
+            start.setEnabled(false);
+        }
+    } 
+
+    public class QuitMenuItemClass implements ActionListener{
+        public void actionPerformed(ActionEvent qmi){
+            System.exit(0);
+        }
+    }
+
+    public class RedButtonClass implements ActionListener{
+        public void actionPerformed(ActionEvent rb){
+            if(pickedPattern.size()!=arrayPattern.size()){
+                pickedPattern.add(1);
+                System.out.println(pickedPattern);
+                if(pickedPattern.size()==arrayPattern.size()){
+                    redButton.setEnabled(false);
+                    blueButton.setEnabled(false);
+                    greenButton.setEnabled(false);
+                    yellowButton.setEnabled(false);
+                    checkData(arrayPattern);
+                }
+            }
+
+            redPanel.setBackground(Color.WHITE);
+            new java.util.Timer().schedule( 
+            new java.util.TimerTask(){
+                public void run() {
+                    redPanel.setBackground(Color.RED);
+                }
+            },100);
+        }
+    }
+
+    public class BlueButtonClass implements ActionListener{
+        public void actionPerformed(ActionEvent bb){
+            if(pickedPattern.size()!=arrayPattern.size()){
+                pickedPattern.add(2);
+                System.out.println(pickedPattern);
+                if(pickedPattern.size()==arrayPattern.size()){
+                    redButton.setEnabled(false);
+                    blueButton.setEnabled(false);
+                    greenButton.setEnabled(false);
+                    yellowButton.setEnabled(false);
+                    checkData(arrayPattern);
+                }
+            }
+
+            bluePanel.setBackground(Color.WHITE);
+            new java.util.Timer().schedule(
+            new java.util.TimerTask(){
+                public void run() {
+                    bluePanel.setBackground(Color.BLUE);
+                }
+            },100);
+        }
+    }
+
+    public class GreenButtonClass implements ActionListener{
+        public void actionPerformed(ActionEvent gb){
+            if(pickedPattern.size()!=arrayPattern.size()){
+                pickedPattern.add(3);
+                System.out.println(pickedPattern);
+                if(pickedPattern.size()==arrayPattern.size()){
+                    redButton.setEnabled(false);
+                    blueButton.setEnabled(false);
+                    greenButton.setEnabled(false);
+                    yellowButton.setEnabled(false);
+                    checkData(arrayPattern);
+                }
+            }
+
+            greenPanel.setBackground(Color.WHITE);
+            new java.util.Timer().schedule( 
+            new java.util.TimerTask(){
+                public void run() {
+                    greenPanel.setBackground(Color.GREEN);
+                }
+            },100);
+        }
+    }
+
+    public class YellowButtonClass implements ActionListener{
+        public void actionPerformed(ActionEvent yb){
+            if(pickedPattern.size()!=arrayPattern.size()){
+                pickedPattern.add(4);
+                System.out.println(pickedPattern);
+                if(pickedPattern.size()==arrayPattern.size()){
+                    redButton.setEnabled(false);
+                    blueButton.setEnabled(false);
+                    greenButton.setEnabled(false);
+                    yellowButton.setEnabled(false);
+                    checkData(arrayPattern);
+                }
+            }
+
+            yellowPanel.setBackground(Color.WHITE);
+            new java.util.Timer().schedule( 
+            new java.util.TimerTask(){
+                public void run() {
+                    yellowPanel.setBackground(Color.YELLOW);
+                }
+            },100);
+        }
+    }
+
+
+
+
+
+
+    public class StartPopupMenu extends JFrame{
+        private JLabel instructionsPart1, instructionsPart2, instructionsPart3, instructionsPart4;
+        private JPanel instructionsPanel;
+        private JButton start;
+        public StartPopupMenu(){
+            Container startPane = this.getContentPane();
+            startPane.setLayout(new GridLayout(0,1));
+            
+            instructionsPanel = new JPanel();
+            instructionsPart1 = new JLabel("Instructions: Your task is to repeat the pattern shown by");
+            instructionsPart2 = new JLabel("clicking on the colors in the correct order. If you are");
+            instructionsPart3 = new JLabel("correct, you can continue to the next round or quit.");
+            instructionsPart4 = new JLabel("Each round will increase in pattern by 2.");
+            startPane.add(instructionsPanel);
+            instructionsPanel.add(instructionsPart1); 
+            instructionsPanel.add(instructionsPart2); 
+            instructionsPanel.add(instructionsPart3); 
+            instructionsPanel.add(instructionsPart4); 
+
+            StartButtonClass sb = new StartButtonClass();
+            start = new JButton("Start");
+            start.addActionListener(sb);
+            startPane.add(start);
+        }
+
+        public class StartButtonClass implements ActionListener{
+            public void actionPerformed(ActionEvent sb){
+                dispose();
+
+                storeData();
+                redButton.setEnabled(true);
+                blueButton.setEnabled(true);
+                greenButton.setEnabled(true);
+                yellowButton.setEnabled(true);
+                System.out.println("RoundSize= " + roundSize);
+            }
+        }
+    }
+
+
+    public class CorrectPopupMenu extends JFrame{
+        private JLabel correct, spaceFiller;
+        private JPanel correctPanel;
+        private JButton continueButton, quitButton;
+        public CorrectPopupMenu(){
+            Container correctPane = this.getContentPane();
+            correctPane.setLayout(new GridLayout(0, 1)); 
+
+            correctPanel = new JPanel();
+            correctPane.add(correctPanel);
+            correct = new JLabel("CORRECT!");
+            correctPanel.add(correct);
+            spaceFiller = new JLabel("");
+            correctPanel.add(spaceFiller);
+            
+            ContinueButtonClass cb = new ContinueButtonClass();
+            continueButton = new JButton("Continue to round " + onRound);
+            continueButton.addActionListener(cb);
+            correctPanel.add(continueButton);
+            
+            QuitButtonClass qb = new QuitButtonClass();
+            quitButton = new JButton("Quit");
+            quitButton.addActionListener(qb);
+            correctPanel.add(quitButton);
+        }
+
+        public class ContinueButtonClass implements ActionListener{
+            public void actionPerformed(ActionEvent cb){
+                dispose(); 
+
+                storeData();
+                redButton.setEnabled(true);
+                blueButton.setEnabled(true);
+                greenButton.setEnabled(true);
+                yellowButton.setEnabled(true);
+                System.out.println("RoundSize= " + roundSize);
+                System.out.println("random array= " + arrayPattern);
+                System.out.println("Picked array= " + pickedPattern);
+            }
+        }
+        public class QuitButtonClass implements ActionListener{
+            public void actionPerformed(ActionEvent qb){
+                System.exit(0);
+            }
+        }
+    }
+
+
+    public class IncorrectPopupMenu extends JFrame{
+        private JPanel incorrectPanel;
+        private JLabel incorrect, spaceFiller;
+        private JButton retryButton, quitButton;
+        public IncorrectPopupMenu(){
+            Container incorrectPane = this.getContentPane();
+            incorrectPane.setLayout(new GridLayout(0, 1)); 
+            
+            incorrectPanel = new JPanel();
+            incorrectPane.add(incorrectPanel);
+            incorrect = new JLabel("INCORRECT :(");
+            incorrectPanel.add(incorrect);
+            spaceFiller = new JLabel("");
+            incorrectPanel.add(spaceFiller);
+            
+            RetryButtonClass rb = new RetryButtonClass();
+            retryButton = new JButton("Retry round " + onRound);
+            retryButton.addActionListener(rb);
+            incorrectPanel.add(retryButton);
+            
+            QuitButtonClass qb = new QuitButtonClass();
+            quitButton = new JButton("Quit");
+            quitButton.addActionListener(qb);
+            incorrectPanel.add(quitButton); 
+        }
+        
+        public class RetryButtonClass implements ActionListener{
+            public void actionPerformed(ActionEvent sb){
+                dispose(); 
+
+                storeData();
+                redButton.setEnabled(true);
+                blueButton.setEnabled(true);
+                greenButton.setEnabled(true);
+                yellowButton.setEnabled(true);
+                System.out.println("RoundSize= " + roundSize);
+                System.out.println("random array= " + arrayPattern);
+                System.out.println("Picked array= " + pickedPattern);
+            }
+        }
+        public class QuitButtonClass implements ActionListener{
+            public void actionPerformed(ActionEvent qb){
+                System.exit(0);
+            }
+        }
+    }
+    public void storeData(){
+        while(arrayPattern.size() < roundSize){
+            Random r = new Random();
+            int x = r.nextInt(4) + 1;
+            arrayPattern.add(x);
+            highlight(x);
+            System.out.println(arrayPattern);
+        }
+    }
+    public void removeData(ArrayList<Integer> arrayPattern){
+        this.arrayPattern=arrayPattern;
+        int size = arrayPattern.size();
+        for(int i = size-1; i >= 0; i--){
+            arrayPattern.remove(i);
+            System.out.println(arrayPattern);
+        }
+    }
+    public boolean checkData(ArrayList<Integer> arrayPattern){
+        this.arrayPattern = arrayPattern;
+        for(int i=0; i<pickedPattern.size();i++){
+            if(pickedPattern.get(i)==arrayPattern.get(i)){
+                correctCount++;
+                if(correctCount==pickedPattern.size()){
+                    correctCount=0;
+                    System.out.println("TRUE");
+    
+                    removeData(pickedPattern);
+                    removeData(arrayPattern);
+                    roundSize=roundSize+2;
+                    
+                    onRound++;
+                    
+                    CorrectPopupMenu popup = new CorrectPopupMenu();
+                    popup.setSize(300, 100);
+                    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    popup.setResizable(false);
+                    popup.setVisible(true);
+                    
+                    return true;
+                }
+            }
+        }
+        System.out.println("False");
+        
+        removeData(pickedPattern);
+        removeData(arrayPattern);
+        
+        IncorrectPopupMenu popup = new IncorrectPopupMenu();
+        popup.setSize(300, 100);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        popup.setResizable(false);
+        popup.setVisible(true);
+        
+        return false;
+    }
+    public void reset(){
+        redButton.setEnabled(false);
+        blueButton.setEnabled(false);
+        greenButton.setEnabled(false);
+        yellowButton.setEnabled(false);
+    }
+    public void highlight(int randomChoice){
+        if(randomChoice==1)
+        {
+            /*redPanel.setBackground(Color.WHITE);  
+            new java.util.Timer().schedule( 
+            new java.util.TimerTask(){
+                public void run() {
+                    redPanel.setBackground(Color.RED);
+                }
+            },1000);*/
+        }
+        if(randomChoice==2){
+            bluePanel.setBackground(Color.WHITE);
+            new java.util.Timer().schedule( 
+            new java.util.TimerTask(){
+                public void run() {
+                    bluePanel.setBackground(Color.BLUE);
+                }
+            },1000);
+        }
+        if(randomChoice==3){
+            greenPanel.setBackground(Color.WHITE);
+            new java.util.Timer().schedule( 
+            new java.util.TimerTask(){
+                public void run() {
+                    greenPanel.setBackground(Color.GREEN);
+                }
+            },1000);
+        }
+        if(randomChoice==4){
+            yellowPanel.setBackground(Color.WHITE);
+            new java.util.Timer().schedule( 
+            new java.util.TimerTask(){
+                public void run() {
+                    yellowPanel.setBackground(Color.YELLOW);
+                }
+            },1000);
+        }
+    }
+    
+
+    public static void main(String[] args){
+        SimonPuzzleGame gui = new SimonPuzzleGame();
+        gui.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        gui.setSize(350, 350);
+        gui.setResizable(false);
+        gui.setVisible(true);
+    }
+    
+    
+    /**
+     * timer = new Timer();
+     * timer.schedule(new highlightTimer(),500, 100);
+     */
+    
+    public class highlightTimer extends TimerTask{
+        public void run() throws IllegalArgumentException{
+            int time = 0;
+            
+            if(time>1){
+                redPanel.setBackground(Color.RED    
+            }
+            else{
+                this.cancel();
+            }
+        }
+    }
+}
+
+
+/**
+ *
+int delay = 1000;
+if(System.currentTimeMillis() > delay)
+{
+    redPanel.setBackground(Color.YELLOW);
+}
+ */

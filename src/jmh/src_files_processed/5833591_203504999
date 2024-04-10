@@ -1,0 +1,79 @@
+
+/**
+ * ##### # ########### ## ##### ######## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Fraction
+{
+
+    private int numerator;
+    private int denominator;
+    private int addition[2];
+    private int subtraction[2];
+    private int multiplication[2];
+    private int division[2];
+    /**
+     * Constructor for objects of class Fraction
+     */
+    public Fraction()
+    {
+        numerator=0;
+        denominator=1;
+    }
+    
+    public Fraction(int top, int bottom)
+    {
+        numerator=top;
+        denominator=bottom;
+    }
+
+    public int[] add(int secondTop, int secondBottom)
+    {
+        addition[1] = denominator*secondBottom;
+        addition[0] = numerator*secondBottom+secondTop*denominator;
+        addition=reduce(addition);
+        return addition;
+    } 
+
+   
+    public int[] subtract(int secondTop, int secondBottom)
+    {
+        subtraction[1] = denominator*secondBottom;
+        subtraction[0] = numerator*secondBottom-secondTop*denominator;
+        subtraction=reduce(subtraction);
+        return subtraction;
+    }
+    
+    public int[] multiply(int secondTop, int secondBottom)
+    {
+        multiplication[1] = denominator*secondBottom;
+        multiplication[0] = numerator*secondTop; 
+        multiplication=reduce(multiplication);
+        return multiplication;
+    }
+    
+    public int[] divide(int secondTop, int secondBottom)
+    {
+        division[1]=denominator*secondTop;
+        division[0]=numerator*secondBottom;
+        division=reduce(division);
+        return division;
+    }
+    
+    public int[] reduce(int array[])
+    {
+    while(array[1]!=0)
+    {
+        int t= array[1];
+        array[1]=array[0]%array[1];
+        array[0]=t;
+    }
+        int gcd=array[0];
+        array[0]/=gcd;
+        array[1]/=gcd;
+        return array;
+    }
+    }
+   

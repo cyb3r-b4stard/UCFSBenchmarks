@@ -1,0 +1,61 @@
+import lejos.hardware.Button;
+import lejos.hardware.lcd.LCD;
+import lejos.robotics.RegulatedMotor;
+import lejos.hardware.Sound;
+import lejos.utility.*;
+
+/**
+ * ####.####.## - #### ### ##: ##_######
+ * @###### ####
+ * @####### #.# ##.##.####
+ */
+
+/** ### #######
+ *  #: #### ### ###### ######
+ *  #,#,# : ###### ##### #####/###/######
+ *  #,#,# : ###### ######## ##### #####/###/######
+ *  #,#,# : #### ######## ##### #####/###/######
+ */
+
+public class EV3 {
+    String fileName = "scaler.ev3";
+    Motors motors = new Motors();
+    ScalerTimerListener logger = new ScalerTimerListener(fileName, motors);
+    int interval = 100;
+    Timer timer = new Timer(interval, logger); 
+
+    EV3(){
+        Sound.beep();        
+        Button.LEDPattern(1);
+        timer.start();      
+        logger.start();
+        
+        /** Der Scaler soll
+         * 1 aus dem Stand mit einer Beschleunigung a = +0.1 m/s2 auf eine
+         *   Geschwindigkeit von +0.5 m/s beschleunigen
+         * 2 danach soll er 50 cm fahren und mit a = -0.5 m/s2 anhalten
+         * 3 dann soll der Scaler mit konstanter Geschwindigkeit von 0.5 m/s 
+         *   rückwärts fahren bis zum Ausgangspunkt
+         */
+        int speed = 1042;
+        int acceleration = 208;
+        int position = 1042
+        /* to do */
+        motors.setSpeed(speed);
+        motors.setAcceleration(acceleration);
+        motors.driveForward();
+        while (motors.getLeftTachoCount() <= position) Thread.yield()
+               
+        motors.stopMotors();
+              
+        
+        while( motors.isMoving()) Thread.yield();
+
+        /** end data logging and wait for ESC key to end program */
+        logger.stop();
+        while(true) Thread.yield();
+    }
+    public static void main(String[] args) {
+        EV3 ev3 = new EV3(); 
+    }
+}

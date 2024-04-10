@@ -1,0 +1,74 @@
+import java.util.Random;
+import java.util.Scanner;
+
+public class Darvesh_Aisha_Game_of_Sticks{
+    public static void main(String [] args) {
+        System.out.println("Welcome to Game of Sticks");
+        System.out.println("Each turn you must pick up 1, 2, or 3 sticks from the starting pile."); 
+        Scanner scan = new Scanner(System.in);  
+        Random rand = new Random(); 
+        System.out.println("How many sticks do you want to start with?");
+        int sticks = scan.nextInt(); 
+        boolean gameover = false; 
+        while (gameover == false) { 
+            if (sticks > 0) {
+                System.out.println("Pick 1, 2, or 3 sticks");
+                int PlayerChoice = scan.nextInt();
+                if (PlayerChoice > 4 || PlayerChoice < 0){
+                    System.out.println("Your number is invalid");
+                    System.out.println("How many sticks do you want to take? 1, 2, or 3?");
+                    PlayerChoice = scan.nextInt();
+                }
+                sticks = sticks - PlayerChoice;
+                System.out.println("You took " + PlayerChoice + " sticks");
+                System.out.println("There are " + sticks + " sticks remaining");
+                if (sticks <= 0) {
+                    System.out.println("You have lost the game of sticks");
+                    gameover = true;
+                }
+            }
+            if (sticks > 0) {
+                System.out.println("Now it's the computer's turn");
+                int optimal;
+                int myRandnum = rand.nextInt(3) + 1;
+                if (sticks % 4 == 3) {
+                    optimal = 2
+                }
+                if (sticks % 4 == 2) {
+                    optimal = 1
+                }
+                if (sticks % 4 == 1) {
+                    optimal = myRandnum;
+                }
+                if (sticks % 4 == 0) {
+                    optimal = 3
+                }
+                
+                
+                
+                sticks = sticks - optimal;                                  
+                System.out.println("The computer took " + optimal + " sticks and now there are " + sticks + " remaining");
+                
+                if (sticks <= 0) {
+                    System.out.println("You have lost the game of sticks.");
+                    gameover = true;
+                }
+            }
+
+            if (gameover == true) {
+                System.out.println("Do you want to play again? Press 0 for yes and 1 for no.");
+                int response = scan.nextInt();
+                if (response == 0) {
+                    System.out.println("How many sticks do you want to start with?");
+                    sticks = scan.nextInt(); 
+                    gameover = false;
+
+                }
+                if (response == 1) {
+                    System.out.println("Thanks for playing");
+                }
+            }
+
+        }
+    }
+}

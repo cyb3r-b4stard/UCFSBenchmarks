@@ -1,0 +1,125 @@
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JApplet;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+
+
+public class ThreadedBinomialApplet extends JApplet 
+{
+        private JTextField t1 = new JTextField();
+        private JTextField t2 = new JTextField();
+        private JButton j1 = new JButton("Calculate");
+        private ButtonGroup g = new ButtonGroup();
+        private JRadioButton rb1 = new JRadioButton("Calculat with Binomial1", false),
+                             rb2 = new JRadioButton("Calculat with Binomial2", false);
+        private JLabel result = new JLabel("Result");
+        private long l;
+        private long l2;
+        private int n;
+        private int k;
+    
+    public void init()
+    {
+        setLayout(new GridLayout(8, 1));
+        
+        add(new JLabel("n: 0-60"));
+        add(t1);
+        add(new JLabel("k: 0-n"));
+        add(t2);
+        g.add(rb1);
+        g.add(rb2);
+        add(rb1);
+        add(rb2);
+        add(j1);
+        add(result);
+        
+        j1.addActionListener(makeListener());
+    }
+    
+    private Thread t = null;
+    
+    public ActionListener makeListener()
+    {
+        return new
+                ActionListener()
+                {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        try{
+                            n = Integer.parseInt(t1.getText());
+                            k = Integer.parseInt(t2.getText());
+                            
+                            if(n <= 60 && n > 0 && k > 0 && k <= n)
+                            {
+                                if(t != null)
+                                    t.interrupt();
+                                
+                                if(rb1.isSelected())
+                                {
+                                    t = new Thread(new Runnable())
+                                    /*{
+                                        public void run()
+                                        {
+                                            l = binomial(n, k);
+                                        }*/
+                                        
+                                    public long binomial(int n, int k) throws InterruptedException
+                                    {
+                                        if (Thread.currentThread().isInterrupted())
+                                        {
+                                            throw new InterruptedException();
+                                        }
+                                        long result = 0;
+                                        if(k == 0 || n == k)
+                                        {
+                                            return 1;
+                                        }
+                                        else {
+                                            return (binomial1(n,k-1)*(n-k+1)/k);
+                                        }
+                                    }});
+                                    t.start();
+                                    result.setText(String.valueOf(l));
+                                }
+                                else if(rb2.isSelected())
+                                {
+                                    t = new Thread(new Runnable()
+                                    {
+                                        public void run()
+                                        {
+                                            l = binomial1(n, k);
+                                        }                                       
+                                    public long binomial1(int n, int k)
+                                    {
+                                        if(k == 0 || k == n)
+                                        {
+                                            return 1;
+                                        }
+                                        else {
+                                            return binomial1(n-1, k) + binomial1(n-1, k-1);
+                                        }
+                                    }});
+                                    t.start();
+                                    result.setText(String.valueOf(l));
+                                }
+                                else {
+                                    result.setText("You have to choose a method");
+                                }
+                            }
+                            else {
+                                result.setText("Either n, k or both do not meet the requirements");
+                            }
+                        }
+                        catch(Exception ex){
+                            result.setText("You have to type numbers in the textfields");
+                        }                       
+                    }
+            };
+    }
+}

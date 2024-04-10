@@ -1,0 +1,277 @@
+import java.util.ArrayList;
+import java.util.ListIterator ;
+import java.util.List;
+import java.util.Observable;
+
+/**
+ * ##### ## ### #### ## ########
+ * @###### #### ##### ########## ## ########
+ */
+
+public class Model extends Observable
+{
+    private static final int B              = 6;  
+    private static final int M              = 40; 
+
+    private static final float BALL_SIZE    = 30; 
+    private static final float BRICK_WIDTH  = 60; 
+    private static final float BRICK_HEIGHT = 40;
+    private static final int   BAT_MOVE     = 5; 
+    private static final float BAT_HEIGHT   = 10;
+    
+    private static final int HIT_BRICK      = 50;  
+    private static final int HIT_BOTTOM     = -50;
+
+    private GameObj ball;          
+    private List<objectBrick> bricks;  
+    private GameObj bat;           
+
+    private boolean runGame = true; 
+    private boolean fast = false;   
+
+    private int score = 0;
+    private int level = 0;
+    private final float W;         
+    private final float H;         
+    PlayWaveSound brickHit = new PlayWaveSound( "brickHit.wav" );
+
+    public Model( int width, int height )
+    {
+        this.W = width; this.H = height;
+    }
+
+    /**
+     * Create in the model the objects that form the game
+     */
+
+    public void createGameObjects()
+    {
+        synchronized( Model.class )
+        {
+            ball   = new GameObj(W/2, H/2, BALL_SIZE, BALL_SIZE, Colour.RED );
+            bat    = new GameObj(W/2, H - BRICK_HEIGHT*2, BRICK_WIDTH*3, 
+                BAT_HEIGHT, Colour.GRAY);
+            bricks = new ArrayList<>();
+    
+            currentLevel(level);
+            
+        }  
+    }
+    
+    private ActivePart active  = null;
+    public void currentLevel(int level){
+        switch (level){
+            case 0:
+                for(int i = 0; i < 3; i++){
+                    for (int n = 0; n < 5; n++){
+                        bricks.add(i + n , new objectBrick(40 + 55 * n + BRICK_WIDTH * n,
+                                100 + 60 * i + BRICK_HEIGHT * i, 
+                                BRICK_WIDTH, BRICK_HEIGHT, Colour.BLUE));
+                    }
+                }
+                break;
+            case 1: 
+                for(int i = 0; i < 3; i++){
+                    for (int n = 0; n < 10; n++){
+                        bricks.add(i + n , new objectBrick(BRICK_WIDTH * n,
+                                100 + 60 * i + BRICK_HEIGHT * i, 
+                                BRICK_WIDTH, BRICK_HEIGHT, Colour.BLUE));
+                    }
+                }
+                break;
+            case 2: 
+                for(int i = 0; i < 3; i++){
+                    for (int n = 0; n < 10; n++){
+                        bricks.add(i + n , new objectBrick(BRICK_WIDTH * n,
+                                BRICK_HEIGHT * i, 
+                                BRICK_WIDTH, BRICK_HEIGHT, Colour.BLUE));
+                    }
+                }
+                break;
+        }
+    }
+    /**
+     * Start the continous updates to the game
+     */
+    public void startGame()
+    {
+        synchronized ( Model.class )
+        {
+            stopGame();
+            active = new ActivePart();
+            Thread t = new Thread( active::runAsSeparateThread );
+            t.setDaemon(true);   
+            t.start();
+        }
+    }
+
+    /**
+     * Stop the continous updates to the game
+     * Will freeze the game, and let the thread die.
+     */
+    public void stopGame()
+    {  
+        synchronized ( Model.class )
+        {
+            if ( active != null ) { active.stop(); active = null; }
+            
+        }
+    }
+
+    public GameObj getBat()             { return bat; }
+
+    public GameObj getBall()            { return ball; }
+
+    public List<objectBrick> getBricks()    { return bricks; }
+
+    /**
+     * Add to score n units
+     * @param n units to add to score
+     */
+    protected void addToScore(int n)    { score += n; }
+
+    public int getScore()               { return score; }
+
+    /**
+     * Set speed of ball to be fast (true/ false)
+     * @param fast Set to true if require fast moving ball
+     */
+    public void setFast(boolean fast)   
+    { 
+        this.fast = fast; 
+    }
+    public void pause(boolean paused){
+        runGame = paused;
+  
+    }
+    /**
+     * Move the bat. (-1) is left or (+1) is right
+     * @param direction - The direction to move
+     */
+    public void moveBat( int direction )
+    {
+
+        float x = bat.getX();
+        float width = bat.getWidth();
+        float dist = direction * BAT_MOVE;    
+        Debug.trace( "Model: Move bat = %6.2f", dist );
+        if (x >= W - B - width && direction == 1)  bat.moveX(0);
+        else if (x <= 0 + B    && direction == -1) bat.moveX(0);
+        else                                       bat.moveX(dist);
+    }
+    public void changeBallXS(int dif){
+    }
+    /**   
+     * This method is run in a separate thread
+     * Consequence: Potential concurrent access to shared variables in the class
+     */
+    class ActivePart
+    {
+        private boolean runGame = true;
+        
+        public void stop()
+        {
+            runGame = false;
+        }
+
+        public void runAsSeparateThread()
+        {
+            float dif = 0;
+            float XS = 0;       
+            final float YS = 1; 
+            try
+            {
+                synchronized ( Model.class ) 
+                {
+                    GameObj       ball   = getBall();     
+                    GameObj       bat    = getBat();      
+                    List<objectBrick> bricks = getBricks();   
+                }
+             
+                while (runGame)
+                {
+                    float x = ball.getX();  
+                    float y = ball.getY();
+                    if (x >= W - B - BALL_SIZE)  ball.changeDirectionX();
+                    if (x <= 0 + B            )  ball.changeDirectionX();
+                    if (y >= H - B - BALL_SIZE)  
+                    { 
+                        addToScore( HIT_BOTTOM ); 
+                        ball = new GameObj(W/2, H/2, BALL_SIZE, BALL_SIZE, Colour.RED );
+                        modelChanged();
+                        Thread.sleep(3000);
+                    }
+                    if (y <= 0 + M            )  ball.changeDirectionY();
+
+                  
+                    boolean hit = false;
+                    synchronized ( Model.class ) 
+                    {
+                        
+                        ListIterator <objectBrick> bricksIterator = bricks.listIterator();
+                        while( bricksIterator.hasNext())
+                        {
+                          objectBrick currentBrick = bricksIterator.next();
+                          int iterationNum = bricksIterator.nextIndex();
+                          
+                          if (currentBrick.collision(ball)) 
+                          {
+                            brickHit.play();
+                            currentBrick.removeLife();
+                            System.out.println(currentBrick.getLives());
+                            addToScore( HIT_BRICK );
+                            if (ball.collision (currentBrick)){
+                              ball.changeDirectionY();  
+                            }
+                            else if (ball.hitBySideOf (ball))
+                              ball.changeDirectionX();
+                            if (currentBrick.getLives() <= 0) bricksIterator.remove();
+                          }
+                        }
+                    }
+                    
+                        
+                    if (bat.collision(ball)){          
+                        ball.changeDirectionY();  
+                        dif = bat.calculateDif(ball);
+                        float newSpeed = 2/105*dif - 10/7;
+                        ball.changeXSpeed(newSpeed);
+                        
+                        Debug.trace("Dif is = %6.2f",dif);
+                        Debug.trace("XS is = %6.2f",XS);
+                        if (bat.hitBySideOf(ball)){    
+                        }
+                    }
+                    ball.moveX(ball.dirX);
+                    ball.moveY(YS);
+                    modelChanged();      
+                    Thread.sleep( fast ? 2 : 5 );
+                    
+                    
+                    if (bricks.size() < 1){
+                        ball   = new GameObj(W/2, H/2, BALL_SIZE, BALL_SIZE, Colour.RED );
+                        level++; 
+                        currentLevel(level);  
+                        Thread.sleep(1000); 
+                    }
+                }
+            }
+            catch (Exception e) 
+            { 
+                Debug.error("Model.runAsSeparateThread - Error\n%s", 
+                    e.getMessage() );
+            }
+
+        }
+
+        /**
+         * Model has changed so notify observers so that they
+         *  can redraw the current state of the game
+         */
+        public void modelChanged()
+        {
+            setChanged(); notifyObservers();
+        }
+
+    }
+}

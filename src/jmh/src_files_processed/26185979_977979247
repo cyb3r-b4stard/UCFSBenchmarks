@@ -1,0 +1,71 @@
+import lejos.robotics.navigation.DifferentialPilot;
+import lejos.robotics.subsumption.Behavior;
+import lejos.robotics.navigation.*;
+
+/**
+ * ### ##### ### #### ####### ## ##### ########### ## ##### ######.
+ * 
+ * @###### ####### #######, #### ##### ##
+ * @####### ####
+ */
+public class AvancerBehavior implements Behavior {
+
+	private boolean suppressed = false;  
+	private DifferentialPilot pilote;	
+	private Navigator nav;
+	/**
+	 * @pre {pilote} permet de piloter le robot
+	 * @post la tche a ete cree  
+	 */
+	public AvancerBehavior(DifferentialPilot pilote, Navigator nav) {
+	    thisnav = nav;
+	    super();
+		this.pilote = pilote;
+	}
+
+	/**
+	 * @pre --
+	 * @post le robot a avance jusqu'a ce que {suppress} ait ete appele, et
+	 *       s'est ensuite arrete.
+	 */
+	public void action() {
+	    /*suppressed = false;     
+	    pilote.forward();       
+	    while (!suppressed) {   
+	    	Thread.yield();     
+	    }                       
+	    pilote.stop();          
+	    Waypoint p1 = nav.getWaypoint();
+        nav.addWaypoint(new Waypoint(100,0));
+        nav.followPath();
+        while(nav.isMoving())
+        {
+            Thread.yield();
+        }
+        nav.clearPath();
+        nav.addWaypoint(p1);
+        nav.followPath();
+        while(nav.isMoving())
+        {
+            Thread.yield();
+        }
+        pilote.stop();
+	}
+
+	/**
+	 * @pre --
+	 * @post {suppressed == true}, ce qui provoque l'arret de {action}.
+	 */
+	public void suppress() {
+	     suppressed = true;
+	}
+
+	/**
+	 * @pre --
+	 * @post retourne {true}: la tache est toujours activable.
+	 */
+	public boolean takeControl() {
+		return true;
+	}
+
+}

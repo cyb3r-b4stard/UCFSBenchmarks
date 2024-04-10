@@ -1,0 +1,159 @@
+import java.awt.*;
+import java.util.*;
+import javax.swing.*;
+import java.awt.event.*;
+import javax.swing.event.*;
+import javax.swing.table.*;
+
+
+/**
+* ###### ########## #### ######## # ########.
+ * ### ####### ## ############ ### ##### ### ####.
+ * #### ######## ## ####### #### ###
+*/
+
+public class CalendarView extends JPanel implements ChangeListener {
+    private Calendar today = Calendar.getInstance();
+    private CalendarTable calendar = new CalendarTable(today);
+    private HotelModel model;
+    private JTable table = new JTable(calendar);
+    private JTextArea roomInfo = new JTextArea("Room Information", 9, 30);
+    private ArrayList<Room> reservedRooms;
+    private String currentDate;
+    
+    
+    public static final String[] months = {"January", "February", "March", "April", "May",
+                "June", "July", "August", "September", "October", "November", "December"};
+    public static final String[] years = {"2014", "2015", "2016", "2017", "2018"};
+    
+    public CalendarView(HotelModel model) {
+        this.model = model;
+        calendar.setCalendar(calendar.getYear(), calendar.getMonth());
+
+
+
+        
+        JButton saveButton = new JButton("Save and Quit");
+        saveButton.addActionListener(createSaveListener());
+        
+        JComboBox monthBox  = new JComboBox(months);
+        monthBox.setSelectedIndex(10);
+        monthBox.addActionListener(new
+            ActionListener(){
+                public void actionPerformed(ActionEvent e){
+                    JComboBox cb = (JComboBox)e.getSource();
+                    int selected = cb.getSelectedIndex();
+                    calendar.setCalendar(calendar.getYear(), selected);
+                    calendar.fireTableDataChanged();
+
+                }  
+            });
+           
+        
+        
+        JComboBox yearBox = new JComboBox(years);
+        yearBox.setSelectedIndex(0);
+        yearBox.addActionListener(new
+            ActionListener(){
+                public void actionPerformed(ActionEvent e){
+                    JComboBox cb = (JComboBox)e.getSource();
+                    int selected = Integer.parseInt((String) cb.getSelectedItem());
+                    calendar.setCalendar(selected, calendar.getMonth());
+                    calendar.fireTableDataChanged();
+                }
+          });
+        
+        
+        JPanel dateBox = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        dateBox.add(monthBox);
+        dateBox.add(yearBox);
+        dateBox.add(saveButton);
+        
+        
+        JPanel tablePanel = new JPanel();
+        tablePanel.add(table);
+        
+        JPanel dateCalendarBox = new JPanel(new BorderLayout());
+        dateCalendarBox.setBorder(BorderFactory.createEmptyBorder(-3, -3, -3, - 3));
+        dateCalendarBox.add(dateBox, BorderLayout.NORTH);
+        dateCalendarBox.add(tablePanel, BorderLayout.CENTER);
+        
+        
+        table.addMouseListener(tabelListener());
+        MyRenderer myRenderer = new MyRenderer();
+        table.setDefaultRenderer(Object.class, myRenderer);
+        setLayout(new BorderLayout());
+        add(dateCalendarBox, BorderLayout.WEST);
+        
+        
+        JPanel roomsPanel = new JPanel(new BorderLayout());
+        JPanel reservedPanel = new JPanel();
+        reservedPanel.add(roomInfo);
+        JPanel roomsAvailablePanel = new JPanel();
+        roomsAvailablePanel.add(
+        
+        add(roomInfo, BorderLayout.EAST);
+        setVisible(true);
+    } 
+
+     
+    public void stateChanged(ChangeEvent e){
+       String reservedRoomsDescription = "";
+       if (reservedRooms != null){
+           if (reservedRooms.size() > 0){
+            for (Room r : reservedRooms){
+                reservedRoomsDescription += r.toString() + " Guest: " + r.getReservationAt(currentDate).getUser().getName() + " Price: $" +  r.getCost() + "\n"+
+                                            "--------------------------\n";
+            }
+            roomInfo.setText(reservedRoomsDescription);
+        } else {
+            roomInfo.setText("No reservations");
+        }
+      }
+     }
+    
+     public MouseAdapter tabelListener(){
+         return new MouseAdapter(){
+                public void mouseClicked(MouseEvent e) {
+                 JTable table = (JTable) e.getSource();
+                    int row = table.getSelectedRow();
+                    int col = table.getSelectedColumn();
+                    String day = (String) table.getValueAt(row, col);
+                    String month = Integer.toString(today.get(Calendar.MONTH)+1);
+                    int intDay = Integer.parseInt(day);
+                    int intMonth = Integer.parseInt(month);
+                    if (intDay < 10) { day = "0" + intDay; }
+                    if (intMonth < 10) { month = "0" + intMonth; }
+                    
+
+                    currentDate = month + "/" + day + "/" + today.get(Calendar.YEAR);
+                    reservedRooms = model.getReservations(currentDate);
+                    model.notifyViews();
+              }
+        };
+    }
+    
+    private ActionListener createSaveListener(){
+        return new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                model.saveInfo();
+                setVisible(false);
+            }
+        };
+    }
+    
+    
+ class MyRenderer extends DefaultTableCellRenderer {
+
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column); 
+        comp.setBackground(Color.WHITE);
+        comp.setForeground(Color.BLACK);
+        return comp;
+    }
+
+}
+}

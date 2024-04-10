@@ -1,0 +1,114 @@
+
+/**
+ * ##### # ########### ## ##### ####### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+
+import java.util.Scanner;
+
+public class BuildWS
+{
+    private char[][] array;
+    private int rows;
+    private int columns;
+    private String word="";
+
+    public BuildWS()
+    {
+    }
+
+    public void build()
+    {
+        Scanner in = new Scanner(System.in);
+        System.out.println("How many rows would you like? >");
+        rows = in.nextInt();
+        System.out.println("How many columns would you like? >");
+        columns = in.nextInt();
+        array = new char[rows][columns];
+
+        for(int r = 0; r < rows; r++)
+        {
+            for(int c = 0; c < columns; c++)
+            {
+                array[r][c] = 0;
+            }
+        }
+
+        while(!word.equals("end"))
+        {
+            Scanner ins = new Scanner(System.in);
+            System.out.print("Add a word to your search (end to stop) >");
+            word = ins.nextLine();
+            if(!word.equals("end"))
+            {
+                addWord();
+            }
+        }
+        printArray();
+    }
+
+    public void addWord()
+    {
+        int method = (int) ((Math.random() * 3) + 1)
+        if(method == 1)
+        {
+            horizontal();
+        }
+        else if(method == 2)
+        {
+            vertical();
+        }
+        else
+        {
+            diagonal();
+        }
+    }
+    
+    private void horizontal()
+    {
+        boolean fit = false;
+        int r = (int) (Math.random() * rows);
+        int c = (int) (Math.random() * (columns - word.length()));
+        
+        for(int i = 0; i < word.length(); i++)
+        {
+            if(array[r][c+i] == (word.charAt(i)) || array[r][c+i] == 0)
+            {
+                fit = true;
+            }
+            else
+            {
+                fit = false;
+                break;
+            }
+        }
+        
+        if(fit == true)
+        {
+            for(int i = 0; i < word.length(); i++)
+            {
+                array[r][c+i] = word.charAt(i);
+            }
+        }
+        else if(fit == false)
+        {
+            addWord();
+        }
+    }
+
+    
+    private void printArray()
+    {
+        for(int r = 0; r < array.length; r++)
+        {
+            for(int c = 0; c < array[0].length; c++)
+            {
+                System.out.print(array[r][c]);
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+}

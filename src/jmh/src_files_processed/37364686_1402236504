@@ -1,0 +1,68 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+/**
+ * ##### # ########### ## ##### ####### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+
+public class DrawShapes6 extends JFrame implements MouseListener, MouseMotionListener {
+    private Polygon dragged;
+    private Point lastLocation;
+    boolean isBoxClicked = false;
+    myListener myListener = new MyListener();
+    addMouseListener(myListener);
+
+    addMouseMotionListener(myListener);
+
+    public static void main(String[] args) {
+        new DrawShapes5();  
+    }
+
+    public DrawShapes6 () {
+        this.setTitle("Click then Drag the Box");
+        setSize(400,200);
+
+        this.setSize(600,600);
+        this.setVisible(true);
+        addMouseListener(this);
+        addMouseMotionListener(this);
+
+    }
+
+    public void mouseClicked(MouseEvent square) {
+        Graphics g = getGraphics(); 
+        g.fillRect(square.getX(),square.getY(), 100, 100);
+
+        System.out.println("CLICK");
+
+    }
+
+    public void mouseMoved(MouseEvent e) {
+        System.out.println("It moved");
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        if (dragged != null) {
+            dragged.translate(e.getX() - lastLocation.x, e.getY() - lastLocation.y);
+            lastLocation = e.getPoint();
+            repaint();
+        }
+    }
+
+    public void mouseEntered(MouseEvent arg0) {}
+
+    public void mouseExited(MouseEvent arg0) {}
+
+    @Override
+    public void mousePressed(MouseEvent arg0) {}
+
+    @Override
+    public void mouseReleased(MouseEvent arg0) {}
+
+    void saySomething(String eventDescription, MouseEvent e) {}
+}

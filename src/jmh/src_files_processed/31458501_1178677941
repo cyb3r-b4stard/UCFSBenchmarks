@@ -1,0 +1,325 @@
+
+/* #### ### ####### ########## #
+ * ####:
+ * ########:
+ * ##:
+ */
+
+import ecs100.*;
+import java.awt.Color;
+import java.lang.*;
+
+/**
+ * ##### # #### #### ### #### ## ##### ########, ### #### ###### #### ### #### ## #####
+ */
+
+public class DateValidator {
+    public static final int NoOfMonths = 12;
+
+    /**
+     * Asks user for a date, then determines whether the date
+     *    specified by the three integers is a valid date.
+     * For the Core, you may assume that
+     * - All months have 31 days, numbered 1 to 31
+     * - The months run from 1 to 12
+     * - Years start from 1 
+     */
+    public void validateDateCore(){
+        int NoDaysInMnth = 31;
+        int Day = UI.askInt("Day: ");
+        int Month = UI.askInt("Month: ");
+        int Year = UI.askInt("Year: ");
+
+        if (Day > 31 || Day < 1 || Month < 1 || Month > 12 || Year < 0)
+        {
+            UI.println("The date " + Day + "/" + Month + "/" + Year + " is not valid");
+
+            if (Day > 31 || Day < 1) {
+                UI.println("The day entered is not valid.");
+            }
+
+            if (Month < 1 || Month > 12) {
+                UI.println("The month entered is not valid.");
+            }
+
+            if (Year < 0) {
+                UI.println("The year entered is not valid");
+            }
+        }
+
+        else {
+            UI.println("The date " + Day + "/" + Month + "/" + Year + " is valid");
+        }
+    }
+
+    /**
+     * Asks user for a date, then determines whether the date
+     *    specified by the three integers is a valid date.
+     * For the Completion, you should also check that
+     * - Months have the correct number of days
+     * - On leap years February should have 29 days.
+     *    A year is a leap year if:
+     *       - The year can be evenly divided by 4 but not 100
+     *       - The year can be evenly divided by 400 
+     */
+    public void validateDateCompletion(){
+        int Day = UI.askInt("Day: ");
+        int Month = UI.askInt("Month: ");
+        int Year = UI.askInt("Year: ");
+
+        UI.println(""); 
+
+        int[] DaysInNormMonth = {31,28,31,30,31,30,31,31,30,31,30,31}; 
+        int DaysInFebLeap = 29; 
+        int MonthIndex = Month - 1; 
+
+        if (Year >= 1) {
+            UI.println("You have entered a valid year");
+
+            if ((Year % 4 == 0) || (Year % 400 == 0) && (Year % 100 != 0)) {
+
+                if (Month > NoOfMonths || Month < 1) {
+                    UI.println("You have entered an invalid month");
+                    UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is invalid" );
+                }
+
+                if (Month <= NoOfMonths && Month >=1) {
+                    UI.println("You have entered a valid month");
+
+                    if ((!(Month == 2)) && Day <= DaysInNormMonth[MonthIndex] && Day >= 1) {
+                        UI.println("You have entered a valid day");
+                        UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is valid");
+                    }
+
+                    else if ((!(Month == 2)) && (Day > DaysInNormMonth[MonthIndex] || Day < 1)) {
+                        UI.println("You have entered an invalid day");
+                        UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is invalid");
+                    }
+
+                    if (Month == 2) {
+
+                        if (Day <= DaysInFebLeap && Day >=1) {
+                            UI.println("You have entered a valid day");
+                            UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is valid");
+                        }
+
+                        else if (Day > DaysInFebLeap || Day < 1) {
+                            UI.println("You have entered an invalid day");
+                            UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is invalid" );
+                        }
+                    }
+                }
+            }
+            else {
+
+                if (Month > NoOfMonths || Month < 1) {
+                    UI.println("You have entered an invalid month");
+                    UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is invalid" );
+                }
+
+                if (Month <= NoOfMonths && Month >= 1) {
+                    UI.println("You have entered a valid month");
+
+                    if (Day <= DaysInNormMonth[MonthIndex] && Day >=1) {
+                        UI.println("You have entered a valid day");
+                        UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is valid");
+                    }
+
+                    else {
+                        UI.println("You have entered an invalid day");
+                        UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is invalid");
+                    }
+                }
+            }
+        }
+
+        else {
+            UI.println("You have entered an invalid year");
+            UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is invalid" );
+        }
+    }
+
+    /**
+     * For the challenge, your program should be extended to deal with the transition from the Julian to Gregorian calendar. 
+     * The program should look at the date, determine whether this should be a Julian or Gregorian date, and test it appropriately. 
+     * You will need to find the rules of the Julian calendar yourselves. 
+     * 
+     */
+    public void validateDateChallenge(){
+        String[] CountryNames = {"France","Italy","Poland","Portugal","Spain","Austria","Germany","Hungary","United States","Canada","United Kingdom","Japan","Bulgaria","Estonia","Russia","Greece","Turkey"};
+        int[] CountryDates = {1582,1582,1582,1582,1582,1583,1583,1587,1752,1752,1752,1872,1916,1918,1918,1923,1926};
+        int CountryDate = 0;
+        UI.println("This program checks the validity of a date based upon two calendars - the older Julian calendar and newer gregorian calendar.\n");
+
+        UI.println("For the older Julian calendar, when it was introduced is dependent on your country. Here's a list of the countries we have on record:");
+        UI.println("France, Italy, Poland, Portugal, Spain, Austria, Germany, Hungary, United States, Canada, United Kingdom, Japan, Bulgaria, Estonia, Russia, Greece, Turkey");
+
+        String CountryInput = "";
+
+        int i;
+
+        do {
+            CountryInput = UI.askString("Which country would you like to select? Type the name here: ");
+
+            for (i = 0; i <= CountryDates.length - 1; i++) {
+                if (CountryInput.equalsIgnoreCase(CountryNames[i]-1)) {
+                    CountryDate = CountryDates[i];
+                }
+            }
+        } while (!(CountryInput.equalsIgnoreCase(CountryNames[i] -1)));
+
+        UI.println(""); 
+        int Day = UI.askInt("Day: ");
+        int Month = UI.askInt("Month: ");
+        int Year = UI.askInt("Year: ");
+
+        UI.println(""); 
+
+        int YearNeg = 0;
+        int[] DaysInNormMonth = {31,28,31,30,31,30,31,31,30,31,30,31}; 
+        int DaysInFebLeap = 29; 
+        int MonthIndex = Month - 1; 
+
+        if (Year >= -46 && Year < 0) {
+            YearNeg = Math.abs(Year);
+        }
+
+        if (Year >= 1 || YearNeg >=1) {
+            UI.println("You have entered a valid year");
+
+            if (Year < CountryDate) {
+                if (Year % 4 == 0) {
+
+                    if (Month > NoOfMonths || Month < 1) {
+                        UI.println("You have entered an invalid month");
+                        UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is invalid" );
+                    }
+
+                    if (Month <= NoOfMonths && Month >=1) {
+                        UI.println("You have entered a valid month");
+
+                        if ((!(Month == 2)) && Day <= DaysInNormMonth[MonthIndex] && Day >= 1) {
+                            UI.println("You have entered a valid day");
+                            UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is valid");
+                        }
+
+                        else if ((!(Month == 2)) && (Day > DaysInNormMonth[MonthIndex] || Day < 1)) {
+                            UI.println("You have entered an invalid day");
+                            UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is invalid");
+                        }
+
+                        if (Month == 2) {
+
+                            if (Day <= DaysInFebLeap && Day >=1) {
+                                UI.println("You have entered a valid day");
+                                UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is valid");
+                            }
+
+                            else if (Day > DaysInFebLeap || Day < 1) {
+                                UI.println("You have entered an invalid day");
+                                UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is invalid" );
+                            }
+                        }
+                    }
+                }
+                else {
+
+                    if (Month > NoOfMonths || Month < 1) {
+                        UI.println("You have entered an invalid month");
+                        UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is invalid" );
+                    }
+
+                    if (Month <= NoOfMonths && Month >= 1) {
+                        UI.println("You have entered a valid month");
+
+                        if (Day <= DaysInNormMonth[MonthIndex] && Day >=1) {
+                            UI.println("You have entered a valid day");
+                            UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is valid");
+                        }
+
+                        else {
+                            UI.println("You have entered an invalid day");
+                            UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is invalid");
+                        }
+                    }
+                }
+            }
+
+            if (Year >= CountryDate) {
+                if ((Year % 4 == 0) || (Year % 400 == 0) && (Year % 100 != 0)) {
+
+                    if (Month > NoOfMonths || Month < 1) {
+                        UI.println("You have entered an invalid month");
+                        UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is invalid" );
+                    }
+
+                    if (Month <= NoOfMonths && Month >=1) {
+                        UI.println("You have entered a valid month");
+
+                        if ((!(Month == 2)) && Day <= DaysInNormMonth[MonthIndex] && Day >= 1) {
+                            UI.println("You have entered a valid day");
+                            UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is valid");
+                        }
+
+                        else if ((!(Month == 2)) && (Day > DaysInNormMonth[MonthIndex] || Day < 1)) {
+                            UI.println("You have entered an invalid day");
+                            UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is invalid");
+                        }
+
+                        if (Month == 2) {
+
+                            if (Day <= DaysInFebLeap && Day >=1) {
+                                UI.println("You have entered a valid day");
+                                UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is valid");
+                            }
+
+                            else if (Day > DaysInFebLeap || Day < 1) {
+                                UI.println("You have entered an invalid day");
+                                UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is invalid" );
+                            }
+                        }
+                    }
+                }
+                else {
+
+                    if (Month > NoOfMonths || Month < 1) {
+                        UI.println("You have entered an invalid month");
+                        UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is invalid" );
+                    }
+
+                    if (Month <= NoOfMonths && Month >= 1) {
+                        UI.println("You have entered a valid month");
+
+                        if (Day <= DaysInNormMonth[MonthIndex] && Day >=1) {
+                            UI.println("You have entered a valid day");
+                            UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is valid");
+                        }
+
+                        else {
+                            UI.println("You have entered an invalid day");
+                            UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is invalid");
+                        }
+                    }
+                }
+            }
+        }
+
+        else {
+            UI.println("You have entered an invalid year");
+            UI.println("Therefore your date of " + Day + "/" + Month + "/" + Year + " is invalid" );
+        }
+    }
+
+    /** ---------- The code below is already written for you ---------- **/
+    /** Constructor: set up user interface */
+    public DateValidator(){
+        UI.initialise();
+        UI.addButton("Clear", UI::clearText );
+        UI.addButton("Validate Date Core", this::validateDateCore );
+        UI.addButton("Validate Date Completion", this::validateDateCompletion );
+        UI.addButton("Validate Date Challenge", this::validateDateChallenge );
+        UI.addButton("Quit", UI::quit );
+        UI.setDivider(1);       
+
+    }
+}

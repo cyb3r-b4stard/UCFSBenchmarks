@@ -1,0 +1,41 @@
+import java.io.*;
+import java.util.*;
+
+/**
+ * #### ### - ### #
+ * #### ########
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class UnixCommands {
+    public int[] wc() throws IOException {
+        Reader in = new InputStreamReader(new FileInputStream("warandpeace.txt"), "UTF-8")
+        BufferedReader br = new BufferedReader(in);
+        int[] res = new int[3];
+        int charCount = 0;
+        int wordCount = 0;
+        int lineCount = 0;
+        boolean canWord = true;
+        boolean firstLine = true;
+        int curr;
+        while( (curr = br.read()) > -1) {
+            charCount++;
+            curr = (char)curr;
+            if (firstLine) { lineCount++; firstLine = false;}
+            if (curr == '\n') { 
+                lineCount++; 
+            }
+            if (canWord && !Character.isWhitespace(curr)) { 
+                wordCount++; 
+                canWord = false;
+            }
+            if (Character.isWhitespace(curr)) { canWord = true;}
+        }   
+        res[0] = lineCount;
+        res[1] = wordCount;
+        res[2] = charCount;
+        System.out.println("lines: " + res[0] + " words: " + res[1] + " chars: " + res[2]);
+        return res;
+    }
+}

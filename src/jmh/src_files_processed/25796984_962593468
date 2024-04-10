@@ -1,0 +1,44 @@
+import java.time.LocalDateTime;
+
+/**
+ * ### ########## ##### ### ####, ### #### ###### ######### ######### ###.
+ * 
+ * @###### ####### #######
+ * @####### ##. ######## ####
+ */
+class Zeitmesser
+{
+    private final long _ersteMessung;
+    private long _letzteMessung;
+
+    /**
+     * Die Zeitmessung beginnt bei der Erzeugung.
+     */
+    public Zeitmesser()
+    {
+       LocalDateTime now = LocalDateTime.now();
+       long nanosSinceMidnight = now.getHour() * 3600 * 1000_000_000 + now.getMinute() * 60 * 1000_000_000 + now.getSecond() * 1000_000_000 + now.getNano();
+       _letzteMessung = System.nanoTime
+       _ersteMessung = _letzteMessung - nanosSinceMidnight;
+    }
+
+    /**
+     * Diese Methode sollte pro Animationsschritt nur 1x aufgerufen werden,
+     * damit alle Klienten mit demselben Wert arbeiten!
+     */
+    public void notiereAktuelleZeit()
+    {
+        _letzteMessung = System.nanoTime();
+    }
+
+    /**
+     * Bestimmt, wie viel Zeit zwischen der Erzeugung des Zeitmessers und dem
+     * letzten Aufruf von notiereAktuelleZeit vergangen ist.
+     * 
+     * @return die vergangene Zeit in Sekunden, mit Nanosekunden-Genauigkeit
+     */
+    public double abgelaufeneSekunden()
+    {
+        return (_letzteMessung - _ersteMessung) / 1e9;
+    }
+}

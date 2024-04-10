@@ -1,0 +1,149 @@
+
+public class Firma {
+	public Pracownik[] pracownicy = null; 
+	public int obecniePracownikow = 0;
+
+	public Firma(int iloscPracownikow) 
+	{
+		pracownicy = new Pracownik[iloscPracownikow];
+	}
+
+	
+	public Pracownik dodajPracownika(String nazwisko) 
+	{
+		Pracownik pracownik = null;
+		for (int i = 0; i < obecniePracownikow; i++) {
+			if (pracownicy[i].nazwisko.equals(nazwisko))
+				pracownik = pracownicy[i];
+		}
+		return pracownik;
+	}
+
+	public boolean jestUrzednik(Pracownik pracownik) 
+	{
+		return pracownik instanceof Urzednik;
+	}
+
+	public boolean jestRobotnik(Pracownik pracownik) {
+		return pracownik instanceof Robotnik;
+	}
+
+	
+	/**
+	 * Dodaje podanego pracownika do tablicy pracownikow, o ile w firmie
+	 * nie ma jeszcze osoby o takim nazwisku
+	 */
+	public void wpisz(Pracownik pracownik) {
+		if (dodajPracownika(pracownik.nazwisko) != null) {
+			System.out.printf("Blad - w firmie pracuje juz osoba o nazwisku %s\n", pracownik.nazwisko);
+		} else {
+			pracownicy[obecniePracownikow++] = pracownik;
+			System.out.printf("Zatrudniono pracownika %s\n", pracownik.nazwisko);
+		}
+	}
+
+	
+	public void usun(String nazwisko) 
+	{
+		boolean przesuwaj = false;
+		for (int i = 0; i < obecniePracownikow; i++) {
+			if (pracownicy[i].nazwisko.equals(nazwisko)) {
+				przesuwaj = true;
+				obecniePracownikow--;
+			}
+			if (przesuwaj)
+				pracownicy[i] = pracownicy[i + 1];
+		}
+		if (przesuwaj)
+			System.out.printf("Zwolniono pracownika %s\n", nazwisko);
+		else
+			System.out.printf("W firmie nie ma zatrudnionej osoby o nazwisku %s\n", nazwisko "\n");
+	}
+
+	public int iluUrzednikow() {
+		int urzednikow = 0;
+		for (int i = 0; i < obecniePracownikow; i++) {
+			if (pracownicy[i] instanceof Urzednik)
+				urzednikow++;
+		}
+
+		return urzednikow;
+	}
+
+	public int iluRobotnikow() {
+		int robotnikow = 0;
+		for (int i = 0; i < obecniePracownikow; i++) {
+			if (pracownicy[i] instanceof Robotnik)
+				robotnikow++;
+		}
+
+		return robotnikow;
+	}
+
+	public double sumaWyplatUrzednikow() {
+		double sumaWyplat = 0;
+		for (int i = 0; i < obecniePracownikow; i++) {
+			if (pracownicy[i] instanceof Urzednik)
+				sumaWyplat += pracownicy[i].wyplata();
+		}
+
+		return sumaWyplat;
+	}
+
+	public double sumaWyplatRobotnikow() {
+		double sumaWyplat = 0;
+		for (int i = 0; i < obecniePracownikow; i++) {
+			if (pracownicy[i] instanceof Robotnik)
+				sumaWyplat += pracownicy[i].wyplata();
+		}
+
+		return sumaWyplat;
+	}
+
+	public double sumaWyplat() {
+		double sumaWyplat = 0;
+		for (int i = 0; i < obecniePracownikow; i++)
+			sumaWyplat += pracownicy[i].wyplata();
+		return sumaWyplat;
+	}
+
+	public void drukujListePracownikow() {
+		System.out.println("Lista pracownikow:");
+		System.out.printf("%2s. %10s - %8s - %s\n", "lp", "nazwisko", "grupa", "etat");
+		for (int i = 0; i < obecniePracownikow; i++) {
+			Pracownik p = pracownicy[i];
+			System.out.printf("%2d. %10s - %s - %4s\n", i + 1, p.nazwisko, (jestRobotnik(p) ? "Robotnik" : "Urzednik"), p.etat);
+		}
+	}
+
+	public void drukujListeUrzednikow() {
+		System.out.println("Lista urzednikow:");
+		System.out.printf("%2s. %10s - %s\n", "lp", "nazwisko", "etat");
+		int lp = 0;
+		for (int i = 0; i < obecniePracownikow; i++) {
+			Pracownik p = pracownicy[i];
+			if (jestUrzednik(p))
+				System.out.printf("%2d. %10s - %4s\n", ++lp, p.nazwisko, p.etat);
+		}
+	}
+
+	public void drukujListeRobotnikow() {
+		System.out.println("Lista robotnikow:");
+		System.out.printf("%2s. %10s - %s\n", "lp", "nazwisko", "etat");
+		int lp = 0;
+		for (int i = 0; i < obecniePracownikow; i++) {
+			Pracownik p = pracownicy[i];
+			if (jestRobotnik(p))
+				System.out.printf("%2d. %10s - %4s\n", ++lp, p.nazwisko, p.etat);
+		}
+	}
+
+	public void drukujListePlac() {
+		System.out.println("Lista plac:");
+		System.out.printf("%2s. %10s - %8s - %4s - %s\n", "lp", "nazwisko", "grupa", "etat", "wyplata");
+		for (int i = 0; i < obecniePracownikow; i++) {
+			Pracownik p = pracownicy[i];
+			System.out.printf("%2d. %10s - %8s - %4s - %s\n", i + 1, p.nazwisko, (jestRobotnik(p) ? "Robotnik" : "Urzednik"), p.etat, p.wyplata());
+		}
+	}
+}

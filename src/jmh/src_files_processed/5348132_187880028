@@ -1,0 +1,128 @@
+/**
+ * @######  <#### #### ####>
+ * @####### <####>
+ * ##### ########## #.
+ *
+ * ## ## #####, <####>, #### ########### ########## ## ## ### #### ### # ####
+ * ### ###### ## ######## #### ### ##### ####### ## ### #####.
+ *
+ *
+ * # ####### ## ##### # ##### ###### ## #### #######
+ * ####### ### ########.
+ *
+ *  ##### #######:
+ *  #####:
+ *  ####### # ##### ##:
+ *  ###### ####:
+ *  ###### ## #### #### #### ## #### ##########:
+ */
+
+import java.util.Scanner;
+
+public class Hangman {
+
+    public static final int totalWrongs = 5;
+    
+    public static void main(String[] args) {
+        intro();
+        PhraseBank phrases = new PhraseBank();
+        Scanner keyboard = new Scanner(System.in);
+        
+        String secretPhrase = phrases.getNextPhrase();
+        boolean another = true;
+        int wrongs = 0;
+        while (another) {
+            playOneGame(keyboard, secretPhrase, wrongs);
+            another = playAgain(keyboard);
+        }
+    }
+
+    public static void intro() {
+        System.out.println("This program plays the game of hangman.");
+        System.out.println("When the window opens select the file");
+        System.out.println("with the phrases you want to use.\n");
+        System.out.println("The computer will pick a random phrase.");
+        System.out.println("Enter capital letters as your guesses.");
+        System.out.println("After 5 wrong guesses you lose.");
+    }
+    
+    public static void playOneGame(Scanner keyboard, String secretPhrase, int wrongs) {
+        System.out.println("I am thinking of a Movie ...");
+        System.out.println();
+        String hiddenPhrase = "";
+        hiddenPhrase = hiding(secretPhrase);
+        System.out.println("The current phrase is " + hiddenPhrase);
+        System.out.println("The letters you have not guessed yet are:");
+        String lettersNotGuessed = "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z ";
+        System.out.println(lettersNotGuessed);
+        while (wrongs < totalWrongs) {
+            System.out.print("Enter your next guess: ");
+            String guess = keyboard.next();
+            System.out.println();
+            System.out.println("You guessed " + guess.toUpperCase());
+            compare(guess, wrongs, secretPhrase);
+            lettersNotGuessed = updateAlphabet(guess, hiddenPhrase, lettersNotGuessed);
+            System.out.println(lettersNotGuessed);
+           
+        } 
+        System.out.println("You lose. The secret phrase was " + secretPhrase);
+    }
+        
+        public static String hiding(String secretPhrase) {
+            int length = secretPhrase.length();
+            System.out.println("(" + secretPhrase +")");          
+            String phrase = "";
+            for (int i = 0; i < secretPhrase.length(); i ++) {
+                if (secretPhrase.charAt(i) == ('_')) {
+                    phrase += "_";
+                } else {
+                    phrase += "*";
+                }
+            }
+            return phrase;
+        }
+        
+        public static boolean compare(String guess, int wrongs, String secretPhrase) {
+            if (secretPhrase.contains(guess)) 
+                return true;
+                return false;
+        }
+            
+        }
+        
+         public static void compare(String guess, int wrongs, String secretPhrase) {
+            if (secretPhrase.contains(guess)) {
+                System.out.println("That is present in the secret phrase.");
+                wrongs = wrongs;
+            } else {
+                System.out.println("That is not present in the secret phrase.");
+                wrongs ++;
+                System.out.println(wrongs);                 
+            }
+            System.out.println("You have made " + wrongs + " wrong guesses.");
+            System.out.println();
+        }
+        
+        public static String updateAlphabet(String guess, String hiddenPhrase, String lettersNotGuessed) {
+            System.out.println("The current phrase is " + hiddenPhrase);           
+            System.out.println("The letters you have not guessed yet are:");
+            lettersNotGuessed = "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z ";
+            for (int i = 0; i < lettersNotGuessed.length(); i ++) {
+                String cutChar = String.valueOf(lettersNotGuessed.charAt(i));
+                if (cutChar.equalsIgnoreCase(guess)) {
+                    lettersNotGuessed = lettersNotGuessed.replace(lettersNotGuessed.substring(i,i+2),"");
+                }
+            }
+            return lettersNotGuessed;
+        }
+        
+    public static boolean playAgain(Scanner keyboard) {
+        System.out.println("Do you want to play again?");
+        System.out.print("Enter 'Y' or 'y' to play again: ");
+        String option = keyboard.next();
+        while (option.equalsIgnoreCase("y")) {
+            return true;
+        }
+        return false;
+    }
+}

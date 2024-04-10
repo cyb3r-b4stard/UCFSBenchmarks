@@ -1,0 +1,130 @@
+
+/**
+ * ###### ####### ### #### ## ####### #### ## ######### ### ############ ### ########
+ * 
+ * @###### (######-######### #######) 
+ * @####### (#.#) 
+ */
+import java.net.*;
+import java.io.*;
+import info_sprinter.*;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+public class Serveur_Android implements Runnable
+{
+    final static int NB_OCTETS = 1000;
+    int m_nPort = 2223;
+    ServerSocket m_ssServeur_Android;
+    Thread m_tService;
+    HDataSprinter hds = new HDataSprinter();
+    FileInputStream fisFichier;
+    FileOutputStream fosFichier; 
+    DataOutputStream dosFluxDonnees;
+    PisteCourse AndroidPiste;
+    DBSprinter DBsprinter = new DBSprinter();
+    
+    public Serveur_Android(PisteCourse PisteC)
+    {
+        AndroidPiste = PisteC;
+        try
+        {
+            m_ssServeur_Android = new ServerSocket(m_nPort, NB_OCTETS);
+            m_tService = new Thread(this);
+            m_tService.start();
+        }
+        catch(IOException e)
+        {
+            System.out.println(e.toString());
+        }
+        catch(Exception e)
+        {
+            System.out.println(e.toString());
+        }
+    }
+
+    public void run()
+    {
+        while(m_tService != null)
+        {
+            try
+            {
+                System.out.println("Attente d'une connexion au serveur Android...");
+                Socket sConnexion = m_ssServeur_Android.accept();
+                System.out.println("1");
+                InputStream isIn = sConnexion.getInputStream();
+                OutputStream osOut = sConnexion.getOutputStream();
+                int i = 0;
+                int size = 0;
+                while(isIn.available() == 0)
+                { 
+                    System.out.println("nb="+isIn.available());
+                    Thread.sleep(50);
+                    if(i++ > 10)
+                        break;
+
+                }
+                if(isIn.available()>0)
+                {
+                    byte[] b = new byte[isIn.available()];
+                    size = isIn.read(b, 0, isIn.available());
+
+                    String sCommande = new String(b, 0, size);
+                    String[] words= sCommande.split("/");
+                    System.out.println(words[0]);
+                    if(words[0].equalsIgnoreCase("N"))
+                    {   
+                    hds.setID(Integer.parseInt(words[1]));
+                    hds.setName(words[2]);
+                    AndroidPiste.Addrunner(hds.getName(),hds.getID());
+                    }
+                    else if(words[0].equalsIgnoreCase("C"))
+                    {
+                        System.out.println("HELLO");
+                        hds = DBsprinter.lectureSprinters(Integer.parseInt(words[1]));
+                        System.out.println(words[1]);
+                        String Nom = hds.getName();
+                        Float Temp = hds.getTime();
+                        String STemp = Temp.toString();
+                        Float 
+                        System.out.println(hds.getName()+"/"+hds.getTime()+"/"+hds.getDate()+"/"+hds.getBestTime()+"/"+hds.getBestDate()+"/"+hds.getBestTime()+"/"+hds.getBestDate());
+                        osOut.write((hds.getName()+"/"+hds.getTime()+"/"+hds.getDate()+"/"+hds.getBestTime()+"/"+hds.getBestDate()+"/"+hds.getBestTime()+"/"+hds.getBestDate()).getBytes());
+                        System.out.println(hds.getName()+"/"+hds.getTime()+"/"+hds.getDate()+"/"+hds.getBestTime()+"/"+hds.getBestDate()+"/"+hds.getBestTime()+"/"+hds.getBestDate());
+                        Thread.sleep(500);
+                    }
+                    else if(words[0].equalsIgnoreCase("L"))
+                    {
+                        
+                    }
+                    System.out.println(sCommande.length());
+                    Thread.sleep(500);
+                }
+                /*OutputStream osOut = sConnexion.getOutputStream();
+                ObjectOutputStream oosOut = new ObjectOutputStream(osOut);
+                System.out.println(hds.getID());
+                System.out.println(hds.getName());
+                System.out.println(hds.getTime());
+                System.out.println(hds.getDate());*/
+                fosFichier = new FileOutputStream(new Integer(hds.getID()).toString() + ".txt");
+                dosFluxDonnees = new DataOutputStream(fosFichier);
+                /*dosFluxDonnees.writeBytes(new Integer(hds.getID()).toString() + "\n");  
+                dosFluxDonnees.writeBytes(hds.getName() + "\n");                        
+                dosFluxDonnees.writeBytes(new Float(hds.getTime()).toString() + "\n");  
+                dosFluxDonnees.writeBytes(hds.getDate().toString() + "\n");             
+                isIn.close();
+            }
+            catch(IOException e)
+            {
+                System.out.println(e.toString());
+            }
+            /* catch(ClassNotFoundException e)
+            {
+            System.out.println(e.toString());
+            }*/
+            catch(Exception e)
+            {
+                System.out.println(e.toString());
+            }   
+        }    
+    }
+} 

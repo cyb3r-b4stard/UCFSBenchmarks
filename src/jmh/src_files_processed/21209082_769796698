@@ -1,0 +1,62 @@
+import java.text.*;
+
+public class Account
+{   private String name;
+    private double balance;
+    
+    public Account(String name)
+    {   this.name = name;
+        balance = readBalance();    }
+    
+    private double readBalance()
+    {   System.out.print(name + " initial balance: $");
+        return In.nextDouble(); }
+        
+    public boolean matches(String name)
+    {   return this.name.toLowerCase().equals(name.toLowerCase());  }
+
+    public void use()
+    {   
+        boolean menu = true;
+        char menuOption;
+        
+        while (menu) {
+            menuOption = In.nextChar("Account Choice: ")
+            switch (menuOption) {
+                case 'x': break;
+                case 'd': deposit();
+                          break;
+                case 'w': withdraw();
+                          break;
+                case 's': show();
+                          break;
+                default : System.out.print("No such choice\n");
+                          break;
+            }
+        }
+    }
+        
+    private void deposit()
+    {   balance += readAmount("deposit"); }
+        
+    private double readAmount(String action)
+    {   System.out.print("  Amount to " + action + ": $");
+        return In.nextDouble(); }
+
+    private void withdraw()
+    {   double amount = readAmount("withdraw");
+        if (balance >= amount)
+            balance -= amount;
+        else
+            System.out.println("  Not enough cash");  }
+            
+    public void show()
+    {   System.out.println(toString()); }
+   
+    public String toString()
+    {   return "  " + name + " account has $" + formatted(balance);  }
+   
+    private String formatted(double amount)
+    {   DecimalFormat form = new DecimalFormat("###,##0.00");
+        return form.format(amount);  }
+}

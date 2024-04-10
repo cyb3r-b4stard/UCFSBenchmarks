@@ -1,0 +1,192 @@
+
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import java.util.*;
+import java.io.*;
+public class Utilizador implements Serializable
+{
+    private String nome;
+    private String password;
+    private String email;
+    private String genero;
+    private int altura;
+    private int peso;
+    private GregorianCalendar dataNascimento;
+    private String desportoFavorito;
+    private TreeSet<Actividade> la;
+    
+    
+
+    /** construtor vazio */
+    public Utilizador(){
+        this.nome="";
+        this.password="";
+        this.email="";
+        this.genero="";
+        this.altura=0;
+        this.peso=0;
+        this.desportoFavorito="";
+        this.dataNascimento= new GregorianCalendar();
+        this.la = new TreeSet<Actividade>();
+    }
+    
+    
+    /** construtor com todas as variáveis menos a lista de actividades */
+    public Utilizador(String nome,String email,String password, String genero, int altura, int peso, GregorianCalendar dataNascimento,String desportoFavorito){
+        this.nome=nome;
+        this.email=email;
+        this.password=password;
+        this.genero=genero;
+        this.altura=altura;
+        this.peso=peso;
+        this.desportoFavorito=desportoFavorito;
+        this.dataNascimento=(GregorianCalendar) dataNascimento.clone();
+        this.la = new TreeSet<Actividade>(new ActividadeComparator());
+    }
+    
+    /** construtor com todas as variáveis */
+    public Utilizador(String nome,String email,String password, String genero, int altura, int peso, GregorianCalendar dataNascimento,String desportoFavorito, TreeSet<Actividade>() la){
+        this.nome=nome;
+        this.email=email;
+        this.password=password;
+        this.genero=genero;
+        this.altura=altura;
+        this.peso=peso;
+        this.desportoFavorito=desportoFavorito;
+        this.dataNascimento=(GregorianCalendar) dataNascimento.clone();
+        this.la = la.clone();
+    }
+    
+    /** construtor por cópia */
+    public Utilizador(Utilizador x){
+        this.nome=(x.getNome());
+        this.email=(x.getEmail());
+        this.password=(x.getPassword());
+        this.genero=(x.getGenero());
+        this.altura=(x.getAltura());
+        this.peso=(x.getPeso());
+        this.desportoFavorito=(x.getDesportoFavorito());
+        this.dataNascimento=(x.getDataNascimento());
+        this.la = x.getLA();
+    }
+    
+    /** devolve o nome do utilizador */
+    public String getNome(){return this.nome;}
+    /** devolve o email do utilizador */
+    public String getEmail(){return this.email;}
+    /** devolve a password do utilizador */
+    private String getPassword(){return this.password;}
+    /** devolve o género do utilizador*/
+    public String getGenero(){return this.genero;}
+    /** devolve a altura em centimetros*/
+    public int getAltura(){return this.altura;}
+    /** devolve o peso */
+    public int getPeso(){return this.peso;}
+    /** devolve o desporto favorito*/
+    public String getDesportoFavorito(){return this.desportoFavorito;}
+    /** devolve a data de nascimento */
+    public GregorianCalendar getDataNascimento(){return (GregorianCalendar) this.dataNascimento.clone();}
+    /** devolve a lista de actividades que o utilizador fez*/
+    
+    
+    /**altera o nome do utilizador */
+    public void setNome(String nome){this.nome=nome;}
+    /**altera o email do utilizador*/
+    private void setEmail(String email){this.email=email;}
+    /** altera a password do utilizador */
+    private void setPassword(String password){this.password=password;}
+    /**altera o género do utilizador */
+    public void setGenero(String genero){this.genero=genero;}
+    /** altera a altura do utilizador */
+    public void setAltura(int altura){this.altura=altura;}
+    /** altera o peso do utilizador*/
+    public void setPeso(int peso){this.peso=peso;}
+    /**altera o desporto favorito do utilizador*/
+    public void setDesportoFavorito(String a){this.desportoFavorito=a;}
+    /**altera a data de nascimento do utilizador*/
+    public void setDataNascimento(GregorianCalendar dataNascimento){this.dataNascimento=(GregorianCalendar) dataNascimento.clone();}
+    /**altera a lista de actividades do utilizador*/
+    
+    public TreeSet<Actividade> getLA(){
+        TreeSet<Actividade> novo = new TreeSet<Actividade>();
+        for(Actividade a: this.la) novo.add(a.clone());
+        return novo;
+    }
+    
+    /** set */
+    
+    public void setLA(TreeSet<Actividade> novo){
+        this.la.clear();
+        for(Actividade a: novo) this.la.add(a.clone());
+    }
+    
+    /**Altera o email se a password recebida como argumento for a password do utilizador*/
+    public int AlteraEmail(String password, String novomail){
+        if(this.password.equals(password)){
+            setEmail(novomail);
+            return 0;
+        }
+        return -1;
+    }
+    
+    /**verifica se a password introduzida é a password do utilizador*/
+    public boolean verificaPass(String pass){
+        return pass.equals(this.password);
+    }
+    
+    /** altera a password se a password recebida como argumento for a password do utilizador*/
+    public int AlteraPassword(String password, String novap){
+        if(this.password.equals(password)){
+            setPassword(novap);
+            return 0;
+        }
+        return -1;
+    }
+    
+    /** insere uma nova actividade na lista de actividades*/
+    
+    public void insereActividade(Actividade a){
+        this.la.add(a);
+    }
+   
+    
+    public Utilizador clone(){
+        return (new Utilizador(this));
+    } 
+    
+    public boolean equals(Object o){
+        if(o == this) return true;
+        if(o == null || o.getClass() != this.getClass()) return false;
+        Utilizador u = (Utilizador) o;
+        return (this.nome.equals(u.getNome()))&&(this.email.equals(u.getEmail()))&&(this.genero.equals(u.getGenero()))&&(this.altura == u.getAltura()) && (this.peso == u.getPeso()) &&(this.dataNascimento.equals(u.getDataNascimento())) && (this.desportoFavorito.equals(u.getDesportoFavorito())) &&(this.la.equals(u.getLA()));
+    }
+    
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("Nome: ");
+        sb.append(this.nome);
+        sb.append("\nEmail: ");
+        sb.append(this.email);
+        sb.append("\nGenero: ");
+        sb.append(this.genero);
+        sb.append("\nAltura: ");
+        float al = ((float)this.altura)/100;
+        sb.append(al);
+        sb.append("m\nPeso: ");
+        sb.append(this.peso);
+        sb.append("KG\nDesporto Favorito: ");
+        sb.append(this.desportoFavorito);
+        sb.append("\nData de Nascimento: ");
+        sb.append(this.dataNascimento.get(Calendar.DAY_OF_MONTH));
+        sb.append("/");
+        sb.append(this.dataNascimento.get(Calendar.MONTH));
+        sb.append("/");
+        sb.append(this.dataNascimento.get(Calendar.YEAR));
+        sb.append("\n");
+        return sb.toString();
+    }
+}

@@ -1,0 +1,102 @@
+import java.util.*;
+public class Tabelle
+{
+    private ArrayList<Mannschaft> tabelle;
+    private ArrayList<Mannschaft> tabelle2;
+    private ArrayList<Mannschaft> tabelle3;
+
+    public Tabelle(ArrayList<String> dieMannschaften)
+    {
+        this.tabelle = new ArrayList<Mannschaft>();
+    }
+
+    public void werteSpielAus(String m1Name, String m2Name,int tore1, int tore2)
+    {
+        
+        tabelle2 = new ArrayList<Mannschaft>();
+        int x = 0;
+        tabelle3 = new ArrayList<Mannschaft>();
+        int xx = -60;
+        
+        if(tore1 == tore2)
+        {
+            for(Mannschaft a : this.tabelle)
+            {
+                if (m1Name.equals(a.getName()))
+                {
+                    a.addPunkte(1);
+                } else if (m2Name.equals(a.getName()))
+                {
+                    a.addPunkte(1);
+                }
+            }
+        } else if (tore1 > tore2)
+        {
+            for(Mannschaft b : this.tabelle)
+            {
+                if (m1Name.equals(b.getName()))
+                {
+                    b.addPunkte(3);
+                    b.changeTordifferenz(tore1 - tore2);
+                } else if (m2Name.equals(b.getName()))
+                {
+                    b.changeTordifferenz(tore2 - tore1);
+                }
+            }
+        } else if (tore1 < tore2)
+        {
+            for(Mannschaft c: this.tabelle)
+            {
+                if (m1Name.equals(c.getName()))
+                {
+                    c.changeTordifferenz(tore1 - tore2);
+                } else if (m2Name.equals(c.getName()))
+                {
+                    c.addPunkte(3);
+                    c.changeTordifferenz(tore2 - tore1);
+                }
+            }
+        }
+        
+        
+        while (this.tabelle.size() != this.tabelle2.size())
+        {
+            for(int i = (this.tabelle.size() - 1); i >= 0 ; i--)
+            {
+                if(this.tabelle.get(i).getPunkte() == x)
+                {
+                    this.tabelle2.add(this.tabelle.get(i));
+                    this.tabelle.remove(this.tabelle.get(i));
+                }
+            }
+            x++;
+        }
+        
+        while(this.tabelle2.size() != this.tabelle3.size())
+        {
+            for(int j = (this.tabelle.size() - 1); j >= 0 ; j--)
+            {
+                if(this.tabelle.get(j).getPunkte() == xx)
+                {
+                    this.tabelle3.add(this.tabelle2.get(j));
+                    this.tabelle2.remove(this.tabelle2.get(j));
+                }
+            }
+            xx ++;
+        }
+        
+        while (this.tabelle3.size() != this.tabelle.size())
+        {
+            for(int g = (this.tabelle3.size() -1); g >= 0; g--)
+            {
+                this.tabelle.add(this.tabelle3.get(g));
+                this.tabelle3.remove(this.tabelle.3.get(g));
+            }
+        }
+    }
+
+    private void addMannschaft(Mannschaft m)
+    {
+
+    }
+}

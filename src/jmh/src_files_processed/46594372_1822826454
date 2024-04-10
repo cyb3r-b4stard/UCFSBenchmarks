@@ -1,0 +1,77 @@
+import GLOOP.*;
+/**
+ * @###### 
+ * @####### 
+ */
+public class Kugel
+ {
+    private double xPos;
+    private double yPos;
+    private double radius;
+    private double vx;
+    private double vy;
+    private GLKugel kugel;
+    private Spieltisch spieltisch;
+    private Casher casher;
+    
+
+    public Kugel(double pX,double pY,double pR, Spieltisch pSpieltisch, Casher pcasher)
+    {   
+        casher=pcasher;
+        xPos = pX;
+        yPos = pY;
+        radius=pR;
+        kugel = new GLKugel(pX,pY,0,pR);
+        vx = Math.random();
+        vy = Math.random();
+
+    }
+    
+    public void bewege()
+    {
+        kugel.verschiebe(vx,vy,0);
+        xPos = kugel.gibX();
+        yPos = kugel.gibY();
+        
+        Sys.warte (1);   
+    }
+    
+    public void pralleAb()
+    {
+      if (kugel.gibX()>240){
+      vx = -vx;}
+      if (kugel.gibX()<-240){
+      vx= -vx;}
+      if (kugel.gibY()>240){
+      vy=-vy;}
+      if (kugel.gibY()<-240) {
+      vy=-vy;}
+      
+     }
+     public void loesche(){
+     kugel.setzeSichtbarkeit(false);
+    }
+    private boolean getroffen(){
+       
+    double abstand = Math.sqrt(Math.pow(kugel.gibX()-casher.gibX(),2)+
+                     Math.pow(kugel.gibY()-casher.gibY(),2));
+    if(abstand<40)return true;
+    else 
+    return false;
+   }
+    
+     public void kolidieren(){
+        if(this.getroffen())kugel.loesche();
+    }
+   public GLKugel gibKugel(){
+   return this.kugel;
+   }  
+   public void setzeGeschwindigkeitx(double ptx){
+    vx = ptx;
+   }
+   public void setzeGeschwindigkeity(double pty){
+    vy = pty;
+   }      
+    
+    
+     

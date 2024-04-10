@@ -1,0 +1,98 @@
+
+import cha.*;
+import cha.action.*;
+import java.awt.*;
+import java.util.*;
+
+import static java.lang.Math.*;
+import static java.awt.Color.*;
+
+public class RaceTrack
+extends CHApplet {
+    Racer tortoise;
+    Judge judge;
+    
+    private class Setup
+    extends CHAction {
+        public void step() {
+            judge = new Judge(1);
+            tortoise.setJudge(judge);            
+            tortoise.start();
+        }
+    }
+    
+    private class Starter
+    extends CHAction {
+        public void step() {
+            judge.start();
+        }
+    }
+    
+    public void init() {
+        CHLabel names;
+        names = new CHLabel;
+        names.setText("Lexie and Victoria");
+        
+        
+        setBackground(green);
+        
+        int start;
+        start = 150;
+        
+        CHRectangle startingLine;
+        startingLine = new CHRectangle();
+        add(startingLine);
+        startingLine.setBounds(start, 50, 10, 150);
+        startingLine.setBackground(white);
+        
+        int finish;
+        finish = 700;
+                
+        Color brown;
+        brown = new Color(102, 102, 0);
+        
+        CHRectangle track;
+        track = new CHRectangle();
+        add(track);
+        track.setBounds(0, 50, finish, 150);
+        track.setBackground(brown);
+        
+        CHImage tImage;
+        tImage = new CHImage();
+        add(tImage, 0);
+        tImage.setFile("turtle.png");
+        
+        CHLabel tLabel;
+        tLabel = new CHLabel();
+        add(tLabel);
+        
+        tortoise = new Racer();
+        add(tortoise);
+        tortoise.setImage(tImage);
+        tortoise.setStart(start, 100);
+        tortoise.setFinish(finish);
+        tortoise.setLabel(tLabel);
+        
+        
+        
+        
+        Starter startAction;
+        startAction = new Starter();
+        add(startAction);
+        startAction.setText("Go!");
+        
+        CHButton startButton;
+        startButton = new CHButton();
+        add(startButton);
+        startButton.setAction(startAction);
+        startButton.setBounds(150, 210, 60, 25);        
+        
+        Setup setAction;
+        setAction = new Setup();
+        add(setAction);
+        setAction.setText("Get Set...");
+        setAction.step();
+        
+        
+    }
+}

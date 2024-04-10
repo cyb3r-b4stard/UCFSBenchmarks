@@ -1,0 +1,581 @@
+
+import java.util.*;
+import javax.swing.*;
+
+import java.io.*;
+
+/**
+ * ### ##### (#######) ####### ### ######## ##### ##### ## ##### #### #### ####.
+ *
+ * @######: ######## ### ######(######## # ########## ### ###### #### #### # ## ####) 
+ * @####### : ####### ## ####. ########## ### ############ ########
+ * @########## : ########## ########## ####
+ * @### ######## ###### ### ##### ## # ## #####. ####. ## ####### ##### #### ###
+ * @####### : #.#
+ * @#### ####### : ## #### ####
+ * @#### ########(###): ## ###### ####
+ * @#### ########(###): # ######### ####
+ * @#### ########(###): ## ######### ####
+ * ###### ########### : #### #### ####
+ */
+
+class CariAkar
+{
+ final int BYTEA_Z = 999 + 1599 + 1056 + 887 + 307 + 159 + 1237 + 2871 + 390 + 782 + 2977 + 1366
+    + 1466 + 436 + 190 + 1907 + 15 + 1159 + 2653 + 1740 + 345 + 69 + 228 + 6 + 39 + 61;
+    
+private String []dicty = new String[BYTEA_Z+100];  
+int akhir_ctr, awal_ctr, apit_ctr, sisip_ctr;
+int total = 0;
+String katabaru = new String();  
+
+private String []im_akhir = new String[100]; 
+private String []im_sisip = new String[50];  
+private String []im_awal = new String[100];  
+private String []im_apitAwal = new String[550];  
+private String []im_apitAkhir = new String[550];  
+
+public CariAkar()
+{
+   load_rule();
+   loadDictionary();
+}
+
+private void printdict()
+{
+for(int i=0;i<total;i++)
+   System.out.println(dicty[i]);  
+}
+private void load_rule()
+{
+   int   lasti, j;
+    
+File dir = new File("C:\Users\wananazuriana\Desktop\master\master part 4\NLP\inda\ir\Stemmer")
+String fileName = "rule.txt";
+File ruleFile = new File(dir, fileName);
+
+try {
+    BufferedReader inRule = new BufferedReader(new FileReader(ruleFile));
+    String s;
+   akhir_ctr = -1;  
+   awal_ctr = -1;   
+   apit_ctr = -1;   
+   sisip_ctr = -1;  
+   
+   s = inRule.readLine();
+ while ((s != null) && (s != "\n")) {
+      lasti = s.length(); 
+      if ((s.charAt(0) == '+') && (s.charAt(lasti - 1) != '+')) {
+         akhir_ctr++;
+         im_akhir[akhir_ctr] = s.substring(1);
+      }
+      if ((s.charAt(0) == '+') && (s.charAt(lasti - 1) == '+')) {
+         sisip_ctr++;
+         im_sisip[sisip_ctr] = s.substring(1,lasti - 1);
+      }
+      if ((s.charAt(0) != '+') && (s.charAt(lasti - 1) == '+')) {
+         awal_ctr++;   
+         im_awal[awal_ctr] = s.substring(0, lasti - 1);
+      }
+      if ((s.charAt(0) != '+') && (s.charAt(lasti - 1) != '+')) { 
+         apit_ctr++;
+         j = 1;
+         while (s.charAt(j) != '+') {
+            j++;
+         }
+     
+         im_apitAwal[apit_ctr] = s.substring(0, j);
+              
+         im_apitAkhir[apit_ctr] = s.substring(j + 1, lasti);
+      }
+          
+      s = inRule.readLine(); 
+   }
+inRule.close();
+   
+}catch (IOException e) {
+     System.err.println("Error in opening input file : " + fileName);  
+} 
+
+} 
+
+/*=================================================================================
+     function   loadDictionary (function to load root words from the dictionary to 
+     the dictionary array)
+  ================================================================================*/
+ public void loadDictionary1()
+ {
+   File dir = new File("C:\\JavaProgram\\data\\Kamus");
+    String []namaFailKamus = dir.list();
+
+    try {
+   FileWriter fw1 = new FileWriter("C:\\Users\\Lusiana Syaiful.LusianaSyaiful\\Desktop\\Master\\notes\\part 2\\csc 742 - ir\\test1\\Stemmer\\kamusakar.txt");  
+   BufferedWriter bw1 = new BufferedWriter (fw1);
+   PrintWriter outfile1 = new PrintWriter (bw1);    
+    int i = 0;  
+    int bilFail = namaFailKamus.length;
+    for (int k = 0; k < bilFail; k++) {
+    File kamusFile = new File(dir, namaFailKamus[k]);
+ 
+
+        BufferedReader inDicty = new BufferedReader(new FileReader(kamusFile));
+        String s;
+        int tot = 0;   
+        s = inDicty.readLine(); 
+        while ((s != null)) {
+           s  = s.trim(); 
+           dicty[i] = s;
+           outfile1.println(s);
+           i++; tot++;
+           s = inDicty.readLine(); 
+        }
+        total += tot;  
+       
+    } 
+     outfile1.close();
+     }catch (IOException e) {
+     System.err.println("Error in opening input file : " );  
+     }    
+    
+}
+
+ public void loadDictionary()
+ {
+   File dir = new File("C:\\Users\\Lusiana Syaiful.LusianaSyaiful\\Desktop\\Master\\notes\\part 2\\csc 742 - ir\\test1\\Stemmer"); 
+   String fileName = "kamusakar.txt";
+   File kamusFile = new File(dir, fileName);
+   int i = 0;
+   try {
+        BufferedReader inDicty = new BufferedReader(new FileReader(kamusFile));
+        String s;
+        s = inDicty.readLine();
+        while ((s != null) && (s != "\n")) 
+        {   
+            s  = s.trim();
+                dicty[i] = s;
+            i++; 
+            s  = inDicty.readLine();
+        }
+        inDicty.close();
+        total=i;
+    }
+    catch (IOException e) 
+    {
+                System.out.println("Error in opening input file : ");
+    } 
+     
+}
+/*=============================================================================
+     function   chk_dicty (cari perkataan dalam kamus tersebut)
+  ===========================================================================*/
+private boolean chk_dicty(String kata)
+{
+   int   cond;
+   int   low, mid, high;
+   boolean wujud = false;  
+   high =  total;
+   low = 0;
+   while (low <= high)
+   {
+      mid = (low + high) / 2;
+      if (dicty[mid] == null) 
+      {
+         wujud = false;
+         break;
+      } 
+      else 
+      {
+          cond = kata.compareToIgnoreCase(dicty[mid]);
+          if (cond < 0)
+              high = mid - 1;
+          else
+              if (cond > 0) 
+                  low = mid + 1;
+              else 
+              {
+                  wujud = true;  
+                  break;
+              }
+       }
+   }
+   
+ return wujud;
+}
+
+/*============================================================================
+     function   ubah_ejaan (ubah ejaan m --> k / f, n --> t, g --> k, y --> s)
+  ============================================================================*/
+private boolean ubah_ejaan()
+{ 
+  boolean wujud = false;
+  String katabaru1="";
+   switch(katabaru.charAt(0)) 
+      { 
+      case 'm':
+         katabaru1 = "p".concat(katabaru.substring(1,katabaru.length()));
+         wujud = chk_dicty(katabaru1);
+         if (wujud == false)
+            {
+            katabaru1 = "f".concat(katabaru.substring(1,katabaru.length()));
+            wujud = chk_dicty(katabaru1);
+            }
+         break;
+      case 'n':
+         katabaru1 = "t".concat(katabaru.substring(1,katabaru.length()));
+         wujud = chk_dicty(katabaru1);
+         break;
+      case 'g':
+         katabaru1 = "k".concat(katabaru.substring(1,katabaru.length()));
+         wujud = chk_dicty(katabaru1);
+         break;
+      case 'y':
+         katabaru1 = "s".concat(katabaru.substring(1,katabaru.length()));
+         wujud = chk_dicty(katabaru1);
+         break;
+      default:
+         wujud = false;
+         break;
+   }
+   if (wujud) katabaru=katabaru1;
+   return wujud;
+}
+
+private String bina_akar(String pkata, int mula, int akhir) 
+{
+  
+   katabaru = pkata.substring(mula, akhir);
+   return katabaru;
+}
+
+private boolean chk_awalan(String pkata)
+{ 
+   int len, k;
+   String  kataAwal = new String();
+
+   boolean j,wujud=false;
+   
+   for (int i = 0; i < awal_ctr + 1; i++) {
+      kataAwal = im_awal[i];
+      len = pkata.length();
+      k = kataAwal.length();
+      j = pkata.startsWith(kataAwal);
+      if (j == true) {
+         if (((len - k) < 1) || (((len - k) < 2) && ((kataAwal.charAt(0) == 'm')
+            && (kataAwal.charAt(1) == 'e')))) {
+            wujud = false;
+            break;
+         }
+         katabaru = bina_akar(pkata,k, len);
+       wujud = ubah_ejaan();
+         if (wujud == false){
+           wujud = chk_dicty(katabaru);
+       }
+         if (wujud == true)
+            break;
+      }
+   }
+   return wujud;
+}
+
+/*================================================================================
+     function   akhiran (bandingkan n abjad terakhir perkataan dengan imbuhan 
+     akhiran dan return true kalau ianya sama.  Jika tidak return false)
+  ==============================================================================*/
+private boolean akhiran(String akhir, String s) 
+{
+   boolean status = false;
+
+     if (s.endsWith(akhir))
+         return true;
+      else
+         return false;
+}
+
+/*===============================================================================
+     function   apitan (bandingkan imbuhan apitan hadapan dengan n abjad pertama
+                        perkataan dan bandingkan n abjad terakhir perkataan 
+                        dengan imbuhan apitan akhir dan return true kalau ianya
+                        sama.  Jika tidak, return false)
+  =============================================================================*/ 
+private boolean apitan(String hadapan, String s, String akhir) 
+
+{
+   boolean status = false;
+
+   status = s.startsWith(hadapan);
+   if (status == false)
+      return false;
+   else {
+      status = akhiran(akhir,s);
+      if (status == false) 
+         return false;
+      else
+         return true;
+   }
+}
+
+
+/*=================================================================
+     function   chk_apitan (cari imbuhan apitan)
+  =================================================================*/
+private boolean chk_apitan(String pkata)
+{ 
+   int k;
+   int   a, h, len;
+   String hadapan = new String();
+   String akhir = new String();
+
+   boolean status, wujud = false;
+   
+   for (int i = 0; i < apit_ctr + 1; i++) {
+      hadapan = im_apitAwal[i];
+      akhir = im_apitAkhir[i];
+ 
+      status = apitan(hadapan,pkata,akhir);
+      if (status == true) {
+         h = hadapan.length();
+         a = akhir.length(); 
+         len = pkata.length();
+         if ((len == h) || ((len - h - a) < 3)) {
+            wujud = false;
+            h = 0;
+            a = 0;
+         }
+         
+         katabaru = bina_akar(pkata,h,len - a);
+         wujud = ubah_ejaan();
+         if (wujud == false)
+           wujud = chk_dicty(katabaru);
+         if (wujud == true)
+            break;
+      }
+   }
+   return wujud;
+}
+
+/*==============================================================================
+     function   chk_akhiran (cari imbuhan akhir)
+  ============================================================================*/
+private boolean chk_akhiran(String pkata)
+{ 
+   int len, pan;
+   String tempkata = new String();
+   boolean wujud = false, status = false;
+   
+   for (int i = 0; i < akhir_ctr + 1; i++) 
+   {
+      tempkata = im_akhir[i];
+      len = pkata.length();    
+      pan = tempkata.length();  
+      status = akhiran(tempkata,pkata);   
+
+      if (status == true)
+         {
+         if ((len - pan) < 1) 
+            {
+            wujud = false;
+            pan = 0;
+            }
+
+         katabaru = bina_akar(pkata,0, len - pan);
+
+         len = katabaru.length();
+         if ((len < 1) || ((len < 2) && (tempkata.charAt(pan - 1) == 'i')))
+            break;
+         else 
+           {
+            wujud = chk_dicty(katabaru);
+            if (wujud == false)
+               wujud = ubah_ejaan();
+            if (wujud == true)
+               break;
+           }
+         }
+   }
+   return wujud;
+}
+
+/*============================================================================
+     function   sisipan (bandingkan imbuhan sisipan sama ada wujud dalam 
+     perkataan atau tidak.  Return true, kalau ya.  Jika tidak, return false)
+  ==========================================================================*/
+private boolean sisipan(String sisip, String s) 
+{
+   int   i, j, k;
+   boolean status = false;
+
+   k = sisip.length(); 
+   j = 0;
+   for (i = k - 1; i < k + 1; i++) {
+      if (sisip.charAt(j) !=  s.charAt(i))
+         return false;
+      else
+         status = true;
+      j++;
+   }
+   return(status);
+}
+
+
+/*===========================================================================
+     function   chk_sisipan (cari imbuhan sisipan) 
+  =========================================================================*/
+private boolean chk_sisipan(String pkata)
+{
+   int   i, len, pan;
+   String tempkata = new String();
+   boolean status = false;
+   boolean wujud = false;
+   
+   for ( i = 0; i < sisip_ctr + 1; i++) {
+ 
+      tempkata = im_sisip[i];
+      len = pkata.length();
+      pan = tempkata.length();
+      status = sisipan(tempkata,pkata);
+
+      if (status == true) {
+         if ((len - pan) < 1) {
+            wujud = false;
+            break;
+         }
+         katabaru = bina_akar(pkata,pan,len);
+         katabaru = katabaru.substring(1,katabaru.length());
+         wujud = chk_dicty(katabaru);
+         if (wujud == true)
+            break;
+      } 
+   }
+   return wujud;
+}
+
+/*============================================================================
+     function   chk_pkata (cari akar perkataan yang diberi.  Bina
+                           perkataan ke 2 jika ia wujud)
+  ==========================================================================*/
+
+private boolean chk_pkata(String pkata) {
+ 
+   int len = pkata.length();
+   pkata = pkata.toLowerCase();
+   
+   katabaru = bina_akar(pkata,0,len);
+   boolean wujud = chk_dicty(katabaru);
+   if (wujud == true)
+      ubah_ejaan();
+   return wujud;
+}
+
+/*============================================================================
+     function   akar(per_kataan[MAXCHAR])
+     This function will find the root word of a word passed through the 
+     parameter.If the word is a root word, return the word back.
+  ===========================================================================*/
+private boolean akar(String per_kataan)
+{
+
+   int i, j;
+   int k; 
+   int   pecah_pkata = 0;  
+  
+   per_kataan = per_kataan.toLowerCase();  
+   
+   int bil_pkata = 1;   
+   boolean wujud = false;    
+   
+   String pkata = "";
+   k = per_kataan.length();
+
+   for (i=0; i < k; i++ ) {
+       if ( per_kataan.charAt(i) == '-' ) {
+               bil_pkata = 2;
+               pecah_pkata = i;  
+               i = k;
+            }
+       }
+   
+   if (bil_pkata == 1) {  
+    pkata = per_kataan.substring(0,k); 
+
+    wujud = chk_dicty(pkata);
+    if (wujud == true) {
+        return false;
+    } else {
+       wujud = chk_awalan(pkata);
+       if (wujud == false) {
+          wujud = chk_apitan(pkata);
+          }             
+       if (wujud == false){
+           wujud = chk_akhiran(pkata);
+           }               
+       if (wujud == false){
+           wujud = chk_sisipan(pkata);
+           }               
+       if (wujud == false){
+           wujud = chk_pkata(pkata);
+           }                
+       if (wujud == true) {
+          return false; 
+           
+       }
+       return true;  
+    }
+    
+   } else if (bil_pkata == 2) {
+        pkata = per_kataan.substring(0,pecah_pkata); 
+        katabaru = per_kataan.substring(pecah_pkata + 1, k);  
+ 
+      wujud = chk_dicty(katabaru);
+      
+      if (wujud == true)
+         return false;
+      else {
+         wujud = chk_awalan(katabaru);
+       if (wujud == false) 
+          wujud = chk_apitan(katabaru);
+       if (wujud == false)
+           wujud = chk_akhiran(katabaru);
+       if (wujud == false)
+           wujud = chk_sisipan(katabaru);
+       if (wujud == false)
+           wujud = chk_pkata(katabaru);
+       
+      }
+   }
+ return true;  
+   } 
+
+
+public String stemWord(String perkataan)
+{
+   katabaru = null;
+   
+   perkataan = perkataan.toLowerCase();
+   boolean wujud = chk_dicty(perkataan);
+   int bil_pkata = 1;
+
+   if (wujud == true) 
+      return(perkataan);
+   else 
+      do {
+          wujud = akar(perkataan); 
+
+         if (wujud == false) 
+            perkataan = katabaru;
+ 
+         bil_pkata--;
+      }while (bil_pkata != 0);
+      
+      return perkataan;
+ }
+
+
+public static void main(String[] args) throws IOException {
+    String nw=JOptionPane.showInputDialog(null,"Masukkan perkataan biasa:");
+    String rw=JOptionPane.showInputDialog(null,"Masukkan perkataan akar:");
+    CariAkar stemmer = new CariAkar();
+    String stem = stemmer.stemWord(nw);
+    System.out.println("\n Perkataan "+ nw+ " jadi " + stem + " dan cari perkataan "+rw+ 
+"="+stemmer.chk_dicty(rw));
+    }
+} 

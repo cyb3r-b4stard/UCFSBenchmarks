@@ -1,0 +1,64 @@
+
+/**
+ * ##### # ########### ## ##### ##### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Ridge
+{
+
+    public static int maximalDrop(int [] a)
+      { if (a.length>1)
+          {int indexMin=0;
+           int indexMax=0;
+           int min1=a[0];
+           int max1=a[0];
+           int max2;
+           int min2;
+           int i;
+           int maxDrop;
+          
+           for (i=1;i<a.length;i++)
+            {if(min1>=a[i])
+               {indexMin=i;
+                min1=a[i];}
+             if(max1<a[i])
+               {indexMax=i;
+                max1=a[i];}
+             }
+            
+           if(indexMin>=indexMax)
+               return max1-min1;
+           
+           max2=min1;   
+           for (i=0;i<indexMin;i++)
+              {if (a[i]>max2)
+                  max2=a[i];}
+         
+           min2=max1;     
+           for(i=indexMax+1;i<a.length;i++)
+              {if(a[i]<min2)
+                  min2=a[i];}
+                  
+           int []aNew =new int[indexMax-indexMin-1];
+           
+           for(i=indexMin+1;i<indexMax;i++)
+              aNew[i-indexMin-1]=a[i];
+              
+           maxDrop=maximalDrop(aNew);
+         
+           return Math.max(Math.max(max2-min1,max1-min2),maxDrop);}
+    
+       else
+
+            return 0;}
+            
+   public static void main ()
+   {int [] a ={1,2,3,4,8};
+    System.out.println("1. " maximalDrop(a));
+    int b={7,2,9,3,10,6,5};
+     System.out.println("2. " maximalDrop(b));
+    
+    
+}

@@ -1,0 +1,136 @@
+
+/**
+ * ##### # ########### ## ##### ##### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Board
+{
+    private final int SIZE = 3;
+    private final char EMPTY = '.';
+    
+    public final int WIN = 1;
+    public final int LOSS = 2;
+    public final int TIE = 3;
+    public final int CONTINUE = 4;
+    
+    private char[][] board;
+    
+    private Player playerX, player0;
+
+    /**
+     * Constructor for objects of class Board
+     */
+    public Board()
+    {
+        board = new char[SIZE][SIZE];
+        reset();
+        playerX = new Player('X');
+        player0 = new Player('0');
+    }
+    public void playerXmove(int row, int col)
+    {
+        makeMove(playerX, row, col);
+    }
+    public void player0move(int row, int col)
+    {
+        makeMove(player0, row, col);
+    }
+    public int checkPlayerX()
+    {
+        boolean b;
+        for (int i = 0; i < 3; i++)
+        {
+            b = true;
+            for (int j = 0; j < 3; j++)
+            {
+                b = b && (board[i][j] == playerX.getSymbol())
+            }
+            if (b) return WIN;
+        }
+        for (int j = 0; j < 3; j++)
+        {
+            b = true;
+            for (int i = 0; i < 3; i++)
+            {
+                b = b && board[i][j] == playerX.getSymbol())
+            }
+            if (b) return WIN;
+        }
+        
+        
+        
+        
+        if(board[0][0] == playerX.getSymbol() &&
+        board[1][1] == playerX.getSymbol()&&
+        board[2][2] == playerX.getSymbol())
+            return WIN;
+        if(board[0][2] == playerX.getSymbol() &&
+        board[1][1] == playerX.getSymbol()&&
+        board[2][0] == playerX.getSymbol())
+            return WIN;
+    }
+    public int checkPlayer0()
+    {
+        boolean b;
+        for (int i = 0; i < 3; i++)
+        {
+            b = true;
+            for (int j = 0; j < 3; j++)
+            {
+                b = b && board[i][j] == player0.getSymbol())
+            }
+            if (b) return WIN;
+        }
+        for (int j = 0; j < 3; j++)
+        {
+            b = true;
+            for (int i = 0; i < 3; i++)
+            {
+                b = b && board[i][j] == player0.getSymbol())
+            }
+            if (b) return WIN;
+        }
+        
+        
+        
+        
+        if(board[0][0] == player0.getSymbol() &&
+        board[1][1] == player0.getSymbol()&&
+        board[2][2] == player0.getSymbol())
+            return WIN;
+        if(board[0][2] == player0.getSymbol() &&
+        board[1][1] == player0.getSymbol()&&
+        board[2][0] == player0.getSymbol())
+            return WIN;
+    }
+    private void makeMove(Player xo, int row, int col)
+    {
+        board[row][col] = xo.getSymbol();
+    }
+    public void reset()
+    {
+        for (int row = 0; row < SIZE; row++)
+        {
+            for (int col = 0; col < SIZE; col++)
+            {
+                board[row][col] = EMPTY;
+            }
+        }
+    }
+    public String toString()
+    {
+        String temp = "";
+        
+        for (int row = 0; row < SIZE; row++)
+        {
+            for (int col = 0; col < SIZE; col++)
+            {
+                temp += "[" + board[row][col] + "]";
+            }
+            temp += "\n";
+        }
+        return temp;
+    }
+}

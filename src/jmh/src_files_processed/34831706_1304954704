@@ -1,0 +1,197 @@
+import javax.swing.*;
+import java.awt.*;
+import java.lang.*;
+
+
+class game
+{	
+
+	JLabel spacingLabel		 = addLabel("  ", 1, 1, 1, 1);
+
+	JLabel wordLabel			= addLabel("Word to Guess", 2, 1, 1, 1);
+	JTextField wordField		= addTextField("",		  3, 1, 1, 1);
+	JButton wordButton		  = addButton("Enter Word",   4, 1, 1, 1);	
+	
+	JLabel spacingLabe2		 = addLabel("  ", 5, 1, 1, 1);
+	
+	JLabel guessedWordLabel		 = addLabel("Word Guessed so far:",  6, 1, 1, 1);
+	JTextField guessedWordField	 = addTextField("",				 7, 1, 1, 1);
+
+		JLabel spacingLabel3		= addLabel("  ", 8, 1, 1, 1);
+
+	JLabel letterLabel	  = addLabel("Guess Letter",  9, 1, 1, 1);
+	JTextField letterField  = addTextField("",		  10, 1, 1, 1);
+	JButton letterButton	= addButton("Enter Guess",  11, 1, 1, 1);
+
+}
+
+
+
+
+
+
+
+	public game () {
+
+		drawingPanel.setBackground(Color.gray);
+
+
+	} 
+
+
+	public void buttonclicked(JButton buttonObj){
+
+		if (buttonObj == wordButton) {
+			processWordButton();
+		}
+		else if (buttonObj == letterButton) {
+			processLetterButton();
+			updateGuessedWordField();
+		}
+
+	} 
+
+
+	/**
+	*   Assigns the text entered in wordField to the wordToGuess char array,
+	*   with all characters being converted to lowercase
+	*/
+	public void processWordButton() {
+
+		String wordIn;					  
+
+		wordIn = wordField.getText();	   
+		
+		if (wordIn == null || wordIn.length() <= 0 ) {   
+			
+			messageBox(" You forgot to enter in a word!" );
+			return;
+			
+		}
+
+		wordIn = wordIn.toLowerCase();	  
+
+		wordToGuess = wordIn.toCharArray(); 
+		int wordLength = wordIn.length();
+		wordGuessedSoFar = new char[wordLength];
+		int i;
+		for (i = 0; i < wordLength; i++) {
+			wordGuessedSoFar[i] = '*';
+			
+		}
+		updateGuessedWordField();
+		wordField.setText("");			  
+
+		wordButton.setEnabled(false);	   
+	   
+
+		
+	} 
+
+
+	/**
+	*   Takes the first character entered in letterField,
+	*   and assigns it to guessedLetter.
+	*   Finally, guessedLetter is converted to lowercase.
+	*/
+	public void processLetterButton() {
+
+		String letterInString;					  
+
+		char[] letterIn; 
+
+		letterInString = letterField.getText();	 
+		
+		 if (letterInString == null || letterInString.length() <= 0 ) {
+			
+			messageBox(" You forgot to enter in a letter!" );
+			return;
+			
+		}
+
+		letterIn = letterInString.toCharArray();	
+		
+		guessedLetter = letterIn[0];				
+		guessedLetter = Character.toLowerCase(guessedLetter);   
+		int wordLength = wordToGuess.length;
+		boolean correctGuess = false;
+		int i;
+		for (i = 0; i < wordLength; i++) {
+			if (wordToGuess[i] == guessedLetter) {
+				wordGuessedSoFar[i] = guessedLetter;
+				correctGuess = true;
+				yes = yes + 1;
+			} 
+			
+		}
+			if (correctGuess == false) {
+				wrong = wrong + 1;
+				super.repaint();
+			}
+			if (yes == wordToGuess.length) {
+			messageBox("**PLAYER WINS!**");
+
+			return;
+		}
+			if (wrong == (wordToGuess.length + 5)) {
+				messageBox("**YOU LOOSE, COMPUTER WINS!**");
+				return;
+
+		}
+		updateGuessedWordField();
+
+		
+		letterField.setText("");					
+
+	} 
+
+
+	/**
+	*   If the guessedWord char array is not null,
+	*   then display the guessedWord in the guesedWordField
+	*/
+	public void updateGuessedWordField() {
+
+		String guessedWordString;
+
+		if (wordGuessedSoFar  != null) {
+		  
+			guessedWordField.setText(new String(wordGuessedSoFar));
+			
+		}
+
+	} 
+
+
+	public void paint(Graphics g) {
+
+		super.paint(g); 
+		Graphics panelG = drawingPanel.getGraphics();
+		if (wrong > 0) {
+		panelG.drawLine(50,250,100,250);
+		panelG.drawLine(75,250,75,50);
+		panelG.drawLine(75,50,200,50);
+		panelG.drawLine(75,70,100,50);
+		panelG.drawLine(200,50,200,80);
+		panelG.drawOval(180,80,40,40);
+		panelG.drawLine(200,120,200,180);
+		panelG.drawLine(200,180,175,210);
+		panelG.drawLine(200,180,225,210);
+		panelG.drawLine(200,140,175,160);
+		panelG.drawLine(200,140,225,160);
+	   
+	}
+
+
+}public static void main(String[] args)  {
+
+		HangmanG tpo = new HangmanG();
+		
+		tpo.setSize(520, 350);  
+		tpo.setVisible(true);   
+
+
+	} 
+
+
+} 

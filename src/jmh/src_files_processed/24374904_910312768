@@ -1,0 +1,124 @@
+
+import acm.graphics.*;
+import acm.program.*;
+import acm.gui.*; 
+import acm.util.*; 
+import acm.io.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.applet.*;
+
+/** #### ###### ####### # <# ####="####:
+ * ########## ### #### #### #####</#> #### # #### ######
+ * <# ####="####:
+ * <#>
+ * #### ###### # ## ####### ## ## "###############": ## ######## ###
+ * ### ###### ## #### # ######## ######## ######## ########. 
+ * <#>
+ * #### ######## #### # ##### ### ###### ## 
+ * <# ####="####:
+ * ###### ######## ## ########## # ######</#> ##
+ * ######### ########### ## ####, ### #### ##### ######, 
+ * ## ####/##/##. 
+ * #### # # ###### ## ####/##/##.
+ * <##>
+ * @###### (# ### ####) 
+ * @####### (###### ## ###### ## ####) 
+ */
+
+public class NewTurtle extends GTurtle
+{ 
+    public void demoDrawings()
+    { 
+
+    }
+
+    public void drawRect(double x, double y, double width, double height)
+    {
+        this.penUp();
+        this.forward(x - this.getX());
+        this.right(90);
+        this.forward(y - this.getY());
+        this.left(90);
+        this.penDown();
+        for( int i = 0; i < 2 ; i++)
+        {
+            this.forward(width);
+            this.right(90);
+            this.forward(height);
+            this.right(90);
+        }
+    }
+
+    public void drawFilledRect(double x, double y, double width, double height)
+    {
+        this.setSpeed(0.8);
+
+        while(width >= 0 && height >=0 )
+        {
+            this.drawRect(x++ , y++ , width, height);
+            width = width - 2;
+            height = height - 2;
+        }
+    }
+    public void randomSquares(int minNSquares, int maxNSquares, int minSize, int maxSize, int xMax, int yMax) 
+    {
+        RandomGenerator rg = new RandomGenerator();
+        int nSquares = rg.nextInt( minNSquares, maxNSquares);
+        double randomX = 0;
+        double randomY = 0;
+        double randomSize = 0;
+        for( int i = 0; i < nSquares ; i++)
+        {
+            randomX = rg.nextDouble(0, xMax);
+            randomY = rg.nextDouble(0, yMax);
+            randomSize = rg.nextDouble( minSize, maxSize);
+            this.drawRect( randomX, randomY, randomSize, randomSize);
+        }
+    }
+
+    public void drawStripes(int nStripes, double x, double y,  double height, double width)
+    {
+        RandomGenerator rc = new RandomGenerator();
+        int r = 0;
+        int g = 0;
+        int b = 0;
+        for( int i = 0 ; i < nStripes ; i++)
+        {
+            r = rc.nextInt(0, 255);
+            g = rc.nextInt(0, 255);
+            b = rc.nextInt(0, 255);
+            Color randomcolor = new Color(r, g, b);
+            this.setColor(randomcolor);
+            this.drawFilledRect(x , y, height, width);
+            x = x + height++; 
+        }
+    } 
+    public void bumpingWalk(double speed, int xMax, int yMax)
+    {
+        this.setSpeed(speed);
+        RandomGenerator ra = new RandomGenerator();
+        
+        for( int i = 0 ; i < 1000 ; i++) 
+        {
+          double distance = this.forward(0.0);
+          double randomAngle = ra.nextDouble( 0, 180);
+          double turnAround = 20;
+          this.forward(distance++);
+          if( x = xMax && y = yMax)
+          {
+             this.left(randomangle); 
+           }
+          if( distance = turnAround)
+          {
+             this.left(randomangle);
+             turnAround = turnAround++;
+              }
+        }
+    }
+
+    public void buildHouse(int nWindows, int nGlassesInEachWindow, int Doors, int nGlassesInEachDoor, int nChimneys, double chimnseyScale, int roofHeight)
+    {
+    }
+} 

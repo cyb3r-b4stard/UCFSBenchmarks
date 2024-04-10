@@ -1,0 +1,78 @@
+public class Player
+{
+    private String name;
+    private int maxHealth;
+    private int currentHealth;
+    private int min_dmg;
+    private int max_dmg;
+    private int gold;
+    private Item[] inventory;
+    
+    
+    public Player(String n, int max, int current, int min, int maxdmg, Item[] items)
+    {
+        name = n;
+        maxHealth = max;
+        currentHealth = current;
+        min_dmg = min;
+        max_dmg = maxdmg;
+        gold = 0;
+        inventory = items;
+    }
+    public String toString()
+    {
+        return name + " has a health of " + currentHealth + " out of " + maxHealth + " and min attack is " + min_dmg + " and max attack is " + max_dmg;
+    }
+    public String playerName()
+    {
+        return name;
+    }
+    public int playerHealth()
+    {
+        return currentHealth;
+    }
+    public void attack(Monster enemy)
+    {
+        int damage = (int)(Math.random() * (max_dmg - min_dmg) + 1) + min_dmg;
+        System.out.println(name + " attacks the " + enemy.monsterName() + " doing " + damage + " damge.");
+        enemy.receive_dmg(damage);
+    }
+    public void receive_dmg(int damage)
+    {
+        currentHealth -= damage;
+        if(currentHealth < 0)
+        {
+            currentHealth =0;
+        }
+        System.out.println(name + " has " + currentHealth + " health left.");
+    }
+    public void displayInventory()
+    {
+        for(int x = 0; x < inventory.length; x++)
+        {
+            System.out.print(inventory[x].toString() + "  ");
+        }
+    }
+    public void buyItem(String itemChoice)
+    {
+        Item thing = new Item(itemChoice);
+        if(gold !< thing.getCost())
+        {
+            
+        }
+    }
+    public void addHealth(int heal)
+    {
+        currentHealth += heal;
+        if(currentHealth > maxHealth)
+        {
+            currentHealth = maxHealth;
+        }
+        
+    }
+    public void changeDamage(int min, int max)
+    {
+        min_dmg += 10;
+        max_dmg += 10;
+    }
+}

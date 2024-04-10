@@ -1,0 +1,209 @@
+import java.util.Scanner;
+import java.util.Random;
+public class HuntTheWumpus
+{
+    
+    
+    }
+    
+    public static void main(String[] args)
+    {
+        char[][] board = new char[5][5];
+        initBoard(board);
+        displayBoard(board);
+        
+        
+        Random r = new Random();
+        Random s = new Random();
+        
+        int startRow = r.nextInt(5);
+        int startCol = r.nextInt(5);
+        int currRow  = startRow;
+        int currCol  = startCol;
+        
+        int arrows = 5;
+        int moves = 0;
+        boolean gameOver = false;
+        int wumpusRow = s.nextInt(5);
+        int wumpusCol = s.nextInt(5);
+        int counter = 0;
+        promptHeader(board, currRow, currCol);
+        
+        
+        while (gameOver == false)
+        {
+            gameOver = promptDetail(board, currRow, currCol, wumpusRow, wumpusCol);
+            counter++;
+            System.out.println("counter is "+ counter);
+            if (counter == 3)
+            {
+                System.out.println("Just so you know - the wumpus is hiding in " + wumpusRow + "/" + wumpusCol); 
+            }
+        }
+    }
+    
+    public static void initBoard(char[][] board)
+    {
+        for (int r = 0; r < 5; r++)
+            for (int c = 0; c < 5; c++)
+                board[r][c] = ' ';
+    }
+    
+    public static void displayBoard(char[][] board)
+    {
+        System.out.println("    0  1  2  3  4 ");
+        System.out.println(" 0 " + board[0][0] + " |" +  board[0][1] + " |" +  board[0][2] + " |" +  board[0][3] + " |" +  board[0][4]);
+        System.out.println("   --+--+--+--+--");
+        System.out.println(" 1 " + board[1][0] + " |" +  board[1][1] + " |" +  board[1][2] + " |" +  board[1][3] + " |" +  board[1][4]);
+        System.out.println("   --+--+--+--+--");
+        System.out.println(" 2 " + board[2][0] + " |" +  board[2][1] + " |" +  board[2][2] + " |" +  board[2][3] + " |" +  board[2][4]);
+        System.out.println("   --+--+--+--+--");
+        System.out.println(" 3 " + board[3][0] + " |" +  board[3][1] + " |" +  board[3][2] + " |" +  board[3][3] + " |" +  board[3][4]);
+        System.out.println("   --+--+--+--+--");
+        System.out.println(" 4 " + board[4][0] + " |" +  board[4][1] + " |" +  board[4][2] + " |" +  board[4][3] + " |" +  board[4][4]);
+    }
+    
+    public static void promptHeader(char[][] board, int currRow, int currCol)
+    {
+        Scanner keyboard = new Scanner(System.in);
+        System.out.println("Welcome to hunt the wumpus! Instructions? (Y/N)");
+        String answer = keyboard.next();
+        char player = 'X';
+        
+        
+        
+        if (answer.equals("Y"))
+            System.out.println("");
+        else if (answer.equals("N"))
+        {    
+            System.out.println("You are in square " + currRow + " " + currCol + "."); 
+            board[currRow][currCol] = player;
+            displayBoard(board);
+        }   
+        else 
+        {   
+            System.out.println("Invalid input.");
+            promptHeader(board, currRow, currCol);
+        }   
+            
+        
+    }
+    
+    public static boolean promptDetail(char[][] board, int currRow, int currCol, int wumpusRow, int wumpusCol)
+    {
+        Scanner keyboard = new Scanner(System.in);
+        boolean answer = false;
+
+        char player = 'X';
+        Random r = new Random();
+        
+        System.out.println("Would you like to shoot an arrow or move locations? 1 to move, 2 to shoot");
+        int decision = keyboard.nextInt();
+        
+        if (decision == 1)
+        {
+            System.out.println("Enter a row followed by a column to which you are adjacent to. (Space in between)");
+            int rowAnswer = keyboard.nextInt();
+            int colAnswer = keyboard.nextInt();
+        
+            if ((valid(rowAnswer) == false) || (validPos(rowAnswer, currRow) == false)) 
+            {
+                System.out.println("Out of range. Enter a row followed by a column to which you are adjacent to");
+                System.out.println("1) Remember, you are in square " + currRow + " " + currCol + "."); 
+                return false;
+                
+            }
+
+            if ((valid(colAnswer) == false) || (validPos(colAnswer, currCol) == false))
+            {
+                  System.out.println("Out of range. Enter a row followed by a column to which you are adjacent to");
+                  System.out.println("2) Remember, you are in square " + currRow + " " + currCol + "."); 
+                  return false;
+            }
+        
+            board[rowAnswer][colAnswer] = player;
+            currRow = rowAnswer;
+            currCol = colAnswer;
+            displayBoard(board);
+            return promptDetail(board, currRow, currCol, wumpusRow, wumpusCol);
+            
+        }
+        else if (decision == 2)
+        {
+          return arrowMethod(board, currRow, currCol, wumpusRow, wumpusCol);
+        }
+        else
+        {
+          System.out.println("1 or 2 acceptable only");
+          return false;
+        }
+        
+    }
+    
+    public static void initWumpus(char[][] board)
+    {
+        Random r = new Random();
+        
+        int wumpusRow = r.nextInt(5);
+        int wumpusCol = r.nextInt(5);
+    }
+    
+    
+    public static boolean valid(int a) 
+    {
+        if (a < 5)
+            return true;
+        else 
+            return false;
+        
+    }
+    
+    public static boolean validPos(int newVal, int currVal)
+    {
+        System.out.println(newVal);
+        System.out.println(currVal);
+        if (Math.abs(newVal - currVal) <= 1)
+            return true;
+        else 
+            return false;
+        
+    }
+    
+    public static boolean arrowMethod(char[][] board, int currRow, int currCol, int wumpusRow, int wumpusCol)
+    {
+            Scanner keyboard = new Scanner(System.in);
+        
+            System.out.println("enter row and column of space you want to shoot into. thats adjacent to you!");
+            int rowAnswer = keyboard.nextInt();
+            int colAnswer = keyboard.nextInt();
+        
+            
+            if ((valid(rowAnswer) == false) || (validPos(rowAnswer, currRow) == false)) 
+            {
+                System.out.println("Out of range. Enter a row followed by a column to which you are adjacent to");
+                System.out.println("3) Remember, you are in square " + currRow + " " + currCol + "."); 
+                arrowMethod(board, currRow, currCol, wumpusRow, wumpusCol);
+            }
+        
+            if ((valid(colAnswer) == false) || (validPos(colAnswer, currCol) == false))
+            {
+                  System.out.println("Out of range. Enter a row followed by a column to which you are adjacent to");
+                  System.out.println("4) Remember, you are in square " + currRow + " " + currCol + "."); 
+                  arrowMethod(board, currRow, currCol, wumpusRow, wumpusCol);
+            }
+            
+            if ((rowAnswer == wumpusRow) && (colAnswer == wumpusCol))
+            {    
+                System.out.println("You hit the wumpus, you win!");
+                return true;
+            }   
+            else 
+            {    
+                System.out.println("Your arrow flies away into the dark.");
+                System.out.println("Remember your position is " + currRow + " " + currCol);
+                return false;
+            }
+    }
+    
+    
+}

@@ -1,0 +1,197 @@
+import java.util.*;
+
+public class Game
+{
+    private Player player;
+    private Dot[] dots;
+    private Exit[] exit;
+    private Enemy[] enemy;
+    private Screen screen;
+    private int row;
+    private int col;
+    
+    public Game()
+    {
+        dots = new Dot[count('.')];
+        enemy = new Enemy[count('e')];
+        exit = new Exit[count('x')];
+        screen = new Screen(col,row);
+
+        int dotCount = 0;
+        int enemyCount = 0;
+        int playerCount = 0;
+        int exitCount = 0;
+
+        for (int row = 0; row < Layout.ROWS.length; row++)
+        {
+            for (int col = 0; col < Layout.ROWS[row].length(); col++)
+            {
+                this.col = col;
+                this.row - row;
+                
+                Vector dotPos = new Vector(col, row);
+                if (Layout.ROWS[row].charAt(col) == '.')
+                {
+                    dots[dotCount] = new Dot(dotPos);
+                    dotCount++;
+                }
+
+                Vector enemyPos = new Vector(col, row);
+                if (Layout.ROWS[row].charAt(col) == 'e')
+                {
+                    enemy[enemyCount] = new Enemy(enemyPos);
+                    enemyCount++;
+                }
+
+                Vector playerPos = new Vector(col, row);
+                if (Layout.ROWS[row].charAt(col) == 'p')
+                {
+                    player = new Player(playerPos);
+                }
+
+                Vector exitPos = new Vector(col, row);
+                if (Layout.ROWS[row].charAt(col) == 'x')
+                {
+                    exit[exitCount] = new Exit(exitPos);
+                    exitCount++;
+                }
+            }
+        }
+    }
+
+    public static int count(char item)
+    {
+        int count = 0;
+
+        for (int row = 0; row < Layout.ROWS.length; row++)
+        {
+            for (int col = 0; col < Layout.ROWS[row].length(); col++)
+            {
+                Vector pos = new Vector(col, row);
+                if (Layout.ROWS[row].charAt(col) == item)
+                {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+
+    public void start()
+    {
+        do
+        {
+            display();
+            input();
+        }
+        while (!over());
+        display();
+        player.finish();
+
+    }
+
+    public void display()
+    {
+        screen.setPixel(player.getPosition(), 'p');
+        
+        for(int i=0; i<enemy.length; i++)
+        {
+            screen.setPixel(enemy[i].getPosition(), 'e');
+        }
+        for(int i=0; i<exit.length; i++)
+        {
+            screen.setPixel(exit[i].getPosition(), 'x');
+        }
+        for(int i=0; i<dots.length; i++)
+        {
+            screen.setPixel(dotas[i].getPosition(), '.');
+        }
+        screen.print();
+    }
+
+    public boolean over()
+    {     
+        boolean ret = false;
+
+        for(int i=0; i<exit.length; i++)
+        {
+            if(exit[i].isReached() || !player.isAlive())
+            {
+                ret = true;
+            }
+        }
+        return ret; 
+    }
+
+    public void input()
+    {
+        move(readMove());
+    }
+
+    private Vector readMove()
+    {
+        switch (Util.readChar("Move (l/r/u/d): "))
+        {
+            case 'l': return Vector.LEFT;
+            case 'r': return Vector.RIGHT;
+            case 'u': return Vector.UP;
+            case 'd': return Vector.DOWN;
+            default: return null;
+        }
+    }
+
+    public void move(Vector direction)
+    {
+        player.move(direction);
+
+        int dotCount = count('.');
+        for(int i=0; i< dotCount; i++)
+        {
+            player.collect(dots[i]);
+        }
+
+        if (player.getCollectedDots() == count('.'))
+        {
+            for(int j=0; j<exit.length; j++)
+            {
+                exit[j].open();
+                player.reach(exit[j]);
+            }
+        }
+
+        for(int i=0; i<enemy.length; i++)
+        {
+            enemy[i].move(player); 
+        }
+    }
+
+    public String toString()
+    {
+        int dotCount = count('.');
+        String dret = "";
+
+        for(int i=0; i< dotCount; i++)
+        {
+            dret = dret + " " + dots[i];
+        }
+
+        int enemyCount = count('e');
+        String eret = "";
+
+        for(int i=0; i< enemyCount; i++)
+        {
+            eret = eret + " " + enemy[i];
+        }
+
+        int exitCount = count('x');
+        String xret = "";
+
+        for(int i=0; i< exitCount; i++)
+        {
+            xret = xret + " " + exit[i];
+        }
+
+        return player + " " + dret + " " + xret + " " + eret;
+    }
+}

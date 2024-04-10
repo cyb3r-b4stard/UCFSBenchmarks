@@ -1,0 +1,136 @@
+import java.util.Scanner;
+/**
+ * ##### # ########### ## ##### #### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Game
+{
+    private int value;
+    
+    /**
+     * Constructor for objects of class Game
+     */
+    public Game()
+    {
+
+    }
+
+    /**
+     * This method will get the roll value from Dice.
+     */
+    public int getRollValue(String player)
+    {
+        Dice dice = new Dice();
+        System.out.println(player + ":");
+        int rollValue1 = dice.getValue();
+        System.out.println("Dice 1 =" + rollValue1);
+        
+        dice.roll();
+        
+        int rollValue2 = dice.getValue();
+        System.out.println("Dice 2 =" + rollValue2);
+        return rollValue1 + rollValue2;
+        
+    }
+    
+    /**
+     * Returns false if the value is under 21.
+     */
+    public boolean isUnderGameLimit()
+    {
+        if (value > 21)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    
+    /**
+     * 
+     */
+    public boolean playAgain()
+    {
+        Scanner keyboard = new Scanner(System.in);
+        System.out.println("Roll the dice? (y/n):");
+        String userResponse = keyboard.nextLine();
+        char letter = userResponse.charAt(0);
+        if (letter == 'y' || letter == 'Y')
+        {
+            return true;
+        }
+        else if (letter == 'n' || letter == 'N')
+        {
+            return false;
+        }
+    }
+    
+    /**
+     * These will display the result of the game.
+     */
+    public void displayResult(int computerScore, int userScore)
+    {
+        System.out.println("Game Over");
+        System.out.println("Your points: " + userScore);
+        System.out.println("Computer points: " + computerScore);
+    }
+    
+    /**
+     * This will find what the winner message is.
+     */
+    public String getWinnerMessage(int computerScore, int userScore)
+    {
+        if (userScore > computerScore && userScore < 21)
+        {
+            return "Congratulations, you win!";
+        }
+        else if (userScore == 21 && !(computerScore == 21))
+        {
+            return "Congratulations, you win!";
+        }
+        else if (userScore == computerScore)
+        {
+            return "Tie game!";
+        }
+        else if (userScore > 21 && computerScore > 21)
+        {
+            return "This game has no winner!";
+        }
+        else
+        {
+            return "The computer wins!";
+        }
+    }
+    
+    /**
+     * 
+     */
+    public void main()
+    {
+        int computerPoints = 0;
+        int userPoints = 0;
+        while (playAgain())
+        {
+            computerPoints += getRollValue("Computer")
+            userPoints += getRollValue("Player")
+            if (computerPoints > 21 && userPoints > 21)
+            {
+                break;
+            }
+            System.out.println("Computers Points: " + computerPoints)
+            System.out.println("User Points: " +userPoints)
+            if (userPoints == 0 && computerPoints == 0)
+            {
+                System.out.println("Gotta play to win!");
+            }
+            else
+            {
+                displayResults();
+            }
+        }
+    }
+}

@@ -1,0 +1,80 @@
+
+/**
+ * ##### # ########### ## ##### ############### ####.
+ * 
+ * @###### (#### #########) 
+ * @####### (##.##.####)
+ */
+public class Getränkeautomat
+{
+    IO io = new IO();
+    private int anzahlSchartnerBombe;
+    private int anzahlAlmdudler;
+    private int anzahlNukaCola;
+    
+    public Getränkeautomat()
+    {
+        anzahlSchartnerBombe = 2;
+        anzahlAlmdudler = 2;
+        anzahlNukaCola = 2;
+    }
+
+    public void zeigeMenue()
+    {       
+        io.println("Bitte wählen Sie eine der folgenden Optionen aus:");
+        io.println("1 .. Inhalt anzeigen");
+        io.println("2 .. Schartner Bombe kaufen ( 1,10 EUR)");
+        io.println("3 .. Almdudler kaufen       ( 1,00 EUR)");
+        io.println("4 .. Nuka-Cola kaufen       (50,00 EUR)");
+    
+        int auswahl = io.readInt();
+        
+        if(auswahl == 1){
+            zeigeInhalt();
+        }
+        
+        if (auswahl == 2){
+            if(anzahlSchartnerBombe == 0){
+                io.println("Das gewünschte Getränk (Schartner Bombe) ist" + "\n" + "nicht mehr verfügbar.");
+            } else {
+                anzahlSchartnerBombe -- ;
+                double gegeben = bezahlung();
+                io.println("Sie bekommen " + berrechneRückgeld(1.10, gegeben) + " EUR Rückgeld.")
+            }
+        } if (auswahl == 3){
+            if(anzahlAlmdudler == 0){
+                io.println("Das gewünschte Getränk (Almdudler) ist" + "\n" + "nicht mehr verfügbar.");
+            } else {
+                anzahlAlmdudler -- ;
+            }
+        } if (auswahl == 4){
+            if(anzahlNukaCola == 0){
+                io.println("Das gewünschte Getränk (Nuka-Cola) ist" + "\n" + "nicht mehr verfügbar.");
+            } else {
+                anzahlNukaCola -- ;
+            }
+        }
+    }
+     
+    private void zeigeInhalt()
+    {
+        io.println("Inhalt:");
+        io.println("- Schartner Bombe (" + anzahlSchartnerBombe + "x)");
+        io.println("- Almdudler (" + anzahlAlmdudler + "x)");
+        io.println("- Nuka-Cola (" + anzahlNukaCola + "x)");      
+        zeigeMenue();
+    }
+    
+    private double bezahlung()
+    {
+        io.println("Werfen Sie bitte das Geld ein!");
+        double gegeben = io.readDouble();
+        return gegeben;
+    }   
+    
+    private double berrechneRückgeld(double preis, double geld)
+    {
+        double rückgeld = geld - preis;
+        return rückgeld;
+    }
+}

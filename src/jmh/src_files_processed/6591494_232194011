@@ -1,0 +1,71 @@
+
+import java.util.Random;
+
+import comp1022p.ColorImage;
+import comp1022p.assignment.ModelLogic;
+import comp1022p.assignment.Target;
+
+
+public class StudentModel implements ModelLogic {
+    
+    /**
+     * Initializes a 2D target array with m rows and n columns of Target objects. You can assume that the 2D array itself (but not the Target objects inside) is already initialized.
+     * 
+     * All targets should be stationary for the lab.
+     * 
+     * @param targets   The m x n 2D target array.
+     */
+    public void initializeTargetArray(Target[][] targets) {
+        int column = targets[0].length;
+        int row = targets.length;
+
+        for (int i = 0; i<row; i++)
+        {
+            for (int j = 0; j<column; j++)
+            {
+                targets[i][j] = new Target (Target.STATIONARY, false);
+            }
+        }
+
+
+    }
+
+    
+    /**
+     * Moves the bullet image for the shooting animation according to the current step of the animation.
+     * 
+     * As the current step approaches the final step, the intermediate bullet image should move closer to the final x, y positions.
+     * This method sets the x, y position of the bullet image to the correct values according to the current step of the animation. 
+     * In order to calculate the correct values of the x, y positions, the technique of linear interpolation should be used.
+     * 
+     * As an example, given the following:
+     * y0 - initial y position
+     * y1 - final y position
+     * t0 - initial step
+     * t1 - final step
+     * t - current step
+     * 
+     * then y, the current y position, can be calculated by the following formula:
+     * 
+     * y = y0 + (y1 - y0) * (t - t0) / (t1 - t0)
+     * 
+     * Reference: http:
+     * 
+     * @param bulletImage   The bullet image to be moved. 
+     * @param initialStep   The initial step of the shooting animation.
+     * @param currentStep   The current step of the shooting animation.
+     * @param finalStep     The final step of the shooting animation.
+     * @param initialX      The initial x position of the intermediate bullet image.
+     * @param finalX        The final x position of the intermediate bullet image.
+     * @param initialY      The initial y position of the intermediate bullet image.
+     * @param finalY        The final y position of the intermediate bullet image.
+     */
+    public void moveBulletImage(ColorImage bulletImage, int initialStep, int currentStep, int finalStep, int initialX, int finalX, int initialY, int finalY) {
+        int CALCULATED_X_POSITION;
+        int CALCULATED_Y_POSITION;
+        CALCULATED_X_POSITION = initialX + (finalX - initialX) * (currentStep - initialStep) / (finalStep - initialStep)
+        CALCULATED_Y_POSITION = initialY + (finalY - initialY) * (currentStep - initialStep) / (finalStep - initialStep);
+        bulletImage.setX (CALCULATED_X_POSITION);
+        bulletImage.setY (CALCULATED_Y_POSITION);
+    } 
+}

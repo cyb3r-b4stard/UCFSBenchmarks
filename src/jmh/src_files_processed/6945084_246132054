@@ -1,0 +1,227 @@
+
+
+public class Feuille1
+{
+  
+    public Feuille1()
+    {
+    }
+
+    /**
+     * Propriété : I(m,k) : m = k*a
+     * Arrêt : k=b
+     * Initialisation : m=0, k=0
+     * Progression : I(m,k) et !Arrêt => I(m+a, k+1)
+     */
+    static public int ex1(int pa, int pb)
+    {
+        int a=pa, b=pb, k=0, m=0;   
+        while(k!=b){                
+            m+=a;                   
+            k++;                    
+        }
+        return m;                   
+    }
+    
+    /**
+     * Propriété : I(m,a,b) : m + a*b = pa*pb
+     * Arrêt : b=0
+     * Initialisation : m=0, a=pa, b=pb
+     * Progression : I(m,a,b) et !Arrêt et b pair => I(m, a*2, b/2)
+     *               I(m,a,b) et !Arrêt et b impair => I(m+a, a*2, b/2)
+     */
+    static public int ex2(int pa, int pb)
+    {
+        int a=pa, b=pb, m=0;    
+        while(b!=0){            
+            if(b%2==0){         
+                a*=2;           
+                b/=2;           
+            }
+            else{               
+                m+=a;           
+                a*=2;           
+                b/=2;           
+            }
+        }
+        return m;               
+    }
+    
+    /**
+     * Propriété : I(i,p) : p = a^i
+     * Arrêt : i=n
+     * Initialisation : i=0, p=1
+     * Progression : I(i,p) et !Arrêt => I(i+1, p*a)
+     */
+    static public int ex3a(int a, int n)
+    {
+        int i=0, p=1;   
+        while(i!=n){    
+            p*=a;       
+            i++;        
+        }
+        return p;       
+    }
+    
+    /**
+     * Propriété : I(p,a,n) : p * a^n = pa^pn
+     * Arrêt : n=0
+     * Initialisation : p=1, a=pa, n=pn
+     * Progression : I(p,a,n) et !Arrêt et n pair => I(p, a^2, n/2)
+     *               I(p,a,n) et !Arrêt et n impair => I(p*a, a^2, n/2)
+     */
+    static public int ex3b(int pa, int pn)
+    {
+        int p=1, a=pa, n=pn;
+        while(n!=0){
+            if(n%2==0){
+                a*=a;
+                n/=2;
+            }
+            else{
+                p*=a;
+                a*=a;
+                n/=2;
+            }
+        }
+        return p;
+    }
+    
+    /**
+     * Propriété : I(x,y,k) : x=fibo(k-1) et y=fibo(k)
+     * Arrêt : k=n
+     * Initialisation : x=0, y=1, k=1
+     * Progression : I(x,y,k) et !Arrêt => I(y, x+y, k+1)
+     */
+    static public int ex4a_fibo(int n)
+    {
+        int x=0, y=1, k=1, temp;    
+        while(k!=n){                
+            temp=x;                 
+            x=y;                    
+            y+=temp;                
+            k++;                    
+        }
+        return y;                   
+    }
+    
+    /**
+     * 
+     */
+    static public int ex4b_fibo()
+    {
+        return 0;
+    }
+    
+    public static int[][] produitM(int[][] a, int[][] b)
+    {
+        int[][] c = new int [2][2];
+        c[0][0] = a[0][0]*b[0][0] + a[0][1]*b[1][0];
+        c[0][1] = a[0][0]*b[0][1] + a[0][1]*b[1][1];
+        c[1][0] = a[1][0]*b[0][0] + a[1][1]*b[1][0];
+        c[1][1] = a[1][0]*b[0][1] + a[1][1]*b[1][1];
+        
+        return c;
+    }
+    
+    
+    
+    /**
+     * Propriété : I(d,f,d2,k) : 
+     * Arrêt : k=n
+     * Init : d=0, f=1, d2=0, k=0
+     * Progression : I(d,f,d2,k) et !Arrêt et T[k] != T[k-1] => I(d,f,k,k+1)
+     *               I(d,f,d2,k) et !Arrêt et T[k] = T[k-1] et k-d2<=f-d => I(d,f,d2,k+1)
+     *               I(d,f,d2,k) et !Arrêt et T[k] = T[k-1] et k-d2>f-d => I(d',k+1,d2,k+1)
+     */
+    static public void ex5(int[] T)
+    {
+        int d=0, d2=0, f=1, k=1;    
+        int n=T.length;
+        while(k!=n){                
+            if(T[k]!=T[k-1]){       
+                d2=k;               
+                k++;                
+            }
+            else{                   
+                if(k-d2 <= f-d){    
+                    k++;            
+                }
+                else{               
+                    d=d2;           
+                    f=k+1;          
+                    k++;            
+                }
+            }
+            
+        }                           
+        System.out.println("d="+d+", f="+f);
+    }
+    
+    /**
+     * Propriété : I(d,f,s,d2,s2,k) : T[d...f] est le tableau de somme s max de T[0...k-1] et T[d2...k] est 
+     * Arrêt : k=n
+     * Init : d=d2=0, f=k=1, s=s2=0
+     * Progression : I(d,f,s,d2,s2,k) et !Arrêt et 
+     */
+    
+    /**
+     * Propriété : I(m,M,k) : m min de T[0...k-1] et M max de T[0...k-1]
+     * Arrêt : k=n
+     * Init : k=0, m=M=T[0];
+     * Progression : I(m,M,k) et !Arrêt et T[k]<m => I(T[k],M,k+1)
+     *               I(m,M,k) et !Arrêt et T[k]>M => I(m,T[k],k+1)
+     *               I(m,M,k) et !Arrêt et T[k]>m et T[k]<M => I(m,M,k+1)
+     */
+    public static void ex7b(int[] T)
+    {
+        int k=0, m=T[0], M=T[0];    
+        int n=T.length;
+        while(k!=n){                
+            if(T[k]<m){             
+                m=T[k];             
+            }
+            else if(T[k]>M){        
+                M=T[k];             
+            }
+            else;                   
+            k++;                    
+        }                           
+        System.out.println("m="+m+", M="+M);
+    }
+    
+    /**
+     * Propriété : I(i,j) : l'intersection de T1[0...i] et T2[0...j] est vide
+     * Arrêt : T1[i]=T2[j]
+     * Init : i=j=0
+     * Progression : I(i,j) et !Arrêt et T1[i]>T2[j] => I(i,j+1)
+     *               I(i,j) et !Arrêt et T1[i]<T2[j] => I(i+1,j)
+     */
+    public static void ex8(int[] T1, int[] T2)
+    {
+        int i=0, j=0;               
+        while(T1[i]!=T2[j]){        
+            if(T1[i]>T2[j]){        
+                j++;                
+            }
+            else if(T1[i]<T2[j]){   
+                i++;                
+            }
+        }                           
+        System.out.println("i="+i+", j="+j);
+    }
+    
+    /**
+     * Propriété : I(i,j,k) : C[0...k] est l'intersection de A[0...i] et B[0...j]
+     * Arrêt : i=n ou j=n
+     * Init : i=j=k=0
+     * Progression : I(i,j,k) et !Arrêt et A[i]<B[j] => I(i+1,j,k)
+     *               I(i,j,k) et !Arrêt et A[i]>B[j] => I(i,j+1,k)
+     *               I(i,j,k) et !Arrêt et A[i]=B[j] => I(i+1,j,k+1)
+     */
+    public static void ex9(int[] A, int[] B)
+    {
+        int i=0, j=0, k=0;
+        int[] C = new int[];
+        while((i!=n)&&(j!=n)){
+}

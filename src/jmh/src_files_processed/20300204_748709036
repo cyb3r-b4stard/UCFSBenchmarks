@@ -1,0 +1,115 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
+
+/**
+ * #### ## #####.
+ * 
+ * @###### ####### 
+ * @####### ####.##.##
+ * 
+ * @###### ##### ######
+ * @####### ####.##.##
+ */
+public class Deck
+{
+    private ArrayList<Card> deck;
+    private static final int TIMES_TO_SHUFFLE = 10;
+    
+    public static final String[] SUITS = {"Hearts", "Diamonds", "Spades", "Clubs"};
+    public static final String[] DESCRIPTIONS = {"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"};
+
+    /**
+     * Constructor for objects of class Deck
+     * Creates a new container for Card objects
+     */
+    public Deck()
+    {
+        deck = new ArrayList<Card>();
+    }
+    
+    /**
+     * Swaps cards within the deck.
+     * 
+     * @param cardA Intakes a position within the deck.
+     * @param cardB Intakes a second position within the deck.
+     */
+    public void swap(int cardA, int cardB)
+    {
+        if (cardA >= 0 && cardA < deck.size() && cardB >= 0 && cardB < deck.size())
+        {
+            Collections.swap(deck, cardA, cardB);
+            System.out.println("Swapped cards positioned at " + cardA + " and " + cardB + ": " + deck.get(cardA).getDescription() + " of " + deck.get(cardA).getSuit() + " <--> " + deck.get(cardB).getDescription() + " of " + deck.get(cardB).getSuit());
+        }
+        else
+        {
+            System.out.println("Error! One of the inputs was not in the array.");
+        }
+    }
+    
+    /**
+     * Load Deck Method
+     */
+    public void loadDeck()
+    {
+        for (int y = 0; y < SUITS.length; y++)
+        {
+            for (int x = 0; x < DESCRIPTIONS.length; x++)
+            {
+                Card card = new Card();
+                card.setSuit(SUITS.get(y).toString());
+                card.setDescription(DESCRIPTIONS[].get(x));
+            }
+        }
+    }
+    
+    /**
+     * Shuffles the deck.
+     */
+    public void shuffle()
+    {
+        Random randomGenerator = new Random();
+        
+        for (int i = 0; i < TIMES_TO_SHUFFLE; i++)
+        {
+            int cardA = randomGenerator.nextInt(deck.size());
+            int cardB = randomGenerator.nextInt(deck.size());
+            
+            swap(cardA, cardB);
+        }
+    }
+    
+    /**
+     * Add a card to the deck.
+     * @param Card to be added
+     */
+    public void addCard(Card cardToAdd)
+    {
+        deck.add(cardToAdd);
+    }
+    
+    /**
+     * Take the first card from the deck.
+     * @return Card or null
+     */
+    public Card takeCard()
+    {
+        if(deck.isEmpty()) {
+            return null; 
+        }
+        else {  
+            return deck.remove(0);
+        }
+    }
+    
+    /**
+     * Show the contents of the deck.
+     */
+    public void showDeck()
+    {
+        for(Card eachCard : deck) {
+            System.out.println(eachCard.getDescription()+ 
+                            " of " + eachCard.getSuit());
+        }
+    }
+}

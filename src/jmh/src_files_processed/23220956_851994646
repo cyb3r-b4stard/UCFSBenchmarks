@@ -1,0 +1,131 @@
+
+public class TELEFONBUCH
+{
+    LISTE_ADT_FELD tb, tbk1, tbk2;
+
+
+
+    public TELEFONBUCH()
+    {
+        tb = new LISTE_ADT_FELD(); 
+        tbk1 = new LISTE_ADT_FELD();
+        tbk2 = new LISTE_ADT_FELD();
+    
+
+    }
+
+    public void bildschirmausgabe(){
+        kopieren1();
+        tb=tbk1;
+        while(!tb.istleer()){
+            String ausgabe = " " +  tb.inhalt().gibnummer();
+            ausgabe = ausgabe + "  " + tb.inhalt().gibbezeichnung();   
+            System.out.println(ausgabe); 
+            tb.loeschen();
+        }
+
+        tb=tbk2;
+    }
+
+    public boolean istenthaltennummer(int x){
+        kopieren1();
+        tb=tbk1;
+        boolean wahr = false;
+        while(!tb.istleer()){
+            if(tb.inhalt().gibnummer()==x){
+                wahr= true;
+                tb.loeschen();
+            }
+            tb.loeschen();
+
+        }
+        tb= tbk2;
+        return wahr;
+    }
+
+    public int summe(){
+        kopieren1();
+        tb=tbk1;
+        int gesamt=0;
+        while(!tb.istleer()){
+            gesamt= gesamt + tb.inhalt().gibnummer();
+            tb.loeschen();
+        }
+        tb= tbk2;
+        return gesamt;
+
+    }
+
+    public void kopieren1(){
+        tbk2 = new LISTE_ADT_FELD();
+
+        while(!tb.istleer()){
+
+            tbk1.einfuegen(tb.inhalt());
+            tbk2.einfuegen(tb.inhalt());
+            tb.loeschen();
+        }
+
+    }
+
+    public int anzahl(){
+        kopieren1();
+        tb = tbk1;
+        int enthaltene=0;
+
+        while(!tb.istleer()){
+            tb.loeschen();
+            enthaltene++;
+        }
+
+        tb= tbk2;
+        return enthaltene;
+    }
+
+    public int pos(int x){
+        kopieren1();
+        tb = tbk1;
+        int posx=0;
+
+        while(!tb.istleer()){
+            if(tb.inhalt().gibnummer()==x){
+                tb.loeschen();
+            }else{
+                posx++;
+                return posx;
+            }
+        }
+
+        tb= tbk2;
+        return posx;
+        
+    }
+
+    public void nummerxloeschen(int x){
+        kopieren1();
+        tb = tbk1;
+        while(!tb.istleer()){
+            if(tb.inhalt().gibnummer()==x){
+                for(int i=0; i<=pos(x)-anzahl(); ;i++){
+                    tbk2.loeschen();
+                }
+                tb.loeschen();
+            }else{
+                tb.loeschen();
+
+            }
+        }
+        tb= tbk2;
+    }
+
+    public void testwerte(){
+        DATEN x;
+        x = new DATEN(1,"a"); tb.einfuegen(x);
+        x = new DATEN(2,"b"); tb.einfuegen(x);
+        x = new DATEN(3,"c"); tb.einfuegen(x);
+        x = new DATEN(4,"d"); tb.einfuegen(x);
+        x = new DATEN(5,"e"); tb.einfuegen(x);
+        x = new DATEN(6,"f"); tb.einfuegen(x);        
+    }
+
+}

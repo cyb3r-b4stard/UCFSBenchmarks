@@ -1,0 +1,138 @@
+public class Test{
+    public Pracownik lista[];
+    public int liczbaPracownikow;
+    public Test(){
+        this.lista = new Pracownik[20];
+        this.liczbaPracownikow=0;
+    }
+    public double obliczWyplate(String nazwisko){
+        for (int i=0;i<liczbaPracownikow;i++)
+            if (lista[i]!=null && lista[i].nazwisko.equals(nazwisko)){    
+                if (czyUrzednik(nazwisko)){
+                    Urzednik u;
+                    u=(Urzednik)lista[i];
+                    return u.wyplata();
+                }
+                if (czyRobotnik(nazwisko)) {
+                    Robotnik r;
+                    r=(Robotnik)lista[i];
+                    return r.wyplata();
+                } 
+            }
+        return 0;
+    }
+    public Pracownik znajdz(String nazwisko){
+        for(int i=0; i<liczbaPracownikow; i++){
+            if(nazwisko.equals(lista[i].nazwisko))
+            return lista[i];
+        }
+        return null;
+    }
+    public boolean czyUrzednik(String nazwisko){
+        Pracownik tmp = znajdz(nazwisko);
+        if (tmp!=null && tmp instanceof Urzednik){
+            return true;}
+        else{
+            return false;}
+    }
+    public boolean czyRobotnik(String nazwisko){
+        Pracownik tmp = znajdz(nazwisko);
+        if (tmp!=null && tmp instanceof Robotnik){
+            return true;
+        }
+        return false;
+    }
+    public void wpiszUrzednika(String nazwisko, double etat, double procent){
+        this.lista[liczbaPracownikow] = new Urzednik(nazwisko, etat, procent);
+        liczbaPracownikow++;
+    }
+    public void wpiszRobotnika(String nazwisko, double etat, double godziny){
+        this.lista[liczbaPracownikow] = new Robotnik(nazwisko, etat, godziny);
+        liczbaPracownikow++;
+    }
+    public void usunPracownika(String nazwisko){
+        for(int i=0; i<liczbaPracownikow; i++){
+               if(lista[i].nazwisko.equals(nazwisko)){
+                   System.out.println("Pracownik "+lista[i].nazwisko + " zostal zwolniony");
+                   for(int j=i+1; j<liczbaPracownikow; j++){
+                     lista[j-1]=lista[j];
+                    }
+                   }
+                }
+        liczbaPracownikow--;       
+    }
+    public void iluUrzednikow(){
+        int liczbaUrzednikow=0;
+        for (int i=0; i<liczbaPracownikow; i++){
+            if(this.lista[i].getClass() == Urzednik.class){
+                liczbaUrzednikow++;
+            }
+        }
+        System.out.println("W firmie pracuje "+liczbaUrzednikow+" urzedników");
+    }
+    public void iluRobotnikow(){
+        int liczbaRobotnikow=0;
+        for (int i=0; i<liczbaPracownikow; i++){
+            if(this.lista[i].getClass() == Robotnik.class){
+                liczbaRobotnikow++;
+            }
+        }
+        System.out.println("W firmie pracuje "+liczbaRobotnikow+" robotników");
+    }
+    
+    public void sumaWyplatRobotnikow(){
+        double sumaR=0;
+        for (int i=0; i<liczbaPracownikow; i++){
+            if (lista[i].getClass()==Robotnik.class){
+                sumaR+=this.lista[i].wyplata();
+            }
+        }
+        System.out.println("Suma wyplat wszystkich robotników wynosi "+sumaR);
+    }
+    public void sumaWyplatUrzednikow(){
+        double sumaU=0;
+        for (int i=0; i<liczbaPracownikow; i++){
+            if (lista[i].getClass()==Urzednik.class){
+                sumaU+=this.lista[i].wyplata();
+            }
+        }
+        System.out.println("Suma wyplat wszystkich urzędników wynosi "+sumaU);
+    }
+    public void wydrukPracownikow(){
+        System.out.println("Lista pracowników");
+        System.out.println("Nazwisko\tGrupa\tEtat");
+            for(int i=0; i<liczbaPracownikow; i++){
+                System.out.println(lista[i].nazwisko + "\t"+this.lista[i].getClass().getName()+"\t"+this.lista[i].etat);
+            }
+    }
+    public void wydrukListyUrzednikow(){
+        System.out.println("Lista urzedników");
+        System.out.println("Nazwisko\tEtat");
+        for(int i=0;i<liczbaPracownikow;i++)
+            if(this.lista[i].getClass()==Urzednik.class)
+               System.out.println(this.lista[i].nazwisko+"\t\t"+this.lista[i].etat);
+    }
+    public void wydrukListyRobotnik(){
+        int lp = 1;
+        System.out.println("Lista robotników");
+        System.out.println("Lp\tNazwisko\tEtat");
+        for(int i=0;i<liczaPracownikow;i++)
+            if(this.tab[i].getClass()==Robotnik.class)
+               System.out.println(lp++ + "\t" this.lista[i].nazwisko+"\t\t"+this.lista[i].etat);
+    }
+    public void wydrukListyPlac(){
+        int lp = 1;
+        System.out.println("Lista płac");
+        System.out.println("Lp.\tNazwisko\t\tGrupa\t\tEtat\t\tPlaca");
+        for(int i=0;i<iloscPracownikow;i++)
+            System.out.println(lp++ + "\t" +this.lista[i].nazwisko+"\t\t"+this.lista[i].getClass().getName()+"\t\t"+this.lista[i].etat+"\t\t"+this.lista[i].wyplata());
+        
+    }
+    public void przyjmijPrzykladowychPracownikow(){
+        this.wpiszRobotnika("Nowak",1.0,52);
+        this.wpiszRobotnika("Kowalski",0.5,60);
+        this.wpiszUrzednika("Malinowski",1.25,50);
+        this.wpiszUrzednika("Kwiatkowski",1,42);
+        this.wpiszUrzednika("Abramowicz",0.5,48);
+    }
+}

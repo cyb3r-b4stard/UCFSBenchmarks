@@ -1,0 +1,89 @@
+/*
+ * ##########:  ##### ######
+ * #######:     ## ###### ## ###### #### ########## ### ######## #### ### ######## #########.
+ */
+
+import java.awt.*;
+import java.applet.*;
+import java.awt.event.*;
+
+public class CandleLine extends Applet implements ItemListener
+{
+    double cost, total;
+    int code;
+    
+    Label candlePromptLabel = new Label("CandleLine--Candles On-line");
+    Label pricePromptLabel = new Label("Please enter the total dollar amount of your order: ");
+        TextField priceInputField = new TextField(35);
+    
+    Label methodPromptLabel = new Label("Please choose your method of shipping:");
+    
+    CheckboxGroup shippingGroup = new CheckboxGroup();
+        Checkbox priorityBox = new Checkbox("Priority (Overnight)", false, shippingGroup);
+        Checkbox expressBox = new Checkbox("Express (2 business days)", false, shippingGroup);
+        Checkbox standardBox = new Checkbox("Standard (3-7 business days)", true, shippingGroup);
+    
+    Label deliveryPromptLabel = new Label("We guarantee on time delivery, or your money back.");
+    
+    public void init()
+    {
+        add(candlePromptLabel);
+        add(pricePromptLabel);
+        add(priceInputField);
+        priceInputField.requestFocus();
+        priceInputField.setForeground(Color.black);
+        add(priorityBox);
+        add(expressBox);
+        add(standardBox);
+    }
+    public void itemStateChanged(ItemEvent choice)
+    {
+        try
+        {
+            cost = getCost();
+        }
+        catch (NumberFormatException e)
+        {
+            outputLabel.setText("You must enter a dollar amount greater than zero.");
+            hiddenBox.setState(true);
+            priceInputField.setText("");
+            priceInputField.requestFocus();
+        }
+    }
+    
+    public double getCost()
+    {
+        double cost = Double.parseDouble(priceInputField.getText());
+        if (sales <=0) throw new NumberFormatException();
+        return cost;
+    }
+    
+    public int getCode()
+    {
+        int code = 0;
+        if (standardBox.getState()) code = 1;
+        else
+            if (expressBox.getState()) code = 2;
+            else
+                if (priority.getState()) code = 3;
+        return code;
+    }
+    
+    public double getTotal(double cost, int code)
+    {
+        double total = 0.0;
+        switch(code)
+        {
+            case 1:
+                total = cost + 7.95
+                break;
+            case 2:
+                total = cost + 13.95
+                break;
+            case 3:
+                total = cost + 16.95
+                break;
+        }
+        return total;
+    }
+}  

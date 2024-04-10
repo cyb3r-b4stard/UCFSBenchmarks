@@ -1,0 +1,198 @@
+
+/**
+ * ##### # ########### ## ##### ##### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Buero
+{ 
+    private Queue warteschlange;
+    private String name;
+    private Stack aktenstapel;
+    private Akte aktuelleAkte;
+    private Person aktuellePerson;
+    private List aktenschrank;
+    private List personenregister;
+    private int anzahlPersonen = 0;
+    private int maxId;
+    /**
+     * Eine Warteschlange wird erschaffen.
+     */
+    public Buero()
+    {
+        warteschlange = new Queue<Person>();
+        aktenstapel = new Stack<Akte>();
+        personenregister = new List<Person>();
+    }
+    
+    /**
+     * Eine Person wird an die momentane letzte Stelle der Warteschlange hinzugefügt
+     */
+    public void hintenAnstellen (Person p)
+    {
+       warteschlange.enqueue(p);
+    }
+    /**
+     * Die erste Person der Warteschlange wird entfernt
+     */
+    public void einlassen()
+    {
+        aktuellePerson = (Person)warteschlange.front();
+        warteschlange.dequeue();
+        if(personenregister.isEmpty())
+        {
+            aktuellePerson.setId(1);
+        }
+        else
+        {
+            personenregisterDurchsuchen();
+            aktuellePerson.setId(maxId);
+            aktuelleAkte = new Akte(aktuellePerson.getId());
+        }
+    }    
+    public void personenregisterDurchsuchen()
+    {
+        if(!personenregister.isEmpty())
+        {
+        Person hilfsPerson;
+        personenregister.toFirst();
+        hilfsPerson = (Person)personenregister.getContent();
+        int hilfe = hilfsPerson.getId();
+        personenregister.next();
+        while(personenregister.hasAccess())
+        {
+            hilfsPerson = (Person)personenregister.getContent();
+            if(hilfe < hilfsPerson.getId())
+            {
+                hilfe = hilfsPerson.getId();
+            }
+            personenregister.next();
+        }
+        maxId = hilfe;
+       }
+       
+    }
+    /**
+     * Die erste Person der Warteschlange wird entfernt
+     */
+    public void einlassen2()
+    {
+        aktuellePerson = (Person)warteschlange.front();
+        warteschlange.dequeue();
+        if(personenregister.isEmpty())
+        {
+            aktuellePerson.setId(1);
+        }
+        else
+        {
+            aktuellePerson.setId(anzahlPersonen++);
+            aktuelleAkte = new Akte(aktuellePerson.getId());
+        }
+    }
+    /**
+     * Die aktuelle Akte wird auf den Aktenstapel gelegt, die akutelle Person wird entlassen und ins Personenregister aufgenommen.
+     */
+    public void entlassen()
+    {
+        akteAblegen();
+        personenregister.append(aktuellePerson);
+        anzahlPersonen = anzahlPersonen ++;
+        aktuellePerson = null;
+    }
+    /**
+     * Wenn mindestens eine Person vorhanden ist, werden alle Personen der Warteschlage entfernt.
+     */
+    public void sprechstundeBeenden()
+    {
+        while(!warteschlange.isEmpty())
+        {
+            warteschlange.dequeue();
+        }
+        
+    }
+    /**
+     * Gibt den Namen der ersten Person zurück
+     * @return Namen der ersten Person, wenn mindestens eine Person vorhanden ist, sonst wird eine Fehlermeldung zurück gegeben.
+     */
+    public String gibNamendererstenPerson()
+    {
+        Person hilfsperson = (Person)warteschlange.front();
+        if (warteschlange.isEmpty())
+        {
+            return "Es gibt keine erste Person, du Trottel.";
+        }
+        return hilfsperson.getName();
+    }
+    /**
+     * Ein neues Objekt der Klasse Akte wird in dem Attribut aktuelle Akte inklusive einer Id erstellt.
+     */
+    public void akteAnlegen(int pId)
+    {
+      aktuelleAkte = new Akte(pId);
+    }
+    /**
+     * Die aktuelleAkte wird oben auf den Aktenstapel draufgelegt.
+     */
+    public void akteAblegen()
+    {
+      aktenstapel.push(aktuelleAkte);
+    }
+    /**
+     * Der Inhalt des Strings Info der aktuellenAkte wird abgefragt.
+     */
+    public String akteLesen()
+    {
+      return aktuelleAkte.getInfo();
+    }
+    /**
+     * Der Inhalt des Strings Info der aktuellenAkte wird bearbeitet.
+     */
+    public void AkteBearbeiten(String pAkteAktuell)
+    {
+        aktuelleAkte.setInfo(pAkteAktuell);
+    }
+    public void AkteInSchrank ()
+    {
+        
+    }
+    /**
+     * (Person)personenregister.getContent().getId() ersetzen durch eine Möglichkeit die Id von current abzufragen.
+     * wahrscheinlich durch eine Variable des Typs Person.
+     * 
+     */
+    public void PersonensortierenBS()
+    {
+        Person hilfsPerson;
+        if(!personenregister.isEmpty())
+        {
+            personenregister.toFirst();
+            personenregister.next();
+            if(personenregister.hasAccess())
+            {
+                personenregister.toFirst();
+            }
+            while(personenregister.hasAccess())
+            {
+                Person hilfsPerson2;
+                hilfsPerson = (Person)personenregister.getContent();
+                personenregister.next();
+                hilfsPerson2 = (Person)personenregister.getContent();
+                if(hilfsPerson.getId() > hilfsPerson2.getId())
+                {
+                    personenregister.remove();
+                    personenregister.toFirst();
+                    while(!hilfsPerson2.getName() = hilfsPerson.getName())
+                    {
+                        personenregister.next();
+                    }
+                    personenregister.insert(hilfsPerson);
+                }
+            }
+        }
+    }
+  }
+
+         
+        
+    

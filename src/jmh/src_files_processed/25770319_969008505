@@ -1,0 +1,224 @@
+import java.io.*;
+import javax.microedition.lcdui.*; 
+import java.util.*;
+import javax.microedition.lcdui.game.*;
+public class MyHouse2 extends Canvas 
+{   
+    Image imageSun, imageBG, imageCloud, imageDrop;
+    Timer timer;
+    SunTimerTask Suntask; CloudTimerTask Ctask; BgTimerTask BGtask; RaindropsTimerTask Rtask;
+    Sprite sprite;
+    int xSprite = 0; int ySprite = -30; int xSun = -50; int ySun = 60; int time = 0; int xCloud = 260;
+    int numberOfRaindrops = 0; int count = 0;
+    Raindrops[] rds = {null, null, null,null,null};
+
+    public MyHouse2() 
+    { 
+        try
+        {
+            imageSun = Image.createImage("/Sun1.png");  
+            imageBG = Image.createImage("/stars3.png");
+            imageCloud = Image.createImage("/Cloud.png");
+            imageDrop = Image.createImage("/drops1.png");
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        sprite = new Sprite(imageBG,300,200);
+
+        timer = new Timer();
+
+        Suntask = new SunTimerTask();
+        BGtask = new BgTimerTask();
+        Ctask = new CloudTimerTask();
+        
+
+        timer.schedule(BGtask, 300,300);
+        timer.schedule(Suntask, 100,100);
+        timer.schedule(Ctask, 100,100);
+        
+    }
+
+    public void drawChimney(Graphics g)
+    {
+        g.setColor(192,192,192);
+        g.fillRect(130,70,10,30);      
+    }
+
+    public void drawRoof(Graphics g)
+    {
+        g.setColor(255,0,0);
+        g.fillTriangle(180,120,150,150,210,150);
+        g.fillTriangle(80,60,50,90,180,120);
+        g.fillTriangle(50,90,150,150,180,120);
+    }
+
+    public void drawMainBody(Graphics g)
+    {
+        g.setColor(128,128,128);
+        g.fillRect(150,150,60,110);
+        g.fillTriangle(50,90,50,190,150,150);
+        g.fillTriangle(50,190,150,150,150,260);
+    }
+
+    public void drawWindowsandDoor(Graphics g)
+    {
+        g.setColor(0,255,255);
+        g.fillRect(160,220,40,40);
+        g.fillRect(160,160,40,30);
+        g.setColor(0,128,128);
+        g.fillTriangle(80,120,80,150,100,130);
+        g.fillTriangle(100,130,80,150,100,160);
+        g.fillTriangle(110,140,110,170,130,150);
+        g.fillTriangle(130,150,110,170,130,180);
+    }
+
+    public void drawVerandah(Graphics g)
+    {
+        g.setColor(128,0,0);
+        g.fillTriangle(50,160,10,170,110,220);
+        g.fillTriangle(50,160,110,220,150,210);
+        g.setColor(255,255,255);
+        g.fillRect(10,170,2,50);
+        g.fillRect(110,220,2,50);
+    }
+
+    public void drawLines(Graphics g)
+    {
+        g.setColor(0,0,0);
+        g.drawLine(180,160,180,190);
+        g.drawLine(160,173,200,173);
+        g.drawLine(150,150,150,260);
+        g.drawLine(180,220,180,260);
+        g.drawLine(180,120,150,150);
+        g.drawLine(50,90,150,150); 
+    }
+
+    public void drawImageCloud(Graphics g)
+    {
+        g.drawImage(imageCloud, xCloud, 20, Graphics.TOP | Graphics.LEFT);
+        xCloud -= 3;
+    }
+
+    public void drawImageSun(Graphics g)
+    {
+        g.drawImage(imageSun, xSun,ySun, Graphics.TOP|Graphics.LEFT);
+        xSun +=2;
+    }
+
+    private class SunTimerTask extends TimerTask
+    {
+        public void run(){
+
+            repaint();
+        }
+    }
+    private class BgTimerTask extends TimerTask
+    {
+        public void run()
+        {
+            sprite.nextFrame();
+            repaint();
+        }
+    }
+    private class CloudTimerTask extends TimerTask
+    {
+        public void run()
+        {
+
+            repaint();
+        }
+    }
+
+    public void paint(Graphics g) 
+    {
+        g.setColor(90,211,242);
+        g.fillRect(0,0,240,170);
+        g.setColor(137,246,109);
+        g.fillRect(0,170,240,300);
+
+        drawImageSun(g);
+        drawImageCloud(g);
+
+        time += 1;
+
+        if (xSun < 80)
+        {
+
+            ySun -= 1;
+        }
+        if (xSun > 80) 
+        {
+
+            ySun += 1.5;
+        }
+
+        if (time > 150)
+        {
+            g.setColor(75,0,130);
+            g.fillRect(0,0,240,170);
+            g.setColor(21,74,48);
+            g.fillRect(0,170,240,300);
+        }
+        if (time > 180)
+        {
+            g.setColor(0,0,0);
+            g.fillRect(0,0,240,170);
+            g.setColor(0,51,26);
+            g.fillRect(0,170,240,300);
+        }
+        if (time > 190)
+        {
+            sprite.setPosition(xSprite,ySprite);
+            sprite.paint(g);
+
+        }
+        if (xCloud < 115)
+        {
+            if (Rtask == null)
+            {
+                Rtask = new RaindropsTimerTask();
+                timer.schedule(Rtask,100,100);
+            }
+            if(numberOfRaindrops < rds.length)
+            {
+                rds[numberOfRaindrops] = new Raindrops(xCloud);
+                numberOfRaindrops+;
+            }
+        }
+        
+        drawChimney(g);
+        drawRoof(g);
+        drawMainBody(g);
+        drawWindowsandDoor(g);
+        drawVerandah(g);
+        drawLines(g);
+        
+        for (int i = 0; i < numberOfRaindrops; i = i+1)
+        {
+            int xRaindrops = rds[i].getX();
+            int yRaindrops = rds[i].getY();
+            g.drawImage(imageDrop, xRaindrops, yRaindrops, Graphics.TOP | Graphics.LEFT);
+        }
+        
+
+    }
+
+    public void nextImage()
+    {
+
+        
+    }
+    private class RaindropsTimerTask extends TimerTask
+    {
+        public void run()
+        {
+            for(int i = 0; i < numberOfRaindrops; i++)
+            {
+                rds[i].incrementY(2);
+            }
+            repaint();
+        }
+    }
+}

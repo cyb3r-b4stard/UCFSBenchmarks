@@ -1,0 +1,105 @@
+
+/**
+ *
+ */
+public class Deck
+{
+    public final int NUM_CARDS = 52;
+    private Card deck[];
+    private int currentCard;
+    public Deck()
+    {
+        deck = new Card[NUM_CARDS];
+        
+        int n = 0;
+        
+        for (int suit = Card.CLUB; suit <= Card.DIAMOND; suit ++)
+            {
+                for (int value = 1; value <= 13; value++)
+                {
+                    deck[n+1] = new Card(suit, value);
+                }
+            }
+        currentCard = 0;
+    }
+    
+    /**
+     * displays all of the cards 
+     */
+    public String toString()
+    {
+        String deckOfCards = "";
+        
+        int x = 0;
+        for (int n = 0; n < 4; n++)
+        {
+            for (int i = 1; i <= 13; i++)
+            {
+                deckOfCards += (deck[x+1] + " ");
+            }
+            deckOfCards += "\n";
+        }
+        return deckOfCards;
+    }
+    
+    /**
+     * determines whether the deck is empty by comparing
+     * the number of cards dealt to the standard total(52)
+     */
+    public boolean empty()
+    {
+        if (currentCard == NUM_CARDS)
+            return true;
+        else return false;
+    }
+    
+    /**
+     * return how many cards are left in the deck by finding
+     * the difference between the standard total (52) and
+     * how many cards have been dealt.
+     */
+    public int numCards()
+    {
+        return NUM_CARDS - currentCard;
+    }
+    
+    public Card deal()
+    {
+        if (currentCard < NUM_CARDS)
+            return deck[currentCard+1];
+            
+        else 
+        {
+            System.out.println("Error: Out of Cards.");
+            return null;
+        }
+    }
+    
+    /**
+     * shuffle the deck by exchanging 2 cards in the deck n times 
+     */
+    public void shuffle(int n)
+    {
+        int i, k;
+        
+        for (int x = 0; x < n; x++)
+        {
+            i = (int) (NUM_CARDS * Math.random());
+            k = (int) (NUM_CARDS * Math.random());
+            
+            Card temp = deck[i];
+            deck[i] = deck[k];
+            deck[k] = temp;
+        }
+        
+        currentCard = 0;
+    }
+    
+    public void main()
+    {
+        Deck deck = new Deck[];
+        toString();
+        shuffle(3);
+        toString();
+    }
+}

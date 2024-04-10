@@ -1,0 +1,157 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+
+/**
+ * ######### ##### ###### ####### ##########.
+ */
+public class Comercial extends Empleado
+{
+    private Scanner sc = new Scanner(System.in);
+    private ArrayList<Ficha> fichasEsperandoConfirmacion;
+    private ArrayList<String> ofertasParaEnviar;
+    
+    /**
+     * Constructor for objects of class Comercial
+     */
+    public Comercial()
+    {
+        fichasEsperandoConfirmacion = new ArrayList<Ficha>();
+        ofertasParaEnviar = new ArrayList<String>();
+    }
+    
+    /**
+     * Enviar ficha con trabajos sin presupuestar al jefe de taller, para hacerlo.
+     */
+    public void pedirPresupuestoAlJefe(JefeTaller jefe, Ficha fichaPresupuestar)
+    {
+        jefe.addFichaPresupuestar(fichaPresupuestar);
+    }
+    
+    /**
+     * Add una ficha a la lista de fichas que el jefe ha presupuestado con una cantidad
+     * que el cliente ha de aceptar o rechazar.
+     */
+    public void addFichaParaConfirmar(Ficha ficha)
+    {
+        fichasEsperandoConfirmacion.add(ficha);
+    }
+    
+    /**
+     * Solicitar conformidad conformidad de presupuesto al cliente.
+     */
+    public void solicitarConformidad(Taller taller)
+    {
+        for(Ficha ficha: taller.getFichasEnCurso()) {
+            if(!fichasEsperandoConfirmacion.isEmpty()) {
+                System.out.println("- PRESUPUESTO PARA EL SERVICIO -");
+                System.out.println("DNI propietario: "+ficha.getCliente().getDniCliente());
+                System.out.println("Matricula del vehiculo: "+ficha.getVehiculo().getMatricula());
+                System.out.println("Tareas: ");
+                for(Trabajo trabajo: ficha.getListaTrabajos()) {
+                    System.out.println("\t- "+ trabajo.getTipoDeProblema());
+                }
+                System.out.println("_________________________________________________");
+                System.out.println("PRECIO DEL SERVICIO EN EUROS\t"+ficha.getPrecio());
+                
+                taller.almacenarDatos(ficha);
+                fichasEsperandoConfirmacion.remove(ficha);
+                break;  
+            }
+        }
+    }
+    
+    /**
+     * Notificar a los dueños de que el vehiculo esta listo.
+     */
+    public void notificarServiciosTerminados(Taller taller)
+    {
+        boolean hayTrabajosSinAcabar = false;
+        
+        for(Ficha ficha: taller.getFichasEnCurso()) {
+            for(Trabajo trabajo: ficha.getListaTrabajos()) {
+                if(!trabajo.getEstado().equals("Finalizado")) {
+                    hayTrabajosSinAcabar = true;
+                    break; 
+                }
+                else {
+                    hayTrabajosSinAcabar = false;
+                }
+            }
+            
+            if(!hayTrabajosSinAcabar){
+                ficha.modificarAPendienteEntrega();
+            }
+            
+            System.out.println("Notificados todos aquellos que puedan recoger su vehiculo");
+        }
+    }
+    
+    /**
+     * Add una nueva oferta a las enviables.
+     */
+    public void addOfertasParaEnviar()
+    {
+        Oferta auxOferta;
+        String auxId;
+        String auxContenido;
+                      
+        System.out.println("Escriba el ID de la oferta nueva:");
+        auxId = sc.nextLine();
+        
+        System.out.println("Escriba el contenido de la oferta nueva:");
+        contenido = sc.nextLine();
+        
+        auxOferta = new Oferta(auxId, auxContenido);
+        
+        ofertasParaEnviar.add(auxOferta);
+    }
+    
+    /**
+     * Enviar oferta a clientes que puedan recibirla: si recibieron una 
+     * misma oferta hace menos de un año, no se les enviará.
+     */
+    public void enviarOferta(Taller taller)
+    {
+        String auxId;
+        
+        System.out.println("Escriba el ID de la oferta a enviar:");
+        auxId = sc.nextLine();
+        
+        for(Oferta oferta: ofertasParaEnviar) {
+            if(oferta.getIdOferta().equals(auxId)) {
+                for(Cliente cli: taller.getListaClientes()) {
+                    for(Oferta oferta: cli.getOfertasRecibidas()){
+                        if(oferta.getIdOferta().equalsIgnoreCase(auxId)) {
+                            if(oferta.getFechaDeEnvio.substring(0,3)
+                               .equals.(obtenerFecha().substring(0,3))) {
+                                break;
+                            }
+                        }
+                    }
+                    
+                    cli.addOfertaRecibida(oferta);
+                }
+                
+                System.out.println("Oferta enviada a lso posibles clientes.");
+            }
+            else {
+                System.out.println("Esa oferta no aparece en el repertorio");
+                return;
+            }
+        }
+    }
+    
+    /**
+     * Metodo para obtener la fecha actual del sistema.
+     */
+    public static String obtenerFecha()
+    {
+        Date fecha = new Date();
+        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/YYYY");
+        
+        return formatoFecha.format();
+    }
+}
+

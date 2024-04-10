@@ -1,0 +1,41 @@
+class Vista{
+    javax.swing.JTextField entrada;
+    javax.swing.JLabel saida;
+    javax.swing.JButton acao;
+
+    void construirCampos() {
+        entrada = new javax.swing.JTextField();
+        entrada.setText("Entrada");
+        getContentPane().add(entrada, java.awt.BorderLayout.NORTH);
+
+        saida = new javax.swing.JLabel();
+        saida.setText("Saída");
+        getContentPane().add(saida, java.awt.BorderLayout.CENTER);
+
+        acao = new javax.swing.JButton();
+        acao.setText("Ecoar");
+        getContentPane().add(acao, java.awt.BorderLayout.SOUTH);
+    }
+    
+    Vista() {
+        construirCampos();
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setBounds(150, 150 ,300, 100);
+        setTitle("Eco de números");
+    }
+    
+    void definirAcao(caverna c) {
+        acao.addActionListener( ev -> {
+            String x = entrada.getText();
+            String y = c.ecoar(x);
+            saida.setText(y);
+        });
+    }
+    
+    public static void main(String[] args){
+        caverna c = new caverna();
+        Vista v = new Vista();
+        v.definirAcao(c);
+        v.setVisible(true);
+    }
+}

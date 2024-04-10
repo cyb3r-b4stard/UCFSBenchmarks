@@ -1,0 +1,93 @@
+public class Normal extends User{
+
+    /** Saldo do utilizador */
+    private double balance;
+
+    /** (verificar qual o melhor caso)
+    private Map<User,Debt> balance -> cada divida e negativa ou positiva segundo esteja a devor ou lhe estejam a dever */
+
+    /** Mapeamento de pessoas a quem o utilizador estÃ¡ a dever, e a quantia devida a cada credor */
+    private Map<User,Debt> creditors;
+
+    /** Mapeamento de pessoas que devem ao utilizador e a quandidade devida por cada devedor */
+    private Map<User,Debt> debtors;
+
+    public Normal (){
+      super("n/a","n/a");
+      balance = 0;
+      creditors = new TreeMap<User,Divida>(); 
+      debtors = new TreeMap<User,Divida>(); 
+    }
+
+    public Normal (Normal n){
+      super(n);
+      this.balance = n.getBalence();
+      this.creditors = n.getCreditors();
+      this.debtors = n.getDebtors();
+    }
+
+    public Normal (String name, String password, Double balance, Map<String,Divida> creditors, Map<String,Divida> debtors){
+      super(name,password);
+      this.balance = balance;
+      this.creditors = new TreeMap<User,Debt>(creditors);
+      this.debtors = new TreeMap<User,Debt>(debtors);
+      setCreditors(creditors);
+      setDebtors(debtors);
+    }
+
+    public Double getBalence (){
+      return this.balance;
+    }
+
+    public void setBalance (Double balance){
+      this.balance = balance;
+    }
+
+    public Map<User,Debt> getCreditors (){
+      return this.creditors.entrySet()
+                           .stream()
+                           .collect(Collectors.toMap(e->e.getKey(),e->e.getValue().clone()));
+    }
+
+    public void setCreditors (Map<User,Debt> creditors){
+      this.creditors = creditors.entrySet()
+                                .stream()
+                                .collect(Collectors.toMap(e->e.getKey(),e->e.getValue().clone()));
+    }
+
+    public Map<User,Debt> getDebtors (){
+      return this.debtors.entrySet()
+                         .stream()
+                         .collect(Collectors.toMap(e->e.getKey(),e->e.getValue().clone()));
+    }
+
+    public void setDebtors (Map<User,Debt> debtors){
+      this.debtors = debtors.entrySet()
+                            .stream()
+                            .collect(Collectors.toMap(e->e.getKey(),e->e.getValue().clone()));
+    }
+
+    public Normal clone (){
+      return new Normal(this);
+    }
+
+    public boolean equals (Object obj){
+      if (obj == this)
+        return true;
+      if (obj == null || obj.getClass() != this.getClass())
+        return false;
+      Normal n = (Normal) obj;
+      return super.equals(obj)
+      && n.getBalence == balance
+      && n.getCreditors.equals(creditors)
+      && n.getDebtors.equals(debtors);
+    }
+
+    public String toString (){
+      StringBuilder sb = new StringBuilder();
+      sb.append("Balance: ").append(balance).append("; ");
+      sb.append("Debtors: ").append(debtors).append("; ");
+      sb.append("Credors: ").append(credors).append(".\n");
+      return sb.toString();
+    }
+}

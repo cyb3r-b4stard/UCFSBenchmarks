@@ -1,0 +1,165 @@
+import java.util.*;
+public class TuneMe  
+{   
+    public static int today = 1;
+    private final String NAME = "TuneMe";
+    private double balance = 0.0;
+    private MediaFiles resources = new MediaFiles();
+    private Members members = new Members();
+    private Member current = null;
+    public TuneMe()
+    {   
+        menu();
+    }
+    private void menu()
+    {
+        char action = readAction();
+        switch (action)
+        {
+            case 'R': register(); break;
+            case 'A': addMedia(); break;
+            case 'B': browse(); break;
+            case 'L': login(); break;
+            case 'Y': buy(); break;
+            case 'M': memberReport(); break;
+            case 'O': menu(action);break;
+            case 'S': siteReport(); break;
+            case 'X': exit(); break;
+            case '?': help(); break;
+            default: error();
+        }
+    }
+    private char readAction()
+    {
+        if(isLoggedIn())
+            System.out.print("Please enter your choice (Y, M, O): ");
+        else
+        System.out.print("Please enter your choice (R, A, B, L, S, X, ?): ");
+        return In.nextUpperChar();
+    }
+    public void register()
+    {  
+        members.add(members.member());
+        menu();
+    } 
+    public void addMedia()
+    {   
+        resources.addMediaFile("Minions", 1.50);
+        resources = new MediaFiles();
+        menu(); 
+    }
+    public void browse()
+    {   
+       new MediaFiles().browseMedia();
+       menu();
+    }
+    private void login()
+    {
+       current.login(); 
+    }               
+    private void menu(char action)
+    {
+        if(isLoggedIn())
+        {
+            switch (action)
+            {
+                case 'Y': buy(); break;
+                case 'M': memberReport(); break;
+                case 'O': logout();break;
+            }
+        }
+        else
+            System.out.println("Not logged in");
+        menu();
+    }
+    private boolean isLoggedIn()
+    {
+        return current != null;
+    }
+   
+    public void buy() 
+    {
+        Member = new member;
+        if (member.getBalance()< mediaFile.getPrice())
+            System.out.println("Sorry, " + name + "has insufficent funds");
+        else
+        {
+            mediaFile.buy(member);
+            member.buy(mediaFile);
+            System.out.printin("Successful purchase");
+        } 
+        menu();
+    } 
+    
+    private void memberReport()
+    {
+        members.report(); 
+        menu();
+    }
+    private void logout()
+    {
+        if(isLoggedIn())
+        {
+            current = null;
+        }
+    }
+    public void siteReport()
+    {   
+        toString();
+        menu();
+    } 
+    private void exit()
+    {
+        if (!confirm())
+            menu();
+        else
+            System.out.println("Goodbye");
+    }
+    private boolean confirm()
+    {
+        System.out.print("Are you sure (y/n)?: ");
+        return In.nextUpperChar() == 'Y';
+    }
+    private void help()
+    {
+        System.out.println("Welcome to TuneMe; enter");
+        System.out.println("R for Register Member");
+        System.out.println("A for Add Media");
+        System.out.println("B for Browse Media");
+        System.out.println("L for Login");
+        System.out.println("Y for Buy Media");
+        System.out.println("O for Logout");
+        System.out.println("S for Site Report");
+        System.out.println("X to exit");
+        menu();
+    }
+    private void error()
+    {
+        System.out.println("No action found. Try again");
+        menu();
+    }
+    private String readString(String message)
+    {
+        System.out.print("Please enter " + message + ": ");
+        return In.nextLine();
+    }
+    private int readInt(String message)
+    {
+        System.out.print("Please enter " + message + ": ");
+        return In.nextInt();
+    }
+    
+    public void show()
+    {
+        System.out.println(toString());
+    } 
+    public String toString()
+    {   
+        String s = "\n: " + NAME;
+        s += " has $" + In.twoDec(balance);
+        s += ", " + resources.size() + " resources";
+        s += ", " + members.size() + " members";
+        return s;   
+    }    
+   
+}

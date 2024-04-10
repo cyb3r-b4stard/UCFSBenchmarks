@@ -1,0 +1,599 @@
+import java.util.*;
+import java.awt.*;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+/**
+ * ###### #####, ############ ############ ###### ######, ##### # ########
+ * ####### ## ### #######: #### ##### # #### ## ## ######.
+ * 
+ * @###### ## 
+ * @####### #.#
+ */
+public class Karol
+{
+    private final static int SLEEPTIME = 50;
+    private final static int HISTORYSIZE = 50;
+
+    private static Platno aPlatno = Platno.dajPlatno();
+
+    private int aRychlostPohybu = 25;
+    private int aX;
+    private int aY;
+    private int aUhol;
+    private Color aFarbaPera = Color.BLACK;
+    private boolean aKresli = true;
+    private boolean aSkryty = false;
+    private Obrazok aObrazok = null;
+    private LinkedList<Prikaz> aHistoriaPrikazov = new LinkedList<Prikaz>();
+    private static LinkedList<Karol> aInstancieKarola = new LinkedList<Karol>();
+
+    /**
+     * Staticka metoda, ktora odstrani vsetko, co bolo nakreslene
+     */
+    public static void reset() {
+        for (Karol karol : aInstancieKarola) {
+            karol.aHistoriaPrikazov.clear();
+        }
+        aPlatno.vycisti();
+    }
+    
+    /**
+     * Konstruktor vytvori Karola na defaultnej pozicii
+     */
+    public Karol() {
+       this(1920/4, 1080/2, 180);
+    }
+
+    /**
+     * Parametricky konstruktor vytvori Karola na pozicii paX, paY s natocenim paUhol
+     * @param paX x-ova suradnica
+     * @param paY y-ova suradnica
+     * @param paUhol uhol natocenia v stupnoch (0 - sever) v kladnom smere
+     */
+    public Karol(int paX, int paY, int paUhol) {
+        aX = paX;
+        aY = paY;
+        aUhol = -paUhol;
+        nacitajObrazok();
+        aInstancieKarola.add(this);
+        aPlatno.ukaz(true);
+    }
+    
+    /**
+     * Metoda vrati x-ovu suradnicu Karola
+     */
+    public int dajX() {
+        return aX;
+    }
+    
+    /**
+     * Metoda vrati y-ovu suradnicu Karola
+     */
+    public int dajY() {
+        return aY;
+    }
+    
+    /**
+     * Metoda vrati Karolov uhol natocenia
+     */
+    public int dajUhol() {
+        return 360-aUhol;
+    }    
+    
+    /**
+     * Nacita obrazok Karola z disku
+     */    
+    private void nacitajObrazok() {
+        aPlatno.ukaz(true);
+
+        Obrazok novyObrazok = null;
+        String nazovSuboru;
+        
+        if (!aKresli)
+            nazovSuboru = "data/karol.png";
+        else if(aFarbaPera == Color.red)
+            nazovSuboru = "data/karol_pero_red.png";
+        else if(aFarbaPera == Color.black)
+            nazovSuboru = "data/karol_pero_black.png";
+        else if(aFarbaPera == Color.blue)
+            nazovSuboru = "data/karol_pero_blue.png";
+        else if(aFarbaPera == Color.yellow)
+            nazovSuboru = "data/karol_pero_yellow.png";
+        else if(aFarbaPera == Color.green)
+            nazovSuboru = "data/karol_pero_green.png";
+        else if(aFarbaPera == Color.magenta)
+            nazovSuboru = "data/karol_pero_magenta.png";
+        else if(aFarbaPera == Color.white)
+            nazovSuboru = "data/karol_pero_white.png";
+        else if(aFarbaPera == Color.orange)
+            nazovSuboru = "data/karol_pero_orange.png";
+        else if(aFarbaPera == Color.LIGHT_GRAY)
+            nazovSuboru = "data/karol_pero_gray.png";
+        else
+            nazovSuboru = "data/karol_pero_black.png";
+        
+        try {
+            novyObrazok = new Obrazok(aX, aY, aUhol, ImageIO.read(new File(nazovSuboru)));
+        }
+        catch (IOException e) {
+            javax.swing.JOptionPane.showMessageDialog(null, "Subor " + nazovSuboru + " sa nenasiel.");
+        }
+        
+        if (novyObrazok != null) {
+            aPlatno.odstranUtvarBezPrekreslenia(aObrazok);
+            aObrazok = novyObrazok;
+            aPlatno.pridajUtvar(aObrazok);
+        }
+    }
+    
+    /**
+     * Pomocna metoda pre vypocet x-ovej zlozky ciary, po ktorej ma Karol prejst
+     * @param paDlzka dlzka ciary, po ktorej ma Karol prejst
+     */
+    private int vypocitajDlzkuX(int paDlzka) {
+        return (int)(paDlzka * Math.cos((aUhol - 90) / 180.0 * Math.PI));
+    }
+    
+    /**
+     * Pomocna metoda pre vypocet y-ovej zlozky ciary, po ktorej ma Karol prejst
+     * @param paDlzka dlzka ciary, po ktorej ma Karol prejst
+     */
+    private int vypocitajDlzkuY(int paDlzka) {
+        return (int)(paDlzka * Math.sin((aUhol - 90)/ 180.0 * Math.PI));
+    }
+    
+    /**
+     * Metoda, ktora presuva Karola po ciare s dlzkou paDlzka
+     * @param paDlzka dlzka ciary, po ktorej ma Karol prejst
+     * @param paAnimuj hovori, ci ma byt pohyb Karola animovany
+     */
+    private Ciara vykonajPohyb(int paDlzka, boolean paAnimuj) {
+        aPlatno.ukaz(true);
+
+        zobrazSa();
+
+        int startX = aX;
+        int startY = aY;
+        int dlzkaX = vypocitajDlzkuX(paDlzka);
+        int dlzkaY = vypocitajDlzkuY(paDlzka);
+        
+        aPlatno.odstranUtvarBezPrekreslenia(aObrazok);
+        
+        if (paAnimuj) {
+            int pocetKrokov = Math.abs(paDlzka / aRychlostPohybu);        
+            for (int i = 0; i < pocetKrokov; i++)
+            {
+                aX = (int)(startX + ((double)i / pocetKrokov) * dlzkaX);
+                aY = (int)(startY + ((double)i / pocetKrokov) * dlzkaY);
+                
+                Ciara c = null;
+                
+                if (aKresli) {
+                    c = new Ciara(startX, startY, aX, aY, aFarbaPera);
+                    aPlatno.pridajUtvarBezPrekreslenia(c);
+                }
+                aObrazok.nastavStred(aX, aY);
+                aPlatno.pridajUtvar(aObrazok);
+                
+                try {
+                    Thread.sleep(SLEEPTIME);
+                } 
+                catch(InterruptedException e) {
+                    
+                }
+                
+                if (aKresli) {
+                    aPlatno.odstranUtvarBezPrekreslenia(c);
+                }
+                aPlatno.odstranUtvarBezPrekreslenia(aObrazok);
+            }
+        }
+        
+        aX = startX + dlzkaX;
+        aY = startY + dlzkaY;
+        
+        Ciara c = new Ciara(startX, startY, aX, aY, aFarbaPera);
+        if (aKresli) {
+            aPlatno.pridajUtvarBezPrekreslenia(c);
+        }
+        aObrazok.nastavStred(aX, aY);
+        aPlatno.pridajUtvar(aObrazok);
+        
+        return c;
+    }
+    
+    /**
+     * Metoda, ktora otaca Karola na mieste o uhol paUhol
+     * @param paUhol uhol, o ktory sa ma karol otocit v zapornom smere
+     * @param paAnimuj hovori, ci ma byt otacanie Karola animovane
+     */
+    private void vykonajOtocenie(int paUhol, boolean paAnimuj) {
+        aPlatno.ukaz(true);
+
+        zobrazSa();
+        
+        int startUhol = aUhol;
+        
+        aPlatno.odstranUtvarBezPrekreslenia(aObrazok);
+        
+        if (paAnimuj)
+        {
+            int pocetKrokov = Math.abs(paUhol / aRychlostPohybu);
+            
+            for (int i = 0; i < pocetKrokov; i++)
+            {
+                aUhol = (int)(startUhol + ((double)i / pocetKrokov) * paUhol) % 360;
+                
+                aObrazok.nastavOtocenie(aUhol);
+                aPlatno.pridajUtvar(aObrazok);
+                
+                try {
+                    Thread.sleep(SLEEPTIME);
+                } 
+                catch(InterruptedException e) {
+                    
+                }
+                
+                aPlatno.odstranUtvarBezPrekreslenia(aObrazok);
+            }
+        }
+        
+        aUhol = (startUhol + paUhol) % 360;
+
+        aObrazok.nastavOtocenie(aUhol);
+        aPlatno.pridajUtvar(aObrazok);
+    }
+    
+    /**
+     * Metoda, ktora meni vlastnosti Karolovho pera
+     * @param paPoloz hovori, ci ma byt pero polozene (Karol kresli) alebo zdvihnute (Karol nekresli)
+     * @param paFarba farba Karolovho pera
+     */
+    private void vykonajZmenuPera(boolean paPoloz, Color paFarba) {
+        zobrazSa();
+        aKresli = paPoloz;
+        aFarbaPera = paFarba;
+        nacitajObrazok();
+    }
+    
+    /**
+     * Sprava pre Karola, ze sa ma posunut vpred
+     * @param paDlzka dlzka, o ktoru sa ma Karol posunut
+     */
+    public void chodVpred(int paDlzka) {
+        Ciara c = vykonajPohyb(paDlzka, true);        
+        vlozPrikazDoHistorie(new Prikaz(Operacia.CHOD_VPRED, c));
+    }
+    
+    /**
+     * Sprava pre Karola, ze sa ma otocit na mieste
+     * @param paUhol uhol v stupnoch, o ktory sa ma Karol pootocit v kladnom smere
+     */
+    public void otocSa(int paUhol) {
+        vykonajOtocenie(-paUhol, true);
+        vlozPrikazDoHistorie(new Prikaz(Operacia.OTOC_SA, new Integer(-paUhol)));
+    }
+    
+    /**
+     * Sprava pre Karola, ze ma zacat kreslit
+     */
+    public void polozPero() {
+        if (!aKresli) {
+            vykonajZmenuPera(true, aFarbaPera);
+            vlozPrikazDoHistorie(new Prikaz(Operacia.POLOZ_PERO, null));
+        }
+    }
+    
+    /**
+     * Sprava pre Karola, ze ma prestat kreslit
+     */
+    public void zdvihniPero() {
+        if (aKresli) {
+            vykonajZmenuPera(false, aFarbaPera);
+            vlozPrikazDoHistorie(new Prikaz(Operacia.ZDVIHNI_PERO, null));
+        }
+    }
+    
+    /**
+     * Nastavenie farby Karolovho pera
+     * @param paFarba farba pera: red, black, blue, yellow, green, magenta, white, orange, gray
+     */
+    public void nastavFarbuPera(String paFarba) {
+        Color farba;
+        if(paFarba.equalsIgnoreCase("red"))
+            farba = Color.red;
+        else if(paFarba.equalsIgnoreCase("black"))
+            farba = Color.black;
+        else if(paFarba.equalsIgnoreCase("blue"))
+            farba = Color.blue;
+        else if(paFarba.equalsIgnoreCase("yellow"))
+            farba = Color.yellow;
+        else if(paFarba.equalsIgnoreCase("green"))
+            farba = Color.green;
+        else if(paFarba.equalsIgnoreCase("magenta"))
+            farba = Color.magenta;
+        else if(paFarba.equalsIgnoreCase("white"))
+            farba = Color.white;
+        else if(paFarba.equalsIgnoreCase("orange"))
+            farba = Color.orange;
+        else if(paFarba.equalsIgnoreCase("gray"))
+            farba = Color.LIGHT_GRAY;
+        else
+            farba = Color.black;
+            
+        if (farba != aFarbaPera) {
+            vlozPrikazDoHistorie(new Prikaz(Operacia.ZMEN_FARBU_PERA, aFarbaPera));
+            vykonajZmenuPera(aKresli, farba);
+        }
+    }
+
+    /**
+     * Sprava pre Karola, ze sa ma skryt
+     */
+    public void skrySa() {
+        aPlatno.ukaz(true);
+        if (!aSkryty) {
+            aSkryty = true;
+            aPlatno.odstranUtvar(aObrazok);
+        }
+    }
+    
+    /**
+     * Sprava pre Karola, ze sa ma ukazat
+     */
+    public void zobrazSa() {
+        aPlatno.ukaz(true);
+        if (aSkryty) {
+            aSkryty = false;
+            aPlatno.pridajUtvar(aObrazok);
+        }
+    }
+    
+    /**
+     * Zmena rychlosti animacii
+     */
+    public void nastavRychlost(int paRychlost) {
+        aPlatno.ukaz(true);
+        aRychlostPohybu = Math.abs(paRychlost);
+    }
+    
+    /**
+     * Pomocna metoda, ktora vklada vykonany prikaz do Karolovej pamati 
+     */
+    private void vlozPrikazDoHistorie(Prikaz paPrikaz) {
+        aHistoriaPrikazov.add(paPrikaz);
+        if (aHistoriaPrikazov.size() > HISTORYSIZE)
+            aHistoriaPrikazov.remove(0);        
+    }
+
+    /**
+     * Sprava pre Karola, aby sa vratil do stavu pred poslednym prikazom (operacia Undo)
+     * Karol si pamata iba dolezite prikazy: CHOD_VPRED, OTOC_SA, POLOZ_PERO, ZDVIHNI_PERO, ZMEN_FARBU_PERA
+     */
+    public void krokSpat() {
+        aPlatno.ukaz(true);
+
+        zobrazSa();
+        if (aHistoriaPrikazov.size() <= 0) {
+            return;
+        }
+        
+        Prikaz prikaz = aHistoriaPrikazov.get(aHistoriaPrikazov.size() - 1);
+        switch (prikaz.dajOperaciu()) {
+            case CHOD_VPRED:
+                Ciara c = (Ciara)(prikaz.dajParameter());
+                if (aKresli) {
+                    aPlatno.odstranUtvarBezPrekreslenia(c);
+                }
+                aPlatno.odstranUtvarBezPrekreslenia(aObrazok);
+                aX = c.dajX1();
+                aY = c.dajY1();
+                aObrazok.nastavStred(aX, aY);
+                aPlatno.pridajUtvar(aObrazok);
+                break;
+            case OTOC_SA:
+                int uhol = (Integer)(prikaz.dajParameter());
+                vykonajOtocenie(-uhol, false);
+                break;
+            case POLOZ_PERO:
+                vykonajZmenuPera(false, aFarbaPera);
+                break;
+            case ZDVIHNI_PERO:
+                vykonajZmenuPera(true, aFarbaPera);
+                break;
+            case ZMEN_FARBU_PERA:
+                vykonajZmenuPera(aKresli, (Color)(prikaz.dajParameter()));
+                break;        
+        }
+        aHistoriaPrikazov.remove(aHistoriaPrikazov.size() - 1);
+    }
+
+    /**
+     * Sprava pre Karola, aby zopakoval posledny prikaz
+     * Karol moze zopakovat iba prikazy: CHOD_VPRED, OTOC_SA
+     */
+    public void zopakujPoslednyPrikaz() {
+        aPlatno.ukaz(true);
+
+        zobrazSa();
+        if (aHistoriaPrikazov.size() <= 0) {
+            return;
+        }
+        
+        Prikaz prikaz = aHistoriaPrikazov.get(aHistoriaPrikazov.size() - 1);
+        switch (prikaz.dajOperaciu()) {
+            case CHOD_VPRED:
+                Ciara c = (Ciara)(prikaz.dajParameter());
+                int dlzka = (int)Math.sqrt((long)(c.dajX2() - c.dajX1()) * (c.dajX2() - c.dajX1()) + 
+                                           (long)(c.dajY2() - c.dajY1()) * (c.dajY2() - c.dajY1()));
+                chodVpred(dlzka);
+                break;
+            case OTOC_SA:
+                int uhol = (Integer)(prikaz.dajParameter());
+                otocSa(-uhol);
+                break;
+        }
+    }
+
+    
+    /**
+     * Metoda, ktora definuje postupnost krokov pre vykreslenie stvorca
+     */
+    public void kresliStvorec() {
+        this.polozPero();
+        this.chodVpred(100);
+        this.otocSa(90);
+        this.chodVpred(100);
+        this.otocSa(90);
+        this.chodVpred(100);
+        this.otocSa(90);
+        this.chodVpred(100);
+        this.otocSa(90);
+        this.zdvihniPero();
+               
+    }
+    
+    /**
+     * Metoda, ktora definuje postupnost krokov pre vykreslenie trojuholníka
+     */
+    public void kresliTrojuholnik() {
+        this.polozPero();
+        this.chodVpred(100);
+        this.otocSa(120);
+        this.chodVpred(100);
+        this.otocSa(120);
+        this.chodVpred(100);
+        this.otocSa(120);
+        this.zdvihniPero();
+               
+    }
+    
+    /**
+     * Metoda, ktora definuje postupnost krokov pre vykreslenie típka
+     */
+    public void kresliTipka() {
+        this.polozPero();
+        this.chodVpred(50);
+        this.otocSa(90);
+        this.chodVpred(50);
+        this.otocSa(90);
+        this.chodVpred(50);
+        this.otocSa(90);
+        this.chodVpred(50);
+        this.otocSa(90);
+        this.chodVpred(50);
+        this.otocSa(90);
+        this.chodVpred(25);
+        this.otocSa(270);
+        this.chodVpred(300);
+        this.otocSa(30);
+        this.chodVpred(200);
+        this.otocSa(180);
+        this.chodVpred(200);
+        this.otocSa(120);
+        this.chodVpred(200);
+        this.otocSa(180);
+        this.chodVpred(200);
+        this.otocSa(30);
+        this.chodVpred(250);
+        this.otocSa(90);
+        this.chodVpred(100);
+        this.otocSa(180);
+        this.chodVpred(200);
+        this.otocSa(180);
+        this.chodVpred(100);
+        this.otocSa(270);
+        this.chodVpred(75);
+        this.otocSa(180);
+        
+        
+        this.zdvihniPero();
+               
+    }
+    
+    /**
+     * Metoda, ktora definuje postupnost krokov pre vykreslenie kružnice
+     */
+    public void kresliKružnicu() {
+        int k=0;
+        
+        this.polozPero();
+        while (k!=360){
+            if (k<360)
+               this.chodVpred(8);
+               this.otocSa(1); 
+               k = k+1;      
+            }      
+        System.out.println("funguje");
+    }
+    
+    /**
+     * Sprava pre Karola, ze sa ma posunut vpred
+     * @param paDlzka dlzka, o ktoru sa ma Karol posunut
+     * p = klav.nextInt();
+     * Ciara p = vykonajPohyb(paDlzka, true); 
+     */
+    public void kružnica_2(int paDlzka) {
+        int k=0;
+        this.polozPero();
+         while (k!=360){
+            if (k<360)
+               this.chodVpred(3);
+               this.otocSa(1); 
+               k = k+1;      
+            }      
+        System.out.println("funguje");
+       
+    }
+    
+    /**
+     * Sprava pre Karola, ze sa ma posunut vpred
+     * @param paDlzka dlzka, o ktoru sa ma Karol posunut
+     */
+    public void chodVpred2(int paDlzka) {
+        
+        Ciara c = vykonajPohyb(paDlzka, true);        
+        vlozPrikazDoHistorie(c));
+        
+        int k=0;
+        this.polozPero();
+         while (k!=360){
+            if (k<360)
+               this.chodVpred(3);
+               this.otocSa(1); 
+               k = k+1;      
+            }   
+    }
+    
+    /**
+     * Zoznam operacii, ktore si Karol pamata
+     */
+    private enum Operacia
+    {
+        CHOD_VPRED, OTOC_SA, POLOZ_PERO, ZDVIHNI_PERO, ZMEN_FARBU_PERA
+    }
+    
+    /**
+     * Pomocna trieda, ktora sluzi pre pracu s Karolovymi prikazmi
+     */
+    private class Prikaz {
+        private Operacia aOperacia;
+        private Object aParameter;
+        
+        public Prikaz(Operacia paOperacia, Object paParameter) {
+            aOperacia = paOperacia;
+            aParameter = paParameter;
+        }
+        
+        public Operacia dajOperaciu() {
+            return aOperacia;
+        }
+        
+        public Object dajParameter() {
+            return aParameter;
+        }
+    }
+}

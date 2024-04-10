@@ -1,0 +1,124 @@
+
+import objectdraw.*;
+import java.awt.*;
+import java.util.*;
+
+public class World extends ActiveObject
+{
+    private DrawingCanvas myCanvas;
+    private Base base;
+    private Projectile gandalf;
+    private ScoreBox sBox;
+    private ArrayList <Projectile> projectiles;
+
+    private RandomIntGenerator ranGen;
+    private FilledRect resetButton;
+    private Text resetText;
+    private ScoreBox clickBox;
+    private RandomIntGenerator ranGen1;
+
+    private boolean gameOver;
+    private boolean canMove;
+    private FilledOval[] lights;
+    private double dx;
+    private Color c1;
+    private Color c2;
+    private Color c3;
+    private Color c4;
+    private Color c5;
+    private Text Monkey;
+    private Explosion boom;
+    private Block[] block;
+    private int x;
+    private int y;
+    private int cols;
+    private int rows;
+    private int blocklimit;
+
+    public  World ( DrawingCanvas c)
+    {
+        myCanvas = c;
+        c1 = color.GREEN;
+        base = new Base(100, 710, 50, 50, myCanvas);
+        base.setColor(Color.GREEN);
+        projectiles = new ArrayList <Projectile>();
+        gandalf = new Projectile (100, 710, 15, 25, myCanvas);
+        
+        sBox = new ScoreBox ( "Score:", 700, 0, 100, 20, myCanvas);
+        
+        resetButton = new FilledRect ( 0, 0, 50, 20, myCanvas);
+        resetText = new Text ("Reset", 5, 2, myCanvas);
+        resetButton.setColor(Color.YELLOW);
+
+        rows = 4;
+        cols = 5;
+
+        x = 0;
+        y = 0;
+
+        blocklimit = rows*cols;
+        block = new Block[blocklimit]; 
+        for (int i = 0; i < block.length; i++)
+        {
+            
+            if ( i % cols == 0 && i != 0)
+            {
+                x = 0;
+                y = y + 45;
+            }
+            block[i] = new Block( x, y, 50, 25, myCanvas);
+            x = x + 65;
+            block[i].setColor(c10;
+
+        }
+        start();
+
+    }
+
+    public void run()
+    {
+        double dxx = 1;
+        while (gameOver == false)
+        {
+
+            for (int i = 0; i < block.length; i++)
+            {
+
+
+                
+                if (block[i].getX() + block[i].getWidth() > myCanvas.getWidth() ||
+                block[i].getX() + block[i].getWidth() < 0)
+                {
+                    block[i].reverseX();
+                    block[i].move();
+
+                    block[i].move(0, 5);
+
+                }
+
+            }
+            pause(1);
+        }
+    }
+
+    public void onMouseMove (Location point)
+    {
+        base.moveTo(point.getX()+20, 710);
+        gandalf.moveTo(base.getX(), base.getY());
+        gandalf.setcanMove(false);
+    }
+
+    public void onMouseClick (Location point)
+    {
+        gandalf.setDx(0);
+        gandalf.setDy(-800);
+        gandalf.setcanMove(true);
+
+        if (resetButton.contains(point))
+        {
+            sBox.setScore(0);
+            gandalf.setcanMove(false);
+
+        }
+    }
+}

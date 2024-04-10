@@ -1,0 +1,107 @@
+import java.util.Scanner;
+/**
+ * ##### # ########### ## ##### ####################### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class AplikaciaBenzinovaPumpa
+{
+   private static Scanner klav = new Scanner (System.in);
+   
+   public static void Menu ()
+   {
+       System.out.println ("___________________________________________________");
+       System.out.println ("1 - Nakup PHM");
+       System.out.println ("2 - Predaj PHM");
+       System.out.println ("3 - Stav v nadrzi");
+       System.out.println ("4 - Vypis stavu benzinovej pumpy");
+       System.out.println ("5 - Kolko objednat cisterien na naplnenie nadrze");
+       System.out.println ("0 - Koniec");
+       System.out.println ("___________________________________________________");
+   }
+   
+       
+   public static void main (String[] args)
+   {
+       String nazov;
+       int stav;
+       String pomocna;
+       BenzinovaPumpa mojaPumpa;
+       int vlozenaHodnota;
+             
+       System.out.println ("Vitajte v aplikacii Benzinova pumpa!");
+       System.out.println ("\nZadajte nazov benzinovej pumpy pre ktore ste sa rozhodli:");
+       nazov = klav.nextLine ();
+       System.out.println ("\nZadajte hodnotu pociatocneho stavu v nadrzi:");
+       stav = klav.nextInt ();
+       mojaPumpa = new BenzinovaPumpa (stav, nazov);
+       System.out.println ("\nVasa benzinova pumpa bola vytvorena z poctom obratov 100!");
+       
+       pomocna = mojaPumpa.toString();
+       System.out.println ("\n" + pomocna);
+       
+       do
+       {
+           System.out.println ("\n Vyberte si z ponuky");
+           AplikaciaBenzinovaPumpa.Menu();
+           vlozenaHodnota = klav.nextInt();       
+       
+           switch (vlozenaHodnota)
+           {
+           case 1:
+                  System.out.println ("\nZadajte mnozstvo nakupu PHM v litroch.");
+                  int nakup = klav.nextInt();
+                  pomocna = mojaPumpa.nakupPHM(nakup);
+                  System.out.println ("\n" + pomocna);
+                  break;
+           case 2:
+                  System.out.println ("\nZadajte mnozstvo predaja PHM v litroch.");
+                  int predaj = klav.nextInt();
+                  pomocna = mojaPumpa.predajPHM(predaj);
+                  System.out.println("\n" + pomocna);
+                  break;
+           case 3:
+                  String vysledok2;
+                  int vysledok = mojaPumpa.dajStavVNadrzi();
+                  if (vysledok == 1)
+                  {
+                      vysledok2 = " liter.";
+                  } else if (vysledok > 4)
+                  {
+                      vysledok2 = " litrov.";                
+                  } else {
+                      vysledok2 = " litre.";
+                  }
+                  System.out.println ("\nVas zostatok v nadrzi je " + vysledok + vysledok2);
+                  break;
+           case 4:
+                  System.out.println ("\n"+ mojaPumpa.toString());
+                  break;
+           case 5:
+                  String vysledok4;
+                  int vysledok3 = mojaPumpa.KolkoObjednatCisterien();                  
+                  if (vysledok3 == 1)
+                  {
+                      vysledok4 = " cisternu.";
+                  } else if (vysledok3 > 4 | vysledok3 == 0)
+                  {
+                      vysledok4 = " cisterien.";                
+                  } else {
+                      vysledok4 = " cisterny.";
+                  }
+                  System.out.println ("\nAby bola plna nadrz musime objednat " + vysledok3 + vysledok4);
+           case 6:
+                  String vysledok5;
+                  String vysledok6;
+                  String pom;
+                  vysledok 5 = mojaPumpa.maximalnyNakupPHM();
+                  vysledok6 = mojaPumpa.maximalnyPredajPHM();
+                  pom = ("\n" +"Maximalny nakup je: " + vysledok5 +"\n";
+                  pom = pom + + "Maximalny predaj je" + vysledok6;
+                  System.out.println (pom);
+                  break;
+           }   
+       } while (vlozenaHodnota > 0);
+   }
+}

@@ -1,0 +1,61 @@
+import model.*;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+public class ChoosePanel extends JPanel implements View
+{
+    private Stadium stadium;
+    private LinkedList<JRadioButton> jRbtns=new LinkedList<JRadioButton>();
+    private ButtonGroup  buttonGroup=new ButtonGroup();
+    private Box box1;
+    public ChoosePanel(Stadium stadium)
+    {
+        this.stadium=stadium;
+        stadium.attach(this);
+        build();
+    }
+
+    private void build(){
+        Box box=Box.createHorizontalBox();
+        box.add(countPanel());
+        box.add(choosePanel());
+        add(box);
+
+    }
+
+    private Box choosePanel(){
+        Box box=Box.createVerticalBox();
+        for(Group group:stadium.groups()){
+            JRadioButton jRbtn=new JRadioButton(group.name()+"@"+group.price());
+            jRbtn.setActionCommand(group.name());
+            jRbtn.addActionListener( new listerner());
+            box.add(jRbtn);
+            buttonGroup.add(jRbtn);
+        }
+        return box;
+    }
+
+    private JPanel countPanel(){    
+        JPanel panel = new JPanel;
+        panel.add(new JLabel("How many seats do you want?"));
+        box1=Util.getPair("Seats");
+        panel.add(box1);
+
+        return panel;
+    }
+
+    private class listerner implements ActionListener{
+
+        public void actionPerformed(ActionEvent e) {
+            String name=buttonGroup.getSelection().getActionCommand();
+            String seats=((JTextField) box1.getComponent(1)).getText();
+            if(!seats.equals("")){
+                int seatsNum=Integer.parseInt(seats);
+                stadium.sold(name,seatsNum);
+                buttonGroup.clearSelection();
+            }
+
+        }
+    }
+}

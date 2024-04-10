@@ -1,0 +1,55 @@
+/**
+ * ###### ### ### ##### ###### ### #### ###### ## # ### ####.
+ * 
+ * @###### #### ######## #### 
+ */
+import edu.duke.*;
+
+public class URLFinder {
+    
+    public StorageResource findURLs(String url) {
+        
+        URLResource page = new URLResource(url);
+        
+        String source = page.asString();
+        
+        StorageResource store = new StorageResource();
+    
+        int start = 0;
+        
+        while (true) {
+            
+            int index = source.indexOf("href=", start);
+            
+            if (index == -1) {
+                break;
+            }
+            
+            
+            
+            int firstQuote = index+6; 
+            
+            int endQuote = source.indexOf("\"", firstQuote);
+            
+            String sub = source.substring(firstQuote, endQuote);
+            
+            if (sub.startsWith("http")) {
+                store.add(sub);
+            }
+            
+            start = endQuote + 1;
+        }
+        return store;
+        
+    }
+   public void testURL() {
+    StorageResource s1 = findURLs("https:
+        StorageResource s2 = findURLs("http:
+			System.out.println(link);
+			System.out.println(link.length());
+		}
+		System.out.println("size = " + s1.size());
+		System.out.println("size = " + s2.size());
+		
+	}
+}

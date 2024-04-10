@@ -1,0 +1,418 @@
+import java.util.ArrayList;
+/**
+ *  ###### ########## ## ### "####". <#>
+ *
+ *  #### ### ## ### #'######## #### ############ #### ### ######### ## ####
+ *  #####: ### ####### ####### ##### ## ######## ##### ### ########### ######.
+ *  ## ### ######### ######## #'#### ####### #### ####### ###########!</#> <#>
+ *
+ *  #### ##### # ## ###, ##### ### ######## ## ##### ###### ## ####### ##
+ *  ####### "#####". </#> <#>
+ *
+ *  ##### ###### #### ## ########## ### ######### ## ###### ### ###### #######:
+ *  #### #### ###### ### ######, #### #'######### ########## ## ####### ## ###.
+ *  #### ## ###### ##### #'######## ### ######### ### ### ####### #'#########
+ *  ##########.</#>
+ *
+ * @######     ####### #######
+ * @######     #### ######### (#### ## ########## #########)
+ * @#######    #.#
+ * @#####      ##### ####
+ */
+
+public class Jeu {
+    private AnalyseurSyntaxique analyseurSyntaxique;
+
+    private Piece pieceCourante;
+
+    private ArrayList <Piece> piecePrecedante;
+    
+    private ArrayList <Piece> pieceEvenement;
+
+    private boolean[] visite;
+
+    private Joueur player;
+
+    /**
+     *  Crée le jeu et initialise la carte du jeu (i.e. les pièces).
+     */
+    public Jeu() {
+        creerPieces();
+        player = new Joueur("Yassine");
+        analyseurSyntaxique = new AnalyseurSyntaxique();
+    }
+
+    /**
+     *  Crée toutes les pieces et relie leurs sorties les unes aux autres.
+     */
+    public void creerPieces() {
+        Piece salle1;
+        Piece salle2;
+        Piece salle3;
+        Piece salle4;
+        Piece salle5;
+        Piece salle6;
+        Piece salle7;
+        Piece salle8;
+        Piece salle9;
+
+        ObjetZork objet1;
+        ObjetZork objet2;
+        ObjetZork objet3;
+        ObjetZork objet4;
+        ObjetZork objet5;
+        ObjetZork objet6;
+        
+        salle1 = new Piece("la salle n°1",0);
+        salle2 = new Piece("la salle n°2",1);
+        salle3 = new Piece("la salle n°3",2);
+        salle4 = new Piece("la salle n°4",3);
+        salle5 = new Piece("la salle n°5",4);
+        salle6 = new Piece("la salle n°6",5);
+        salle7 = new Piece("la salle n°7",6);
+        salle8 = new Piece("la salle n°8",7);
+        salle9 = new Piece("la salle n°9",8);
+
+        objet1 = new ObjetZork(2,"clef");
+        objet2 = new ObjetZork(50,"trone");
+        objet3 = new ObjetZork(40,"table");
+        objet4 = new ObjetZork(20,"katana");
+        objet5 = new ObjetZork(3,"verre");
+        
+
+        salle1.setSorties(salle3, salle2, salle7, null);
+        salle2.setSorties(salle4, salle6, null, salle1);
+        salle3.setSorties(null, salle4, salle1, null);
+        salle4.setSorties(null, salle5, salle2, salle3);
+        salle5.setSorties(null, null, null, salle4);
+        salle6.setSorties(null, null, salle8, salle2);
+        salle7.setSorties(salle1, null, null, null);
+        salle8.setSorties(salle6, null, null, salle9);
+        salle9.setSorties(null, salle8, null, null);
+
+        salle7.ajouter(objet2);
+        salle7.ajouter(objet3);
+        salle6.ajouter(objet4);
+        salle3.ajouter(objet5);
+
+        pieceCourante = salle1;      
+        piecePrecedante = new ArrayList <Piece> ();
+        
+        pieceEvenement = new ArrayList <Piece> ();
+        pieceEvenement.add(salle7);
+        pieceEvenement.add(salle9);
+        pieceEvenement.add(salle5);
+        
+        visite = new boolean[9];
+        visite[0]=true;
+        for(int i=1;i<9;i++)
+            visite[i]=false;
+
+    }
+
+    /**
+     *  Pour lancer le jeu. Boucle jusqu'a la fin du jeu.
+     */
+    public void jouer() {
+        afficherMsgBienvennue();
+
+        boolean termine = false;
+        boolean victoire = false;
+        while (!termine && !victoire) {
+            Commande commande = analyseurSyntaxique.getCommande();
+            termine = traiterCommande(commande);
+            victoire = conditionVictoire();
+            evenement();
+        }
+        System.out.println("Merci d'avoir jouer. Au revoir.");
+    }
+
+    /**
+     *  Affiche le message d'accueil pour le joueur.
+     */
+    public void afficherMsgBienvennue() {
+        System.out.println();
+        System.out.println("Bienvennue dans le monde de Zork !");
+        System.out.println("Zork est un nouveau jeu d'aventure, terriblement enuyeux.");
+        System.out.println("Tapez 'aide' si vous avez besoin d'aide.");
+        System.out.println();
+        System.out.println(pieceCourante.descriptionLongue());
+    }
+
+    /**
+     *  Exécute la commande spécifiée. Si cette commande termine le jeu, la valeur
+     *  true est renvoyée, sinon false est renvoyée
+     *
+     * @param  commande  La commande a exécuter
+     * @return           true si cette commande termine le jeu ; false sinon.
+     */
+    public boolean traiterCommande(Commande commande) {
+        if (commande.estInconnue()) {
+            System.out.println("Je ne comprends pas ce que vous voulez...");
+            return false;
+        }
+
+        String motCommande = commande.getMotCommande();
+
+        if (motCommande.equals("aide")) {
+            afficherAide();
+        }else if(motCommande.equals("utiliser")){
+            utiliserObjet(commande);
+        }else if (motCommande.equals("carte")){
+            afficherCarte();
+        }else if(motCommande.equals("inventaire")){
+            afficherInventaire();
+        }else if(motCommande.equals("jeter")){
+            jeterObjet(commande);
+        }else if(motCommande.equals("prendre")){
+            prendreObjet(commande);
+        }else if (motCommande.equals("regarder")){
+            afficherObjetsPiece();
+        }else if (motCommande.equals("retour")){
+            deplacerRetour ();
+        }else if (motCommande.equals("aller")) {
+            deplacerVersAutrePiece(commande);
+        } else if (motCommande.equals("quitter")) {
+            if (commande.aSecondMot()) {
+                System.out.println("Quitter quoi ?");
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     *  Affichage de l'aide. Affiche notament la liste des commandes utilisables.
+     */
+    public void afficherAide() {
+        System.out.println("Vous vous réveillé dans un donjon. Vous etes seul.");
+        System.out.println("Vous errez à travers les salle du donjon");
+        System.out.println();
+        System.out.println("Les commandes reconnues sont:");
+        analyseurSyntaxique.afficherToutesLesCommandes();
+    }
+
+    /**
+     * 
+     */
+    public void utiliserObjet(Commande commande){
+         if(player.poidsSac () == 0){
+            System.out.println("Il y'a pas d'objet à utiliser dans votre sac.");
+            return;
+        }
+        if (!commande.aSecondMot()) {
+            System.out.println("Utiliser quoi ?");
+            return;
+        }
+        String des = commande.getSecondMot();
+        ObjetZork objet = player.getObjet(des);
+        if(objet == null){
+            System.out.println("L'objet n'est pas dans votre sac");
+            return;
+        }
+        if(objet.getDescription().equals("katana")){
+            objet6 = new ObjetZork(5,"chaussette");
+            System.out.println("Vous avez tué le Boss. Bien joué. La chaussette de Zac est tombé du boss.(La chaussette est au sol)");
+            pieceCourante.ajouter(objet6);
+        }
+        if(objet.getDescription().equals("chaussette")){
+            objet6 = new ObjetZork(5,"clef");
+            System.out.println("Zac : Merci de m'avoir donné ma chaussette. Tien la clef.(La clef est au sol)")
+            pieceCourante.ajouter(objet6);
+        }
+        System.out.println("Vous avez utilisez l'objet mais cela n'a aucun effet.");
+    }
+    
+    /**
+     * 
+     */
+    public void afficherCarte(){
+        String rempliSP = ("* * * *");
+        String rempliAP = ("* + + *");
+        String miRempliSP = ("*     *");
+        String miRempliAPD = ("*     +");
+        String miRempliAPG = ("+     *");
+        String miRempliAPDG = ("+     +");
+        String vide = ("       ");
+        for(int i=0;i<12;i++){
+            for(int j=0; j<3; j++){
+                if( i == 0 || i == 11)
+                    System.out.print(rempliSP);
+                else if(i==1 || i == 2 || i == 5 || i == 6){
+                    if(j==0)
+                        System.out.print(miRempliAPD);
+                    else if(j==1)
+                        System.out.print(miRempliAPDG);
+                    else
+                        System.out.print(miRempliAPG);  
+                }
+                else if (i==3 || i==4){
+                    if(j==0 || j==1)
+                        System.out.print(rempliAP);
+                    else
+                        System.out.print(rempliSP);
+                }
+                else if (i==7 || i==8){
+                    if(j==0 || j==2)
+                        System.out.print(rempliAP);
+                    else
+                        System.out.print(rempliSP);
+                }  
+                else{
+                    if(j==0)
+                        System.out.print(miRempliSP);
+                    else if (j==1)
+                        System.out.print(miRempliAPD);
+                    else
+                        System.out.print(miRempliAPG);
+                }
+            }
+            System.out.println();
+        }
+
+    }
+
+    /**
+     * 
+     */
+    public void afficherInventaire(){
+        if(player.poidsSac () == 0)
+            System.out.println("Il y'a pas d'objet dans votre sac."); 
+        else
+            System.out.println("Les objets contenue dans votre sac sont : " + player.afficherSac () );
+    }
+
+    /**
+     * 
+     */
+    public void jeterObjet(Commande commande){
+        if(player.poidsSac () == 0){
+            System.out.println("Il y'a pas d'objet dans votre sac.");
+            return;
+        }
+        if (!commande.aSecondMot()){
+            System.out.println("Jeter quoi ?");
+            return;
+        }
+        String des = commande.getSecondMot();
+        ObjetZork objet = player.getObjet(des);
+        if(objet == null){
+            System.out.println("L'objet n'est pas dans votre sac");
+            return;
+        }
+        pieceCourante.ajouter(objet);
+        player.retirer(objet);
+        System.out.println("L'objet a été jeter dans la piece.");
+    }
+
+    /**
+     * 
+     */
+    public void prendreObjet(Commande commande){
+        if (!commande.aSecondMot()) {
+            System.out.println("Prendre quoi ?");
+            return;
+        }
+        String des = commande.getSecondMot();
+        ObjetZork objet  = pieceCourante.getObjet(des);
+        if(objet == null){
+            System.out.println("L'objet n'existe pas dans cette piece");
+            return;
+        }
+        if(!(objet.estTransportable() )){
+            System.out.println("L'objet ne peut pas etre ajouté à votre sac. L'objet est trop lourd.");
+            return;
+        }
+        if (player.ajouter(objet)){
+            System.out.println("L'objet a été ajouté à votre sac.");
+            pieceCourante.retirer(objet);
+        }
+        else
+            System.out.println("L'objet ne peut pas etre ajouté à votre sac. Votre sac est remplie.");
+    }
+
+    /**
+     *  Affichage de tout les objets présent dans la piéce.
+     */
+    public void afficherObjetsPiece(){
+        if(pieceCourante.nbObjet() == 0)
+            System.out.println("Il n'y a pas d'objet ici");
+        else
+            System.out.println("Les objets de cette piece sont : " + pieceCourante.afficherLesObjets());
+    }
+
+    /**
+     *  Tente d'aller dans la piéce précédante. Si la piéce précédante existe 
+     *  la piece précedante devient la piéce courante , sinon affiche un
+     *  message d'erreur.
+     */
+    public void deplacerRetour (){
+        if(piecePrecedante.size () == 0)
+            System.out.println("Retour impossible, vous etez déja dans la premiére salle.");
+        else{
+            pieceCourante = piecePrecedante.remove(piecePrecedante.size () - 1) ;
+            System.out.println(pieceCourante.descriptionLongue());
+        }
+    }
+
+    /**
+     *  Tente d'aller dans la direction spécifiée par la commande. Si la piece
+     *  courante possède une sortie dans cette direction, la piece correspondant a
+     *  cette sortie devient la piece courante, dans les autres cas affiche un
+     *  message d'erreur.
+     *
+     * @param  commande  Commande dont le second mot spécifie la direction a suivre
+     */
+    public void deplacerVersAutrePiece(Commande commande) {
+        if (!commande.aSecondMot()) {
+            System.out.println("Aller ou ?");
+            return;
+        }
+
+        String direction = commande.getSecondMot();
+
+        Piece pieceSuivante = pieceCourante.pieceSuivante(direction);
+
+        if (pieceSuivante == null) {
+            System.out.println("Il n'y a pas de porte dans cette direction!");
+        } else {
+            piecePrecedante.add(pieceCourante);
+            pieceCourante = pieceSuivante;
+            System.out.println(pieceCourante.descriptionLongue());
+        }
+    }
+
+    /**
+     * 
+     * 
+     */
+    public boolean conditionVictoire(){
+        if(!(pieceCourante == pieceEvenement.get(0)))
+            return false;
+        if(!(player.estPresent("clef")))
+            return false;
+
+        System.out.println("Vous avez gagné.");
+        return true;
+    }
+    
+    public void evenement(){
+        if((pieceCourante == pieceEvenement.get(2))){
+            System.out.println("Zac : Bonjour, jeune aventurier. J'ai besoin de ton aide autant que toi tu as besoin de mon aide.");
+            System.out.println("Zac : Pour sortir de ce donjon il te faut la clef.Mais pour obtenir la clef il faut que tu me ramene ma chaussette.");
+            System.out.println("Zac : Oui tu as bien entendu ma chaussette. C'est le boss de ce donjon qui me la pris.");
+            System.out.println("Zac : Mais pour battre ce boss il te faut utiliser le katana qui j'ai laissé dans une des pieces du donjon.");
+            System.out.println("Zac : Lorsque tu aura le katana tu de dirigera vers le sud et tu suivera le chemin qui te ramenera au Boss.");
+            System.out.println("Zac : Une fois le Boss tuer, ramene moi ma chaussette et je te donnerai la clef pour sortir du donjon.");
+            System.out.println("Zac : Maitenant vas !!");
+            pieceEvenement.remove(pieceEvenement.get(2));
+            pieceEvenement.add(null);
+        }
+        if((pieceCourante == pieceEvenement.get(1))){
+            System.out.println("Vous etez dans la salle du boss, utiliser le katana pour tuer le boss.");
+            pieceEvenement.remove(pieceEvenement.get(1));
+            pieceEvenement.add(null);
+        }
+    }
+}

@@ -1,0 +1,48 @@
+import java.util.*;
+
+public class LottoSimulation
+{
+    Lottoschein lottoschein;
+    Kommunikation kom;
+    Lottoziehung ziehung;
+    Kiosk kiosk;
+    Spieler[] spielerliste;
+    String[] namenSpieler;
+    Scanner leser;
+
+    public LottoSimulation()
+    {
+        ziehung = new Lottoziehung();
+        kom=new Kommunikation();
+
+    }
+
+    public void spielen()
+    {
+        System.out.println("Gib die Anzahl der Spieler ein!");
+        leser =new Scanner(System.in);
+        int anzahlSpieler = leser.nextInt();
+        namenSpieler=new String[anzahlSpieler];
+        spielerliste = new Spieler[anzahlSpieler];
+        System.out.println("");
+
+        for (int i = 0;i<anzahlSpieler;i++){
+            System.out.println("Geben Sie nun den Namen des "+(i+1)+ ". Spielers ein!");
+            String text = leser.next();
+            namenSpieler[i] = text;
+            spielerliste[i] = new Spieler(namenSpieler[i],50.0);
+            spielerliste[i].lottoScheinKaufen(kiosk);
+            int[] meineZahlen=kom.zahlenLesen();
+            spielerliste[i].getLottoschein().zahlenEingeben(meineZahlen);
+        }
+		        
+        ziehung.ziehen();
+        kom.ziehungZahlenAusgeben(ziehung.getlottozahlen());
+        
+        for(int i = 0;i<anzahlSpieler;i++)
+        {
+        	spielerliste[i].getLottoschein().bestimmeAnzahlRichtige(z)
+        }
+
+    }
+}

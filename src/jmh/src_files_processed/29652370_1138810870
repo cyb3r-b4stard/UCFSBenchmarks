@@ -1,0 +1,185 @@
+public class LList < T > implements ListInterface < T >
+{
+    private Node firstNode; 
+    private int length;     
+
+    public LList ()
+    {
+        firstNode = null;
+        length = 0;
+    } 
+
+    public final void clear ()
+    {
+        firstNode = null;
+        length = 0;
+    } 
+
+    public boolean replace (int givenPosition, T newEntry)
+    {
+        return true;
+    }
+
+    public boolean add (T newEntry)
+    {
+        if (isEmpty())
+        {
+            Node newNode = new Node(newEntry);
+            firstNode = newNode;
+            length++;
+        }
+
+        else
+        {
+            Node last = getNodeAt(length);
+            Node newNode = new Node(newEntry);
+            last.next = newNode;
+            length++;
+        }
+
+
+
+
+        return true;
+    } 
+
+    public boolean add (int newPosition, T newEntry)
+    {
+        boolean isSuccessful = true;
+        if ((newPosition >= 1) && (newPosition <= length + 1))
+        {
+            Node newNode = new Node (newEntry);
+            if (isEmpty () || (newPosition == 1)) 
+            {
+                newNode.next = firstNode;
+                firstNode = newNode;
+
+            }
+            else 
+            {
+                Node currentNode = getNodeAt(newPosition-1);
+                newNode.next = currentNode.next;
+                currentNode.next = newNode;
+
+            } 
+            length++;
+        }
+        else
+            isSuccessful = false;
+        return isSuccessful;
+    } 
+
+    public T remove (int givenPosition) 
+    {
+        Think about two cases -- removing the first item and  
+        removing an item that is not first in the list.
+        if (!isEmpty())
+        {
+            Node newNode = new Node(newEntry);
+            firstNode = newNode;
+            length++;
+        }
+
+        else
+        {
+            Node last = getNodeAt(length);
+            Node newNode = new Node(newEntry);
+            last.next = newNode;
+            length++;
+        }
+        return null;
+    }
+
+    public T getEntry (int givenPosition)
+    {
+        if (!isEmpty() && givenPosition < length && givenPosition > 0)
+        {
+            Node refNode = getNodeAt(givenPosition);
+            return refNode.data;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public void reverse ( )
+    {
+    }
+
+    public boolean contains (T anEntry)
+    {
+        return true;
+    }
+
+    public int getLength ()
+    {
+        return length;
+    }
+
+    public void display ()
+    {
+        Node currentNode = firstNode;
+        while (currentNode != null)
+        {
+            System.out.println (currentNode.data);
+            currentNode = currentNode.next;
+        } 
+    } 
+
+    public boolean isFull ()
+    {
+        return false;
+    }
+
+    public boolean isEmpty ()
+    {
+        boolean result;
+        if (length == 0)
+        {
+            assert firstNode == null;
+            result = true;
+        }
+        else
+        {
+            assert firstNode != null;
+            result = false;
+        } 
+        return result;
+    } 
+
+    /** Task: Returns a reference to the node at a given position.
+     * Precondition: List is not empty; 1 <= givenPosition <= length. */
+    private Node getNodeAt (int givenPosition)
+    {
+        if ((isEmpty()) ||( givenPosition < 1) ||( givenPosition > length))
+        {
+            return null;
+        }
+        Node currentNode = firstNode;
+        for (int i = 1; i < givenPosition; i++)
+        {
+            currentNode = currentNode.next;
+        }
+        return currentNode;
+    } 
+
+    private class Node 
+    {
+        private T data; 
+        private Node next; 
+
+        private Node (T dataPortion)
+        {
+            data = dataPortion;
+            next = null;
+        } 
+
+        private Node (T dataPortion, Node nextNode)
+        {
+            data = dataPortion;
+            next = nextNode;
+        } 
+
+    } 
+} 

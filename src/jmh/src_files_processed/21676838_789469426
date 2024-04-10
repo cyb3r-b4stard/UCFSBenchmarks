@@ -1,0 +1,217 @@
+import java.util.Scanner;
+/**
+ * ##### # ########### ## ##### ##### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+
+public class Kiosk
+{
+     private Customer name;
+     private int credit;
+     private int buyCredit;
+     public int itemPrice;
+     public LuckyDipGenerator randomNumber;
+     public int amount;
+     
+     
+    public Kiosk()
+     {
+         name = new Customer();
+         randomNumber = new LuckyDipGenerator();
+         int amount = 0;
+     }
+     
+     public void displayMenu()
+    {
+        System.out.println("Welcome to My Fantastic Kiosk");
+        System.out.println("=============================");
+        System.out.println("(1) Create A New Order");
+        System.out.println("(2) Buy More Credit");
+        System.out.println("(3) Purchase An Item");
+        System.out.println("(4) What Have I Ordered So Far?");
+        System.out.println("(5) Collect My Order");
+        System.out.println("(6) Display Help");
+        System.out.println("(7) Leave Kiosk");
+        System.out.println("Choose an option :");
+    }
+    
+    public void itemsOnSale()
+    {
+        System.out.println("These are the items available for sale today :");
+        System.out.println("----------------------------------------------");
+        System.out.println("(1) PEN, worth $10.");
+        System.out.println("(2) BOOK, worth $20.");
+        System.out.println("(3) DVD, worth $30.");
+        System.out.println("(4) MOUSE, worth $40.");
+        System.out.println("(5) KEYBOARD, worth $50.");
+        System.out.println("(6) Let ME pick a random item for you!!");
+        System.out.println("Pick a number between 1-6: ");
+    }
+    
+    public void selectItem()
+    {
+        int selectItemNo;
+        Scanner input = new Scanner(System.in);
+        selectItemNo = input.nextInt();
+        switch(selectItemNo)
+        {
+            case 1: 
+            itemPrice = 10;
+            checkCredit();
+            break;
+            case 2:
+            itemPrice = 20;
+            checkCredit();break;
+            case 3:
+            itemPrice = 30;
+            checkCredit();break;
+            case 4:
+            itemPrice = 40;
+            checkCredit();break;
+            case 5:
+            itemPrice = 50;
+            checkCredit();break;
+            case 6:
+            selectItemNo == randomNumber.printRandomNumber();
+            selectItem();
+            default: 
+            System.out.println("Your choice must between 1-6");
+            break;
+        }
+    }
+     
+    public void createOrder()
+    {   
+        int chooseOption;
+        String name;
+        displayMenu();
+        int choice;
+        Scanner input = new Scanner(System.in);
+        chooseOption = input.nextInt();  
+       
+            if(chooseOption == 1)
+            {
+                System.out.println("Enter your name please: ");
+                name = input.next();
+                System.out.println("Buy some credit please: " );
+                credit=input.nextInt();
+                System.out.println("your current credit is: " + credit );
+                while(chooseOption != 7)
+                { 
+                    displayMenu();
+                    choice= input.nextInt();
+                    switch(choice)
+                  {
+                      case 1:
+                            System.out.println("Enter your name please: ");
+                            name = input.next();
+                            System.out.println("Buy some credit please: " );
+                            credit=input.nextInt();
+                            System.out.println("your current credit is: " + credit );
+                            break;
+                      case 2:
+                            option2();
+                            break;
+                            
+                      case 3:
+                            itemsOnSale();
+                            break;   
+                      case 4:
+                            displayItems();
+                            break;
+                      case 5:
+                      case 6:
+                      default:
+                            System.out.println("Please enter a valid option.");
+                  }
+                }
+            }
+            else
+                {
+                  System.out.println("Please choose 1 and create an oder first."); 
+                  createOrder();
+                }  
+    }
+    
+    public void displayItems()
+    {
+        System.out.println("Customer" + name + "has purchased these items: ");
+        System.out.println("Worth a total of ");
+        System.out.println("Credit balance ");
+    }
+    
+    public void option2()
+    {
+        Scanner input = new Scanner(System.in);
+        Scanner console = new Scanner(System.in);
+        System.out.println("Enter the amount you want to buy: ");
+        amount = input.nextInt();
+        
+        if(amount >= 0)
+        {
+            credit = credit + amount;
+            System.out.println("your current credit is: " + credit);
+        }
+        else
+        {
+            System.out.println("Please enter a positive number");
+        }
+    }
+    
+    public void selectItem2()
+    {
+        String item = "";
+        String itemList = item + "";
+        int itemPrice;
+        int selectItem = 0;
+        Scanner input = new Scanner(System.in);
+        selectItem = input.nextInt();
+        switch(selectItem)
+        {
+            case 1: 
+            item = "PEN";
+            itemPrice = 10;
+            checkCredit();break;
+            case 2:
+            item = "BOOK";
+            itemPrice = 20;
+            checkCredit();break;
+            case 3:
+            item = "DVD";
+            itemPrice = 30;
+            checkCredit();break;
+            case 4:
+            item = "MOUSE";
+            itemPrice = 40;
+            checkCredit();break;
+            case 5:
+            item = "KEYBOARD";
+            itemPrice = 50;
+            checkCredit();break;
+            default: 
+            System.out.println("Your choice must between 1-6");break;
+        }
+        }
+   
+    public void checkCredit()
+    {
+        int balance;
+        if (credit >= itemPrice)
+        {
+            balance = credit - itemPrice;
+            System.out.println("Credit Balance: " + balance + "Item Cost: "+itemPrice);
+            System.out.println("");
+        }
+        else 
+        {
+            System.out.println("Sorry, you do not have enough credit to purchase this item!");
+           
+        }
+    }
+    
+    
+ 
+}
+  

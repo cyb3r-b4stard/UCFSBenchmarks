@@ -1,0 +1,117 @@
+
+/**
+ * ##### # ########### ## ##### ####### ####.
+ * 
+ * @###### (####### #######) 
+ * @####### (##/##/##)
+ */
+
+import java.util.Random;
+import java.util.HashMap;
+public class Company
+{
+    private static final int MIN = 100;
+    private static final int MAX = 999;
+    private Random randomGenerator = new Random();
+    private String name;
+    private HashMap<String, String> employees;
+
+    /**
+     * Constructor for objects of class Company
+     */
+    public Company(String name)
+    {
+        this.name = name.trim().replaceAll("\\s+", " ").toUpperCase();
+        employees = new HashMap<String, String>();
+    }
+
+    /**
+     * 
+     */
+    public String getName()
+    {
+        return name;
+    }
+    
+    public HashMap<String, String> getEmployees()
+    {
+        return employees;
+    }
+    
+    public int getTotalNumberOfEmployees()
+    {
+        return employees.size();
+    }
+    
+    public void changeName(String newName)
+    {
+        name = newName.trim().replaceAll("\\s+", " ").toUpperCase();
+    }
+    
+    public String generateId(String name)
+    {
+        String id = "";
+        String[] nameArray = name.split("[ \t]+");
+        for(int index = 0; index < nameArray.length; index++)
+        {
+            id = id + nameArray[index].substring(0,1).toUpperCase();
+        }
+        Random rand = new Random();
+        int newId = rand.nextInt(900) + MIN;
+        return  id + newId;
+    }
+    
+    public void addEmployee(String inputName)
+    {
+        String newName = inputName.trim().replaceAll("\\s+", " ").toUpperCase();
+        if(newName.isEmpty())
+        {
+            System.out.println("Name is INVALID");
+        }
+        else if(employees.containsKey(newName))
+        {
+            System.out.println("Existing: " + inputName);
+        }
+        else
+        {
+            employees.put(newName, generateId(newName));
+            System.out.println("Adding employee: ");
+            System.out.println(newName);
+            System.out.println(employees.get(newName));
+        }
+    }
+    
+    public void removeEmployee(String inputName)
+    {
+        String newName = inputName.trim().replaceAll("\\s+", " ").toUpperCase();
+        if(newName.isEmpty())
+        {
+            System.out.println("Name is INVALID");
+        }
+        else if(employees.containsKey(newName))
+        {
+            System.out.println("Non-existing: " + inputName);
+        }
+        else
+        {
+            System.out.println("Removing employee: ");
+            System.out.println(newName);
+            System.out.print(employees.get(newName));
+            employees.remove(newName);
+        }
+    }
+    
+    public void removeIds(String id)
+    {
+        boolean found = false;
+        String newId = id.trim().replaceAll("\\s+", " ").toUpperCase();
+        for(Iterator<String> it = employees.keySet().iterator(); it.hasNext())
+        {
+            String key = it.next();
+            if(employees.get(key).contains(newId))
+            {
+                it.remove();
+            }
+        }
+    }
+}

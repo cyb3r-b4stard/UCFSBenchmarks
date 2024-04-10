@@ -1,0 +1,124 @@
+public class L01_CPSR {
+	
+	
+  /**
+   * Main
+   * @param args
+   */
+  public static void main(String[] args) {
+	  
+    int statusWord = 0xea_3f_3c_14; 
+    
+  
+    System.out.println("status word: "+ convertToBinaryString(statusWord)); 
+    System.out.println("isNegative(): " + isNegative(statusWord));
+    System.out.println("isZero(): " + isZero(statusWord));
+    System.out.println("getInstructionSet(): " + getInstructionSet(statusWord));
+    
+    
+    /** TODO: *** weitere Ausgaben ... *** */
+ 
+  }
+
+  /**
+   * Checks if CPSR indicates a negative value
+   * @return true, if the N flag is set, false otherwise
+   */
+  public static boolean isNegative(int statusWord) {
+    boolean negative = false;
+    
+    int x = 1;
+    
+    int y = statusWord >>> 31;
+    
+    int z = x & y;
+    
+    String statusWord1 = convertToBinaryString(z);
+    
+    System.out.println("nach Rechts verschoben: " + statusWord1);
+    
+    
+    
+    
+    
+    if (z == 1){
+    
+        negative = true;
+    }
+    else {
+    
+        negative = false;
+    }
+    
+    return negative;
+  }
+
+  /**
+   * Checks if CPSR indicates a zero value
+   * @return true, if the Z flag is set, false otherwise
+   */
+  public static boolean isZero(int statusWord) {
+    boolean zero = false; 
+
+    int y = statusWord >>> 30;
+    y = y << 31;
+    y = y >>> 31;
+    int x = 1;
+    
+    int z = x & y;
+    
+    String statusWord1 = convertToBinaryString(y);
+    System.out.println("Nach dem verschieben: " + statusWord1);
+    
+    if (z == 1){
+    
+        zero = true;
+    }
+    else {
+    
+        zero = false;
+    }
+
+    return zero;
+  }
+
+  /**
+   * Extracts the instruction set bits and shifts them.
+   * @return 0-3, according to J and T flag
+   */
+  public static int getInstructionSet(int statusWord) {
+    int is = 0;
+
+    int y = statusWord >>> 24;
+    y = y <<< 31;
+    y = y >>> 31;
+    int x = statusWord >>> 5;
+    x = x <<< 31;
+    x = x >>> 31;
+    
+    int z = y + x;
+    
+    String statusWord1 = convertToBinaryString(y);
+    System.out.println("Nach dem verschieben: " + statusWord1);
+    
+    return is;    
+  }
+  
+
+  /**
+   * Converts a 32 bit integer into a 32 digit binary representation
+   * @param val 32 bit value
+   * @return
+   */
+  private static String convertToBinaryString(int val) {
+    StringBuilder sb = new StringBuilder( "00000000000000000000000000000000" );  
+    sb.append( Integer.toBinaryString(val) );
+
+    String res = sb.substring(sb.length()-32, sb.length());
+
+    return 	res.substring(0, 8) + " " + 
+    		res.substring(8, 16) + " " + 
+    		res.substring(16, 24) + " " + 
+    		res.substring(24, 32);
+  }
+}

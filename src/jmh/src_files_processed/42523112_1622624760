@@ -1,0 +1,81 @@
+import java.util.Scanner;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.util.*;
+import java.math.*;
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Encryption
+{
+    public static File file=new File("Test.txt");
+    public static File key=new File("Public Key.txt");
+    public static ArrayList<Integer> list=new ArrayList<Integer>();
+    public static ArrayList<Integer> pass=new ArrayList<Integer>();
+    public static BigInteger n;
+    public static void createFile() throws Exception
+    {
+        PrintWriter out=new PrintWriter(file);
+        out.println("(Password)");
+        out.println("(Message)");
+        out.close();
+    }
+    public static void convert() throws Exception
+    {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(
+        new FileInputStream(file),Charset.forName("UTF-8")));
+        
+        int c;
+        boolean t=true;
+        while((c = reader.read()) != -1) {
+          char character = (char) c;
+          Integer bit=(int)character;
+          list.add(bit);
+          if(t)
+          {
+              if(bit!=10)
+                    pass.add(bit);
+              else
+                    t=false;
+          }
+          System.out.println(bit);
+        }
+        number(list);
+    }
+    private static void number(ArrayList<Integer> print) throws Exception
+    {
+        PrintWriter out=new PrintWriter(file);
+        out.print("");
+        for(Integer bit:print)
+        {
+            int length=(int)(Math.log10(bit)+1);
+            if(length==3)
+                out.print("");
+            else if (length==2)
+                out.print("0");
+            else if(length==1)
+                out.print("00");
+            out.print(bit);
+        }
+        out.close();
+    }
+    public static void reads() throws Exception
+    {
+        Scanner n=new Scanner(file);
+        BigInteger x=n.nextBigInteger();
+        System.out.println(x);
+    }
+    public static void Reset(int length,int d)
+    {
+        BigInteger p1=Prime.main(length);
+        BigInteger p2=Prime.main(length);
+        BigInteger n=p1.multiply(p2);
+        p1=p1.subtract(BigInteger.ONE);
+        p2=p2.subtract(BigInteger.ONE);
+        BigInteger f=p1.multiply(p2);
+        BigInteger k=BigInteger(10, Random rnd);
+    }
+}

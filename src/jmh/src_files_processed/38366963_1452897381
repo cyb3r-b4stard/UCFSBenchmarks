@@ -1,0 +1,133 @@
+/**
+ * ######### ###########:
+ *
+ * @######: ##### ####  
+ * @#######: ##/##/##
+ *
+ */
+
+
+import java.util.Scanner;
+import java.io.File;
+import java.io.IOException;
+
+public class Hurricanes2
+{
+    public static void main(String[] args)throws IOException
+    {
+
+
+        int arrayLength = 59;
+        int [] year = new int[arrayLength];
+        String [] month = new String[arrayLength];
+        int [] pressure = new int[arrayLength];
+        int [] speed = new int[arrayLength];
+        String [] hurricane = new String[arrayLength];
+        int [] category = new int[arrayLength];
+        
+
+
+        File fileName = new File("hurcdata2.txt");
+        Scanner inFile = new Scanner(fileName);
+
+        int index = 0;
+        while (inFile.hasNext())
+        {
+            year[index] = inFile.nextInt();
+            month[index] = inFile.next();
+            pressure[index] = inFile.nextInt();
+            speed[index] = inFile.nextInt();
+            hurricane[index] = inFile.next();
+            
+            index++;
+        }
+        inFile.close();
+
+
+        for( index = 0; index < speed.length; index++)
+            {
+                speed[index] += speed[index]*0.151;
+            }
+        for (index = 0; index < speed.length; index++)
+            if(speed[index] > 156)
+                category[index] = 5;
+            else if(speed[index] > 129)
+                category[index] = 4;
+            else if (speed[index] > 110)
+                category[index] = 3;
+            else if (speed[index] > 96)
+                category[index] = 2;
+            else 
+                category[index] = 1;
+       
+                
+                
+       
+        int numCat1 = 0;
+        int numCat2 = 0;
+        int numCat3 = 0;
+        int numCat4 = 0;
+        int numCat5 = 0;
+       
+                    for (index = 0; index < category.length; index++)
+            if(category[index] >= 5)
+                numCat5++;
+            else if(category[index] >= 4)
+                numCat4++;
+            else if (speed[index] >= 3)
+                numCat3++;
+            else if (speed[index] >= 2)
+                numCat2++;
+            else 
+                numCat1++;
+       
+        
+        int categorySum = 0;
+         for(int n = 0; n < category.length; n++)
+        {
+            categorySum += category[n];        
+        }
+        
+
+
+        Integer[] numbers = {3, 99, -1, 5, -10};
+
+        Integer minCategory = Integer.MAX_VALUE;
+        Integer maxCategory = Integer.MIN_VALUE;
+        for(int i = 0; i < category.length; i ++)
+        {
+            if (category[i] < minCategory)
+                minCategory = numbers[i];
+        }
+        for(int i = 0; i < category.length; i ++)
+        {
+            if (category[i] < minCategory)
+                maxCategory = numbers[i];
+        }
+        
+
+
+
+        System.out.println("                      Hurricanes 1980 - 2006");
+        System.out.println();
+        System.out.println("Year     Hurricane    Category     Pressure (mb)     Wind Speed (mph)");
+        System.out.println("=====================================================================");
+        
+                 for(int n = 0; n < speed.length; n++)
+        {
+            System.out.println(year[n] + "    " + hurricane[] + "    " + category[] + "    " + pressure[] + "    " + speed[]);
+        }
+
+
+
+        System.out.println("=====================================================================");
+        System.out.println("Average     " + maxCategory/speed.length  );
+        
+        System.out.println("Number of Category 1: " + numCat1);
+        System.out.println("Number of Category 2: " + numCat2);
+        System.out.println("Number of Category 3: " + numCat3);
+        System.out.println("Number of Category 4: " + numCat4);
+        System.out.println("Number of Category 5: " + numCat5);
+
+    }
+}

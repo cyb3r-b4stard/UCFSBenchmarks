@@ -1,0 +1,78 @@
+
+/**
+ * ##### # ########### ## ##### ### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import javax.swing.JFrame;
+import javax.swing.JButton;
+import javax.swing.JTextArea;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+public class GUI extends JFrame
+{
+    Transactions [] arrTrans = new Transactions[50];
+    int count = 0;
+    Data data = new Data();
+    private JButton btnAll, btnCash, btnSort, btnQuit;
+    private JTextArea display;
+    
+    public GUI()
+        {
+            super("EliteComp_X");
+            super.setLayout(null);
+            
+            btnAll = new JButton("Display all transactions");
+            btnAll.setSize(180,20);
+            btnAll.setLocation(200,5);
+            btnAll.setVisible(true);
+            
+            btnCash = new JButton("Display a cash transaction");
+            btnCash.setSize(200,20);
+            btnCash.setLocation(380,5);
+            btnCash.setVisible(true);
+            
+            btnSort = new JButton("Sort transactions");
+            btnSort.setSize(180,20);
+            btnSort.setLocation(200,50);
+            btnSort.setVisible(true);
+            
+            btnQuit = new JButton("Quit");
+            btnQuit.setSize(200,20);
+            btnQuit.setLocation(380,50);
+            btnQuit.setVisible(true);
+            
+            display = new JTextArea();
+            display.setSize(640,320);
+            display.setLocation(80,100);
+            display.setVisible(true);
+            
+            add(btnAll);
+            add(btnCash);
+            add(btnSort);
+            add(btnQuit);
+            add(display);
+        }
+}
+
+private class ButtonHandler implements ActionListener
+    {
+        public void actionPerformed(ActionEvent e)
+            {
+                if (e.getSource() == btnAll)
+                    {
+                        data.read();
+                        arrTrans = data.getArray();
+                        count = data.getCount();
+                        
+                        try
+                            {
+                                for (int x = 0; x < count; x++)
+                                    {
+                                       display.append(arrTrans[x].toString() + "\n");     
+                                    }
+                            }
+                    }
+            }
+    }

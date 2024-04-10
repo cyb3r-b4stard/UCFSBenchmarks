@@ -1,0 +1,133 @@
+import java.io.*;
+import java.util.*;
+
+/**
+ * ###### ########### ####### ### # ######## ## ########## #### ####.
+ * 
+ * @###### ###### #########  
+ * @####### #.#
+ * @####    ######## ##, ####
+ */
+public class BalancedHTMLApp
+{
+    public static void main(String[] args) throws FileNotFoundException 
+    {
+        Scanner samp = new Scanner(new File("sample.html"));
+        boolean balanced = true;
+        Stack<String> stack = new Stack<>();
+        Stack<String> compareStack = new Stack<>();   
+        stack.add("<html>");
+        stack.add( "<body>");
+        stack.add("<h1>");
+        stack.add("<title>");
+        stack.add("<p>");
+        stack.add("<ol>");
+        stack.add("<li>");
+
+        while(!stack.empty()) 
+        {
+            compareStack.push(stack.pop());
+            if(stack.empty())
+            {
+                balanced = false;
+                break;
+            }
+
+            if(compareTags(stack.peek(),compareStack.peek()))
+            {
+                stack.pop();
+                compareStack.pop();
+                if(compareStack.empty())
+                {
+                    balanced = true;
+                }
+                if(compareTags(stack.peek(),compareStack.peek()))
+                {
+                    stack.pop();
+                    compareStack.pop();
+                    if(stack.empty())
+                    {
+                        balanced = true;
+                    }
+                }
+            }
+            else
+            {
+                balanced = false;
+            }
+        } 
+        
+        if(balanced)
+        {
+            System.out.println("HTML tags are balanced");           
+        }
+        else
+        {
+            System.out.println("HTML tags are not balanced");
+        }
+    }
+
+    /*
+     * Returns true if the tags are the tags we want to compare
+     */
+
+    static private boolean checkTag(String input)
+    {
+        return tags.contains(input);
+    }
+
+    /*
+     * Since HTML tags aren't equal to each other in Strings.
+     * this method is need to compare the tags to make sure they are.
+     */
+
+    static private boolean compareTags(String x, String y)
+    {
+        if((x.equalsIgnoreCase("<html>") && y.equalsIgnoreCase("</html>")) || (y.equalsIgnoreCase("<html>") && x.equalsIgnoreCase("</html>")))
+        {
+            return true;
+        }
+        else
+        {
+            if((x.equalsIgnoreCase("<body>") && y.equalsIgnoreCase("</body>")) || (y.equalsIgnoreCase("<body>") && x.equalsIgnoreCase("</body>")))
+            {
+                return true;
+            }
+            else
+            {
+                if((x.equalsIgnoreCase("<h1>") && y.equalsIgnoreCase("</h1>")) || (y.equalsIgnoreCase("<h1>") && x.equalsIgnoreCase("</h1>")))
+                {
+                    return true;
+                }
+                else
+                {
+                    if((x.equalsIgnoreCase("<title>") && y.equalsIgnoreCase("</title>")) || (y.equalsIgnoreCase("<title>") && x.equalsIgnoreCase("</title>")))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        if((x.equalsIgnoreCase("<p>") && y.equalsIgnoreCase("</p>")) || (y.equalsIgnoreCase("<p>") && x.equalsIgnoreCase("</p>")))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            if((x.equalsIgnoreCase("<ol>") && y.equalsIgnoreCase("</ol>")) || (y.equalsIgnoreCase("<ol>") && x.equalsIgnoreCase("</ol>")))
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                return (x.equalsIgnoreCase("<li>") && y.equalsIgnoreCase("</li>")) || (y.equalsIgnoreCase("<li>") && x.equalsIgnoreCase("</li>"));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+}
+}

@@ -1,0 +1,110 @@
+import java.util.*;
+import java.util.ArrayList;
+public class Student
+{
+    private String personalIdNo;
+    private String surname;
+    private String login;
+    private String forename;
+    private String modules;
+    private boolean isValidPersonalIdNo = true; 
+    private ArrayList<String> forenames = new ArrayList<String>(); 
+    private ArrayList<String> logins = new ArrayList<String>();
+
+    public Student(String personalIdNo ,String surname ,ArrayList<String> forename ,String modules) 
+    {
+        this.personalIdNo = personalIdNo;
+        this.surname = surname; 
+        this.modules = modules; 
+        this.forenames = forenames;
+    }
+
+    public String getPIN() 
+    {
+        return personalIdNo;
+    }
+
+    public String getSurname()
+    {
+        return surname;
+    }
+
+    public ArrayList getForename()
+    {
+        return forenames;
+    }
+
+    public void fixString(){
+        if (modules.length() > 5) 
+        {
+            modules = modules.substring(0, 5);
+        }
+    }
+
+    public String getModules(){ 
+        return modules; 
+    }
+
+    public String getLogins()
+    {
+        return login;
+    }
+    
+      public void loginsIssued()
+    {
+        forename = forenames.get(0);
+        char f = forenames.charAt(0);
+        char s = surname.charAt(0);
+
+        Random rand = new Random();
+        int rn = rand.nextInt(998) + 1;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("");
+        sb.append(rn);
+        String strI = sb.toString();
+
+        login = (f +""+ s+""+ strI);
+        System.out.println(login);
+        
+        while((loginsIssued.contains(login))){
+            rn = rand.nextInt((999 -1) +1) + 1;
+            login = f + s + rn
+        }
+    }
+    
+    public void vaildPin()  
+    {
+        personalIdNo.trim();
+        if(personalIdNo.length() != 10){
+            isValidPersonalIdNo = false;
+            System.out.println("Not 10 digits long");
+        }
+
+        if (personalIdNo.startsWith("1")) { 
+        }
+        else {
+            isValidPersonalIdNo = false; 
+            System.out.println("Doesn't start with a one");
+        }
+
+        char[] charArray ={ '0', '1', '2', '3', '4','5','6','7','8','9'}; 
+        for (int i = 0; i < personalIdNo.length(); i++) { 
+            char c = personalIdNo.charAt(i);
+            if(Arrays.asList(charArray).contains(c) == false){
+            }
+            else{
+                isValidPersonalIdNo =false;
+                System.out.println(c +" Not a digit");
+            }
+        }
+
+        if (isValidPersonalIdNo == false) {
+            System.out.println(" Invalid PIN or PIN has already been used ");
+        }
+
+        if (isValidPersonalIdNo == true) {
+            System.out.println(" valid PIN  ");
+        }
+    }
+}

@@ -1,0 +1,293 @@
+public class New10162014
+{
+    String  [] Name                     = {"Objekt 1", "Objekt 2", "Objekt 3", "Objekt 4", "Objekt 5"};
+    String  [] Rucksackinhalt           = new String[5];                                               
+    int     [] Volumen                  = {5, 3, 7, 8, 1};                                             
+    int     [] Wert                     = {1, 5, 12, 6, 9};                                            
+    double  [] GreedyQuotient           = new double[5];                                               
+    boolean [] isSelected               = new boolean[5];                                              
+    int        Rucksackvolumen          = 12;                                                          
+    int        Vr                       = 0;                                                           
+    int        Wr                       = 0;                                                           
+    int        Position                 = 0;                                                           
+    int   [][] Results                  = new int [5][Rucksackvolumen + 1];                            
+    
+    public void GreedyAlgorithmus()
+    {
+        for(int a = 0;                                                                                 
+                a < Rucksackinhalt.length;
+                a++)
+           {
+               Rucksackinhalt[a]    = null;                                                            
+               GreedyQuotient[a]    = 0;                                                               
+               isSelected[a]        = false;                                                           
+           }
+        Position = 0;
+        Vr       = 0;
+        Wr       = 0;
+        
+        for(int b = 0;
+                b < GreedyQuotient.length;
+                b++)
+           {
+               GreedyQuotient[b] = Wert[b] / Volumen[b];                                               
+           }
+           
+        boolean hlp = true;                                                                            
+        while(hlp)
+        {
+            hlp = false;                                                                               
+            for(int c = 0;
+                    c < GreedyQuotient.length;
+                    c++)
+                {
+                    if((c+1) < GreedyQuotient.length && GreedyQuotient[c] < GreedyQuotient[c+1])       
+                    {
+                        String n            = Name[c];                                                 
+                        int v               = Volumen[c];
+                        int w               = Wert[c];
+                        double g            = GreedyQuotient[c];
+                        
+                        Name[c]             = Name[c+1];                                               
+                        Volumen[c]          = Volumen[c+1];
+                        Wert[c]             = Wert[c+1];
+                        GreedyQuotient[c]   = GreedyQuotient[c+1];
+                        
+                        Name[c+1]           = n;                                                       
+                        Volumen[c+1]        = v;
+                        Wert[c+1]           = w;
+                        GreedyQuotient[c+1] = g;
+                        
+                        hlp                 = true;                                                    
+                    }
+                }
+        }
+        
+        while(true)                                                                                    
+        {
+            if(Rucksackvolumen > (Vr + Volumen[Position]))                                             
+            {
+                Rucksackinhalt[Position] = Name[Position];                                             
+                isSelected[Position]     = true;                                                       
+                Vr                       = Vr + Volumen[Position];                                     
+                Wr                       = Wr + Wert[Position];                                        
+                Position++;                                                                            
+            }else{
+                break;                                                                                 
+            }
+        }
+        
+        System.out.println();
+        System.out.println("Ergebnisse des GreedyAlgorithmus: ");
+        Printer();                                                                                     
+    }
+    
+    public void Rekursion()
+    {
+        for(int h = 0;                                                                                 
+                h < Rucksackinhalt.length;
+                h++)
+           {
+               Rucksackinhalt[h]    = null;                                                            
+               GreedyQuotient[h]    = 0;                                                               
+               isSelected[h]        = false;                                                           
+           }
+        Position = 0;                                                                                  
+        Vr       = 0;                                                                                  
+        Wr       = 0;                                                                                  
+        
+        Vr = Brutforce(Position, Vr);                                                                  
+        for(int i = 0;
+                i < Name.length;
+                i++)
+           {
+               if(isSelected[i] == true)
+               {
+                   Vr = Vr + Volumen[i];                                                               
+                   Wr = Wr + Wert[i];                                                                  
+               }
+           }
+        
+        System.out.println();
+        System.out.println("Ergebnisse der rein rekusiven Lösung: ");
+        Printer();                                                                                     
+    }
+    
+    private int Brutforce(int pos, int Vr)
+    {
+        if(pos < Name.length)
+        {
+            int o = Brutforce(pos + 1, Vr);                                                            
+            isSelected[pos] = false;                                                                   
+            Rucksackinhalt[pos] = null;  
+            int m = 0;                                                                                 
+            if((Vr + Volumen[pos] <= Rucksackvolumen))                                                 
+            {
+                m = Brutforce(pos + 1, Vr + Volumen[pos]);                                             
+                Rucksackinhalt[pos] = Name[pos];                                                       
+                isSelected[pos]     = true;                                                            
+            }
+            
+            if(m >= o)                                                                                 
+            {
+                return m;                                                                              
+            }else{
+                return o;                                                                              
+            }
+        }else{
+            return 0;                                                                                  
+        }
+    }
+    
+    public void Printer()
+    {
+        System.out.println("Objektname  |  isSelected  |  Volumen  |  Wert  |  Quotient");
+        
+        for(int d = 0;
+                d < Name.length;
+                d++)
+            {
+                 System.out.println(Name[d] + ",         " + isSelected[d] + ":     " + Volumen[d] + ",         " + Wert[d] + ",       " + GreedyQuotient[d]);
+            }
+            
+        System.out.println();
+        
+        System.out.println("Vmax:  " + Rucksackvolumen);
+        System.out.println("Volumen:  " + Vr);
+        System.out.println("Wert:  " + Wr);
+        
+        System.out.println();
+        
+        for(int e = 0;
+                e< Rucksackinhalt.length;
+                e++)
+           {
+               if(Rucksackinhalt[e] != null)
+                 {
+                   System.out.println(Rucksackinhalt[e]);
+                 }
+           }
+            
+        for(int f = 0;
+                f < 5;
+                f++)
+           {
+               for(int g = 0;
+                       g < Rucksackvolumen;
+                       g++)
+                  {
+                      if(Results [f][g] < 0 || Results [f][g] > 9)
+                      {
+                          System.out.print(Results [f][g] + " ");
+                      }else{
+                          System.out.print(" " + Results [f][g] + " ");                          
+                      }
+                  }
+               System.out.println();
+           }
+    }
+    public void sorter(int j)
+    {
+        if(j == 1)
+        {
+        /**boolean hlp = true;                                                                            
+        while(hlp)
+        {
+            hlp = false;                                                                               
+            for(int c = 0;
+                    c < Name.length;
+                    c++)
+                {
+                    if((c+1) < Name.length && isSelected[c] == false && isSelected[c+1] == true)       
+                    {
+                        String n            = Name[c];                                                 
+                        int v               = Volumen[c];
+                        int w               = Wert[c];
+                        double g            = GreedyQuotient[c];
+                        boolean s           = isSelected[c];
+                        
+                        Name[c]             = Name[c+1];                                               
+                        Volumen[c]          = Volumen[c+1];
+                        Wert[c]             = Wert[c+1];
+                        GreedyQuotient[c]   = GreedyQuotient[c+1];
+                        isSelected[c]       = isSelected[c+1];
+                        
+                        Name[c+1]           = n;                                                       
+                        Volumen[c+1]        = v;
+                        Wert[c+1]           = w;
+                        GreedyQuotient[c+1] = g;
+                        isSelected[c+1]     = s;
+                        
+                        hlp                 = true;                                                    
+                    }
+                }
+        }*
+        }else if(j==2){
+        boolean hlp = true;                                                                            
+        while(hlp)
+        {
+            hlp = false;                                                                               
+            for(int c = 0;
+                    c < Name.length;
+                    c++)
+                {
+                    if((c+1) < Name.length &&  Volumen[c] < Volumen[c+1])       
+                    {
+                        String n            = Name[c];                                                 
+                        int v               = Volumen[c];
+                        int w               = Wert[c];
+                        double g            = GreedyQuotient[c];
+                        boolean s           = isSelected[c];
+                        
+                        Name[c]             = Name[c+1];                                               
+                        Volumen[c]          = Volumen[c+1];
+                        Wert[c]             = Wert[c+1];
+                        GreedyQuotient[c]   = GreedyQuotient[c+1];
+                        isSelected[c]       = isSelected[c+1];
+                        
+                        Name[c+1]           = n;                                                       
+                        Volumen[c+1]        = v;
+                        Wert[c+1]           = w;
+                        GreedyQuotient[c+1] = g;
+                        isSelected[c+1]     = s;
+                        
+                        hlp                 = true;                                                    
+                    }
+                }
+        } 
+        }else if(j==3){
+        boolean hlp = true;                                                                            
+        while(hlp)
+        {
+            hlp = false;                                                                               
+            for(int c = 0;
+                    c < Name.length;
+                    c++)
+                {
+                    if((c+1) < Name.length &&  Wert[c] < Wert[c+1])       
+                    {
+                        String n            = Name[c];                                                 
+                        int v               = Volumen[c];
+                        int w               = Wert[c];
+                        double g            = GreedyQuotient[c];
+                        boolean s           = isSelected[c];
+                        
+                        Name[c]             = Name[c+1];                                               
+                        Volumen[c]          = Volumen[c+1];
+                        Wert[c]             = Wert[c+1];
+                        GreedyQuotient[c]   = GreedyQuotient[c+1];
+                        isSelected[c]       = isSelected[c+1];
+                        
+                        Name[c+1]           = n;                                                       
+                        Volumen[c+1]        = v;
+                        Wert[c+1]           = w;
+                        GreedyQuotient[c+1] = g;
+                        isSelected[c+1]     = s;
+                        
+                        hlp                 = true;                                                    
+                    }
+                }
+        }            
+        }
+    }
+}

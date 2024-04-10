@@ -1,0 +1,305 @@
+
+/**
+ * ####### ### #######
+ * 
+ * @###### ####### ##########
+ * @####### ##.##.##
+ */
+public class RoboterSteuerung
+{
+    private WELT welt;                         
+    public ROBOTER karol; 
+    
+    public RoboterSteuerung(){          
+        welt = new WELT(10,10,5);
+        karol = new ROBOTER(welt);
+    }
+   
+    public void karolTesten(){
+        karol.Hinlegen();
+    }
+    
+    public void karolTesten2(){
+        karol.Schritt();
+    }
+    
+    public void invertieren(){
+        zufallsreihe(); 
+        while (!karol.IstWand()) {
+       if (karol.IstZiegel()) {
+          karol.Aufheben();
+       }
+       else {
+          karol.Hinlegen();
+        }
+       karol.Schritt();
+      }
+    }
+    public void aufraeumen() {
+     unordnungMachen();
+     eckeGehen();
+     while (!(karol.IstWand())) {
+      reiheAufraeumen();
+      karol.LinksDrehen();
+      if (!karol.IstWand()) {
+         feldAufraeumen();
+         karol.LinksDrehen();
+         reiheAufraeumen();
+         karol.RechtsDrehen();
+         if (!(karol.IstWand())) {
+            feldAufraeumen();
+            karol.RechtsDrehen();
+         }
+      }
+     }
+    }
+   
+         
+            }
+        
+    }
+    
+    public void feldaufräumen() {
+        while (karol.IstZiegel() ){
+         karol.Aufheben();
+        }
+        karol.Schritt();
+    }
+    
+    public void reiheAufraeumen(){
+     
+     
+     while(!karol.IstWand()){
+        feldaufräumen(); 
+     }
+    
+    
+    }
+    
+    public void dreierreihe(){
+     karol.Hinlegen();
+     karol.Schritt();
+     karol.Hinlegen();
+     karol.Schritt();
+     karol.Hinlegen();
+     karol.Schritt();
+    }
+    
+    public void zickzackreihe(){
+     karol.Hinlegen();
+     karol.Schritt();
+     karol.LinksDrehen();
+     karol.Hinlegen();
+     karol.Schritt();
+     karol.RechtsDrehen();
+     karol.Hinlegen();
+     karol.Schritt();
+     karol.LinksDrehen();
+     karol.Hinlegen();
+     karol.Schritt();
+
+    }
+    
+    public void sechserreihe(){
+     dreierreihe();
+     dreierreihe();
+    }
+    
+    public void umdrehen(){
+     karol.LinksDrehen();
+     karol.LinksDrehen();
+    } 
+    
+    public void schrittZurueck(){
+     umdrehen();
+     karol.Schritt();
+     umdrehen();
+    }
+    
+    public void quadrat() {
+     for (int i=1; i<=4; i=i+1){
+         karol.Hinlegen();
+         karol.Schritt();
+         karol.Hinlegen();
+         karol.Schritt();
+         karol.Hinlegen();
+         karol.Schritt();
+         karol.LinksDrehen();
+     }
+    }
+    
+    public void gehen() { 
+     for ( int k = 0; k <= 6; k = k + 2 ) { 
+       karol.Schritt(); 
+      } 
+    } 
+    
+    public void zurWandGehen() {
+     while (!karol.IstWand()) {
+         karol.Schritt();
+        }
+    
+    }
+    
+    public void zurEckeGehen(){
+     zurWandGehen();
+     karol.LinksDrehen();
+     zurWandGehen();
+    } 
+    
+    
+   public void rahmenMachen(){
+    spazieren();
+    zurEckeGehen();
+    for (int i=1; i<=4; i=i+1){
+      karol.LinksDrehen();
+      legeBisWand();
+    }
+   } 
+
+ 
+   public void reiheAuffuellen(){
+       while (!karol.IstWand() ){
+        if(karol.IstZiegel()){
+            karol.Schritt();
+        }
+        else {
+            karol.Hinlegen();
+            karol.Schritt();
+        }
+        }
+       
+    }
+
+
+    
+    public void steinreihe(int laenge) {
+     for (int k = 1; k<=laenge; k = k + 1 ){
+       karol.Hinlegen();
+       karol.Schritt();
+     }
+    } 
+
+     public void info () {
+        for (int k = 10; k>=0; k = k - 1 ){
+        System.out.println(k + " kleine Informatikerlein, die ...");
+
+     }
+    }   
+    
+    public void TreppeBauen1(){
+       for (int i=7; i>=1; i=i-2){
+       steinreihe(i);
+       umdrehen();
+      }
+    }
+
+    public void legeBisWand() {
+      while(!karol.IstWand()) {
+       karol.Hinlegen();
+       karol.Schritt();
+      }
+    } 
+    
+    public void invertieren2() {
+     while (!karol.IstWand()) {
+      if (karol.IstZiegel()) {
+          karol.Aufheben();
+       }
+      else {
+          karol.Hinlegen();
+        }
+      karol.Schritt();
+     }
+    }
+    
+    
+    public void zweierreihe () {
+     spazieren();
+     while (!karol.IstWand()) {
+      karol.Hinlegen();
+      karol.Schritt();
+      if (!karol.IstWand()){
+      karol.Schritt();
+       
+      }
+     }
+    }
+    
+    public void informatikerlein() {
+     for (int i=10; i>=0; i=i-1) {
+     System.out.println(i + " kleine Informatikerlein, die...");
+     }
+    }
+    
+    public void zufallsreihe(){
+        karol.MeldungAusgeben("Jetzt mache ich erst mal eine zufällige Reihe...");
+        java.util.Random zufallsgenerator = new java.util.Random();
+        double zufallszahl;        
+        while(!karol.IstWand()){
+            zufallszahl = zufallsgenerator.nextDouble();
+            if(zufallszahl > 0.5){
+                karol.Hinlegen();
+            }
+            karol.Schritt();
+        }
+        karol.RechtsDrehen();
+        karol.RechtsDrehen();
+        while(!karol.IstWand()){            
+            karol.Schritt();
+        }
+        karol.RechtsDrehen();
+        karol.RechtsDrehen();
+        karol.MeldungAusgeben("...Fertig!");
+    }
+    
+    public void spazieren(){
+        karol.MeldungAusgeben("Ich gehe spazieren, lalala...");
+        java.util.Random zufallsgenerator = new java.util.Random();
+        double zufallszahl;        
+        for(int i = 1; i <= (zufallsgenerator.nextDouble() * 60 + 10); i++){
+            zufallszahl = zufallsgenerator.nextDouble();
+            if (zufallszahl * 6 < 4 ){
+                if(!karol.IstWand()){ 
+                    karol.Schritt();
+                } else {
+                    karol.LinksDrehen();
+                    karol.LinksDrehen();
+                    karol.Schritt();
+                }
+            } else if (zufallszahl * 6 == 4) {
+                karol.LinksDrehen();
+            } else {
+                karol.RechtsDrehen();
+            }            
+        }
+        karol.MeldungAusgeben("...jetzt aber wieder an die Arbeit, Karol!");
+    }
+    
+    public void unordnungMachen(){
+        karol.MeldungAusgeben("Ich glaube, ich bin kaputtgegangen - ich mache Unordnung!");
+        java.util.Random zufallsgenerator = new java.util.Random();
+        double zufallszahl;
+        double zz = zufallsgenerator.nextDouble();        
+        for(int i = 1; i <= (zz * 70 + 30); i++){
+            zufallszahl = zufallsgenerator.nextDouble();
+            if (zufallszahl * 6 < 4 ){
+                if(!karol.IstWand()){ 
+                    karol.Schritt();
+                    if (zufallszahl * 6 < 2 && !karol.IstZiegel() && !karol.IstWand()){
+                        karol.Hinlegen();
+                    }
+                } else {
+                    karol.LinksDrehen();
+                    karol.LinksDrehen();
+                    karol.Schritt();
+                }
+            } else if (zufallszahl * 6 == 4) {
+                karol.LinksDrehen();
+            } else {
+                karol.RechtsDrehen();
+            }            
+        }
+        karol.MeldungAusgeben("So, jetzt geht's wieder.");
+    }
+}

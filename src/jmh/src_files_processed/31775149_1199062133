@@ -1,0 +1,88 @@
+import java.util.*;
+import edu.duke.*;
+
+public class VigenereBreaker {
+    public String sliceString(String message, int whichSlice, int totalSlices) {
+        StringBuilder sb = new StringBuilder();
+        for(int i = whichSlice; i<message.length(); i += totalSlices){
+            char c = message.charAt(i);
+            sb.append(c);
+        }
+        return sb.toString();
+    }
+
+    public int[] tryKeyLength(String encrypted, int klength, char mostCommon) {
+        int[] key = new int[klength];
+        ArrayList<String> sliced = new ArrayList<String>();
+        for(int i=0; i<klength; i++){
+            sliced.add(sliceString(encrypted, i, klength));
+        }
+        for(int i =0; i<klength; i++){
+            CaesarCracker cc = new CaesarCracker(mostCommon);
+            key[i] = cc.getKey(sliced.get(i));
+        }
+        return key;
+    }
+    public HashSet<String> readDictionary(FileResource fr){
+        HashSet<String> dict = new HashSet<String>();
+        
+        for(String line: fr.lines()){
+            line.toLowerCase();
+            dict.add(line);
+        }
+        return dict;
+    }
+    public int countWords(String message, HashSet<String> dictionary){
+        String[] words = message.split("\\W");
+        int count =0;
+        for(int i=1; i< words.length; i++){
+            String currWord = words[i];            
+            if(dictionary.contains(currWord)){
+                count = count+1;
+            }
+        }
+        return count;
+    }
+    public String breakForLanguage(String encrypted, HashSet<String> dictionary){
+        String answer = "";
+        int maxCount =0;
+        int keySize = 0;
+        for(int i=38; i<39; i++){
+            int[] key = tryKeyLength(encrypted, i, 'e');
+            VigenereCipher vc = new VigenereCipher(key);
+            String decrypted = vc.decrypt(encrypted);
+            int count = countWords(decrypted,dictionary);
+            
+            if(maxCount < count){
+                answer = decrypted;
+                maxCount = count;
+                keySize = i;
+            }
+       }
+       System.out.println("key length is "+keySize);
+       System.out.println("count of words is "+maxCount);
+        return answer;
+    }
+    public char mostCommonCharIn(HashSet<String> dictionary){
+        char most;
+        for(String s : dictionary){
+            
+        }
+        return 'e';
+    }
+    public void breakForAllLanguages(String encrypted, HashMap<String, HashSet<String>> languages){
+    }
+    public void breakVigenere () {
+        FileResource file = new FileResource();
+        String message = file.asString();
+        FileResource dict = new FileResource();
+        HashSet<String> dictionary = readDictionary(dict);
+        HashMap<String, HashSet<String>> languages = readDictionary();
+        breakForAllLanguages(String message, languages);
+        
+        String decrypted = breakForLanguage(message,dictionary);
+        System.out.println(decrypted.substring(0,200));
+        System.out.println(decrypted.length());
+    }
+    
+}

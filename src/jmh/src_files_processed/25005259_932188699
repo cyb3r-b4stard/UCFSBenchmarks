@@ -1,0 +1,667 @@
+import java.lang.StringBuilder;
+/**
+ * #### ##### ########## # ###### ## ### ## ###
+ * 
+ * @###### ####### ######### ### (#### ####)
+ * @####### #.#
+ */
+public class Strand
+{   
+    /**
+     * Codes the types of Strand that are legal
+     * 
+     * @author Gregory McWhirter
+     * @version 0.1
+     */
+    public enum Type
+    {
+        /**
+         * Indicates a DNA strand starting at the 3' end
+         */
+        THREE_PRIME, 
+        /**
+         * Indicates a DNA strand starting at the 5' end
+         */
+        FIVE_PRIME, 
+        /**
+         * Indicates an RNA strand
+         */
+        RNA
+    }
+    
+    private Base[] seq;
+    private Type type;
+    private String stringRep;
+    
+    /**
+     * Converts string representations of bases to actual Base values
+     * 
+     * Prerequisites: seqInput is an array of single-character strings
+     * 
+     * @param seqInput the array of string bases to convert
+     * @return the array of converted bases
+     */
+    public static Base[] stringsToBases(String[] seqInput)
+    {
+        Base[] seqBases = new Base[seqInput.length];
+        for (int i = 0; i < seqInput.length; i++)
+        {
+            try
+            {
+                seqBases[i] = Base.valueOf(seqInput[i]);
+            }
+            catch (IllegalArgumentException e)
+            {
+                seqBases[i] = Base.X;
+            }
+        }
+        
+        return seqBases;
+    }
+    
+    
+    /**
+     * Constructs an empty strand of given type and length
+     * 
+     * @param stype the type of the strand (3', 5', or RNA)
+     * @param length the length of the strand (in # of base pairs)
+     */
+    public Strand(Type stype, int length)
+    {
+        type = stype;
+        seq = new Base[length];
+    }
+    
+    /**
+     * Constructs an strand of given type with the given contents
+     * 
+     * @param stype the type of the strand (3', 5', or RNA)
+     * @param seqInput the sequence of base-pairs for the strand
+     */
+    public Strand(Type stype, String[] seqInput) throws BaseException
+    {
+        type = stype;
+        seq = new Base[seqInput.length];
+        fill(seqInput);
+    }
+    
+    /**
+     * Constructs an strand of given type with the given contents
+     * 
+     * @param stype the type of the strand (3', 5', or RNA)
+     * @param seqInput the sequence of base-pairs for the strand
+     */
+    public Strand(Type stype, Base[] seqInput) throws BaseException
+    {
+        type = stype;
+        seq = new Base[seqInput.length];
+        fill(seqInput);
+    }
+    
+    /**
+     * Constructs an strand of given type with the given contents
+     * 
+     * @param stype the type of the strand (3', 5', or RNA)
+     * @param seqInput the sequence of base-pairs for the strand
+     */
+    public Strand(Type stype, String seqInput) throws BaseException
+    {
+        type = stype;
+        seq = new Base[seqInput.length()];
+        fill(seqInput.split(""));
+    }
+    
+    
+    /**
+     * Validates the bases to make sure they are allowed (no T in RNA, for example).
+     * 
+     */
+    private void validate() throws BaseException
+    {
+        boolean okay = true;
+
+        
+        
+        if (type == Type.RNA)
+             { for(int i =0; i < seq.length; i++)
+                 {
+                   if (seq[i]==Base.T)
+                     okay = false;
+                     
+                 }
+              }
+             else if (type == Type.THREE_PRIME || type == Type.FIVE_PRIME)
+             { for(int i =0; i < seq.length; i++)
+                 {
+                   if (seq[i]==Base.U)
+                     okay = false;
+                     
+                 }
+              }
+       if (!okay)
+        {
+            throw new BaseException();
+            
+        }
+    }
+    
+    
+    /**
+     * Determines if two Strands are the same strand or not
+     * 
+     * @param otherObj the object to compare to the current strand (casted to a Strand inside)
+     * @return true if they have the same type, length, and base sequence, false otherwise
+     */
+    public boolean equals(Object otherObj)
+    {
+        Strand other = (Strand)otherObj;
+        if (otherObj.getLength() == this.getLength() && otherObj.getStrandType() == this.getStrandType() && otherObj.getSeq() == this.getSeq()
+         { return true;
+            }
+        
+        return false;
+    }
+    
+    /**
+     * Returns the array of base pairs.
+     * 
+     * Warning: DOES NOT RETURN A COPY
+     * 
+     * @return the sequence of base pairs
+     */
+    public Base[] getSeq()
+    {
+        return seq;
+    }
+    
+    /**
+     * Returns the type of the strand (3', 5', or RNA)
+     * 
+     * @return the type of the strand
+     */
+    public Type getStrandType()
+    {
+        return type;
+    }
+    
+    /**
+     * Returns the number of bases in the strand
+     * 
+     * @return the number of bases in the strand
+     */
+    public int getLength()
+    {
+        return seq.length;
+    }
+    
+    /**
+     * Fills the strand with a sequence of base pairs. 
+     * 
+     * Truncates the input to the length of the internal array if it is longer.
+     */
+    public void fill(Base[] seqInput) throws BaseException
+    {
+        stringRep = null;
+        int min =0 ;
+
+        if (seqInput.length < seq.length)
+         { min = seqInput.length;
+            }
+        if (seqInput.length > seq.length)
+         { min = seq.length;
+            }
+        for (int i = 0; i < seqInput.length; i++)
+        {
+            seq[i] = seqInput[i];
+        }
+        
+        validate();
+    
+    } 
+    
+    /**
+     * Fills the strand with a sequence of base pairs. 
+     * 
+     * Truncates the input to the length of the internal array if it is longer.
+     */
+    public void fill(String[] seqInput) throws BaseException
+    {
+        fill(stringsToBases(seqInput));
+    }
+    
+    /**
+     * Fills the strand with a sequence of base pairs. 
+     * 
+     * Truncates the input to the length of the internal array if it is longer.
+     */
+    public void fill(String seqInput) throws BaseException
+    {
+        fill(seqInput.split(""));
+    }
+    
+    /**
+     * Gets the base sequence paired to the strand.
+     * 
+     * @param rna return the pair as RNA, not DNA
+     * @return the pairs of the bases in the strand
+     */
+    public Base[] getPairSeq(boolean rna)
+    {
+        return new Base[]{};
+    }
+    
+    /**
+     * Gets the base sequence paired to the strand.
+     * 
+     * If the strand is DNA, it returns the other DNA strand (3' -> 5', or 5' -> 3')
+     * If the strand is RNA, it returns the paired RNA strand
+     * 
+     * @return the pairs of the bases in the strand
+     */
+    public Base[] getPairSeq()
+    {
+        return getPairSeq(type == Type.RNA);
+    }
+    
+    /**
+     * Gets a strand that is the pair of the current strand.
+     * 
+     * @param stype The strand type to return (3', 5', or RNA)
+     * @return the Strand of the requested type that has a sequence paired to the current one.
+     */
+    public Strand getPairStrand(Type stype) throws BaseException
+    {
+        return new Strand(stype, getPairSeq(stype == Type.RNA));
+    }
+    
+    /**
+     * Gets a strand that is the pair of the current strand.
+     * 
+     * @param forceRNA Force the pair to RNA if it isn't going to be already
+     * @return the Strand that has a sequence paired to the current one.
+     */
+    public Strand getPairStrand(boolean forceRNA) throws BaseException
+    {
+        Type newType;
+        if (forceRNA)
+        {
+            newType = Type.RNA;
+        }
+        else if (type == Type.RNA)
+        {
+            newType = Type.RNA;
+        }
+        else if (type == Type.THREE_PRIME)
+        {
+            newType = Type.FIVE_PRIME;
+        }
+        else {
+            newType = Type.THREE_PRIME;
+        }
+        return getPairStrand(newType);
+    }
+    
+    /**
+     * Gets a strand that is the pair of the current strand.
+     * 
+     * @return the Strand that has a sequence paired to the current one (DNA->DNA with 3'/5' swap, RNA->RNA).
+     */
+    public Strand getPairStrand() throws BaseException
+    {
+        return getPairStrand(false);
+    }
+    
+    /**
+     * Gets the current strand's reverse (so instead of starting at 3', start at 5', or vice-versa)
+     * 
+     * Note: this does not get the pair, it only reverses the direction.
+     * 
+     * @return the Strand that is the reverse of the current one.
+     */
+    public Strand getReverseStrand() throws BaseException
+    {
+        Type newType;
+        
+        newType = Type.RNA;
+        
+        Base[] rev;
+        rev = new Base[]{};
+        
+        return new Strand(newType, rev);
+    }
+    
+    /**
+     * Generate a substrand of the current strand (works like substring)
+     * 
+     * @param start the index of the base to start the substrand at
+     * @param end the index of the base to end the substrand at (does not include this base)
+     * @return a new Strand that is a substrand of this one, from start to end
+     */
+    public Strand getSubStrand(int start, int end) throws BaseException
+    {
+        Base[] newBases;
+        newBases = new Base[]{};
+        
+        return new Strand(type, newBases);
+    }
+    
+    /**
+     * Generate a substrand of the current strand (works like substring)
+     * 
+     * @param start the index of the base to start the substrand at
+     * @return a new Strand that is a substrand of this one, from start to the end of the strand
+     */
+    public Strand getSubStrand(int start) throws BaseException
+    {
+        return getSubStrand(start, seq.length);
+    }
+    
+    /**
+     * Finds where a given base sequence is within the strand
+     * 
+     * @param subseq the sequence to find
+     * @param startAt the index to start looking at
+     * @return the index in the strand where the subsequence was found, or -1 if it isn't found.
+     */
+    public int find(Base[] subseq, int startAt)
+    {
+        
+        return -1;
+    }
+    
+    /**
+     * Finds where a given base sequence is within the strand
+     * 
+     * @param subseq the sequence to find
+     * @return the index in the strand where the subsequence was found, or -1 if it isn't found.
+     */
+    public int find(Base[] subseq)
+    {
+        return find(subseq, 0);
+    }
+    
+    /**
+     * Finds where a given base sequence is within the strand
+     * 
+     * @param subseq the sequence to find
+     * @param startAt the index to start looking at
+     * @return the index in the strand where the subsequence was found, or -1 if it isn't found.
+     */
+    public int find(Strand subseq, int startAt)
+    {
+        return find(subseq.getSeq(), startAt);
+    }
+    
+    /**
+     * Finds where a given base sequence is within the strand
+     * 
+     * @param subseq the sequence to find
+     * @return the index in the strand where the subsequence was found, or -1 if it isn't found.
+     */
+    public int find(Strand subseq)
+    {
+        return find(subseq.getSeq());
+    }
+    
+    /**
+     * Finds where a given base sequence is within the strand
+     * 
+     * @param subseq the sequence to find
+     * @param startAt the index to start looking at
+     * @return the index in the strand where the subsequence was found, or -1 if it isn't found.
+     */
+    public int find(String[] subseq, int startAt)
+    {
+        return find(stringsToBases(subseq), startAt);
+    }
+    
+    /**
+     * Finds where a given base sequence is within the strand
+     * 
+     * @param subseq the sequence to find
+     * @return the index in the strand where the subsequence was found, or -1 if it isn't found.
+     */
+    public int find(String[] subseq)
+    {
+        return find(subseq, 0);
+    }
+    
+    /**
+     * Finds where a given base sequence is within the strand
+     * 
+     * @param subseq the sequence to find
+     * @param startAt the index to start looking at
+     * @return the index in the strand where the subsequence was found, or -1 if it isn't found.
+     */
+    public int find(String subseq, int startAt)
+    {
+        return find(subseq.split(""), startAt);
+    }
+    
+    /**
+     * Finds where a given base sequence is within the strand
+     * 
+     * @param subseq the sequence to find
+     * @return the index in the strand where the subsequence was found, or -1 if it isn't found.
+     */
+    public int find(String subseq)
+    {
+        return find(subseq, 0);
+    }
+    
+    /**
+     * Finds where a given base sequence is within the strand
+     * 
+     * @param subseq the sequence to find
+     * @param startAt the index to start looking at
+     * @return the index in the strand where the subsequence was found, or -1 if it isn't found.
+     */
+    public int find(Base subseq, int startAt)
+    {
+        return find(new Base[]{subseq}, startAt);
+    }
+    
+    /**
+     * Finds where a given base sequence is within the strand
+     * 
+     * @param subseq the sequence to find
+     * @return the index in the strand where the subsequence was found, or -1 if it isn't found.
+     */
+    public int find(Base subseq)
+    {
+        return find(subseq, 0);
+    }
+    
+    /**
+     * Finds the location of a full codon.
+     * 
+     * Prerequisites: 
+     *      codon is an array of exactly 3 bases
+     *      startAt >= geneStart
+     * 
+     * 
+     * @param codon an array of exactly 3 bases to look for
+     * @param geneStart the index of the strand where the gene starts
+     * @param startAt the index of the strand to start looking for the codon
+     */
+    public int findCodon(Base[] codon, int geneStart, int startAt)
+    {
+        if (codon.length != 3)
+        {
+            return -1;
+        }
+        
+        
+        return -1;
+    }
+    
+    /**
+     * Finds the location of a full codon.
+     * 
+     * Prerequisites: 
+     *      codon is an array of exactly 3 bases.
+     * 
+     * 
+     * @param codon an array of exactly 3 bases to look for
+     * @param geneStart the index of the strand where the gene starts
+     */
+    public int findCodon(Base[] codon, int geneStart)
+    {
+        return findCodon(codon, geneStart, geneStart);
+    }
+    
+    /**
+     * Finds the location of a full codon.
+     * 
+     * Prerequisites: 
+     *      codon is an array of exactly 3 bases.
+     *      startAt >= geneStart
+     * 
+     * 
+     * @param codon an array of exactly 3 bases to look for
+     * @param geneStart the index of the strand where the gene starts
+     * @param startAt the index of the strand to start looking for the codon
+     */
+    public int findCodon(String[] codon, int geneStart, int startAt)
+    {
+        return findCodon(stringsToBases(codon), geneStart, startAt);
+    }
+    
+    /**
+     * Finds the location of a full codon.
+     * 
+     * Prerequisites: 
+     *      codon is an array of exactly 3 bases.
+     * 
+     * 
+     * @param codon an array of exactly 3 bases to look for
+     * @param geneStart the index of the strand where the gene starts
+     */
+    public int findCodon(String[] codon, int geneStart)
+    {
+        return findCodon(codon, geneStart, geneStart);
+    }
+    
+    /**
+     * Finds the location of a full codon.
+     * 
+     * Prerequisites: 
+     *      codon is a String of exactly 3 bases.
+     *      startAt >= geneStart
+     * 
+     * 
+     * @param codon a String of exactly 3 bases to look for
+     * @param geneStart the index of the strand where the gene starts
+     * @param startAt the index of the strand to start looking for the codon
+     */
+    public int findCodon(String codon, int geneStart, int startAt)
+    {
+        return findCodon(codon.split(""), geneStart, startAt);
+    }
+    
+    /**
+     * Finds the location of a full codon.
+     * 
+     * Prerequisites: 
+     *      codon is a String of exactly 3 bases.
+     * 
+     * @param codon a String of exactly 3 bases to look for
+     * @param geneStart the index of the strand where the gene starts
+     */
+    public int findCodon(String codon, int geneStart)
+    {
+        return findCodon(codon, geneStart, geneStart);
+    }
+    
+    /**
+     * Finds the location of the next start codon ATG
+     * 
+     * Prerequisites: the strand should be in 5' orientation.
+     * 
+     * Note: This could find spurious starts if asked to start in
+     * the middle of another gene.
+     * 
+     * @param startAt the location in the sequence to start looking
+     * @return the index of the A in the ATG sequence, or -1 if not found
+     */
+    public int findGeneStart(int startAt)
+    {
+        return -1;
+    }
+    
+    /**
+     * Finds the location of the next start codon ATG
+     * 
+     * Prerequisites: the strand should be in 5' orientation.
+     * 
+     * Note: This could find spurious starts if asked to start in
+     * the middle of another gene.
+     * 
+     * @return the index of the A in the ATG sequence, or -1 if not found
+     */
+    public int findGeneStart()
+    {
+        return findGeneStart(0);
+    }
+    
+    /**
+     * Finds the location of the next stop codon (TGA/TAA/TAG) after
+     * the start of the gene.
+     * 
+     * Prerequisites: the strand should be in 5' orientation.
+     * 
+     * @param geneStart the index of the start of the gene to consider
+     * @return the index of the T in the stop codon, or -1 if not found
+     * 
+     */
+    public int findGeneStop(int geneStart)
+    {
+        return -1;
+    }
+    
+    /**
+     * Generate a string representation of the strand.
+     * 
+     * The representation is memoized.
+     * 
+     */
+    public String toString()
+    {
+        if (stringRep == null)
+        {
+            StringBuilder sb = new StringBuilder();
+            switch (type)
+            {
+                case THREE_PRIME:
+                    sb.append("DNA 3'-");
+                    break;
+                case FIVE_PRIME:
+                    sb.append("DNA 5'-");
+                    break;
+                case RNA:
+                    sb.append("RNA ");
+                    break;
+            }
+            
+            for (int i = 0; i < seq.length; i++)
+            {
+                sb.append(seq[i]); 
+            }
+            
+            switch (type)
+            {
+                case THREE_PRIME:
+                    sb.append("-5'");
+                    break;
+                case FIVE_PRIME:
+                    sb.append("-3'");
+                    break;
+            }
+            
+            stringRep = sb.toString();
+        }
+        
+        return stringRep;
+    }
+    
+}

@@ -1,0 +1,66 @@
+
+/**
+ * ##### # ########### ## ##### ############# ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class CartaoCliente
+{   
+    private int valTotal,pontos,vbonus;
+    private String nome,codigoC;
+    public int bonus;
+    bonus=1;
+    
+    public CartaoCliente(int pts,int vt,String cod,String nm,int vb){
+        this.valTotal=vt;
+        this.pontos=pts;
+        this.vbonus=vb;
+        this.nome=nm;
+        this.codigoC=cod;
+}
+    public CartaoCliente(){
+        this(0,0,"","",0);
+    }
+    public CartaoCliente(CartaoCliente c){
+        this.valTotal=c.getValTotal();
+        this.pontos=c.getPontos();
+        this.vbonus=c.getValorBonus();
+        this.nome=c.getNome();
+        this.codigoC=c.getCodigoC();
+    }
+    
+    public int getValTotal(){return valTotal;}
+    public int getPontos(){return pontos;}
+    public String getNome(){return nome;}
+    public String getCodigoC(){return codigoC;}
+    public int getValorBonus(){return vbonus;}
+   
+
+    public void descontar(int menu){
+        if(menu==1&&pontos>=10) this.pontos-=10;
+        if(menu==2&&pontos>=20) this.pontos-=20;
+    }
+    
+    public void setNome(String nome){
+        this.nome=nome;}
+        
+    public void setValorBonus(int valorBonus){
+        this.vbonus=valorBonus;}
+        
+    public void descarregarPontos(CartaoCliente cartao){
+        this.valTotal+=cartao.getValTotal();
+        this.pontos=cartao.getPontos();
+        this.vbonus+=cartao.getValorBonus();
+    }
+    
+    public void efectuarCompra(double valor){
+        if(valor<=5) {this.pontos++;this.valTotal+=valor;this.vbonus+=pontos;}
+        if(valor>5&&valor<=20) {this.pontos+=2;this.valTotal+=valor;this.vbonus+=pontos;}
+        if(valor>20) {this.pontos+=10;this.valTotal+=valor;this.vbonus+=pontos;}
+        if(this.pontos>=this.vbonus) {this.pontos+=10;}
+    }
+}
+    
+    
+    

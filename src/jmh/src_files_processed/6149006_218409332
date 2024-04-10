@@ -1,0 +1,187 @@
+/** 
+ * ####### #### ### ##### ####### # (###### ####).
+ * ### ########## ##### ######## ## ##### #### ##### 
+ * ####### #### ######## ## #### ### #### ## ########.
+ * ####### ## #. #######.
+ * ######## ## <#### #### ####.>
+ */
+public class SmartArray {
+    private Integer[] myList;
+
+    public SmartArray(int size){
+        myList = new Integer[size];
+        this.init();
+    }
+
+    /**
+     * Fills the array with random numbers between
+     * the size of the array divided by 10 and the size-1.
+     * For example, an array of size 10 could hold numbers
+     * from 1 to 9, and an array of size 100 could hold
+     * numbers from 10 to 99. 
+     */
+    
+    public void init(){
+        java.util.Random numberGenerator = 
+            new java.util.Random();
+        int minVal = myList.length/10; 
+        int maxVal = myList.length -1;
+        int range = maxVal - minVal + 1;
+        for (int i = 0; i < myList.length; i++) {
+            myList[i] = new Integer(
+                numberGenerator.nextInt(range)+minVal);
+        }
+    }
+
+    public void bubbleSort(){
+        int pos, scan;
+        int temp;
+        for (pos = myList.length-1; pos >= 0; pos--){
+            for (scan = 0; scan < pos; scan++){
+                if (myList[scan] > myList[scan+1]){
+                    temp = myList[scan];
+                    myList[scan] = myList[scan+1];
+                    myList[scan+1] = temp;
+                }
+            }
+        }
+    }
+
+    public void insertionSort(){
+        for (int i=1; i < myList.length; i++) {
+            int key = myList[i];
+            int pos = i;
+            while (pos > 0 && myList[pos-1] > key) {
+                myList[pos] = myList[pos-1];
+                pos--;
+            }
+            myList[pos] = key;
+        }
+    }
+
+    public void mergeSort()
+    {
+        mergeSort(0, myList.length-1);
+    }
+    
+    public void mergeSort(int min, int max)
+    {
+    int left;
+    int right;
+    int temp;
+    /**this method checks to make sure the list does not hold just one number
+    if so the program is to (via the return statement) return the value */
+    
+    if (min == max)
+    return;
+    
+    int size = min - max + 1;
+    int pivot = (min + max) / 2;
+    
+
+    mergeSort(min, pivot); 
+    mergeSort(pivot + 1, max); 
+    
+    /**this next process copies the sorted data into the workspace. This "for loop" provides
+       the mechanism to take the two lists (left and right) and be able to (via code) merges the two list) 
+       place them into a temporary "mylist" with an index of "I" */
+    
+       for (int i=0; i < size; i++)
+       temp = myList[min + i];
+    
+    /**the code below merges the two sorted lists (left and right) */
+    
+    left = 0;
+    right = pivot - min + 1;
+    
+    for (int i = 0; i < size; i++)
+    {
+        if (right <= max - min)
+            if (left <= pivot - min) 
+                if (left > right)  
+                myList[i + min] = myList[right++];
+                else
+                myList[i + min] = myList[left++];
+            else
+            myList[i + min] = [right++];
+        else
+        myList[i + min] = myList[left++];
+    }
+    }
+    
+    public void quickSort(){
+        quicksortHelper(0, myList.length-1);
+    }
+    
+    private void quicksortHelper(int min, int max){
+        if (min < max) {
+            int partitionIndex = partition(min, max);
+            quicksortHelper(min, partitionIndex-1);
+            quicksortHelper(partitionIndex+1, max);
+        }
+    }
+    
+    private int partition (int min, int max){
+        int partitionValue;
+        int left, right;
+        int mid = (min+max)/2;
+
+        
+        partitionValue = myList[mid];
+        
+        int temp = myList[min];
+        myList[min] = myList[mid];
+        myList[mid] = temp;
+
+        left = min; 
+        right = max;
+        while (left < right) {
+            while (left < right && myList[left] <= partitionValue){
+                left++;
+            }
+            while (myList[right] > partitionValue){
+                right--;
+            }
+            if (left < right) {
+                temp = myList[left];
+                myList[left] = myList[right];
+                myList[right] = temp;
+            }
+        }
+        temp = myList[min];
+        myList[min] = myList[right];
+        myList[right] = temp;
+        return right;
+    }
+       
+    public void selectionSort(){
+        int min, temp;
+        for (int i=0; i < myList.length-1; i++) {
+            min = i; 
+            for (int scan = i+1; scan < myList.length; scan++){
+                if (myList[scan] < myList[min]) {
+                    min = scan;
+                }
+            }
+            temp = myList[i];
+            myList[i] = myList[min];
+            myList[min] = temp;
+        }
+    }
+
+        public SmartArray clone() {
+            SmartArray temp = new SmartArray(myList.length);
+        for (int i = 0; i < myList.length; i++){
+            temp.myList[i] = this.myList[i];
+        }
+        return temp;
+    }
+
+    public String toString(){
+        String result = "";
+        for (int i = 0; i < myList.length; i++){
+            result += myList[i].toString() + " ";
+        }
+        return result;
+    }
+}

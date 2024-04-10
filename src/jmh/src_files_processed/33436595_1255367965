@@ -1,0 +1,56 @@
+
+import java.awt.Color;
+
+import ihs.apcs.spacebattle.*;
+import ihs.apcs.spacebattle.commands.*;
+
+/**
+ * ####### '#####' #### ### ##### ########## #### ## ####.
+ * 
+ * 
+ *
+ */
+public class MyThirdShip extends BasicSpaceship {
+    private int current = -1;
+    private Point midpoint;
+    private int width;
+    private int height;
+    private Point mid;
+    
+    public static void main(String[] args) {
+        TextClient.run("10.136.35.81", new MyThirdShip());   
+      
+    }
+    
+    @Override
+    public RegistrationData registerShip(int numImages, int worldWidth, int worldHeight) {
+        this.width = worldWidth / 2;
+        this.height = worldHeight / 2;
+        this.midpoint = new Point (double(width, height));
+        return new RegistrationData("Im Still Lost", new Color(0, 200, 255), 0);
+
+    }
+       
+    @Override
+    public ShipCommand getNextCommand(BasicEnvironment env) {
+         ObjectStatus ship = env.getShipStatus();
+        current++;
+        switch(current)
+        {
+            case 0:
+            Point mP = new Point (midpoint);
+            return new RotateCommand(ship.getPosition().getAngleTo(mP) - ship.getOrientation());
+            case 1:
+            return new ThrustCommand('B',6.0,1.0);
+            case 2:
+            return new IdleCommand(3.0);
+            case 3:
+            current = -1;
+            break;
+            
+       }
+       return new BrakeCommand(0.99);
+    }
+}
+
+

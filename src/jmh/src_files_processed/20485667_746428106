@@ -1,0 +1,229 @@
+public class CharacterSearchTree
+{
+    public CharacterSearchTree(char[] arr)
+    {
+        for(char v : arr)
+        {
+            iterativeAdd(v);
+        }
+    }
+    
+    public void add(char t, int q, String c)
+    {
+        if(isEmpty())
+        {
+            content = new HuffmanTriple(t,q);
+            content.setCode(c);
+            leftChild = new CharacterSearchTree();
+            rightChild = new CharacterSearchTree();
+        }
+        else if (content.getToken() > t)
+        {
+            leftChild.add(t,q,c);
+        }
+        else if (content.getToken() < t)
+        {
+            rightChild.add(t,q,c);
+        }
+        else
+        {
+            for(int i = 0; i <= q; i++)
+            {
+                content.incrementQuantity();
+            }
+            content.setCode(c);
+        }
+    }
+    
+    public void showPreorder()
+    {
+        if(isLeaf())
+        {
+            System.out.print("*");
+        }
+        else
+        {
+            System.out.print(content.toString());
+            leftChild.showPreorder();
+            rightChild.showPreorder();
+        }
+    }
+    
+    public int height()
+    {
+        if(isEmpty())
+        {
+            return 0;
+        }
+        else
+        {
+            int l = leftChild.height();
+            int r = rightChild.height();
+            if(l > r) return l + 1;
+            else if(r > l) return 1 + r;
+            else return 1;
+        }
+    }
+    
+    public int countCharacters()
+    {
+        if(isEmpty())
+        {
+            return 0;
+        }
+        else
+        {
+            return content.getQuantity() + leftChild.countCharacters() + rightChild.countCharacters();
+        }
+    }
+    
+    
+    public int longestCode()
+    {
+        if ( !isEmpty() ) 
+        {
+            int l = leftChild.longestCode();
+            int r = rightChild.longestCode();
+            int max = 0;
+            if ( l > r )
+            {
+                max = l;
+            } else {
+                max = r;
+            }
+            if ( max > content.getCode().length() )
+            {
+                return max;
+            } else {
+                return content.getCode().length();
+            }
+        } else {
+            return 0;
+        }
+    }
+    
+    public HuffmanTriple minimum()
+    {
+        if(!isEmpty())
+        {
+            CharacterSearchTree current = this;
+            while(!current.leftChild.isEmpty())
+            {
+                current = current.leftChild;
+            }
+            return current.getContent();
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
+    public boolean hasCompleteNodes()
+    {
+        if(isEmpty() || isLeaf())
+        {
+            return true;
+        }
+        else
+        {
+            if(!(leftChild.isEmpty() || rightChild.isEmpty()))
+            {
+                return leftChild.hasCompleteNodes() && rightChild.hasCompleteNodes();
+            }
+            else
+            {
+                return false;
+            }
+    }
+    
+    private HuffmanTriple content;
+    private CharacterSearchTree leftChild,rightChild;
+    
+    public CharacterSearchTree()
+    {
+        content = null;
+        leftChild = null;
+        rightChild = null;
+    }
+    
+    public HuffmanTriple getContent()
+    {
+        if(!isEmpty())
+        {
+            return content;
+        }
+        else
+        {
+            throw new RuntimeException();
+        }
+    }
+    
+    public boolean isEmpty()
+    {
+        return content == null;
+    }
+    
+    public boolean isLeaf()
+    {
+        return !isEmpty() && leftChild.isEmpty() && rightChild.isEmpty();
+    }
+    
+
+    public void iterativeAdd( char t )
+      {
+        CharacterSearchTree current = this;
+        while ( !current.isEmpty() && current.content.getToken() != t )
+        {
+            if ( current.content.getToken() > t )
+            {
+                current = current.leftChild;
+            }
+            else
+            {
+                current = current.rightChild;
+            }
+        }
+        if ( current.isEmpty() ) 
+        {
+            current.content = new HuffmanTriple( t );
+            current.leftChild = new CharacterSearchTree();
+            current.rightChild = new CharacterSearchTree();
+        }
+        else
+        {
+            current.content.incrementQuantity();
+        }
+    }
+
+    
+    public int size()
+    {
+        if(isEmpty())
+        {
+            return 0;
+        }
+        else
+        {
+            return 1 + leftChild.size() + rightChild.size();
+        }
+    }
+   
+    public void show()
+    {
+        if(!isEmpty())
+        {
+            leftChild.show();
+            System.out.println(content.toString());
+            rightChild.show();
+        }
+    }
+    
+    /*public void showDetails()
+    {
+        System.out.println("");
+        System.out.println("Tiefe: " + height());
+        System.out.println("Häufigkeit: " + countCharacters());
+    }*/
+    
+}

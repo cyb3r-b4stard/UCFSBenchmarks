@@ -1,0 +1,235 @@
+import java.util.Scanner; 
+/**
+ * #### ##### ##### ### ### ######## ## ### ####
+ * 
+ * @###### (####### #####) 
+ * @####### (##/##/####)
+ */
+public class Game
+{
+    Grid activeGrid;
+    int playerTurn;
+    boolean gameOver = false;
+    
+    /**
+     * Constructor for objects of class Game
+     */
+    public Game()
+    {
+       activeGrid = new Grid();
+       
+       playerTurn = 0;
+    }
+    
+    /**
+     * Main method for project
+     */
+    public static void main(String[] args) 
+    {
+        Game director = new Game();
+        director.mainMenu();
+    }
+    
+    /**
+     * Displays the main menu to the user
+     * 
+     * @param  No parameters
+     * @return None 
+     */
+    public void mainMenu()
+    {
+        int choice;
+        int subChoice;
+        do
+        {
+            do  
+            {
+                clearScreen();
+                
+                System.out.println("Please select from the following choices:");
+                System.out.println("======================================");
+                System.out.println("0 - Exit Program");
+                System.out.println("--------------------------------------");
+                System.out.println("1 - New Game.");
+                System.out.println("2 - TEST CELL.");
+                System.out.println("--------------------------------------");
+                System.out.println("3 - BLANK.");
+                System.out.println("4 - BLANK.");
+                System.out.println("--------------------------------------");
+                System.out.println("5 - BLANK.");
+                System.out.println("--------------------------------------");
+                System.out.println("6 - BLANK.");
+                System.out.println("--------------------------------------");
+                System.out.println("");
+                System.out.print("User selection: ");
+                
+                choice = Genio.getInteger();                
+                if (choice < 0 || choice > 6)
+                {
+                    keyContinue("Please enter a choice as displayed.");
+                }
+                
+            } while (choice < 0 || choice > 6);
+            
+            switch (choice)
+            {
+                case 1: clearScreen();
+                        newGame();
+                        break;
+                        
+                case 2: clearScreen();
+                        activeGrid.initialiseGrid();
+                        activeGrid.displayGrid();
+                        testCell();
+                        break;
+                
+                case 3: 
+                        do 
+                        {
+                            clearScreen();
+                            
+                            System.out.println("Please select from the following choices:");
+                            System.out.println("======================================");
+                            System.out.println("0 - Return to main menu.");
+                            System.out.println("--------------------------------------");
+                            System.out.println("1 - BLANK.");
+                            System.out.println("2 - BLANK.");
+                            System.out.println("--------------------------------------");
+                            System.out.println("");
+                            System.out.print("User selection: ");
+                            
+                            subChoice = Genio.getInteger();
+                            
+                            switch (subChoice)
+                            {
+                                case 1: clearScreen();
+                                        break;
+                                
+                                case 2: clearScreen();
+                                        break;
+                                
+                                case 0: clearScreen();
+                                        break;
+                                
+                                default: keyContinue("The choice you have selected is invalid!");
+                            }
+                        } while (subChoice < 0 || subChoice > 2);
+                        break;
+
+                case 4: clearScreen();
+                        break;                        
+                        
+                case 5: clearScreen();
+                        break;
+                        
+                case 6: clearScreen();
+                        break;                       
+
+                
+                case 0: clearScreen();
+                        System.exit(1);
+                        break;
+                
+                default: keyContinue("The choice you have selected is invalid!");
+            }       
+        } while(choice != 0);
+    }
+
+    /**
+     * Creates a new game
+     * 
+     * @param  No parameters
+     * @return None
+     */
+    public void newGame()
+    {
+        activeGrid.initialiseGrid();
+        activeGrid.displayGrid();
+        
+        playGame(1); 
+    }
+    
+    public void testCell()
+    {
+        int x;
+        int y;
+        int result;
+        
+        System.out.print("Please enter the X cord");
+        x = Genio.getInteger();
+        System.out.print("Please enter the Y cord");
+        y = Genio.getInteger();
+        
+        result = activeGrid.getCell(x, y);
+        System.out.println(result);
+        keyContinue("TEST");
+    }
+    
+    public void playGame(int turn)
+    {
+        String playerMove;
+        boolean validMove;
+        
+        playerTurn = turn;
+        
+        do
+        {
+            
+            System.out.println("Player " +  playerTurn + "'s turn.");
+            System.out.println("Please enter the coordinates of your move choice: ");
+            System.out.print("(Format X/Y): ");
+            playerMove = Genio.getString();
+            
+            if (playerTurn == 1)
+            {
+                playerTurn = 2;
+            }
+            else
+            {
+                playerTurn = 1;
+            }
+            
+            validMove = activeGrid.isValidMove(playerMove, playerTurn);
+            
+            if (validMove)
+            {
+                activeGrid.setCellState(playerTurn
+            }
+            
+            
+            
+            
+        } while (gameOver = false);       
+        
+        
+    }
+        
+     /**
+     * Static method to await user continuation
+     * This method is static so it can be called freely by all classes
+     * 
+     * @param  String message
+     * @return     None
+     */
+    public static void keyContinue(String message)
+    {
+        System.out.println("");
+        System.out.println(message);
+        System.out.println("");
+        System.out.print("Press ENTER to continue");
+        Scanner keyboard = new Scanner(System.in);
+        keyboard.nextLine();      
+    }    
+    
+     /**
+     * Static method to clear the terminal
+     * This method is static so it can be called freely by all classes
+     * 
+     * @param  No parameters
+     * @return     None
+     */
+    public static void clearScreen()
+    {
+        System.out.print('\u000C');        
+    }
+}

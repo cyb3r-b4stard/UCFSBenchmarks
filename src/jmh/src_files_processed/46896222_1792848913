@@ -1,0 +1,215 @@
+
+/**
+ * ###### ### ###### ########## ### #####.
+ * 
+ * @###### ###### #####
+ * @####### ##### ##, ####
+ */
+public class StacksAndQueues
+{
+    /**
+     * Put all items in an array of Strings on to a stack where element at index 0 is the first element pushed onto the stack.  Returns the stack.  Try using a for-each loop in your solution.
+     */
+    public static Stack<String> toStack(String[] array){
+        Stack<String> stack = new Stack<String>();
+        for(String str: array){
+            stack.push(str);
+        }
+        return stack;
+    }
+
+    /**
+     * Put all items in a String array onto a Queue where element at index 0 is the first element enqueued.
+     * Returns the queue.
+     * Try using a for-each loop in your solution.
+     */
+    public static Queue<String> toQueue(String[] array){
+        Queue<String> queue = new Queue<String>();
+        for(String str: array){
+            queue.enqueue(str);
+        }
+        return queue;
+    }
+
+    /**
+     * Reverse the items of a given stack 
+     */
+    public static void reverse(Stack<String> stack){
+        Stack<String> stack2 = new Stack<String>();
+        while (!stack.isEmpty()){
+            stack2.push(stack.pop());
+        }
+    }
+
+    /**
+     * Reverse the items of a given queue
+     */
+    public static void reverse(Queue<String> q){
+        Stack<String> stack = new Stack<String>();
+        Queue<String> q2 = new Queue<String>();
+        while (!q.isEmpty()){
+            stack.push(q.dequeue());
+        }
+        while (!stack.isEmpty()){
+            q2.enqueue(stack.pop());
+        }
+    }
+
+    /**
+     * Duplicates every String on a queue of strings.
+     *For example, if the queue initially contained the strings: "ape", "bug", "car"
+     *the queue should now contain:  "ape", "ape", "bug", "bug", "car", "car"
+     */
+    public static void duplicate(Queue<String> q){
+        String keep = ""; 
+        Queue<String> q2 = new Queue<String>();
+        while (!q.isEmpty()){
+            keep = q.dequeue();
+            q2.enqueue(keep);
+            q2.enqueue(keep);
+        }
+    }
+
+    /**
+     * Create a method that takes a String sequence of left and right
+     * parentheses (), braces {}, and brackets [] from and uses a stack to determine whether the sequence is properly balanced.
+     * For example, your program should return true for [()]{}{[()()]()} and false for [(]).
+     * You must use a stack in your solution.
+     */
+    public static boolean parentheses(String sequence){
+        Stack<String> stack = new Stack<String>();
+        String character = ""; 
+        for (int i = 0; i < sequence.length(); i++){
+            character = sequence.substring(i,i+1);
+            if (character.equals("(") || character.equals("{") || character.equals("[")){
+                stack.push(character);
+            }
+            else if(stack.isEmpty()){
+                return false;
+            }
+            else if((character.equals(")") && stack.peek().equals("(")) || (character.equals("}") && stack.peek().equals("{")) 
+            || (character.equals("]") && stack.peek().equals("["))) {
+                stack.pop();
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Create a method that uses a stack to determine the answer to a String math expression with the in-fix notation 
+     * (also called reverse polish notation).
+     * For example: the expression:  5 + ((2 + 3) * 4) - 1 as infix is:  5 2 3 + 4 * + 1 -  (Answer is 24).
+     * The way infix notation works is by reading tokens from left-to-right (a token is a value or operator e.g. 3, 5, +, etc).
+     * Push tokens one at a time onto a stack.
+     * If the token is an operator, pop the last 2 tokens and perform the operation on them.
+     * The resulting value is pushed onto the stack.
+     * Repeat. If there is one value left, that is the final answer.
+     * You may want to use a private helper method like the following to perform operations
+     * Convert a String to integer by using:  Integer.parseInt(String s)
+     * Convert an integer to String by using: Integer.toString(int i)
+     * infix("5 2 3 + 4 * + 1 -") returns 24.
+     * Assume the expression will only use single-digit integer values.
+     * Each number or operator will be separated by a space.
+     * Also assume that the operators will only be addition (+), subtraction (-), and multiplication(*).
+     */
+    public static int infix(String expression){
+        String[] num = expression.split(" ");
+        Stack<Integer> stack = new Stack<Integer>();
+        for (String str : num){
+            if(str.equals("+") || str.equals("-") || str.equals("*")){
+                stack.push(operate(str,stack.pop(),stack.pop()));
+            }
+            else{
+                stack.push(Integer.parseInt(str));
+            }
+        }
+        System.out.println(stack.peek());
+        return stack.peek();
+    }
+
+    private static int operate(String operator, int a, int b) {   
+        if (operator.equals("+")){
+            return b + a;
+        }
+        else if (operator.equals("-")){
+            return b - a;
+        }
+        else if (operator.equals("*")){
+            return b * a;
+        }
+        return 0;
+    }
+
+    /**
+     * In the game of duck-duck-goose, children in a circle are counted off and every nth child in that circle is eliminated.
+     * This continues until only one child remains.  Use a stack or queue to simulate this game.
+     * In this simulation, each child is given a number as a String starting from 1.
+     * This method takes 2 arguments: m is the number of children in the circle and n is the count number.
+     * Return the number of the last child.  For example, duckDuckGoose(5, 3) returns 4
+     * The game will proceed as follows:
+     * 1 2 3 4 5
+     * 1 2 4 5  (3 is eliminated)
+     * 2 4 5  (Count proceeds as follows: 4 5 1 --> so 1 is eliminated)
+     * 2 4
+     * 4  (Count proceeds back and forth as follows: 2 4 2 --> 2 is eliminated)
+     * You must use a stack and/or queue in your implementation of the solution for this method.
+     */
+    public static int duckDuckGoose(int m, int n){
+        Queue<Integer> queue = new Queue<Integer>();
+        int[] nums = new int[m];
+        for(int i = 1; i <= m; i++){
+            queue.enqueue(i);
+            System.out.println(queue.last.item);
+        }
+        boolean firstcount = false;
+        Queue<Integer>.Node first2 = queue.first;
+        for(int i = 1; i < m; i++){
+            for (int a = 0; a < n; a++){
+                if (firstcount == false){
+                    firstcount = true;
+                    System.out.println(queue.peek());
+                }
+                else if (queue.peek().equals(0)){
+                    queue.first = queue.first.next;
+                    System.out.println(queue.peek());
+                    a--;
+                }
+                else{
+                    if (queue.first.next != null){
+                        queue.first = queue.first.next;
+                        if (!queue.peek().equals(0){
+                            System.out.println(queue.peek());
+                        }
+                    }
+                    else{
+                        queue.first = first2;
+                        if (!queue.peek().equals(0){
+                            System.out.println(queue.peek());
+                        }
+                    }
+                }
+            }
+            queue.first.item = 0;
+        }
+        while (queue.peek().equals(0)){
+            if (queue.first.next != null){
+                queue.first = queue.first.next;
+            }
+            else{
+                queue.first = first2;
+            }
+        }
+        System.out.println(queue.peek());
+        return queue.peek();
+    }
+
+    public static void main(String[] args){
+        String[] arr = {"wow","yep","hi"};
+        Queue<String> queue = new Queue<String>();
+
+        for(String str : arr){
+            queue.enqueue(str);
+        }
+        duckDuckGoose(5,3);
+    }
+}

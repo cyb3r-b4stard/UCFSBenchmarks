@@ -1,0 +1,60 @@
+import java.sql.*;
+public class MeineDBVerbindung
+{
+    Connection con = null;
+    Statement stmt = null;
+    ResultSet rs = null;
+    boolean rs2 = false;
+    
+    public MeineDBVerbindung(){
+        try{
+            Class.forName("com.mysql.jdbc.Driver");
+        }
+        catch (ClassNotFoundException e){
+            e.printStackTrace();
+            System.exit(1);
+        }
+        try{
+            con = DriverManager.getConnection("jdbc:mysql:
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+	public boolean einfugen(String befehl) {
+		try {
+			stmt = con.createStatement();			
+			stmt.execute(befehl);
+			return true;
+		}
+		catch(Exception e) {
+			return false;
+		}
+	}
+	public ResultSet getRs(String befehl) {
+		try {
+			stmt = con.createStatement();			
+			rs = stmt.executeQuery(befehl);
+			return rs;
+		}
+		catch(Exception e) {
+			return null;
+		}
+	}
+	public void beenden(){
+		try{
+			if(rs != null){
+				rs.close();
+			}
+			if(stmt != null){
+				stmt.close();
+			}
+			con.close();
+		}
+		catch(Exception e){
+	    	return;
+			
+		}
+}
+        

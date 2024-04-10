@@ -1,0 +1,210 @@
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Scanner;
+import java.util.ArrayList;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Scanner;
+import java.util.ArrayList;
+
+
+public class CourseHistory
+{
+    private ArrayList<CompletedCourse> courseList;  
+    /*
+     * The constructor for the CourseCatalog class initializes the ArrayList to be empty
+     * and reads courses from the file displaying them on the console. You will be modifying
+     * this constructor so that it adds the courses to the ArrayList instead of displaying
+     * them on the console.
+     */
+    public CourseHistory()
+    {  courseList = new ArrayList<CompletedCourse>();  
+        String department;
+        String courseNumber;
+        String semesterTaken; 
+        String credit;
+        String grade; 
+        String competency;
+        String distArea;
+
+        try
+        {
+            FileReader reader = new FileReader("finishedcourses.txt");
+            Scanner in = new Scanner(reader);
+
+            while(in.hasNextLine())   
+            {  department = in.nextLine();  
+                courseNumber = in.nextLine();
+                semesterTaken = in.nextLine(); 
+                credit = in.nextLine(); 
+                grade = in.nextLine(); 
+                competency = in.nextLine();
+                distArea = in.nextLine();  
+                CompletedCourse theCourse = new CompletedCourse(department, courseNumber, competency, credit,grade, semesterTaken, distArea);
+                courseList.add(theCourse); 
+            }
+            in.close();  
+        } catch (IOException exception)
+        {
+            System.out.println("Error processing file: " + exception);
+        }   
+    }
+
+    public void displayCourseHistory()
+    {
+        System.out.println("Course History");
+        for(int i = 0; i < courseList.size(); i++)
+        {
+            courseList.get(i).displayCourse();
+        }
+    }
+
+    public void summaryReport()
+    {
+        System.out.println("Summary Report");
+        double creditsEarned =0, credits = 0, gpa = 0;
+        for(int i = 0; i < courseList.size(); i++)
+        {
+            credits += courseList.get(i).getCredit();
+            if(courseList.get(i).getGrade() >0 )
+            {
+                creditsEarned += courseList.get(i).getCredit();
+            }
+            gpa += courseList.get(i).getGrade()*courseList.get(i).getCredit();
+        }
+        gpa = (gpa/credits);
+        System.out.println("Total Credits Earned: " +creditsEarned);
+        System.out.println("GPA: "+gpa);
+    }
+
+    public void distAreaReport()
+    {
+        double creditAH = 0, creditSS = 0, creditSM = 0, creditLA = 0;
+        System.out.println("Distribution Area Report");
+        for(int i = 0; i < courseList.size(); i++) 
+        {
+            if(courseList.get(i).getDistArea().equals("AH") && courseList.get(i).getGrade() > 0)
+            {
+                System.out.println(courseList.get(i).getDepartment()+courseList.get(i).getCourseNumber());
+                creditAH += courseList.get(i).getCredit();
+            }
+        }
+        System.out.println("total credits for AH are: "+creditAH);
+        for(int i = 0; i < courseList.size(); i++) 
+            if(courseList.get(i).getDistArea().equals("SS") && courseList.get(i).getGrade() > 0)
+            {
+                System.out.println(courseList.get(i).getDepartment()+courseList.get(i).getCourseNumber());
+                creditSS += courseList.get(i).getCredit(); 
+            }
+        System.out.println("total credits for SS are: "+creditSS);
+        for(int i = 0; i < courseList.size(); i++)  
+            if(courseList.get(i).getDistArea().equals("SM") && courseList.get(i).getGrade() > 0)
+            {
+                System.out.println(courseList.get(i).getDepartment()+courseList.get(i).getCourseNumber());
+                creditSM += courseList.get(i).getCredit();
+            }
+        System.out.println("total credits for SM are: "+creditSM);
+
+        for(int i = 0; i < courseList.size(); i++)  
+            if(courseList.get(i).getDistArea().equals("LA") && courseList.get(i).getGrade() > 0)
+            {
+                System.out.println(courseList.get(i).getDepartment()+courseList.get(i).getCourseNumber());
+                creditLA += courseList.get(i).getCredit(); 
+            }
+        System.out.println("total credits for LA are: "+creditLA);
+    }
+
+    public void compReport()
+    {
+        int w = 0, q = 0, s = 0; 
+        System.out.println("Competency Report");
+        for(int i = 0; i < courseList.size(); i++) 
+        {
+            if(courseList.get(i).getCompetency().equals("W") && courseList.get(i).getCredit() > 0)
+            {
+                w++ ; 
+            }
+            else if (courseList.get(i).getCompetency().equals("Q") && courseList.get(i).getCredit() > 0)
+            {
+                q++;
+            }
+            else if (courseList.get(i).getCompetency().equals("S") && courseList.get(i).getCredit() > 0)
+            {
+                s++;
+            }
+        }
+        if( w >= 1 && s >= 1 && q >= 1) 
+        {
+            System.out.println("All Competencies are Complete");
+        }
+        if( w >= 1 && s >= 1 && q == 0) 
+        {
+            System.out.println("Some Competencies are Complete");
+            System.out.println("W Competency is Complete");
+            System.out.println("S Competency is Complete");
+            System.out.println("Q Competency is Not Complete"); 
+
+        }
+        if( w >= 1 && s == 0 && q >= 1) 
+        {
+            System.out.println("Some Competencies are Complete");
+            System.out.println("W Competency is Complete");
+            System.out.println("S Competency is Not Complete");
+            System.out.println("Q Competency is Complete");   
+        }
+        if( w >= 0 && s>= 1 && q == 1) 
+        {
+            System.out.println("Some Competencies are Complete");
+            System.out.println("W Competency is Not Complete");
+            System.out.println("S Competency is Complete");
+            System.out.println("Q Competency is Complete");   
+        }
+        if( w = 0 && s= 0 && q = 0)
+        {
+            System.out.println("THIS PROGRAM IS FUCKED");
+        }
+    }   
+
+    public void fullReport()
+    {
+        System.out.println("Full Report");
+        summaryReport();
+        distAreaReport();
+        compReport();
+    }
+    
+   public void sortListGPA()
+   {
+       int max;
+    for(int i = 0; i < courseList.size()-1; i++)
+    {
+        max= indexOfMax(i);
+        swap(i, max);
+    }
+    System.out.println();
+   }
+   
+   private int indexOfMax(int start)
+   {
+       int maxindex = start;
+       for(int i=start; i < courseList.size(); i++)
+        if(courseList.get(i).getGrade() > courseList.get(maxindex).getGrade())
+        {
+            maxindex = i; 
+        }
+        return maxindex; 
+   }
+   
+   public void swap(int max, int i)
+   {
+       
+       CompletedCourse temp = courseList.get(i);
+       courseList.set(i,courseList.get(max));
+       courseList.set(max, temp);
+       
+   }
+}
+   
+    
+ 

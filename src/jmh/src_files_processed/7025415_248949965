@@ -1,0 +1,104 @@
+
+/**
+ * ##### # ########### ## ##### #### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+/**
+* #### ##### ## #### ## ####### ######## #### # ###### ##### ######.
+*
+* @###### #### ########
+* @####### #/##/##
+*/
+import java.util.Scanner;
+import java.util.ArrayList;
+public class JaneDoeCipher
+{
+    private ArrayList<Character> newAlphabet = new ArrayList<Character>();
+
+(continue)
+    private ArrayList<Character> alphabet = JaneDoeCipherTester.ALPHABET;
+   
+    /**
+     * Default constructor for this class
+     */
+    public JaneDoeCipher()
+    {   
+    }
+   
+    /**
+     * This method gets user input and uses it with other methods.
+     */
+    public static void getInput()
+    {
+        Scanner in = new Scanner(System.in);
+        createNewAlphabet();
+        final ArrayList<Character> NEW_ALPHABET = newAlphabet;
+        System.out.println("Here is the alphabet being used for encryption:");
+        displayNewAlphabet(NEW_ALPHABET);
+        System.out.print("\nEnter the phrase that will be encrypted: ");
+        String message = in.nextLine();
+        String newMessage = encrypt(message);
+        System.out.println("Here is the encrypted message using the cipher alphabet: ");
+        System.out.println(newMessage + "\n");
+    }
+   
+    /**
+     * This method makes a new method based on the given Caesar Shift.
+     * @return newAlphabet The new alphabet
+     * @param shift The shift number
+     * @param alphabet The english alphabet in uppercase
+     */
+    public static void createNewAlphabet()
+    {
+        int number;
+        int originalSize = alphabet.size();
+        for (int loop = 0; loop < originalSize; loop++)
+        {
+            number = (int)(Math.random() * (alphabet.size()));
+            newAlphabet.add(alphabet.get(number));
+            alphabet.remove(number);
+        }
+
+    }
+   
+    /**
+     * This method displays the newly created alphabet
+     * @param newAlphabet The new alphabet being displayed
+     */
+    public static void displayNewAlphabet(ArrayList<Character> newAlphabet)
+    {
+        for (int loop = 0; loop < newAlphabet.size(); loop++)
+        {
+            System.out.print(newAlphabet.get(loop));
+        }
+    }
+   
+    /**
+     * This method encrypts a message based on the shift entered
+     * @return newMessage The encrypted message
+     * @param message The original message
+     */
+    public static String encrypt(String message)
+    {
+        String upper = message.toUpperCase();
+        String newMessage = "";
+        char newLetter;
+        char letter;
+        int letterPosition;
+        for (int loop = 0; loop < message.length(); loop++)
+        {
+            if(upper.charAt(loop) >= 65 && upper.charAt(loop) <= 90)
+            {
+                letterPosition = alphabet.indexOf(upper.charAt(loop));
+                newMessage += newAlphabet.get(letterPosition);
+            }
+            else
+            {
+                newMessage += upper.charAt(loop);
+            }
+        }     
+        return newMessage;
+    }
+}

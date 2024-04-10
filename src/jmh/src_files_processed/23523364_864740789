@@ -1,0 +1,224 @@
+import java.util.ArrayList;
+/** 
+ * 
+ * #### ####: ###### #####
+ * #### ###: ####### ## ####
+ * #### ###### #######: 
+ * 
+ * 
+ * ########## #. ### ### ####### ### #### ## ##.
+ * 
+ * ######:  #######, #. ### ##. ###### #. #######
+ * #######:  ########
+ * 
+ */
+
+public class Store 
+{
+    private ArrayList<Movie> movies;     
+    private Movie thisMovie;             
+
+    private ArrayList<Customer> customers;  
+    private Customer thisCustomer;
+
+    private int movieKey;
+    private String movieName;
+    private int renterID;
+    private int dueDate;
+    private double price;
+    private int timesRented;
+    private int currentDate = 20130920;
+
+    private int customerKey;
+    private String custName;
+    private String phoneNum;
+    private double outStandingLateFees;
+  
+    private ReadFile reader;
+    
+    /**
+     * Create the store. This means set up the ArrayList for movies.
+     */
+    public Store() 
+    {
+        movies = new ArrayList<Movie>();
+        customers = new ArrayList<Customer>();
+        readFromMovieFile();
+        readFromCustomerFile();
+    }
+
+    /**
+     * .readFromMovieFile.
+     * Read initial movie info from file.
+     */
+    private void readFromMovieFile() 
+    {
+
+        reader = new ReadFile("MovieData.txt");
+
+        reader.setSeparator(",");
+
+        reader.readInputLine();
+
+        while(!reader.eof())        
+        {
+            movieKey = reader.getIntField(1);
+            movieName = reader.getStringField(2);
+            renterID = reader.getIntField(3);
+            dueDate = reader.getIntField(4);
+            price = reader.getDoubleField(5);
+            timesRented = reader.getIntField(6);
+
+            thisMovie = new Movie(movieKey, movieName, renterID, dueDate, price, timesRented);
+
+            movies.add(thisMovie);
+
+            reader.readInputLine();
+        }
+        System.out.println("All movies read from the file and added to the ArrayList");
+    }
+
+    /**
+     *  .printAllMovieInfoForThisMovie.
+     *  Given the index of the array, print all info for this movie
+     */
+    public void printAllMovieInfoForThisMovie(int index)
+    {
+        System.out.println("Movie ID    Movie Name                Cust ID       DueDate");
+        thisMovie = movies.get(index);
+        thisMovie.print();
+    }
+
+    /**
+     * .readFromCustomerFile.
+     * Just like readFromMovieFile
+     */
+    private void readFromCustomerFile() 
+    {
+
+        reader = new ReadFile("CustomerData.txt");
+
+        reader.setSeparator(",");
+
+        reader.readInputLine();
+
+        int numberOfCustomersReadIn = 0;
+
+        while(!reader.eof())        
+        {
+            customerKey = reader.getIntField(1);
+            custName = reader.getStringField(2);
+            phoneNum = reader.getStringField(3);
+            outStandingLateFees = reader.getDoubleField(4);
+
+            thisCustomer = new Customer(customerKey, custName, phoneNum, outStandingLateFees);          
+
+            customers.add(thisCustomer);
+
+            numberOfCustomersReadIn = numberOfCustomersReadIn + 1;
+
+            reader.readInputLine();
+        }
+        System.out.println( numberOfCustomersReadIn + " customers read from the file and added to the ArrayList");
+    }
+
+    /**
+     * .listMoviesWithWhile.
+     * List all movies in the system with a while loop.
+     */ 
+    public void listMoviesWithWhile()
+    {
+        System.out.println("Listing Movies)");
+        int index = 0;
+        while(index < movies.size())
+        {
+            thisMovie = movies.get(index);
+            thisMovie.print();
+
+            index ++;
+        }
+        System.out.println();
+    }
+
+    /**
+     * .listCustomersWithWhile.
+     * List all customers in the system with a while loop.
+     */ 
+    public void listCustomersWithWhile()
+    {
+        System.out.println("Listing Customers");
+        int index = 0;
+        while(index < customers.size())
+        {
+            thisCustomer = customers.get(index);
+            thisCustomer.printCustomerInfo();
+
+            index ++;
+        }
+        System.out.println();
+    }
+
+    /**
+     * .findMovie. returns a movie object if it is found, or null if not
+     */
+    private Movie findMovie(int pMovieID)
+    {
+       for(Movie theMovie: movies)
+       {
+           if(theMovie.getMovieKey() == pMovieID)
+           {
+               return theMovie;
+            }
+        }
+        return null;
+    }
+    
+    
+    
+    /**
+     * .checkOutMovie.
+     * Check Out Movie if all info is valid.
+     */ 
+    public void checkOutMovie(int pCustID, int pMovieID)
+    {
+        /* 
+         * You need to carry out the operations listed in the Assignment G sheet.
+         *
+         */
+        
+        thisMovie = findMovie(pMovieID);
+        if(thisMovie == null)
+        {
+            System.out.println("****Error: MOVIE NOT FOUND!");
+            return;
+        }
+        if(thisMovie.getDueDate() != 0)
+        {
+           System.out.println("Movie is already checked out!");
+           return;
+        }
+        thisCustomer =findCustomer(pCustID)
+        if(thisCustomer == null)
+        {
+            System.out.println("This person does not exist")
+            return;
+        }
+    }
+    
+    
+    /**
+     * .findCustomer. returns a customer object if it is found, or null if not
+     */
+    private Customer findCustomer(int pCustID)
+    {
+       for(Customer theCustomer: customers)
+       {
+           if(theCustomer.getCustKey() == pCustID)
+           {
+               return theCustomer;
+            }
+        }
+        return null;
+    }
+
+}

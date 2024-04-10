@@ -1,0 +1,192 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.Random;
+
+class Game{
+    private static int numberOfPlayers;
+    private static int numberOfAI;
+    
+    private static Dice dice1;
+    private static Dice dice2;
+    
+    private static final int NUMBER_OF_COLUMNS = 5;
+    private static final int AI_BIAS_STANDUP_PERCENTAGE = 40; 
+    
+    private static ArrayList<Player> players;
+    
+    public static void skunk(){        
+        players = new ArrayList<Player>();
+        
+        dice1 = new Dice(6,1);
+        dice2 = new Dice(6,1);
+        
+        System.out.print("Enter the number of human players: ");        
+        numberOfPlayers = getKeyboardInt();
+        for(int i = 0; i < numberOfPlayers; i++){
+            players.add(new Player("player " + (i+1), false, 0 ));
+        }
+        
+        System.out.print("Enter the number of AI players: ");        
+        numberOfAI = getKeyboardInt();
+        Random r = new Random();
+        for(int i = 0; i < numberOfAI; i++){
+            players.add(new Player("AI " + (i+1), true, ));
+        }
+                
+        for(int c = 0; c < NUMBER_OF_COLUMNS; c++){
+            System.out.println();
+            System.out.println("Round " + (c+1) );
+            System.out.println();
+            boolean isFirstRound = true;
+            
+            do{  
+                dice1.roll();
+                dice2.roll();
+                
+                askPlayer();
+                System.out.println("Dice 1: " + dice1.getValue());
+                System.out.println("Dice 2: " + dice2.getValue());
+                
+                if( (dice1.getValue() == 1 || dice2.getValue() == 1) && isFirstRound){
+                    System.out.println("Start round over, a ONE was row on first round");
+                }else if(playerStandingUp()){
+
+                    for(Player p: players){
+                        if(p.getStandUp()){
+                            if(dice1.getValue() != 1 && dice2.getValue() != 1){
+                                p.addColumnScore(dice1.getValue() + dice2.getValue());
+                                isFirstRound = false;
+                            }
+                            else if( (dice1.getValue() == 1) && dice2.getValue() == 1) {
+                                p.resetTotalScore();
+                            }
+                            else if( (dice1.getValue() == 1) || dice2.getValue() == 1){
+                                p.setColumnScore(0);
+                            }
+                        }
+    
+                   }
+                   
+                   if(dice1.getValue() != 1 && dice2.getValue() != 1){
+                        printScoreBoard();
+                   }
+                }
+                 
+            }while( ((dice1.getValue() != 1 && dice2.getValue() != 1) || isFirstRound) && playerStandingUp() );
+            
+            System.out.println(".........................................");
+            System.out.println("Round Over");
+            System.out.println(".........................................");
+            
+            for(Player p: players){
+                p.addTotalScore(p.getColumnScore());
+                p.setStandUp(true);
+                p.setColumnScore(0);
+            }
+            
+            printScoreBoard();
+        }       
+        printWinners();           
+    }
+    
+    private static int getKeyboardInt(){
+        Scanner keyboardScanner = new Scanner(System.in);
+        String  input           = "go";
+        int userNumber = 0;        
+        input = keyboardScanner.nextLine();       
+        Scanner inputScanner = new Scanner(input);
+        
+        if(inputScanner.hasNextInt()){
+            userNumber = inputScanner.nextInt();
+        }
+
+        return userNumber;
+    }
+    
+    private static void askPlayer(){
+        Scanner keyboardScanner = new Scanner(System.in);
+        String  input           = "go";
+        for(Player p: players){           
+            if(p.getStandUp()){ 
+                if(p.getIsAI()){
+                    p.setStandUp(determineIfStand());
+                }
+                else
+                {
+                    do{
+                        System.out.print(p.getName()+", do you want to stand up? Y/N ");
+                        input = keyboardScanner.nextLine();
+
+                        if(input.equalsIgnoreCase("y")){
+                            p.setStandUp(true);
+                        }
+                        else if(input.equalsIgnoreCase("n")) {
+                            p.setStandUp(false);
+                        }
+                        else{
+                            System.out.println("Invalid choice, choose again");
+                        }
+                    }while( !(input.equalsIgnoreCase("y")) && !(input.equalsIgnoreCase("n")));
+                }
+            }
+        }
+    }
+    
+    private static boolean playerStandingUp(){
+        for(Player p: players){
+            if(p.getStandUp()){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private static void printScoreBoard(){
+        
+        System.out.println();
+        System.out.println("Score Board");
+        System.out.println("==========================================");
+        for(Player p : players){
+            System.out.println(p.getName() + " has " + p.getColumnScore() + " points for this column and total score is "+p.getTotalScore());
+        }
+        System.out.println();
+    }
+    
+    private static boolean determineIfStand(){
+        Random r = new Random();
+        int i = r.nextInt(100) + 1;
+        if(i > 100 - AI_BIAS_STANDUP_PERCENTAGE){
+            return true;
+        }
+        else if(i <= 100 - AI_BIAS_STANDUP_PERCENTAGE){
+            return false;
+        }
+        
+        return false;
+    }
+    
+    private static void printWinners(){
+        ArrayList<Player> winners = new ArrayList<Player>();
+        
+        for(Player p: players){
+            if(  (winners.size() == 0)  && (p!= null)){
+                winners.add(p);
+            }else if(p.getTotalScore() == winners.get(0).getTotalScore()){
+                winners.add(p);
+            }else if(p.getTotalScore() > winners.get(0).getTotalScore()){
+                winners = new ArrayList<Player>();
+                winners.add(p);
+            }
+        }
+        
+        if(winners.size() == 1){
+                System.out.println("The winner is:");
+            }else{
+                System.out.println("There are " + winners.size() + " winners and they are:");
+            }
+        
+        for(Player p: winners){
+            System.out.println(p.getName() + " and the score is " + p.getTotalScore());
+        }
+        }
+    }

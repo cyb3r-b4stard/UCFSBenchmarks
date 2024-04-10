@@ -1,0 +1,63 @@
+import java.util.*;
+
+public class Impfstatistik
+{
+    private ArrayList<ImpfEintrag> liste;
+    public Impfstatistik()
+    {
+        liste = new ArrayList<ImpfEintrag>();
+    }
+    
+    public void add(ImpfEintrag einEintrag)
+    {
+        for(int i=0; i<liste.size(); i++)
+        {
+            if(liste.get(i).getPatient().gibName().equals(einEintrag.getPatient().gibName()))
+            {
+                return;
+            }
+        }
+        liste.add(einEintrag);
+    }
+    
+    public double gibNatuerlicheErkrankungsrate()
+    {
+        double krank = 0.0;
+        double ngeimpft = 0.0;
+        for(int i=0; i<liste.size(); i++)
+        {
+            
+              if(!liste.get(i).getGeimpft())
+              {
+                ngeimpft++;
+                if(liste.get(i).getErk())
+               {
+                 krank++;
+               }
+            }
+        }
+        
+        return ngeimpft>0 ? ((krank/ngeimpft)*100) : 0.0;
+    }
+    
+    public boolean impfungSinnvoll()
+    {
+        double g = 0.0;
+        double kn = 0.0;
+        for(int i=0; i<liste.size(); i++)
+        {
+            if(liste.get(i).getGeimpft())
+            {
+                g++;
+                
+                if(liste.get(i).getErk() || liste.get(i).getNebenW() == 2)
+                {
+                    kn++;
+                }
+            }
+        }
+        gibNatuerkucheErkrankungsrate() > ((kn/g)*100);
+        return true;
+    }
+
+}

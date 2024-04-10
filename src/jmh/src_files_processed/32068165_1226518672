@@ -1,0 +1,281 @@
+import java.util.*;
+  /**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+  public class Biblioteca
+  {
+    private ArrayList<Libros> books;
+    private ArrayList<Usuario> users;
+    private ArrayList<Bibliotecario> librarian;
+    private ArrayList<Prestamo> borrow;
+    private ArrayList<Libros> intermedio;
+    
+    
+    
+      /**
+     * Crea una biblioteca
+     */
+       public Biblioteca()
+    {
+        books= new ArrayList<Libros>();
+        users = new ArrayList<Usuario>();
+        librarian = new ArrayList<Bibliotecario>();
+        borrow = new ArrayList<Prestamo>();
+        
+        
+        
+    }
+   
+      /**
+     * Agregar usuarios  a la colecion.
+     * @param user
+     */
+    public void addNewuser(String Nom, String Ape)
+     {
+        Usuario newuser = new Usuario(Nom,Ape, 0);
+        users.add(newuser);
+        int nID = 100 + users.indexOf(newuser);
+        newuser.setid(nID);
+        
+        
+                
+     }
+     
+        /**
+     * Agregar bibiotecarios  a la colecion.
+     * @param librarian
+     */
+    public void addnewlibrarian(String Nom, String Ape)
+     {
+        Bibliotecario newlibrarian = new Bibliotecario(Nom,Ape, 0);
+        librarian.add(newlibrarian);
+        int nID = 10 + librarian.indexOf(newlibrarian);
+        newlibrarian.setid(nID);
+        
+        
+                
+     }
+    
+    /**
+     * List a track from the collection.
+     * @param index The index of the track to be listed.
+     */
+    public void listUsers(int index)
+    {
+        System.out.print("Usuario " + index + ": ");
+        Usuario user = users.get(index);
+        System.out.println(user.getDetails());
+    }
+    
+    /**
+     * Agregar libros a the collection.
+     * @param track The track to be added.
+     */
+    public void addNewbook(String Aut, String Tit, int cop, String isb, String ubi)
+    {
+        int valor=1;
+        Libros newlibro = new Libros(Aut,Tit, cop, isb,ubi );
+        books.add(newlibro);
+        valor= valor % cop;
+       while (valor !=0){
+          Libros newlibro1 = new Libros(Aut,Tit, cop, isb, ubi );
+          books.add(newlibro1);
+          valor = (valor + 1) % cop;        
+       }       
+    }
+    
+      /**
+     * Agregar prestamos a la coleccion.
+     * @param prestamo 
+     */
+    public void addNewborrow(String id_alum, String isb_lib)
+     { 
+        if ((IDbookvalid(isb_lib)) && (IDstudentvalid (id_alum)) && (Checkdisponible("1"))) {
+        Prestamo newborrow = new Prestamo(id_alum, isb_lib);
+        borrow.add(newborrow);
+        newborrow.upgradeID();
+        for(Libros book : books) {
+            int index=;
+            if(book.getisbn().contains(isb_lib)) {
+               book.get(index);
+            }
+            
+        }
+             int index=0;
+            Libros intermed = intermedio.get(index);
+            System.out.println(intermed);
+        }   
+        
+                
+     }
+    
+    /**
+     * Lista todos los libros de un autor.
+     * @param author el nombre del autor.
+     */
+    public void listByAutor(String autor)
+    {
+        for(Libros book : books) {
+            if(book.getAutor().contains(autor)) {
+                System.out.println(book.getDetails());
+            }
+        }
+           }
+    
+    /**
+     * Lista todos los libros de un ISBN.
+     * @param isbn el nombre del autor.
+     */
+    public void listByIsbn(String ID)
+    {
+        for(Libros book : books) {
+            if(book.getisbn().contains(ID)) {
+                System.out.println(book.getDetails());
+            }
+        }
+    }
+    
+    
+     /**
+     * Return the number of tracks in the collection.
+     * @return The number of tracks in the collection.
+     */
+    public int getNumberOfLibros()
+    {
+        return books.size();
+    }
+    
+    /**
+     * Metodo de control... Eliminar
+     * @param index The index of the track to be listed.
+     */
+    public void listLibros(int index)
+    {
+        System.out.print("Libro " + index + ": ");
+        Libros book = books.get(index);
+        System.out.println(book.getDetails());
+    }
+    
+     /** Metodo de Control..Eliminar
+     * Determine whether the given index is valid for the collection.
+     * Print an error message if it is not.
+     * @param index The index to be checked.
+     * @return true if the index is valid, false otherwise.
+     */
+    private boolean indexValid(int index)
+    {
+        boolean valid;
+        
+        if(index < 0) {
+            System.out.println("Index cannot be negative: " + index);
+            valid = false;
+        }
+        else if(index >= books.size()) {
+            System.out.println("Index is too large: " + index);
+            valid = false;
+        }
+        else {
+            valid = true;
+        }
+        return valid;
+    }
+    
+    /** Metodo de control...Eliminar
+     * Lista prestamos de la coleccion.
+     * @param index el indice de los prestamos
+     */
+    public void listPrestamos(int index)
+    {
+        System.out.print("Prestamo " + index + ": ");
+        Prestamo borrows = borrow.get(index);
+        System.out.println(borrows.getDetails());
+    }
+    
+    /**
+     * Comprobador de datos de prestamo.
+     * Print an error message if it is not.
+     * @param estudent ID chequea el id del Libro.
+     * @return true if el ID existe, false otherwise.
+     */
+    private  boolean IDbookvalid(String ID)
+    {
+        boolean valid= true;
+        
+        for(Libros book : books) {
+            if(book.getisbn().contains(ID)) {
+               valid = true;
+               System.out.println("Encontrado ID :"+ID);
+            }
+            else{
+                valid=false;
+                System.out.println("No se ha encontrado ID :"+ID);
+            }     
+        }
+        return valid;
+     }
+     
+     /**
+     * Comprobador de datos de prestamo.
+     * Print an error message if it is not.
+     * @param estudent ID chequea el id del usuario.
+     * @return true if el ID existe, false otherwise.
+     */
+    private  boolean IDstudentvalid(String socio)
+    {
+        boolean valid= true;        
+        for(Usuario user : users) {
+            if(user.getID().contains(socio)) {
+               valid = true;
+               System.out.println("Encontrado ID :"+socio);
+            }
+            else{
+                valid=false;
+                System.out.println("No se ha encontrado ID :"+socio);
+            }     
+        }
+        return valid;
+     }
+     
+     /**
+     * Comprobador de datos de prestamo.
+     * Print an error message if it is not.
+     * @param Si el libro esta disponible.
+     * @return true if el ID existe, false otherwise.
+     */
+    private  boolean Checkdisponible(String available)
+    {
+        boolean valid= true;
+        
+        for(Libros book : books) {
+            if(book.getdisponible().contains(available)) {
+               valid = true;
+               System.out.println("El libro está disponible");
+               System.out.print(available);
+            }
+            else{
+                valid=false;
+                System.out.println("El libro no esta disponible");
+            }     
+        }
+        return valid;
+     }
+     
+    /**
+     * List a track from the collection.
+     * @param index The index of the track to be listed.
+     */
+    public void SetPrestar(int index)
+    {
+        System.out.print("Libro " + index + ": ");
+        Libros book = books.get(index);
+        book.setIndisponible();
+        System.out.println(book.getDetails());
+    }
+        
+    }
+
+    
+     

@@ -1,0 +1,81 @@
+import info.gridworld.actor.*;
+import info.gridworld.grid.*;
+import java.util.ArrayList;
+import java.awt.Color;
+
+public class Square extends Actor{
+    
+    private boolean bomb = false;
+    private boolean acted = false;
+    private ArrayList<Location> sqwrs;
+   
+    public Square(boolean B){
+        bomb = B;      
+    }
+    
+    public boolean isABomb(){
+        return bomb;
+    }
+    
+    public int numBombsAround(){
+        int numbomb = 0;
+        ArrayList<Location> Loc = getOccupiedAdjacentLocations(this.getLocation());
+        for(ArrayList<Location> a: Loc){
+            if( a instanceof Square && ((Square)a).isABomb() )
+            {numbomb++;}
+            if( a instanceof Square){
+                sqwrs.add(a);
+            }
+    }return numbomb;}
+    
+    public void reset(){
+        acted = false;
+    }
+    
+    public boolean alreadyActed(){
+        return acted;
+    }
+    
+    public String toString()  {
+        if(bomb == true){return "It's a trap";}
+        else{return "Nothing to see here";}
+    }
+    
+    public void act(){
+        if(bomb==true){Bomb bertha = new Bomb();
+         bertha.putSelfInGrid(getGrid(),this.getLocation());}
+        if(numBombsAround()==0){Square sq = new Square();
+            sq.putSelfInGrid(getGrid(),this.getLocation());
+            acted=true;
+        }
+        else if(numBombsAround()==1){One a = new One();
+          a.putSelfInGrid(getGrid(),this.getLocation());
+            acted=true;  }
+        else if(numBombsAround()==2){Two a = new Two();
+          a.putSelfInGrid(getGrid(),this.getLocation());
+            acted=true;  }
+        else if(numBombsAround()==3){Three a = new Three();
+          a.putSelfInGrid(getGrid(),this.getLocation());
+            acted=true;  }
+        else if(numBombsAround()==4){Four a = new Four();
+          a.putSelfInGrid(getGrid(),this.getLocation());
+            acted=true;  }
+        else if(numBombsAround()==5){Five) a = new Five();
+          a.putSelfInGrid(getGrid(),this.getLocation());
+            acted=true;  }
+        else if(numBombsAround()==6){Six a = new Six();
+          a.putSelfInGrid(getGrid(),this.getLocation());
+            acted=true;  }
+        else if(numBombsAround()==7){Seven a = new Seven();
+          a.putSelfInGrid(getGrid(),this.getLocation());
+            acted=true;  }
+        else if(numBombsAround()==8){Eigth a = new Eigth();
+          a.putSelfInGrid(getGrid(),this.getLocation());
+            acted=true;  }
+    }
+}
+    
+    
+    
+    
+}

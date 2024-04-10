@@ -1,0 +1,585 @@
+
+/**
+ * # # # # # # #
+ *
+ * #�###### ##### ###### #### ###.
+ * 
+ * @###### (##### ###) 
+ * @####### (### ####)
+ *
+ * (##### #### #########)
+ * (##### ####### ## ########)
+ */
+import java.awt.event.*;
+import javax.swing.*;
+
+import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Random;
+import java.awt.*;
+import java.awt.Color;
+import java.awt.EventQueue;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+public class jump {
+    public static int randInt(int min, int max) {
+
+           Random rand = new Random();
+
+           int randomNum = rand.nextInt((max - min) + 1) + min;
+
+           return randomNum;
+        }
+    public static class Objet{
+        public int x;
+        public int y;
+        public int maxX;
+        public int maxY;
+        
+        public Objet(int i, int j, int width, int height){
+            x=i;
+            y=j;
+            maxX=i+width-1;
+            maxY=j+height-1;
+        }
+        
+        public Objet(Objet deja){
+            x=deja.x;
+            y=deja.y;
+            maxX=deja.maxX;
+            maxY=deja.maxY;
+        }
+    }
+    
+    class GameKeyBindings{
+      public GameKeyBindings(JComponent gp, final Perso joueur) {
+
+        gp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0, false), "LEFT pressed");
+        gp.getActionMap().put("LEFT pressed", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                joueur.left = true;
+            }
+        });
+        gp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0, true), "LEFT released");
+        gp.getActionMap().put("LEFT released", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                joueur.left = false;
+            }
+        });
+        gp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0, false), "RIGHT pressed");
+        gp.getActionMap().put("RIGHT pressed", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                joueur.right=true;
+            }
+        });
+        gp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0, true), "RIGHT released");
+        gp.getActionMap().put("RIGHT released", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                joueur.right = false;
+            }
+        });
+        gp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false), "SPACE pressed");
+        gp.getActionMap().put("SPACE pressed", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {                
+                joueur.jumping=true;    
+            }
+        });
+        gp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_E, 0, true), "E released");
+        gp.getActionMap().put("E released", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                joueur.exit = true;
+            }
+        });
+      }
+    }
+
+    public static class Grid extends JPanel {
+
+        private List<Point> fillCellsBlack;
+        private List<Point> fillCellsYellow;
+        public List<Point> pointsX;
+        public List<Objet> objets;
+        public int totalPoints;
+        
+        
+        public Grid() {
+            fillCellsBlack = new ArrayList<>(500);
+            fillCellsYellow = new ArrayList<>(25);
+            
+            objets = new ArrayList<Objet>(14);
+            totalPoints =0;
+            
+            
+            
+        }
+        public void initObjets(){
+             objets.add(new Objet(10,10,1,500));
+             objets.add(new Objet(410,10,1,500));
+             objets.add(new Objet(10,10,400,1));
+             objets.add(new Objet(10,510,400,1));
+             objets.add(new Objet(10, 478, 70, 10));
+             objets.add(new Objet(10, 288, 70, 10));
+             objets.add(new Objet(200, 478, 70, 10));
+             objets.add(new Objet(90, 438, 70, 10));
+             objets.add(new Objet(170, 398, 70, 10));
+             objets.add(new Objet(190, 358, 40, 10));
+             objets.add(new Objet(40, 378, 60, 10));
+             objets.add(new Objet(90, 328, 60, 10));
+             objets.add(new Objet(220, 328, 45, 10));
+             objets.add(new Objet(245, 288, 45, 10));
+             objets.add(new Objet(290, 255, 45, 10));
+             objets.add(new Objet(360, 223, 50, 10));
+             objets.add(new Objet(40, 190, 250, 10));
+             objets.add(new Objet(10, 150, 40, 10));
+             objets.add(new Objet(10, 110, 30, 10));
+             objets.add(new Objet(10, 70, 20, 10));
+             objets.add(new Objet(10, 41, 10, 5));
+            }
+        
+        @Override
+        protected void paintComponent(Graphics g) {
+            int test=1;
+            super.paintComponent(g);
+            for (Point fillCellBlack : fillCellsBlack) {
+                int cellX = fillCellBlack.x ;
+                int cellY = fillCellBlack.y ;
+                g.setColor(Color.BLUE);
+                g.fillRect(cellX, cellY, 20, 20);
+            }
+            for (Point fillCellYellow : fillCellsYellow) {
+                int cellX = fillCellYellow.x ;
+                int cellY = fillCellYellow.y ;
+                g.setColor(Color.YELLOW);
+                g.fillRect(cellX, cellY, 20, 20);
+            }
+            
+
+            g.setColor(Color.BLACK);
+            addObject(5,5,5,510,g);
+            addObject(410,5,5,510,g);
+            addObject(5,5,410,5,g);
+            addObject(5,510,410,5,g);
+            addObject(10, 478, 70, 10, g);
+            addObject(10, 288, 70, 10, g);
+            addObject(200, 478, 70, 10, g);
+            addObject(90, 438, 70, 10, g);
+            addObject(170, 398, 70, 10, g);
+            addObject(190, 358, 40, 10, g);
+            addObject(40, 378, 60, 10, g);
+            addObject(90, 328, 60, 10, g);
+            addObject(220, 328, 45, 10, g);
+            addObject(245, 288, 45, 10, g);
+            addObject(290, 255, 45, 10, g);
+            addObject(355, 223, 50, 10, g);
+            addObject(40, 190, 250, 10,g);
+            addObject(10, 150, 40, 10,g);
+            addObject(10, 110, 30, 10,g);
+            addObject(10, 70, 20, 10,g);
+            addObject(10, 41, 10, 5,g);
+            
+            g.drawString(Integer.toString(totalPoints,180,570);
+        }
+        
+        public void addObjectFrame(int x, int y, int width, int height, Graphics g){
+            g.drawRect(x, y, width, height);
+            
+            
+            
+        }
+        public void addObject(int x, int y, int width, int height, Graphics g){
+            g.drawRect(x, y, width, height);
+            g.fillRect(x, y, width, height);
+            
+            
+            
+            
+        }
+        
+        public void resetArrays(){
+            fillCellsBlack.clear();
+            fillCellsYellow.clear();
+            
+            
+            
+            }
+        
+        public void fillCellBlack(Perso perso) {
+            
+            fillCellsBlack.add(new Point(perso.x, perso.y));
+            
+            
+        }
+
+        public void fillCellYellow(Perso perso) {
+            
+            fillCellsYellow.add(new Point( perso.x, perso.y));
+            
+        }
+        
+        public void finalRepaint(){
+            repaint();
+        }
+        public Perso addCoin(int creation){
+            int tours=0;
+            int choixDansArray;
+            Perso res;
+            Objet temp;
+            
+            choixDansArray=randInt(5,objets.size()); 
+            temp = objets.get(choixDansArray-1);
+            res= new Perso(((temp.maxX+temp.x)/2)-10, temp.y-45,creation);
+            return res;
+            
+            
+        }
+        
+        
+        public boolean isEmpty(int x, int y, int move, boolean vertical,int posNeg){
+            boolean res = true;
+            for(int i = x; i<x+21;i=i+10){
+                for(int j = y; j<y+move; j=j+posNeg){
+                    for(Point point : pointsX){
+                        if(vertical==true && point.getX()==i && point.getY()==j){
+                            return false;
+                        }else if( vertical==false && point.getX()==j && point.getY()==i){
+                            return false;
+                        }
+                    }
+                }
+            }
+            
+            return res;
+            
+        }
+        public boolean estVide(int x, int y){
+            
+            boolean res = true;
+            
+            for(Point point : pointsX){
+                
+                if(point.getX()==x && point.getY()==y){
+                    res = false;
+                }
+                
+            
+            }
+            
+            if(res==false){
+            System.out.println(res);
+            }
+            
+            
+            return res;
+         }
+        public boolean estVide2(int x, int y){
+             
+             Point point;
+             for(int i=0;i<pointsX.size();i=i+1){
+                 point = new Point(pointsX.get(i));
+                 if(point.getX()== x && point.getY()==y){
+                     return false;
+                    }
+                }
+                return true;
+         }
+        public boolean estVide3(int x, int y){
+            Objet chaque;
+            for(int i=0;i<objets.size();i=i+1){
+                 chaque = new Objet(objets.get(i));
+                 if(chaque.x<= x && chaque.maxX>=x){
+                     if(chaque.y<= y && chaque.maxY>= y){
+                         return false;
+                    }else if(chaque.maxY==y){
+                        return false;
+                    }
+                }else if(chaque.x== x || chaque.maxX==x){
+                    if(chaque.y-5<=y && chaque.maxY+5>=y){
+                        return false;
+                    }
+                }
+                        
+            }
+            return true;
+         }
+        }
+    public static class Perso {
+        
+        public int x;
+        public int y;
+        public int fallingSpeed;
+        public int creation;
+        public boolean left;
+        public boolean right;
+        public boolean jumping;
+        public boolean exit;
+        public boolean falling;
+        public boolean touchePlancher;
+        public int toursEnSaut;
+        public int toursFinal;
+        public Perso(Perso temp){
+            x=temp.x;
+            y=temp.y;
+            fallingSpeed=0;
+            left = false;
+            right = false;
+            jumping = false;
+            exit = false;
+            falling=false;
+            touchePlancher=false;
+            toursEnSaut=0;
+            toursFinal = 0;
+        }
+            
+        public Perso(int i, int j){
+            x= i;
+            y=j;
+            fallingSpeed=0;
+            left = false;
+            right = false;
+            jumping = false;
+            exit = false;
+            falling=false;
+            touchePlancher=false;
+            toursEnSaut=0;
+            toursFinal = 0;
+            
+        }
+        public Perso(int i, int j,int k){
+            x= i;
+            y=j;
+            fallingSpeed=0;
+            left = false;
+            right = false;
+            jumping = false;
+            exit = false;
+            falling=false;
+            touchePlancher=false;
+            toursEnSaut=0;
+            toursFinal = 0;
+            creation=k;
+            
+        }
+        public void gravity(Grid grid){
+            
+            
+            toucherPlancher(grid);
+            if(touchePlancher==false){
+                fall(grid);
+            }
+            if(falling == false && touchePlancher ==true){
+                fallingSpeed=0;
+            }
+            
+        }
+        public void toucherPlancher(Grid grid){
+            touchePlancher=false;
+            
+            for(int i = x; i<=x+20;i=i+10){
+                if(!grid.estVide3(i,y+21)){
+                    
+                
+                        touchePlancher=true;
+                        return;
+                }
+                
+            }
+        }
+       
+        public void fall(Grid grid){
+            int j = y+20;
+            if(fallingSpeed<6){
+            fallingSpeed=(fallingSpeed*2)+1;
+            }else if(fallingSpeed<25){
+                fallingSpeed=fallingSpeed+5;
+            }else if(fallingSpeed>=25){
+                fallingSpeed=fallingSpeed+1;
+            }
+            for( ; j<y+20+fallingSpeed;j=j+1){  
+                for(int i = x; i<=x+20;i=i+10){                    
+                    if(!grid.estVide3(i,j)){
+                        
+                            touchePlancher=true;
+                            falling=false;
+                            jumping=false;
+                            toursEnSaut=0;
+                            y=j-20-1;
+                            return;
+                        }
+                    }                  
+                }
+            
+            falling=true;
+            touchePlancher=false;
+            y=j-21;
+        }
+                
+                
+    
+        public void jump(Grid grid){
+            int j = y;
+            
+              if(toursEnSaut<=11){
+                for( ; j>y-15;j=j-1){ 
+                  for(int i = x; i<=x+21;i=i+10){
+                                     
+                    if(!grid.estVide3(i,j)){                          
+                            y=j+1;
+                            jumping=false;
+                            toursEnSaut=0;
+                            return;
+                        }
+                    }                  
+                
+                }
+                y=j;
+                toursEnSaut=toursEnSaut+1;
+                toucherPlancher(grid);
+              }else if(toursEnSaut>11 || touchePlancher){
+                  jumping=false;
+                  toursEnSaut=0;
+                }
+              
+        }
+          
+       public void mouv(Grid grid){
+           if(left==true && right==false){
+               
+               for(int i=x-1;i>=x-8;i=i-1){
+                   for(int k = y;k<=y+20;k=k+1){
+                       
+                     if(!grid.estVide3(i,k)){
+                       x=i+1;
+                       return;
+                      }else if(grid.estVide3(i,k) && i<=x-8){
+                        x=i;
+                        return;
+                     }
+                }
+                   
+                }
+            }else if(right == true && left ==false){
+               
+               for(int j=x+21;j<=x+29;j=j+1){
+                   for(int l=y; l<y+20;l=l+1){
+                   if(!grid.estVide3(j,l)){
+                       x=j-21;
+                       return;
+                    }else if(grid.estVide3(j,l) && j>=x+29){
+                        x=j-20;
+                        return;
+                    }
+                }
+                   
+                }
+               
+               
+            }
+        }
+    }
+    
+    public void clearScreen()
+      {
+         System.out.print('\u000C');
+      }  
+    public void initBindings(Grid grid, Perso joueur){
+        GameKeyBindings gameKeyBindings = new GameKeyBindings(grid, joueur);
+    }
+      
+    public static void main( String[] args) throws IOException{
+        jump jumpjump;
+        jumpjump = new jump();
+        Grid grid = new Grid();
+        grid.initObjets();
+        Perso joueur = new Perso(200,490);
+        Perso coin = new Perso(grid.addCoin(0));
+        
+
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+        }
+        
+        int tours = 0;
+
+        
+        JFrame window = new JFrame();
+        
+        
+        
+        window.setSize(420, 600);
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+        window.add(grid);
+        
+        
+        
+        window.setVisible(true);
+        jumpjump.initBindings(grid, joueur);
+        
+        try {
+                Thread.sleep(500);
+             } catch(InterruptedException ex) {
+                Thread.currentThread().interrupt();
+             }
+        
+        while(joueur.exit != true)
+        {
+            if(tours%200==0 || tours%150==0){
+                coin = new Perso (grid.addCoin(tours));
+            }
+                
+                
+            grid.fillCellBlack(joueur);
+            grid.fillCellYellow(coin);
+            
+            if(joueur.jumping == true){
+                joueur.jump(grid);
+            }
+            
+            joueur.gravity(grid);
+            coin.gravity(grid);
+            joueur.mouv(grid);
+            tours = tours + 1;
+            
+            try {
+                Thread.sleep(40);
+             } catch(InterruptedException ex) {
+                Thread.currentThread().interrupt();
+             }
+             if(((joueur.x<= coin.x && joueur.x+20> coin.x) ||
+                 (joueur.x<= coin.x+20 && joueur.x+20> coin.x+20)) &&
+                ((joueur.y<= coin.y && joueur.y+20>=coin.y) ||
+                 (joueur.y<= coin.y+20 && joueur.y+20>=coin.y+20))){
+                     grid.totalPoints = grid.totalPoints + (tours-coin.creation);
+                     coin.x=-70;
+             }
+             
+             
+             
+            grid.resetArrays();
+            grid.repaint();
+        }
+        
+        
+    
+    
+
+    
+    }
+  }
+    
+  

@@ -1,0 +1,148 @@
+import java.util.Calendar;
+import java.util.Scanner;
+
+public class InvoiceCreator
+{
+    private static final String COMPANY_NAME = "Quality Employment Agency";
+    private static final String COMPANY_PAYABLE_NAME = "Quality Employees Inc.";
+    private static final String COMPANY_ADDRESS1 = "10 Sixth Road";
+    private static final String COMPANY_ADDRESS2 = "Lodgate";
+    private static final String COMPANY_POSTCODE = "LO15 9EE";
+    private static final String COMPANY_SLOGAN = "Quality Employment Agency: where quality comes first";
+    private static Scanner in;
+
+    public static void main(String[] args) 
+    {
+        InvoiceCreator.create();
+    }
+
+    public static void create() 
+    {
+        in = new Scanner(System.in);
+        String name = getFromUser("name of company to invoice"); 				
+        String address = getAddress();										
+        String breakdownOfCosts = "";
+        int totalHours = 0;
+        int totalOwing = 0;
+        boolean keepGoing=true;
+        while(keepGoing)
+        {
+            String jobTitle = getFromUser("job title"); 						
+            int hourlyRate = getIntFromUser("hourly rate for " + jobTitle); 	
+            int hours = getIntFromUser("hours worked for " + jobTitle);	
+            breakdownOfCosts += addEmployeeToInvoice(jobTitle, hourlyRate, hours);
+            totalHours += hours;
+            totalOwing += (hourlyRate * hours);
+            in.nextLine();
+            String more =getFromUser("Add another user Yes/No");
+            if (more.trim().toLowerCase().startsWith("n")) 
+            {
+                keepGoing=false;
+            } 
+        }
+        printInvoice(name, address, totalHours, totalOwing, breakdownOfCosts);
+        in.close();
+    }
+
+    private static String addEmployeeToInvoice(String jobTitle, int hourlyRate, int hours) 
+    {
+        return String.format("%-25s\t£%d\t\t%d\t\t£%d%n", jobTitle, hourlyRate, hours, hourlyRate *hours);
+    }
+
+    private static void printInvoice(String name, String address, int totalHours, int totalBeforeVat, String breakdownOfCosts) {
+        int vat = 0;
+        int totalWithVat = 0;
+        vat = getVat(totalBeforeVat); 		 							
+        totalWithVat = addVat(totalBeforeVat); 							
+        String s = String.format("\t\t\t%s%n%n%n", COMPANY_NAME);
+        s += String.format("INVOICE%n%n%s%n%n", getTodaysDate());
+        s += String.format("%s%n%s%n%s%n%s%n%n", COMPANY_NAME, COMPANY_ADDRESS1, COMPANY_ADDRESS2, COMPANY_POSTCODE);
+        s += String.format("TO%n%s%n%s%n%n", name, address);
+        s += String.format("JOB TITLE\t\t\tHOURLY RATE\tHOURS WORKED\tAMOUNT%n%s%n",breakdownOfCosts);
+        s += String.format("Total Hours\t\t\t\t\t\t\t%d%n", totalHours);
+        s += String.format("Total Before VAT\t\t\t\t\t\t£%d%n", totalBeforeVat);
+        s += String.format("VAT @ 20%%\t\t\t\t\t\t\t£%d%n%n", vat);
+        s += String.format("==========================================================================%n","");
+        s += String.format("TOTAL PAYABLE\t\t\t\t\t\t\t£%d%n", totalWithVat);
+        s += String.format("==========================================================================%n%n%n","");
+        s += String.format("DETAILS%nSee attached time sheets.%n%n%nPAYMENT%nMake all cheques payable to %s%n", COMPANY_PAYABLE_NAME);
+        s += String.format("Total due in 30 days from date of invoice.%n%n%nThe total payment of £%d is due on or before %s.%n%n%n", totalWithVat, getDateIn30Days());										
+        s += String.format("Thank you for your custom.%n%n%n\t\t%s", COMPANY_SLOGAN);
+
+        System.out.println(s);
+    }
+
+    private static String getTodaysDate() 
+    {
+        Calendar today = Calendar.getInstance();
+        return String.format("%1$te/%1$tm/%1$ty", today);
+    }
+
+    public static String getFromUser(String x)
+    {
+        System.out.println(x);
+        String b=in.nextLine();
+        return b;
+    }
+
+    public static String getAddress()
+    {
+            System.out.println("Please Enter Address Line 1");
+            String a = in.nextLine();
+            if (a.isEmpty());
+            do
+            {
+                System.out.println("Please Enter Address Line 1 again"); 
+                a= in.nextLine();
+            }
+            while(a.isEmpty()); 
+            System.out.println("Please Enter Address Line 2");
+            String b = in.nextLine();
+            if (b.isEmpty()) 
+                return a; 
+
+            System.out.println("Please Enter Address Line 3");
+            String c= in.nextLine(); 
+            if (c.isEmpty())  
+                return a + "\n" + b; 
+            else 
+                return (a + "\n" +b+ "\n" +c);
+    }
+
+    public static int getIntFromUser(String x)
+    {
+        System.out.println(x);
+        int a=in.nextInt();
+        return a;
+    }
+
+    public static int getVat(int a)
+    {
+        return (a*20)/100;
+    }
+
+    public static int addVat(int b)
+    {
+        return (b*20)/100+b;
+    }
+
+    public static String getDateIn30Days()
+    {
+        String x="";
+        return x;
+    }
+    
+    public static void meth()
+    {
+     String str="";
+     int x=str.length();
+     char ch=str.charAt(0);
+     Character.toUpperCase(ch);
+     for(int i=0;i<x;i++)
+     {
+        if(str.charAt(i)==" ")
+        }
+    }
+
+}
+

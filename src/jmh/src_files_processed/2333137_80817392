@@ -1,0 +1,89 @@
+
+import sum.kern.*;
+/**
+ * @###### 
+ * @####### 
+ */
+public class Buschprogramm
+{
+    Bildschirm derBildschirm;
+    Stift meinStift;
+
+    public Buschprogramm()
+    {
+        derBildschirm = new Bildschirm();
+        meinStift = new Stift();
+    }
+
+    public void fuehreAus()
+    {
+        meinStift.bewegeBis(1000, 800);
+        meinStift.dreheBis(90);
+	    baum(128, 30);
+        meinStift.gibFrei();
+        derBildschirm.gibFrei();
+        
+        
+    }
+    
+    private void baum(int x, int a)
+    {
+        if(x <= 16)
+        {
+            return;
+        }
+        meinStift.runter();
+        linie1(x, a);
+        baum(x/2, a);
+        back(x);
+        linie2(x, a);
+        baum(x/2, a);
+        
+    }
+    
+    private void wait(int millis)
+    {
+        try
+        {
+            Thread.sleep(millis);
+        }
+        catch(Exception e)
+        {
+        }
+    }
+    
+    private void linie1(int x, int a)
+    {
+       System.out.println("linie1 x =" + x + " a=" + a); 
+       wait(500);
+       meinStift.dreheUm((a/2));
+       meinStift.bewegeUm(x);
+
+      
+       
+       
+       
+       
+        
+       
+        
+    }
+    
+    private void linie2(int x, int a)
+    {
+       System.out.println("linie2 x =" + x + " a=" + a); 
+       wait(500);
+       meinStift.dreheUm(-a);
+       meinStift.bewegeUm(x);
+       /meinStift.dreheUm(+(a/2));
+       
+        
+    }
+    
+    private void back(int x, int a)
+    {
+        System.out.println("back x =" + x); 
+        wait(500);
+        meinStift.bewegeUm(-x);
+    }
+}

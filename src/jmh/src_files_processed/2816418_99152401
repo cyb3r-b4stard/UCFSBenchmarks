@@ -1,0 +1,104 @@
+/**
+ * #### ### ### #### ## ### ## # #### ####### ## ### ### ## ######## ### ##### ## ###### ####### ##### # ## ###
+ * ######## # ###### ## ### ##### ## ## ## # #### ## # ######## ###### ######## ## ## ######### ##### ### #### #### ### ######/##### ###
+ * #### # ##### ## ######### #### ####### ### #### # ###### ## ### ##.
+ * 
+ * @###### (####### #######, #### ########) 
+ * @####### (##/#/####)
+ */
+import java.util.Scanner;
+import java.util.ArrayList;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.Timer;
+public class ArrayViewer extends JFrame implements ActionListener
+{
+    public static void main(String[] args)
+    {ArrayViewer a=new ArrayViewer();}
+    static int state=0;
+    static int size=0;
+    static int[] array;
+    static ArrayComponent arrayGraph;
+    JTextArea display=new JTextArea(1,20);
+    
+    JButton reset= new JButton("Reset");
+    JButton insert= new JButton("Insertion Sort");
+    JButton selecSort= new JButton("Selection Sort");
+    JButton binSearch= new JButton("Binary Search");
+    JButton linSearch= new JButton("Linear Search");
+    JButton[] button={reset,insert,selecSort,binSearch,linSearch};
+    ArrayViewer()
+    {
+        Scanner in=new Scanner(System.in);
+
+        System.out.print("Enter the size of the array: ");
+        size=in.nextInt();
+
+        JFrame frame=new JFrame("ArrayGraph");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize((size*10)+35,400);
+        
+        JPanel myPanel= new JPanel();
+        myPanel.setLayout(null);
+        
+        array=ArrayUtil.randomIntArray(size,200);
+        arrayGraph=new ArrayComponent(array);
+        
+        frame.add(arrayGraph);
+        frame.setVisible(true);
+        
+        display.setSize(150,15);
+        display.setLocation(10,220);
+        myPanel.add(display);
+        for(int i=0;i<5;i++)
+        {
+            button[i].setSize(150,15);
+            button[i].setLocation(10,250+20*i);
+            button[i].addActionListener(this);
+            myPanel.add(button[i]);
+        }
+        frame.add(myPanel);
+        frame.setVisible(true);
+    }
+    
+    public void disableBtn(){for(int i=0;i<5;i++){button[i].setEnabled(false);}}
+    public void enableBtn(){for(int i=0;i<5;i++){button[i].setEnabled(true);}}
+    
+    public void actionPerformed(ActionEvent e)
+    {
+        class TimerListener implements ActionListener
+        {
+            int index=0;
+            double value=0;
+            boolean found=false;
+            int half=array.length/2;
+            int x=0;
+            int y=0;
+            ArrayList<Integer> storage = new ArrayList<Integer>();
+            public void actionPerformed(ActionEvent event)
+            {
+                switch(state){
+                    case 1: break;
+                    case 2: arrayGraph.highlight(x); break;
+                    case 3: break;
+                    case 4: break;
+                    case 5: arrayGraph.highlight(x); if(x<array.length){if(array[x]==Double.parseDouble(display.getText())){storage.add(x);} arrayGraph.highlight(storage);} if(x==(array.length)-1){enableBtn(); arrayGraph.clearSingles();} x++; break;
+                    default: System.out.println("ERROR");
+                }
+            }
+        }
+        ActionListener listener=new TimerListener();
+        final int DELAY=500;
+        Timer t=new Timer(DELAY,listener);
+        
+        if(e.getSource()==reset){state=1; array=ArrayUtil.randomIntArray(size,200); arrayGraph.renew(array);}
+        if(e.getSource()==insert){state=2; t.start(); disableBtn();}
+        if(e.getSource()==selecSort){state=3; t.start(); disableBtn();}
+        if(e.getSource()==binSearch){state=4; t.start(); disableBtn();}
+        if(e.getSource()==linSearch){state=5; t.start(); disableBtn();}
+    }
+    
+    public int binary()
+    {x=array.length/2; if(array[x]>Double.parseDouble(display.getText())){}else if(array[x]<Double.parseDouble(display.getText()))else{arrayGraph.highlight(x);}}
+}

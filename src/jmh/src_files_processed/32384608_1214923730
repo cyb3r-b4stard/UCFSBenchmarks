@@ -1,0 +1,86 @@
+
+/* #### ### #### ### ##########
+ * ####:
+ * ########:
+ * ##:
+ */
+
+import ecs100.*;
+import java.util.*;
+import java.io.*;
+import java.awt.Color;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import javax.swing.JColorChooser;
+
+/** ############## ###### ### #### ## ####, #######, ######, ### #### ## ##### ## # ###### ## ####.
+ *  ### ####### ###### #######
+ *  - ####, ######, ####. (####)
+ *  - ########## ########## (####)
+ *  - ########## #### ### ## ###### ########. (####)
+ *  - #####  (####)
+ *  - ####&####  (####)
+ *  - #### (### ######)  (####)
+ * 
+ *  - ###### ######### ##### (##########)
+ *  - #### (######-####)  (##########)
+ *  - ####### ########### ######  (##########)
+ * 
+ *  - ###-### ######### ### ####### (#########)
+ *  - ###### ##### (#########)
+ */
+public class ImageProcessor {
+    /*# YOUR CODE HERE */
+
+    private BufferedImage img;
+    private Color[][] processedImage;
+    
+    private int left = 20;
+    private int top = 20;
+    private int pixelSize = 1;
+
+    private double brightness;
+    public ImageProcessor() {
+        UI.initialise();
+        UI.addButton("Load File", this::loadFile);
+        UI.addButton("Adjust Brightness", this::brightness);
+        UI.setWindowSize(710,740);
+        UI.setDivider(0.0);
+        loadFile();
+    }
+
+    public void loadFile(){
+        UI.clearText();
+        UI.clearGraphics();
+        String fname = UIFileChooser.open("Image file to render");
+        if (fname != null){
+            try {
+                img = ImageIO.read(new File(fname));
+            } catch (IOException e) {
+            }
+        }
+    }
+
+    public void brightness() {
+        String slider = "";
+        UI.addSlider(slider, -255, 255, 0, (double v) -> {brightness = v; brightnessProcess(brightness);});
+    }
+    
+    public void brightnessProcess(double value) {
+        for(int x = 0; x < img.getWidth(); x++) {
+            for(int y = 0; y < img.getHeight(); y++) {
+                Color currentColor = new Color(img.getRGB(x, y));
+                float[] colorArray;
+                currentColor.getRGBColorComponents(colorArray);
+            }
+        }
+    }
+
+    public void displayImage() {
+        for(int row = 0; row < img.getWidth(); row++) {
+            for(int col = 0; col < img.getHeight(); col++) {
+                UI.fillRect(left+col*pixelSize, top+row*pixelSize, pixelSize, pixelSize);
+            }
+        }
+    }
+}

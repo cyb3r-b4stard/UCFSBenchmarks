@@ -1,0 +1,260 @@
+import acm.graphics.*;
+import acm.program.*;
+import acm.gui.*; 
+import acm.util.*; 
+import acm.io.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.applet.*;
+
+/**
+ * @###### ######## ####-#### ####### # ##### ###### ####### 
+ * @####### #.#
+ */
+public class Breakout extends GraphicsProgram 
+{
+    final int space = 5;
+    private GRect racket; 
+    private GRect brick; 
+    private GOval ball; 
+    final double ballRadius = 10;
+    private double mousePositionX; 
+    private int dx; 
+    private int dy;
+    private int nBricks = 72;
+    private int lives = 3; 
+    private IODialog diag; 
+
+    public void run()
+    {
+        this.playGame();
+    }
+
+    private void playGame()
+    {
+        this.addMouseListeners();
+        this.bricks();
+        this.moveRacket();
+        this.moveBall();
+    }
+
+    public void bricks()
+    {
+        double bricksWidth = (this.getGCanvas().getWidth() / 9) - space;
+        double bricksHight = bricksWidth / 5;
+        double x = 5;
+        double y = 3 * bricksHight; 
+        for(int i = 0; i < 8; i++)
+
+        {
+            for(int l = 0; l < 9; l++)
+
+            {
+                brick = new GRect(x, y, bricksWidth, bricksHight);
+                x = x + bricksWidth + space; 
+
+                brick.setFilled(true);
+                if(i <= 0 || i <= 1)
+                {
+                    brick.setFillColor(new Color(236, 7, 7));
+                    brick.setColor(new Color(236, 7, 7));
+                }
+                else if(i <= 2 || i <= 3)
+                {
+                    brick.setFillColor(new Color(249,140,5));
+                    brick.setColor(new Color(249,140,5));
+                }
+                else if(i <= 4 || i <= 5)
+                {
+                    brick.setFillColor(new Color(87,177,18));
+                    brick.setColor(new Color(87,177,18));
+                }
+                else if(i <=6 || i <= 7)
+                {
+                    brick.setFillColor(new Color(255,253,27));
+                    brick.setColor(new Color(255,253,27));
+                }
+                this.add(brick);
+            }
+            x = x - (bricksWidth * 9) - (space * 9); 
+            y = y + bricksHight + space; 
+        }
+    }
+
+    public void moveRacket()
+    {
+        double racketWidth = ((this.getGCanvas().getWidth() / 9) - space) * 1.5;
+        double racketHight = ((this.getGCanvas().getWidth() / 9) - space) / 5;
+        this.racket = new GRect(this.mousePositionX, this.getGCanvas().getHeight() - (space * 4), racketWidth, racketHight);
+
+        this.racket.setFilled(true);
+        this.racket.setFillColor(Color.BLACK);
+        this.add(this.racket);
+    }
+
+    public void mouseMoved(MouseEvent ev)
+    {
+        this.mousePositionX = ev.getX();
+
+        if (this.racket.getX() + this.racket.getWidth() / 2 > mousePositionX && mousePositionX > this.racket.getWidth() / 2)
+        {       
+            this.racket.move( -11, 0); 
+        }
+        if (this.racket.getX() + this.racket.getWidth() / 2  < mousePositionX && mousePositionX < this.getWidth() - this.racket.getWidth() / 2)
+        {       
+            this.racket.move( 11, 0);  
+        }
+    }
+
+    public void createBall()
+    {
+        int ballDiameter = 20; 
+        dy = 4;
+
+        this.ball = new GOval( (this.getGCanvas().getWidth() / 2) - ballRadius, (this.getGCanvas().getHeight() / 2) - ballRadius, ballDiameter, ballDiameter);
+        this.ball.setColor(Color.BLUE);
+        this.ball.setFilled(true);
+        this.ball.setFillColor(Color.BLUE);
+        this.add(this.ball);
+
+        RandomGenerator gen = new RandomGenerator();
+        this.dx = gen.nextInt(1, 3);
+        if (gen.nextBoolean(0.5))
+        {
+            this.dx = -this.dx;
+        }
+    }
+
+    public void moveBall()
+    { 
+        diag = new IODialog();
+        this.createBall();
+        this.waitForClick();
+        while (nBricks != 0)
+        {
+            ball.move(dx, dy);
+            this.pause(10);
+            if (ball.getX() >= this.getWidth() - ballRadius*2 && dx > 0 || ball.getX() <= 0  && dx < 0)
+            {
+                dx = -dx;
+            }
+            if (ball.getY() >= this.getHeight() - ballRadius*2 && dy > 0 || ball.getY() <= 0 && dy < 0)
+            {
+                dy = - dy; 
+
+                boolean ballOutOfTheGame = this.ball.getY() >= this.getHeight() - ballRadius * 2;
+                if (ballOutOfTheGame)
+                {
+                    lives--;
+                    diag.println("You have " + lives + " remaning lives");
+                    this.remove(ball);
+                    if (lives == 0)
+                    {
+                        this.remove(ball);
+                        this.remove(racket);
+                        this.remove(brick);
+                        diag.println("Game Over");
+                        this.newGame();
+                    }
+                    this.moveBall();
+                }
+            }
+            this.getCollidedObject();
+        }
+    }
+
+    private void newGame()
+    {
+        diag = new IODialog();
+        int ans = 0;
+        do
+        {
+            diag.println("Do you want to make one more game ?\n" + 
+            "1 - Yes\n" + 
+            "2 - No\n" ); 
+            
+            switch(ans)
+            {
+                case 1: 
+                {
+                    this.playGame();
+                }
+                break; 
+                
+                case 2: 
+                {
+                    System.exit(0);
+                }
+            }
+        }while(ans != 2)
+    }
+
+    private GObject getCollidedObject()
+    {
+        GObject obj0 = this.getElementAt(ball.getX(), ball.getY());
+        GObject obj1 = this.getElementAt(ball.getX() + ballRadius * 2, ball.getY());
+        GObject obj2 = this.getElementAt(ball.getX(), ball.getY() + ballRadius * 2);
+        GObject obj3 = this.getElementAt(ball.getX() + ballRadius * 2, ball.getY() + ballRadius * 2);
+        if(obj0 !=null)
+        {
+            if(obj0 == racket)
+            {
+                this.dy = - this.dy; 
+            }
+            else
+            {
+                this.dy = - this.dy; 
+                this.remove(obj0);
+                nBricks--;
+            }
+            return obj0;
+        }
+        else if(obj1 != null)
+        {
+            if(obj1 == racket)
+            {
+                this.dy = - this.dy; 
+            }
+            else
+            {
+                this.dy = - this.dy; 
+                this.remove(obj1);
+                nBricks--;
+            }
+            return obj1;
+        }
+        else if(obj2 != null)
+        {
+            if(obj2 == racket)
+            {
+                this.dy = - this.dy; 
+            }
+            else
+            {
+                this.dy = - this.dy; 
+                this.remove(obj2);
+                nBricks--;
+            }
+            return obj2;
+        }
+        else if(obj3 != null)
+        {
+            if(obj3 == racket)
+            {
+                this.dy = - this.dy; 
+            }
+            else
+            {
+                this.dy = - this.dy; 
+                this.remove(obj3);
+                nBricks--;
+            }
+            return obj3;
+        }
+        else
+        {
+            return null;
+        }
+    }
+}

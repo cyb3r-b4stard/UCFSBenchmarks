@@ -1,0 +1,99 @@
+
+/* #### ### ####### - ######
+ * ####:###### ######-####
+ * ########:##########
+ * ##:#########
+ */
+
+import ecs100.*;
+
+/** ####### ### ########### ### #### ### ### #### ## #### ##### #### */
+
+public class PowerCalculator{
+
+    public static final double priceKWh = 0.2034;         
+    public static final int incandescentLifeSpan = 1000; 
+    public static final int ledLifeSpan = 25000;         
+    public static final double incandescentPrice = 0.99;   
+    
+
+    /** Constructor: set up the user interface (already written for you) */ 
+    public PowerCalculator(){
+        UI.initialise();
+        UI.addButton("Core", this::doCalculateCostSaverCore); 
+        UI.addButton("Completion", this::doCalculateCostSaverCompletion );
+        UI.addButton("Quit", UI::quit);
+        UI.setDivider(1);    
+    }
+
+    /** Calculates and print how long it would take you to pay off the original cost of switching
+     *  to energy LED bulbs - 
+     *  Ask the user how many watts the old bulbs used, how many watts the new bulbs use, and the number of such bulbs to replace.
+     *  Print the number of kilowatts they are now saving whenever the lights are on.
+     *  Ask the user how many hours each day the lights are on, how many days they are used per week, and how many weeks they are used per year.
+     *  Print the total kilowatt-hours of energy saved each year (the saved kilowatts multiplied by the total number of hours).
+     *  Print the total dollars saved on their power bill each year (from the lower power usage).
+     *  Ask the cost of each new LED bulb.
+     *  Print the numbers of years it will take to break even on paying the extra for the LED light bulbs.
+     */
+    public void doCalculateCostSaverCore(){
+        double oldWatts = UI.askDouble("Original Incandescent Bulbs Watts:");
+        double newWatts = UI.askDouble("Replacement LED Bulbs Watts:");
+        double numberBulbs = UI.askDouble("Number of Bulbs Replaced");
+        
+        double kilowatts = (( oldWatts - newWatts) * numberBulbs) / 1000.0;
+        UI.println(kilowatts + " Kilowatts Saved");
+        
+        double hoursDay = UI.askDouble("Hours per Day the lights are on:");
+        double daysWeek = UI.askDouble("Days per Week the lights are on:");
+        double weeksYear = UI.askDouble("Weeks per Year the lights are on:");
+        
+        double kilowattHours = kilowatts * hoursDay * daysWeek * weeksYear;
+        UI.println(kilowattHours + " Kilowatt Hours saved per Year");
+        
+        double dollarsSaved = kilowattHours * priceKWh;
+        UI.println("Total $" +dollarsSaved + " Saved per Year");
+        
+        double newBulbCost = UI.askDouble("Price of new LED Bulbs ($)");
+        double yearsToBreakeven = (numberBulbs * newBulbCost)/dollarsSaved;
+        UI.println(yearsToBreakeven + " Years to Breakeven on paying for the LED light Bulbs.");
+
+    }
+
+
+    public void doCalculateCostSaverCompletion(){
+        double oldWatts = UI.askDouble("Original Incandescent Bulbs Watts:");
+        double newWatts = UI.askDouble("Replacement LED Bulbs Watts:");
+        double numberBulbs = UI.askDouble("Number of Bulbs Replaced");
+        
+        double kilowatts = (( oldWatts - newWatts) * numberBulbs) / 1000.0;
+        UI.println(kilowatts + " Kilowatts Saved");
+        
+        double hoursDay = UI.askDouble("Hours per Day the lights are on:");
+        double daysWeek = UI.askDouble("Days per Week the lights are on:");
+        double weeksYear = UI.askDouble("Weeks per Year the lights are on:");
+        double hoursYear = hoursDay * daysWeek * weeksYear;
+        
+        double kilowattHours = kilowatts * hoursDay * daysWeek * weeksYear;
+        UI.println(kilowattHours + " Kilowatt Hours saved per Year");
+        
+        double dollarsSaved = kilowattHours * (priceKWh);
+        UI.println("Total $" +dollarsSaved + " Saved per Year");
+        
+        double newBulbCost = UI.askDouble("Price of new LED Bulbs ($)");
+        double yearsToBreakeven = (numberBulbs * newBulbCost)/dollarsSaved;
+        UI.println(yearsToBreakeven + " Years to Breakeven on paying for the LED light Bulbs.");
+        
+        double numberYears = UI.askDouble("Number of Years to calculate the savings over:");
+        double numberIncandescentBulbs = UI.askDouble("Number of Incandescent Bulbs being used:")
+        double totalPowerUpTime = hoursYear * numberYears;
+        double costToRunIncandescent = totalPowerUpTime * priceKWh;
+        double costToReplaceIncandescent = (totalPowerUpTime / incandescentLifeSpan) * incandescentPrice;
+        double totalCostIncandescent = (costToReplaceIncandescent + costToRunIncandescent) * numberIncandescentBulbs;
+        UI.println("Cost of running and replacing Incandescent Bulbs over " + numberYears + " years: $" + totalCostIncandescent); 
+        
+        
+
+    }
+
+}

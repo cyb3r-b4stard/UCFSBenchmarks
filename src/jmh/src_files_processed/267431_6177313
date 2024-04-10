@@ -1,0 +1,88 @@
+package com.blogspot.mandelag.McServer;
+
+import java.net.*;
+import java.io.*;
+import java.util.ArrayList;
+
+/**
+ * # ##### ### ############ ##### ########/######## ####(#) #######.
+ * ####, ## ##### ## ########### ##### ### #### ####### #### ## ###### ## ### #####.
+ * 
+ * @###### ###### #. #####
+ * @####### #.#
+ */
+public class McProtocol
+{
+    static int HELLO = 101;
+    static int WHAT_DO_YOU_WANT_TO_ORDER = 102;
+    static int I_WANT_TO_ORDER = 103;
+    static int THERE_YOU_GO = 104;
+    static int SORRY = 105;
+    static int I_DONT_UNDERSTAND = 106;
+    static int OK = 107;
+    static int NO = 108;
+    static int GOODBYE = 109;
+    static int REQUEST_LIST = 110;
+    
+    enum McMessage {
+
+        private static final int CODE;
+        public McMessage(int code) {
+            CODE = code;
+        }
+    }
+
+    /**
+     * Divides message to sent to two parts, identifier and the message.
+     * 
+     * @return byte[] the message decoded to byte array 
+     * @return null if the message is to long
+     */
+    static byte[] decodeMessage(int code, String message) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(256);
+        DataOutputStream dos = new DataOutputStream(baos);
+        try {
+            if(code >= 0 || code < 128) { 
+
+                dos.write((byte)code); 
+            }
+            byte[] string = message.getBytes(); 
+            if(string.length >=254) {
+                throw new IOException();
+            }else {
+                dos.write(string);
+            }
+        }catch(IOException e) {
+            return null;
+        }
+        return baos.toByteArray();
+    }
+    
+    /**
+     * Divides message to sent to two parts, identifier and the message.
+     * 
+     * @return byte[] the message decoded to byte array 
+     * @return null if the message is to long
+     */
+    static byte[] decodeMessage(int code, byte[] message) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(256);
+        DataOutputStream dos = new DataOutputStream(baos);
+        try {
+            if(code >= 0 || code < 128) { 
+
+                dos.write((byte)code); 
+            }
+            dos.write(message);
+        }catch(IOException e) {
+            return null;
+        }
+        return baos.toByteArray();
+    }
+    
+    
+    
+    
+    
+    
+    
+}

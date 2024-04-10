@@ -1,0 +1,317 @@
+import java.util.*;
+
+/**
+ * ###### ### ############ ### #######.
+ * 
+ * @###### ##### ####
+ * @####### ##.#.####
+ */
+public class Bild {
+
+    private String titel;
+    private int[][] bild;
+
+    /**
+     * Erzeuge ein neues leeres Bild mit dem Titel "Kein Bild".
+     */
+    public Bild() {
+        this("Kein Bild", null);
+    }
+
+    /**
+     * Erzeuge ein neues Bild mit dem gegebenen Titel und den Bilddaten.
+     * 
+     * @param titel die Titel des Bildes
+     * @param bild die Bilddaten
+     */
+    public Bild(String titel, int[][] bild) {
+        this.titel = titel;
+        this.bild = bild;
+    }
+
+    /**
+     * Der Titel des Bildes.
+     * 
+     * @return der Titel des Bildes
+     */
+    public String gibTitel() {
+        return titel + " (" + gibBreite() + " x " + gibHoehe() + ")";
+    }
+
+    /**
+     * Die Breite des Bildes. Falls kein Bild gesetzt worden ist, gibt die Methode 0 zurück.
+     * 
+     * @return die Bildbreite, oder 0, falls kein Bild gesetzt worden ist.
+     */
+    public int gibBreite() {
+        if (bild != null){
+            return bild.length;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Die Höhe des Bildes. Falls kein Bild gesetzt worden ist, gibt die Methode 0 zurück.
+     * 
+     * @return die Bildhöhe, oder 0, falls kein Bild gesetzt worden ist.
+     */
+    public int gibHoehe() {
+        if (bild != null && bild[0] != null){
+            return bild[0].length;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Die Intensität an der gegebenen Spalte und Zeile. Falls die Angaben bezüglich Zeile oder Spalte ungültig sind, wird 0 zurückgegeben. 
+     * 
+     * @param spalte die Spalte
+     * @param zeile die Zeile
+     * @return der Intensitätswert zwischen 0 (schwarz) und 255 (weiss), oder 0 bei ungültigen Zeilen-/Spaltenwerten 
+     */
+    public int gibIntensitaetswert(int spalte, int zeile) {
+        if (0 <= spalte && spalte < gibBreite() && 0 <= zeile && zeile < gibHoehe()) {
+            return bild[spalte][zeile];
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Die Bilddaten des Bildes.
+     * 
+     * @return die Bilddaten oder null, falls kein Bild gesetzt wurde.
+     */
+    public int[][] gibBilddaten() {
+        return bild;
+    }
+
+    /**
+     * Bild kopieren
+     *
+     * @return eine Kopie des Bildes. Als Titel wird an den Originalnamen die Endung " - Kopie" angehängt
+     */
+    public Bild erstelleKopie() {
+        int[][] b = new int[gibBreite()][gibHoehe()];
+        for (int spalte = 0; spalte < gibBreite(); spalte++) {
+            for (int zeile = 0; zeile < gibHoehe(); zeile++) {
+                b[spalte][zeile] = bild[spalte][zeile];
+            }
+        }
+        return new Bild(gibTitel() + " - Kopie", b);
+    }
+
+    /**
+     * Aufgabe: Histogramm berechnen
+     * 
+     * @return das Histogramm 
+     */
+    public int[] gibHistogramm() {
+        int[] histogramm = new int[256];
+        for (int i =0; i < 256; i++) {
+            histogramm[i] =0;
+        }
+
+        for (int spalte = 0; spalte < bild.length; spalte++) {
+            for (int zeile = 0; zeile <  bild[0].length; zeile++) {
+                int grauwert = bild[spalte][zeile];
+                histogramm[grauwert]++;
+            }
+        }
+        return histogramm;
+    }
+
+    /**
+     * Aufgabe: Invertieren 
+     */
+    public void bild_invertieren() {
+        for (int spalte = 0; spalte < bild.length; spalte++) {
+            for (int zeile = 0; zeile <  bild[0].length; zeile++) {
+                bild[spalte][zeile] =255- bild[spalte][zeile];
+            }
+        }
+    }
+
+    /**
+     * Aufgabe: Aufhellen um einen Offset anheben
+     * 
+     * @param offset der Offset, um den die Intensitaetswerte angehoben werden
+     */
+    public void bild_aufhellen(int offset) {
+        for (int spalte = 0; spalte < gibBreite(); spalte++) {
+            for (int zeile = 0; zeile < gibHoehe(); zeile++) {
+                bild[spalte][zeile] = bild[spalte][zeile]+ offset;
+                if(bild[spalte][zeile] < 0)
+                {
+                    bild[spalte][zeile] = 0;
+                }else if(bild[spalte][zeile]>255)
+                {
+                    bild[spalte][zeile] = 255;
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Aufgabe: Kontrast um einen Faktor erhöhen 
+     * 
+     * @param faktor der Faktor, um den die Intensitaetswerte angehoben werden
+     */
+    public void bild_kontrastErhoehen(double faktor) {
+        for (int spalte = 0; spalte < gibBreite(); spalte++) {
+            for (int zeile = 0; zeile < gibHoehe(); zeile++) {
+            }
+        }
+
+    }
+
+    /**
+     * Aufgabe: Kontrast optimieren 
+     */
+    public void bild_kontrastOptimieren() {
+        int aLow = 255; int aHigh = 0;
+        for (int spalte = 0; spalte < gibBreite(); spalte++) {
+            for (int zeile = 0; zeile < gibHoehe(); zeile++) {
+                if(bild[spalte][zeile] < aLow)
+                {
+                    aLow = bild[spalte][zeile];
+                }else if(bild[spalte][zeile] > aHigh)
+                {
+                    aHigh = bild[spalte][zeile];
+                }
+            }
+        }
+
+        for (int spalte = 0; spalte < gibBreite(); spalte++) {
+            for (int zeile = 0; zeile < gibHoehe(); zeile++) {
+                bild[spalte][zeile] = (int)((bild[spalte][zeile] - aLow) * 255.0 /(aHigh - aLow));
+            }
+        }
+
+    }
+
+    /**
+     * Aufgabe: Schwellwertverfahren 
+     * 
+     * @param schwellwert der Schwellwert, der als Grenze genommen wird
+     */
+    public void bild_schwellwertAnwenden(int schwellwert) {
+
+        for (int spalte = 0; spalte < gibBreite(); spalte++) {
+            for (int zeile = 0; zeile < gibHoehe(); zeile++) {
+                if(bild[spalte][zeile] < schwellwert)
+                {
+                    bild[spalte][zeile] = 0;
+                } else if(bild[spalte][zeile] > schwellwert)
+                {
+                    bild[spalte][zeile] = 255;
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Aufgabe: Mittelwertfilter 3x3
+     * 
+     * @param eingangsbild das Bild, das gefiltert wird
+     */
+    public void bild_mittelwertfilter(Bild originalbild) {
+
+        for (int spalte = 0; spalte < gibBreite(); spalte++) {
+            for (int zeile = 0; zeile < gibHoehe(); zeile++) {
+                int summe = 0;
+                for (int s = -1; s <= 1; s++) {
+                    for (int z = -1; z <= 1; z++) {
+                        summe += originalbild.gibIntensitaetswert(spalte-s, zeile-z);
+                    }
+                }
+                bild[spalte][zeile] = summe /9;
+
+            }
+        }
+
+    }
+
+    /**
+     * Aufgabe: Genereller Linearer Filter mit einem Filterkern
+     * 
+     * @param eingangsbild das Bild, das gefiltert wird
+     * @param filter der Filterkern
+     */
+    public void bild_linearerfilter(Bild eingangsbild, double[][] filter) {
+        for (int spalte = 0; spalte < gibBreite(); spalte++) {
+            for (int zeile = 0; zeile < gibHoehe(); zeile++) {
+                double summe = 0.0;
+                for (int i = 0; i < 3 ; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        summe += filter[i][j]* eingangsbild.gibIntensitaetswert(spalte + i, zeile+j-1); 
+                    }
+                }
+                bild[spalte][zeile] = (int) summe;
+            }
+        }
+        this.bild_kontrastOptimieren();
+
+    }
+
+    /**
+     * Aufgabe: Medianfilter 3x3
+     * 
+     * @param eingangsbild das Bild, das gefiltert wird
+     */
+    public void bild_medianfilter(Bild eingangsbild) {
+    }
+
+    /**
+     * Aufgabe: Template Matching
+     * 
+     * @param suchbild das Bild, das durchsucht wird
+     * @param template das Bild, das gesucht wird
+     */
+    public void bild_templatematching(Bild suchbild, Bild template) {
+        int hbt = template.gibBreite() / 2;
+        int hht = template.gibHoehe() / 2;
+        
+        for (int spalte = 0; spalte < suchbild.gibBreite(); spalte++) {
+            for (int zeile = 0; zeile < suchbild.gibHoehe(); zeile++) {
+                int summe = 0;
+                for (int i= 0; i < template.gibBreite();i++) {
+                    for(int j= 0; j < templategibHoehe(); j++) {
+                        int wertImSuchbild = suchbild.gibIntensitaetswert(spalte+i-hbt, zeile +j - hht);
+                        int wertImTemplate = template.gibIntensitaetswert(i,j);
+                        int werteDifferenz = wertImSuchbild - wertImTemplate;
+                        summe+= werteDifferenz * werteDifferenz;
+                    }
+                    bild[spalte][zeile] = (int) Math.sqrt(summe)
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Aufgabe: Geometrische Transformation: Rotation. Beachten Sie, dass das Rotationszentrum zuerst in den Ursprung geschoben, dann rotiert und wieder zurueckgeschoben werden muss.
+     * 
+     * @param eingangsbild das Bild, das veraendert wird
+     * @param rotationszentrumSpalte die u-Position des Rotationszentrums
+     * @param rotationszentrumZeile die v-Position des Rotationszentrums
+     * @param winkel der Rotationswinkel (Achtung in Radian)
+     */
+    public void bild_rotation(Bild eingangsbild, int rotationszentrumSpalte, int rotationszentrumZeile, double winkel) {
+    }
+
+    /**
+     * Aufgabe: Verzerren. Twirl-Transformation: Rotation um alpha, die mit dem Abstand vom Zentrum abnimmt 
+     * 
+     * @param eingangsbild das Bild, das veraendert wird
+     * @param rmax der maximale Radius, bis wohin gedreht wird
+     * @param alpha der Rotationswinkel (Achtung in Radian)
+     */
+    public void bild_twirl(Bild eingangsbild, int rmax, double alpha) {
+    }
+
+}

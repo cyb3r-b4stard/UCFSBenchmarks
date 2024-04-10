@@ -1,0 +1,73 @@
+import javax.swing.*;
+import java.awt.event.*;
+import java.awt.*;
+import java.util.*;
+
+public class Zoo extends JPanel implements KeyListener {  
+
+    private Snake sponge;
+    private Snake patrick;
+    private Bubble squidward;
+    
+
+    public Zoo() {
+        sponge = new Snake(0, 500, Color.RED, "patrickbubble.gif");
+        patrick = new Snake(500, 500, Color.BLUE, "spongebob.jpg");
+        squidward = new Bubble(
+    }
+
+    public void keyTyped(KeyEvent e) {
+
+        char letter = e.getKeyChar(); 
+
+        if(letter == 't'){
+            sponge.grow(5);
+        }else if(letter == 'p'){
+            patrick.grow(5);
+        }
+
+        if(letter == 'r'){
+            sponge.moveRight();
+        }else if(letter == 'o'){
+            patrick.moveRight();
+        }
+
+        this.repaint();
+    }
+
+    /** Handle the key pressed event from the text field. */
+    public void keyPressed(KeyEvent e) {
+        char letter = e.getKeyChar();
+
+        this.repaint();
+    }
+
+    /** Handle the key released event from the text field. */
+    public void keyReleased(KeyEvent e) {
+        char letter = e.getKeyChar();
+
+        this.repaint();
+    }
+
+    public void paint(Graphics g){
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, 1000, 1000);
+
+        sponge.draw(g);
+        patrick.draw(g);
+
+    }
+
+    public static void main(String [] arg){
+        Zoo myZoo = new Zoo();
+        JFrame frame = new JFrame("ZOO");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setSize(700, 700);
+        frame.setLocation(0, 0);
+        frame.addKeyListener(myZoo);
+        frame.getContentPane().add(myZoo);
+        frame.setVisible(true);
+
+    }
+}

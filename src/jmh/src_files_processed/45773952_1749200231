@@ -1,0 +1,101 @@
+
+public class Store
+{
+    private List <Item> myStore;
+
+    public Store(String fName)
+    { 
+        myStore = new ArrayList<Item>();
+        loadFile(fname);
+    }
+
+    public Store()
+    {
+        myStore = new ArrayList<Item>();
+        loadFile("file50.txt");
+    }
+
+    private void loadFile(String inFileName)
+    {
+
+    }
+
+    public void displayStore()
+    {
+        for( int i = 0; i < myStore.length; i++)
+        {
+            System.out.println(myStore.get(i));
+        }
+    }
+
+    public String toString()
+    {
+        
+    }  
+
+    public void sort()
+    {
+        mergeSort(myStore, 0, myStore.size()-1);
+    }   
+
+    private void merge(List <Item> a, int first, int mid, int last)
+    {
+        List arr3 = new ArrayList<Item>();
+        int index1 = first;
+        int index2 = mid + 1;
+        if(index1 > mid)
+        {
+            arr3.add(a.get(index2));
+            index2++;
+        }
+        else if (index2 > last)
+        {
+            arr3.add(a.get(index1));
+            index1++;
+        }
+        else if(index1.compareTo(index2) < 0)
+        {
+            arr3.add(a.get(index1));
+            index1++;
+        }
+        else
+        {
+            arr3.add(a.get(index2));
+            index2++;
+        }  
+    }
+
+    private void mergeSort(List <Item> a, int first, int last)
+    {
+        if(first == last)
+        {
+
+        }
+        else if(last - first == 1)
+        {
+
+        }
+        else
+        {
+            int mid = (first+last)/2;
+            mergeSort(a, first, mid);
+            mergeSort(a, mid + 1, last);
+            merge(a, first, mid, last);
+        }
+    }
+
+    public void binarySearch(List <Item> list, int first, int last, int wantNum)
+    {
+        int mid = (first+last)/2;
+        Item midOb = list.get(mid);
+        if(midOb.compareTo(wantNum) == 0)
+            return mid;
+        else if (midOb.compareTo(wantNum) < 0)
+        {
+            binarySearch(list, midOb, last, wantNum);
+        }
+        else
+        {
+            binarySearch(list, first, midOb, wantNum);
+        }
+    }

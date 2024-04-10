@@ -1,0 +1,68 @@
+import java.awt.*;
+import java.util.*;
+import java.net.URL;
+/**
+ * ##### # ########### ## ##### #### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class View extends Canvas
+{
+    private Level level;
+    private static int size = 15;
+
+    /**
+     * Constructor for objects of class View
+     */
+    public View(Level level)
+    {
+        this.level = level;
+    }
+    
+     public void paint(Graphics g) {
+        g.setColor(new Color(200, 200, 200));
+        g.fillRect(0,0, level.getBreedte()*size, level.getHoogte()*size);
+        Speler actief = level.getActieveSpeler();
+        
+        for (int i =0; i < level.getBreedte(); i++)
+        {
+            for (int j =0; j < level.getHoogte(); j++)
+            {
+                Voorwerp vw = level.getVoorwerp(i, j);
+                if (vw instanceof Muur) {
+                    g.setColor(Color.RED);
+                    g.fillRect(i*size,j*size,1*size,1*size);
+                    g.setColor(Color.BLACK);
+                    g.drawRect(i*size,j*size,1*size,1*size);
+                }
+                if (vw instanceof Steen) {
+                    g.setColor(Color.YELLOW);
+                    g.fillOval(i*size,j*size,1*size,1*size);
+                }
+            }   
+        }
+        
+        Iterator<Speler> spelers = level.getSpelers();
+        while(spelers.hasNext()) {
+            Speler s = spelers.next();
+            tekenSpeler(g, s);
+            g.drawImage(stickman.png, s.getX(),s.getY(), size, size, _observer_)
+        }
+    }
+    protected void tekenSpeler(Graphics g, Speler s) {
+        g.setColor(s.getKleur());
+        g.fillOval(s.getX()*size, s.getY()*size, size/2, size);
+        if (s.equals(level.getActieveSpeler())) {
+           g.setColor(Color.BLACK);
+           g.drawOval(s.getX()*size, s.getY()*size, size/2, size);
+        }        
+    }
+
+    public int getBeeldX(int pixelX) {
+        return pixelX/size;
+    }
+    public int getBeeldY(int pixelY) {
+        return pixelY/size;
+    }
+}

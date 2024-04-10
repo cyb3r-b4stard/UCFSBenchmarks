@@ -1,0 +1,334 @@
+import java.util.Scanner;
+import java.util.Random;
+public class HamburgueriaMatrizes2
+{
+    public static void main(String [] args){
+        Scanner in = new Scanner(System.in);
+
+        int[][] matriz = preencheFilial(200);
+        int[][] filial2 = preencheFilial(100);
+        int[][] filial3 = preencheFilial(50); 
+
+        System.out.println("\fVENDAS DA MATRIZ");
+        imprimeMatriz(matriz);
+        System.out.println("VENDAS DA FILIAL 2");
+        imprimeMatriz(filial2);
+        System.out.println("VENDAS DA FILIAL 3");
+        imprimeMatriz(filial3);
+
+        System.out.printf("\nTotal dos lanches vendidos na Matriz: R$ %.2f", totalArrecadacao(matriz));
+        System.out.printf("\nTotal dos lanches vendidos na Filial 2: R$ %.2f", totalArrecadacao(filial2));
+        System.out.printf("\nTotal dos lanches vendidos na Filial 3: R$ %.2f", totalArrecadacao(filial3));
+
+        System.out.println("\nO lanche mais vendido na matriz: " + (maisvendidoParaCadaLoja(matriz) == 0 ? "SandubaDeLuz" : maisvendidoParaCadaLoja(matriz) == 1 ? "JarJar Burguer" : maisvendidoParaCadaLoja(matriz) == 2 ? "Skywalker Burguer" : "Bauru-Yoda"));
+        System.out.println("O lanche mais vendido na filial 1: " + (maisvendidoParaCadaLoja(filial2) == 0 ? "SandubaDeLuz" : maisvendidoParaCadaLoja(filial2) == 1 ? "JarJar Burguer" : maisvendidoParaCadaLoja(filial2) == 2 ? "Skywalker Burguer" : "Bauru-Yoda"));
+        System.out.println("O lanche mais vendido na filial 2: " + (maisvendidoParaCadaLoja(filial3) == 0 ? "SandubaDeLuz" : maisvendidoParaCadaLoja(filial3) == 1 ? "JarJar Burguer" : maisvendidoParaCadaLoja(filial3) == 2 ? "Skywalker Burguer" : "Bauru-Yoda"));
+
+        System.out.println("\nO lanche mais vendido: " + (maisvendidodetodos(matriz, filial2, filial3) == 0 ? "SandubaDeLuz" : maisvendidodetodos(matriz, filial2, filial3) == 1 ? "JarJar Burguer" : maisvendidodetodos(matriz, filial2, filial3) == 2 ? "Skywalker Burguer" : "Bauru-Yoda"));
+
+        System.out.println("\nO lanche menos vendido na Matriz: " + (menosvendidoParaCadaLoja(matriz) == 0 ? "SandubaDeLuz" : menosvendidoParaCadaLoja(matriz) == 1 ? "JarJar Burguer" : menosvendidoParaCadaLoja(matriz) == 2 ? "Skywalker Burguer" : "Bauru-Yoda"));
+        System.out.println("O lanche menos vendido Filial 2: " + (menosvendidoParaCadaLoja(filial2) == 0 ? "SandubaDeLuz" : menosvendidoParaCadaLoja(filial2) == 1 ? "JarJar Burguer" : menosvendidoParaCadaLoja(filial2) == 2 ? "Skywalker Burguer" : "Bauru-Yoda"));
+        System.out.println("O lanche menos vendido Filial 3: " + (menosvendidoParaCadaLoja(filial3) == 0 ? "SandubaDeLuz" : menosvendidoParaCadaLoja(filial3) == 1 ? "JarJar Burguer" : menosvendidoParaCadaLoja(filial3) == 2 ? "Skywalker Burguer" : "Bauru-Yoda"));
+
+        System.out.println("\nDiferença da arrecadação do lanche mais e menos vendido: R$ " + variaveldiferenca(matriz, filial2, filial3));
+        System.out.print("\nA venda onde mais lanches foram vendidos na Matriz: "); 
+        imprimeVetor(variavelmaiorParaCadaLoja(matriz));
+        System.out.print("\nA venda onde mais lanches foram vendidos na Filial 2: "); 
+        imprimeVetor(variavelmaiorParaCadaLoja(filial2));
+        System.out.print("\nA venda onde mais lanches foram vendidos na Filial 3: "); 
+        imprimeVetor(variavelmaiorParaCadaLoja(filial3));
+        System.out.print("\nA venda onde mais lanches foram vendidos dentre todas as lojas: "); 
+        imprimeVetor(maislanchesvendidos(matriz, filial2, filial3));
+
+    }
+
+    public static int[] vendas(int matriz1[][], int matriz2[][], int matriz3[][]){
+        int [] x = new int[matriz1.length + matriz2.length + matriz3.length];
+
+        int proximo = 0;
+
+        for(int i = 0; i<matriz1.length; i++){
+            int soma = 0;
+            for(int j = 0; j<matriz1[0].length; j++){
+                soma += matriz1[i][j];
+            }
+            x[proximo] = soma;
+            proximo++;
+        }
+
+        for(int i = 0; i<matriz2.length; i++){
+            int soma = 0;
+            for(int j = 0; j<matriz2[0].length; j++){
+                soma += matriz2[i][j];
+            }
+            x[proximo] = soma;
+            proximo++;
+        }
+
+        for(int i = 0; i<matriz3.length; i++){
+            int soma = 0;
+            for(int j = 0; j<matriz3[0].length; j++){
+                soma += matriz3[i][j];
+            }
+            x[proximo] = soma;
+            ++;
+        }     
+
+        return x;
+    }
+
+    public static void imprimeVetor(int [] vetor){
+        for(int i=0; i<vetor.length; i++){
+            System.out.print(vetor[i]);
+            if(i!=vetor.length-1){
+                System.out.print(", ");
+            }
+        }
+    }
+
+    public static int[] maislanchesvendidos(int matriz1[][], int matriz2[][], int matriz3[][]){
+        int [] xvenda = new int[matriz1[0].length];
+
+        int variavelmaior = 0;
+
+        for(int i=0; i<matriz1.length; i++){   
+            int variavelvenda = 0;
+            for(int j=0; j<matriz1[0].length; j++){
+                variavelvenda += matriz1[i][j];
+            }
+            if(variavelvenda > variavelmaior){
+                variavelmaior = variavelvenda;
+                for(int k=0; k < matriz1[0].length; k++){
+                    xvenda[k] = matriz1[i][k];
+                } 
+            }
+        }
+
+        for(int i=0; i<matriz2.length; i++){   
+            int variavelvenda = 0;
+            for(int j=0; j<matriz2[0].length; j++){
+                variavelvenda += matriz2[i][j];
+            }
+            if(variavelvenda > variavelmaior){
+                variavelmaior = variavelvenda;
+                for(int k=0; k < matriz2[0].length; k++){
+                    xvenda[k] = matriz2[i][k];
+                } 
+            }
+        }
+
+        for(int i=0; i<matriz3.length; i++){   
+            int variavelvenda = 0;
+            for(int j=0; j<matriz3[0].length; j++){
+                variavelvenda += matriz3[i][j];
+            }
+            if(variavelvenda > variavelmaior){
+                variavelmaior = variavelvenda;
+                for(int k=0; k < matriz3[0].length; k++){
+                    xvenda[k] = matriz3[i][k];
+                } 
+            }
+        }
+
+        return xvenda;
+    }
+
+    public static int[] variavelmaiorParaCadaLoja(int [][] matriz){
+        int [] xvenda = new int[matriz[0].length];
+
+        int linhavariavelmaior = 0;
+        int variavelmaior = 0;
+        for(int i=0; i<matriz.length; i++){
+            int variavelvenda = 0;
+            for(int j=0; j<matriz[0].length; j++){
+                variavelvenda += matriz[i][j];
+            }
+            if(variavelvenda > variavelmaior){
+                variavelmaior = variavelvenda;
+                linhavariavelmaior = i;
+            }
+        }
+
+        for(int i=0; i<matriz[0].length; i++){
+            xvenda[i] = matriz[linhavariavelmaior][i];
+        }
+        return xvenda;
+    }
+
+    public static void ordenaVetorDecrescente(int [] vet){                
+        for (int i = 0; i < vet.length; i++) {
+            for (int j = 0; j < vet.length-1-i; j++) {
+                if (vet[j] < vet[j+1]) {
+                    int aux = vet[j];
+                    vet[j] = vet[j+1];
+                    vet[j+1] = aux;
+                }
+            }
+        }        
+    }
+
+    public static double variaveldiferenca(int matriz1[][], int matriz2[][], int matriz3[][]){
+        int [] lanchesvenda = totallanchesvenda(matriz1, matriz2, matriz3);
+
+        int maisvendido = maisvendidodetodos(matriz1, matriz2, matriz3);
+        int menosvendido =  menosvendidodetodos(matriz1, matriz2, matriz3);
+
+        double diferenca = (lanchesvenda[maisvendido] * (maisvendido == 0 ? 15 : maisvendido == 1 ? 28 : maisvendido == 2 ? 30 : 25)) - (lanchesvenda[menosvendido] * (menosvendido == 0 ? 15 : menosvendido == 1 ? 28 : menosvendido == 2 ? 30 : 25));
+
+        return diferenca;
+    }
+
+    public static int[] totallanchesvenda(int matriz1[][], int matriz2[][], int matriz3[][]){
+        int [] vetor = new int[matriz1[0].length];
+        for(int j=0; j<matriz1[0].length; j++){
+            int totalLanches = 0;        
+            for(int i=0; i<matriz1.length; i++){
+                totalLanches += matriz1[i][j];
+            }
+            for(int i=0; i<matriz2.length; i++){
+                totalLanches += matriz2[i][j];
+            }
+            for(int i=0; i<matriz3.length; i++){
+                totalLanches += matriz3[i][j];
+            }
+            vetor[j] = totalLanches;
+        }
+
+        return vetor;
+    }
+
+    public static int maisvendidoParaCadaLoja(int matriz[][]){
+        int maisvendido = 0;
+        int somamaisvendido = 0;
+        for(int j=0; j<matriz[0].length; j++){
+            int totalLanches = 0;
+            for(int i=0; i<matriz.length; i++){
+                totalLanches += matriz[i][j];
+            }
+            if(totalLanches > somamaisvendido){
+                somamaisvendido = totalLanches;
+                maisvendido = j;
+            }
+        }
+        return maisvendido;
+    }
+
+    public static int menosvendidoParaCadaLoja(int matriz[][]){
+        int menosvendido = 0;
+        int somamenosvendido = 2000;
+        for(int j=0; j<matriz[0].length; j++){
+            int totalLanches = 0;
+            for(int i=0; i<matriz.length; i++){
+                totalLanches += matriz[i][j];
+            }
+            if(totalLanches < somamenosvendido){
+                somamenosvendido = totalLanches;
+                menosvendido = j;
+            }
+        }
+        return menosvendido;
+    }
+
+    public static int menosvendidodetodos(int matriz1[][], int matriz2[][], int matriz3[][]){
+        int menosvendido = 0;
+        int somamenosvendido = 2000;
+        for(int j=0; j<matriz1[0].length; j++){
+            int totalLanches = 0;
+            for(int i=0; i<matriz1.length; i++){
+                totalLanches += matriz1[i][j];
+            }
+            for(int i=0; i<matriz2.length; i++){
+                totalLanches += matriz2[i][j];
+            }
+            for(int i=0; i<matriz3.length; i++){
+                totalLanches += matriz3[i][j];
+            }
+            if(totalLanches < somamenosvendido){
+                somamenosvendido = totalLanches;
+                menosvendido = j;
+            }
+        }
+        return menosvendido;
+    }
+
+    public static int maisvendidodetodos(int matriz1[][], int matriz2[][], int matriz3[][]){
+        int maisvendido = 0;
+        int somamaisvendido = 0;
+        for(int j=0; j<matriz1[0].length; j++){
+            int totalLanches = 0;
+            for(int i=0; i<matriz1.length; i++){
+                totalLanches += matriz1[i][j];
+            }
+            for(int i=0; i<matriz2.length; i++){
+                totalLanches += matriz2[i][j];
+            }
+            for(int i=0; i<matriz3.length; i++){
+                totalLanches += matriz3[i][j];
+            }
+            if(totalLanches > somamaisvendido){
+                somamaisvendido = totalLanches;
+                maisvendido = j;
+            }
+        }
+        return maisvendido;
+    }
+
+    public static double totalArrecadacao(int [][] matriz){
+        double totalVendas = 0;
+        for(int j=0; j<matriz[0].length; j++){
+            int valordasvendas = 0;
+            for(int i=0; i<matriz.length; i++){
+                valordasvendas += matriz[i][j];
+            }
+            if(j==0){
+                totalVendas += quantidadeVendas * 15.00;
+            } else if(j==1){
+                totalVendas += quantidadeVendas * 28.00;
+            } else if(j==2){
+                totalVendas += quantidadeVendas * 30.00;
+            } else {
+                totalVendas += quantidadeVendas * 25.00;
+            }            
+        }
+        return totalVendas;
+    }
+
+    public static int [][] preencheFilial(int qnt){
+        Random r = new Random();
+        int [][] matriz = new int[200][4];
+        int somaLanches = 0;
+        int i = 0;
+        while(somaLanches <= qnt){
+            for(int j=0; j<4; j++){
+                int qntLanches = r.nextInt(6);
+                matriz[i][j] = qntLanches;
+                somaLanches += qntLanches;
+                if(somaLanches >= qnt){
+                    break;
+                }
+            }
+            i++;
+        }
+        return limpaMatriz(matriz, i-1);
+    }
+
+    public static int [][] limpaMatriz(int[][] matriz, int linhas){
+        int [][] matrizLimpa = new int[linhas][matriz[0].length];
+        for(int i=0; i<linhas; i++){
+            for(int j=0; j<matriz[0].length; j++){
+                matrizLimpa[i][j] = matriz[i][j];
+            }
+        }
+        return matrizLimpa;
+    }
+
+    public static void imprimeMatriz(int [][] matriz){
+        for(int i=0; i<matriz.length; i++){
+            for(int j=0; j<matriz[0].length; j++){
+                System.out.print(matriz[i][j] + "  ");
+            } 
+            System.out.print("\n");
+        }        
+    }
+
+}

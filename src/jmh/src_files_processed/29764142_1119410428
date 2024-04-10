@@ -1,0 +1,158 @@
+import java.util.*;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.net.URL;
+import javax.sound.sampled.*;
+public class Moseley extends JFrame implements Runnable, KeyListener
+{
+    Container con = getContentPane();
+    Thread t = new Thread(this);
+    Box a,b,c,d,e,f;
+    Image background, floor;
+    int ct;
+    Rectangle rect;
+    public Moseley()
+    {
+        con.setLayout(new FlowLayout());
+        a = new Box(1);
+        b = new Box(2);
+        c = new Box(3);
+        d = new Box(4);
+        e = new Box(5);
+        f = new Box(6);
+
+        addKeyListener(this);
+
+        ct = 1;
+        rect = new Rectangle(325,940,350,50);
+        background = Toolkit.getDefaultToolkit().getImage("beach.png");
+        background = background.getScaledInstance(1000,1000,1);
+
+        floor = Toolkit.getDefaultToolkit().getImage("ground.png");
+        floor = floor.getScaledInstance(350,50,1);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        t.start();
+    }
+
+    public void run()
+    {
+        try{
+            while(true)
+            {
+                t.sleep(67);
+                a.move();
+                b.move();
+                c.move();
+                d.move();
+                e.move();
+                f.move();
+
+                repaint();
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void paint(Graphics gr)
+    {
+        Image i=createImage(getSize().width, getSize().height);
+        Graphics2D g = (Graphics2D)i.getGraphics();
+        g.drawImage(background,0,0,this);
+        g.drawImage(floor,325,940,this);
+
+        g.draw(rect);
+
+        a.draw(g);
+        b.draw(g);
+        c.draw(g);
+        d.draw(g);
+        e.draw(g);
+        f.draw(g);
+        g.dispose();
+        gr.drawImage(i, 0, 0, this);
+    }
+
+    public static void main(String[] args)
+    {
+        Moseley frame = new Moseley();
+        frame.setSize(1000, 1000);
+        frame.setVisible(true);
+    }
+
+    public void update(Graphics g)
+    {
+        paint(g);
+    } 
+
+    public void keyReleased(KeyEvent k){}
+
+    public void keyTyped(KeyEvent k){}
+
+    public void keyPressed(KeyEvent k)
+    {
+        if (k.getKeyCode() == 32)
+        {
+            if(ct == 1)
+            {
+                a.show();
+            }
+            else if(ct == 2)
+            {
+                a.shoot(a.getX(), a.getY());
+            }
+            else if(ct == 3)
+            {
+                b.show();
+            }
+            else if(ct == 4)
+            {
+                b.shoot(b.getX(), b.getY());
+            }
+            else if(ct == 5)
+            {
+                c.show();
+            }
+            else if(ct == 6)
+            {
+                c.shoot(c.getX(), c.getY());
+            }
+            else if(ct == 7)
+            {
+                d.show();
+            }
+            else if(ct == 8)
+            {
+                d.shoot(d.getX(), d.getY());
+            }
+            else if(ct == 9)
+            {
+                e.show();
+            }
+            else if(ct == 10)
+            {
+                e.shoot(e.getX(), e.getY());
+            }
+            else if(ct == 11)
+            {
+                f.show();
+            }
+            else if(ct == 12)
+            {
+                f.shoot(f.getX(), f.getY());
+            }
+            ct++;
+        }   
+    }
+
+    public void collide(Rectangle a, Rectangle b)
+    {
+        if(a.intersects(b))
+        {
+            System.exit(0);
+        }
+    }

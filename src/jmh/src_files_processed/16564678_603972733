@@ -1,0 +1,70 @@
+import sum.kern.*;
+/**
+ * @###### 
+ * @####### 
+ */
+public class SchlechteKugel
+{
+    private Buntstift meinStift;
+    private Bildschirm dieWelt;
+    private SchlechteKugel die SchlechteKugel
+
+    private int radius;
+    private double schrittweite;
+
+    public SchlechteKugel(Bildschirm pBildschirm)
+    {
+        dieWelt = pBildschirm;                          
+        meinStift = new Buntstift();
+        meinStift.setzeFuellMuster(Muster.GEFUELLT);
+        meinStift.dreheUm(90);                          
+        
+        
+
+        int x = (int) (Math.random() * 600) + 100;       
+        int y = (int) (Math.random() * 400) + 100;
+        radius = 5;                                     
+        schrittweite = 2;                               
+        meinStift.setzeFarbe(0);                        
+        meinStift.bewegeBis(x,y);
+    }
+
+    public void bewege()
+    {
+        loesche();
+        meinStift.bewegeUm(schrittweite);
+        if ((meinStift.vPosition() <= radius+schrittweite)          
+        || (meinStift.vPosition() >= dieWelt.hoehe() - radius - schrittweite))
+        {
+            meinStift.dreheUm(180);
+        }
+        zeichne(); 
+    }
+
+    public void zeichne()
+    {
+        meinStift.zeichneKreis(radius);
+    }
+
+    public void loesche()
+    {
+        meinStift.radiere();
+        zeichne();
+        meinStift.normal();
+    }
+    
+    public void setzeRadius(int pRadius) 
+    {
+        radius = pRadius;
+    }
+
+    public void setzePosition(int pX, int pY) 
+    {
+        meinStift.bewegeBis(pX, pY);
+    }
+
+    public void setzeFarbe(int pFarbe)
+    {
+        meinStift.setzeFarbe(pFarbe);
+    }
+}

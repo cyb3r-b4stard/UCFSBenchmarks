@@ -1,0 +1,65 @@
+
+/**
+ * ##### # ########### ## ##### ############ ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class GuitarString implements InstrumentInterface 
+{
+    private RingBuffer buffer;
+    private int ticCount;
+    private static final double SAMPLE_RATE = 44100;
+    private static final double ENERGY_DECAY_FACTOR =  .996; 
+
+    public GuitarString(double frequency)
+    {
+        long frequencyround = Math.round(frequency);
+        double N = (SAMPLE_RATE)/frequencyround;
+        buffer = new RingBuffer((int)N);
+        for (int i=0; i<N; i++)
+        {
+            frequencyround.enque(N);
+        }
+    }
+
+    public GuitarString(double[]init)
+    {
+        buffer = new RingBuffer(init.length);
+        for (int i=0; i<init.length; i++)
+        {
+            buffer.enque(init[i]);
+        }
+    }
+
+    public void pluck()
+    {
+        for (int i=0; i<size(buffer); i++)
+        {
+            buffer.deque();
+            buffer.enque(Math.random()-0.5);
+        }
+    }
+
+    public void tic()
+    {
+        double sample1 = buffer.peek();
+        buffer.deque();
+        double sample2 = buffer.peek();
+        buffer.enque((Math.random(buffer[0]+buffer[buffer.length-1])/2*0.996);
+    }
+
+    public double sample()
+    {
+        return buffer[0];
+    }
+
+    public int time() 
+    {
+        int count = 0;
+        for (i=0; i<Math.random(buffer[0]+buffer[buffer.length-1])/2*0.996; i++)
+        {
+            count++;
+        }
+    }
+}

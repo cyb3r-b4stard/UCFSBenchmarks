@@ -1,0 +1,192 @@
+
+/**
+ * ##### # ########### ## ##### #### ####.
+ * 
+ * @###### ####### ########
+ *
+ */
+public class Date
+{
+    private int _day, _month, _year;
+        int daysInMonth;
+        final int JAN = 1;
+        final int FEB = 2;
+        final int MAR = 3;
+        final int APR = 4;
+        final int MAY = 5;
+        final int JUN = 6;
+        final int JUL = 7;
+        final int AUG = 8;
+        final int SEP = 9;
+        final int OCT = 10;
+        final int NOV = 11;
+        final int DEC = 12;
+        final int LEAP_YEAR = 29;
+        final int NOT_LEAP_YEAR = 28;
+        final int MIN_MONTHS_IN_YEAR = 1;
+        final int MAX_MONTHS_IN_YEAR = 12;
+    
+    /**
+     * Constructor for objects of class Date
+     */
+    public Date(int day, int month, int year)
+    {
+        _day = day;
+        _month = month;
+        _year = year;
+    }
+    
+     /**
+     * Constructor That copied ate object
+     */
+    
+       public Date(Date other)
+    {
+        
+        if (other!=null) {
+        
+            _day = other._day;
+            _month = other._month;
+            _year = other._year;
+        
+       }
+        
+    }
+
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public int getDay()
+    {
+       
+        return _day;
+    }
+    
+        public int getMonth()
+    {
+       
+        return _month;
+    }
+    
+          public int getYear()
+    {
+       
+        return _year;
+    }
+    
+    public void setDay(int dayToSet) {
+        
+        _day = dayToSet;
+    }
+    
+     public void setMonth(int monthToSet) {
+         
+         if (checkMonth(monthToSet)) {
+             _month = monthToSet;
+        }
+    }
+    
+      public void setYear(int yearToSet) {
+          
+          _year = yearToSet;
+    }
+    
+    public boolean equals (Date other) {
+        
+        return (other._day == _day && other._month == _month && other._year == _year);
+    }
+    
+    public boolean before (Date other) {
+        
+        int currentDate = calculateDate(_day, _month, _year);
+        int otherDate = calculateDate(other._day,other._month, other._year);
+        
+        return (currentDate < otherDate);
+    }
+    
+    public boolean after (Date other) {
+        
+        return before(this);
+    }
+    
+    public int difference (Date other) {
+        
+        int currentDate = calculateDate(_day, _month, _year);
+        int otherDate = calculateDate(other._day,other._month, other._year);
+        
+        return currentDate % otherDate;
+    }
+    
+    public String toString () {
+        
+        return _day + "/" + _month + "/" + _year;
+    }
+    
+        public int dayInWeek () {       
+            int y = _year%100;
+            int c = _year/100;
+            int m = _month;
+            
+            if (m == 1 || m == 2) {
+                m = _month + 12;
+                y = y - 1;   
+            }
+            
+            return (_day + (26*(m+1))/10 + y + y/4 + c/4 - 2*c) % 7;
+    }
+    
+    private int calculateDate ( int day, int month, int year) {
+        if (month < 3) {
+             year--;
+             month = month + 12;
+         }
+         return 365 * year + year/4 - year/100 + year/400 + ((month+1) * 306)/10 + (day - 62);
+    } 
+    
+    private boolean checkMonth(int month) {
+        return (MIN_MONTHS_IN_YEAR >= month && month <= MAX_MONTHS_IN_YEAR);
+    }
+    
+    private boolean checkDayesAndYears(int daye, int month, int year) {
+            
+            if (month == JAN || month == MAR || month == MAY ||
+                month == JUL || month == AUG || month == OCT || month == DEC && day > 0 && day <= 31) {
+                  return true;
+           }
+                
+            if (month == APR || month == JUN || month == SEP || mobth == NOV && day > 0 && day <= 30) {
+                 return true;
+            }
+                
+    
+                
+            if (month == FEB) {
+                
+                if (year % 4 == 0 && year % 100 != 0 && day > 0 && day <= 28) {
+                   
+                   return true;
+                    
+                }
+                
+                else if (year % 4 != 0) && 0 && day <= 29) { 
+                   return true;
+                }
+                
+            }
+            
+            else {
+                return false;
+            }
+           
+                
+   }
+        
+    }
+    
+    
+    
+    
+ }

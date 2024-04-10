@@ -1,0 +1,113 @@
+package mystring;
+
+
+
+import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+/**
+ * ######-#### ############.
+ *
+ * @######  (##### ###)
+ * @####### (## ###### ## ####### ## ### ####)
+ *
+ * ### ####### ## #### #### ######## ### ####### # ######
+ * ### ## ###### ######## ####### (#.#. ##'## #### ## ## ###### ####.####
+ * ## ####### ########.####); ### #### ## ########## #### ## #### #########.
+ */
+public class MyStringTest {
+
+    MyString empty;
+    MyString isNotEmpty;
+    MyString minuscule;
+    MyString majuscule;
+    MyString voyelles;
+    MyString phrase;
+    
+    @Before
+    public void setup() {
+        this.empty = new MyString("");
+        this.isNotEmpty = new MyString("test");
+        this.minuscule = new MyString("test");
+        this.majuscule = new MyString("TEST");
+        this.voyelles = new MyString("aeiou");
+        this.phrase = new MyString("Test test");
+    }
+    
+    @Test
+    public void isEmptyTrue() {
+        assertTrue("N'est pas vide",this.empty.isEmpty());
+    }
+    
+    @Test
+    public void isEmptyFalse() {
+        assertFalse("Est vide",this.isNotEmpty.isEmpty());
+    }
+    
+    @Test
+    public void toUpperCase() {
+        this.minuscule.toUpperCase();
+        assertEquals("Ils ne sont pas identiques", this.majuscule, this.minuscule);
+    }
+    
+    @Test
+    public void numberOfChar() {
+        assertEquals(2,this.minuscule.numberOfChar('t'));
+    }
+
+    @Test
+    public void numberOfVowels() {
+        assertEquals(5, this.voyelles.numberOfVowels());
+    }
+    
+    @Test
+    public void getFirstWord() {
+        assertEquals("Test", this.phrase.getFirstWord());
+    }
+    
+    @Test
+    public void getFirstWordNull() {
+        assertEquals(null, this.empty.getFirstWord());
+    }
+    
+    @Test
+    public void insertValidite() {
+        try {
+            this.phrase.insert("TEst", -1, false);
+        }
+        catch (IllegalArgumentException e){}
+    }
+    
+    @Test
+    public void insertGrand() {
+        try {
+            this.phrase.insert("TEst", 10, false);
+        }
+        catch (IllegalArgumentException e){}
+    }
+    
+    @Test
+    public void insertAjout() {
+        this.phrase.insert("TEst ",5,false);
+        assertEquals("Test TEst test", this.phrase.getString());
+    }
+    
+    @Test
+    public void insertRemplace() {
+        this.phrase.insert("TEst", 5, true);
+        assertEquals("Test TEst", this.phrase.getString());
+    }
+    
+    @Test
+    public void equalsFalse() {
+        assertFalse(this.empty.equals(this.minuscule));
+    }
+    
+    @Test
+    public void equalsTrue() {
+        assertTrue(this.empty.equals(this.empty);
+    }
+
+}

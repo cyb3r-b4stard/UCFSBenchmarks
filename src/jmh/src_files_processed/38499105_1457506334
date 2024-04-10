@@ -1,0 +1,148 @@
+import java.util.*;
+import java.io.*;
+
+public class Animals extends Main implements Functions
+{
+    ArrayList<String> ESources = new ArrayList<String>();
+    String name, symbol;
+    double currentAge, lifeSpan, currentE, maxE, minEforBirth, EforLiving;
+    ArrayList<ArrayList<Cell>> board;
+    int height = cf.getHeight();
+    int width = cf.getWidth();
+    int x=0;
+    int y=0;
+    
+    /**
+     * boolean if animal has enough energy for giving a birth
+     */
+    public boolean hasEforBirth()
+    {
+        return minEforBirth<=currentE;
+    }
+
+    /**
+     * boolean if other animal or plant near their cells are edible(in the list of energy source) 
+     */
+    public boolean canEat(String name)
+    {
+        return ESources.contains(name);
+    }
+
+    private boolean inBoundary(int x, int y)
+    {
+        return 0<=x && x<width && 0<=y && y<height;
+    }
+
+    /**
+     *initialized the board again
+     *and then put numAvailable =0 for later
+     *and check 9 cells by double for-loop
+     *and create arraylist<Cell> available
+     *to save all 9 cells to become 0 to 8
+     *and then check if the 9 cells are in boundary and if it is
+     *put that cell (i,j) in available arraylist
+     *and then get the value of each cell of arraylist and check if it only has plant or empty
+     *and then if it's true, numAvailable++
+    */
+   public boolean canMove()
+    { 
+        board = new ArrayList<ArrayList<Cell>>();
+        int numAvailable = 0;
+        ArrayList<Cell> available = new ArrayList<Cell>();
+
+        for(int i=-1; i<2; i++)
+        {           
+            for(int j=-1; j<2; j++)
+            {                
+                if(inBoundary(width+i, height+j))
+                {
+                    Cell cell = board.get(i).get(j);
+                    available.add(cell); 
+                    for(int k=0; k<available.size(); k++)
+                    {
+                        if(available.get(k).get(k)="-,-" || available.get(k).get(k)="-") 
+                        {
+                            numAvailable = numAvailable + 1;
+                        } 
+                    }
+                }                
+            }
+        }
+        return numAvailable;
+    }
+
+    public Animals(String name, String symbol, ArrayList<String> ESources, double currentAge, double lifeSpan, double currentE, double initE, double minEforBirth, double maxE, double EforLiving)
+    {
+        this.name=name;
+        this.symbol=symbol;
+        this.ESources=ESources;
+        this.currentAge = 0;        
+        this.lifeSpan=lifeSpan;
+        this.currentE=currentE;
+        this.initE=initE;
+        this.maxE=maxE;
+        this.minEforBirth=minEforBirth;
+        this.EforLiving=EforLiving;
+    }
+
+    public String getName()
+    {
+        return this.name;
+    }
+
+    public String getSymbol()
+    {
+        return this.symbol;
+    }
+
+    public void birth(double energy)
+    {
+        if(currentE>= 2*EforLiving + minEforBirth)
+        {
+            canGiveBirth = true;
+        }
+    }
+
+    public void eat()
+    {
+        board = new ArrayList<ArrayList<Cell>>();
+        int numPrey = 0;
+        ArrayList<Cell> prey = new ArrayList<Cell>();
+
+        for(int i=-1; i<2; i++)
+        {           
+            for(int j=-1; j<2; j++)
+            {                
+                if(inBoundary(width+i, height+j))
+                {
+                    Cell cell = board.get(i).get(j);
+                    prey.add(cell); 
+                    for(int k=0; k<prey.size(); k++)
+                    {
+                        if(prey.get(k).get(k).canEat==true) 
+                        {
+                            numPrey = numPrey + 1;
+                        } 
+                    }
+                }                
+            }
+        }
+        
+    }
+
+    public void move()
+    {
+        board = new ArrayList<ArrayList<Cell>>();
+        ArrayList<Cell> moveable = new ArrayList<Cell>();
+        Random random = new Random();
+        for (int i = -1; i < 2; i++) {
+            for (int j = -1; j < 2; j++) { 
+            }
+        }
+        }
+    
+
+   public String toSymbol(){
+        return "";
+   }
+}

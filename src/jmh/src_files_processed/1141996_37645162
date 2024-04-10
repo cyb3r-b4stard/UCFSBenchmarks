@@ -1,0 +1,139 @@
+import java.util.Scanner;
+/**
+ * #### ## # ####### #### ##### # ####### ##### ## ##### #### ## #########, ########### ###### ##### ## ####,
+ * ### ### ###### ## ## ######## ########### ## ###########.
+ * 
+ * @###### ###### ######### 
+ * @####### ####### #, ####
+ */
+public class Assignment4
+{
+    public static void main(String[] args)
+    {
+       final double C_RATE_R = .07;
+       final double C_RATE_M = .06;
+       final double C_RATE_C = .035;
+       boolean priceIsSet = false;
+       boolean codeIsSet = false;
+       boolean doAnotherIsSet = false;
+       boolean doAgain = false;
+       double totalSales = 0;
+       double totalCommissions = 0;
+       double commissionAmount = 0;
+       double commissionRate = 0;
+       String message = "";
+       
+       double sellingPrice;
+       String propertyCode;
+       String doAnother;
+       
+       Scanner input = new Scanner(System.in);
+       
+       message = "Real-Estate Commission Calculator\n";
+       message += "---------------------------------\n";
+       System.out.print(message);
+       do
+       {
+           do
+           {
+               System.out.print("\nEnter the property's selling price: ");
+               sellingPrice = input.nextFloat();
+               
+               if(sellingPrice > 0)
+               {
+                   priceIsSet = true;
+               }
+               else
+               {
+                   message = "\n**Error** - Selling price must be greater than zero\n";
+                   System.out.println(message);
+               }
+           }while(priceIsSet == false);
+           
+           message = "Residential     R\n";
+           message += "Multi-Dwelling  M\n";
+           message += "Commercial      C";
+           
+           System.out.println();
+           System.out.println(message);
+           System.out.println();
+           
+           do
+           {
+               System.out.print("Enter the property code: ");
+               propertyCode = input.next();
+               System.out.println(propertyCode);
+               
+               if(propertyCode.equals("R") || propertyCode.equals("M") || propertyCode.equals("C") || propertyCode.equals("r") || propertyCode.equals("m") || propertyCode.equals("c"))
+               {
+                   switch(propertyCode)
+                   {
+                       case "R","r":
+                       commissionRate = C_RATE_R;
+                       break;
+                       
+                       case "M","m":
+                       commissionRate = C_RATE_M;
+                       break;
+                       
+                       case "C","c":
+                       commissionRate = C_RATE_C;
+                       break;
+                       
+                       
+                       default:
+                       message = "Oh no, you broke me. Better grab a wrench!";
+                       System.out.println(message);
+                       System.out.println();
+                       break;
+                   }
+                   codeIsSet = true;
+               }
+               else
+               {
+                   message = "\n**Error** - Property code myust be R, M or C";
+                   System.out.println(message);
+                   System.out.println();
+               }
+           }while(codeIsSet == false);
+           
+           commissionAmount = sellingPrice*commissionRate;
+           totalCommissions += commissionAmount;
+           totalSales += sellingPrice;
+           message = "\nTotal commission on this property is $" + commissionAmount + "\n";
+           System.out.println(message);
+           
+           do
+           {
+               System.out.print("Calculate another commission? (Y/N): ");
+               doAnother = input.next();
+               
+               if (!((doAnother.equals("Y")) || (doAnother.equals("N")) || (doAnother.equals("y")) || (doAnother.equals("n"))))
+               {
+                   message = "\n**Error** - Invalid response";
+                   System.out.println(message);
+                   System.out.println();
+               }
+               else if(doAnother.equals("N") || doAnother.equals("n"))
+               {
+                   doAnotherIsSet = true;
+                   doAgain = false;
+               }
+               else if(doAnother.equals("Y") || doAnother.equals("y"))
+               {
+                   doAgain = true;
+                   doAnotherIsSet = true;
+               }
+           }while(doAnotherIsSet == false);
+           
+       }while(doAgain == true);
+        
+       message = "Transaction Summary\n";
+       message += "-------------------\n";
+       message += "Total property sales: $" + totalSales + "\n";
+       message += "Total Commissions: $" + totalCommissions;
+       
+       System.out.println();
+       System.out.println(message);
+    }
+}

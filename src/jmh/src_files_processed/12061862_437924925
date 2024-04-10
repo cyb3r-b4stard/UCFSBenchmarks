@@ -1,0 +1,155 @@
+
+public class Cola<T> implements TADCola<T>
+{
+  private Nodo<T> inicio;
+  private Nodo<T> fin;
+  private int numElemento;
+  
+  public Cola()
+  {
+      inicio=fin=null;
+      numElemento=0;
+  }
+  
+  public boolean estaVacia()
+  {
+      return numElemento==0;
+  }
+  
+  public void vaciar()
+  {
+      inicio=fin=null;
+      numElemento=0;      
+  }
+  
+  public int tamanio()
+  {
+      return numElemento;
+  }
+  
+  public void meter(T e)
+  {
+      Nodo<T> n=new Nodo<T>(e);
+      if(estaVacia())
+      {
+          inicio=fin=n;
+      }
+      else
+      {
+          n.asignarSiguiente(fin);
+          fin=n;
+      }
+      numElemento++;
+  }
+  
+  private Nodo<T> anteriorInicio()
+  {
+      Nodo<T> anterior=null;
+      Nodo<T> r=fin;
+      
+      while(r!=inicio)
+      {
+          anterior=r;
+          r=r.obtenerSiguiente();
+      }
+      return anterior;
+  }
+  
+  public T sacar()
+  {
+      if(!estaVacia())
+      {
+          T e=inicio.obtenerElemento();
+          inicio=anteriorInicio();
+          if(inicio!=null)
+             inicio.asignarSiguiente(null);
+          numElemento--;
+          if(numElemento==0)
+            inicio=fin=null;
+          return e;
+      }
+      return null;
+  }
+  
+  public T primero()
+  {
+      if(!estaVacia())
+         return inicio.obtenerElemento();
+      return null;
+  }
+  
+  public T ultimo()
+  {
+      if(!estaVacia())
+         return fin.obtenerElemento();
+      return null;
+  }
+  
+  public java.util.Iterator iterador()
+  {
+      return new Iterador();
+  }
+  
+  private class Iterador implements java.util.Iterator
+  {
+      Nodo<T> r;
+      
+      public Iterador()
+      {
+          r=inicio;
+      }
+      
+      public boolean hasNext()
+      {
+          return r!=null;
+      }
+      
+      private Nodo<T> anteriorNodo(Nodo<T> inicio)
+      {
+          Nodo<T> anterior=null;
+          Nodo<T> r=fin;
+      
+          while(r!=inicio)
+          {
+              anterior=r;
+              r=r.obtenerSiguiente();
+          }
+          return anterior;
+      }
+      
+      public T next()
+      {
+          if(hasNext())
+          {
+              T e=r.obtenerElemento();
+              if(r == fin)
+                  r=null;
+              else
+                  r=anteriorNodo(r);
+              return e;
+          }
+          return null;
+      }
+      
+      public void remove()
+      {
+          throw new UnsupportedOperationException();
+      }
+  }
+  
+  public void Cola<T> concatenar(Cola<T> c2)
+  {
+      for(int i=0; i<tamanio();i++)
+      {
+          meter(c2.primero());
+          c2.sacar();
+      }
+        
+  }
+}
+
+
+
+
+
+

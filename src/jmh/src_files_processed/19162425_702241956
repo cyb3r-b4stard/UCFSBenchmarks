@@ -1,0 +1,175 @@
+/*
+ * ####### # ###### #### ### ##### ## ##########:
+ *  (#) # ######, #### ### #### "#### ## # #####".
+ *  (#) # ########## - #### ### #### ## ## ### ### #####, ### ####### ######
+ *      #### ####### ### #### #######
+ *  (#) # ####### - #### ### ##### ##, ### ####### ###### #### ####### ####
+ *      ### ###### ### ####### ### #### #### ## ## ### ######
+ *  (#) # ######### - #### ### ##### ##, ### ####### ###### #### ####### #######
+ *      ### ######## ### #### ####### ## #########
+ *  (#) # ######### - #### ### ##### ## ### ####-#### #### #####, # #### ####
+ *      ###### #### ### ##### "#####", "#####", "#####", "#####"; #### ###
+ *      ###### ## #### ## ### ####, ### ####### ###### #### ####### ##### ####
+ *      ### ######
+ *  (#) # ##### ###### '####' - ##### ### ###### ##, # ####-#### #### #### ###
+ *      ##### "#####" ### "####" #### ## #########; #### ### ###### "#####", #
+ *      ####### #### ###### ## ### ####### ######, ## #### ### ###### "####",
+ *      ### ########### #### ###.
+ *  (#) # ####### - #### ### ##### ### ####, ## ###### ### ### ####### #####
+ */
+
+import java.awt.*;          
+import java.awt.event.*;    
+import javax.swing.*;       
+import javax.swing.event.*;     
+
+public class GuiTest1 extends JFrame {
+
+    private JLabel label1;
+    private JTextField textField1;
+    private JButton button1;
+    private JCheckBox chkBox1;
+    private JComboBox<String> comboBox1;
+    private String[] names = {"item1", "item2", "item3", "item4"};
+    private JSlider slider1;
+    private JMenuItem startItem, exitItem;
+
+    /** Creates a new instance of gui_test - sets up GUI */
+    public GuiTest1() {
+        super("Comment in Window Title Bar");
+
+        Container container = getContentPane();
+        container.setLayout( new FlowLayout() );
+
+        label1 = new JLabel("This is a label");
+        textField1 = new JTextField(20);    
+        button1 = new JButton("Text in button");
+        chkBox1 = new JCheckBox("Text next to checkbox");
+
+        comboBox1 = new JComboBox<String>(names);   
+        comboBox1.setMaximumRowCount(3);    
+
+        slider1 = new JSlider();    
+        slider1.setMajorTickSpacing(10);    
+        slider1.setPaintTicks(true);
+        slider1.setPaintLabels(true);
+
+        JMenu fileMenu = new JMenu("File");
+        startItem = new JMenuItem("Start");
+        exitItem = new JMenuItem("Exit");
+        JMenuBar bar = new JMenuBar();
+
+        container.add(label1);
+        container.add(textField1);
+        container.add(button1);
+        container.add(chkBox1);
+        container.add(comboBox1);
+        container.add(slider1);
+        fileMenu.add(startItem);
+        fileMenu.add(exitItem); 
+        setJMenuBar (bar);
+        bar.add (fileMenu);
+
+        textField1.addActionListener(new TextFieldHandler());
+        button1.addActionListener(new ButtonHandler());
+        chkBox1.addItemListener(new CheckBoxHandler());
+        comboBox1.addItemListener(new ComboBoxHandler());
+        slider1.addChangeListener(new SliderHandler());
+        MenuItemHandler menuItemHandler = new MenuItemHandler();
+        startItem.addActionListener(menuItemHandler);
+        exitItem.addActionListener(menuItemHandler);
+
+        c
+
+        setSize( 275, 275);
+        setVisible(true);
+
+    }
+
+    /**
+     * execute application
+     */
+    public static void main(String[] args) {
+        GuiTest1 application = new GuiTest1();
+    }
+
+    /******** PRIVATE INNER CLASSES FOR EVENT HANDLING ***************/
+    /*
+     * - Provide ActionListener event handlers for JTextField, JButton
+     * - Provide ItemListener event handlers for JCheckBox, JComboBox events
+     * - Provide ChangeListener event handlers for JSlider
+     * - Provide MouseListener event handlers for mouse events
+     * - Provide KeyListener event handlers for key events
+     *
+     * - if there is more than one component associated with a
+     *  particular event handler, you can test which component caused
+     *  the event using the method event.getSource()
+     */
+    private class TextFieldHandler implements ActionListener {
+        public void actionPerformed (ActionEvent event) {
+
+            if (event.getSource() == textField1) 
+            { 
+                System.out.print("Text typed in textField1: ");
+                System.out.println(event.getActionCommand());
+            }
+        }
+    }
+    private class ButtonHandler implements ActionListener {
+        public void actionPerformed (ActionEvent event) {
+
+            if (event.getSource() == button1) {
+                System.out.print("Button1 pressed; label in it is: ");
+                System.out.println(event.getActionCommand());
+            }
+        }
+    }
+
+    private class CheckBoxHandler implements ItemListener {
+        public void itemStateChanged (ItemEvent event) {
+
+            if (event.getSource() == chkBox1) {
+                if (event.getStateChange() == ItemEvent.SELECTED)
+                    System.out.println("Chkbox1 just checked");
+                else
+                    System.out.println("Chkbox1 just unchecked");
+            }
+        }   
+    }
+
+    private class ComboBoxHandler implements ItemListener {
+        public void itemStateChanged (ItemEvent event) {
+
+            if (event.getSource() == comboBox1) {
+                if ( event.getStateChange() == ItemEvent.SELECTED) {
+                    String itemSelected = names[comboBox1.getSelectedIndex()];
+                    System.out.println("Item selected: " + itemSelected);
+                }
+            }
+
+        }  
+    }
+
+    private class SliderHandler implements ChangeListener {
+        public void stateChanged (ChangeEvent event) {
+            if (event.getSource() == slider1) {
+                int x = slider1.getValue();
+                System.out.println("Slider value is now " + x);
+            }
+
+        }
+    }
+
+    private class MenuItemHandler implements ActionListener {
+        public void actionPerformed (ActionEvent event) {
+
+            if (event.getSource() == startItem) {
+                System.out.println("'Start' menu item selected");
+            }
+            else if (event.getSource() == exitItem ) {
+                System.exit(0);     
+            }
+        }   
+    }
+
+}   

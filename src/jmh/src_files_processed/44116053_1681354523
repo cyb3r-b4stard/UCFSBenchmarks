@@ -1,0 +1,392 @@
+import java.util.*; 
+import java.lang.*;
+public class Country implements CountryInterface
+{
+    private String countryName;
+    private LeaderInterface countryLeader;
+    private double countryPopulation;
+    private List<CityInterface> cityList;
+
+    public Country(String countryName)
+    {
+        this.countryName = countryName;
+        cityList = new ArrayList<CityInterface>();
+    }
+    
+    public String getName()
+    {
+        return countryName;
+    }
+
+    /**
+     * @param name The country's name
+     * e.g. United Kingdom
+     */
+    public void setName(String name)
+    {
+        countryName = name;
+    }
+
+    /**
+     * @return The Leader of the country. If no leader has been set then null is returned.
+     */
+    public LeaderInterface getLeader()
+    {
+        return countryLeader;
+    }
+
+    /**
+     * @param leader The leader of the country 
+     * e.g. an object referring to the Prime Minister
+     */
+    public void setLeader(LeaderInterface leader)
+    {  
+        countryLeader = leader;
+    }
+    
+    /**
+     * @return The total population of the country in 1000s
+     */
+    public double getPopulation()
+    {
+        return countryPopulation;
+    }
+
+    /**
+     * @param population The total population of the country in 1000s
+     */
+    public void setPopulation(double population)
+    {
+        countryPopulation = population;
+    }
+
+    /** 
+     * @param c A city of the country
+     * e.g. an object referring to Durham
+     */
+    public void addCity(CityInterface c)
+    {
+        cityList.add(c);
+    }
+
+    /**
+     * @return A list of all of the cities in the country.
+     */
+    public List<CityInterface> getCities()
+    {
+        return cityList;
+    }
+
+    /**
+     * @return The total population of the cities in the country 
+     * i.e. the sum of the total population of each of the cities in the country.
+     */
+    public double getCityPopulation()
+    {
+        double cityPopulation = 0;
+        for(CityInterface c : cityList){
+            cityPopulation += c.getPopulation();
+        }
+        return cityPopulation;
+    }
+
+    /**
+     * @return The total student population of the country 
+     * i.e. the sum of the total student population of each of the cities in the country.
+     */
+    public double getStudentPopulation()
+    {
+        double studentPopulation = 0;
+        for(CityInterface c : cityList){
+            studentPopulation += c.getStudentPopulation();
+        }
+        return studentPopulation;
+    }
+
+    /**
+     * @return The average (mean) size (student population) of all the universities not including
+     * those with a student population of 0.
+     * Return 0 if all universities have a population of 0 or if there are no universities.
+     */
+    public double averageUniversitySize()
+    {
+        double n = 0;
+        double average = 0;
+        for(CityInterface c : cityList){
+            for(UniversityInterface u : c.getUniversities()){
+                if(u.getStudentPopulation() != 0){
+                    n++;
+                }
+            }
+        }
+        if(n == 0){
+            average = 0;
+        }
+        else{
+            average = getStudentPopulation()/n;
+        }
+        return average;
+    }
+    
+    /**
+     * @return The average (mean) rank of all the universities not including
+     * those with a rank of 0.
+     * Return 0 if all universities have rank 0 or if there are no universities.
+     */
+    public double averageUniversityRanking()
+    {
+        double n = 0;
+        double totalRank = 0;
+        double average = 0;
+        for(CityInterface c : cityList){
+            for(UniversityInterface u : c.getUniversities()){
+                int r = u.getRank();
+                if(r != 0){
+                    totalRank += r;
+                    n++;
+                }
+            }
+        }
+        if(n==0){
+            average = 0;
+        }
+        else{
+            average = totalRank/n;
+        }
+        return average;
+    }
+
+    /**
+     * @return The average (mean) rank of all the universities with a total student population of less than 10,000 
+     * not including those with a rank of 0.
+     * Return 0 if all such universities have rank 0 or if there are no universities with a total student population of less than 10,000.
+     */
+    public double averageRankOfUniversitiesWithLessThan10kStudents()
+    {
+        double n = 0;
+        double totalRank = 0;
+        double average = 0;
+        for(CityInterface c : cityList){
+            for(UniversityInterface u : c.getUniversities()){
+                double p = u.getStudentPopulation();
+                int r = u.getRank();
+                if(p < 10 && r != 0){
+                    totalRank += r;
+                    n++;
+                }
+            }
+        }
+        if(n==0){
+            average = 0;
+        }
+        else{
+            average = totalRank/n;
+        }
+        return average;
+    }
+
+    /**
+     * @return A list of all cities that have more than one university.
+     */
+    public List<CityInterface> citiesWithMultipleUniversities()
+    {
+        ArrayList<CityInterface> list = new ArrayList<CityInterface>();
+        for(CityInterface c : cityList){
+            if(c.getNumberOfUniversities() > 1){
+                list.add(c);
+            }
+        }
+        return list;
+    }
+
+    /**
+     * @return A list of universities that have some postgraduate students but no undergraduate students.
+     */
+    public List<UniversityInterface> getPGOnlyUniversities()
+    {
+        ArrayList<UniversityInterface> list = new ArrayList<UniversityInterface>();
+        for(CityInterface c : cityList){
+            for(UniversityInterface u : c.getUniversities()){
+                double postgrads = u.getPGStudents();
+                if(u.hasUGs()==false && postgrads!=0){
+                    list.add(u);
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
+     * @return The proportion of universities (out of all universities) that do not include their city name in the university name
+     * e.g. Northumbria University does not include its city name (Newcastle)
+     */
+    public double proportionOfUniversitiesThatDoNotMentionCityName()
+    {
+        double n = 0;
+        double total = 0;
+        for(CityInterface c : cityList){
+            String cityName = c.getName().toLowerCase();
+            for(UniversityInterface u : c.getUniversities()){
+                String uniName = u.getName().toLowerCase();
+                boolean mentionsName = uniName.contains(cityName);
+                if(mentionsName==false){
+                    n++;
+                }
+            }
+            total += c.getUniversities().size(); 
+        }
+        return n/total;
+    }
+
+    /**
+     * @return A list of all female leaders, including the leader of the country, the cities and the universities.
+     */
+    public List<LeaderInterface> femaleLeaders()
+    {
+        List<LeaderInterface> femaleLeaders = new ArrayList<LeaderInterface>();
+        LeaderInterface countryLeader = getLeader();
+        if(countryLeader.isFemale()==true){
+            femaleLeaders.add(countryLeader);
+        }
+        for(CityInterface c : cityList){
+            LeaderInterface cityLeader = c.getLeader();
+            if(cityLeader.isFemale()==true){
+                femaleLeaders.add(cityLeader);
+            }
+            for(UniversityInterface u : c.getUniversities()){
+                LeaderInterface uniLeader = u.getLeader();
+                if(uniLeader.isFemale()==true){
+                    femaleLeaders.add(uniLeader);
+                }
+            }
+        }
+        return femaleLeaders;
+    }
+
+    /**
+     * @return the most commonly used title amonst all leaders (of the countrym the cities and the Universities). If two titles are equally frequently used then either may be returned.
+     */
+    public String mostCommonLeaderTitle()
+    {
+        String mode = "";
+        int highest = 0;
+        List<String> titles = new ArrayList<String>();
+        titles.add(getLeader().getTitle());
+        for(CityInterface c : cityList){
+            titles.add(c.getLeader().getTitle());
+            for(UniversityInterface u : c.getUniversities()){
+                titles.add(u.getLeader().getTitle());
+            }
+        }
+        for(String t : titles){
+            int freq = Collections.frequency(titles, t);
+            if(freq > highest){
+                highest = freq;
+                mode = t;
+            }
+        } 
+        return mode;
+    }
+
+    /**
+     * @return The university selected by a formatted query string. If no university meets the criteria or the query string is not well formatted then return null.
+     * 
+     * @param query The query string is of the format
+     * "_property_ UNIVERSITY IN A CITY WITH _comparator_ THAN _size_k STUDENTS"
+     * where: 
+     * _property_ is "LARGEST" or "SMALLEST" (based on total student numbers);
+     * _comparator_ is "MORE" or "LESS";
+     * _size_ is a floating point number representing thousands of people.
+     * 
+     * E.g. "LARGEST UNIVERSITY IN A CITY WITH LESS THAN 30k STUDENTS"
+     * 
+     */    
+    public UniversityInterface select(String query)
+    {
+        String[] words;
+        String splitter = " ";
+        words = query.split(splitter);
+        String property = "";
+        String comparator = "";
+        float size = 0;
+        List<CityInterface> cities = new ArrayList<CityInterface>();
+        UniversityInterface result = null;
+        
+        if(words.length != 10){
+            return null;
+        }
+        if(word[0].equals("LARGEST") || word[0].equals("SMALLEST")){
+            property = word[0];
+        }
+        else{
+            return null;
+        }
+        if(!"UNIVERSITYINACITYWITH".equals(word[1] + word[2] + word[3] + word[4] + word[5])){
+            return null;
+        }
+        if(word[6].equals("MORE") || word[6].equals("LESS")){
+            comparator = word[6];
+        }
+        if(!"THAN".equals(word[7])){
+            return null;
+        }
+        if(word[8].endsWith("k")){
+            String number = word[8].substring(0,(word[8].length())-1);
+            size = Float.parseFloat(number);
+        }
+        else{
+            return null;
+        }
+        if(!"STUDENTS".equals(word[9])){
+            return null;
+        }
+        System.out.println(words);
+        System.out.println(comparator);
+        System.out.println(property);
+        System.out.println(size);
+        for(CityInterface c : cityList){
+            if(comparator.equals("MORE")){
+                if(c.getStudentPopulation() > size){
+                    cities.add(c);
+                }
+            }
+            if(comparator.equals("LESS")){
+                if(c.getStudentPopulation() < size){
+                    cities.add(c);
+                }
+            }
+        }
+        if(cities.size() == 0){
+            return null;
+        }
+        System.out.println(cities)
+        
+        for(CityInterface c : cities){
+            if(property.equals("LARGEST")){
+                double largest = 0;
+                for(UniversityInterface u : c.getUniversities()){
+                    if(u.getStudentPopulation() > largest){
+                        largest = u.getStudentPopulation();
+                        result = u;
+                    }
+                }
+            }
+            if(property.equals("SMALLEST")){
+                double smallest = 0;
+                for(UniversityInterface u : c.getUniversities()){
+                    if(u.getStudentPopulation() < smallest){
+                        smallest = u.getStudentPopulation();
+                        result = u;
+                    }
+                }
+            }
+        }
+        
+        return result;
+    }    
+}
+    
+    
+
+  
+

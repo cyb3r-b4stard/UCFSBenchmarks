@@ -1,0 +1,100 @@
+
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import java.awt.*;
+import java.awt.Label;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import javax.swing.*;
+
+public class UploadForm extends JFrame implements ActionListener
+{
+    File image;
+    JTextField server = new JTextField(10);
+    JTextField username = new JTextField(10);
+    JTextField imagePath = new JTextField(10);
+    JTextArea opt = new JTextArea(10,15);
+    JButton imageBrowse = new JButton("Browse Image");
+    JPasswordField password = new JPasswordField(10);
+    JButton uploadButton = new JButton("Upload");
+    
+    public void actionPerformed(ActionEvent ae) 
+    
+{
+    if (ae.getSource().equals(imageBrowse)) 
+{String s;JFileChooser jfc = new JFileChooser();
+jfc.showDialog(jfc, "Choose an image file");
+s = jfc.getSelectedFile().getAbsolutePath();
+imagePath.setText(s);
+}
+else if (ae.getSource().equals(uploadButton))
+
+}
+try {
+File f = new File(imagePath.getText());
+String urlString = "ftp:
+URL url = new URL(urlString);
+URLConnection connection = url.openConnection();
+connection.setDoOutput(true);
+BufferedOutputStream out = new BufferedOutputStream(connection.getOutputStream());
+FileInputStream in = new FileInputStream(f);
+byte[] buffer = new byte[1024];
+int i = 0;
+while ((i = in.read(buffer)) >= 0) {
+out.write(buffer, 0, i);
+}
+out.close();
+in.close();
+}catch (Exception e) {
+System.out.println(e.getMessage());
+}
+}
+}
+
+public UploadForm() {
+getContentPane().setBackground(Color.PINK);
+setLayout(new FlowLayout());
+setSize(500,300);
+setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+JPanel ft = new JPanel();
+ft.add(imagePath);
+ft.add(imageBrowse);
+add("West",ft);
+JPanel lt = new JPanel();
+lt.add(new Label("Server"));
+lt.add(server);
+add("West",lt);
+JPanel mt = new JPanel();
+mt.add(new Label("Username"));
+mt.add(username);
+add("West",mt);
+JPanel nt = new JPanel();
+nt.add(new Label("Password"));
+nt.add(password);
+add("West",nt);
+JPanel bt = new JPanel();
+bt.add(uploadButton);
+add("Center",bt);
+JPanel kt = new JPanel();
+kt.add(opt);
+add("Center",kt);
+imageBrowse.addActionListener(this);
+uploadButton.addActionListener(this);
+setVisible(true);
+
+}
+
+public static void main(String[] args) {
+JFrame f = new UploadForm();
+
+}
+

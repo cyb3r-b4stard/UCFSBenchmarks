@@ -1,0 +1,119 @@
+package lab5;
+import java.util.*;
+public class FirmaHashMap {
+    Map <String, Pracownik> firma;
+    public FirmaHashMap(){
+        firma = new HashMap<String, Pracownik>();
+    }
+    public Pracownik znajdzPracownika(String nazwisko){
+        return firma.get(nazwisko);
+    }
+    public boolean jestUrzednikiem(Pracownik pracownik){
+        return pracownik instanceof Urzednik;
+    }
+    public boolean jestRobotnikiem(Pracownik pracownik){
+        return pracownik instanceof Robotnik;
+    }
+    public void zatrudnijRobotnika(String nazwisko, double etat, double stawka, int godzinyPrzepracowane){
+        if(znajdzPracownika(nazwisko)!= null)
+        System.out.println("Pracownik o podanym nazwisku: " + nazwisko + " już pracuje dla tej firmy");
+        else{
+            firma.put(nazwisko, );
+            System.out.println("Zatrudniono pracownika o nazwisku: " + nazwisko);
+        }
+    }
+    public void zatrudnijUrzednika(String nazwisko, double etat, double placaPodstawowa, double procentPremii){
+        if(znajdzPracownika(nazwisko) != null)
+        System.out.println("Pracownik o podanym nazwisku: " + nazwisko + " już pracuje dla tej firmy");
+        else{
+            firma.add(new Urzednik(nazwisko, etat, placaPodstawowa, procentPremii));
+            System.out.println("Zatrudniono pracownika o nazwisku: " + nazwisko);
+        }
+    }
+    public void zwolnijPracownika(String nazwisko){
+        boolean jest = false;
+        Iterator <Pracownik> it = firma.iterator();
+        while(it.hasNext()){
+            if(it.next().nazwisko.equals(nazwisko)){
+                it.remove();
+                jest=true;
+            }
+        }
+        if(jest)
+        System.out.println("Pracownik: " + nazwisko + " został zwolniony");
+        else
+        System.out.println("Pracownik: " + nazwisko + " nie był zatrudniony");
+    }
+    public int liczbaUrzednikow(){
+        int liczbaUrzednikow = 0;
+        Iterator <Pracownik> it = firma.iterator();
+        while(it.hasNext()){
+            it.next();
+            liczbaUrzednikow++;
+        }
+        return liczbaUrzednikow;
+    }
+    public int liczbaRobotnikow(){
+        int liczbaRobotnikow = 0;
+        Iterator <Pracownik> it = firma.iterator();
+        while(it.hasNext()){
+            it.next();
+            liczbaRobotnikow++;
+        }
+        return liczbaRobotnikow;
+    }
+    public double sumaWyplatRobotnikow(){
+        double sumaWyplat=0;
+        Iterator <Pracownik> it = firma.iterator();
+        while(it.hasNext()){
+            Pracownik p = it.next();
+            if(jestRobotnikiem(p))
+            sumaWyplat+= p.placa();
+        }
+        return sumaWyplat;
+    }
+    public double sumaWyplatUrzednikow(){
+        double sumaWyplat=0;
+        Iterator <Pracownik> it = firma.iterator();
+        while(it.hasNext()){
+            Pracownik p = it.next();
+            if(jestUrzednikiem(p))
+            sumaWyplat+=p.placa();
+        }
+        return sumaWyplat;
+    }
+    public void wydrukListyPracownikow(){
+        int nrPrac=1;
+        System.out.println("Lista pracowników: ");
+        System.out.printf("%2s. %12s - %8s - %s\n", "Lp", "nazwisko", "grupa", "etat");
+        for(Pracownik p : firma){
+            System.out.printf("%2d. %12s - %s - %4s\n", nrPrac++, p.nazwisko, (jestRobotnikiem(p) ? "Robotnik" : "Urzędnik"), p.etat);
+        }
+    }
+    public void wydrukListyUrzednikow(){
+        int lu=0;
+        System.out.println("Lista urzędników: ");
+        System.out.printf("%2s. %12s - %s\n", "Lp" , "nazwisko", "etat");
+       for(Pracownik p : firma){
+           if(jestUrzednikiem(p))
+           System.out.printf("%2d. %12s - %4s\n", ++lu, p.nazwisko, p.etat);
+        }
+    }
+    public void wydrukListyRobotnikow(){
+        int lr=0;
+        System.out.println("Lista robotników ");
+        System.out.printf("%2s. %12s - %s\n", "Lp", "nazwisko", "etat");
+        for(Pracownik p : firma){
+            if(jestRobotnikiem(p))
+            System.out.printf("%2d. %12s - %4s\n", ++lr, p.nazwisko, p.etat);
+        }
+    }
+    public void wydrukListyPlac(){
+        int nrPrac = 1;
+        System.out.println("Wydruk listy płac pracowników: ");
+        System.out.printf("%2s. %12s - %8s - %4s - %s\n", "Lp", "nazwisko", "grupa", "etat", "płaca");
+        for(Pracownik p : firma){
+            System.out.printf("%2d. %12s - %8s - %4s - %s\n", nrPrac++, p.nazwisko, (jestRobotnikiem(p) ? "Robotnik" : "Urzędnik"), p.etat, p.placa());
+        }
+    }
+}

@@ -1,0 +1,365 @@
+import java.util.Stack;
+import java.util.ArrayList;
+/**
+ *  #### ##### ## ### #### ##### ## ### "##### ## ####" ###########. 
+ *  "##### ## ####" ## # #### ######, #### ##### ######### ####.  ##### 
+ *  ### #### ###### #### #######. ####'# ###. ## ###### ###### ## ######## 
+ *  ## #### ## #### ###########!
+ * 
+ *  ## #### #### ####, ###### ## ######## ## #### ##### ### #### ### "####"
+ *  ######.
+ * 
+ *  #### #### ##### ####### ### ########### ### ### ######: ## ####### ###
+ *  #####, ####### ### ###### ### ###### ### ####.  ## #### ######### ###
+ *  ######## ### ######## #### ### ###### #######.
+ * 
+ * @######  ####### ####### ### ##### #. ######
+ * @####### ####.##.##
+ */
+
+public class Game 
+{
+    private Parser parser;
+    private Player player;
+    private Stack<Room> backRoom;
+
+    /**
+     * Create the game and initialise its internal map.
+     */
+    public Game() 
+    {
+        player = new Player("Tony", 20);
+        createRooms();
+        parser = new Parser();
+        backRoom = new Stack<Room>();
+    }
+
+    /**
+     * Create all the rooms and link their exits together.
+     */
+    private void createRooms()
+    {
+        Room lobby, entrance, casino, restaurant, corridor, room1, room2, room3, exit, trapDoor, carPark; 
+
+        lobby = new Room("in the hotel lobby");
+        entrance = new Room("at the hotel entrance");
+        casino = new Room("in the casino");
+        restaurant = new Room ("in the restaurant");
+        corridor = new Room ("in the corridor");
+        room1 = new Room ("in Room 1");
+        room2 = new Room ("in Room 2");
+        room3 = new Room ("in Room 3");
+        exit = new Room ("in the hotel exit");
+        trapDoor = new Room("are caught by the trap door");
+        carPark = new Room("in the car parking");
+
+        lobby.setExit("east", restaurant);
+        lobby.setExit("west", entrance);
+        lobby.setExit("north", casino);
+        lobby.setExit("south", corridor);
+        entrance.setExit("east", lobby);
+        entrance.setExit("west", trapDoor);
+        entrance.setExit("north", carPark);
+        entrance.setExit("south", exit);
+        casino.setExit("east", restaurant);
+        casino.setExit("south", lobby);
+        casino.addItem("chips", "Just poker chips", 10, "No", 0);
+        restaurant.setExit("west", lobby);
+        restaurant.setExit("north", casino);
+        restaurant.addItem("bigbackpack", "Bigger backpak.", 10, "Increases you maximum weight to 50", 30);
+        corridor.setExit("east", room1);
+        corridor.setExit("west", exit);
+        corridor.setExit("north", lobby);
+        corridor.setExit("south", room2);
+        room1.setExit("west", corridor);
+        room1.setExit("south", room3);
+        room1.addItem("food", "medium ammount of food", 20, "No", 0);
+        room2.setExit("east", room3);
+        room2.setExit("north", corridor);
+        room3.setExit("west", room2);
+        room3.setExit("north", room1);
+        exit.setExit("east", corridor);
+        exit.setExit("north", entrance);
+        trapDoor.setExit("east", entrance);
+        carPark.setExit("south", entrance);
+
+        player.setCurrentRoom(lobby); 
+    }
+
+    /**
+     *  Main play routine.  Loops until end of play.
+     */
+    public void play() 
+    {
+        player.printName();
+        printWelcome();
+
+
+        boolean finished = false;
+        while (! finished) {
+            Command command = parser.getCommand();
+            finished = processCommand(command);
+        }
+        System.out.println("Thank you for playing.  Good bye.");
+    }
+
+    /**
+     * Print out the opening message for the player.
+     */
+    private void printWelcome()
+    {
+        System.out.println();
+        System.out.println("Welcome to the World of Zuul!");
+        System.out.println("World of Zuul is a new, incredibly boring adventure game.");
+        System.out.println("Type 'help' if you need help.");
+        System.out.println();
+        printLocationInfo();
+    }
+
+    /**
+     * Given a command, process (that is: execute) the command.
+     * @param command The command to be processed.
+     * @return true If the command ends the game, false otherwise.
+     */
+    private boolean processCommand(Command command) 
+    {
+        boolean wantToQuit = false;
+
+        if(command.isUnknown())
+        {
+            System.out.println("I don't know what you mean...");
+            return false;
+        }
+
+        String commandWord = command.getCommandWord();
+        if (commandWord.equals("help"))
+        {
+            printHelp();
+        }
+        else if (commandWord.equals("go"))
+        {
+            goRoom(command);
+        }
+        else if (commandWord.equals("look"))
+        {
+            look();
+        }
+        else if (commandWord.equals("use"))
+        {
+            useItem(command);
+        }
+        else if (commandWord.equals("back"))
+        {
+            back();
+        }
+        else if (commandWord.equals("take"))
+        {
+            take(command);
+        }
+        else if (commandWord.equals("drop"))
+        {
+            drop(command);
+        }
+        else if (commandWord.equals("items"))
+        {
+            listInventory();
+        }
+        else if (commandWord.equals("quit"))
+        {
+            wantToQuit = quit(command);
+        }
+        return wantToQuit;
+    }
+
+
+    /**
+     * Print out some help information.
+     * Here we print some stupid, cryptic message and a list of the 
+     * command words.
+     */
+    private void printHelp() 
+    {
+        System.out.println("You are lost. You are alone. You wander");
+        System.out.println("around at the hotel.");
+        System.out.println();
+        System.out.println("Your command words are:");
+        System.out.println(parser.showCommands());
+    }
+
+    /** 
+     * Try to go in one direction. If there is an exit, enter
+     * the new room, otherwise print an error message.
+     */
+    private void goRoom(Command command) 
+    {
+        if(!command.hasSecondWord())
+        {
+            System.out.println("Go where?");
+            return;
+        }
+
+        String direction = command.getSecondWord();
+
+        Room nextRoom = player.getCurrentRoom().getExit(direction);
+        if (nextRoom == null)
+        {
+            System.out.println("There is no door!");
+        }
+        else
+        {
+            backRoom.push(player.getCurrentRoom());
+            player.setCurrentRoom(nextRoom);
+            printLocationInfo();
+        }
+    }
+
+    private void printLocationInfo()
+    {
+        System.out.println(player.getCurrentRoom().getLongDescription());
+    }
+
+    /** 
+     * "Quit" was entered. Check the rest of the command to see
+     * whether we really quit the game.
+     * @return true, if this command quits the game, false otherwise.
+     */
+    private boolean quit(Command command) 
+    {
+        if(command.hasSecondWord())
+        {
+            System.out.println("Quit what?");
+            return false;
+        }
+        else
+        {
+            return true;  
+        }
+    }
+
+    /**
+     * Method for the look command
+     */
+    private void look()
+    {
+        System.out.println(player.getCurrentRoom().getLongDescription());
+    }
+
+    /**
+     * Method for the eat command
+     */
+    private void useItem(Command command)
+    {
+        if(!command.hasSecondWord())
+        {
+            System.out.println("Use what?");
+            return;
+        }
+        ArrayList<Item> items = new ArrayList<Item>(player.getInventory());
+        String itemToUse = command.getSecondWord();
+        boolean found = false;
+        for(Item item : items)
+        {
+            if(itemToUse.equals("bigbackpak")
+            {
+                System.out.println("This item has a special effect!")
+                System.out.println("Special effect: " + item.getSpecialDescription());
+                found = true;
+            }
+        }
+        if (!found)
+        {
+            System.out.println("No such item");
+        }
+    }
+
+    /**
+     * Method for back command
+     */
+    private void back()
+    {
+        if (backRoom.empty())
+        {
+            System.out.println("No room to go back !");
+            printLocationInfo();
+        }
+        else
+        {
+            player.setCurrentRoom(backRoom.pop());
+            printLocationInfo();
+        }
+    }
+
+    /**
+     * Method for the take command. Allows player to take items.
+     */
+    private void take(Command command)
+    {
+        if (!command.hasSecondWord())
+        {
+            System.out.println("Take what ?");
+            return;
+        }
+        ArrayList<Item> items = new ArrayList<Item>(player.getCurrentRoom().getItems());
+        String chosenItem = command.getSecondWord();
+        boolean found = false;
+        for (Item item : items)
+        {
+            if (chosenItem.equals(item.getItem()))
+            {
+                if ((player.getMaxWeight() - player.getCurrentWeight()) < item.getWeight())
+                {
+                    System.out.println("This item is too heavy !");
+                    return;
+                }
+                else
+                {
+                    player.takeItem(item);
+                    player.increaseWeight(item.getWeight());
+                    found = true;
+                }
+            }
+        }
+        if (!found)
+        {
+            System.out.println("No such item");
+        }
+    }
+
+    private void drop(Command command)
+    {
+        if(!command.hasSecondWord())
+        {
+            System.out.println("Drop what ?");
+            return;
+        }
+        ArrayList<Item> inventory = new ArrayList<Item>(player.getInventory());
+        String chosenItem = command.getSecondWord();
+        boolean found = false;
+        if (player.getInventorySize() > 0)
+        {
+            for (Item item : inventory)
+            {
+                if (chosenItem.equals(item.getItem()))
+                {
+                    player.dropItem(item);
+                    player.decreaseWeight(item.getWeight());
+                    found = true;
+                }
+            }
+        }
+        else
+        {
+            System.out.println("You have no items !");
+        }
+
+        if (!found)
+        {
+            System.out.println("No such item");
+        }
+    }
+    
+    public void listInventory()
+    {
+        System.out.println(player.listItemsInventory());
+    }
+}

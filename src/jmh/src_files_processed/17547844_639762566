@@ -1,0 +1,121 @@
+/*
+ * ## ###### #### ####### ######, ###### ####### ####### ## ####### ##########.
+ * ## ###### #### ######## ####, ###### ##### | #########
+ * ### #### ### ######## ## ### ######.
+ */
+
+/**
+ *
+ * @###### ####
+ */
+ 
+ 
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
+ 
+/**
+ *
+ * @###### ####
+ */
+public class DPPeterJantak {
+    private ArrayList<Rezistor> rezistory;
+ 
+    public DPPeterJantak() {
+        rezistory = new ArrayList<>();
+    }
+ 
+    private static class Rezistor {
+        private double pravdepodobnost;
+ 
+        public Rezistor() {
+            this(0.0);
+        }
+ 
+        public Rezistor(double pravdepodobnost) {
+            this.pravdepodobnost = pravdepodobnost;
+        }
+ 
+        public double getPrav() {
+            return pravdepodobnost;
+        }
+ 
+        @Override
+        public String toString() {
+            return String.valueOf(pravdepodobnost);
+        }
+    }
+ 
+    private static void spravenieSchemy(DPPeterJantak dp) {
+        dp.rezistory.add(new Rezistor(0.1));
+        dp.rezistory.add(new Rezistor(0.4));
+        dp.rezistory.add(new Rezistor(0.7));
+        dp.rezistory.add(new Rezistor(0.8));
+        dp.rezistory.add(new Rezistor(0.9));
+        dp.rezistory.add(new Rezistor(0.9));
+    }
+ 
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        DPPeterJantak dp = new DPPeterJantak();
+        DPPeterJantak.spravenieSchemy(dp);
+ 
+        double temp = dp.getPravdepodobnost();
+        Object[] odpoved = dp.rezistory.toArray();
+        for (int i = 0; i < 100000; i++) {
+            Collections.shuffle(dp.rezistory, new Random());
+            if (dp.getPravdepodobnost() > temp) {
+                temp = dp.getPravdepodobnost();
+                odpoved = dp.rezistory.toArray();
+            }
+        }
+ 
+        
+        Rezistor[] rez = new Rezistor[6];
+        for (int i = 0; i < odpoved.length; i++) {
+            rez[i] = (Rezistor) odpoved[i];
+        }
+        dp.rezistory.clear();
+        for (int i = 0; i < odpoved.length; i++) {
+            dp.rezistory.add(rez[i]);
+        }
+        System.out.println("Najlepsia pravdepodobnost: " + temp);
+        dp.rezistory.forEach(System.out::println);
+    }
+ 
+    private double getPravdepodobnost() {
+        return spocitajSchemu();
+    }
+ 
+    private double spocitajSchemu() {
+        double ret = 0.0;
+        double temp1 = 0.0;
+        double temp2 = 0.0;
+        double temp3 = 0.0;
+        temp1 = spocitatSerial(rezistory.get(0), rezistory.get(1));
+        temp2 = spocitatParalelne(rezistory.get(3), rezistory.get(4));
+        temp3 = spocitatSerial(rezistory.get(2).getPrav(), temp2);
+        ret = spocitatParalelne(temp1, temp3);
+        ret = spocitatSerial(ret, rezistory.get(5).getPrav());
+        return ret;
+    }
+ 
+    private double spocitatParalelne(double prob1, double prob2) {
+        return 1 - ((1 - prob1) * (1 - prob2));
+    }
+ 
+    private double spocitatParalelne(Rezistor rez1, Rezistor rez2) {
+        return 1 - ((1 - rez1.getPrav()) * (1 - rez2.getPrav()));
+    }
+ 
+    private double spocitatSerial(double prob1, double prob2) {
+        return prob1 * prob2;
+    }
+ 
+    private double spocitatSerial(Rezistor rez1, Rezistor rez2) {
+        return rez1.getPrav() * rez2.getPrav();
+    }
+}  

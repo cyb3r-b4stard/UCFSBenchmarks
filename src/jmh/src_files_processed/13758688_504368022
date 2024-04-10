@@ -1,0 +1,106 @@
+import java.util.ArrayList;
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (###### #####) 
+ * @####### (##/##/####)
+ */
+public class Class2Trip
+{
+    private ArrayList<Class3Booking> arrBookings32;
+    
+    private int Reference;
+    private String Code;
+    private String Location;
+    private String Date;
+    private double Price;
+    private int Seatcount;
+     
+    /**
+     * Constructor for objects of class Class2Trip
+     */
+    public Class2Trip(String Trip_Code,String Trip_Location,String Trip_Date,double Trip_Price)
+    {
+        arrBookings32 = new ArrayList<Class3Booking>();
+
+        Code = Trip_Code;
+        Location = Trip_Location;
+        Date = Trip_Date;
+        Price = Trip_Price;
+        Seatcount = 0;
+        
+        System.out.println("Trip Added.Code: " + Trip_Code);
+       
+    }
+    
+    public void AddBooking(String Name,String Telephone,int Number_of_Adults,int Number_of_Children)
+    {
+        Class3Booking ObjBooking;
+        
+        if (Name=="" || Telephone=="" || Number_of_Adults < 0 || Number_of_Children < 0)
+        {
+            System.out.println("Cannot add booking as incorrect values were provided");
+            return;
+        }
+
+        if (Seatcount + Number_of_Adults + Number_of_Children > 32)
+        {
+            System.out.println("Cannot add booking as not enough seats available");
+            return;
+        }
+        
+        ObjBooking = new Class3Booking();
+        ObjBooking.SetName(Name);
+        ObjBooking.SetTelephone(Telephone);
+        ObjBooking.SetAdults(Number_of_Adults);
+        ObjBooking.SetChildren(Number_of_Children);
+        arrBookings32.add(ObjBooking);
+        Seatcount = Seatcount + Number_of_Adults + Number_of_Children;
+        
+        System.out.println("Booking Added");
+        
+        
+    }
+    
+    public String GetTripCode()
+    {
+        return Code;
+    }
+    
+    public String GetTripDate()
+    {
+        return Date;
+    }
+    
+    public int GetAdults()
+    {
+        int numAdults = 0; 
+        for (Class3Booking booking : arrBookings32) {
+           numAdults = numAdults + booking.GetAdults();
+           
+        }
+        return numAdults;
+    }    
+    
+    public double GetPrice()
+    {
+        return Price;
+    }
+    
+      public int GetChildren()
+    {
+        int numChildren = 0; 
+        for (Class3Booking booking : arrBookings32) {
+           numChildren = numChildren + booking.GetChildren();
+           
+        }
+        return numChildren;
+    } 
+    
+    public void printcustomers()
+    {
+        for (Class3Booking booking : arrBookings32){
+            System.out.println( booking.GetName() + " " + booking.GetTelephone() + " " + booking.GetAdults()"Adults" + " " + booking.GetChildren()"Children"); 
+        }
+    }
+}

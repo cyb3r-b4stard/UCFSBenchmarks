@@ -1,0 +1,57 @@
+
+/**
+ * ##### # ########### ## ######## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+ 
+ 
+import edu.duke.*;
+import org.apache.commons.csv.*;
+import java.io.*;
+public class Humidity {
+	
+	public getLowestOfTwo(CSVParser currentRow, CSVParser lowestSoFar){
+		if (currentRow.get("Humidity").indexOf("N")!=-1){
+			if (lowestSoFar==null){
+			lowestSoFar=currentRow;
+		    }
+			else{
+				double currentHum=Double.parseDouble(currentRow.get("Humidity"));
+				double lowestHum=Double.parseDouble(lowestSoFar.get("Humidity"));
+				if (currentHum<lowestHum){
+					lowestSoFar=currentHum;
+				}
+			}
+		}
+		return lowestSoFar;
+		
+	}
+	
+	public CSVRecord lowestHumidityInFile(CSVParser parser){
+		lowestSoFar=null;
+		for (CSVRecord currentRow:parser){
+			lowestSoFar=getLowestOfTwo(currentRow,lowestSoFar);
+		}
+		return lowestSoFar
+	}
+	
+	public lowestHumidityInManyFile(){
+		CSVRecord lowestSoFar = null;
+		DirectoryResource dr = new DirectoryResource();
+		for (File f : dr.selectedFiles()) {
+			FileResource fr = new FileResource(f);
+			CSVRecord currentRow = lowestHumidityInFile(fr.getCSVParser());
+			lowestSoFar = getLowestOfTwo(currentRow, lowestSoFar);
+		}
+		return lowestSoFar;
+		
+	}
+	public void testlowestHumidityInManyFile () {
+		CSVRecord lowest = lowestHumidityInManyFile();
+		System.out.println("lowest humidity was " + lowest.get("Humidity") +
+				   " at " + lowest.get("DateUTC"));
+	}
+
+}

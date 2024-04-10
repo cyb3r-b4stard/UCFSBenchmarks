@@ -1,0 +1,95 @@
+/* 
+ * #### ##### #### ### ### ####### #### ## ##########.
+ * 
+ * @###### ####### ##########
+ * @####### ##/##/####
+ */
+
+import info.gridworld.actor.ActorWorld;
+import info.gridworld.grid.Location;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+import java.awt.KeyEventDispatcher;
+
+import java.awt.Color;
+
+import info.gridworld.grid.*;
+import info.gridworld.actor.*;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+/**
+ * #### ##### ######## ### ### ########## #### ########
+ */
+public class BattleshipRunner
+{
+    public static void main(String[] args)
+    {
+        ArrayList<Battleship> player1Ships = new ArrayList<Battleship>();
+        ArrayList<Battleship> player2Ships = new ArrayList<Battleship>();
+        MainMenu menu = new MainMenu();
+        menu.showMenu();
+        
+        ActorWorld world1 = new ActorWorld();
+        world1.setMessage("Battleship: Player 1");
+        
+        shipSpawner(world1, player1Ships, 3);
+
+        world1.show();
+        
+        
+        
+        
+        
+        
+    }
+    
+    public static void shipSpawner(ActorWorld world, ArrayList<Battleship> playerShips, int quantity)
+    {
+        int shipSize = 5;
+        for (int i = 0; i < quantity; i++)
+        {
+            Battleship temp = new Battleship(shipSize);
+            temp.buildShip(world);
+            
+            shipPlacer(temp);
+            
+            if (quantity != 2)
+            {
+                shipSize--;
+            }
+        }
+    }
+    
+    public static void shipPlacer(Battleship ship)
+    {
+        KeyEventDispatcher keyDispatcher = KeyEventDispatcher()
+        {
+            public boolean dispatchKeyEvent(java.awt.event.KeyEvent event)
+            {
+                String key = javax.swing.KeyStroke.getKeyStrokeForEvent(event).toString();
+                if (key.equals("pressed UP"))
+                {
+                    ship.move(0);
+                }
+                if (key.equals("pressed RIGHT"))
+                {
+                    ship.move(90);
+                }
+                if (key.equals("pressed DOWN"))
+                {
+                    ship.move(180);
+                }
+                if (key.equals("pressed LEFT"))
+                {
+                    ship.move(270);
+                }
+                    
+                return true;
+            }
+        }
+        java.awt.KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(keyDispatcher);
+    }
+}

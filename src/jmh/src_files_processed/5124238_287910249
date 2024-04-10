@@ -1,0 +1,299 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.table.*;
+
+
+
+
+class Display extends JFrame implements ActionListener
+{   
+    ResultSet R;
+     ResultSet   B;
+      ResultSet   C;
+    JLabel l1,l2,l3,l4,l14,l15,l5,l6;
+    JButton b1,b2,b3,b4,b14,b15,b16;
+    
+    JTextArea textarea;
+    JTextField t14,t15,t1;
+    Connection coon;
+    Statement stat;
+   JTable table;
+    DefaultTableModel model;
+    Container c;
+    JScrollPane scroll;
+
+    public Display()
+    {
+        super("Display");
+        setLayout(null);
+        
+        
+        c=getContentPane();
+    	c.setLayout(null);
+    	model=new DefaultTableModel(null,new String [] {"ID","Name","Day","Month","year","Price","Name2","count","الكود بالحروف"});
+        table=new JTable(model);
+        table.setPreferredScrollableViewportSize(new Dimension(400,250));
+		scroll=new JScrollPane(table);
+		scroll.setBounds(10,36,760,450);
+		c.add(scroll);
+      
+        try
+        {
+            Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
+            String filename = "stu1.mdb";
+            String database = "jdbc:odbc:Driver={Microsoft Access Driver (*.mdb)};DBQ=";
+            database+= filename.trim() + ";DriverID=22;READONLY=true}"; 
+            coon = DriverManager.getConnection(database,"",""); 
+            coon = DriverManager.getConnection("jdbc:odbc:Stu1","hr","hr"); 
+            stat= coon.createStatement();
+        }
+        
+        catch(Exception nn)
+        {
+            JOptionPane.showMessageDialog(null,"SQLError","Error",0);   
+        }
+        
+       
+        
+        
+                
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+      textarea=new JTextArea();
+      textarea.setBounds(10,36,400,240);
+      textarea.setEnabled(false);
+      add(textarea);
+        b1=new JButton("Show data");
+        b1.setBounds(20,550,100,30);
+        add(b1);
+        
+        t1=new JTextField();
+        t1.setBounds(20,590,100,20);
+        add(t1);
+              b1.setBackground(new Color(0,128,64));
+        
+        b2=new JButton("Clear");
+        b2.setBounds(132,550,100,30);
+        add(b2);
+                 b2.setBackground(new Color(4,130,255));
+        
+        b3=new JButton("Exit");
+        b3.setBounds(250,550,100,30);
+        add(b3);
+                b3.setBackground(new Color(255,60,60));
+		
+       
+        l14=new JLabel("ID:");
+        l14.setBounds(450,550,100,30);
+        add(l14);
+        
+        t14=new JTextField();
+        t14.setBounds(500,550,100,30);
+        add(t14);
+      
+        b15=new JButton("search");
+        b15.setBounds(500,600,100,30);
+        add(b15);
+        
+        l15=new JLabel("ID:");
+        l15.setBounds(620,550,100,30);
+        add(l15);
+        
+        b16=new JButton("Delete");
+        b16.setBounds(650,600,100,30);
+       add(b16);
+       
+        
+          
+        t15=new JTextField();
+       t15.setBounds(650,550,100,30);
+       add(t15);
+      
+        
+        
+        
+      
+
+        
+        b1.addActionListener(this);
+        b2.addActionListener(this);
+        b3.addActionListener(this);
+        b15.addActionListener(this);
+        b16.addActionListener(this);
+        
+        
+          setSize(800,700);
+         setVisible(true);
+        setResizable(true);
+         
+      
+      textarea.setBounds(10,36,760,450);
+       
+      textarea.setEnabled(true);
+      
+        add(textarea);
+        
+    }
+    
+    
+    public void actionPerformed(ActionEvent e)
+    {
+        
+         
+        if(e.getSource()==b3)
+        {
+            setVisible(false);
+        }
+        
+        else if(e.getSource()==b2)
+        {
+               int x=0; int o=0; int p=0; int t=0;  int r=0;  int w = 0; int y=0;
+              
+               int z=0; int m=0; int n=0; int k=0;  int l=0;  int j=0;   int g=0;  int f=0;
+             if(x>=0&&x<=10000){
+             model.removeRow(x);
+             model.removeRow(y);
+             model.removeRow(o);
+             model.removeRow(r);
+             model.removeRow(t);
+             model.removeRow(w);
+             model.removeRow(p);
+             model.removeRow(z);
+             model.removeRow(m);
+             model.removeRow(n);
+             model.removeRow(k);
+             model.removeRow(l);
+             model.removeRow(j);
+             model.removeRow(g);
+             model.removeRow(f);
+             }
+        
+              else{
+                 JOptionPane.showMessageDialog(null,"فش اشي يحذفة اصلاً","Error",0);	
+                
+                }         
+           
+           
+        }
+        
+        else if(e.getSource()==b1)
+        {   
+             int i=0;
+             int x=0;
+            try
+            {
+                String query2 = " SELECT * FROM  stu ORDER BY year "; WHERE year="+ year+"
+                R=stat.executeQuery(query2);
+                  
+                   if(R!=null){
+                while(R.next())
+                {
+                   model.insertRow(i,new Object[]{ R.getInt("ID"), R.getString("Name"), R.getString("Day"),R.getString("Month"), R.getString("year"), R.getString("Price"), R.getString("Name2"), R.getString("count"), R.getString("الكودبالحروف")});
+                    
+                                        i++;
+                }
+            }
+            
+              else 
+              {
+                  JOptionPane.showMessageDialog(null,"لايوجد معلومات في قاعدة البيانات","Error",0);	
+                  
+                }
+              
+                
+           
+            
+            }
+            catch(SQLException exe)
+            {           
+                JOptionPane.showMessageDialog(null, exe.getMessage());
+            }
+
+        }
+        
+        
+        
+        
+          else if(e.getSource()==b15)
+          {
+                 
+                int ID=Integer.parseInt( t14.getText());
+                 
+                       int i=0;
+            try{
+                String query1 = ( " SELECT * FROM  stu WHERE ID="+ID+" ORDER BY year ");
+                
+              
+                ResultSet   R=stat.executeQuery(query1);
+             
+                 
+                while(R.next())
+                {
+                
+                     model.insertRow(i,new Object[]{ R.getString("ID"),  R.getString("Name"), R.getString("Day"),R.getString("Month"), R.getString("year"), R.getString("Price"), R.getString("Name2"), R.getString("count"), R.getString(" الكودبالحروف")});
+                      
+                     
+                     
+                     
+                     i++;
+                  
+               }
+            
+                
+             }catch(Exception ex){
+                  JOptionPane.showMessageDialog(null, ex.getMessage());
+            }
+            
+        }
+        
+      
+			
+	  if(e.getSource()==b16)
+		
+		{
+		    
+		   
+    		
+      
+   
+		        int ID=Integer.parseInt( t15.getText());
+		        try
+			{
+			  
+     	
+		     String query1=("DELETE FROM Stu WHERE ID=   "+ID+"   ");
+             stat.executeUpdate(query1);
+
+		    JOptionPane.showMessageDialog(null,"deleted successfully");
+		   } 
+         
+             
+	
+		  catch(SQLException exe)
+			{
+                JOptionPane.showMessageDialog(null, exe.getMessage());
+			}
+		  
+
+		  }
+  
+  
+}
+ 
+}

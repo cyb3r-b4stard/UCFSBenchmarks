@@ -1,0 +1,247 @@
+import java.util.Scanner;
+/**
+ * ##### # ########### ## ##### ######## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Farma
+{
+    /*
+     * 10 cages - each has a capacity
+     * sometimes we have to buy a new cage
+     * max number of cages is 20
+     * in one cage, we can only have one type of animal
+     * one cage can hold no more than 10 animals
+     * we have to remember the year of birth of each animal
+     * ability to remove an animal from a farm
+     * how many animals do we have
+     * move animal from one cage to another cage
+     */
+   
+    
+   
+   public static int numberOfAnimals=0;
+   public static int numberOfCages=0;
+   
+   public static Animal[] myAnimals = new Animal [200];
+   public static Cage[] myCages = new Cage [20];
+   
+   public static Scanner input= new Scanner(System.in);
+   
+   
+   
+        
+   
+   
+  
+      
+   public static void exit(){
+       System.out.println();
+   }
+   public static void addAnimal(){
+       String empty;
+       
+       System.out.println("Type: ");
+       String typo= input.nextLine();      
+       System.out.println("");
+       
+       System.out.println("Name: ");
+       String nejm= input.nextLine();       
+       System.out.println("");
+       
+       System.out.println("YearBorn: ");
+       int jir = input.nextInt();       
+       System.out.println("");
+       
+       System.out.println("Cage: ");
+       int cejdz = input.nextInt();
+       if (myCages[cejdz].type.equals(typo) && myCages[cejdz].isFull() == false) {
+        
+        } else if (!myCages[cejdz].type.equals(typo) || myCages[cejdz].isFull() == true) {
+                System.out.println("This cage is unavailable - it's either full or holds a different animal type.");
+                int numOfAvCages = 0;
+                for (int i = 0; i < numberOfCages - 1; i++) {
+                   if (myCages[i].type.equals(typo) && myCages[cejdz].isFull() == false && numOfAvCages == 0) {
+                       System.out.println("Available cages: " + j + ", ");
+                    } else if (myCages[i].type.equals(typo) && myCages[cejdz].isFull() = false && numOfAvCages != 0) {
+                       System.out.println(j + ", ");
+                    }
+                } 
+                if (numOfAvCages == 0) {
+                    System.out.println("There are no cages available for your animal. Create a new cage and add the animal again.");
+                } else {
+                    System.out.println("Choose one of the available cages.");
+                }
+              
+        }
+       
+       System.out.println("");
+       
+       System.out.println("ID: ");
+       int ajdi= input.nextInt();      
+       empty=input.nextLine();
+       
+       
+       myAnimals[numberOfAnimals]= new Animal(typo,nejm,jir,cejdz,ajdi);
+       numberOfAnimals++;
+       
+   }   
+   public static void removeAnimal(){
+       System.out.println("Which animal do you want to remove? Enter ID: ");
+       int ajdi = input.nextInt();
+       
+       for(int i = 0; i< myAnimals.length; i++)
+        {
+            if (myAnimals[i]!=null && myAnimals[i].getiD()==ajdi){ 
+                myAnimals[i]=myAnimals[numberOfAnimals-1];
+                numberOfAnimals--;
+                break;
+            }
+        }
+        
+       System.out.println("");
+   }   
+   public static void moveAnimalToCage(){
+       System.out.println("Which animal do you want to another cage? Enter ID: ");
+       int ajdi= input.nextInt();
+       int tempZviera=0;
+       
+       for(int i = 0; i< myAnimals.length; i++)
+        {
+            if (myAnimals[i]!=null && myAnimals[i].getiD()==ajdi){ 
+                tempZviera= i;
+                break;
+            }
+        }
+        
+       System.out.println("To what cage do you want to move it?: ");
+       int cejdz= input.nextInt();
+       
+       myAnimals[tempZviera].setCage(cejdz);
+       
+       
+   }   
+   public static void showInfo(){
+       System.out.println("Which animal do you want to remove? Enter ID: ");
+       int ajdi= input.nextInt();
+       
+       for(int i = 0; i< myAnimals.length; i++)
+        {
+            if (myAnimals[i]!=null && myAnimals[i].getiD()==ajdi){ 
+                System.out.println(myAnimals[i].toString());  
+                break;
+            }
+        }
+       
+   }   
+   public static void addCage(){
+       String empty;
+       if (numberOfCages == 20) {
+          System.out.println("The maximum number of cages is 20. You can't add more cages.");
+        } else {
+       System.out.println("Capacity: ");
+       int capa= input.nextInt();      
+       System.out.println("");
+       
+       System.out.println("Type :");
+       String taip = input.nextLine();
+       System.out.println("");
+       
+       myCages[numberOfCages]= new Cage(capa, taip);
+       
+       numberOfCages++;
+       System.out.println("The total number of cages is: "+ numberOfCages);
+      }
+
+   }
+   public static void removeCage(){
+       
+   }   
+   public static void showAll(){
+       for(int i = 0; i< myAnimals.length; i++){
+           if(myAnimals[i]!=null){
+               System.out.println(myAnimals[i].toString());      
+           }
+       }  
+    }
+
+   
+   public static void main()
+    {
+        myAnimals [0] = new Animal ("dog","Havo", 1999, 1, 45);
+        myAnimals [1] = new Animal ("cat","Cila", 1998, 0, 46); 
+        myAnimals [2] = new Animal ("pig","Prasiatko", 1999,3,47);
+        myAnimals [3] = new Animal ("dog","Hugo", 1997,1,48);
+        myAnimals [4] = new Animal ("cat","Muro", 1996,0,49);
+        myAnimals [5] = new Animal ("cow","Malina", 1999,2,50);
+        myAnimals [6] = new Animal ("pig","Crisper",2000,3,51);
+        
+        numberOfAnimals= 7;
+        
+        myCages[0]= new Cage(3, "cat");
+        myCages[1]= new Cage(10, "dog");
+        myCages[2]= new Cage(9, "cow");
+        myCages[3]= new Cage(7, "pig");
+        myCages[4]= new Cage(6, "meerkat");
+        myCages[5]= new Cage(8, "giraffe");
+        
+      
+        
+         
+        numberOfCages= 10;
+        
+        boolean x=false;
+        do{
+            System.out.println("Menu");
+            System.out.println("1. Exit");
+            System.out.println("2. Add Animal");
+            System.out.println("3. Remove animal");
+            System.out.println("4. Move Animal to another cage");
+            System.out.println("5. Show information about animal");
+            System.out.println("6. Add cage");
+            System.out.println("7. Remove cage");
+            System.out.println("8. Show ALL");
+            
+            Scanner input= new Scanner(System.in);
+            int option;
+            System.out.println("What option do you pick?");
+            option = input.nextInt();
+            
+            switch(option){
+                case 1: x=true;
+                        break;
+   
+                case 2:
+                        addAnimal();
+                        break;
+   
+                case 3: 
+                        removeAnimal();
+                        break;
+   
+                case 4: 
+                        moveAnimalToCage();
+                        break;
+   
+                case 5: 
+                        showInfo();
+                        break;
+   
+                case 6:
+                        addCage();
+                        break;
+                
+                case 7:
+                        
+                        break;
+   
+                case 8:
+                        showAll();
+                        break;
+                        
+            }
+        } while(x==false);
+   }
+}
+   

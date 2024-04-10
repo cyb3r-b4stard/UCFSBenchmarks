@@ -1,0 +1,231 @@
+/**
+ * @######
+ * @##/#/####
+ */
+import java.util.*;
+public class Play2048 {
+    public static void main(String [] args) {
+        int [][] board = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+        printWelcomeAndDirections();
+        printBoard(board); 
+        placeBlock(board);
+        placeBlock(board);
+        String gameState = "continue";
+        while (gameState.equals("continue")) {
+            printBoard(board);
+            processUserChoice(getUserChoice(), board);  
+            gameState = updateGameState(board);
+        }
+    }
+    
+    /*
+     * Prints out the intro and instructions for gameplay
+     */
+    public static void printWelcomeAndDirections() {
+        System.out.println("Welcome to 2048.");
+        System.out.println("Use the u, d, l, and r keys to slide up, down, left, and right.");
+        System.out.println("Combine like numbers to increase your score and win.");
+        System.out.println();
+    }
+    
+    /*
+     * Prints out the board with proper spacing and nice lines
+     */
+    public static void printBoard(int [][] board) {
+        for (int i=0; i<board.length; i++) { 
+            System.out.println("---------------------");
+            System.out.print("|");
+            for (int j=0; j<board[0].length; j++) { 
+                if (board[i][j] > 512)
+                    System.out.print(board[i][j] + "|");
+                else if (board[i][j] > 64)
+                    System.out.print(" " + board[i][j] + "|");
+                else if (board[i][j] > 8)
+                    System.out.print("  " + board[i][j] + "|");
+                else if (board[i][j] == 0)
+                    System.out.print("    " + "|");
+                else
+                    System.out.print("   " + board[i][j] + "|");
+            }
+            System.out.println();
+        }
+        System.out.println("---------------------");
+        System.out.println();
+    }
+    
+    /*
+     * Places a 2 at a random open position on the board
+     * Will loop for a very long time/inefficiently if there are few/no open positions
+     */
+    public static void placeBlock(int [][] board) {
+        int randRow = (int)(board.length*Math.random());
+        int randCol = (int)(board[0].length*Math.random());
+        while (board[randRow][randCol] != 0) {
+            randRow = (int)(board.length*Math.random());
+            randCol = (int)(board[0].length*Math.random());
+        }
+        board[randRow][randCol] = 2;
+    }
+    
+    /*
+     * Gets a user input up, down, left, and right; should be optimal
+     */
+    public static char getUserChoice() {
+        Scanner scan = new Scanner (System.in);
+        System.out.println("Please type u, d, l, or r and press enter.");
+        String userInput = scan.nextLine();
+        while (!userInput.equals("u") && !userInput.equals("d") && !userInput.equals("l") && !userInput.equals("r")) {
+            System.out.println(userInput + " is not a valid character. Please type u, d, l, or r and press enter.");
+            userInput = scan.next();
+        }
+        return userInput.charAt(0);
+    }
+    
+    /*
+     * Calls relevant methods based on user input; sliding and merging methods
+     */
+    public static void processUserChoice(char userInput, int [][] board) {
+        if (userInput == 'u') {
+            slideUp(board);
+            mergeUp(board);
+            slideUp(board);
+        }
+        else if (userInput == 'd') {
+            slideDown(board);
+            mergeDown(board);
+            slideDown(board);
+        }
+        else if (userInput == 'l') {
+            slideLeft(board);
+            mergeLeft(board);
+            slideLeft(board);
+        }
+        else {
+            slideRight(board);
+            mergeRight(board);
+            slideRight(board);
+        } 
+    }
+    
+    /*
+     * it trucking works man but you still needs to do the jukes
+     */
+    public static void slideUp(int [][] board) {
+        int slideY = 0;
+        System.out.println("Slide Up");
+        for (int i=1; i<board.length; i++)
+            for (int j=0; j<board[0].length; j++) {
+                if (!(board[i][j] == 0)) {
+                    slideY = i;
+                    while (slideY >= 1 && board[slideY-1][j] == 0) {
+                        board[slideY-1][j] = board[slideY][j];
+                        board[slideY][j] = 0;
+                        slideY--;
+                    }
+                }
+            }
+    }
+    
+    /*
+     * Under Construction
+     */
+    public static void mergeUp(int [][] board) {
+        System.out.println("Merge Up");
+    }
+    
+    /*
+     * Under Construction
+     */
+    public static void slideDown(int [][] board) {
+        int slideY = 0;
+        System.out.println("Slide Down");
+        for (int i=board.length-2; i>=0; i--)
+            for (int j=0; j<board[0].length; j++) {
+                if (!(board[i][j] == 0)) {
+                    slideY = i;
+                    while (slideY <=board.length-2 && board[slideY+1][j] == 0) {
+                        board[slideY+1][j] = board[slideY][j];
+                        board[slideY][j] = 0;
+                        slideY++;
+                    }
+                }
+            }
+    }
+    
+    /*
+     * Under Construction
+     */
+    public static void mergeDown(int [][] board) {
+        System.out.println("Merge Down");
+    }
+    
+    /*
+     * Under Construction
+     */
+    public static void slideLeft(int [][] board) {
+        int slideX = 0;
+        System.out.println("Slide Left");
+        for (int i=1; i<board[0].length-1; i++)
+            for (int j=0; j<board.length; j++) {
+                if (!(board[j][i] == 0)) {
+                    slideX = i;
+                    while (slideX >= 1 && board[j][slideX-1] == 0) {
+                        board[j][slideX-1] = board[j][slideX];
+                        board[j][slideX] = 0;
+                        slideX--;
+                    }
+                }
+            }
+    }
+    
+    /*
+     * Under Construction
+     */
+    public static void mergeLeft(int [][] board) {
+        System.out.println("Merge Left");
+    }
+    
+    /*
+     * Under Construction
+     */
+    public static void slideRight(int [][] board) {
+        int slideX = 0;
+        System.out.println("Slide Right");
+        for (int i=board[0].length-2; i<=; i++)
+            for (int j=0; j<board.length; j++) {
+                if (!(board[j][i] == 0)) {
+                    slideX = i;
+                    while (slideX >= 1 && board[j][slideX-1] == 0) {
+                        board[j][slideX-1] = board[j][slideX];
+                        board[j][slideX] = 0;
+                        slideX--;
+                    }
+                }
+            }
+    }
+    
+    /*
+     * Under Construction
+     */
+    public static void mergeRight(int [][] board) {
+        System.out.println("Merge Right");
+    }
+    
+    /*
+     * Returns whether the game has been won, lost, or can continue based on what the board contains
+     */
+    public static String updateGameState(int [][] board) {
+        boolean canContinue = false;
+        for (int i=0; i<board.length; i++) {
+            for (int j=0; j<board.length; j++) {
+                if (board[i][j] == 2048) 
+                    return "win";
+                if (board[i][j] == 0) 
+                    canContinue = true;
+            }
+        }
+        if (canContinue)
+            return "continue";
+        return "lose"; 
+    }
+}

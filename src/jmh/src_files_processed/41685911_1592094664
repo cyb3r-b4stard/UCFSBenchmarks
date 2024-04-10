@@ -1,0 +1,102 @@
+import java.util.NoSuchElementException;
+
+public class RingBuffer {
+
+    private double[] buff;
+    private int ringCapacity;
+    private int numElements;
+    private int first;
+    private int last;
+
+    public RingBuffer(int capacity) {
+        buff = new double[capacity];
+        ringCapacity = capacity;
+        numElements = 0;
+    }
+
+    public int size(){
+        return numElements;
+    }
+
+    public boolean isEmpty(){
+        if (numElements == 0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public boolean isFull(){
+        if (numElements == ringCapacity){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public void enqueue(double x) throws IllegalStateException{
+        if(isFull()){
+            IllegalStateException full = new IllegalStateException("This ring buffer is full! You must dequeue before adding another element.");
+        }
+        if (last == ringCapacity - 1){
+            last = 0;
+            buff[ringCapacity - 1] = x;
+            numElements++;
+        }else{
+            buff[last] = x;
+            last++;
+            numElements++;
+        }
+    }
+
+    public double dequeue() throws NoSuchElementException{
+        if (!isEmpty()){
+            if (first == ringCapacity - 1){
+                first = 0;
+                numElements--;
+                return buff[ringCapacity - 1];
+            }else{
+                first++;
+                numElements--;
+                return buff[first - 1];
+            }
+        }else{
+            throw new NoSuchElementException();
+        }
+
+        public double peek() throws NoSuchElementException{
+            if (!isEmpty()){
+                return buff[first];
+            }else{
+                throw new NoSuchElementException();
+            }
+        }
+
+        public String toString(){
+            double[] arrayToPrint = new double[numElements];
+            String printThese = "";
+            int j = 0;
+            if (numElements == 0){
+                return "[]";
+            }else{
+                for (int i = 0; i < numElements; i++){
+                    if (first + i >= ringCapacity){
+                        arrayToPrint[i] = buff[j];
+                        j++;
+                    }else{
+                        arrayToPrint[i] = buff[first + i];
+                    }
+                }
+                for (int k = 0; k < numElements; k++){
+                    if(k == 0){
+                        printThese += "[" + arrayToPrint[k] + ",";
+                    }else if(k == numElements - 1){
+                        printThese += " " + arrayToPrint[k] + "]";
+                    }else{
+                        printThese += " " + arrayToPrint[k] + "," ;
+                    }
+                }
+                return printThese;
+            }
+        }
+    }

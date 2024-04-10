@@ -1,0 +1,334 @@
+/**
+ * ###########：####-###-#### ####
+ * 
+ * @###### ###
+ * @#.#(#/##/####)
+ */
+import java.util.Scanner; 
+import java.util.ArrayList;
+
+public class Game
+{
+    private boolean isExit;
+    private int maximum;
+    private int numOfRound;
+    private Player player1;
+    private Player player2;
+    private Dice dice[];  
+ 
+    public Game()
+    {
+        isExit = false;
+        maximum = 0;
+        numOfRound = 0;
+
+        player1Dice1 = new Dice();
+        player1Dice2 = new Dice();
+        player2Dice1 = new Dice();
+        player2Dice2 = new Dice();
+        play();
+    }
+
+    public int play()
+    {
+        while(!isExit)
+        {
+            switch(menuDisplay())
+            {
+                case 1:
+                        newGame();
+                        break;
+                case 2:
+                        playOneRound();
+                        break;
+                case 3:
+                        lead();
+                        break;
+                case 4:
+                        gameHelp();
+                        break;
+                case 5:    
+                        exitGame();
+                        break;
+                default :
+                        play();
+            }
+        }
+        return 1;
+    }
+
+    public int menuDisplay()
+    {   
+        int menuOption = 0;
+
+        System.out.println();
+        System.out.println("Welcome to My Dice-and-Roll Game!");
+        System.out.println("=================================");
+        System.out.println("(1) Start a New Game");
+        System.out.println("(2) Play One Round");
+        System.out.println("(3) Who is leading now?");
+        System.out.println("(4) Display Game Help");
+        System.out.println("(5) Exit Game");
+        System.out.print("Please choose an option :");   
+        menuOption = numberInput(1,1,5);
+
+        return menuOption;
+    }
+
+    /** Options **/
+    public void newGame()
+    {
+        System.out.print("Enter Player1's Name: ");
+        player1 = new Player(stringInput());
+        System.out.print("Enter Player2's Name: ");
+        player2 = new Player(stringInput());
+        System.out.println("Maximum score to win");
+        System.out.print("(from 50 to 999 <Enter> to use default 200):");
+        maximum = numberInput(3,50,999);
+        if (maximum == 0)
+            maximum = 200;
+
+        System.out.println("Welcome " + player1.getName() + " & " + player2.getName() + "!");
+        System.out.println("Achieve " + maximum + " score to win the game!");
+    }
+
+    public int playOneRound()
+    {
+        Scanner console = new Scanner(System.in);
+        if(!checkTheGame())
+            return 0;
+
+        numOfRound++;
+
+        int score1 = 0;
+        int score2 = 0;
+        int dicePoint[4];
+
+        String rolled1 = "";
+        String rolled2 = "";
+        String winner = "";
+        
+        dice[] = new Dice[4];
+        for(int i = 0; i < 4 ; i++)
+        {
+            dicePoint[i] = dice[i].randomPoint();
+        }
+        
+        rolled1 = player1.getName() + " rolled " +  dicePoint[0] + " + " + dicePoint[1];
+        rolled2 = player2.getName() + " rolled " +  dicePoint[2] + " + " + dicePoint[3];
+
+        System.out.println("Round " + numOfRound);
+
+        if(player1Dice1Point == player1Dice2Point)
+        {
+            score1 = (dicePoint[0] + dicePoint[1])*2;
+            rolled1 += " and scored " + score1 + " points (BONUS!)";
+        }
+        else
+        {
+            score1 = dicePoint[0] + dicePoint[1];
+            rolled1 += " and scored " + score1 + " points";
+        }
+        player1.setScore(score1);
+        System.out.println(rolled1);
+
+        if(dicePoint[0] == dicePoint[0])
+        {
+            score2 = (dicePoint[2] + dicePoint[3])*2;
+            rolled2 += " and scored " + score2 + " points (BONUS!)";
+        }
+        else
+        {
+            score2 = dicePoint[2] + dicePoint[3];
+            rolled2 += " and scored " + score2 + " points";
+        }
+        player2.setScore(score2);
+        System.out.println(rolled2);
+
+        if (player1.getScore() >= maximum || player2.getScore() >= maximum)
+        {
+            if (player1.getScore() > player2.getScore() && player2.getScore()< maximum)
+            {
+                System.out.println("*************************************");
+                System.out.println("Winner is "+ player1.getName() + "! Game over!");
+                System.out.println("*************************************");
+                System.out.println("Press Enter to initialise...");
+                console.nextLine();
+                initialise();
+            }
+            else
+            {
+                if (player1.getScore() >= maximum && player2.getScore()>= maximum)
+                {
+                    System.out.println("*************************************");
+                    System.out.println("Both players reached the maximum score! Draw!");
+                    System.out.println("*************************************");
+                    System.out.println("Press Enter to initialise...");
+                    console.nextLine();
+                    initialise();
+                }
+                else
+                {   if(player1.getScore() < player2.getScore() && player2.getScore() > maximum)
+                    System.out.println("*************************************");
+                    System.out.println("Winner is "+ player2.getName() + "! Game over!");
+                    System.out.println("*************************************");
+                    System.out.println("Press Enter to initialise...");
+                    console.nextLine();
+                    initialise();
+                }
+            }
+        }
+        return 1;
+    }
+
+    public int lead()
+    {
+        if(!checkTheGame())
+            return 0;
+
+        System.out.println("Round " + numOfRound);
+
+        if( player1.getScore() > player2.getScore())
+        {
+            System.out.println(player1.getName() + " current score is " + player1.getScore() + " points <-----Current LEADER!");
+            System.out.println(player2.getName() + " current score is " + player2.getScore() + " points");
+        }
+        else
+        {
+            if (player1.getScore() == player2.getScore())
+                System.out.println("Both players have the same score (" + player1.getScore() + " points) at the moment!");
+            else
+            {
+                System.out.println(player1.getName() + " current score is " + player1.getScore() + " points");
+                System.out.println(player2.getName() + " current score is " + player2.getScore() + " points <-----Current LEADER!");
+            }
+
+        }
+
+        return 1;
+    }
+
+    public void gameHelp()
+    {
+        System.out.println();
+        System.out.println("*************************************** Dice-and-Roll Game ****************************************");
+        System.out.println("                              version 1.2 Last update: Mar 29 2016");
+        System.out.println("***************************************************************************************************");
+        System.out.println("How to Play:");
+        System.out.println("  * After you choose (1) Start a New Game, simply enter two player's name and set the maximum score."); 
+        System.out.println("    Then using (2) Play One Round to get start.");
+        System.out.println("About the Score:");
+        System.out.println("  * if the 2 dice rolls have the same value (ie. 1&1, 2&2, …, 6&6), the player scores 2 times the");
+        System.out.println("    sum of that value (eg. 1&1 scores 4 points, 2&2 scores 8 points, etc) ");
+        System.out.println("  * if the 2 dice rolls have different values, the player simply scores the sum of that value (eg.");
+        System.out.println("    1&4 scores 5 points, 5&2 scores 7 points, etc)");
+        System.out.println("  * if both players reaches a score which is more than the pre-defined maximum, the game’s result");
+        System.out.println("    is a Draw");
+        System.out.println("***************************************** Enjoy the Game! *****************************************");
+    }
+
+    public boolean exitGame()
+    {
+        isExit = false;
+        int option = 0;
+
+        System.out.println(" Are you sure you want to exit?");
+        System.out.println(" (1) Yes");
+        System.out.println(" (2) No");
+        System.out.print("Please choose an option :");   
+        option = numberInput(1,1,2);
+
+        if (option == 1)
+        {
+            isExit = true;
+            System.out.print("See ya!");   
+            System.exit(0);
+        }
+
+        return isExit;
+    }
+
+    /** Input methods **/
+    public int numberInput(int numLength, int lowerLimit, int upperLimit)
+    {
+        boolean isValid = false;
+        Scanner console = new Scanner(System.in);
+        String inputString = "";
+        int inputNum = 0;
+        while(!isValid)
+        {
+            inputNum = 0;
+            inputString = console.nextLine();
+            isValid = true;
+            if (inputString.length() == 0)
+            {
+                return inputNum;
+            }
+            if (inputString.length() <= numLength && inputString.length() > 0) 
+            {
+                for (int i = 0; i< inputString.length(); i++)
+                {   
+                    if (inputString.charAt(i)< 48 || inputString.charAt(i) > 57)
+                    {
+                        isValid = false;
+                        break;
+                    }
+                }
+            }
+            else
+                isValid = false;
+
+            if (isValid)
+                inputNum = Integer.parseInt(inputString); 
+
+            if(inputNum >= lowerLimit && inputNum <= upperLimit)
+                break;
+            else
+            { 
+                isValid = false;
+                System.out.println("Error: Invalid value entered. Try Again!");
+                System.out.print("Re-Enter:");
+            }
+        }
+        return inputNum;
+    }
+
+    public String stringInput()
+    {   
+        String inputString = "";
+        boolean isValid = false;
+        Scanner console = new Scanner(System.in);
+        while(!isValid)
+        {
+            inputString = console.nextLine();
+            if(inputString.length() == 0  || inputString.trim().length() == 0 )
+            {
+                System.out.println("Error: Input cannot be empty!");
+                System.out.print("Re-Enter:");
+            }
+            else
+                isValid = true;
+        }
+
+        return inputString;       
+    }
+
+    /** Other methods **/
+    public void initialise()
+    {
+        numOfRound = 0;
+        player1 = new Player();
+        player2 = new Player();   
+    }
+
+    public boolean checkTheGame()
+    {
+        if (player1.getName().isEmpty()|| player2.getName().isEmpty())
+        {
+            System.out.println("Error : players have not been set up! ");
+            return false;
+        }
+        else
+            return true;
+    }
+}

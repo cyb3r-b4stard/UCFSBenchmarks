@@ -1,0 +1,137 @@
+import java.util.Arrays;
+import java.lang.Object;
+import java.util.ArrayList;
+
+public class ListaUtilizadores {
+  private ArrayList<Utilizador> elementos = new ArrayList <Utilizador>();
+       
+  private int size;
+  private static final int capacidade_inicial = 20;
+  
+public ListaUtilizadores () {
+  
+}
+  
+  public ListaUtilizadores(ArrayList<Utilizador> elem) {
+    int i ; i =0;  
+        while (i<elem.size()){  
+         elementos.add(elem.get(i).clone());
+            i++;
+  }
+}
+
+    public int getSize() {
+    
+        return this.size; 
+  }
+  
+    public Array getElementos(){
+            int i=0;
+            int novo[elementos.size()]; 
+            while(i<elementos.size())
+        {novo[i]=elementos.get(i).clone();
+            i++;
+        } 
+      return novo ; 
+  }
+  
+  public Utilizador get(int indice) {
+     if (indice < this.size)
+        {
+            return this.elementos[indice];
+        }
+            else return null ; 
+  }
+  
+  public void set(int indice, Utilizador c) {
+      if (indice <= this.size ){
+            elementos[indice]= c; 
+        } 
+  }
+  
+  public void add(Utilizador c) {
+        aumentaCapacidade(this.size+1);
+        this.elementos[this.size++]=c;
+  }
+  
+  private void aumentaCapacidade(int capacidade) {
+      if (capacidade > 0.5*this.elementos.length){
+          int nova_capacidade =(int)(this.elementos.length*1.5);
+          this.elementos = Arrays.copyOf(this.elementos,nova_capacidade);
+        }
+  }
+  
+  public void add(int indice, Utilizador c) {
+      
+      if (indice < this.size){
+        aumentaCapacidade(this.size+1);
+        System.arraycopy(this.elementos,indice,this.elementos,indice+1,this.size-indice);
+        this.elementos[indice]=c ;
+        this.size++;
+        } 
+    }
+    
+  public boolean  remove(int indice) {
+       boolean encontrado = false ; 
+      if (indice<this.size){
+        Utilizador c = this.elementos[indice];
+        int desloc = this.size- indice - 1;
+            if(desloc > 0 )
+                System.arraycopy(this.elementos,indice +1,this.elementos,indice,desloc);
+                this.elementos[--this.size]=null;
+                encontrado = true ; 
+                return encontrado; 
+            }
+            else return encontrado; 
+   }
+   
+   public boolean remove(Utilizador c) {
+       if (c!=null){
+            boolean encontrado = false ;
+        for(int i =0;i<this.size && !encontrado; i ++)
+            if(c.equals(this.elementos[i])){
+               encontrado = true ; 
+               int deslocamento = this.size - i - 1 ; 
+                if (deslocamento > 0)
+                    System.arraycopy(this.elementos,i +1 , this.elementos,i,deslocamento);
+                    this.elementos[--this.size]=null;
+                }
+                return encontrado; 
+   }
+    else 
+        return false; 
+    }
+    
+   public int size() {
+       return this.size ; 
+   }
+   
+   public int indexOf(Utilizador c) {
+       int posicao, i ;
+        posicao = -10; 
+       boolean res = false ;
+        if (c != null) {
+           for(i=0;i<this.size && !res;i++){
+               if(c.equals(this.elementos[i]))
+                res = true; 
+                posicao = i ; 
+            }
+        } 
+       return posicao ;
+    }
+    
+   public boolean contains(Utilizador c) {
+             return indexOf(c) >=0;
+    }
+    
+   public boolean isEmpty() {
+       if (this.size == 0) 
+                return true; 
+                    else return false;
+    }
+    
+   public ListaUtilizadores clone(){
+       return new ListaUtilizadores(this);
+    }
+}
+ 

@@ -1,0 +1,161 @@
+public class StringList
+{
+    private CharNode _head;
+    
+    public StringList () 
+    {
+        _head = null;
+    }
+    
+    
+    public StringList (CharNode node) 
+    {
+        if (node == null)
+            _head = null;
+        else
+        {
+            _head = new CharNode (node.getData(), node.getValue(), null);
+            for (CharNode ptr = node.getNext(), last =_head; ptr!= null; ptr = ptr.getNext())
+            {
+                last.setNext (new CharNode(ptr.getData(),ptr.getValue(), ptr.getNext()));
+                last = last.getNext();
+            }
+        }
+    }
+    
+    
+    public StringList (String s)
+    {   
+        int count = 1;
+        char ch;
+        
+        if (s == "")
+            return;
+            
+        if ((s.charAt(0)>='a')&&(s.charAt(0)<='z')||(s.charAt(0)>='A')&&(s.charAt(0)<='Z'))
+            _head = new CharNode (s.charAt(0),1,null);
+
+        CharNode ptr=_head;  
+        
+        for (int i=1; i < s.length(); i++)
+        {
+            if (s.charAt(i) == (s.charAt(i-1)))
+            {
+                count++;
+                ptr.setValue(count);
+            }
+            else
+            {
+               if ((s.charAt(i)>='a')&&(s.charAt(i-1)<='z')||(s.charAt(i)>='A')&&(s.charAt(i-1)<='Z'|| s == ""))
+               {
+                   ch = s.charAt(i);
+                   ptr.setNext (new CharNode (ch,count,ptr.getNext()));
+                   count = 1;
+                   ptr = ptr.getNext();
+                   ptr.setValue(count);
+                   ptr.getNext();
+               }
+            }
+        }
+    }
+    
+             
+    public StringList (StringList other)
+    {
+        if (other == null)
+            _head = null;
+        else
+        {
+            _head = new CharNode (other._head.getData(), other._head.getValue(), null);
+            
+            for (CharNode ptr = other._head.getNext(), last =_head; ptr!= null; ptr = ptr.getNext())
+            {
+                last.setNext (new CharNode(ptr.getData(),ptr.getValue(), ptr.getNext()));
+                last = last.getNext();
+            }
+        }
+    }
+    
+    
+    public char charAt (int i)
+    {   
+        char ch=' ';
+        int counter = 0;
+        
+        for (CharNode ptr = _head; ptr!= null; ptr = ptr.getNext())
+        {
+            counter += ptr.getValue();
+            if (counter > i)
+            {
+                ch = ptr.getData();
+                break;
+            }
+        }
+        return ch;
+    }
+    
+    
+    public StringList concat (StringList str)
+    {
+        if (this == null)
+            _head = null;
+        else
+            _head = new CharNode (this._head.getData(), this._head.getValue(), null);
+            
+            for (CharNode ptr = this._head.getNext(), last =_head; ptr!= null; ptr = ptr.getNext())
+            {
+                last.setNext (new CharNode(ptr.getData(),ptr.getValue(), ptr.getNext()));
+                last = last.getNext();
+          
+            }
+}
+        
+          
+
+            
+         
+               
+            
+            /*
+            public int indexOf (int ch)
+            {
+                
+            }
+            
+            public int indexOf (int ch, int fromIndex)
+            {
+                
+            }
+            
+            public boolean equals (StringList str)
+            {
+                
+            }
+            
+            public int CompareTo (StringList str)
+            {
+                
+            }
+            
+            public StringList subString (int i)
+            {
+                
+            }
+            
+            public StringList subString (int i, int j)
+            {
+                
+            }
+            
+            public int length()
+            {
+                
+            }
+            
+            public String toString()
+            {
+                
+            }*/
+        
+        
+        

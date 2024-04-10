@@ -1,0 +1,224 @@
+import java.util.ArrayList;
+/**
+ * ##### # ########### ## ##### #### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Game
+{
+    private static final int BLACK_JACK = 21;
+    private static final int BLACK_JACK_POINTS = 5;
+    private static final int STAND_POINTS = 18;
+    private static final int ACE_RULE = 10;
+    private ArrayList<Card> playersHand;
+    private Deck            cardDeck;
+    private InputReader     reader;
+   /**
+     * Constructor for objects of class Game
+     */
+    public Game()
+    {
+        reader = new InputReader();
+        cardDeck = new Deck();
+        playersHand = new ArrayList<Card>();
+        
+        
+    }
+    
+   /**
+    * An introduction to the blackjack game
+    * 
+    */
+      private void intro()
+      {
+        System.out.println("*****************************************************************");
+        System.out.println("*                          Hello!                               *");
+        System.out.println("*             Welcome to Comp 1451 Blackjack!                   *");
+        System.out.println("*          You will be delt two cards to start.                 *");
+        System.out.println("*  Then you will have the choice to 'Hit' (get another card)    *");
+        System.out.println("*            or 'Stand'(receive no more cards).                 *");
+        System.out.println("*                                                               *");
+        System.out.println("*****************************************************************");
+        
+      }
+   
+   /**
+    * plays a game of blackjack
+    */
+     public void play()
+      {
+      intro();
+      boolean quit = false; 
+      
+      while(!quit){
+      dealCard();
+      dealCard();
+      showHand();
+      System.out.println("");
+      if (getHandValue() < BLACK_JACK){
+         System.out.println("Would you like to hit or stand? > ");
+         String userInput = reader.getInput().toLowerCase();
+        if(userInput.equals("hit")){
+                hit();
+                
+                }
+            }
+       
+      
+      System.out.println("Would you like to play again? yes or no?");
+       String userInput = reader.getInput().toLowerCase();
+        if(userInput.equals("yes")){
+             playersHand.clear();
+            }
+            else if (userInput.equals("no"){
+              quit = false;
+              report();
+       }
+        
+        }
+      }
+   
+   /**
+    * deals a card to the player
+    */
+      private void dealCard()
+       {
+        if(cardDeck.getdeckSize() > 0) {
+        Card newCard = cardDeck.takeFirstCard();
+        playersHand.add(newCard);
+      }
+        else if (cardDeck.getdeckSize() == 0) {
+          cardDeck = new Deck();
+          Card newCard = cardDeck.takeFirstCard();
+          playersHand.add(newCard);
+        }
+    }
+    
+    /**
+     * hits the players hand
+     */
+    private boolean hit()
+    {
+        boolean hit = true;
+        while (hit) {
+           System.out.println("Would you like to hit or stand? > ");
+           String userInput = reader.getInput().toLowerCase();
+                dealCard();
+                showHand();
+                if (userInput.equals("stand")){
+                    isStanding();
+                    hit = false;
+           }
+      }
+      return hit;
+   }
+    
+    /**
+     * calculate the hand value
+     */
+    private int getHandValue()
+     {
+       int handValue = 0;
+       int cardCount = 0;
+       int cardValue = 0;
+         if (! playersHand.isEmpty()) {
+            while (cardCount < playersHand.size()) {
+                Card newCard = playersHand.get(cardCount);
+                cardValue = newCard.getcardValue();
+                handValue += cardValue;
+                cardCount++;
+            if (newCard.equals("Ace")&& isBusted()) {
+                    handValue -= ACE_RULE;
+           }
+        }
+      }
+      return handValue;
+   } 
+   
+   /**
+    * displays the hand and its value
+    */
+   private void showHand()
+   {
+       
+          System.out.println("Your cards : ");
+          for (Card hand : playersHand) {
+                System.out.println(hand.getdescription()+ " of " + hand.getsuit());
+            }
+          System.out.println("Hand value : "+getHandValue());
+        }
+    
+    
+   /**
+    *  determines if the hand value is a blackjack
+    * 
+    */  
+   private boolean hasBlackjack()
+   {
+       boolean blackjack = false;
+       if(getHandValue() == BLACK_JACK){
+           System.out.println("Blackjack!!");
+           showHand();
+           blackjack = true;
+       }
+       return blackjack;
+   }
+   
+   /**
+    *  determines if the hand value is a bust
+    * 
+    */  
+   private boolean isBusted()
+   {
+      boolean busted = false;
+       if(getHandValue() > BLACK_JACK){
+              System.out.println("Busted!!");
+              showHand();
+              busted = true;
+      }
+      return busted;
+   }
+   
+   /**
+    *  determines if the player is standing
+    * 
+    */  
+   private boolean isStanding()
+   {
+       boolean standing = false;
+       if (hit() == false){
+           System.out.println("Player stands");
+       showHand();
+       standing = true;
+    }
+       return standing;
+    }
+   
+   
+   /**
+    * reports the players total score and rounds played
+    * 
+    */
+   private void report()
+   {
+       int rounds = 0;
+       int points = 0;
+       
+        if(hasBlackjack()) {
+           points += BLACK_JACK_POINTS;
+           rounds++;
+         }
+         else if(isStanding() && getHandValue() >= STAND_POINTS){
+           points++;
+           rounds++;
+        }
+        else {
+           rounds++;
+        }
+     
+     
+         System.out.println("Player points : "+points);
+         System.out.println("Player rounds : "+rounds);
+     }
+   }

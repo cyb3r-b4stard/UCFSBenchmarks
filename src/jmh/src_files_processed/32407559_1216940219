@@ -1,0 +1,84 @@
+
+/**
+ * ##### # ########### ## ############ ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+
+import edu.duke.*;
+import java.io.*;
+import java.util.*;
+
+public class WordsInFiles {
+    private HashMap<String, ArrayList<String>> map;
+    
+	private static String dataSourceURL = "http:
+	private static String dataSourceDirectory = "datalong";    
+    
+    public WordsInFiles(){
+        map = new HashMap<String, ArrayList<String>>();
+    }
+    
+    private void addWordsFromFile(File f){        
+        FileResource fr = new FileResource(f);
+        for(String word : fr.words() ){
+            if(!map.containsKey(word)){
+                ArrayList<String> newFiles = new ArrayList<String>();
+                map.put(word, newFiles);
+                newFiles.add(f.toString());
+            }
+            else{
+                ArrayList<String> file = map.get(word);
+                String fileName = f.toString();
+                int idx = file.indexOf(fileName);
+                
+                if (idx == -1){
+                    file.add(fileName);
+                }
+            }
+        }
+    }
+    
+    public void buildWordFileMap(){
+        map.clear();
+        DirectoryResource dr = new DirectoryResource();
+        for (File f:dr.selectedFiles()){
+            addWordsFromFile(f);
+        }
+    }
+    
+    public int maxNumber(){
+        int max = 0;
+        for(String words : map.keySet()){
+            ArrayList<String> file = map.get(words);
+            if(file.size() > max){
+                max = file.size();
+            }
+            }
+        }
+        return max;
+    }
+    
+    public void testMaxNumber(){
+        System.out.println(maxNumber());
+    }
+    
+    /*public ArrayList<String> wordsInNumFiles(int number){
+        
+    }*/
+    
+    public void printFilesIn (String word){
+        
+    }
+    
+    public void tester (){
+        buildWordFileMap();
+        for(String words : map.keySet()){
+            ArrayList<String> file = map.get(words);
+            for(int i = 0; i < file.size(); i++){
+                System.out.println(words+"\t"+file.get(i));
+            }
+        }
+    }
+}

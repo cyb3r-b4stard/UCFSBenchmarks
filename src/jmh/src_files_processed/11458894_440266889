@@ -1,0 +1,220 @@
+
+/**
+ * #### ##### ####### ### # ########### #### ##### ## ##### ##### ### ###-###-###. ### ####### #######
+ * ### ## ##### ## ### #####, ### ## ##### ### #### ## "#" ## "#" ## ### #####, ### ## ##### ## ### ## 
+ * ### #### ## #### ## ###### ## ##### ## ##### ## # ### ######## ## ## ### ##### ## ###### ##, ### #######
+ * # ###### ## ##### ### ####### ## ### ####.
+ * 
+ * @###### ######## ######
+ * @####### ##/#/##
+ */
+import java.util.*;
+
+public class Board
+{
+    private String[][] boardT;
+    private String empty;
+    private String winner;
+
+    public Board()
+    {
+        boardT = new String[3][3];
+        empty = " ";
+        for(int i = 0; i < boardT.length; i++)
+        {
+            for(int j = 0; j < boardT.length; j ++)
+            {
+                boardT[i][j] = empty;
+            }
+        }
+    }
+
+    public void print()
+    {
+        for(int i = 0; i < boardT.length; i++)
+        {
+            for(int j = 0; j < boardT.length; j ++)
+            {
+                System.out.print(boardT[i][j]);
+                if(j < boardT.length - 1)
+                {
+                    System.out.print("|");
+                }
+            }
+            System.out.println();
+            if(i < boardT.length - 1)
+            {
+                for(int j = 0; j < boardT.length; j++)
+                {
+                    if(j < boardT.length - 1)
+                    {
+                        System.out.print("--");
+                    }
+                    else
+                    {System.out.println("-");}
+                }
+            }
+        }
+    }
+
+    public boolean placeMark(int row, int col, String mark)
+    {
+        if(boardT[row][col].equals(empty))
+        {
+            boardT[row][col] = mark;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    public int[] strategy()
+    {
+        char[] xCheck = {'X','X',' '};
+        char[] oCheck = {'O','O',' '};
+        int[] place = null;
+        for(int i = 0; i < boardT.length; i ++)
+        {
+            char[] check = new char[3];
+            for(int j = 0; j < boardT.length; j++)
+            {
+                check[j] = boardT[i][j].charAt(0);
+            }
+            if(Arrays.equals(xCheck, check) || Arrays.equals(oCheck, check))
+            {
+                place = new int[i]; 
+            }
+        }
+
+        for(int i = 0; i < boardT.length; i ++)
+        {
+            char[] check = new char[3];
+            for(int j = 0; j < boardT.length; j++)
+            {
+                check[j] = boardT[j][i].charAt(0);
+            }
+            if(Arrays.equals(xCheck, check) || Arrays.equals(oCheck, check))
+            {
+                
+            }
+        }
+        return place[];
+    }
+
+    public boolean gameOver()
+    {
+        char[] xCheck = {'X','X','X'};
+        char[] oCheck = {'O','O','O'};
+
+        for(int i = 0; i < boardT.length; i ++)
+        {
+            char[] check = new char[3];
+            for(int j = 0; j < boardT.length; j++)
+            {
+                check[j] = boardT[i][j].charAt(0);
+            }
+            if(Arrays.equals(xCheck, check))
+            {
+                winner = "X";
+                return true;
+            }
+            else if(Arrays.equals(oCheck, check))
+            {
+                winner = "O";
+                return true;
+            }
+        }
+
+        for(int i = 0; i < boardT.length; i ++)
+        {
+            char[] check = new char[3];
+            for(int j = 0; j < boardT.length; j++)
+            {
+                check[j] = boardT[j][i].charAt(0);
+            }
+            if(Arrays.equals(xCheck, check))
+            {
+                winner = "X";
+                return true;
+            }
+            else if(Arrays.equals(oCheck, check))
+            {
+                winner = "O";
+                return true;
+            }
+        }
+
+        char[] check = new char[3];
+        for(int i = 0; i < boardT.length; i++)
+        {
+            check[i] = boardT[i][i].charAt(0);
+        }
+        if(Arrays.equals(xCheck, check))
+        {
+            winner = "X";
+            return true;
+        }
+        else if(Arrays.equals(oCheck, check))
+        {
+            winner = "O";
+            return true;
+        }
+
+        int j = 2;
+        for(int i = 0; i < boardT.length; i ++, j--)
+        {
+            check[i]=boardT[i][j].charAt(0);
+        }
+        if(Arrays.equals(xCheck, check))
+        {
+            winner = "X";
+            return true;
+        }
+        else if(Arrays.equals(oCheck, check))
+        {
+            winner = "O";
+            return true;
+        }
+
+        boolean cats = true;
+        loop:
+        for(int i = 0; i < boardT.length; i++)
+        {
+            for(j = 0; j < boardT.length; j++)
+            {
+                if(boardT[i][j] == empty)
+                {
+                    cats = false;
+                    break loop;
+                }
+            }
+        }
+
+        if(cats == true)
+        {
+            winner = "tie";
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
+    }
+
+    public void printWinner()
+    {
+        System.out.println("Game Over!");
+        if(winner.equals("X") || winner.equals("O"))
+        {
+            System.out.println(winner + " - won!");
+        }
+        else
+        {
+            System.out.println("Board is full. Tie!");
+        }
+    }
+
+}

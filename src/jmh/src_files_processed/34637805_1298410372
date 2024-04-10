@@ -1,0 +1,142 @@
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+
+/**
+ * ########### ### #### ### ###### ########.
+ * 
+ * @###### (### ####) 
+ * @####### (#### ############## #### ### #####)
+ */
+public class Database
+{
+    private Connection c;
+
+    private String database = "data.db";
+
+    public Database() {
+        this.database=database;
+        connectDB();
+    }
+
+    
+    public ArrayList<Integer> getNodes(){
+        Statement stmt = null;
+        ArrayList<Integer> nodes= new ArrayList<Integer>();
+
+
+        try {
+            stmt = c.createStatement();
+            ResultSet rs = stmt.executeQuery( "SELECT  `id` FROM Nodes where id != Overview_Node_id;" );
+
+            while(rs.next()) {
+                nodes.add(rs.getInt("id"));
+            }
+
+            rs.close();
+            stmt.close();
+        } catch (Exception e) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+        }
+        
+        return nodes;
+    }
+    
+        public int getPictureId(int id){
+        Statement stmt = null;
+        int id
+
+
+        try {
+            stmt = c.createStatement();
+            ResultSet rs = stmt.executeQuery( "SELECT  `Picture_id` FROM Nodes where id "+id+";" );
+
+            while(rs.next()) {
+                id= rs.getInt("id");
+            }
+
+            rs.close();
+            stmt.close();
+        } catch (Exception e) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+        }
+        
+        return id;
+    }
+    
+        public ArrayList<Integer> getConnectedNodes(int node, boolean category){
+        Statement stmt = null;
+        ArrayList<Integer> nodes= new ArrayList<Integer>();
+
+
+        try {
+            stmt = c.createStatement();
+            ResultSet rs;
+            if (category)
+                rs = stmt.executeQuery( "SELECT  `Node1_id` FROM Edges Where Node2_id="+node+" and category != 3" );
+            else 
+                rs = stmt.executeQuery( "SELECT  `Node1_id` FROM Edges Where Node2_id="+node+" and category != 0 and category != 1" );
+
+            while(rs.next()) {
+                nodes.add(rs.getInt("Node1_id"));
+            }
+
+            rs.close();
+            stmt.close();
+            
+            stmt = c.createStatement();
+            if (category)
+                rs = stmt.executeQuery( "SELECT  `Node2_id` FROM Edges Where Node1_id="+node+" and category != 3" );
+            else 
+                rs = stmt.executeQuery( "SELECT  `Node2_id` FROM Edges Where Node1_id="+node+" and category != 0 and category != 1" );
+
+            while(rs.next()) {
+                nodes.add(rs.getInt("Node2_id"));
+            }
+
+            rs.close();
+            stmt.close();
+        } catch (Exception e) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+        }
+        
+        return nodes;
+    }
+    
+    
+    /**
+     * 
+     */
+    public void connectDB()
+    {
+        Statement stmt = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:"+database);
+      
+        } catch ( Exception e ) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+            System.out.println("Could not connect to DB");
+        }
+        
+    }
+    
+    
+    /**
+     * 
+     */
+    public void closeConnection()
+    {
+        try {
+            c.close();
+        } catch ( Exception e ) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+        }
+    }
+}

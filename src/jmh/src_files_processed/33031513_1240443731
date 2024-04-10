@@ -1,0 +1,119 @@
+
+
+/**
+ * ### #### #### ##### ## ## ### ### #### #### ## ###### ### ##### ## #### #### ######
+ * #### ########
+ * #.# ##/#/##
+ */
+import java.util.*;
+import java.io.*;
+public class Advanced_Address_Book
+{
+    static class AddressRecord{
+        String name;
+        String number;
+        }
+    /** Detremines the max number of entries in the array
+     */
+    static final int MAX_PEOPLE = 10;
+    /** Determines the name of the file where the names will be saved
+     */
+    static final String PEOPLE_FILE = "people.txt";
+    /** Creates array for storing names
+     */
+    static AddressRecord[] people = new AddressRecord[MAX_PEOPLE];
+    
+    static int CURRENT_PEOPLE = 0;
+    
+    static int NUMBER_ENTERED = 1;
+    
+    /** Copies MAX_PEOPLE amount of names from the standard input and stores them in the MAX_PEOPLE array
+     */
+    static void read(){
+        System.out.println("How many entries do you want to add?");
+        Scanner in = new Scanner(System.in);
+        try{
+            NUMBER_ENTERED = in.nextInt();
+        }catch in.nextInt+CURRENT_PEOPLE>MAX_PEOPLE{
+            System.out.println(e);
+        }
+        System.out.println("Enter in name and details");
+        
+        for(int i = 0; i<NUMBER_ENTERED; i++) {
+            people[i].name=in.next();
+            people[i].number=in.next();
+            CURRENT_PEOPLE++;
+        }
+        System.out.println(CURRENT_PEOPLE+" entries in data base");
+        save();
+    }
+    /** Prints out short term memory
+     */
+    static void write(){
+        System.out.println("Names");
+        
+        for(int i = 0; i<MAX_PEOPLE; i++) {
+            System.out.println((i+1) +": "+people[i].name+" "+people[i].number);
+        }
+    }
+    /** Saves names currently in the MAX_PEOPLE array by printing them on to PEOPLE_FILE
+     */
+    static void save(){
+        System.out.println("Saving to " + PEOPLE_FILE);
+        try{
+            PrintStream out = new PrintStream(new File(PEOPLE_FILE));
+            for(int i = 0; i<NUMBER_ENTERED; i++){
+                out.println(people[i].name+" "+people[i].number);
+            }
+            out.close();
+        }catch(Exception e){
+            System.out.println(e);
+        }
+    }
+    /** Scans all names on the PEOPLE_FILE and then prints them on to the console using the Write() function
+     */
+    static void load(){
+        System.out.println("Loading from " + PEOPLE_FILE);
+        try{
+            Scanner sc = new Scanner(new File(PEOPLE_FILE));
+            int i = 0;
+            while (sc.hasNext()) {
+                people[i].name=sc.next();
+                people[i].number=sc.next();
+                i++;
+            }
+            sc.close();
+        }catch(Exception e){
+            System.out.println(e);
+        }
+        write();
+    }
+    /** Prints out text showing all the functions used by the main function
+     */
+    static void printMenu(){
+        System.out.println("Enter 1 to Add entries to the data base");
+        System.out.println("Enter 2 to Load all files on the data base");
+        System.out.println("Enter 3 to quit");
+    }
+    /** Runs printMenu then when 1-5 is pressed executes the corosponding function. It will continue to cycle through until the quit function is chosen
+     */
+    public static void main(String[] args){
+       Scanner in = new Scanner(System.in);
+       printMenu();
+       int ip = in.nextInt();
+       while(ip !=3){
+           switch (ip) {
+               case 1: read();
+               break;
+               case 2: load();
+               break;
+               case 3: break;
+               default: System.out.println("Invalid input");
+               break;
+            }
+           printMenu();
+           ip = in.nextInt();
+        }
+       System.out.println("Goodbye.");
+    }
+}

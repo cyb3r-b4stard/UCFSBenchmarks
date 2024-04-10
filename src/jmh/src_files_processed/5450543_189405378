@@ -1,0 +1,163 @@
+
+/**
+ * ##### # ########### ## ##### ###### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+
+/**
+ * ## ## ### ###### ############ ### ######### #########
+ * # ## ##### ###### ###### ## #### # ## ######### #### ########, ######## # ###
+ * ############ ## ###### ##########
+ * @###### (###-##) 
+ * @####### (##/##/####)
+ */
+class Node
+{
+    String nome;
+    Node filhoEsq;
+    Node filhoDir;
+    Node pai;
+    
+    Node(String n, Node noPai)
+    {
+        nome = n;
+        pai = noPai;
+        filhoDir = filhoEsq = null;
+    }
+    
+    Node(String n)
+    {
+        this(n,null);   
+    }
+    
+    boolean temFilhoEsq()
+    {
+        if (filhoEsq == null)
+          return false;
+        else
+          return true;
+    }
+    
+    boolean temFilhoDir()
+    {
+        if (filhoDir == null)
+          return false;
+        else
+          return true;
+    }
+    
+    void insFilhoEsq(Node filho)
+    {
+        filhoEsq = filho;
+    }
+    
+    void insFilhoDir(Node filho)
+    {
+        filhoDir = filho;
+    }
+    
+    Node getFilhoEsq()
+    {
+        return filhoEsq;
+    }
+    
+    Node getFilhoDir()
+    {
+        return filhoDir;
+    }
+    
+    String getNome()
+    {
+        return nome;
+    }
+    
+} 
+
+public class Arvore
+{
+    private Node raiz;
+    private Node achou = null;
+    private int cont = 0;
+    
+    public Arvore()
+    {
+        cont = 0;
+    	raiz = null;
+    }
+
+    public boolean estaVazia()
+    {
+        if (raiz == null) 
+            return true;
+           else
+           return false;
+    }
+    
+    public Node getRaiz()
+    {
+        return raiz;
+    }
+    
+    public Node procura(String procurado)
+    {
+        achou = null;
+        pesquisa(raiz,procurado);
+        return achou;
+    }
+    
+    public boolean pesquisa(Node inicio, String procurado)
+    {
+        if (inicio != null)
+        {
+            if (procurado.equals(inicio.getNome()))    
+                {
+                    achou = inicio;
+                    return true;
+                }
+            pesquisa(inicio.getFilhoEsq(), procurado);
+            pesquisa(inicio.getFilhoDir(), procurado);
+        }
+        return false;
+    }
+    
+    public boolean insere(Node noPai, String info, char tipoFilho)
+    {
+        Node aux;
+        boolean Ok = false;
+        if ((noPai == null) && (raiz == null)) 
+          {
+              aux = new Node(info);
+              raiz = aux;
+              Ok = true;
+              cont++;
+          }
+        else
+          {
+              if ((tipoFilho == 'E') && (noPai.temFilhoEsq()))
+                {
+                   System.out.println("*** ERRO: Impossível inserir, já possui filho esquerdo!");
+                   Ok = false;
+                   return false;
+                }
+              else
+                if ((tipoFilho == 'D') && (noPai.temFilhoDir()))
+                  {
+                   System.out.println("*** ERRO: Impossível inserir, já possui filho direito! ***");                      
+                      Ok = false;
+                      return false;
+                  }
+               aux = new Node(info,noPai); 
+               if (tipoFilho == 'E'){
+                  noPai.insFilhoEsq(aux);
+                  cont++;
+                }else
+                  noPai.insFilhoDir(aux);
+               Ok = true;
+               cont++;
+          }          
+          return Ok;
+    }
+    
+}}}

@@ -1,0 +1,119 @@
+/**#######*/
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Random;
+public class Chatbot extends JFrame {
+    /**Das erste Textfeld, in das der user seine Nachrichten eingibt*/   
+    JTextField jtfText1;
+    /**Das zweite Textfeld, das den Verlauf und Antworten des Bots anzeigt*/
+    JTextArea jtfText2;
+    String disp = "";
+    TextHandler handler = null;
+    /**hier werden die Nachrichten des users abgelegt*/
+    private String echo;
+    /**Ein Zufallsgenerator für zufallsbasierte Elemente des Projekts*/
+    Random r = new Random();
+    /**eine Liste der Wörter, auf die der Bot beleidigt reagieren soll*/
+    private String [] schimpfwort;
+    /**Konstruktor*/
+    public Chatbot() {
+        super("Chatbot");
+        /**Erschaffen des Fensters*/
+        Container container = getContentPane();
+        /**Setzen des Fensterhintergrundes*/
+        container.setLayout(new FlowLayout());
+        /**Erschaffen des ersten Textfeldes als Eingabefeld*/        
+        jtfText1 = new JTextField(10);
+        /**Erschaffung des zweiten Textfeldes als TextArea*/
+        jtfText2 = new JTextArea(10,40);
+        JScrollPane scrollingArea = new JScrollPane(jtfText2);    
+        /**Markieren des zweiten Textfeldes als nicht beschreibbar*/
+        jtfText2.setEditable(false);
+        /**Hinzufügen des Eingabefeldes zum Fenster*/
+        container.add(jtfText1);
+        /**Hinzufügen der Textarea zum Fenster*/
+        container.add(scrollingArea);
+        handler = new TextHandler();
+        jtfText1.addActionListener(handler);
+        /**Bestimmung der Größe des Fensters */
+        setSize(450, 400);
+        /**Bestimmung der Sichtbarkeit des Fensters*/
+        setVisible(true);
+        /** Hinzufügen von Wörtern auf die Liste der beleidigenden Aussagen*/
+        schimpfwort = new String[10];
+        schimpfwort[0] = "scheiß";
+        schimpfwort[1] = "scheiss";
+        schimpfwort[2] = "fick";
+        schimpfwort[3] = "fuck";
+        schimpfwort[4] = "hure";
+        schimpfwort[5] = "schlampe";
+        schimpfwort[6] = "bastard";
+        schimpfwort[7] = "depp";
+        schimpfwort[8] = "idiot";
+        schimpfwort[9] = "dummkopf";
+        schimpfwort[10] = "shit";
+    }
+    /**Einrichtung des grundsätzlichen Ablaufs des Chats*/
+    private class TextHandler implements ActionListener {
+
+        public void actionPerformed(ActionEvent e) {
+            echo = jtfText1.getText();
+            jtfText1.setText("");
+            jtfText2.append("Ich: "+echo+"\n");         
+            jtfText2.append("Conputer:"+antwort()+"\n");
+        }
+    }
+    /**Generierung der Antwort anhand unterschiedlicher Kriterien*/
+    String antwort()
+    {
+        int x = 0;
+        String antwort = "";
+        if(echo != null)
+        {
+            echo = echo.toLowerCase();
+        }
+        if(echo.contains("hallo"))
+        {
+            if(echo.contains("wie") && echo.contains("geht"))
+            {
+                antwort = "Mir geht es gut!";
+            }
+            else
+            {
+                antwort = "Hallo!";
+            }
+
+        }
+        else 
+        {
+            String substring = echo.substring(0,4);
+            if(substring.equalsIgnoreCase("warum") || substring.equalsIgnoreCase("wieso"))
+            {
+                switch r.nextInt(2)
+                {
+                    case 0:
+                    antwort = "darum!"
+                    break;
+                    case 1:
+                    antwort = "deshalb!"
+                    break;
+                    case 2:
+                    antwort = "warum nicht?"
+                    break;
+                }
+
+            }
+        }
+
+        while(x < 10)
+        {
+            if(echo.contains(schimpfwort[x]))
+            {
+                antwort = "So etwas sagt man nicht! :(";
+            }
+            x = x+1;
+        }
+        return antwort;
+    }
+}

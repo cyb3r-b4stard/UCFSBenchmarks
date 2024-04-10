@@ -1,0 +1,72 @@
+
+
+    public class StudentNeu implements Comparable<StudentNeu>{
+        public String name; 
+        public int mat_nr; 
+        public String gebdat; 
+        public static String vergleichskriterium;
+        
+        public StudentNeu(String name, int mat_nr, String gebdat) {
+            this.name = name;
+            this.mat_nr = mat_nr;
+            this.gebdat = gebdat;
+        
+       }
+       private int vergleicheDatum(StudentNeu arg0){
+           String[] _date = this.gebdat.split("\\.");
+            if(Integer.parseInt(_date[0]) < 10)
+            {
+                _date[0] = "0" + _date[0];
+            }
+            
+            if(Integer.parseInt(_date[1]) < 10)
+            {
+                _date[1] = "0" + _date[1];
+            }
+            
+            String _date_rueckwaerts = _date[2]+_date[1]+_date[0];
+            
+            
+            
+            String[] _date2 = arg0.gebdat.split("\\.");
+            if(Integer.parseInt(_date2[0]) < 10)
+            {
+                _date2[0] = "0" + _date2[0];
+            }
+            
+            if(Integer.parseInt(_date2[1]) < 10)
+            {
+                _date2[1] = "0" + _date2[1];
+            }
+            
+            String _date2_rueckwaerts = _date2[2]+_date2[1]+_date2[0];
+            
+            /*genauere spezifizierung
+             * zum Beispiel:
+             * 1 bedeutet date1 ist  aläter als date2
+             * 0 bedeutet date1 ist genau so alt wie date2
+             * möglich aber nicht nötig: 
+             * -1 bedeutet date1 ist jünger als date2
+             */
+            
+            if (Integer.parseInt(_date2_rueckwaerts) > Integer.parseInt(_date_rueckwaerts))
+            {
+                return 0;
+            }
+            
+            else return 1;
+        }
+        
+        @Override
+		public int compareTo(StudentNeu arg0) {
+		      switch (vergleichskriterium){
+		          case "datum": return vergleicheDatum(arg0);
+		          break;
+		          case "name": return vergleicheName(arg0);
+		          break;
+		          case "matrikel": return vergleicheMatrikel(arg0);
+		          break;
+		          default: return vergleicheMatrikel(arg0);
+		          break;
+		  }
+    }

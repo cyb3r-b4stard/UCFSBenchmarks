@@ -1,0 +1,51 @@
+import java.util.*;
+
+public class CivilServant {
+    private boolean fast;
+    private ArrayList<Service> canPerform;
+    public final static int MAX_NUMBER_OF_SERVICES = 3;
+
+    public CivilServant(boolean fast) {
+        this.fast = fast;
+        canPerform = new ArrayList<Service>();
+    }
+
+    public void addService(Service service) {
+        if(service!=null && canPerform.size()<MAX_NUMBER_OF_SERVICES){
+            canPerform.add(service);
+        }
+    }
+
+    private Service findService(String serviceName) {
+        for(Service volgendeService : canPerform){
+            if(volgendeService.getName().equals(serviceName)) {
+                return volgendeService;
+            }
+        }
+        return null;
+    }
+    
+  public boolean canPerform(String serviceName) {
+        return findService(serviceName) != null;
+    }
+
+    
+    
+    
+    
+    
+public int performService(String serviceName) {
+         if (canPerform(serviceName)){
+            Service serviceToPerform = findService(serviceName);
+            if (fast){
+                return (serviceToPerform.getDuration() * 3)/4;
+            }
+            else{
+                return serviceToPerform.getDuration()+10;
+            }
+        }
+        
+        return Integer.MAX_VALUE;
+    }
+}
+}

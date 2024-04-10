@@ -1,0 +1,158 @@
+package UI.Common;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.border.*;
+
+import Datastructure.*;
+import Util.*;
+
+
+
+/**
+ * ########### ### #### ### ###### #########.
+ * 
+ * @###### (### ####) 
+ * @####### (#### ############## #### ### #####)
+ */
+public abstract class ObjectPanel extends JPanel
+{
+    protected GUIInterface gui;
+    protected CoreInterface Core;
+    protected int row;
+    protected int col;
+    
+    protected DSMObject object;
+    
+    protected ButtonBar bBar;
+    protected JScrollPane buttonScroller;
+    
+    protected JPanel objectPanel;
+        protected JLabel objNameLabel;
+        protected JTextArea objDescript;
+        protected JScrollPane objDescriptScroller;
+        
+    protected JLabel annotations;
+    
+    public ObjectPanel (GUIInterface gui, CoreInterface Core, int row, int col, DSMObject object)
+    {
+        this.gui = gui;
+        this.Core = Core;
+        this.row = row;
+        this.col = col;
+
+        this.object = object;
+        
+        this.setPreferredSize(new Dimension (280, 200));
+    }
+        
+    protected void initPanel()
+    {
+        buttonScroller = new JScrollPane(bBar);
+        Dimension area = new Dimension(0,0);
+        buttonScroller.setPreferredSize(new Dimension(Conf.getConf().getIntEntry("IconPanelWidth"),Conf.getConf().getIntEntry("IconPanelHeight")));
+        add (buttonScroller);
+        buttonScroller.setAlignmentX (Component.CENTER_ALIGNMENT);
+        buttonScroller.setBorder (BorderFactory.createEmptyBorder());
+        
+        this.setLayout(new BoxLayout (this, BoxLayout.PAGE_AXIS));
+        
+        initObj();
+        initAnnotations();
+    }
+    
+    protected void initObj (boolean suppressName)
+    {
+        objectPanel = new JPanel ();
+                objectPanel.setLayout (new GridLayout (0, 1));
+                
+        String objName = (object.getName());
+        String objResp;
+        if (object.getResponsible()!=null) objResp = (object.getResponsible().getInitials());
+        else objResp = "";
+        
+        String objNameStr = "<html><span style=\"font-size:180%\">";
+        if (!suppressName) objNameStr += objName;
+        objNameStr += "<span style=\"font-size:100%\"><br></br>" + objResp + "<br></html>", JLabel.LEFT);
+        objNameLabel = new JLabel (objNameStr);
+        objectPanel.add (objNameLabel);
+    }
+    
+    protected void initObjDescript()
+    {
+        objDescript = new JTextArea (object.getDescription());
+        objDescript.setLineWrap(true);
+        objDescript.setWrapStyleWord(true);
+        objDescript.setEditable(false);
+        objDescript.setOpaque(false);
+        objDescript.setBorder(BorderFactory.createEmptyBorder());
+        Font descriptFont = new Font (objDescript.getFont().getName(), Font.BOLD, objDescript.getFont().getSize());
+        objDescriptScroller = new JScrollPane (objDescript);
+        objDescriptScroller.setBorder(BorderFactory.createEmptyBorder());
+        
+        
+    }
+    
+    protected void initAnnotations ()
+    {
+        String anns = "<html><br><span style=\"font-size:160%\">Anmerkungen<span style=\"font-size:100%\"><span style=\"font-size:120%\">";
+        for (int i = 0; i < object.getAnnotationsCount(); ++i)
+        {
+            anns += "<br>";
+            anns += object.getAnnotationAt(i);
+        }
+        anns += "<span style=\"font-size:100%\"></html>";
+        
+        annotations = new JLabel (anns, JLabel.LEFT);
+    }
+    
+    protected DSMObject getObject()
+    {
+        return object;
+    }
+   
+    
+    public abstract void update ();
+    
+    public abstract void edit();
+    
+    public abstract class ButtonBar extends JPanel
+    {
+        protected ObjectPanel ePanel;
+        
+        protected JIconButton edit;
+        public ButtonBar (ObjectPanel ePanel)
+        {
+            super();
+            this.ePanel = ePanel;
+            
+            this.setLayout(new BoxLayout (this, BoxLayout.LINE_AXIS));
+            
+            this.setBorder (BorderFactory.createEmptyBorder());
+            
+            initButtons();
+            addActionListeners();
+            addButtons();
+        }
+        
+        protected abstract void initButtons ();
+        
+        private void addActionListeners ()
+        {
+            edit.addActionListener (new ActionListener ()
+            {
+                public void actionPerformed (ActionEvent e)
+                {
+                    edit();
+                }
+            });
+        }
+        
+        private void addButtons()
+        {
+            add (edit);
+        }
+    }
+
+}

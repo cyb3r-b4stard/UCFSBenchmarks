@@ -1,0 +1,182 @@
+import java.util.*;
+
+/**
+ *  ##### ######### - ##### ############# #### # #### #########.
+ * 
+ *  #### ##### ############ ##### ## ####### ## ### ######:
+ *  ####### ####### ########,
+ *  ######### ## ######## ###### ####### 
+ *  # ######## ## ######## #######, ## ###### ## #### ##### #######.
+ *
+ *@######    ###### ###### ##
+ *@#######    ##.##.####
+ */
+public class HerniPlan {
+
+    private Prostor aktualniProstor;
+    private Batoh batoh;
+    private boolean zacatekHry = true;
+
+    /**
+     *  Konstruktor který vytváří jednotlivé prostory a propojuje je pomocí východů.
+     *  Jako výchozí aktuální prostor nastaví halu.
+     */
+    public HerniPlan() {
+        zalozProstoryHry();
+        batoh = new Batoh();
+
+    }
+
+    /**
+     *  Vytváří jednotlivé prostory a propojuje je pomocí východů.
+     *  Jako výchozí aktuální prostor nastaví domeček.
+     */
+    private void zalozProstoryHry() {
+        Prostor doma = new Prostor("doma","Starý mládenec se nudí všude. Ženatý muž jen doma.");
+        Prostor predsin = new Prostor("predsin", "zde jsou různé papírové peníze");
+        Prostor cesta = new Prostor("cesta","zlatá střední cesta");
+        Prostor dilna = new Prostor("dilna","dílna, montuj a tvoř!");
+        Prostor dumKamarada = new Prostor("dumKamarada","");
+        Prostor hospoda = new Prostor("hospoda","Hospoda je místem, které lidem skýtá příležitost k výměně názorů a myšlenek o veřejných záležitostech.");
+        Prostor sousedka = new Prostor("sousedka","Ahoj, na na stole si vem sponky, učitě se ti hodí");
+        Prostor novaPaka = new Prostor("novaPaka","Zde jsem vyrůstal a chodil na Gympl");
+        Prostor trznice = new Prostor("trznice","Mít peníze v pravém okamžiku, pouze to jsou peníze.");
+        Prostor vrakoviste = new Prostor("vrakoviste","vrakoviště, křápy a harampádí, ale možná tu něco objevím");
+        Prostor studna = new Prostor("studna","co v ní je, je mi záhadou");
+        doma.setVychod(predsin);
+        predsin.setVychod(doma);
+        predsin.setVychod(dilna);
+        predsin.setVychod(cesta);
+        dilna.setVychod(predsin);
+        cesta.setVychod(predsin);
+        cesta.setVychod(sousedka);
+        cesta.setVychod(dumKamarada);
+        cesta.setVychod(hospoda);
+        cesta.setVychod(novaPaka);
+        sousedka.setVychod(cesta);
+        sousedka.setVychod(dumKamarada);
+        sousedka.setVychod(hospoda);
+        dumKamarada.setVychod(cesta);
+        dumKamarada.setVychod(sousedka);
+        dumKamarada.setVychod(hospoda);   
+        hospoda.setVychod(dumKamarada);
+        hospoda.setVychod(cesta);
+        novaPaka.setVychod(cesta);
+        novaPaka.setVychod(studna);
+        novaPaka.setVychod(vrakoviste);
+        novaPaka.setVychod(trznice);
+        trznice.setVychod(vrakoviste);
+        trznice.setVychod(novaPaka);
+        trznice.setVychod(novaPaka);
+        trznice.setVychod(trznice);
+        vrakoviste.setVychod(trznice);
+        vrakoviste.setVychod(novaPaka);
+        studna.setVychod(novaPaka);
+        aktualniProstor = doma; 
+        Vec stovka = new Vec ("stovka",true);
+        predsin.vlozVec(stovka);
+        Vec tisicovka = new Vec ("tisicovka",true);
+        predsin.vlozVec(tisicovka);
+        predsin.vlozVec(new Vec("boty",true));
+        predsin.vlozVec(new Vec("zrcadlo",false));
+
+        sousedka.vlozVec(new Vec("civka",true));
+        sousedka.vlozVec(new Vec("stul",false));
+        dumKamarada.vlozVec(new Vec("kelimek",true));
+        dumKamarada.vlozVec(new Vec("draty",true));
+        dumKamarada.vlozVec(new Vec("srouby",true));
+        dumKamarada.vlozVec(new Vec("videohra",true));
+        dumKamarada.vlozVec(new Vec("kniha",true));
+        dumKamarada.vlozVec(new Vec("police",false));
+
+        Vec baterka = new Vec ("baterka",true);       
+        Vec slouceninaZeleza = new Vec ("slouceninaZeleza",true);
+        vrakoviste.vlozVec(slouceninaZeleza);
+        Vec auto = new Vec ("auto",true);
+        vrakoviste.vlozVec(auto);        
+        vrakoviste.vlozVec(new Vec("plech",true));
+        Vec magnet = new Vec ("magnet",true);
+        Vec zahadnyKlic = new Vec("zahadnyKlic", true);
+
+        predsin.vlozPostavu(new Postava("grandfather","Ahoj Iron Mane \n"+ "Pokud hledas sponky, draty a civku měl bys navštívit sousedku a dům mého kamaráda \n "+"Taky dojdi do hospody a promluv si s jedním frajerem, který ti řekne další instrukce \n ","nic bohužel nemám", "nic nemám","nemám nedám",null,null));
+
+        trznice.vlozPostavu(new Postava("prodavac", "Doby dén, ty mě dát peníze a já ti dát baterku, ano pane? ", "nechci", "Jo, tohle já chci", "Bylo mi potěšením", stovka, baterka ));
+
+        trznice.vlozPostavu(new Postava("prodavacka", "Ahoj, nabízím něco, čím můžeš otevřít kouzelnou místnost, chceš? ", "nechci", "Jo, tohle já chci", "Děkuju moc", tisicovka, zahadnyKlic ));
+
+        sousedka.vlozPostavu(new Postava("sousedka","ahoj krasavce,pokud tě za mnou poslal děda, tak tu mám sponky","nic bohuzel nemam", ""," ",null,null));
+
+        dilna.vlozPostavu(new Postava("robot","Dobry den, jsem C3PO, byl jsem vytvoreny na transformování věcí, pokud máš nějáké železo, vyrobim ti z něho magnet ", "error,tohle ja nechci", "Ano, tohle potřebuju", "Hotovo", slouceninaZeleza, magnet ));
+
+        hospoda.vlozPostavu(new Postava("frajer","zdarec,pokud chces vyměnit nějakou sloučeninu železa na MAGNET, dojdi za robotem v dílně\n"+ "pokud máš peníze dojdi do tržnice, učitě něco seženeš\n ","", "","",null,null));
+
+        dumKamarada.vlozPostavu(new Postava("kamarad","Nazdar Martine, na poličce si vem nějáký věci, který potřebuješ a neruš mě při uklízení","nemám!", "","",null,null));
+
+        dilna.zamknout(true);
+        dilna.nastavKlic(zahadnyKlic);
+
+    }
+
+    /**
+     *  Metoda vrací odkaz na aktuální prostor, ve ktetém se hráč právě nachází.
+     *
+     *@return     aktuální prostor
+     */
+
+    public Prostor getAktualniProstor() {
+        return aktualniProstor;
+    }
+
+    /**
+     *  Metoda nastaví aktuální prostor, používá se nejčastěji při přechodu mezi prostory
+     *
+     *@param  prostor nový aktuální prostor
+     */
+    public void setAktualniProstor(Prostor prostor) {
+        aktualniProstor = prostor;
+    }
+
+    /**
+     * Metoda vrací odkaz na aktuální batoh
+     *
+     * @return batoh
+     */
+    public Batoh getBatoh() {
+        return batoh;
+    }
+
+    /**
+     *  Metoda zjišťuje, jestli je v daném prostoru s danými věcmi.
+     *  
+     */
+    public boolean jsemDoma() {
+        return ((aktualniProstor.getNazev().equals("doma"))&&
+            getBatoh().obsahujeVec("civka")&&
+            getBatoh().obsahujeVec("draty")&&
+            getBatoh().obsahujeVec("kelimek")&&
+            getBatoh().obsahujeVec("baterka")&&
+            getBatoh().obsahujeVec("magnet"));
+    }
+
+    /**
+     *  Metoda ke zjištění, jestli je daném prostoru s danymi vecmi.
+     */
+    public boolean prohra () {
+        return ((aktualniProstor.getNazev().equals("doma"))&&
+            !((getBatoh().obsahujeVec("civka")&&
+                    getBatoh().obsahujeVec("draty")&&
+                    getBatoh().obsahujeVec("kelimek")&&
+                    getBatoh().obsahujeVec("baterka")&&
+                    getBatoh().obsahujeVec("magnet"))))  && (getZacatekHry() == false)     )  ;
+
+    }
+
+     void setZacatekHry (boolean zacatekHry) {
+        this.zacatekHry = zacatekHry;
+    }
+
+    boolean getZacatekHry() {
+        return zacatekHry;
+    }
+
+}

@@ -1,0 +1,195 @@
+import java.util.*; 
+import java.util.Scanner; 
+import javax.swing.*;
+
+/**
+ * ##### # ########### ## ##### ######## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Molecula
+{
+    private Mol r1;
+    private Mol r2;
+    private Mol r3;
+    private Mol r4;
+    private boolean isVisible;
+    private String cargas;
+    private int tam ;
+
+
+    /**
+     * Constructor for objects of class Molecula
+     */
+    public Molecula(String cargas,int y)
+    {
+ 
+       this.cargas=cargas;
+       String c1 = cargas.valueOf(cargas.charAt(0));
+       String c2 = cargas.valueOf(cargas.charAt(2));
+       String c3 = cargas.valueOf(cargas.charAt(4));
+       String c4 = cargas.valueOf(cargas.charAt(6));
+       
+       tam = 20:
+       
+       r1=new Mol(tam,tam-10,10,((tam+10)*(y+1)+((tam-10)*y)),c1,false,cargas.charAt(0),cargas.charAt(1));
+       r2=new Mol(tam-10,tam,20,(tam*(y+1)+(tam*y))+2,c2,false,cargas.charAt(2),cargas.charAt(3));
+       r3=new Mol(tam,tam-10,40,((tam+10)*(y+1)+((tam-10)*y)),c3,false,cargas.charAt(4),cargas.charAt(5));
+       r4=new Mol(tam-10,tam,20,(tam*(y+1)+(tam*y)+30),c4,false,cargas.charAt(6),cargas.charAt(7)); 
+       isVisible=false;
+       
+    }
+    
+     /**
+     * Constructor for objects of class Molecula en posicion especial
+     */
+    public Molecula(String cargas, int x, int y)
+    {
+       this.cargas=cargas;
+        
+       String c1 = cargas.valueOf(cargas.charAt(0));
+       String c2 = cargas.valueOf(cargas.charAt(2));
+       String c3 = cargas.valueOf(cargas.charAt(4));
+       String c4 = cargas.valueOf(cargas.charAt(6));
+       tam = 20
+
+       r1=new Mol(tam,(tam-10),110+x,30+y, c1,false,cargas.charAt(0),cargas.charAt(1));
+       r2=new Mol((tam-10),tam,120+x,20+y ,c2,false,cargas.charAt(2),cargas.charAt(3));
+       r3=new Mol(tam,(tam-10),140+x,30+y, c3,false,cargas.charAt(4),cargas.charAt(5));
+       r4=new Mol((tam-10),tam,120+x,50+y, c4,false,cargas.charAt(6),cargas.charAt(7));
+       isVisible=false;
+    }
+    
+    /**
+     * rota la molecula 90 grados
+     */
+    public void rotate(){
+        char[]cambia= {cargas.charAt(6),cargas.charAt(7),cargas.charAt(0),cargas.charAt(1),cargas.charAt(2),cargas.charAt(3),cargas.charAt(4),cargas.charAt(5)};
+        cargas =String.valueOf(cambia);
+      
+        r1.changeLetra(cargas.charAt(6));
+        r1.changeCarga(cargas.charAt(7));
+        r2.changeLetra(cargas.charAt(0));
+        r2.changeCarga(cargas.charAt(1));
+        r3.changeLetra(cargas.charAt(2));
+        r3.changeCarga(cargas.charAt(3));
+        r4.changeLetra(cargas.charAt(4));
+        r4.changeCarga(cargas.charAt(5));
+  
+        String c1 = cargas.valueOf(cargas.charAt(0));
+        String c2 = cargas.valueOf(cargas.charAt(2));
+        String c3 = cargas.valueOf(cargas.charAt(4));
+        String c4 = cargas.valueOf(cargas.charAt(6));
+        
+        r1.refrescar(cargas.charAt(1),c1);
+        r2.refrescar(cargas.charAt(3),c2);
+        r3.refrescar(cargas.charAt(5),c3);
+        r4.refrescar(cargas.charAt(7),c4);
+        
+    }   
+    
+    /**
+     * alterna los valores laterales de la mol
+     */
+    public void reflect(){
+        this.cargas = cargas;
+        char[]cambia= {cargas.charAt(4),cargas.charAt(5),cargas.charAt(2),cargas.charAt(3),cargas.charAt(0),cargas.charAt(1),cargas.charAt(6),cargas.charAt(7)};
+        
+        r1.changeLetra(cargas.charAt(6));
+        r1.changeCarga(cargas.charAt(7));
+        r2.changeLetra(cargas.charAt(0));
+        r2.changeCarga(cargas.charAt(1));
+        r3.changeLetra(cargas.charAt(2));
+        r3.changeCarga(cargas.charAt(3));
+        r4.changeLetra(cargas.charAt(4));
+        r4.changeCarga(cargas.charAt(5));
+
+        cargas =String.valueOf(cambia);
+ 
+        String c1 = cargas.valueOf(cargas.charAt(0));
+        String c2 = cargas.valueOf(cargas.charAt(2));
+        String c3 = cargas.valueOf(cargas.charAt(4));
+        String c4 = cargas.valueOf(cargas.charAt(6));
+        
+        r1.refrescar(cargas.charAt(1),c1);
+        r2.refrescar(cargas.charAt(3),c2);
+        r3.refrescar(cargas.charAt(5),c3);
+        r4.refrescar(cargas.charAt(7),c4);
+        
+    } 
+    /**
+     * retorna la informacion de la molecula en un arreglo
+     */
+    public void cambiaTam(char signo)
+    {
+        erase();
+        if (signo=='+'){
+            tam =tam+20;
+            
+        }
+        else if(signo == '-'){
+            tam = tam-15;}
+        else{
+            JOptionPane.showMessageDialog(null,"caracter no valido ");}
+        draw();
+    }
+    
+    
+    /**
+     * retorna la informacion de la molecula en un arreglo
+     */
+    public String infomol()
+    {
+        return cargas;
+    }
+    
+    /**
+     * hace visibles las partes de la molecula
+     */
+    public void makeVisible()
+    {
+       r1.makeVisible();
+       r2.makeVisible();
+       r3.makeVisible();
+       r4.makeVisible();
+       isVisible=true;
+    }
+  
+    /**
+     * hace invisibles las partes de la molecula
+     */
+    public void makeInvisible()
+    {
+       r1.makeInvisible();
+       r2.makeInvisible();
+       r3.makeInvisible();
+       r4.makeInvisible();
+       isVisible=false;
+    }
+   
+     /**
+     * hace visibles las partes de la molecula
+     */
+    public void draw()
+    {
+       r1.draw();
+       r2.draw();
+       r3.draw();
+       r4.draw();
+
+    }
+   
+    /**
+     * hace visibles las partes de la molecula
+     */
+    public void erase()
+    {
+       r1.erase();
+       r2.erase();
+       r3.erase();
+       r4.erase();
+
+    }
+    
+}

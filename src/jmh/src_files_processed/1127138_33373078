@@ -1,0 +1,192 @@
+import java.util.*;
+/**
+ * #### ###### # #### #######.
+ * ###### ### ### ## ## #### ######## #### ####. 
+ * ##### ### # ####### ## #### #######.
+ * ###### ###### ### ## # ###### ## #### #####, ### #### ## ### #### ########.
+ * ## ### ### ###### ## #######.
+ * 
+ * @###### ##### ## 
+ * @####### ####.##.#
+ */
+
+public class Game
+{
+    private ArrayList<Player> listOfPlayers;
+    private Player myPlayer;
+    private LuckyDip myLuckyDip;
+    private Prize myPrize;
+
+    /**
+     * Constructor for objects of class Game
+     */
+    public Game()
+    {
+        listOfPlayers = new ArrayList<Player>();
+        myPlayer = null;
+        myLuckyDip = new LuckyDip();
+    }
+
+    /**
+     * Show all the players who play LuckyDip this game as a list.
+     */
+    public ArrayList<Player> getListOfPlayers()
+    {
+        return listOfPlayers;
+    }
+    
+    /**
+     * Add the players together into a list.
+     */
+    public void setListOfPlayers(Player playerName)
+    {
+        listOfPlayers.add(playerName);
+    }
+    
+    /**
+     * Get one player from player list.
+     */
+    public Player getPlayer(int index)
+    {
+        if (index >=0 &&
+            index < listOfPlayers.size())
+        {
+            Player playerName = listOfPlayers.get(index);
+            return playerName;
+        }
+        else
+        {
+            System.out.println("Error: invalid index");
+            return null;
+        }
+    }
+    
+    /**
+     * Show the display menu for players.
+     */
+    public void displayMenu()
+    {
+        System.out.println("");
+        System.out.println("Welcome to the LuckyDip Game");
+        System.out.println("============================");
+        System.out.println("(1) Set up New Player");
+        System.out.println("(2) Try my Luck");
+        System.out.println("(3) What Have I Won So Far?");
+        System.out.println("(4) Display All Players");
+        System.out.println("(5) Who Is The Luckiest Player");
+        System.out.println("(6) Display Game Help");
+        System.out.println("(7) Add New Prize to LuckyMachine");
+        System.out.println("(8) Exit Game");
+        System.out.println("Choose an option:");
+    }
+    
+    /**
+     * Show the contents of "Display Game Help".
+     */
+    private void helpContent()
+    {
+        System.out.println("1. You need to set up a new player by choosing (1) first");
+        System.out.println("2. After setting up a player, you can play LuckyDip by choosing (2)");
+        System.out.println("3. If you want to check the prize you have won, your can choose (3)");
+        System.out.println("4. You can see all of the players' game records by choosing (4)");
+        System.out.println("5. You can know who is the luckiest player in LuckyDip by choosing (5)");
+        System.out.println("6. Option(6) is the game help of LuckyDip");
+        System.out.println("7. Manager could change the prize by choosing (7)");
+        System.out.println("8. If you want to exit LuckyDip, please choose (5)");
+        System.out.println("9. If you have more questions, please ask worker! Good luck to you");
+    }
+    
+    /**
+     * Choose an option from 1 to 8 while playing LuckyDip.
+     */
+    public void playGame() 
+    {
+        String playYouGame = "0";
+        Scanner console = new Scanner(System.in);
+        displayMenu(); 
+        playYouGame = console.nextLine(); 
+        while (!playYouGame.equals ("8"))
+        {
+            switch (playYouGame)
+            {
+                case "1": System.out.println("(1) Please entr your name");
+                          setUpPlayer(); 
+                          break;
+                case "2": playLucky();
+                          break;
+                case "3": checkPrize();
+                          break;
+                case "4": getListOfPlayers();
+                          break;
+                case "5": 
+                          break;          
+                case "6": helpContent(); 
+                          break;
+                case "7": 
+                          break;          
+                default : System.out.println("Invalid option number, please choose 1 - 8");
+                          break;
+            }
+            displayMenu();
+            playYouGame = console.nextLine();
+        }      
+
+        System.out.println("Welcome to play LuckyDip Next Time!");
+        myPlayer = null; 
+    }
+    
+    /**
+     * Set up a player to play LuckyDip.
+     */
+    private void setUpPlayer()
+    {
+        Scanner newPlayerName = new Scanner(System.in); 
+        String playerName = newPlayerName.nextLine(); 
+        setListOfPlayers(Player);
+        playerName = playerName.trim(); 
+        if (playerName.length() > 0 && 
+            playerName != null)
+            myPlayer = new Player(playerName);
+        else
+            System.out.println("Please choose (1) again to set up a valid name such as David, David123 and David Wang!"); 
+    }
+    
+    /**
+     * Judge whether the player has set up his player already. If he has set up already, he can play LuckyDip. 
+     * Otherwise, he should choose (1) to set up player first.
+     */
+    private void playLucky()
+    {
+        if (myPlayer != null)
+            myLuck();
+        else
+            System.out.println("You cannot play this game without setting up a player");
+    }
+    
+    /**
+     * Play LuckyDip by calling generateRandomNumber from LuckyDip class. 还未写完
+     */
+    private void myLuck()
+    {
+        int luckyNumber = 0;
+        luckyNumber = myLuckyDip.generateRandomNumber(); 
+        myPlayer.setTotalSpent(5); 
+        switch (luckyNumber)
+        {    
+            System.out.println("You have won " + myPrize.getPrizeName() + "and its worth is $" + myPrize.getPrizeValue());
+            break;
+        }
+    }
+    
+    /**
+     * Judge whether the player has set up his player already. If he has set up already, he can check what he has won.
+     * Otherwise, he should choose (1) to set up a player first
+     */
+    private void checkPrize()
+    {
+        if (myPlayer != null)
+            myPlayer.display();
+        else
+            System.out.println("Sorry, you should set up a player first!");
+    }
+}

@@ -1,0 +1,96 @@
+package outils;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import lib.mysql-connector-java-5.1.38-bin.*;
+
+public class BddSelect {
+
+				String url = "jdbc:mysql:
+				String login = "root";
+				String passwd = "bsdtjln";
+				Connection cn =null;
+				Statement st =null;
+				ResultSet rs =null;
+				RowTable table = new RowTable();
+				Row columnName = new Row();
+				int rowCount = 0;
+	
+	
+	public BddSelect(String request){
+	
+			
+			try {
+
+				Class.forName("com.mysql.jdbc.Driver");
+
+				cn = DriverManager.getConnection(url, login, passwd);
+
+				st = cn.createStatement();
+
+				String sql = request;
+
+				rs = st.executeQuery(sql);
+
+				ResultSetMetaData md = rs.getMetaData();
+				for (int i = 1 ; i <= md.getColumnCount() ; i++){
+					columnName.add(md.getColumnName(i).toUpperCase());
+				}
+				
+				while (rs.next()) {
+					rowCount++;
+					table.add(new Row());
+					for (int i = 1 ; i <= md.getColumnCount() ; i++){
+						if (rs.getObject(i) != null){
+							table.get(table.size()-1).add(rs.getObject(i).toString());
+						}else {table.get(table.size()-1).add("");}
+						
+					}
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					cn.close();
+					st.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+
+	public Statement getStatement() {
+		return st;
+	}
+
+	public ResultSet getResultSet() {
+		return rs;
+	}
+
+	public RowTable getTable() {
+		return this.table;
+	}
+	
+	public Row getColumnName() {
+		return columnName;
+	}
+	
+	public Column getColumn(int index){
+		Column column = new Column(table,index);
+		return column;
+		
+	}
+	
+	public int getRowCount(){
+		return rowCount;
+		
+	}
+
+}

@@ -1,0 +1,166 @@
+
+/**
+ * ############: ### #### ###### ### ##### + #######
+ * 
+ * @###### (###### ##) 
+ * @####### (#.#)
+ */
+public class SPIELAUTOMAT implements ITuWas
+{
+    int farbNr1, farbNr2, farbNr3, farbNr4, farbNr5, farbNr6;
+    String farbe1, farbe2, farbe3, farbe4, farbe5, farbe6;
+    SPIELWALZE walze1, walze2, walze3;
+    Taste t;
+    Ausgabe a1, a2;
+    
+    Guthaben x;
+    
+    /**
+     * Der Konstruktor weist den Attributen 
+     * ihre Werte zu.
+     */
+    SPIELAUTOMAT()
+    {
+        /**
+         * Die Farbnummern sind wurscht.
+         */
+        
+        /**
+         * Die Farben sind auch wurscht.
+         */
+        /**
+         * Die Walzen werden mit den Konstruktor der
+         * Klasse Spielwalze erzeugt.
+         */
+        walze1 = new SPIELWALZE(100,100);
+        walze2 = new SPIELWALZE(200,100);
+        walze3 = new SPIELWALZE(300,100);
+        
+        t= new Taste ("Spielen",100,225,120,30);
+        
+        a1= new Ausgabe("Los geht's!",225,225,200,30);
+        a2= new Ausgabe("Startguthaben 10€", 160, 30,200,90);
+        x = 10;
+       
+        
+        t.setzeLink(this);
+        t.setzeID(0);
+        
+        t.setzeSchriftfarbe("pink");
+        t.setzeHintergrundfarbe("schwarz");
+        t.setzeSchriftName("Comic Sans MS");
+        
+        a1.setzeFarbe("grau");
+        a2.setzeFarbe("grau");
+        a1.setzeSchriftName("Comic Sans MS");
+        a2.setzeSchriftName("Comic Sans MS");
+        
+        
+        /**
+         * Wie geht das mit Taste und Ausgabe?
+         */
+    }
+    
+    /**
+     * Die Hauptmethode, die alles andere steuern soll:
+     * 1) Zufallszahlen erzeugen und farbNrx zuweisen.
+     * 2) Zufallszahlen in Farben verwandeln und 
+     *    den Attributen farbex zuweisen.
+     * 3) Spielwalzen umfaerben.
+     * 4) Gewinn prüfen.
+     */
+    void spielen()
+    {
+        farbNr1 = StaticTools.gibZufall(5);
+        farbNr2 = StaticTools.gibZufall(5);
+        farbNr3 = StaticTools.gibZufall(5);
+        farbNr4 = StaticTools.gibZufall(5);
+        farbNr5 = StaticTools.gibZufall(5);
+        farbNr6 = StaticTools.gibZufall(5);
+        
+        farbe1 = zahlZuFarbe(farbNr1);
+        farbe2 = zahlZuFarbe(farbNr2);
+        farbe3 = zahlZuFarbe(farbNr3);
+        farbe4 = zahlZuFarbe(farbNr3);
+        farbe5 = zahlZuFarbe(farbNr3);
+        farbe6 = zahlZuFarbe(farbNr3);
+        
+        walze1.setzeFarbe(farbe1);
+        walze2.setzeFarbe(farbe2);
+        walze3.setzeFarbe(farbe3);
+        
+        
+        gewinn();
+    }
+    
+    /**
+     * Nimmt eine Zahl und gibt einen String (=Farbe)
+     * zurück.
+     * 
+     * TO DO!!!!!
+     */
+    String zahlZuFarbe(int x)
+    {
+        if (x == 0)
+        {
+            return "rot";
+        }
+        else if (x == 1)
+        {
+            return "blau";
+        }
+        else if (x == 2)
+        {
+            return "gelb";
+        }
+        else if (x == 3)
+        {
+            return "pink";
+        }
+        else if (x == 4)
+        {
+            return "grau";
+        }
+        else if (x == 5)
+        {
+            return "gruen";
+        }
+        else
+        {
+            return "lila";
+        }
+        
+    }
+    
+    /**
+     * Prüft die 3 Zufallszahlen, ob sie gleich sind und
+     * gibt den Gewinn aus.
+     * 
+     * TO DO!!!!!!!
+     * 
+     */
+    void gewinn()
+    {
+       if (farbNr1 == farbNr2 && farbNr2 == farbNr3) 
+       {
+           a1.setzeAusgabetext("Wuhu,gewonnen!");
+       }
+       else
+       {
+           a1.setzeAusgabetext("Leider verloren!");
+        }
+    }
+    void guthaben()
+    {
+        if (a1.Ausgabetext == "Wuhu,gewonnen!")
+        {
+            a2.setzeAusgabetext( x+2);
+        }
+        
+    
+    public void tuWas (int ID)
+    {if (ID ==0)
+        {spielen();
+        }
+    }
+}

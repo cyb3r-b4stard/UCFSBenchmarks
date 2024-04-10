@@ -1,0 +1,166 @@
+
+import ecs100.*;
+import java.awt.Color;
+import java.util.*;
+
+/** #########
+ * ########## # ###### ######### #### ### #### ###### ## ### #####
+ * 
+ * # ######### #### #### ###### ## ##### ##### #####:
+ *  - # ######## (# ### #)
+ *  - # ######## ## ###### (## #####, ########## ## #######, ## ####### -####.## ### ####.##
+ *  - ##### ######### ####
+ *  - ##### #####
+ *
+ * # ######### #####
+ *  - # ###########,
+ *  - # ###### ## #### ## #### ### ####
+ *  - ####### ## #### ### ### ## ### #### ### ### #####
+ *    # ###### ###### ####### ### ######### ## ### ### ########.
+ *    # ###### ###### ### # "######## #####": ####### ### ### ######## ##### ###
+ *    ######## #####, ### ### ######## ##### ##### ### ######### ###### # ######
+ *    ### ## #### ####.
+ *  - # ###### ## #### ### ### ## ### ######## ####
+ *  - ####### ## ##### ### ##########, ###### #### ### #### ### ########, ## #### ####### ###
+ *    ##### ####### ###### ###### ### ##### ## ### ### ## ##### ## # #########
+ *  - # ###### ## ###### ### ######### #### ## ### ###.
+ *
+ * ####### # ######### ###### #### ### ######## ### ######### ## ### ###.
+ *   ## ### ###### #### # ######## #####, #### ### ####### ######### ## ###
+ *   ######## ###### #### ## #####.
+ *   
+ * # ######### ### ####### #### # ####, ### ########, ## ####### #########.
+ * - ######### #### # #### ##### # ###### ### ## ######
+ * - ######### #### ### ######## ###### #### # ### ## ######
+ * - ######### #### ### ##### ### ### #### # ###### ######, ###
+ *   ###### #### ###### ## ####### ####, ### ### ########## ## ### #### ##### #######
+ *  
+ *   ### # ###### #### ######, ### ### ### #### #### #### #### 
+ *   ##### ###### ###### ## ### ######## ########## ## ### #### -
+ *   ##### ###### ## ### #### ###### #### # ######### ###### ####
+ *   ##### ###### ## ### ##### ## ### ####.
+ *   
+ */
+public class DodgemCar{
+    private double Radius = 50;
+    private double wallHealthLoss = 1;
+    private double carHealthLoss = 5;
+    private double objHealthLoss = 10;
+
+    private double x;
+    private double y;
+    private double dir;
+    private double health = 100;
+    private String carColor;
+
+    /** 
+     * The parameters specify the initial position and direction
+     */
+    public DodgemCar(double xInit, double yInit, double dirInit, String carColor)  {
+        x = xInit;
+        y = yInit;
+        dir = dirInit;
+    }
+
+
+    /**
+     * Turn the steering wheel one step more to the left (negative angle)
+     * This governs how much the car turns on each move
+     * Steering wheel can't turn more than 45 degrees to left or right
+     */
+    public void turnLeft(){
+        dir -= 0.6;
+        System.out.println(dir);
+    }
+
+    /**
+     * Turn the steering wheel one step more to the right (positive angle)
+     * This governs how much the car turns on each move
+     * Steering wheel can't turn more than 45 degrees to left or right
+     */
+    public void turnRight(){
+        dir += 0.6;
+        System.out.println(dir);
+    }
+
+    /**
+     * Moves the car 1 unit forward
+     * First changes the current direction according to the position of the
+     * steering wheel (takes 20 moves to turn the car by the angle of the steering wheel)
+     * Then moves forward by 1 unit
+     */
+    public void move() {
+        /*# YOUR CODE HERE */
+
+    }
+
+    /** draw the car */
+    public void draw() {
+        UI.setColor(Color.red);
+        double l = Radius/200;
+        y = (y + (Radius/100)*Math.sin(dir));
+        x = (x + (Radius/100)*Math.cos(dir));
+        UI.fillOval(x, y, Radius, Radius);
+        UI.setColor(Color.blue);
+        y = (y + (l+Radius/4)*Math.sin(dir));
+        x = (x + (l+Radius/4)*Math.cos(dir));
+        UI.fillOval(x+(Radius/2-5), y+(Radius/2-5), 10, 10);
+    }
+
+    /**
+     * Check whether the car has collided with a wall. (Core)
+     * if so, move it back so it isn't overlapping the wall, and 
+     * reduce its life by the appropriate amount.
+     */
+    public void checkCollideWall(int left, int right, int top, int bot){
+        if(x+Radius > right){
+            x = right - Radius;
+            health -= wallHealthLoss;
+        }
+        if(x < left){
+            x = left;
+            health -= wallHealthLoss;
+        }
+        if(y < top){
+            y = top;
+            health -= wallHealthLoss;
+        }
+        if((y + Radius) > bot){
+            y = bot-Radius;
+            health -= wallHealthLoss;
+        }
+    }        
+
+    /**
+     * Check whether the car has collided with the obstacle. (Completion)
+     * if so, move it back so it isn't overlapping the obstacle, and
+     * reduce its life by the appropriate amount.
+     */
+    public void checkCollideObstacle(){
+        
+    }
+
+    /** @return whether this car is touching the other car */
+    public boolean checkCollideCar(DodgemCar other){
+        Math.hypot((x+(radius/2))-(other.x+(radius/2)), (y+(radius/2))-(other.y+(radius/2));
+        return true;
+    }
+
+    /**
+     * Returns the amount of life left of this car (needed for Completion)
+     */
+    public double life(){
+        return health;
+    }
+
+    /**
+     * Useful method for debugging: 
+     * Returns a String rendering of the DodgemCar Object
+     * which can be printed out for debugging.
+     * Assumes that you called the fields x, y, and direction; you could change it.
+     */
+    public String toString(){
+        return String.format("Car@(%.0f,%.0f)->%s", this.x, this.y, this.dir);
+    }
+
+}

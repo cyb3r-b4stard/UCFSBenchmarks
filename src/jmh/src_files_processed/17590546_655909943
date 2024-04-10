@@ -1,0 +1,173 @@
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+/**
+ * #### #####, ############, ## #### ## #########
+ * ### #### # ###### #### ## ### ########## ## #####
+ * ##### ### #.#.'# "#######" ########### ### #####
+ * ##### ##### ## ##-####-## ######### ## ### #### #######.
+ * #### ####### # #####-#### ###### #####, #####, ## ### ######'# 
+ * ###### ######, ###, ######, ## ##### ##### ######.
+ * 
+ * ###### ######
+ * 
+ * ### ## - ### ###### ### ####
+ */
+public class Instructions      
+{
+    static double taxDeduction, grossIncome, moneyAfterTax, deductedIncome;    
+    public static void main(String []args) throws Exception
+    {
+       char maritalStatus, filingConfirmation;    
+       double standardDeduction;    
+       Scanner scan = new Scanner(System.in);     
+       
+       System.out.println("1) Are you filing singly, jointly with a spouse, or are you and your spouse filing seperately?");   
+         TimeUnit.SECONDS.sleep(2);  
+         System.out.println("-Enter S if filing singly.");    
+         System.out.println("-Enter M if filing jointly with a spouse.");    
+         System.out.println("-Enter C if you and your spouse are filing seperately.");    
+         maritalStatus = scan.next().charAt(0);
+              
+       if(maritalStatus ==  'S')    
+       {
+           System.out.println("~You are filing singly.");   
+           System.out.println("2) Are you sure you would like to file this way?");    
+           filingConfirmation = scan.next().charAt(0);    
+           if(filingConfirmation == 'N')   
+           {
+               System.out.println("**You must run the program again to start over.**");   
+               System.exit(1);    
+           }
+           else if(filingConfirmation == 'Y')
+           {
+              System.out.println("3) What is your gross income?");   
+              grossIncome = scan.nextDouble();   
+              standardDeduction = 11600;   
+              deductedIncome = grossIncome - standardDeduction;   
+              if(deductedIncome <= 8500)
+                  taxDeduction = deductedIncome *.1;
+              else if(deductedIncome > 8500 && deductedIncome <= 34500)
+                  taxDeduction = 8500 *.1 + (deductedIncome - 8500) * .15;   
+              else if(deductedIncome > 34500 && deductedIncome <= 83600)
+                  taxDeduction = 8500 *.1 + 26000 *.15 + (deductedIncome - 34500) * .25;   
+              else if(deductedIncome > 83600 && deductedIncome <= 174400)
+                  taxDeduction = 8500 *.1 + 26000 *.15 + 49100 *.25 + (deductedIncome - 83600) * .28;
+              else if(deductedIncome > 174400 && deductedIncome <= 379150)
+                  taxDeduction = 8500 *.1 + 26000 *.15 + 49100 *.25 + 90800 *.28 + (deductedIncome - 174400) * .33;    
+              else if(deductedIncome > 379150)
+                  taxDeduction = 8500 *.1 + 26000 *.15 + 49100 *.25 + 90800 *.28 + 204750 * .33 + (deductedIncome - 379150) * .35;
+              else
+              {
+                  System.out.println("That is an invalid answer.");
+                  System.exit(1);
+              }
+           }
+           else
+           {
+               System.out.println("**That is an invalid answer**");
+               System.exit(1);
+           }  
+           }
+       }
+       
+       else if(maritalStatus == 'M')  
+       {
+           System.out.println("~You are filingly jointly with a spouse.");
+           System.out.println("Are you sure you would like to file this way?");
+           filingConfirmation = scan.next().charAt(0);
+           if(filingConfirmation == 'N')
+           {
+              System.out.println("**You must run the program again to start over.**");
+              System.exit(1);
+           }
+           if(filingConfirmation == 'Y')
+           {
+              System.out.println("2) What is your gross income?");
+              grossIncome = scan.nextDouble();
+              standardDeduction = 11600;
+              deductedIncome = grossIncome - standardDeduction;
+              if(deductedIncome <= 17000)
+              {      
+                 taxDeduction = deductedIncome * .1;
+              }  
+              else if(deductedIncome > 17000 && deductedIncome <= 69000)
+              {
+                 taxDeduction = 17000 * .1 + (deductedIncome - 17000) * .15;
+              } 
+              else if(deductedIncome > 69000 && deductedIncome <= 139350)
+              {
+                 taxDeduction = 17000 * .1 + 52000 * .15 + (deductedIncome - 69000) * .25;
+              }   
+              else if(deductedIncome > 139350 && deductedIncome <= 212300)
+              {     
+                 taxDeduction = 17000 * .1 + 52000 * .15 + 70350 * .25 + (deductedIncome - 139350) * .28;
+              } 
+              else if(deductedIncome > 212300 && deductedIncome <= 379150)
+              {
+                 taxDeduction = 17000 * .1 + 52000 * .15 + 70350 * .25 + 72950 * .28 + (deductedIncome - 212300) * .33;
+              }  
+              else if(deductedIncome > 379150)
+              {
+                 taxDeduction = 17000 * .1 + 52000 *.15 + 70350 * .25 + 72950 * .28 + 166850 * .33 + (deductedIncome - 379150) * .35;
+              }  
+              else
+              {
+                System.out.println("That is an invalid answer.");
+                System.exit(1);
+              }
+           }
+       }
+       else if(maritalStatus == 'C')  
+       {
+           System.out.println("~You and your spouse are filing seperately.");
+           System.out.println("2) Are you sure you would like to file this way?");
+           filingConfirmation = scan.next().charAt(0);
+           if(filingConfirmation == 'N')
+           {
+              System.out.println("**You must run the program again to start over.**");
+              System.exit(1);
+           }
+           System.out.println("2) What is your gross income?");
+           grossIncome = scan.nextDouble();
+           standardDeduction = 5800;
+           deductedIncome = grossIncome - standardDeduction;
+           if(deductedIncome <= 8500)
+           {
+              taxDeduction = deductedIncome *.1;
+           }
+           else if(deductedIncome > 8500 && deductedIncome <= 34500)
+           {
+              taxDeduction = 8500 *.1 + (deductedIncome - 8500) * .15; 
+           }
+           else if(deductedIncome > 34500 && deductedIncome <= 69675)
+           {
+              taxDeduction = 8500 *.1 + 26000 *.15 + (deductedIncome - 34500) * .25;
+           }
+           else if(deductedIncome > 69675 && deductedIncome <= 106150)
+           {
+              taxDeduction = 8500 *.1 + 26000 *.15 + 49100 *.25 + (deductedIncome - 83600) * .28;
+           }
+           else if(deductedIncome > 106150 && deductedIncome <= 189575)
+           {
+              taxDeduction = 8500 *.1 + 26000 *.15 + 49100 *.25 + 90800 *.28 + (deductedIncome - 174400) * .33;
+           }
+           else if(deductedIncome > 189575)
+           {
+              taxDeduction = 8500 *.1 + 26000 *.15 + 49100 *.25 + 90800 *.28 + 204750 * .33 + (deductedIncome - 379150) * .35;
+           }
+       }
+       else 
+       {
+           System.out.println("That is an invalid answer.");
+           System.exit(1);
+       }
+       
+       System.out.print("Your tax deduction is: $");
+       System.out.printf("%1.2f", taxDeduction);
+       moneyAfterTax = grossIncome - taxDeduction;
+       TimeUnit.SECONDS.sleep(2);
+       System.out.print("\n~The amount of money you have after taxes is: $");
+       System.out.printf("%1.2f", moneyAfterTax);
+      } 
+}   
+     

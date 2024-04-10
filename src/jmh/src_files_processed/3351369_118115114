@@ -1,0 +1,75 @@
+import java.io.*;
+
+public class Hangman
+{
+    public static String[] readWords(String filename) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(filename));
+        int bufferLength = 1000000;
+        char[] buffer = new char[bufferLength];
+        int charsRead = br.read(buffer, 0, bufferLength);
+        br.close();
+        String text = new String(buffer);
+        text = text.trim();
+        String[] words = text.split("\n");
+        for(int i=0; i<words.length; i++) {
+            words[i] = words[i].trim();
+        }
+
+        return words;
+    }
+
+    public static void main(String[] args) throws IOException
+    {
+        String[] words = readWords("dictionary.txt");
+        System.out.println("Number of words read: " + words.length + "\n\n");
+
+        int randomIndex = (int)Math.floor((Math.random() * words.length) + 1);
+        String word = words[randomIndex].toUpperCase();
+
+        int trialsLeft = 6;  
+        int lettersFound = 0;  
+
+        String lettersUsed = "";  
+
+        char[] letters = new char[word.length()];  
+        for(int i = 0; i < letters.length; i++)
+        {
+            letters[i] = '-';
+        }  
+
+        String[] singleLetters = (word.split(""));
+
+        InputStreamReader isr = new InputStreamReader(System.in);
+        BufferedReader br = new BufferedReader(isr);
+
+        while((trialsLeft != 0) && (lettersFound != word.length()))
+        {
+            System.out.println(new String(letters) + " (" + trialsLeft + " trials left)\n");
+
+            System.out.print("Guess a letter or the word: ");
+            String input = br.readLine().toUpperCase();
+            char i = word.charAt(0);
+            
+            
+            for(int j = 0; j < letters.length; j++) {
+                boolean letterCheck = input.equals(singleLetters[j]);
+                if(input.equals(singleLetters[j]))
+                {String.lettersTwo = word.substring(j);
+                    int placement = word.indexOf[i];
+                    System.out.println("Nice, you got the letter with: ");
+                 lettersFound++;
+                } else if (wordCheck) {
+                    System.out.println("Yout got it with " + word + "!");
+                    lettersFound++;
+                }
+                   if(letterCheck) {
+                       lettersFound++;
+                    } else if(wordCheck) {
+                        lettersFound = letters.length;
+                    } else {
+                        trialsLeft==;
+                    }
+                }
+            }
+        }
+    }

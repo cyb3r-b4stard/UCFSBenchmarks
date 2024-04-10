@@ -1,0 +1,139 @@
+import java.util.Scanner;
+
+/*
+ * ##### ########## ##
+ * # ####### ## #### ####### ####.
+ *
+ * ## ## ##### #### ####### ## ## ### ####:
+ * ####### #####
+ *
+ *  ##### #######: ##########@######.###
+ *  #####: #######
+ *  ####### # ##### ##: #####
+ *  ###### ####: #### 
+ *  ###### ## #### #### #### ## #### ##########: #
+ *
+ * ###### ## #### #### # ## #####: #
+ */
+
+public class ConnectFour {
+    public static final int PLAYER_1 = 1;
+    public static final int PLAYER_2 = 2;
+    public static final int ROWS = 6;
+    public static final int COLS = 7;
+
+    public static void main(String[] args) {
+        Scanner keyboard = new Scanner(System.in);
+        String p1 = getName(keyboard, PLAYER_1);
+        String p2 = getName(keyboard, PLAYER_2);
+        System.out.println();
+        char[][] currentBoard = createBoard();
+        playGame(keyboard, currentBoard,p1, p2);
+    }
+    
+    public static boolean checkForWin(char[][] board){
+        boolean win = false;
+        return win;
+    }
+
+    public static void playGame(Scanner key, char[][] board, String player1, String player2){
+        int turn = 1;
+        while(!checkForWin(board)){
+            printBoard(board);
+            String currentPlayer = "";
+            char currentPiece;
+            if(turn % 2 == 1){
+                currentPlayer = player1;
+                currentPiece = 'r';
+            }
+            else{
+                currentPlayer = player2;
+                currentPiece = 'b';
+            }
+            System.out.println(currentPlayer + " it is your turn.");
+            System.out.println("Your pieces are the " + currentPiece + "'s.");
+            enterColumn(key, currentPlayer, currentPiece, board);
+            turn++;
+        }
+    }
+    
+    public static char[][] placeChecker(char[][] board, int col, char piece){
+        for(int r = board.length - 1; r >= 0; r--){
+            if(board[r][col] == '.')
+            board[r][col] == piece
+        }
+    }
+
+    public static char[][] enterColumn(Scanner sc, String player, char piece, char[][] board){
+        String prompt = player + ", enter the column to drop your checker: ";
+        int column = getInt(sc, prompt) - 1;
+        if(inRange(0, column, board)){
+            board = placeChecker(board, column, piece);
+        }
+        else{
+            System.out.println(column + " is not a valid column.");
+            column = getInt(sc, prompt);
+        }
+        System.out.println();
+        return board;
+        
+    }
+    
+    public static void printBoard(char[][] board){
+        System.out.println("Current Board");
+        System.out.println("1 2 3 4 5 6 7 column numbers");
+        for(int r = 0; r < ROWS; r++){
+            for(int c = 0; c < COLS; c++){
+                System.out.print(board[r][c] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+
+    public static char[][] createBoard(){
+        char[][] board = new char[ROWS][COLS];
+        for(int r = 0; r < ROWS; r++){
+            for(int c = 0; c < COLS; c++){
+                board[r][c] = '.';
+            }
+        }
+        return board;
+    }
+
+    public static String getName(Scanner key, int player){
+        System.out.print("Player " + player + " enter your name: ");
+        String name = key.next();
+        return name;
+    }
+
+    public static void intro() {
+        System.out.println("This program allows two people to play the");
+        System.out.println("game of Connect four. Each player takes turns");
+        System.out.println("dropping a checker in one of the open columns");
+        System.out.println("on the board. The columns are numbered 1 to 7.");
+        System.out.println("The first player to get four checkers in a row");
+        System.out.println("horizontally, vertically, or diagonally wins");
+        System.out.println("the game. If no player gets fours in a row and");
+        System.out.println("and all spots are taken the game is a draw.");
+        System.out.println("Player one's checkers will appear as r's and");
+        System.out.println("player two's checkers will appear as b's.");
+        System.out.println("Open spaces on the board will appear as .'s.\n");
+    }
+
+    public static boolean inRange(int r, int c, char[][] board) {
+        return 0 <= r && r < board.length && 0 <= c && c < board[0].length;
+    }
+
+    public static int getInt(Scanner key, String prompt) {
+        System.out.print(prompt);
+        while(!key.hasNextInt()) {
+            String notAnInt = key.next();
+            System.out.println(notAnInt + " is not an integer.");
+            System.out.print(prompt);
+        }
+        int result = key.nextInt();
+        key.nextLine();
+        return result;
+    }
+}

@@ -1,0 +1,191 @@
+import java.util.Set;
+import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.*;
+import java.util.function.Predicate;
+
+/**
+ * ##### #### - # #### ## # ####.
+ *
+ * #### ##### ## #### ## ### "##### ## ####" ###########. 
+ * "##### ## ####" ## # #### ######, #### ##### ###### ####.  
+ *
+ * # "####" ########## ### ######## ## ### ####### ## ### ####.  ## ## 
+ * ######### ## ##### ##### ### #####.  ### #### ######## ####, ### #### 
+ * ###### # ######### ## ### ########### ####.
+ * 
+ * @######  ####### #######, ##### #. ######, #### ###### ### ###### #####
+ * @####### #/#/####
+ */
+
+public class Room 
+{
+    private String description;
+    private HashMap<Direction, Room> exits;        
+    private Set<Character> chars;  
+
+    /**
+     * Create a room described "description". Initially, it has
+     * no exits. "description" is something like "a kitchen" or
+     * "an open court yard".
+     * @param description The room's description.
+     * Pre-condition: description is not null.
+     */
+    public Room(String description) 
+    {
+        assert description != null : "Room.Room has null description";
+        this.description = description;
+        exits = new HashMap<Direction, Room>();
+        chars = new HashSet<Character>();
+    }
+
+    /**
+     * Define an exit from this room.
+     * @param direction The direction of the exit.
+     * @param neighbor  The room to which the exit leads.
+     * Pre-condition: neither direction nor neighbor are null; 
+     * there is no room in given direction yet.
+     */
+    public void setExit(Direction direction, Room neighbor) 
+    {
+        assert direction != null : "Room.setExit gets null direction";
+        assert neighbor != null : "Room.setExit gets null neighbor";
+        assert getExit(direction) == null : "Room.setExit set for direction that has neighbor";
+        exits.put(direction, neighbor);
+        assert getExit(direction) == neighbor : "Room.setExit has wrong neighbor";
+    }
+
+    /**
+     * @return The short description of the room
+     * (the one that was defined in the constructor).
+     */
+    public String getShortDescription()
+    {
+        return description;
+    }
+
+    /**
+     * Return a description of the room in the form:
+     *     You are in the kitchen.
+     *     Exits: north west
+     * @return A long description of this room
+     */
+    public String getLongDescription()
+    {
+        return "You are " + description + ".\n" + getExitString() + getCharacterString();
+    }
+
+    /**
+     * Return a string describing the room's exits, for example
+     * "Exits: north west".
+     * @return Details of the room's exits.
+     */
+    private String getExitString()
+    {
+        String returnString = "Exits:";
+        Set<Direction> keys = exits.keySet();
+        for(Direction exit : keys) {
+            returnString += " " + exit;
+        }
+        return returnString;
+    }
+
+    /**
+     * Return the room that is reached if we go from this room in direction
+     * "direction". If there is no room in that direction, return null.
+     * @param direction The exit's direction.
+     * @return The room in the given direction.
+     * Pre-condition: direction is not null
+     */
+    public Room getExit(Direction direction) 
+    {
+        assert direction != null : "Room.getExit has null direction";
+        return exits.get(direction);
+    }
+    
+    /**
+     * This will only return true if and only if whenever a room is left, the opposite
+     * direction of the new room will be the room that we had just left.
+     */
+    public boolean normalExit(Direction d){
+        if(getExit(d) != null){
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Return a collection of all the normal exits that returned false.
+     */
+    public List<Direction> insanes() {
+        return exits.keySet().stream()
+            .filter(exits -> !normalExit(exits))
+            .collect(Collectors.toList());
+    }
+    
+    /**
+    * Return true if and only if the room has any exits that are not normal.
+    */    
+    public boolean insane(){
+        if(insanes() != null){
+            return true;
+        }
+        return false;
+    }
+    
+    public List<Direction> suchDirections(Predicate<Direction> p){
+        List<Direction> directions = 
+            directions.stream()
+            .filter(p -> p.insane() == true))
+            .collect(toList())
+    }
+    
+    /**
+     * Add given character to the room.
+     * @param c The character to add.
+     * Pre-condition: character is not null.
+     * Pre-condition: character is not already in the room.
+     */
+    public void addCharacter(Character c)
+    {
+        assert c != null : "Room.addCharacter has null character";
+        assert !chars.contains(c) : "Room.addCharacter for existing character";
+        chars.add(c);
+    }
+
+    /**
+     * Take given item from a character in the room.
+     * @param item The item to take.
+     * @return true if taking was successful, false otherwise
+     * Pre-Condition: item is not null.
+     */
+    public boolean take(Item item)
+    {
+        assert item != null : "Room.take is given null item";
+        for (Character c : chars) {
+            if (c.take(item)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Return a string listing the characters in the room.
+     */
+    private String getCharacterString()
+    {
+        if (chars.isEmpty()) {
+            return "";
+        } else {
+            String returnString = "\nCharacters: ";
+            for (Character c : chars) {
+                returnString += c.toString() + "; ";
+            }
+            return returnString;
+        }
+    }
+}

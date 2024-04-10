@@ -1,0 +1,292 @@
+import java.text.*;
+import java.util.*;
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class VideoKiosk
+{
+    private String mov1;
+    private String mov2;
+    private String mov3;
+    
+    private final int FcInitial = 3;
+    private final int InInitial = 3;
+    private final int GlInitial = 3;
+    private int FcStock;
+    private int InStock;
+    private int GlStock;
+    private int selections;
+    private int transactions;
+    private int totalVids;
+    
+    
+    
+    
+    private double creditBalance;
+    private double amountDue;
+    private double totalSales;
+    private final double PRICE;
+    private final double TAX;
+    
+    NumberFormat numForm = NumberFormat.getCurrencyInstance();
+    
+    
+    
+    
+    
+    
+
+    /*********************************************
+     * Constructor for objects of class VideoKiosk
+     ********************************************/
+    public VideoKiosk()
+    {
+        mov1 = "Fight Club";
+        mov2 = "Inception";
+        mov3 = "Gladiator";
+        FcStock = 3;
+        InStock = 3;
+        GlStock = 3;
+        PRICE = 198.0;
+        TAX = 1.06;
+        totalSales = 0.0;
+        amountDue = .0;
+        creditBalance = 0.0;
+        transactions = 0;
+        selections = 0;
+        
+        displayGreeting();
+        
+        
+    }
+     /*********************************************
+     * Alternate Constructor for objects of class VideoKiosk
+     ********************************************/
+    public VideoKiosk(int units)
+    {
+        mov1 = "Fight Club";
+        mov2 = "Inception";
+        mov3 = "Gladiator";
+        FcStock = units;
+        InStock = units;
+        GlStock = units;
+        PRICE = 198.0;
+        TAX = 1.06;
+        totalSales = 0.0;
+        amountDue = .0;
+        creditBalance = 0.0;
+        transactions = 0;
+        selections = 0;
+        
+        displayGreeting();
+        
+        
+    }
+    
+    /**********************************************
+     * Check price
+     *********************************************/
+    public double getPrice(){
+        return PRICE;
+    }
+    
+    /*********************************************
+     * Checks amount of money inserted
+     ********************************************/
+     public double getCredit(){
+         return creditBalance;
+        }
+        
+    /********************************************
+     * Checks the amount of money due
+     *******************************************/
+     public double getAmountDue(){
+         return amountDue;
+        }
+        
+    /********************************************
+     * Shows the amount of transactions made in 
+     a day
+     *******************************************/
+     public int getTransactions(){
+         return transactions;
+        }
+        
+    /********************************************
+     * Shows the number of selections left
+     *******************************************/
+     public int getNumSelections(){
+         return selections;
+        }
+        
+    /********************************************
+     * Shows the inventory remaining
+     *******************************************/
+     public int getTotalInventory(){
+         return totalVids;
+        }
+        
+    /********************************************
+     * Shows the day's sale total
+     *******************************************/
+     public double getDailySales(){
+        return totalSales; 
+        }
+        
+    /********************************************
+     * Shows the number of id videos in stock
+     *******************************************/
+     public int getVideoCount(int id){
+         if (id == 1){
+             return FcStock;
+            }
+            
+         else if (id == 2){
+             return InStock;
+            }
+            
+         else if (id == 3){
+             return GlStock;
+            }
+         
+         else{
+             return -1;
+      
+        }
+    }
+        
+        
+        
+        
+    /********************************************
+     * Displays a greeting message
+     *******************************************/
+     private void displayGreeting(){
+         System.out.println("Welcome to the cool video Kiosk");
+         System.out.println("(1) Fight Club: " + FcInitial + " available");
+         System.out.println("(2) Inception: " + InInitial + " available");
+         System.out.println("(3) Gladiator: " + GlInitial + " available");
+        
+         
+         
+        }
+    
+    /*******************************************
+     * Allows the customer to select a video
+     ******************************************/
+     public void selectVideo (int id){
+         if (id == 1 && FcInitial > 0){
+         System.out.println("You have selected: " +mov1);
+         FcStock = FcInitial-1;
+         selections++;
+        }
+        else if (id == 2 && InInitial > 0){
+            System.out.println("You have selected: " + mov2);
+            InStock = InInitial-1;
+            selections++;
+        }
+        else if (id == 3 && GlInitial > 0){
+            System.out.println("You have selected: "+ mov3);
+            GlStock = GlInitial-1;
+            selections++;
+        }
+        
+    }
+    
+    
+    /*******************************************
+     * Finishes the customers transactions
+     ******************************************/
+     private void finishTransaction(){
+         totalSales = totalSales + amountDue;
+         
+         transactions = transactions + selections;
+         
+         amountDue = 0.0;
+         
+         selections = 0;
+         
+         creditBalance = 0.0;
+         
+         displayGreeting();
+         
+        }
+        
+        
+    /*******************************************
+     * Checks the customer out
+     ******************************************/
+     
+     public void checkOut(){
+         amountDue = selections * PRICE * TAX;
+         
+         System.out.println("Your amount due is: " + numForm.format(amountDue/100));
+         
+        }
+        
+    /*********************************************
+     * Allows the customer to insert money
+     ********************************************/
+     
+     double change = creditBalance - amountDue;
+     double owes = amountDue - creditBalance;
+     int amount;
+     
+     public void insertMoney (int amount){
+      
+         
+         if (amount == 25 || amount == 5 || amount == 10 || amount == 100 || amount == 500 ){
+             creditBalance = creditBalance + amount;
+             amountDue = amountDue-amount;
+             System.out.println("")
+        }
+        
+        else {
+            System.out.println("You have entered an invalid coin type, please use only 5, 10,25, 100, or 500");
+            
+        }
+    }
+        
+    
+        
+    public void returnVideo (int id){
+        
+    }
+    
+    public void resetKiosk(){
+        
+    }
+    
+    public void createDailyReport (){
+        
+    }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    /********************************************
+     * Main Method
+     *******************************************/
+     public static void main (String[] args){
+         VideoKiosk v = new VideoKiosk();
+         
+         v.displayGreeting();
+        }
+}
+

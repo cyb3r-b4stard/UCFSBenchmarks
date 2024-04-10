@@ -1,0 +1,140 @@
+import java.util.ArrayList;
+
+/**
+ * ########## # #### ## ## ####### #####.
+ * 
+ * @###### #### #### #### ####!!!!!
+ * @####### ### ##
+ * 
+ * ####### ## ####### ##### ###### ####
+ */
+
+public class Deck
+{
+    private final String[] suits = {"Spades", "Hearts", "Clubs", "Diamonds"};
+    private final String[] faces = {"Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"};
+
+    private Card[] cards;
+    private int topCard;
+
+    /**
+     * Construct a deck of cards and initialize the topCard to -1.
+     */
+    public Deck()
+    {
+        cards = new Card[52];
+        topCard = -1;
+
+    }
+
+    /**
+     * deal()  returns the next card or null if the deck is empty.
+     * @return next Card in the deck.
+     */
+    public Card deal()
+    {
+        topCard++;
+        if(topCard < 52)
+        {     
+            return cards[topCard];
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    /**
+     * shuffle()  randomly generates a sequence of cards for the card array
+     */    
+    public void shuffle()
+    {
+        topCard = -1;
+        int nextNumber;
+        boolean[] available = new boolean[52];
+
+        for(int i = 0; i < 52; i++)
+        {
+            available[i] = true;
+        }
+
+        for(int i = 0; i < 52; i++)
+        {
+            nextNumber = (int)(Math.random()*52);
+            while(!available[nextNumber])
+            {
+                nextNumber = (int)(Math.random()*52);
+            }
+            available[nextNumber] = false;
+            cards[i] = new Card(suits[nextNumber/13], faces[nextNumber%13]);
+        }
+    } 
+
+    /**
+     * Print out the entire deck for testing purposes.
+     */
+    public void testDeck() 
+    {
+        shuffle();
+        Arrays.sort(array);
+        int index = 0;
+        for(Card crds2:cards){
+            if(index < cards.length){
+
+                System.out.println(crds2.getSuit() "\t" crds2.getFace() );
+
+      
+            }
+        }
+    }
+    /*
+    Write a method called "testDeck" that uses a loop (whichever
+    type of loop you think is appropriate) to print out all cards
+    in the deck (Card array) in four NEAT columns.
+    When "testDeck" is called on a brand new deck each COLUMN should
+    contain one suit with that suit's cards in order.  For
+    example:  the first column should contain all of the
+    spades in order: Ace Spades, 2 Spades, 3 Spades, ..., King Spades.
+    The second column should contain all of the clubs in
+    order:Ace Clubs, 2 Clubs, 3 Clubs, ... and so on.
+    When called on a shuffled deck cards will be random but still
+    in NEAT columns.
+    WHEN YOU ARE FINISHED WRITING THIS METHOD REMOVE THIS COMMENT
+     */
+
+    /**
+     * Print out a subset of the deck to test the deal method.
+     */
+    public void testDeal(int numberOfCards)
+    {
+        ArrayList<Card>hand = new ArrayList<Card>();
+        int index = 0;
+
+        while(hand.size() < numberOfCards){
+            Card crds = deal();
+            hand.add(crds);
+        }
+
+        for(Card crds2:hand){
+            if(index < hand.size())
+                crds2 = hand.get(index); 
+            String info = crds2.getCard();      
+            System.out.println(info);
+            index++;
+        }
+
+    }
+
+}
+/*
+Write a method called "testDeal" that takes a single integer
+parameter called "numberOfCards".  Create a local ArrayList of Cards (i.e. ArrayList<Card>)
+called "hand".
+Use an index variable, a while loop, and the deal() method
+to fill the "hand" with a number of cards equal to numberOfCards.
+Next use a loop (whichever type of loop you think is appropriate) to go through the hand 
+and print out all of the cards in a single NEAT column.
+(Note: this method uses an ArrayList of Cards, not an array.  Pay attention
+to the difference.)
+WHEN YOU ARE FINISHED WRITING THIS METHOD REMOVE THIS COMMENT
+ */

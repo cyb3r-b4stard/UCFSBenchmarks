@@ -1,0 +1,153 @@
+import java.util.ArrayList;
+import java.lang.String;
+import java.util.Scanner;
+/**
+ * ##### # ########### ## ##### ####### ####.
+ * 
+ * @###### (###### ######) 
+ * @####### (##)
+ */
+public class Library
+{
+    private ArrayList<Book> books;
+    private Database database;
+    private Book book;
+    private Scanner reader;
+    
+    public Library()
+    {
+        database =  new Database();
+        books = new ArrayList<Book>();
+        reader = new Scanner(System.in);
+    }
+    public void addBook()
+    {
+        System.out.println("Enter title: ");
+        String title = reader.nextLine();
+        
+        System.out.println("Enter author: ");
+        String author = reader.nextLine();
+        
+        Book book = new Book(title, author);
+        books.add(book);
+    }
+    public void removeBook(String title, String author)
+    {
+        Book target = new Book(title, author);
+        int pos = books.indexOf(target);
+        if (pos!=1)
+        {
+            books.remove(pos);
+        }
+    }
+    /*public void searchBook(String title, String author)
+    {
+        Book target = new Book(title, author);
+        int pos = books.indexOf(target); 
+        if (pos!=-1)
+        {
+             System.out.println("Search results: "+ target);
+             
+        }
+        else
+        {
+            System.out.println("Search results: no results");
+            
+        }
+    }*/
+    
+    public void start()
+    {
+        System.out.println("Welcome to Glasgow Caledonian Library");
+        boolean finished = false;
+        
+            while(!finished)
+            {
+                printOptions();
+                String input = reader.nextLine();
+                int opt=0;
+                try
+                    {
+                        opt = Integer.parseInt(input);
+                    }
+                    catch (Exception e){}
+          
+                if(opt==1)
+                {
+                 searchTitle();
+                }
+                else if(opt == 2)
+                {
+                    registerMember();
+                }
+                else if(opt==3)
+                {
+                    addBook();
+                }
+                else if(opt==4)
+                {
+                    finished = true;
+                }
+               
+                System.out.println("Thank you for using the Glasgow Caledonian Library System");
+            }
+    }
+    public void searchTitle()
+    {
+        System.out.println("Please enter title to search for:");
+        String titleSearch = reader.nextLine();
+        for(Book book : books)
+        {
+            if(book.getTitle().contains(titleSearch)) 
+            {
+
+                System.out.println("Books found: " + titleSearch);
+                System.out.println("Would you like to rent this title?");
+            }
+        
+                    
+            
+            else if(
+            
+                System.out.println("Title not found, try again");)
+            }
+        }
+    }
+    public void registerMember()
+    {
+         System.out.print("Enter first name:\n>");
+         String firstName = reader.nextLine();
+         
+         System.out.println("Enter last name:\n>");
+         String lastName = reader.nextLine();
+         
+         System.out.println("Enter Student ID:\n>");
+         String studentId = reader.nextLine();
+         
+         System.out.println("Enter username:\n>");
+         String username = reader.nextLine();
+         
+         System.out.println("Enter password:\n>");
+         String password = reader.nextLine();
+        
+         Member member = new Member(firstName, lastName, studentId, username, password);
+         database.addMember(member);
+
+         System.out.println("Thank you for registering");
+        }   
+    public void printOptions()
+    {
+        System.out.println("OPTIONS\n>");
+        System.out.println("1. Serach");
+        System.out.println("2.Register");
+        System.out.println("3.Add Book");
+        System.out.println("4.Terminate program");
+        
+    }
+    public static void main(String [ ] args)
+    {
+        Database database = new Database();
+        Library library = new Library();
+        library.start();
+    }
+}

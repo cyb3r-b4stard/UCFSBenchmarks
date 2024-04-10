@@ -1,0 +1,73 @@
+import javafx.application.Application;
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import javafx.scene.Group;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import java.util.Random;
+
+/**
+ * ###### #### #######
+ * 
+ * @###### (######)
+ * @####### (####.##.##)
+ */
+public class RandomCircles extends Application
+{
+    /**
+    * creating random circles with random colors
+    * @param primaryStage the main window
+    */
+   public void start(Stage primaryStage)
+   {
+       Group root = new Group();
+       Random gen = new Random();
+       int biggestsize = 0;
+       int biggestx = 0;
+       int biggesty = 0;
+       
+       for (int i = 1; i <= 30; i++)
+       {
+           int size = gen.nextInt(66) + 10;
+           int maxx = 601 - size;
+           int rangex = maxx - size;
+           int maxy = 401 - size;
+           int rangey = maxy - size;
+           int x = gen.nextInt(rangex) + size;
+           int y = gen.nextInt(rangey) + size;
+           
+           Circle circle = new Circle(x, y, size);
+           circle.setStroke(Color.rgb(gen.nextInt(256), gen.nextInt(256), gen.nextInt(256)));
+           circle.setStrokeWidth(3);
+           circle.setFill(null);
+           root.getChildren().add(circle);
+           
+           if (size > biggestsize)
+           {
+               Circle biggestCircle = new biggestCircle(x, y, size);
+               biggestx = x;
+               biggesty = y;
+               biggestsize = size;
+           }
+        }
+       Circle circle = new Circle();
+       circle.setFill(Color.rgb(216, 35, 49, 0.3));
+       
+       Scene scene = new Scene(root, 600, 400);
+       
+       primaryStage.setTitle("RandomCircles");
+       primaryStage.setScene(scene);
+       primaryStage.show();
+       
+       primaryStage.setOnCloseRequest(e -> System.exit(0));
+   }
+   
+    /**
+    * required to run javafx
+    * @param args unused
+    */
+   public static void main(String[] args)
+   {
+       launch(args);
+   }
+}

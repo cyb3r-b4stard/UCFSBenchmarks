@@ -1,0 +1,163 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.util.*;
+import java.io.*;
+
+public class MainFrame extends JFrame{
+    private JMenuBar mb = new JMenuBar();
+    private JMenu m1 = new JMenu("Optiuni");
+    private JMenuItem mi5 = new JMenuItem("Afisare carti");
+    private JMenuItem mi6 = new JMenuItem("Afisare cd-uri");
+    private JMenuItem mi1 = new JMenuItem("Adauga produs");
+    private JMenuItem mi3 = new JMenuItem("Salvare");
+    private JMenuItem mi4 = new JMenuItem("Sterge");
+    
+    
+    private DefaultListModel<Produs> model = new DefaultListModel<>();
+    private JList<Produs> lista = new JList<>(model);
+    
+    private JScrollPane jsp = new JScrollPane(lista);
+    
+    private JPanel p1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    private JLabel e1 = new JLabel("Produse: 0");
+    
+    public MainFrame(){
+        setTitle("Librarie");
+        setJMenuBar(mb);
+        
+        mb.add(m1);
+        m1.add(mi5);
+        m1.addSeparator();
+        m1.add(mi6);
+        m1.addSeparator();
+        m1.add(mi1);
+        m1.addSeparator(); 
+        m1.add(mi3);
+        m1.addSeparator();
+        m1.add(mi4);
+        m1.addSeparator();
+        
+        
+        
+         mi5.addActionListener(
+            new ActionListener(){
+                public void actionPerformed(ActionEvent ev){
+                   afisareProduse();
+                }
+            }
+        );
+        
+        mi6.addActionListener(
+            new ActionListener(){
+                public void actionPerformed(ActionEvent ev){
+                  afisareProduse();
+                }
+            }
+        );
+        mi1.addActionListener(
+            new ActionListener(){
+                public void actionPerformed(ActionEvent ev){
+                   new AdaugaProdus();
+                }
+            }
+        );
+      
+        
+        mi3.addActionListener(
+            new ActionListener(){
+                public void actionPerformed(ActionEvent ev){
+                   JFileChooser chooser = new JFileChooser(); 
+                   int r = chooser.showSaveDialog(null);
+                   
+                   if(r == JFileChooser.APPROVE_OPTION){
+                       File file = chooser.getSelectedFile();
+                   try{
+                       Librarie.getInstance().salvareProduse(file);
+                   }catch(Exception e){
+                       JOptionPane.showMessageDialog(
+                        null,"Eroare la salvare","Eroare",JOptionPane.ERROR_MESSAGE
+                       );
+                    }
+                   }
+                }
+            }
+        );
+        
+        mi4.addActionListener(
+            new ActionListener()
+                public void actionPerformed(ActionEvent ev){
+                    lista.addMouseListener(
+            new MouseAdapter(){
+                public void mouseClicked(MouseEvent ev){
+                    if(ev.getClickCount() == 2){
+                        Produs p = lista.getSelectedValue();
+                        Magazin.getInstance().eliminaProdus(p);
+                    }
+                }
+            }
+        );
+
+            
+        
+        
+        
+        
+        
+        Librarie.getInstance().addLibrarieListener(
+            new LibrarieListener(){
+                public void listaProduseModificata(){
+                    afisareProduse();
+                }
+            }
+        );
+        Thread t = new Thread(){
+            public void run(){
+               try{
+                   while(true){
+                       int nr = Librarie.getInstance().getProduse().size();
+                       e1.setText("PRODUSE: "+nr);
+                       Thread.sleep(1000);
+                    }
+               }catch(InterruptedException e){
+                    e.printStackTrace();
+                
+               } 
+            };
+        };
+        
+        t.setDaemon(true);
+        t.start();
+        
+        add(jsp);
+        add(p1, BorderLayout.SOUTH);
+        p1.add(e1);
+        
+        setSize(500,500);
+        setLocationRelativeTo(null);
+        setVisible(true);
+        
+      
+    }
+    
+    private void afisareProduse(){
+        model.clear();
+        ArrayList<Produs> produse = Librarie.getInstance().getProduse();
+        for(Produs p: produse){
+            model.addElement(p);
+        }
+    }
+    
+    private void inchideProgramul(){
+        int r = JOptionPane.showConfirmDialog(this,
+            "Sigur vrei sa inchizi?",
+            "Intrebare",JOptionPane.YES_NO_OPTION);
+        if(r == JOptionPane.YES_OPTION){
+            System.exit(0);
+        }    
+    }
+    
+    public static void main(String [] args){
+        new MainFrame();
+    }
+}

@@ -1,0 +1,51 @@
+
+
+public class Kunde extends Person
+{
+   public  Bank bank;     
+   public double konto;   
+   public Umrechner u1 ;  
+   public MyDate buchungstag;
+   
+    Kunde(){
+        u1 = new Umrechner () ; 
+        bank = new Bank();      
+        konto = 1000;           
+    }
+    
+    public Kunde(String name, String vorname, double konto){
+        super(name, vorname);
+        bank = new Bank();
+        einzahlen(konto);
+    }
+   
+    
+    
+    void einzahlen(double wert, int tag int monat, int jahr){    
+        bank.vermoegenAddieren(wert);  
+        konto = konto +wert;           
+        buchungstag = new MyDate(jahr, monat, tag);
+        
+        
+    
+    }
+    
+    void abheben(double wert){
+        bank.vermoegenSubtrahieren(wert);
+        konto = konto -wert;    
+        
+    }
+    
+    void einzahlenBetragInPfund (double pfund){  
+        bank.vermoegenAddieren( u1.getBetragInEuroPfund(pfund)); 
+        konto = konto +(u1.getBetragInEuroPfund(pfund));         
+    }
+    void einzahlenBetragInCent(double cent){
+        bank.vermoegenAddieren(u1.getBetragInEuroCent(cent)); 
+        konto = konto + (u1.getBetragInEuroCent(cent));      
+    }
+    void abhebenBetragInCent(double cent){
+         bank.vermoegenSubtrahieren(u1.getBetragInEuroCent(cent));  
+        konto = konto -u1.getBetragInEuroCent(cent);                
+    }
+}

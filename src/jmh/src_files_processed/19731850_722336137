@@ -1,0 +1,797 @@
+
+/**
+ * ###### #### ### ####### ### ############.
+ * 
+ * @###### #### #######
+ * @####### ####### #.#! ######### ## ##/#/##
+ */
+
+import java.awt.Point;
+import java.util.ArrayList;
+public class PacMan
+{
+
+    private Mode                  PacmanMode;
+    private Ghost.Orientation     PacmanOrientation;
+    private Ghost.Orientation     nextOrientation;
+    private int                   PacmanSpeed;
+    private Point                 PacmanPosition;
+    private int                   BacktrackCount;
+    private boolean               HasBacktracked;
+
+    private Point                 OriginalPosition;
+    private Ghost.Orientation     OriginalOrientation;
+
+    public enum Mode {CONTROLLED, AUTONOMOUS};
+
+    public static final int[] SPEED={0,1,2,4,8,16,32};
+
+    /*
+     * The SPEED indicates the legal speed, representing how many pixels the center of Pac-Man or the ghost moves per frame. 
+     * Same as the ghost speeds, they need to be divisors of MazeViewer.CELL_SIZE.
+     * The Ghost.ORIENTATION is used here to record the Pac-Man's moving direction as well. 
+     */
+
+    public PacMan(Point pos){
+
+        /*
+         * creates a Pac-Man with an initial position, and sets its 
+         * initial orientation to Orientation.UP, 
+         * mode to Mode.CONTROLLED, 
+         * initial travelling speed to 16 (i.e. MazeViewer.CELL_SIZE).
+         */
+
+        PacmanPosition = pos;
+        PacmanOrientation = Ghost.Orientation.UP;
+        nextOrientation = PacmanOrientation;
+        PacmanMode = Mode.AUTONOMOUS;        
+        setSpeed(MazeViewer.CELL_SIZE);
+        OriginalPosition = PacmanPosition;
+        OriginalOrientation = PacmanOrientation;
+        BacktrackCount = 0;
+        HasBacktracked = false;
+    }
+
+    public PacMan(Point pos, Ghost.Orientation ori, int speed, Mode m) {
+
+        PacmanPosition = pos;
+        PacmanOrientation = ori;
+        setMode(m);
+        setSpeed(speed);
+        nextOrientation = PacmanOrientation;
+
+        OriginalPosition = PacmanPosition;
+        OriginalOrientation = PacmanOrientation;
+    }
+
+    public int getSpeed(){
+        return PacmanSpeed;
+    }
+
+    public void setSpeed(int newSpeed){
+
+        boolean found = false;
+        for(int i = 0; i < SPEED.length; i++){
+            if (SPEED[i] == newSpeed) {
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            PacmanSpeed = newSpeed;
+        } else {
+            throw new IllegalArgumentException("Error - Newspeed not in speed array");
+        }
+    }
+
+    public void setMode(Mode m){
+        PacmanMode = m;
+    }
+
+    public Ghost.Orientation getOrientation(){ 
+        return PacmanOrientation;
+    }
+
+    public Point getPosition(){
+        return PacmanPosition;
+    }
+
+    public void setNextOrientation(Ghost.Orientation ori){ 
+        nextOrientation = ori;
+    }
+
+    public Ghost.Orientation nextOrientation(){
+        return nextOrientation;
+    }   
+
+    public boolean atGrid(){
+        boolean canx = false;
+        if ((PacmanPosition.x-MazeViewer.CELL_SIZE/2)%MazeViewer.CELL_SIZE == 0) canx = true;
+        boolean cany = false;
+        if ((PacmanPosition.y-MazeViewer.CELL_SIZE/2)%MazeViewer.CELL_SIZE == 0) cany = true;
+
+        return canx && cany;
+    }
+
+    public void doMove(Maze maze){
+        if(PacmanMode == Mode.AUTONOMOUS){
+            move(maze, 2);
+        }
+
+        Maze.Status nextStatus = maze.locationStatus(nextPos(PacmanPosition,nextOrientation));
+        boolean canturn = false;
+        if(nextStatus == Maze.Status.DOT || nextStatus == Maze.Status.LEGAL || nextStatus == Maze.Status.ENERGISER){
+            canturn = true;
+        }
+
+        if(canturn && atGrid()){
+            move(maze,nextOrientation);
+        } else {
+            move(maze,PacmanOrientation); 
+        }
+    }
+
+    public void move(Maze maze, Ghost.Orientation ori){
+        boolean doMove = false;
+
+        if(atGrid()){
+            switch (maze.locationStatus(nextPos(PacmanPosition,ori))){
+                case INVALID:
+                if (PacmanPosition.x == MazeViewer.CELL_SIZE/2){ 
+                    PacmanPosition.x = maze.getMap().length*MazeViewer.CELL_SIZE-MazeViewer.CELL_SIZE/2;
+
+                } else if (PacmanPosition.x == maze.getMap().length*MazeViewer.CELL_SIZE-MazeViewer.CELL_SIZE/2){ 
+                    PacmanPosition.x = MazeViewer.CELL_SIZE/2;
+                }
+
+                break;
+
+                case DEAD:
+                maze.doStopDot(); 
+                break;
+
+                case ENERGISER:
+                maze.doEnergiser();
+                maze.setStatus(nextPos(PacmanPosition,ori).x/MazeViewer.CELL_SIZE,nextPos(PacmanPosition,ori).y/MazeViewer.CELL_SIZE, Maze.Status.LEGAL);
+
+                Ghost.setPanic(maze.getGhosts(), true);
+                maze.doPanicCountdown();
+
+                doMove = true;
+                break;
+
+                case DOT:
+                maze.doDot();
+                maze.setStatus(nextPos(PacmanPosition,ori).x/MazeViewer.CELL_SIZE,nextPos(PacmanPosition,ori).y/MazeViewer.CELL_SIZE, Maze.Status.LEGAL);
+                doMove = true;
+                break;
+
+                case LEGAL: 
+                doMove = true;
+                maze.doStopDot();
+            }
+        } else {
+            doMove = true;
+        }
+
+        if(doMove){
+
+            PacmanPosition = nextPos2(PacmanPosition, ori); 
+            PacmanOrientation = ori;
+
+        }
+    }
+
+    private Point nextPos(Point positioncopy, Ghost.Orientation ori){
+        Point position = new Point(positioncopy); 
+        int dist = MazeViewer.CELL_SIZE;
+        switch (ori){
+            case UP: 
+            position.translate(0,-dist); break;
+            case DOWN: 
+            position.translate(0,dist); break;
+            case LEFT: 
+            position.translate(-dist,0); break;
+            case RIGHT: 
+            position.translate(dist,0); break;
+        }
+        return position;
+    }
+
+    private Point nextPos2(Point positioncopy, Ghost.Orientation ori){
+        Point position = new Point(positioncopy); 
+        int dist = (PacmanSpeed/MazeViewer.CELL_SIZE)*2;
+        switch (ori){
+            case UP: 
+            position.translate(0,-dist); break;
+            case DOWN: 
+            position.translate(0,dist); break;
+            case LEFT: 
+            position.translate(-dist,0); break;
+            case RIGHT: 
+            position.translate(dist,0); break;
+        }
+        return position;
+    }
+
+    /**
+     * This method controls what the Pac-Man does in AUTONOMOUS mode <br>
+     * an int strat will determine what strategy is used. The number of the strategy <br>
+     * in the Javadoc should correspond to the int strat, e.g. 1 = AGGRESSIVE, 2 = SAFETY...etc <br>
+     * The Strategies: <br>
+     * 1) AGGRESSIVE <br>
+     * <br>
+     * GET CLOSEST GHOST <br>
+     * CASE: <br>
+     *    (PANIC MODE) <br>
+     *        WHILE(PANIC MODE) <br>
+     *            GET CLOSEST GHOST <br>
+     *            PURSUE GHOST RELENTLESSLY AND EAT GHOST <br>
+     *    (NUM OF ENERGISERS > 0 AND !PANIC MODE) <br>
+     *        FIND CLOSEST ENERGISER <br>
+     *        EAT ENERGISER <br>
+     *    (NUMBER OF ENERGISERS == 0 AND !PANIC MODE) <br>
+     *        EAT CLOSEST DOT <br>
+     * <br>
+     * 2) SAFETY <br>
+     * <br>
+     * GET CLOSEST GHOST <br>
+     * CASE: <br>
+     *   (PANIC MODE) <br>
+     *   IF(CLOSEST GHOST < SOME DISTANCE) <br>
+     *      THEN EAT GHOST <br>
+     *   ELSE <br>
+     *      EAT CLOSEST DOT <br>
+     *   (IF GHOSTS WITHIN AREA >= 2 and !PANIC MODE) <br>
+     *       IF(NUMBER OF ENERGISERS > 0) <br> 
+     *           GET CLOSEST ENERGISER <br>
+     *           EAT ENERGISER PATH FINDING VIA OPPOSITE DIRECTION OF GHOSTS <br>
+     *       ELSE <br>
+     *           DEFAULT <br>
+     *   (DEFAULT) <br>
+     *       EAT CLOSEST DOT <br>
+     *
+     * The idea of the AGGRESSIVE Strategy is to win the game as quickly as possible. <br>
+     * The best way I think to do this strategy is to basically eat the ghosts and energisers until there is none left <br>
+     * also note that even in a normal game of Pac-Man this is still a good strategy since you get big scores <br>
+     * for eating the ghosts. However there is not much of a plan after that its just eat the closest dot(s) <br>
+     * as quickly as possible to end the game as quickly as possible. <br>
+     *
+     * The idea of the SAFETY Strategy is to simply stay alive and not take minimal risks. <br>
+     * This is in a way a limited AGGRESSIVE mode it only shows "aggression" when its safe to do so <br>
+     * namely when in panic mode it only eats ghost within a certain distance. It does have a contingency in the event <br>
+     * where a certain amount of ghosts are within a certain area to essentially either get the closest energiser<br>
+     * ASAP. In this one level version of Pac-Man it may not be the best strategy but in a normal <br>
+     * game of Pac-Man, Longevity = Higher Score. <br>
+     *
+     * If I have time I think I'd like to combine these two strategies to see how the Pac-Man would behave. <br>
+     * @author Joel Dunstan
+     * @param strat an integer that decides what strategy is used.
+     **/
+
+    public void move(Maze maze, int strat){
+        PacmanMode = Mode.AUTONOMOUS;
+        Ghost[] ghosts = maze.getGhosts();
+        int ghostsWithinArea = 0;
+        Ghost closest;
+        if(atGrid()) {
+            switch (strat){
+                case 1:
+                closest = getClosestGhost(ghosts);
+                if(closest.isPanic()) {
+                    shortestPath(maze, null, true, ghosts, false);
+                }
+                else if(maze.getNumEnergisers() > 0 && !closest.isPanic()) {
+                    Point closestEng = getClosestDot(maze, true, false);
+                    shortestPath(maze, closestEng, false, ghosts, false);
+                }
+                else if(maze.getNumEnergisers() == 0 && !closest.isPanic()){
+                    Point closestDot = getClosestDot(maze, false, false);
+                    shortestPath(maze, closestDot, false, ghosts, false);
+                }
+                break;
+                case 2:
+                closest = getClosestGhost(ghosts);
+                ghostsWithinArea = 0;
+                for(Ghost ghost: ghosts) {
+                    Point CG = closest.getPosition();
+                    double ghostCalc = Math.pow(CG.x - PacmanPosition.x, 2) + Math.pow(CG.y - PacmanPosition.y, 2);
+                    double ghostDist = Math.sqrt(ghostCalc);
+                    if(ghostDist < MazeViewer.CELL_SIZE*5) {
+                        ghostsWithinArea++;
+                    }
+                }
+                if(closest.isPanic()) {
+                    Point CG = closest.getPosition();
+                    double ghostCalc = Math.pow(CG.x - PacmanPosition.x, 2) + Math.pow(CG.y - PacmanPosition.y, 2);
+                    double ghostDist = Math.sqrt(ghostCalc);
+                    if(ghostDist < MazeViewer.CELL_SIZE*4) {
+                        shortestPath(maze, null, true, ghosts, false);
+                    }
+                    else {
+                        Point closestDot = getClosestDot(maze, false, true);
+                        shortestPath(maze, closestDot, true, ghosts, true);
+                    }
+                }
+                else if(ghostsWithinArea >= 2 && !closest.isPanic()) {
+                    if(maze.getNumEnergisers() > 0) {
+                        Point closestDot = getClosestDot(maze, true, false);
+                        shortestPath(maze, closestDot, false, ghosts, false);
+                    }
+                    else {
+                        Point closestDot = getClosestDot(maze, false, true);
+                        shortestPath(maze, closestDot, false, ghosts, false);
+                    }
+                }
+                else {
+                    Point closestDot = getClosestDot(maze, false, true);
+                    shortestPath(maze, closestDot, false, ghosts, false);
+                }
+                break;
+                /*
+                 * The idea here is try to combine the best of both SAFETY and AGGRESSIVE
+                 * Unfortunately at the moment, this one seems to crash somewhere along
+                 * closestDot when its run out of energisers...I've tried fixing it to no avail.
+                 * The closestDot seems to work with SAFETY and AGGRESSIVE but refuses to work with this.
+                 */
+                case 3:
+                closest = getClosestGhost(ghosts);
+                ghostsWithinArea = 0;
+                for(Ghost ghost: ghosts) {
+                    Point CG = closest.getPosition();
+                    double ghostCalc = Math.pow(CG.x - PacmanPosition.x, 2) + Math.pow(CG.y - PacmanPosition.y, 2);
+                    double ghostDist = Math.sqrt(ghostCalc);
+                    if(ghostDist < MazeViewer.CELL_SIZE*5) {
+                        ghostsWithinArea++;
+                    }
+                }
+                if(closest.isPanic()) {
+                    if(maze.getNumLives() == 3 && maze.getNumEnergisers() == 3) {
+                        shortestPath(maze, null, true, ghosts, false);
+                    }
+                    else {
+                        if(ghostsWithinArea > 2) {
+                            shortestPath(maze, null, true, ghosts, false);
+                        }
+                        else {
+                            Point closestDot = getClosestDot(maze, false, false);
+                            shortestPath(maze, closestDot, true, ghosts, true);
+                        }
+                    }
+                }
+                else if(maze.getNumEnergisers() > 2 && !closest.isPanic()) {
+                    Point closestEng = getClosestDot(maze, true, false);
+                    shortestPath(maze, closestEng, false, ghosts, false);
+                }
+                else if(maze.getNumEnergisers() <= 2 && !closest.isPanic()){
+                    if(ghostsWithinArea > 1) {
+                        Point closestEng = getClosestDot(maze, true, false);
+                        shortestPath(maze, closestEng, false, ghosts, false);
+                    }
+                    else {
+                        Point closestDot = getClosestDot(maze, false, false);
+                        shortestPath(maze, closestDot, false, ghosts, false);
+                    }
+                }
+                else if(maze.getNumEnergisers() == 0 && !closest.isPanic()) {
+                    Point closestDot = getClosestDot(maze, false, false);
+                    shortestPath(maze, closestDot, false, ghosts, false);
+                }
+            }
+        }
+    }
+
+    public void doDemo(){
+        if(PacmanMode == Mode.AUTONOMOUS){
+            PacmanMode = Mode.CONTROLLED;
+        } else {
+            PacmanMode = Mode.AUTONOMOUS;
+        }
+    }
+
+    public boolean isDemo(){
+        return PacmanMode == Mode.AUTONOMOUS;
+    }
+
+    public void setToOriginal(){
+        PacmanPosition = OriginalPosition;
+        PacmanOrientation = OriginalOrientation;
+    }
+
+    /**
+     * All METHODS FROM THIS POINT ARE FROM JOEL DUNSTAN
+     */
+
+    /**
+     * This method finds the closest ghost and returns the actual instance of the <br>
+     * closest Ghost allowing the use of the isPanic methods among others in the move function. <br>
+     * @author Joel Dunstan
+     * @param ghosts an array of Ghost instances
+     * @return Ghost The ghost that is closest to the Pac-Man
+     */
+    private Ghost getClosestGhost(Ghost[] ghosts) {
+        Ghost closestGhost = ghosts[0];
+        int closestGhostDist = Math.abs(PacmanPosition.x-ghosts[0].getPosition().x)+Math.abs(PacmanPosition.y-ghosts[0].getPosition().y); 
+
+        for(int i = 0; i < ghosts.length; i++){
+            if(!ghosts[i].isDead()){
+                int tempDist = Math.abs(PacmanPosition.x-ghosts[i].getPosition().x)+Math.abs(PacmanPosition.y-ghosts[i].getPosition().y);
+                if(closestGhostDist > tempDist){ 
+                    closestGhostDist = tempDist;
+                    closestGhost = ghosts[i];
+                }
+            }
+        }
+        return closestGhost;
+    }
+
+    /**
+     * This method finds the closest Dot or the Closest Energiser. <br>
+     * This method uses the idea of a Iterative Deeping Depth First Search (IDDFS) starting <br>
+     * from the Pac-Man and going out from that position. It uses the idea of IDDFS by imagining <br>
+     * the Pac-Man somewhere in the grid then there will be 'branches' (in the sense <br>
+     * that the branches are one cell thick squares with no insides...). It will investigate each square layer <br>
+     * looking for an energiser/dot. The search ends when the boolean Found becomes true as its found an energiser/dot. <br>
+     * This energiser/dot Should be the closest one from the Pac-Man as it will be the one with the least STRAIGHT-LINE <br>
+     * DISTANCE from the Pac-Man. <br>
+     * This method will assume that all necessary checks have been done before being run, such checks include the number <br>
+     * of energisers is above 0, that the pacman is on the grid etc. If they havent been done, there will be an ArrayOutOfBounds <br>
+     * exception or the loop(s) will run to infinity. <br>
+     * As a note, this can do infinite loops for unknown reasons at this Point. In regard<br>
+     * @author Joel Dunstan
+     * @param energiser if true, hunt for energiser
+     * @param both if true, will look for either closest dor ot energiser
+     * @return closestDot The position fo the closest Dot or Energiser
+     */
+    private Point getClosestDot(Maze maze, boolean energiser, boolean both) {
+        boolean found = false;
+        int limit = 1;
+        Point closestDot = PacmanPosition;
+        int pacX = PacmanPosition.x/MazeViewer.CELL_SIZE;
+        int pacY = PacmanPosition.y/MazeViewer.CELL_SIZE;
+        Maze.Status[][] grid = maze.getMap();
+        int xlength = grid.length;
+        int ylength = grid[0].length;
+        double closestDist = xlength * MazeViewer.CELL_SIZE + ylength * MazeViewer.CELL_SIZE;
+        while(!found) {
+            int starterX = 0;
+            int finisherX = pacX + limit;
+            if(pacX - limit > 0) {
+                starterX = pacX - limit;
+            }
+            if(finisherX > xlength - 1) {
+                finisherX = xlength - 1;
+            }
+            int zerocounter = 0;
+            outer
+            for(int i = starterX; i <= finisherX; i++) {
+                if(zerocounter % 2 == 0 && zerocounter != 0) {
+                    break;
+                }
+                else if(i == 0) {
+                    zerocounter++;
+                }
+                int starterY = 0;
+                int finisherY = pacY + limit;
+                if(pacX - limit > 0) {
+                    starterY = pacX - limit;
+                }
+                if(finisherY > ylength - 1) {
+                    finisherY = ylength - 1;
+                }
+                for(int j = starterY; j <= finisherY ; j++) {
+                    System.out.println("second loop");
+                    Point checkPoint = new Point(i * MazeViewer.CELL_SIZE, j * MazeViewer.CELL_SIZE);
+                    System.out.println(checkPoint);
+                    double ghostCalc = Math.pow(i - pacX, 2) + Math.pow(j - pacY, 2);
+                    double tempDist = Math.sqrt(ghostCalc);
+                    if(both) {
+                        if(closestDist > tempDist && (grid[i][j] == Maze.Status.DOT) && (grid[i][j] == Maze.Status.ENERGISER)) {
+                            closestDist = tempDist;
+                            closestDot = new Point(checkPoint);
+                            found = true;
+                        }
+                    }
+                    else if(energiser) {
+                        if(closestDist > tempDist && grid[i][j] == Maze.Status.ENERGISER) {
+                            closestDist = tempDist;
+                            closestDot = new Point(checkPoint);
+                            found = true;
+                        }
+                    }
+                    else {
+                        if(closestDist > tempDist && grid[i][j] == Maze.Status.DOT) {
+                            closestDist = tempDist;
+                            closestDot = new Point(checkPoint);
+                            found = true;
+                        }
+                    }
+                }
+            }
+            limit++;
+        }
+        return closestDot;
+    }
+
+    /**
+     * This is a greedy Algorithm, it always chooses the orientation that gets it locally closer to target each time <br>
+     * this uses straight line distances to compare orientations and points. It will always choose the one with the shortest Distance to target <br>
+     * at that point UNLESS it isn't safe according to Ghost Checking Algorithm(s). The Ghost Checking Algorithm is particuarly important <br>
+     * the better that is, the better this pac-man. So therefore one could say its like a Uniform Cost Search, always takes the Point with the <br>
+     * smallest distance from target, with un-optimised moves being due to the ghost algorithm(s). <br>
+     * @author Joel Dunstan
+     * @param maze
+     * @param target The Point we want to goto
+     * @param panic Is it in Panic Mode? true = yes.
+     * @param ghosts the array of ghosts
+     * @param safetypanic is it in panic mode and are we looking for dots only? true = yes.
+     */
+    public void shortestPath(Maze maze, Point target, boolean panic, Ghost[] ghosts, boolean safetypanic) {
+        Ghost.Orientation[] possibleOrientations = getOrientations(maze);
+        int checkX = 0;
+        int checkY = 0;
+        double bestDistSoFar = 0;
+        int count = 0;
+        if(possibleOrientations.length == 1) {
+            nextOrientation = possibleOrientations[0];
+        }
+        else {
+            for(Ghost.Orientation ori: possibleOrientations) {
+                switch(ori) {
+                    case UP:
+                    checkX = PacmanPosition.x;
+                    checkY = PacmanPosition.y - MazeViewer.CELL_SIZE;
+                    break;
+                    case DOWN:
+                    checkX = PacmanPosition.x;
+                    checkY = PacmanPosition.y + MazeViewer.CELL_SIZE;
+                    break;
+                    case LEFT:
+                    checkX = PacmanPosition.x - MazeViewer.CELL_SIZE;
+                    checkY = PacmanPosition.y;
+                    break;
+                    case RIGHT:
+                    checkX = PacmanPosition.x + MazeViewer.CELL_SIZE;
+                    checkY = PacmanPosition.y;
+                    break;
+                }
+                Point checkPoint = new Point(checkX, checkY);
+                if(panic) {
+                    Ghost closestG = getClosestGhost(ghosts);
+                    Point closestGP = new Point (closestG.getPosition().x, closestG.getPosition().y);
+                    if(!(maze.locationStatus(checkPoint) == Maze.Status.DEAD)) {
+                        double ghostCalc = Math.pow(closestGP.x - checkX, 2) + Math.pow(closestGP.y - checkY, 2);
+                        double tempDist = Math.sqrt(ghostCalc);
+                        if(bestDistSoFar == 0 || (bestDistSoFar > tempDist)) {
+                            bestDistSoFar = tempDist;
+                            nextOrientation = ori;
+                        }
+                    }
+                }
+                else if(panic && safetypanic) {
+                    double distcalc = Math.pow(target.x - checkX, 2) + Math.pow(target.y - checkY, 2);
+                    double tempDist = Math.sqrt(distcalc);
+                    if(bestDistSoFar > tempDist || bestDistSoFar == 0) {
+                        bestDistSoFar = tempDist; 
+                        nextOrientation = ori;
+                    }
+                }
+                else {
+                    /*
+
+                     * This will try to predict ghost movements and thus avoid where their predicted movements are
+                     */
+                    boolean GhostViolation = false;
+                    if(!(maze.locationStatus(checkPoint) == Maze.Status.DEAD)) {
+                        /*
+                         * The one we're currently looking at is completely Legal
+                         * Check all the ghosts, if any ghosts are within two moves of catching pacman by
+                         * moving to checkX and checkY, then the move is too risky unless, the target is an energiser
+                         * and its the shortest distance so far and that distance is within two moves!
+                         */
+                        double distcalc = Math.pow(target.x - checkX, 2) + Math.pow(target.y - checkY, 2);
+                        double tempDist = Math.sqrt(distcalc);
+                        Ghost closest = getClosestGhost(ghosts);
+                        Point CG = closest.getPosition();
+                        Ghost.Orientation gOri = closest.getOrientation(); 
+                        double ghostCalc = Math.pow(CG.x - checkX, 2) + Math.pow(CG.y - checkY, 2);
+                        double ghostDist = Math.sqrt(ghostCalc);
+                        if(!(possibleOrientationGhost(maze, CG, gOri, checkX, checkY))) {
+                            GhostViolation = true;
+                        }
+                        if(GhostViolation && getOppOri(ori) == gOri) {
+                            bestDistSoFar = tempDist;
+                            nextOrientation = gOri;
+                            count++;
+                        }
+                        else if(bestDistSoFar == 0 && !GhostViolation) {
+                            bestDistSoFar = tempDist;
+                            nextOrientation = ori;
+                            count++;
+                        }
+                        else if(bestDistSoFar > tempDist && !GhostViolation) {
+                            bestDistSoFar = tempDist; 
+                            nextOrientation = ori;
+                            count++;
+                        }
+                    } 
+                }
+            }
+        }
+    }
+
+    /**
+     * Variation of getOrientations method from original source. <br>
+     */
+    private Ghost.Orientation[] getOrientations(Maze maze){
+
+        boolean[] temp = new boolean[4];
+        int count = 0;
+        Point DOWN = new Point(PacmanPosition.x, PacmanPosition.y + MazeViewer.CELL_SIZE);
+        Point UP = new Point(PacmanPosition.x, PacmanPosition.y - MazeViewer.CELL_SIZE);
+        Point RIGHT = new Point(PacmanPosition.x + MazeViewer.CELL_SIZE, PacmanPosition.y);
+        Point LEFT = new Point(PacmanPosition.x - MazeViewer.CELL_SIZE, PacmanPosition.y);
+        for(int i = 0; i < 4; i++){
+            temp[i] = false;
+        }
+
+        if(!(maze.locationStatus(DOWN) == Maze.Status.DEAD)) {
+            if(PacmanOrientation != Ghost.Orientation.UP) {           
+                temp[0] = true;
+                count++;   
+            }
+        }
+
+        if(!(maze.locationStatus(UP) == Maze.Status.DEAD)){
+            if(PacmanOrientation != Ghost.Orientation.DOWN) {
+                temp[1] = true;
+                count++;
+            }
+        }
+
+        if(!(maze.locationStatus(RIGHT) == Maze.Status.DEAD)){
+            if(PacmanOrientation != Ghost.Orientation.LEFT) {
+                temp[2] = true;
+                count++;
+            }
+        }
+
+        if(!(maze.locationStatus(LEFT) == Maze.Status.DEAD)){
+            if(PacmanOrientation != Ghost.Orientation.RIGHT) {
+                temp[3] = true;
+                count++;
+            }
+        }
+
+        Ghost.Orientation[] tempOri = new Ghost.Orientation[count];
+        int i = 0;
+        if(temp[0]){
+            tempOri[i]=Ghost.Orientation.DOWN;
+            i++;
+        }
+
+        if(temp[1]){
+            tempOri[i]=Ghost.Orientation.UP;
+            i++;
+        }
+
+        if(temp[2]){
+            tempOri[i]=Ghost.Orientation.RIGHT;
+            i++;
+        }
+
+        if(temp[3]){
+            tempOri[i]=Ghost.Orientation.LEFT;
+        }
+
+        return tempOri;
+    }
+
+    /**
+     * Gets the opposite orientation of given orienation <br>
+     * @author Joel Dunstan
+     * @param ori the orientation we're getting the opposite of
+     * @return Ghost.Orientation opposite of ori
+     */
+    private Ghost.Orientation getOppOri(Ghost.Orientation ori) {
+        switch(ori){
+            case UP:
+            return Ghost.Orientation.DOWN;
+            case DOWN:
+            return Ghost.Orientation.UP;
+            case LEFT:
+            return Ghost.Orientation.RIGHT;
+            case RIGHT:
+            return Ghost.Orientation.LEFT;
+        }
+        return ori;
+    }
+
+    /**
+     * What this algorithm is designed to do is anticipate the Ghosts moves up to a certain amount of 'moves'. <br>
+     * If the Pac-Man is going to be 'in the firing line' so to speak, or going to be killed in a possible certain amount <br>
+     * of moves time, then we mark the orientation unsafe. At least thats what its supposed to do. I'm still working out the kinks <br>
+     * it still somestimes moves directly into the firing line, there are noticable loops as well, in the movement and the actions <br>
+     * over many lives. <br>
+     * @param maze
+     * @param ghost the Point of the Ghost we're looking at
+     * @param gOri the ghosts orientation
+     * @param checkX pacman's intended X coordinate
+     * @param checkY pacman's intended Y coordinate
+     * @return boolean true = orientation is good.
+     */
+    private boolean possibleOrientationGhost(Maze maze, Point ghost, Ghost.Orientation gOri, int checkX, int checkY) {
+        boolean origood = true;
+        int limit = 0;
+        for(Ghost.Orientation ori: Ghost.Orientation.values()) {
+            boolean x = false;
+            boolean y = false;
+            if(getOppOri(ori) == gOri) {
+                continue;
+            }
+            switch(ori){
+                case UP:
+                limit = -MazeViewer.CELL_SIZE;
+                y = true;
+                break;
+
+                case DOWN:
+                limit = MazeViewer.CELL_SIZE;
+                y = true;
+                break;
+
+                case LEFT:
+                limit = -MazeViewer.CELL_SIZE;
+                x = true;
+                break;
+
+                case RIGHT:
+                limit = MazeViewer.CELL_SIZE;
+                x = true;
+                break;
+            }
+            for(int i = 1; i < 4; i++) {
+                Point checkPoint = null;
+                if(x) {
+                    checkPoint = new Point(ghost.x + i*limit, ghost.y);
+                }
+                else {
+                    checkPoint = new Point(ghost.x, ghost.y + i*limit);
+                }
+                if(!(maze.locationStatus(checkPoint) == Maze.Status.DEAD)){
+                    if(checkX != checkPoint.x && checkY != checkPoint.y) {
+                        continue;
+                    }
+                    else {
+                        origood = false;
+                    }
+                }
+                else if((maze.locationStatus(checkPoint) == Maze.Status.DEAD) && i != 1) {
+                    if(x){
+                        if(checkY != checkPoint.y - MazeViewer.CELL_SIZE && checkY != checkPoint.y + MazeViewer.CELL_SIZE &&
+                        checkX != checkPoint.x) {
+                            continue;
+                        }
+                        else {
+                            origood = false;
+                        }
+                    }
+                    else {
+                        if(checkX != checkPoint.x - MazeViewer.CELL_SIZE && checkX != checkPoint.x + MazeViewer.CELL_SIZE &&
+                        checkY != checkPoint.y) {
+                            continue;
+                        }
+                        else {
+                            origood = false;
+                        }
+                    }
+                }
+                else if(maze.locationStatus(checkPoint) == Maze.Status.DEAD && i == 1) {
+                    continue;
+                }
+            }
+        }
+        return origood;
+    }
+}

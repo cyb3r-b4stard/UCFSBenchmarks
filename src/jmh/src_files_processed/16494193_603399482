@@ -1,0 +1,99 @@
+import java.awt.*;
+import javax.swing.*;
+
+/**
+ * # ####### #### ##### # ####### #####
+ * 
+ * @###### #### #### ####
+ */
+public class Quilt extends JPanel
+{
+    public final int ROWS; 
+    public final int COLS;
+    public final int PATCH_SIZE = 100; 
+
+    /**
+     * Creates a new 5x7 quilt.
+     */
+    public Quilt()
+    {
+        this(5,7); 
+    }
+
+    /**
+     * Creates a new quilt with the given number of rows and columns
+     * @param rows The number of rows
+     * @param cols The number of cols
+     */
+    public Quilt(int rows, int cols)
+    {
+        ROWS = rows; 
+        COLS = cols;
+        this.setPreferredSize(new Dimension(PATCH_SIZE*COLS, PATCH_SIZE*ROWS)); 
+
+        JFrame frame = new JFrame("Sampler Quilt");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+        frame.setResizable(false);
+        frame.add(this); 
+        frame.pack(); 
+        frame.setVisible(true); 
+    }
+
+    /**
+     * This method actually draws the quilt. It is called automatically (by Java)
+     * when the window appears. You never call this yourself.
+     * @param brush The Graphics paintbrush to draw with.
+     */
+    public void paintComponent(Graphics brush, rx)
+    {
+        brush.setColor(Color.WHITE);
+        brush.fillRect(0, 0, COLS*PATCH_SIZE, ROWS*PATCH_SIZE); 
+        Quilt.drawBullseyePatch(brush, rx);
+
+
+
+
+        this.drawGrid(brush); 
+    }
+
+    public static void drawBullseyePatch(Graphics brush,int rx, int ry)
+    {
+        int cd = 90;
+
+        while ( rx < 50 && ry < 50)
+        {
+            brush.setColor(Color.RED);
+            brush.fillOval( rx,  ry,  cd,  cd);
+            brush.setColor(Color.BLUE);
+            rx = rx + 5;
+            ry = ry + 5;
+            cd = cd - 10;
+            brush.fillOval( rx,  ry,  cd,  cd);
+            brush.setColor(Color.RED);
+            rx = rx + 5;
+            ry = ry + 5;
+            cd = cd - 10;
+        }
+
+    }
+
+    /**
+     * Draws an grid using the given graphics brush
+     * @param brush the Graphics paintbrush to draw with.
+     */
+    public void drawGrid(Graphics brush)
+    {
+        brush.setColor(Color.BLACK); 
+        for(int i=0; i<=ROWS; i++) 
+        {
+            brush.drawLine(0, i*PATCH_SIZE, PATCH_SIZE*COLS, i*PATCH_SIZE);
+        }
+        for(int i=0; i<=COLS; i++) 
+        {
+            brush.drawLine(i*PATCH_SIZE, 0, i*PATCH_SIZE, PATCH_SIZE*ROWS);
+        }
+
+    }
+
+
+}

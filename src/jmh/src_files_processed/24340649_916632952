@@ -1,0 +1,145 @@
+import java.util.*;
+/**
+ * ######### ### #######################
+ * 
+ * @###### ### ##
+ * @####### #.#
+ */
+public class Robi {
+
+    private RobiAPI robi;
+    private Random r;
+
+    /**
+     * Erzeugt ein Stellvertreterobjekt eines Roboters. Es wird dazu sofort eine
+     * Verbindung zum zu steuernden Roboter hergestellt.
+     * 
+     * @param hostname
+     *            Hostname des Roboters, z.B. robiInf001.ntb.ch
+     */
+    public Robi(String hostname) {
+        robi = new RobiAPI(hostname);
+        r= new Random();
+
+    }
+
+    /**
+     * Erzeugt ein Stellvertreterobjekt eines realen Roboters. Es wird dazu
+     * sofort eine Verbindung zum realen Roboter hergestellt.
+     * 
+     * @param hostname
+     *            Hostname des Robi, z.B. robiInf001.ntb.ch
+     * @param portNumber
+     *            Port Nummer des zu steuernden, z.B. 2000
+     */
+    public Robi(String hostname, int portNummer) {
+        robi = new RobiAPI(hostname, portNummer);
+        r = new Random();
+
+    }
+
+    /**
+     * Der Roboter fährt planlos herum. Er fährt zuerst geradeaus vorwärts, bis
+     * er irgendwo an eine Wand anstösst. Danach fährt er ein kurzes Stück
+     * zurück, dreht an Ort ab. Dann beginnt der nächste Zyklus. Das Verfahren
+     * ist auch unter dem Begriff "random walk" bekannt.
+     */
+    public void planlosFahren(int maxWandberührungen) {
+        final int RobiFährtVorwärts = 0;
+        final int RobiFährtRückwärts = 1;
+        final int RobiDrehtAb = 2;
+
+        System.out.println("PLANLOS FAHREN");
+
+        int anzahlWandberührungen = 0;
+        SandUhr uhr = new SandUhr();
+        int zustand = RobiFährtVorwärts;
+
+        robi.verbinden();
+        robi.drive(20);
+        System.out.println("Robi fährt vorwärts");
+
+        while (anzahlWandberührungen < maxWandberührungen) {
+            switch (zustand) {
+                case RobiFährtVorwärts:
+                   
+                    if (anWand()) {
+                        bodenSensorWerteAusgeben();
+                        robi.drive(-10);
+                        uhr.starten(1000);
+                        zustand = RobiFährtRückwärts;
+                        System.out.println("Robi fährt rückwärts");
+                    }
+                     else (uhr.abgelaufen()){
+                        zustand= RobiDrehtAb;
+                    }
+                    break;
+
+                case RobiFährtRückwärts: 
+                if (uhr.abgelaufen()) {
+                    System.out.println("Robi dreht ab: Sensorwerte");
+                    bodenSensorWerteAusgeben();
+                    if (robi.readSensor(2)>100){
+                        robi.turn(r.nextInt(200)-100);
+                        uhr.starten(r.nextInt(1000)+100);
+                        zustand = RobiDrehtAb;
+                        System.out.println("Robi dreht ab");
+                    }
+                    else if (robi.readSensor(6)>100 ||robi.readSensor(5)>100||robi.readSensor(4)>100){
+                        robi.turn(r.nextInt(100));
+                        uhr.starten(r.nextInt(1000)+100);
+                        zustand = RobiDrehtAb;
+                        System.out.println("Robi dreht ab");
+                    }
+                    else if (robi.readSensor(10)>100 ||robi.readSensor(11)>100||robi.readSensor(12)>100){
+                        robi.turn(r.nextInt(100)-100);
+                        uhr.starten(r.nextInt(1000)+100);
+                        zustand = RobiDrehtAb;
+                        System.out.println("Robi dreht ab");
+                    }
+                    else {
+                        robi.turn(r.nextInt(100)-100);
+                        uhr.starten(100);
+                        zustand = RobiDrehtAb;
+                        System.out.println("Robi dreht ab xxxxxxxxxxxxxxxxxxxxxxxxxx");
+                    }
+
+                }
+                break;
+
+                case RobiDrehtAb: 
+                if (uhr.abgelaufen()) {
+                    anzahlWandberührungen++;
+                    robi.drive(20);
+                    zustand = RobiFährtVorwärts;
+                    uhr.starten(r.nextInt(1000)+100);
+                    System.out.println("Robi fährt vorwärts");
+                }
+                break;
+
+            }
+        }
+        robi.stop();
+        robi.trennen();
+
+        System.out.println("FERTIG");
+        System.out.println();
+    }
+
+    private boolean anWand() {
+        for (int i = 2; i < 16; i++) {
+            if (robi.readSensor(i) > 100) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void bodenSensorWerteAusgeben() {
+        for (int i = 2; i < 16; i++) {
+            System.out.print(robi.readSensor(i) + " ");
+        }
+        System.out.println();
+    }
+
+}

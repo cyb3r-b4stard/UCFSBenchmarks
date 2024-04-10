@@ -1,0 +1,69 @@
+public class Main
+{
+    abstract static class Room
+    {
+        abstract Room action(String command);
+    }
+
+    static final Room HOME_WELCOME, HOME, HALLWAY, HALLWAY1_LOOKLEFT, HALLWAY1_LOOKRIGHT,
+            H1_R1_WELCOME, H1_R1_GOTSWORD, H1_R2_WELCOME, H1_R2_MONDEAD, HALLWAY2_PLAYERISREADY,
+            HALLWAY2_PLAYERISNTREADY, END;
+
+    static Room pos = HOME_WELCOME;
+    static boolean gameRunning = true;
+
+    public static void main(String[] args)
+    {
+        HOME_WELCOME = new Room() {
+            @Override Room action(String it) {
+                if( it.equals("Look") ) {
+                    System.out.println(
+                        "Welcome to GAME! Adventure awaits!\n"+
+                        "You seem to be in some kind of dungeon... The only obvious exit is NORTH."
+                    );
+                    return HOME;
+                if( it.equals("Go NORTH") ) {
+                    return HALLWAY1;
+                } else {
+                    System.out.println("Sorry, I don't know how to "+it);
+                    return HOME;
+                }
+            }
+        }
+        HOME = new Room() {
+            @Override Room action(String it) {
+                if( it.equals("Look") ) {
+                    System.out.println("You're in the room you started in. The only exit is NORTH");
+                    return HOME;
+                } else if( it.equals("Go NORTH") ) {
+                    return HALLWAY1;
+                } else {
+                    System.out.println("Sorry, I don't know how to "+it);
+                    return HOME;
+                }
+            }
+        }
+        HALLWAY1 = new Room() {
+            @Override Room action(String it) {
+                if( it.equals("Look") {
+                    System.out.println(
+                        "You're in a stone brick hallway.\n"+
+                        "The hallway continues to the NORTH, and there are doors on your right (EAST) and left (WEST)"
+                    );
+                    return HALLWAY1;
+                }
+                if( it.equals("Go EAST") ) {return HALLWAY1_ROOM1;}
+                else if( it.equals("Go WEST") ) {return HALLWAY1_ROOM2;}
+                else {
+                    System.out.println("Sorry, I don't know how to "+it);
+                    return HOME;
+                }
+            }
+        }
+
+        Scanner in = new Scanner(System.in);
+        while(gameRunning) {
+            pos = pos.action(in.nextLine());
+        }
+    }
+}

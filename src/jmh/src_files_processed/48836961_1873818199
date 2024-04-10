@@ -1,0 +1,104 @@
+import java.util.Scanner;
+public class BlackJack
+{
+    private static Card[][] currentGame;
+    public static void BlackJack()
+    {
+        Scanner keyboard = new Scanner(System.in);
+        int numPlayers = 0;
+        Deck myDeck = new Deck();
+        System.out.println("How many players for BlackJack?");
+        numPlayers = keyboard.nextInt();
+        currentGame = new Card[numPlayers][];
+        boolean bust;
+        boolean blackJack;
+        boolean gameOver = false;
+        int hitOrStay = 0;
+        for(int i = 0; i < currentGame.length; i++)
+        {
+            Card[] tempHand = myDeck.dealTwo();
+            currentGame[i] = tempHand;
+        }
+        for(int i = 0; i < currentGame.length; i++)
+        {
+            System.out.println("Player " + (i+1));
+            for(int x = 0; x < currentGame[0].length; x++)
+            {
+                System.out.println(currentGame[i][x]);
+            }
+        }
+        while(gameOver == false)
+        {
+            for(int i = 0; i < currentGame.length; i++)
+            {  
+                bust = checkForBust(i);
+                if(bust = false)
+                {
+                    System.out.println("Player " + (i+1) + "Press 1 to hit. Press 2 to stay.");
+                    hitOrStay = keyboard.nextInt();
+                    if(hitOrStay == 1)
+                    {
+                        currentGame[i][currentGame[i].length + 1] = myDeck.getRandomCard
+                    }
+                }
+            }
+
+        }
+    }
+        
+    
+    public boolean checkForBust(int currentPlayer)
+    {
+        int handTotal = 0;
+        for(int i = 0; i < currentGame[currentPlayer].length; i++)
+        {
+            handTotal += cardValue(currentGame[currentPlayer][i]);
+        }
+        if(handTotal > 21)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public boolean checkFor21(int currentPlayer)
+    {
+        int handTotal = 0;
+        for(int i = 0; i < currentGame[currentPlayer].length; i++)
+        {
+            handTotal += cardValue(currentGame[currentPlayer][i]);
+        }
+        if(handTotal == 21)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public static int cardValue(Card thisCard)
+    {
+       Card.Rank[] rank = Card.Rank.values();
+       int[] valueOfCard = new int[rank.length];
+       int valueOfThisCard = 0;
+       for(int i = 0; i < valueOfCard.length; i++)
+       {
+           if(rank[i] == thisCard.rank)
+           {
+               valueOfThisCard = i + 1;               
+           }
+           if((thisCard.rank == Card.Rank.KING) || (thisCard.rank == Card.Rank.QUEEN) ||(thisCard.rank == Card.Rank.JACK ))
+           {
+               valueOfThisCard = 10;
+           }
+           if(thisCard.rank == Card.Rank.ACE)
+           {
+               valueOfThisCard = 11;
+           }         
+       }
+       return valueOfThisCard;
+    }
+}

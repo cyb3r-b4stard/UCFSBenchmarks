@@ -1,0 +1,742 @@
+import java.awt.*;
+import javax.swing.*;
+import java.awt.event.*;
+import java.applet.*;
+import java.util.*;
+import java.awt.geom.*; 
+public class AntiVirusDef extends JApplet implements Runnable,MouseListener,MouseMotionListener
+{
+    Thread main;
+    volatile boolean game = true;
+    int x =0,y = 0,timer = 0;
+    int WIDTH = 1600, HEIGHT = 700;
+    int xPos = 0, yPos = 0, mod = 1, lives =3;
+    boolean gameStart = true,mainMenu=true, level1 = false, gameOver =false;
+    double mod2 = 2,time;
+    AudioClip gameMusic;
+
+    Rectangle frogger = new Rectangle(800,650,25,25);
+    Rectangle sideBar = new Rectangle(0,1,61,714);
+
+    Rectangle title = new Rectangle(500,20,608,163);
+    Rectangle menu = new Rectangle(0,0,1600,800);
+    Rectangle Xcar1 = new Rectangle(-300,645,30,30);
+    Rectangle Xcar2 = new Rectangle(-400,645,30,30);
+
+    Rectangle barrier1 = new Rectangle(1,202,978,248);
+    Rectangle car1 = new Rectangle(-1335,590,30,30);
+    Rectangle car2 = new Rectangle(-1435,590,30,30);
+    Rectangle car3 = new Rectangle(-1535,590,30,30);
+    Rectangle car4 = new Rectangle(-1635,590,30,30);
+    Rectangle car5 = new Rectangle(-1735,590,30,30);
+    Rectangle car6 = new Rectangle(-1835,590,30,30);
+    Rectangle car7 = new Rectangle(-1935,590,30,30);
+    Rectangle car8 = new Rectangle(-1995,590,30,30);
+    Rectangle car9 = new Rectangle(1500,540,30,30);
+    Rectangle car10 = new Rectangle(1600,540,30,30);
+    Rectangle car11 = new Rectangle(1700,540,30,30);
+    Rectangle car12 = new Rectangle(1800,540,30,30);
+    Rectangle car13 = new Rectangle(1900,540,30,30);
+    Rectangle car14 = new Rectangle(2000,540,30,30);
+    Rectangle car15 = new Rectangle(2100,540,30,30);
+    Rectangle car16 = new Rectangle(2200,540,30,30);
+    Rectangle car17 = new Rectangle(1500,480,30,30);
+    Rectangle car18 = new Rectangle(1600,480,30,30);
+    Rectangle car19 = new Rectangle(1700,480,30,30);
+    Rectangle car20 = new Rectangle(1800,480,30,30);
+    Rectangle car21 = new Rectangle(1900,480,30,30);
+    Rectangle car22 = new Rectangle(2000,480,30,30);
+    Rectangle car23 = new Rectangle(2100,480,30,30);
+    Rectangle car24 = new Rectangle(2200,480,30,30);
+    Rectangle car25 = new Rectangle(1500,155,30,30);
+    Rectangle car26 = new Rectangle(1600,155,30,30);
+    Rectangle car27 = new Rectangle(1700,155,30,30);
+    Rectangle car28 = new Rectangle(1800,155,30,30);
+    Rectangle car29 = new Rectangle(1900,155,30,30);
+    Rectangle car30 = new Rectangle(2000,155,30,30);
+    Rectangle car31 = new Rectangle(2100,155,30,30);
+    Rectangle car32 = new Rectangle(2200,155,30,30);
+
+    Rectangle car33 = new Rectangle(-1335,60,30,30);
+    Rectangle car34 = new Rectangle(-1435,60,30,30);
+    Rectangle car35 = new Rectangle(-1535,60,30,30);
+    Rectangle car36 = new Rectangle(-1635,60,30,30);
+    Rectangle car37 = new Rectangle(-1735,60,30,30);
+    Rectangle car38 = new Rectangle(-1835,60,30,30);
+    Rectangle car39 = new Rectangle(-1935,60,30,30);
+    Rectangle car40 = new Rectangle(-1975,60,30,30);
+
+    int dirUP = 40,dirDOWN = 40, dirRIGHT = 40, dirLEFT = 40;
+    Rectangle froggerbglvl1 = new Rectangle(0,0,1600,800);
+    keyMove gameKey = new keyMove();
+
+    Graphics2D bufferG;
+    Image buffer;
+
+    Image car, froggerImg,froggerBgImg,virusImg,playerImg,titleImg,menuImg,virus2Img;
+    public void init()
+    {
+        resize(WIDTH,HEIGHT);
+
+        froggerBgImg = this.getImage(this.getCodeBase(), "froggerbg.png");
+        virusImg = this.getImage(this.getCodeBase(), "virus1.png");
+        virus2Img = this.getImage(this.getCodeBase(), "virus2.png");
+        gameMusic = this.getAudioClip(this.getCodeBase(), "musicGame1.wav");
+        playerImg = this.getImage(this.getCodeBase(), "AVplayer.png");
+        titleImg = this.getImage(this.getCodeBase(), "titleGif.gif");
+        menuImg = this.getImage(this.getCodeBase(), "menu.png");
+
+        this.setLayout(null);    
+        this.setFocusable(true);
+        this.requestFocusInWindow();
+        this.addKeyListener(gameKey);
+        if(level1==true)
+        {
+            gameMusic.loop();
+        }
+        buffer = createImage(this.getWidth(),this.getHeight()); 
+        bufferG = (Graphics2D)buffer.getGraphics();
+        addMouseListener(this);
+        addMouseMotionListener(this);
+        main = new Thread(this);
+        main.start();
+    }   
+
+    public void run() 
+    {
+
+        while(game)
+        {
+            timer++;
+            if(gameStart == true)
+            {
+                if(!gameKey.w && frogger.y > 0)
+                {
+                    frogger.y -= dirUP;
+                }
+                if(!gameKey.s && frogger.y + 30 < HEIGHT)
+                {
+                    frogger.y += dirDOWN;
+                }
+                if(!gameKey.a && frogger.x> 0)
+                {
+                    frogger.x -= dirLEFT;
+                }
+                if(!gameKey.d && frogger.x + 30 < WIDTH)
+                {
+                    frogger.x += dirRIGHT;
+                }
+                if(gameKey.space)
+                {
+                    mainMenu=false;
+                    level1=true;
+                }
+                if(gameKey.escape)
+                {
+                    level1=false;
+                    mainMenu=true;
+                    lives =0;
+                }
+                gameKey.w= true;
+                gameKey.a= true;
+                gameKey.s= true;
+                gameKey.d = true;
+
+                if(mainMenu==true)
+                {
+                    Xcar1.x +=2;
+                    Xcar2.x +=2;
+                    if(Xcar1.x >= 1660)
+                    {
+                        Xcar1.x = -300;
+                    }
+                    if(Xcar2.x >= 1660)
+                    {
+                        Xcar2.x = -400;
+                    }
+                }
+                if(level1==true)
+                {
+                    if(timer%10==0 && !gameOver == true)
+                    {
+                        time+=.1;
+                        time = Math.round(time*10.0)/10.0;
+                    }
+                    car1.x += 5*mod2;
+                    car2.x += 5*mod2;
+                    car3.x += 5*mod2;
+                    car4.x += 5*mod2;
+                    car5.x += 5*mod2;
+                    car6.x += 5*mod2;
+                    car7.x += 5*mod2;
+                    car8.x += 5*mod2;
+                    car9.x -= 6*mod2;
+                    car10.x -= 6*mod2;
+                    car11.x -= 6*mod2;
+                    car12.x -= 6*mod2;
+                    car13.x -= 6*mod2;
+                    car14.x -= 6*mod2;
+                    car15.x -= 6*mod2;
+                    car16.x -= 6*mod2;
+                    car17.x -= 7*mod2;
+                    car18.x -= 7*mod2;
+                    car19.x -= 7*mod2;
+                    car20.x -= 7*mod2;
+                    car21.x -= 7*mod2;
+                    car22.x -= 7*mod2;
+                    car23.x -= 7*mod2;
+                    car24.x -= 7*mod2;
+                    car25.x -= 6*mod2;
+                    car26.x -= 6*mod2;
+                    car27.x -= 6*mod2;
+                    car28.x -= 6*mod2;
+                    car29.x -= 6*mod2;
+                    car30.x -= 6*mod2;
+                    car31.x -= 6*mod2;
+                    car32.x -= 6*mod2;
+                    car33.x -= 8*mod2;
+                    car34.x -= 8*mod2;
+                    car35.x -= 8*mod2;
+                    car36.x -= 8*mod2;
+                    car37.x -= 8*mod2;
+                    car38.x -= 8*mod2;
+                    car39.x -= 8*mod2;
+                    car40.x -= 8*mod2;
+                    if(car1.x >= 1650)
+                    {
+                        car1.x = -1335;
+                    }
+                    if(car2.x >= 1650)
+                    {
+                        car2.x = -2335;
+                    }
+                    if(car3.x >= 1650)
+                    {
+                        car3.x = -3335;
+                    }
+                    if(car4.x >= 1650)
+                    {
+                        car4.x = -4335;
+                    }
+                    if(car5.x >= 1650)
+                    {
+                        car5.x = -5335;
+                    }
+                    if(car6.x >= 1650)
+                    {
+                        car6.x = -6335;
+                    }
+                    if(car7.x >= 1650)
+                    {
+                        car7.x = -7335;
+                    }
+                    if(car8.x >= 1650)
+                    {
+                        car8.x = -8335;
+                    }
+                    if(car9.x <= -400)
+                    {
+                        car9.x = 1500;
+                    }
+                    if(car10.x <= -400)
+                    {
+                        car10.x = 1600;
+                    }
+                    if(car11.x <= -400)
+                    {
+                        car11.x = 1700;
+                    }
+                    if(car12.x <= -400)
+                    {
+                        car12.x = 1800;
+                    }
+                    if(car13.x <= -400)
+                    {
+                        car13.x = -935;
+                    }
+                    if(car14.x <= -400)
+                    {
+                        car14.x = -1180;
+                    }
+                    if(car15.x <= -400)
+                    {
+                        car15.x = -1355;
+                    }
+                    if(car16.x <= -400)
+                    {
+                        car16.x = -1500;
+                    }
+                    if(car17.x <= -400)
+                    {
+                        car17.x = 1500;
+                    }
+                    if(car18.x <= -400)
+                    {
+                        car18.x = 1600;
+                    }
+                    if(car19.x <= -400)
+                    {
+                        car19.x = 1700;
+                    }
+                    if(car20.x <= -400)
+                    {
+                        car20.x = 1800;
+                    }
+                    if(car21.x <= -400)
+                    {
+                        car21.x = -935;
+                    }
+                    if(car22.x <= -400)
+                    {
+                        car22.x = -1180;
+                    }
+                    if(car23.x <= -400)
+                    {
+                        car23.x = -1355;
+                    }
+                    if(car24.x <= -400)
+                    {
+                        car24.x = -1500;
+                    }
+
+                    if(car25.x <= -400)
+                    {
+                        car25.x = 1500;
+                    }
+                    if(car26.x <= -400)
+                    {
+                        car26.x = 1600;
+                    }
+                    if(car27.x <= -400)
+                    {
+                        car28.x = 1700;
+                    }
+                    if(car28.x <= -400)
+                    {
+                        car28.x = 1800;
+                    }
+                    if(car29.x <= -400)
+                    {
+                        car29.x = 1900;
+                    }
+                    if(car30.x <= -400)
+                    {
+                        car30.x = 2000;
+                    }
+                    if(car31.x <= -400)
+                    {
+                        car31.x = 2100;
+                    }
+                    if(car32.x <= -400)
+                    {
+                        car32.x = 2200;
+                    }
+
+                    if(car33.x <= -400)
+                    {
+                        car33.x = 1500;
+                    }
+                    if(car34.x <= -400)
+                    {
+                        car34.x = 1600;
+                    }
+                    if(car35.x <= -400)
+                    {
+                        car35.x = 1700;
+                    }
+                    if(car36.x <= -400)
+                    {
+                        car36.x = 1800;
+                    }
+                    if(car37.x <= -400)
+                    {
+                        car37.x = 1900;
+                    }
+                    if(car38.x <= -400)
+                    {
+                        car38.x = 2000;
+                    }
+                    if(car39.x <= -400)
+                    {
+                        car39.x = 2100;
+                    }
+                    if(car40.x <= -400)
+                    {
+                        car40.x = 2200;
+                    }
+
+                    if(frogger.intersects(barrier1))
+                    {
+                        dirUP =1;
+                        dirDOWN=1;
+                        dirLEFT=1;
+                        dirRIGHT=1;
+                    }else{
+                        dirUP=30;
+                        dirDOWN=30;
+                        dirLEFT=30;
+                        dirRIGHT=30;
+                    }
+
+                    if(frogger.intersects(car1))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car2))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car3))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car4))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car5))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car6))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car7))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car8))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car9))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car10))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car11))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car12))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car13))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car14))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car15))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car16))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car17))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car18))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car19))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car20))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car21))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car22))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car23))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car24))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car25))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car26))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car27))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car28))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car29))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car30))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car31))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car32))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car33))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car34))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car35))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car36))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car37))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car38))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car39))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+                    if(frogger.intersects(car40))
+                    {
+                        lives = lives - 1;
+                        frogger.x =800;
+                        frogger.y =650;
+                    }
+
+                }
+                if(lives <= 0)
+                {
+                }
+            }
+
+            try
+            {
+                main.sleep(10);
+            }
+            catch(Exception e){}
+            repaint();
+        }
+    }
+
+    public void paint(Graphics g)
+    {
+        bufferG.setColor(Color.black);
+        bufferG.fill(new Rectangle(0,0,WIDTH,HEIGHT));
+        if(mainMenu == true)
+        { 
+            bufferG.drawImage(menuImg,menu.x,menu.y,this);
+            bufferG.drawImage(titleImg,title.x,title.y,this);
+            bufferG.drawImage(virusImg,Xcar1.x,Xcar1.y,this);
+            bufferG.drawImage(virusImg,Xcar2.x,Xcar2.y,this);
+        }
+
+        if(level1 == true)
+        {
+            bufferG.drawImage(froggerBgImg,froggerbglvl1.x,froggerbglvl1.y,this);
+            bufferG.drawImage(virusImg,car1.x,car1.y,this);
+            bufferG.drawImage(virusImg,car2.x,car2.y,this);
+            bufferG.drawImage(virusImg,car3.x,car3.y,this);
+            bufferG.drawImage(virusImg,car4.x,car4.y,this);
+            bufferG.drawImage(virusImg,car5.x,car5.y,this);
+            bufferG.drawImage(virusImg,car6.x,car6.y,this);
+            bufferG.drawImage(virusImg,car7.x,car7.y,this);
+            bufferG.drawImage(virusImg,car8.x,car8.y,this);
+            bufferG.drawImage(virus2Img,car9.x,car9.y,this);
+            bufferG.drawImage(virus2Img,car10.x,car10.y,this);
+            bufferG.drawImage(virus2Img,car11.x,car11.y,this);
+            bufferG.drawImage(virus2Img,car12.x,car12.y,this);
+            bufferG.drawImage(virus2Img,car13.x,car13.y,this);
+            bufferG.drawImage(virus2Img,car14.x,car14.y,this);
+            bufferG.drawImage(virus2Img,car15.x,car15.y,this);
+            bufferG.drawImage(virus2Img,car16.x,car16.y,this);
+            bufferG.drawImage(virusImg,car17.x,car17.y,this);
+            bufferG.drawImage(virusImg,car18.x,car18.y,this);
+            bufferG.drawImage(virusImg,car19.x,car19.y,this);
+            bufferG.drawImage(virusImg,car20.x,car20.y,this);
+            bufferG.drawImage(virusImg,car21.x,car21.y,this);
+            bufferG.drawImage(virusImg,car22.x,car22.y,this);
+            bufferG.drawImage(virusImg,car23.x,car23.y,this);
+            bufferG.drawImage(virusImg,car24.x,car24.y,this);
+            bufferG.drawImage(virusImg,car25.x,car25.y,this);
+            bufferG.drawImage(virusImg,car26.x,car26.y,this);
+            bufferG.drawImage(virusImg,car27.x,car27.y,this);
+            bufferG.drawImage(virusImg,car28.x,car28.y,this);
+            bufferG.drawImage(virusImg,car29.x,car29.y,this);
+            bufferG.drawImage(virusImg,car30.x,car30.y,this);
+            bufferG.drawImage(virusImg,car31.x,car31.y,this);
+            bufferG.drawImage(virusImg,car32.x,car32.y,this);
+
+            bufferG.drawImage(virusImg,car33.x,car33.y,this);
+            bufferG.drawImage(virusImg,car34.x,car34.y,this);
+            bufferG.drawImage(virusImg,car35.x,car35.y,this);
+            bufferG.drawImage(virusImg,car36.x,car36.y,this);
+            bufferG.drawImage(virusImg,car37.x,car37.y,this);
+            bufferG.drawImage(virusImg,car38.x,car38.y,this);
+            bufferG.drawImage(virusImg,car39.x,car39.y,this);
+            bufferG.drawImage(virusImg,car40.x,car40.y,this);
+
+            bufferG.drawImage(playerImg,frogger.x,frogger.y,this);
+            bufferG.drawRect(1,202,978,248);
+            bufferG.setColor(Color.black);
+            bufferG.fill(sideBar);
+            bufferG.setFont(new Font("Times New Roman",Font.PLAIN,10))
+            bufferG.setColor(Color.green);
+            bufferG.drawString("Lives: " + lives,5,20);
+            bufferG.drawString("Time: " + time,5,40);
+        }
+
+        g.drawImage(buffer,0,0,this);
+    }
+
+    public void mousePressed(MouseEvent e){
+        xPos = e.getX();
+        yPos = e.getY();
+    }
+
+    public void mouseMoved(MouseEvent e){
+
+    }
+
+    public void mouseDragged(MouseEvent e){
+
+    }
+
+    public void mouseClicked(MouseEvent e){
+
+    }
+
+    public void mouseReleased(MouseEvent e){
+
+    }
+
+    public void mouseEntered(MouseEvent e){}
+
+    public void mouseExited(MouseEvent e){}
+
+    public int getRand(int low,int high)
+    {
+        Random r = new Random();
+        return r.nextInt(high-low+1)+low;
+    }
+
+    public void update(Graphics g)
+    {
+        paint(g);
+    }
+}

@@ -1,0 +1,140 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class UsaNumeros implements ActionListener
+{
+    public static final int WINDOW_MIN_X = 240;
+    public static final int WINDOW_MIN_Y = 200;
+
+    public static final int COLS = 4;
+    public static final int ROWS = 4;
+    public static final int HGAP = 3;
+    public static final int VGAP = 3;
+
+    public static final int NUMBER_OF_CELLS = ROWS * COLS;
+
+    private JFrame frame;
+    private List<Numeros> buttons = new ArrayList<>();
+    private List<Numeros> correct = new ArrayList<>();
+    private Numeros emptyButton;
+
+    private int movesCounter;
+
+    /**
+     * Constructor for objects of class GUI
+     */
+    public UsaNumeros ()
+    {
+        frame = new JFrame("Slide Game");
+
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        frame.setMinimumSize(new Dimension (WINDOW_MIN_X, WINDOW_MIN_Y));
+
+        frame.setLayout (new GridLayout (ROWS, COLS, HGAP, VGAP));
+
+        for( Integer i = NUMBER_OF_CELLS-1; i >= 0 ; i-- ) {
+            createCell (i);
+        }
+
+        emptyButton = buttons.get (NUMBER_OF_CELLS-1);
+
+        frame.setVisible(true);
+        frame.pack();
+
+        setVictoryCondition ();
+    }
+
+    public void actionPerformed (ActionEvent e) {
+        if (checkNeighbour((Numeros)e.getSource())) {
+            swap ((Cell)e.getSource());
+            movesCounter++;
+            checkVictory ();
+        } else {
+            Toolkit.getDefaultToolkit().beep();
+        }
+    }
+
+    /**
+     * createCell (String s)
+     * 
+     * Creates a Cell and adds an ActionListener
+     * 
+     * @param   String s
+     */
+    private void createCell (int v) {
+        Cell c = new Cell (v);
+        c.addActionListener(
+            (ActionEvent e) -> {actionPerformed(e);}
+        );
+        buttons.add(c);
+        frame.add(c);
+    }
+
+    /**
+     * checkNeighbour (Cell c)
+     * 
+     * Checks if c is within 1 grid of emptyButton (non-diagonal)
+     * 
+     * @param   Cell c
+     * 
+     * @return false if c is more than one grid away from emptyButton
+     */
+    private boolean checkNeighbour (Numeros c) {
+        int x = Math.abs(c.getCol() - emptyButton.getCol());
+        int y = Math.abs(c.getRow() - emptyButton.getRow());
+
+        if (!(x == 0 && y == 1 || y == 0 && x == 1)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * swap (Cell c)
+     * 
+     * Swaps c with emptyButton
+     * 
+     * @param   Cell c
+     */
+    private void swap (Numeros c) {
+        String tmp = emptyButton.getText ();
+        emptyButton.setText (c.getText ());
+        c.setText (tmp);
+
+        emptyButton = c;
+    }
+
+    /**
+     * setVictoryCondition ()
+     * 
+     * Initiates correct list
+     */
+    private void setVictoryCondition () {
+        for (Integer i = 1; i < NUMBER_OF_CELLS; i++) {
+            correct.add (new Cell (i));
+        }
+        correct.add(new Cell (0));
+    }
+
+    /**
+     * checkVictory ()
+     * 
+     * Compares buttons to correct lists, if match declare victory!
+     */
+    private void checkVictory () {        
+        for (int i = 0; i < NUMBER_OF_CELLS; i++) {
+            if (!(buttons.get(i).getText ().equals( correct.get(i).getText ()))) {
+                return;
+            }
+        }
+
+        JOptionPane.showMessageDialog(null, "You achieved victory in " + movesCounter + " moves.",
+            "Congratulations!", JOptionPane.INFORMATION_MESSAGE);
+    }
+}

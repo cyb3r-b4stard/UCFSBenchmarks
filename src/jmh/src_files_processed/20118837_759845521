@@ -1,0 +1,168 @@
+/*
+ * ######### (#) #### ### ###### <####@##############.##>
+ * ### ###### ########.
+ *
+ * ############## ### ### ## ###### ### ###### #####, #### ## #######
+ * ############, ### ######### ######## #### ### ######### ##########
+ * ### ###:
+ * #. ############### ## ###### #### #### ###### ### ##### #########
+ *    ######, #### #### ## ########## ### ### ######### ##########.
+ * #. ############### ## ###### #### #### ######### ### ##### #########
+ *    ######, #### #### ## ########## ### ### ######### ########## ## ###
+ *    ############# ###/## ##### ######### ######## #### ### ############.
+ * #. ### #### ## ### ###### ### ### ## #### ## ####### ## ####### ########
+ *    ####### #### #### ######## ####### ######## ##### ####### ##########.
+ *
+ * #### ######## ## ######## ## ### ###### ``## ##'' ### ### ####### ##
+ * ####### ##########, #########, ### ### ####### ##, ### ####### ##########
+ * ## ############### ### ####### ### # ########## ####### ### ##########.
+ * ## ## ##### ##### ### ###### ## ###### ### ### ######, ########,
+ * ##########, #######, #########, ## ############# ####### (#########, ###
+ * ### ####### ##, ########### ## ########## ##### ## ########; #### ## ###,
+ * ####, ## #######; ## ######## ############) ####### ###### ### ## ###
+ * ###### ## #########, ####### ## ########, ###### #########, ## ####
+ * (######### ########## ## #########) ####### ## ### ### ### ## ### ### ##
+ * #### ########, #### ## ####### ## ### ########### ## #### ######.
+ */
+ 
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.table.*;
+import javax.swing.event.*;
+import java.awt.event.*;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyleConstants;
+ 
+public class PU_Stall extends B_PopUp
+{
+    private JPanel panel1;
+    private JLabel label1;
+    private String levelx;
+    private BackGroundPane bg2;
+    private JLabel label2;
+    private BackGroundPane banner;
+    private JTextPane tf;
+    private JButton shopb;
+    private GAME game;
+    private JPanel panel2;
+    private JPanel panel3;
+    private JButton upgrade;
+    private int gold;
+    private int ressi;
+    
+    public PU_Stall(int x,int y, String level, GAME gamex)
+    {
+        super(x,y,gamex,1);
+        levelx = level;
+        game=gamex;
+        initPanel();
+        setContentPane(panel1); 
+    }
+    
+    private void shopbActionPerformed(ActionEvent e) {
+        game.hf.tabbedPane1.setSelectedIndex(1);
+        game.hf.setLocationRelativeTo(this);
+        game.hf.setVisible(true);
+    }
+    
+    private void pferdbActionPerformed(ActionEvent e) {
+        int pferdelvl = Integer.parseInt(game.mysql.truppenData(game.name)[6]);
+        gold = new O_Stall(levelx).giveUC()[0];
+        ressi = new O_Stall(levelx).giveUC()[1];
+        if(pferdelvl != new O_Stall(game.map.stall.levelx).giveUM()){
+            if(JOptionPane.showConfirmDialog(game, "Möchtest du deine Pferde(Lvl. "+pferdelvl+")\num eine Stufe verbessern?\n\nKosten für die Verbesserung:  \nGold - "+gold+" | Ressorcen - "+ressi+"\n\nEinheiten verbessern sich:\nSpeer: +60 Ang. / +10 Vert.\nSchwert: +45 Ang. / +25 Vert.\nBogen: +10 Ang. / +60 Vert.", "Verbesserung (Pferde)", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,new ImageIcon("Daten/Einheiten/Klein/schwert2.png"))!=1)
+            {
+                if(Integer.parseInt(game.mysql.gold(game.name)[0])>=gold && Integer.parseInt(game.mysql.ressi(game.name)[0])>=ressi) {
+                        Thread upx = new Thread()
+                        {
+                            public void run()
+                            {
+                                game.mysql.uploadGold(game.name, Integer.parseInt(game.mysql.gold(game.name)[0])-gold);
+                                game.mysql.uploadRessi(game.name, Integer.parseInt(game.mysql.ressi(game.name)[0])-ressi);
+                                game.gold.loadGoldOnly(game.name);
+                                game.ressi.loadRessiOnly(game.name);
+                                game.mysql.uploadPferd(game.name,pferdelvl+1);
+                                game.label14.setVisible(false);
+                                game.update();
+                                JOptionPane.showMessageDialog(null, "Das Gold und das Holz wurden\ndir erfolgreich abgezogen!\nPferdelevel: "+(pferdelvl+1), " ERFOLG: Pferde verbessert",JOptionPane.INFORMATION_MESSAGE,new ImageIcon("Daten/Einheiten/Klein/bogen2.png"));
+                            }
+                        };
+                        game.label14.setVisible(true);
+                        upx.start();
+                    } else JOptionPane.showMessageDialog(null, "Du hast nicht genug Gold oder Holz!\nBaue deine Minen und Holzfällerhütten\naus um mehr zu bekommen.", " ACHTUNG: Zu wenig Ressourcen", JOptionPane.ERROR_MESSAGE, SI_Rathaus.iconChange("Daten/Icons/Game/MSG/e.png",40,40));
+            }
+        } else JOptionPane.showMessageDialog(game, "Baue deinen Stall aus um deine Pferde auf eine höhere Stufe zu verbessern!", " ACHTUNG: Level zu hoch", JOptionPane.ERROR_MESSAGE, SI_Rathaus.iconChange("Daten/Icons/Game/MSG/e.png",40,40));
+    }
+    
+    public void initPanel()
+    {
+        panel1 = new JPanel();
+        label1 = new JLabel("Willkommen im Stall!",SwingConstants.CENTER);
+        tf = new JTextPane();
+        panel1.setLayout(null);
+        panel1.setOpaque(false);
+        panel1.setBorder(new EtchedBorder(EtchedBorder.RAISED, Color.black, Color.gray));
+        label1.setForeground(Color.black);
+        label1.setFont(new Font("Trajan Pro", Font.BOLD, 14));   
+        
+        shopb = new JButton("Stall verbessern");
+        shopb.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        shopb.setForeground(Color.black);
+        shopb.addActionListener(e -> shopbActionPerformed(e));
+        shopb.setFocusPainted(false);
+        shopb.setBorder(UIManager.getBorder("ToggleButton.border"));
+        shopb.setBounds(300, 340, 150, 28);
+        panel1.add(shopb);
+        
+        upgrade = new JButton("Pferde verbessern");
+        upgrade.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        upgrade.setForeground(Color.black);
+        upgrade.addActionListener(e -> pferdbActionPerformed(e));
+        upgrade.setFocusPainted(false);
+        upgrade.setBorder(UIManager.getBorder("ToggleButton.border"));
+        upgrade.setBounds(115, 340, 150, 28);
+        panel1.add(upgrade);
+        
+        panel1.add(tf);
+        StyleContext.NamedStyle centerStyle = StyleContext.getDefaultStyleContext().new NamedStyle();
+        StyleConstants.setAlignment(centerStyle,StyleConstants.ALIGN_CENTER);
+        tf.setLogicalStyle(centerStyle);
+        String text;
+        if(Integer.parseInt(levelx)<6) text = "Bei Stall Stufe "+(Integer.parseInt(levelx)+1)+": "+new O_Stall(""+(Integer.parseInt(levelx)+1)).giveUM();
+        else {
+            text = "Maximale Stufe erreicht.";
+            shopb.setEnabled(false);
+            upgrade.setEnabled(false);
+        }
+        tf.setText("Im Stall kannst du deine Pferde verbessern.\nWenn du deine Pferde auf Level 1 erweiterst, werden manche deiner Einheiten zu Berittenen!\n\nAktuelles max. Pferdelevel: "+new O_Stall(levelx).giveUM()+"\n"+text+"\n\nJe höher das Level der Pferde umso mehr Schaden können deine Einheiten anrichten!\nHast du stärkere Einheiten, verschaffst du dir einen Vorteil gegenüber den Anderen.");
+        tf.setBounds(86,140,400,200);
+        tf.setMinimumSize(new Dimension(400,200));
+        tf.setOpaque(false);
+        tf.setEditable(false);
+        tf.setSelectionColor(new Color(128, 128, 128, 0));
+        tf.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        tf.setSelectedTextColor(Color.black);
+        
+        label2 = new JLabel("Stall [Stufe: "+levelx+"]",SwingConstants.CENTER);
+        label2.setFont(new Font("Trajan Pro", Font.BOLD, 24));
+        label2.setForeground(new Color(240, 167, 0, 243));
+        panel1.add(label2);
+        label2.setBounds(130,27,302,30);
+        
+        banner = new BackGroundPane("Daten/Icons/Game/banner.png",0);
+        banner.setOpaque(false);
+        panel1.add(banner);
+        banner.setBounds(20,20,522,81);
+        
+        bg2 = new BackGroundPane("Daten/Backgrounds/Menu.png",0);
+        bg2.setOpaque(false);
+        bg2.setLayout(null);
+        panel1.add(bg2);
+        bg2.setBounds(61,100,445,300);
+        
+        bg2.add(label1);
+        label1.setBounds(0,20,445,20);        
+    }
+}
+

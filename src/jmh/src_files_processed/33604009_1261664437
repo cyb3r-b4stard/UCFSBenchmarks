@@ -1,0 +1,178 @@
+import java.io.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.util.ArrayList;
+
+/**
+ *  # ### ####### ## ### #### ## #######.  ### #### ##### ## ##### ####### ##
+ *  # ###### ####, ### ##### ##### # ####### #### ### ### ## ### ####.  ###
+ *  #### ####### # ###### ## ######## # ###### ##### #### ## #### ######.
+ */
+public class Hangman extends JPanel {
+	
+	private Display display; 
+	
+	private ArrayList<JButton> alphabetButtons = new ArrayList<JButton>();
+	private ArrayList<String> list = new ArrayList<String>();
+	private JButton nextButton;    
+	private JButton giveUpButton;  
+	private String array[] = new String[list.size()]; 
+	private String message;     
+	private  File wordlist;  
+	private String word;        
+	private String guesses;     
+	private boolean gameOver;   
+	private int badGuesses;     
+	
+	/**
+	 * This class defines a listener that will respond to the events that occur
+	 * when the user clicks any of the buttons in the button.  The buttons are
+	 * labeled "Next word", "Give up", "Quit", "A", "B", "C", ..., "Z".
+	 */
+	private class ButtonHandler implements ActionListener {
+		public void actionPerformed( ActionEvent evt ) {
+			JButton whichButton = (JButton)evt.getSource();  
+			String cmd = evt.getActionCommand();  
+			if (cmd.equals("Quit")) { 
+				System.exit(0);
+			}
+			else {
+				message = "The command is " + cmd;
+			}
+			display.repaint();  
+		}
+	}
+	
+	/**
+	 * This class defines the panel that occupies the large central area in the
+	 * main panel.  The paintComponent() method in this class is responsible for
+	 * drawing the content of that panel.  It shows everything that that the user
+	 * is supposed to see, based on the current values of all the instance variables.
+	 */
+	private class Display extends JPanel {
+		Display() {
+			setPreferredSize(new Dimension(620,420));
+			setBackground( new Color(250, 230, 180) );
+			setFont( new Font("Serif", Font.BOLD, 20) );
+		}
+		protected void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			((Graphics2D)g).setStroke(new BasicStroke(3));
+			if (message != null) {
+				g.setColor(Color.RED);
+				g.drawString(message, 30, 40);
+			}
+		}
+	}
+	
+	/**
+	 * The constructor that creates the main panel, which is represented
+	 * by this class.  It makes all the buttons and subpanels and adds 
+	 * them to the main panel.
+	 */
+	public Hangman() {
+		
+		ButtonHandler buttonHandler = new ButtonHandler(); 
+		
+		/* Create the subpanels and add them to the main panel.
+		 */
+		
+		display = new Display();  
+		JPanel bottom = new JPanel();  
+
+		setLayout(new BorderLayout(3,3));  
+		add(display, BorderLayout.CENTER); 
+		add(bottom, BorderLayout.SOUTH);   
+
+		/* Create three buttons, register the ActionListener to respond to clicks on the
+		 * buttons, and add them to the bottom panel.
+		 */
+		
+		nextButton = new JButton("Next word");
+		nextButton.addActionListener(buttonHandler);
+		bottom.add(nextButton);
+		
+		giveUpButton = new JButton("Give up");
+		giveUpButton.addActionListener(buttonHandler);
+		bottom.add(giveUpButton);
+		
+		JButton quit = new JButton("Quit");
+		quit.addActionListener(buttonHandler);
+		bottom.add(quit);
+		
+		/* Make the main panel a little prettier
+		 */
+
+		setBackground( new Color(100,0,0) );
+		
+		/* Get the list of possible secret words from the resource file named "wordlist.txt".
+		 */
+
+		wordlist = new File("wordlist.txt");
+		list.add("words .txt");
+		/*ArrayList to Array Conversion */
+		String array[] = new String[list.size()];              
+		for(int j =0;j<list.size();j++){
+		  array[j] = list.get(j);
+		}
+		/* Start the first game.
+		 */
+		
+		startGame();
+		
+	} 
+	
+	/**
+	 * This method should be called any time a new game starts. It picks a new
+	 * secret word, initializes all the variables that record the state of the
+	 * game, and sets the enabled/disabled state of all the buttons.
+	 */
+	private void startGame() {
+		gameOver = false;
+		guesses = "";
+		badGuesses = 0;
+		nextButton.setEnabled(false);
+		for (int i = 0; i < alphabetButtons.size(); i++) {
+			alphabetButtons.get(i).setEnabled(true);
+		}
+		giveUpButton.setEnabled(true);
+		int index = (array(int)(Math.random() * array.length)]);
+		word = wordlist.removeWord(index);
+		word = word.toUpperCase();
+		message = "The word has " + word.length() + " letters.  Let's play Hangman!";
+	}
+	
+	/**
+	 * This method can be called to test whether the user has guessed all the letters
+	 * in the current secret word.  That would mean the user has won the game.
+	 */
+	private boolean wordIsComplete() {
+		for (int i = 0; i < word.length(); i++) {
+			char ch = word.charAt(i);
+			if ( guesses.indexOf(ch) == -1 ) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * This main program makes it possible to run this class as an application.  The main routine
+	 * creates a window, sets it to contain a panel of type Hangman, and shows the window in the
+	 * center of the screen.
+	 */
+	public static void main(String[] args) {
+		JFrame window = new JFrame("Hangman"); 
+		Hangman panel = new Hangman();  
+		window.setContentPane(panel);   
+		window.pack();  
+		window.setResizable(false);  
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
+		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();  
+		window.setLocation( (screen.width - window.getWidth())/2, 
+				(screen.height - window.getHeight())/2 );  
+		window.setVisible(true);  
+	}
+
+} 

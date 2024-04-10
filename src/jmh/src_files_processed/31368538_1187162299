@@ -1,0 +1,491 @@
+
+import java.util.*;
+import java.awt.*;
+import javax.swing.*;
+import java.awt.Color;
+import java.awt.event.*;
+import javax.swing.JOptionPane;
+import java.awt.EventQueue;
+
+/**
+ * ##### # ########### ## ##### ### ####.
+ * 
+ * @###### (###### ##### ) 
+ * @####### (##/##/####)
+ */
+public class GUI implements ActionListener
+
+{
+
+    private JFrame frame;
+    private JTextField player1Text;
+    private JTextField player2Text;
+    private JLabel player1Display;
+    private JLabel player2Display;
+    private JFrame entryFrame;
+     static JButton Play;
+     static JButton back;
+    
+     private int buttonCount = 0;
+    private JButton[][] grid;
+    Game game;
+    private int buttonNumber;
+    private boolean gameOver;
+    private boolean player1Turn;
+    private String player1Name;
+    private String player2Name;
+    private int numberOfWins1;
+    private int numberOfWins2;
+    JLabel playerTurnLabel;
+    private String buttonValue;
+    private String buttonFont;
+    static JButton Button1;   
+    static JButton Button2; 
+    static JButton Button3; 
+    static JButton Button4; 
+    static JButton Button5; 
+    static JButton Button6; 
+    static JButton Button7; 
+    static JButton Button8; 
+    static JButton Button9; 
+
+    /**
+     * Constructor for objects of class GUI
+     */
+    public GUI()
+    {
+
+        grid = new JButton[3][3];
+        gameOver = false;
+        player1Turn = true;
+        Game game = new Game(this);
+        makeFrame();
+        makeEntryFrame();
+
+    }
+
+    private GUI(String player1Name, String player2Name, int numberOfWins1, int numberOfWins2)
+    {
+        this.player1Name = player1Name;
+        this.player2Name = player2Name;
+        this.numberOfWins1 = numberOfWins1;
+        this.numberOfWins2 = numberOfWins2;
+        gameOver = false;
+        player1Turn = true;
+        makeFrame();
+    }
+
+    /**
+     * Receive notification of an action.
+     * @param event Details of the action.
+     */
+    public void actionPerformed(ActionEvent events) 
+    { 
+        buttonCount++;
+
+        Font buttonFont = new Font ("Ariel", Font.BOLD, 22);
+
+        switch(buttonCount)
+        {
+            case 1:
+            buttonValue = "X";                                               
+            playerTurnLabel.setText("Player Turn: ", (player2Name()))
+
+            break;
+
+            case 2:
+            buttonValue = "O";                                              
+            playerTurnLabel.setText("Player Turn: " + player1Name);
+
+            break;
+
+            case 3:
+            buttonValue = "X";                                              
+            playerTurnLabel.setText("Player Turn: " + player2Name);
+
+            break;
+
+            case 4:
+            buttonValue = "O";                                              
+            playerTurnLabel.setText("Player Turn: " + player1Name);
+
+            break;
+
+            case 5:
+            buttonValue = "X";                                              
+            playerTurnLabel.setText("Player Turn: " + player2Name);
+
+            break;
+
+            case 6:
+            buttonValue = "O";                                              
+            playerTurnLabel.setText("Player Turn: " + player1Name);
+
+            break;
+
+            case 7:
+            buttonValue = "X";                                              
+            playerTurnLabel.setText("Player Turn: " + player2Name);
+
+            break;
+
+            case 8:
+            buttonValue = "O";                                              
+            playerTurnLabel.setText("Player Turn: " + player1Name);
+
+            break;
+
+            case 9:
+            buttonValue = "X";                                              
+            playerTurnLabel.setText("Player Turn: " + player2Name);
+
+            break;
+
+        }
+        
+        if(events.getSource() == Button1)
+        {
+            Button1.setText(buttonValue);      
+            Button1.setFont(buttonFont);
+            Button1.setBackground(Color.WHITE);
+            Button1.setEnabled(false);
+            
+
+        }
+
+        else if(events.getSource() == Button2)
+        {
+            Button2.setText(buttonValue);
+            Button2.setFont(buttonFont);
+            Button2.setBackground(Color.WHITE);
+            Button2.setEnabled(false);
+
+        }
+        else if(events.getSource() == Button3)
+        {
+            Button3.setText(buttonValue);
+            Button3.setFont(buttonFont);
+            Button3.setBackground(Color.WHITE);
+            Button3.setEnabled(false);
+
+        }
+        else if(events.getSource() == Button4)
+        {
+            Button4.setText(buttonValue);
+            Button4.setFont(buttonFont);
+            Button4.setBackground(Color.WHITE);
+            Button4.setEnabled(false);
+
+        }
+        else if(events.getSource() == Button5)
+        {
+            Button5.setText(buttonValue);
+            Button5.setFont(buttonFont);
+            Button5.setBackground(Color.WHITE);
+            Button5.setEnabled(false);
+
+        }
+        else if(events.getSource() == Button6)
+        {
+            Button6.setText(buttonValue);
+            Button6.setFont(buttonFont);
+            Button6.setBackground(Color.WHITE);
+            Button6.setEnabled(false);
+
+        }
+        else if(events.getSource() == Button7)
+        {
+            Button7.setText(buttonValue);
+            Button7.setFont(buttonFont);
+            Button7.setBackground(Color.WHITE);
+            Button7.setEnabled(false);
+
+        }
+        else if(events.getSource() == Button8)
+        {
+            Button8.setText(buttonValue);
+            Button8.setFont(buttonFont);
+            Button8.setBackground(Color.WHITE);
+            Button8.setEnabled(false);
+        }
+        else if(events.getSource() == Button9)
+        {
+            Button9.setText(buttonValue);
+            Button9.setFont(buttonFont);
+            Button9.setBackground(Color.WHITE);
+            Button9.setEnabled(false);          
+        }
+
+        if(GUI.getButton(1)==(GUI.getButton(2)) && GUI.getButton(2)==(GUI.getButton(3))) {
+
+        }        
+        else if (GUI.getButton(4)==(GUI.getButton(5)) && GUI.getButton(5)==(GUI.getButton(6))) {
+
+        }
+        else if (GUI.getButton(5)==(GUI.getButton(6)) && GUI.getButton(6)==(GUI.getButton(7))) {
+
+        }
+        else if (GUI.getButton(7)==(GUI.getButton(8)) && GUI.getButton(8)==(GUI.getButton(9))) {
+
+        }
+    }
+
+    public static String getButton(int buttonNumber)
+    {
+        if(buttonNumber == 1){
+            return Button1.getText();           
+        }
+        else if(buttonNumber == 2){
+            return Button2.getText();
+        }
+        else if(buttonNumber == 3){
+            return Button3.getText();
+        }
+        else if(buttonNumber == 4){
+            return Button4.getText();
+        }
+        else if(buttonNumber == 5){
+            return Button5.getText();
+        }
+        else if(buttonNumber == 6){
+            return Button6.getText();
+        }
+        else if(buttonNumber == 7){
+            return Button7.getText();
+        }
+        else if(buttonNumber == 8){
+            return Button8.getText();
+        }
+        else if(buttonNumber == 9){
+            return Button9.getText();
+        }
+
+        return null;
+    }
+
+    /**
+     * Place five components in the available regions.
+     */
+    private void makeEntryFrame()
+    {
+        entryFrame = new JFrame("Enter Name");
+        makeMenuBar(entryFrame);
+
+        
+        
+        Container contentPane =  entryFrame.getContentPane();
+        
+        player1Display = new JLabel("Player 1 Name");
+        player1Text = new JTextField();
+        player1Text.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) { player1Name(); }
+            });
+        player2Display = new JLabel("Player 2 Name");
+        player2Text = new JTextField();
+        player2Text.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) { player2Name(); }
+            });
+        
+        Play = new JButton("Play Game");
+        Play.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) { play(); }
+            });
+        back = new JButton("Back");
+         back.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) { back(); }
+            });
+        
+        contentPane.setLayout(new GridLayout(3, 2));
+        
+        
+        contentPane.add(player1Display);        
+        contentPane.add(player1Text);         
+        contentPane.add(player2Display);        
+        contentPane.add(player2Text);
+        contentPane.add(Play);      
+        contentPane.add(back);
+
+        entryFrame.pack();
+        entryFrame.setSize(300,200);
+        entryFrame.setVisible(true);
+    }
+
+    /**
+     * Place five components in the available regions.
+     */
+    private void makeFrame()
+    {
+        frame = new JFrame("Interface");
+        makeMenuBar(frame);
+
+        Container contentPane = frame.getContentPane();
+
+        contentPane.setLayout(new BorderLayout());
+
+        playerTurnLabel = new JLabel("Label");        
+        contentPane.add(playerTurnLabel, BorderLayout.SOUTH);
+
+        Container contentPane2 = new Container();
+        contentPane2.setLayout(new GridLayout(3, 3));
+
+        Button1 = new JButton();
+        contentPane2.add(Button1); 
+        grid[0][0] = Button1;
+        Button1.addActionListener(this);
+
+        Button2 = new JButton();
+        contentPane2.add(Button2);
+        grid[0][1] = Button2;
+        Button2.addActionListener(this);
+
+        Button3 = new JButton();
+        contentPane2.add(Button3);
+        grid[0][2] = Button3;
+        Button3.addActionListener(this);
+
+        Button4 = new JButton();
+        contentPane2.add(Button4);
+        grid[1][0] = Button4;
+        Button4.addActionListener(this);
+
+        Button5 = new JButton();
+        contentPane2.add(Button5);
+        grid[1][1] = Button5;
+        Button5.addActionListener(this);
+
+        Button6 = new JButton();
+        contentPane2.add(Button6);
+        grid[1][2] = Button6;
+        Button6.addActionListener(this);
+
+        Button7 = new JButton();
+        contentPane2.add(Button7);
+        grid[2][0] = Button7;
+        Button7.addActionListener(this);
+
+        Button8 = new JButton();
+        contentPane2.add(Button8);
+        grid[2][1] = Button8;
+        Button8.addActionListener(this);
+
+        Button9 = new JButton();
+        contentPane2.add(Button9);
+        grid[2][2] = Button9;
+        Button9.addActionListener(this);
+
+        contentPane.add(contentPane2, BorderLayout.CENTER);
+
+        frame.pack();
+        frame.setSize(600,500);
+        
+    }
+
+    /**
+     * Create the main frame's menu bar.
+     * @param frame   The frame that the menu bar should be added to.
+     */
+    private void makeMenuBar(JFrame frame)
+    {
+        final int SHORTCUT_MASK =
+            Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+
+        JMenuBar menubar = new JMenuBar();
+        frame.setJMenuBar(menubar);
+
+            
+        JMenu fileMenu = new JMenu("File");
+        menubar.add(fileMenu);
+
+        JMenuItem restartItem = new JMenuItem("Restart");
+        restartItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, SHORTCUT_MASK));
+        fileMenu.add(restartItem);
+        restartItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) { restartFile(); }
+            });
+
+        JMenuItem quitItem = new JMenuItem("Quit");
+        quitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, SHORTCUT_MASK));
+        fileMenu.add(quitItem);
+        quitItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) { quitFile(); }
+            });
+
+        JMenu helpMenu = new JMenu("Help");
+        menubar.add(helpMenu);
+
+        JMenuItem GameGuideItem = new JMenuItem("Game Guide"); 
+        GameGuideItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, SHORTCUT_MASK));
+        helpMenu.add(GameGuideItem);
+        GameGuideItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) { gameGuide(); }
+            });
+
+        JMenuItem aboutItem = new JMenuItem("About Game");  
+        aboutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, SHORTCUT_MASK));
+        helpMenu.add(aboutItem);
+        aboutItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) { aboutGame(); }
+            });           
+    }    
+
+    private void restartFile()
+    {
+        GUI gui = new GUI();
+        frame.dispose();
+    }
+    
+    private void back()
+    {
+        
+        entryFrame.dispose();
+    }
+
+    private void play()
+    {
+        
+        entryFrame.dispose();
+        frame.setVisible(true);
+        
+    }
+    
+    public int getCount()
+    {
+        return buttonCount;
+    }
+
+    private void quitFile()
+    {
+        System.exit(0);
+    }
+
+    private void gameGuide()
+    {
+        System.out.println("Menu Item: Game Guide");
+    }
+
+    private void aboutGame()
+    {
+        System.out.println("Menu Item: About Game");
+    }
+
+    public String winner()
+    {
+
+        return("done");
+    }
+    
+    private void player1Name()
+    {
+        playerTurnLabel.setText(playerTurnLabel.getText());
+        
+        playerTurnLabel.setText("");
+    }
+    
+    private void player2Name()
+    {
+        playerTurnLabel.setText(playerTurnLabel.getText());
+        playerTurnLabel.setText("");
+        
+    }
+}
+

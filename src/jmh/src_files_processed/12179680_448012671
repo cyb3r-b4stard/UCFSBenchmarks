@@ -1,0 +1,168 @@
+
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Polynomial
+{
+    private Polynomial p;
+    private String statement;
+    private String[] pol;
+    private Node first, last;
+    private int numTerms;
+
+    /**
+     * Constructor for objects of class Polynomial
+     * Does not construct the node yet, just a declaration of a new Polynomial object
+     * @param s a string of numbers
+     */
+    public Polynomial(String s)
+    {
+        first=null;
+        last=null;
+        statement=s;
+    }
+    /**
+     * Copy constructor for objects of class Polynomial
+     * @param p the polynomial object created by passing in a string statement
+     * @throws NullPointerException if the polynomial p object is null (empty)
+     * @throws IllegalArgumentException if the number of elements is an odd number;
+     */
+    public Polynomial(Polynomial p){
+        if(p==null)throw new NullPointerException("No polynomial object was created.");
+        this.p=p;
+        String s=statement;
+        pol=s.split(" ");
+        int length=pol.length;
+        if(length % 2 ==1){
+            throw new IllegalArgumentException("The number of items is not even, unable to create node.");
+        }
+        first=new Node(Double.parseDouble(pol[0]), Integer.parseInt(pol[1]), null);
+        last=first;
+        numTerms=1;
+        int i=2;
+        while(i<pol.length){
+        last.next=new Node(Double.parseDouble(pol[i]), Integer.parseInt(pol[i+1]), null);
+        last=last.next;
+        numTerms++;
+        i+=2;
+    }
+    }
+    /**
+     * Gets the number of terms in the polynomial
+     * @return number of terms
+     */
+    public int terms(){
+        return numTerms;
+    }
+    /**
+     * Adds a coefficient and an exponent to a polynomial
+     * @param coef the coefficient carried by the exponent
+     * @param exp the exponent
+     */
+    public void addTerm(double coef, int exp){
+        Node scan=first;
+        boolean same=false;
+        while(scan!=null){
+            if(scan.exponent==exp){
+                same=true;
+                scan.coeficient+=coef;
+            }
+            scan=scan.next;
+        }
+        if(same==false){
+            while(scan!=null){
+                if(scan.next.exponent<exp){
+                    scan=new Node(coef, exp, null);
+                }
+                scan=scan.next;
+        }
+    }
+    
+    public double deleteTerm(int exp){
+        return 0.0;
+    }
+    
+    public double getCoefficient(int exp){
+        return 0.0;
+    }
+    
+    public double evaluate(double x){
+        return x;
+    }
+    
+    public boolean equals(Object o){
+        return false;
+    }
+    
+    public Polynomial derivative(){
+        return p;
+    }
+    
+    public String toString(){
+        String s="";
+        if(pol.length==0) s+="0.0";
+        if(Double.parseDouble(pol[0])==1.0 || Double.parseDouble(pol[0])==0.0){
+                s=s+"";
+            }else if(Double.parseDouble(pol[0])==-1.0){
+                s=s+"- ";
+            }else{
+                s=s+pol[0];
+            }
+            if(Integer.parseInt(pol[1])==1){
+                s=s+"x ";
+        }else if(Integer.parseInt(pol[1])==0){
+                s=s+" ";
+        }else{
+            s=s+"x^"+pol[1]+" ";
+        }
+            
+        if(pol.length>2){
+        for(int i=2; i<pol.length; i+=2){
+            if(Double.parseDouble(pol[i])==1.0 || Double.parseDouble(pol[i])==0.0){
+                s=s+"+ ";
+            }else if(Double.parseDouble(pol[i])>=0){
+                s=s+"+ "+pol[i];
+            }else if(Double.parseDouble(pol[i])==-1){
+                s=s+"- ";
+            
+            }else{
+                s=s+"-"+(-1*Double.parseDouble(pol[i]));
+            }
+            if(Integer.parseInt(pol[i+1])==1){
+                s=s+"x ";
+        }else if(Integer.parseInt(pol[i+1])==0){
+                s=s+" ";
+        }else{
+            s=s+"x^"+pol[i+1]+" ";
+        }
+    }}
+        return s;
+    }
+    
+    public String description(){
+        return statement;
+    }
+    
+              
+            
+    /** 
+   * Private inner 'Node' class.
+   * This is a good example of an application where non-private instance variables
+   * make sense.  We grant the SimpleLinkedList unrestricted access to the members
+   * of every Node object.  The syntax for working with them is simpler (and the 
+   * code more efficient) with direct access.
+   */
+  private class Node {
+    double coeficient;
+    int exponent;
+    Node next;
+    Node(double coef, int exp, Node n ) {
+      coeficient=coef;
+      exponent=exp;
+      next = n;
+    }
+  }
+}

@@ -1,0 +1,194 @@
+-..--*++-import java.util.*;
+import java.io.*;
+public class Administrador
+{
+    private LinkedList<Profesor> lista;
+    private String ubicacion;
+    DataInputStream dis;
+    public Administrador(String a){
+        ubicacion=a;
+        lista=new LinkedList<Profesor>();
+        recuperarLista();
+    }
+    public void recuperarLista(){
+        try{
+            File f=new File(ubicacion);
+            FileInputStream fis=new FileInputStream(f);
+            ObjectInputStream ois=new ObjectInputStream(fis);
+            lista=(LinkedList<Profesor>)ois.readObject();
+            ois.close();
+        }catch(Exception e){}
+    }
+    public void guardarLista(){
+        try{
+            File f=new File(ubicacion);
+            FileOutputStream fos=new FileOutputStream(f);
+            ObjectOutputStream oos=new ObjectOutputStream(fos);
+            oos.writeObject(lista);
+        }catch(Exception e){}
+    }
+    public void migrarAAA(){
+        try{
+            RandomAccessFile r=new RandomAccessFile("c:
+            for(int i=0;i<lista.size();i++){
+                r.seek(0);
+                int cr=(int)(r.length()/216);
+                int c=0;
+                String nombre="";
+                for(int j=0;j<cr;j++){
+                    r.seek(j*216);
+                    String dni="";
+                    for(int k=0;k<8;k++){
+                        dni=dni+r.readChar();
+                    }
+                    nombre=lista.get(i).getNombre();
+                    for(int l=nombre.length();l<100;l++){
+                        nombre=nombre+" ";
+                    }
+                    if(lista.get(i).getDni().equals(dni)){
+                        r.writeChars(nombre);
+                        c=-1;
+                    }
+                }
+                if(c==0){
+                    r.writeChars(lista.get(i).getDni());
+                    r.writeChars(nombre);
+                }
+                guardarLista();
+            }
+        }catch(Exception e){}
+    }
+    public void migrarDAAA(){
+        try{
+            RandomAccessFile r=new RandomAccessFile("c:
+            int cr=(int)(r.length()/240);
+            int c=0;
+            for(int i=0;i<cr;i++){
+                r.seek(i*216);
+                String dni="";
+                for(int j=0;j<8;j++){
+                    dni=dni+r.readChar();
+                }
+                String nombre="";
+                for(int j=0;j<100;j++){
+                    nombre=nombre+r.readChar();
+                }
+                int especialidad=r.readInt();
+                String fecha="";
+                for(int j=0;j<10;j++){
+                    fecha=fecha+r.readChar();
+                }
+                Profesor p=new Profesor(dni,nombre.trim(),especialidad,fecha);
+                for(int j=0;j<lista.size();j++){
+                    if(dni.equals(lista.get(j).getDni())){
+                        if(fecha.equals(lista.get(j).getFecha())){
+                            agregarOrdenado(p);
+                            lista.remove(j);
+                            c=-1;
+                        }else{
+                            lista.set(j,p);
+                            c=-1;
+                        }
+                    }
+                }
+                if(c==0){
+                    agregarOrdenado(p);
+                }
+            }
+            guardarLista();
+        }catch(Exception e){}
+    }
+    public void agregarOrdenado(Profesor p){
+        for(int i=0;i<lista.size();i++){
+            if(lista.get(i).getDni().equals(p.getDni())){
+                System.out.println("El profesor ya ha sido agregado.");
+            }else{
+                if(lista.get(i).getFecha().compareTo(p.getFecha())>0){
+                    lista.add(i,p);
+                    guardarLista();
+                    break;
+                }
+            }
+        }
+    }
+    public void migrarDAAS(){
+        try{
+            File f=new File("c:
+            FileInputStream fis=new FileInputStream(f);
+            DataInputStream dis=new DataInputStream(fis);
+            try{
+                String dni;
+                int c=0;
+                while((dni= dis.readUTF())!= null){
+                    String nombre=dis.readUTF();
+                    String apellido=dis.readUTF();
+                    String tipo=dis.readUTF();
+                    String fecha=dis.readUTF();
+                    int especialidad=0;
+                    if(tipo=="IIS"){
+                        especialidad=1;
+                    }
+                    if(tipo=="IC"){
+                        especialidad=2;
+                    }
+                    if(tipo=="IME"){
+                        especialidad=3;
+                    }
+                    Profesor p=new Profesor(dni,nombre+" "+apellido,especialidad,fecha);
+                    for(int i=0;i<lista.size();i++){
+                        if(dni.equals(lista.get(i).getDni())){
+                            lista.set(i,p);
+                            c=-1;
+                        }
+                    }
+                    if(c==0){
+                        lista.add(p);
+                    }
+                }
+            }catch(EOFException e){}
+            dis.close();
+        }catch(Exception e){}
+    }
+    public void migrarAAS(){
+        try{
+            for(int i=0;i<lista.size();i++){
+                File f=new File("c:
+                FileOutputStream fos = new FileOutputStream(f);
+                DataOutputStream dos = new DataOutputStream(fos);
+                String dni;
+                try{
+                    while((dni= dis.readUTF())!= null){
+                        String nombre=dis.readUTF();
+                        String apellido=dis.readUTF();
+                        String tipo=dis.readUTF();
+                        String fecha=dis.readUTF();
+                        int especialidad=0;
+                        if(tipo=="IIS"){
+                            especialidad=1;
+                        }
+                        if(tipo=="IC"){
+                            especialidad=2;
+                        }
+                        if(tipo=="IME"){
+                            especialidad=3;
+                        }
+                        if(dni!=lista.get(i).getDni()){
+                            dos.writeUTF(dni);
+                            dos.writeUTF(nombre);
+                            dos.writeInt(especialidad);
+                            dos.writeUTF(fecha);
+                        }
+                    }
+                }catch(EOFException e){}
+                dos.close();
+            }
+        }catch(Exception e){}
+    }
+    public void mostrarMayores(String a){
+        for(int i=0;i<lista.size();i++){
+            if(lista.get(i).getFecha().compareTo(a)>0){
+                lista.get(i).imprimir();
+            }
+        }
+    }
+}

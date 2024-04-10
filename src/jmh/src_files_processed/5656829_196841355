@@ -1,0 +1,32 @@
+import sacco.*;
+public class Ghost extends StateBasedAnimatedSprite
+{   
+
+    public static final int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3;
+    public Ghost(Boundingbox B)
+    {
+        super(250,250,40,40);
+        Picture[][] strips = SpriteLoader.getBlinkyPics();
+        B.setPictureStrips(
+    }     
+
+    public static void ghostRunner()
+    {
+        Ghost[] ghosts = new Ghost[64];
+        BoundingBox boundary = new BoundingBox(0,0,500,500);
+        for( int i =0; i < ghosts.length; i++)
+        {
+            ghosts[i] = new Ghost(boundary);
+            int c = i%8;
+            int r = i/8;
+            ghosts[i].setX(20+60*c);
+            ghosts[i].setY(20+60*r);
+            ghosts[i].setState(r%4);
+        }
+
+        SpriteViewer view = new SpriteViewer(ghosts);
+        view.setVisible(true);
+        view.start();
+    }
+
+}    

@@ -1,0 +1,211 @@
+import java.util.ArrayList;
+/**
+ * ##### # ########### ## ##### ########### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class SeatManager
+{
+    private Person[][]seats;
+    
+
+    public final static int ASIENTOS_FILA = 6;
+    public final static int MIN_PRIMERA_CLASE = 3;
+    public final static int MIN_ESTANDAR = 4;
+
+    /**
+     * Constructor for objects of class SeatManager
+     */
+    public SeatManager(int filasPrimeraClase, int filasEstandar)
+    {
+        if (filasPrimeraClase > MIN_PRIMERA_CLASE && filasEstandar > MIN_ESTANDAR)
+
+            throw new RuntimeException("número de filas incorrecto");
+
+        else
+        {
+            
+            seats = new Person[filasPrimeraClase+filasEstandar][6];
+
+        }
+    }
+
+    
+
+    /**
+     * Method bookSeat
+     *
+     * @param person A parameter
+     * @param row A parameter
+     * @param column A parameter
+     * @return The return value
+     */
+    public boolean bookSeat(Person person, int row, int column)
+    {
+        if(person==null && row<=0 && column<=0)
+            throw new RuntimeException("parametros incorrectos");
+        else
+        {
+            if(seats[row][column]==null)
+            {
+                seats[row][column]=person;
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
+    /**
+     * Method oldestPassenger
+     *
+     * @return The return value
+     */
+    public Person oldestPassenger(){
+        ArrayList<Person>mayoresEdad=new ArrayList<Person>();
+        for(int i=0;i<seats.length;i++)
+        {
+            for(int j=0;j<seats[i].length;j++)
+            {
+                if(seats[i][j]!=null)
+                    mayoresEdad.add(seats[i][j]);
+            }
+        }
+        Person mayor=new Person(0);
+        for(Person person:mayoresEdad)
+        {
+            if(person.getAge()>mayor.getAge())
+                mayor=person;
+        }
+        if(mayor.getAge()==0)
+            return null;
+        else
+            return mayor;
+    }
+
+    /**
+     * Method numberOffreeSeats
+     *
+     * @param row A parameter
+     * @return The return value
+     */
+    public int numberOffreeSeats(int row)
+    {
+        int suma=0;
+        if(row<6 && row>=0)
+        {
+            for(int i=0;i<seats[row].length;i++)
+            {
+                if(seats[row][i]==null)
+                    suma=suma+1;
+            }
+            return suma;
+        }
+        return -1;
+    }
+
+    /**
+     * Method print
+     *
+     */
+    public void print()
+    {
+        for(int x=0;x <6;x++)
+            System.out.print("   "+ x);
+        System.out.println("");
+        for(int i = 0; i< seats.length; i++)
+        {  
+            System.out.print(i+"  ");
+            for(int j = 0; j <seats[i].length; j++)
+            {
+
+                if(seats[i][j] == null)  
+                    System.out.print("?" + "   ");
+                else if(seats[i][j].getAge()<18)
+                    System.out.print("C" + "   ");
+                else if(seats[i][j].getAge()>=18)
+                    System.out.print("X" + "   ");
+            }
+
+        }
+    }
+    
+    /**
+     * Metodo que libera un asiento dada la fila y columna
+     *
+     * @param row fila a liberar
+     * @param column columna a liberar
+     * @return la persona que ocupaba el asiento de tipo Person o null si no habia ninguna
+     */
+    public Person releaseSeat(int row,int column)
+    {
+        if(row>=0 && column>=0 && row<seats.length && 
+        column<seats[0].length)
+        {
+            Person persona = seats[row][column];
+            seats[row][column]=null;
+            return persona;
+        }
+
+        else
+            throw new RuntimeException("Parametro incorrecto");
+    }
+    /**
+     * Metodo que devuelve una ArrayList de la gente de menor edad
+     *
+     * @return La arrayList de los que tienen menor de edad
+     */
+    public ArrayList<Person> getYoungestPeople()
+    {
+        ArrayList<Person> youngestPeople = new ArrayList<Person>();
+        Person persona = new Person(119);
+        for(int i=0; i<seats.length; i++)
+        {
+            for(int j=0; j<seats[i].length; j++)
+            {
+                if(seats[i][j]!=null && seats[i][j].getAge()<persona.getAge())
+                    persona = seats[i][j];
+            }
+        }
+
+        for(int i=0; i<seats.length; i++)
+        {
+            for(int j=0; j<seats[0].length; j++)
+            {
+                if(seats[i][j]!=null && seats[i][j].getAge()==persona.getAge())
+                    youngestPeople.add(seats[i][j]);
+            }
+        }
+
+        return youngestPeople;
+
+    }
+    public ArrayList<Person> childrenPassengers()
+    {
+        ArrayList<Person> menores = new ArrayList<Person>();
+        for(int i=0; i<seats.length; i++)
+        {
+            for(int j=0; j<seats[i].length; j++)
+            {
+                if(seats[i][j]!=null && seats[i][j].getAge()<Person.ADULTHOOD_AGE)
+                 menores.add(seats[i][j]);
+                 return menores;
+            }
+            else
+            throw new RuntimeException("Persona adulta");
+        }
+            
+        
+  
+
+    /**
+     * Metodo que libera un asiento dada la fila y columna
+     *
+     * @param row fila a liberar
+     * @param column columna a liberar
+     * @return la persona que ocupaba el asiento de tipo Person o null si no habia ninguna
+     */
+}
+    

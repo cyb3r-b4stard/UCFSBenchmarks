@@ -1,0 +1,190 @@
+import java.awt.*;
+import javax.swing.*;
+
+/**
+ * ##### ### - !!! ##### # ########### ## ### ##### #### !!!
+ * 
+ * @###### !!! ###### ####### !!!
+ * @####### !!! ### #### #### !!!
+ * 
+ * --------------------------
+ * #####
+ * ####### #### #### #######:  ###### ####
+ * --------------------------
+ */
+public class Art extends JPanel
+{
+
+    int numCloud = 3;  
+
+     /**
+      * This method is called exactly once when your program is first started.
+      * It asks the user for information used to customize the final drawing.
+      */
+    public void init() 
+    {
+        JOptionPane.showMessageDialog(null, 
+                                    "Hello. Today we are going to customize a poster for the movie UP.");
+                                   
+
+        String question = 
+            "How many clouds do you want in the picture? (Enter 1, 2, or 3)";
+        String numCloudString = JOptionPane.showInputDialog(question);
+        numCloud = Integer.parseInt(numCloudString);
+        
+        String posterPosition =
+              JOptionPane.showInputDialog("Do you want the title, UP, at the top or bottom of poster?");
+        
+        String question3 = 
+              JOptionPane.showInputDialog("What color do you want the balloon? (Enter green, red, or purple)"); 
+        
+        Color steelBlue = new Color(70,130,180);
+        setBackground(steelBlue);)
+        
+        
+    }
+    
+
+    /**
+     * This helper method draws clouds when called on and given an x and y value. 
+     */
+    public void drawCloud(Graphics canvas, int x, int y)
+    {
+        Color lavenderBlush = new Color(230,240,245);
+        canvas.setColor(lavenderBlush);
+        canvas.fillOval(x+20,y,90,80);
+        canvas.fillOval(x,y+40, 50,50);
+        canvas.fillOval(x+30,y+40,70,50);
+        canvas.fillOval(x+80,y+40,60,50);
+        canvas.fillOval(x+90,y+10,50,50);
+        
+
+    }
+    
+    /**
+     * This helper method creates the title UP given the values of x and y for positioning. 
+     */
+    public void drawTitle(Graphics canvas, int x, int y)
+    {
+        canvas.setColor(Color.white);
+        canvas.fillArc(x,y,100,220,180,180);
+        Color steelBlue = new Color(70,130,180);
+        canvas.setColor(steelBlue);
+        canvas.fillArc(x+17,y+30,65,160,180,180);
+        
+        canvas.setColor(Color.white);
+        canvas.fillRect(x+110,y+110,20,110);
+        canvas.fillArc(x+175,y+110,70,50,90,-180);
+        canvas.setColor(steelBlue);
+        canvas.fillArc(x+110,y+120,40,30,90,-180);
+     
+        
+    }
+    
+    /**
+     * This helper method draws a house with a balloon!
+     */
+    public void drawHouse(Graphics canvas, int x, int y)
+    {
+        Color lightGoldenrod = new Color(238,221,130);
+        canvas.setColor(lightGoldenrod);
+        canvas.fillRect(100,100,50,55);
+        
+        Color brown = new Color(165,42,42);
+        canvas.setColor(brown);
+        canvas.fillRect(120,130,10,25);
+        canvas.setColor(Color.black);
+        canvas.fillOval(125,140,2,2);
+        
+        Color beige = new Color(245,245,220);
+        canvas.setColor(beige);
+        canvas.fillRect(110,110,10,10);
+        canvas.setColor(Color.black);
+        canvas.drawLine(115,110,115,120);
+        canvas.drawLine(110,115,120,115);
+        
+        Color sienna = new Color(160,82,45);
+        canvas.setColor(sienna);
+        Polygon roof = new Polygon ();
+        roof.addPoint(90,100);
+        roof.addPoint(160,100);
+        roof.addPoint(125,70);
+        canvas.fillPolygon(roof);
+        
+        Color firebrick = new Color(178,34,34);
+        canvas.setColor(firebrick);
+        canvas.fillRect(110,70,5,20);
+        
+        canvas.setColor(Color.black);
+        canvas.drawLine(112,70,112,55);
+        canvas.setColor(Color.red);
+        canvas.fillOval(108,37,12,20);
+    }
+    
+    /**
+     * This program uses the data that the init() method placed in the program's
+     * instance variables to draw artwork on the window.  
+     * 
+     * This method will be called many times.  Each time the window is moved,
+     * resized, covered or uncovered, the painting must be redrawn.
+     * 
+     * @param  canvas   the Graphics object for this applet
+     */
+    public void paint(Graphics canvas) 
+    {
+        super.paint(canvas);
+        
+        canvas.setColor(Color.white);
+        canvas.fillRect(0,410,500,100);
+        canvas.fillOval(0,360, 130,100);
+        canvas.fillOval(130,385,50,50);
+        canvas.fillArc(180,385,40,40,10,-180);
+        canvas.fillArc(210,370,150,100,0,200);
+        canvas.fillArc(350,385,60,60,0,200);
+        canvas.fillArc(400,380,100,130,0,220);
+
+
+        drawCloud(canvas, 330, 20);
+        if(numCloud > 1)
+        {
+            drawCloud(canvas, 10, 220);
+        }
+
+        if(numCloud == 3)
+        {
+            drawCloud(canvas, 340, 240); 
+        }
+        
+       
+        if(posterPosition.equalsIgnoreCase("bottom"))
+        {
+            drawTitle(canvas, 200, 110 );
+        }
+        else
+        {
+            drawTitle(canvas, 50, -30);
+        }
+        
+        
+        
+    }
+
+
+    /**
+     * The program begins by creating a window frame and putting a drawing canvas
+     * into it.  CS203 Students can safely ignore this method though you may wish
+     * to change the size of the window from the 500x500 specified below.
+     */
+    public static void main(String[] args)
+    {
+        JFrame myFrame = new JFrame();
+        myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        myFrame.setSize(500,500);
+
+        Art studentArt = new Art();
+        studentArt.init();
+        myFrame.add(studentArt);
+
+        myFrame.setVisible(true);
+    }    
+}

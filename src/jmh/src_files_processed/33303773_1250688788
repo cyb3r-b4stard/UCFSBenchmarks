@@ -1,0 +1,107 @@
+import java.util.ArrayList;
+/**
+ * ### ############# ### ### ######.
+ * 
+ * @###### (### ##) 
+ * @####### (##### ##)
+ */
+public class KeywordCipher extends Message
+{
+    private String keyword;
+
+    public KeywordCipher(String message, String keyword)
+    {
+        super(message.toUpperCase(), true);
+        this.keyword = keyword;
+    }
+
+    public KeywordCipher(String message, boolean encrypted, String keyword)
+    {
+        super(message.toUpperCase(),encrypted);
+        this.keyword = keyword;
+    }
+
+    public void encrypt()
+    {
+        if(!this.isEncrypted())
+        {
+            ArrayList<String> arr = new ArrayList<String>();
+            String letter;
+            boolean flag = true;
+            for(int i = 0; i < keyword.length(); i++)
+            {
+                letter = keyword.substring(i,i+1);
+                for(int j = 0; j < arr.size(); j++)
+                {
+                    if(arr.get(j).equals(letter))
+                    {
+                        flag = false;
+                    }
+                }
+                if(flag == true)
+                {
+                    arr.add(letter);
+                }
+                flag = true;
+            }
+
+            ArrayList<String> allLetters = new ArrayList<String>();
+            for(int i = 0; i < arr.size(); i++)
+            {
+                allLetters.add(arr.get(i));
+            }
+
+            boolean flag2 = true;
+            for(int c = 65; c < 91; c++)
+            {
+                for(int q = 0; q < arr.size(); q++)
+                {
+                    if(arr.get(q).equals(c))
+                    {
+                        flag2 = false;
+                    }
+                }
+                if(flag2)
+                {
+                    arr.add("" + (char)c);
+                    allLetters.add("" + (char)c);
+
+                }
+                flag = true;
+            }
+
+            String encrypted = "";
+            for(int i = 0; i < secret.length(); i++)
+            {
+                if(secret.charAt(i) >= 65 && secret.charAt(i) <= 90)
+                {
+                    int correspondingIndex = secret.charAt(i) - 65;
+                    encrypted += allLetters.get(correspondingIndex);
+                }
+
+            }
+            secret = encrypted;
+        }
+
+    }
+
+    public void decrypt()
+    {
+
+    }
+
+    public void clean()
+    {
+        String noSpace = "";
+        for(int i = 0; i < secret.length(); i++)
+        {
+            if(secret.charAt(i) >= 65 && secret.charAt(i) <= 90)
+            {
+                noSpace += secret.substring(i, i+1);
+            }
+        }
+        secret = noSpace;
+    }
+
+}
+}

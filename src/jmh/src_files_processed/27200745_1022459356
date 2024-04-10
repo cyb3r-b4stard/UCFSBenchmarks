@@ -1,0 +1,250 @@
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Scanner;
+
+
+class ribo extends JFrame implements ActionListener
+{
+    JLabel L1;
+    JLabel L2;
+    JLabel L3;
+    JLabel L4;
+    JTextField T1;
+    JTextField T2;
+    JTextField T3;
+    JTextField T4;
+    JButton B1,B2;
+    JTextField tf;
+    public JFrame D;
+   
+    ribo()
+    {
+        
+        L1=new JLabel("ENTER SEQUENCE");
+        L1.setForeground(Color.GREEN);
+        L2=new JLabel(" RIBOSWITCH AND RNA SECONDARY STUCTURE PREDICTION TOOL  ");
+        L1.setForeground(Color.RED);
+        T1=new JTextField();
+        B1=new JButton("SUBMIT");
+        L1.setBounds(40,80,160,30);
+        L2.setBounds(10,30,420,30);
+        T1.setBounds(150,80,160,30);
+        B1.setBounds(90,160,160,30);
+        B1.addActionListener(this);
+        B1.setBackground(Color.BLACK);
+        B1.setForeground(Color.WHITE);
+        B2=new JButton("SHOW STRUCTURE");
+        B2.setBounds(90,200,160,30);
+        B2.addActionListener(this);
+        B2.setBackground(Color.BLACK);
+        B2.setForeground(Color.WHITE);
+        add(L2);
+        add(B2);
+        add(L1);add(T1);
+        add(B1);
+        
+    }
+    
+    
+    public void actionPerformed(ActionEvent e)
+    {
+        if(e.getActionCommand().equals("SUBMIT"))
+        {
+            
+           String x=T1.getText();  
+           String seq1=x;
+           String seq;
+           seq1=seq1.replaceAll(" ","");
+           seq=seq1.replaceAll("[0-9]","");  
+           System.out.println(seq);
+           String ribo=new String("ugacauacuuauuuaugcugugaauuggcgcagcgucucuacaagacaccuuaaugucuaacaauaaguaagcu");
+           boolean check=seq.contains(ribo);
+           if (check==true)
+           {
+               System.out.println("riboswitch found----riboswitch sequence");
+                System.out.println(seq);
+               System.out.println("ugacauacuuauuuaugcugugaauuggcgcagcgucucuacaagacaccuuaaugucuaacaauaaguaagcu");
+               
+           }
+           else
+           {
+                System.out.println("riboswitch not found----");
+                System.out.println(seq);
+            }
+          D.setSize(400,400);
+          D.setLayout(null);
+          D.setVisible(true);
+ 
+       }
+
+        
+        if(e.getActionCommand().equals("SHOW STRUCTURE"))
+         {
+                   
+             String one, two;
+             char [] charArray;
+             char [] charArray1;
+             int [][] array ;
+             Scanner input = new Scanner (System.in);
+             int max=0;
+             int match = 1;
+             int mismatch = 0;
+             int diag, bottom , left ,bifurcation, best ;
+             int row , col;
+             int score;
+             String riboSeq = "aaccuucaauc";
+                
+             System.out.println("----strucute of ribo switch------");
+             charArray = riboSeq.toCharArray();
+             row = riboSeq.length();
+             col = riboSeq.length();
+                
+             array  =new int[row][col];
+             array [0][0] = 0 ;    
+             int k=1;
+        	 int point =0;
+             int i = 0 ;
+             do
+             {
+                i = 0 ;
+        	   for(int j = k; j<col; j++)
+        	   {
+        	   
+        		if ((charArray[i] == 'u' && charArray[j]=='a') ||(charArray[i] == 'a' && charArray[j]=='u')||(charArray[i] == 'g' && charArray[j]=='c')||(charArray[i] == 'c' && charArray[j]=='g'))
+        		{
+        			diag = array [i+1][j-1] + match ;
+        			bottom = array [i+1][j]  ;
+        			left = array [i][j-1] ;
+        			point++;
+        			if(point>=3 && point<col)       
+        		{
+        			   int z=i;
+        			    int c=i;
+        			    int g=0;
+        			    max=0;
+        			    int m;
+        			do{
+        			    if(g==0)
+        			    {
+            			  m= array[i][z+1] + array[c+2][j];
+            			  c=c+2;
+            			   z=z+1;
+            			 g++;
+                        }
+                      else
+                      {
+                  
+                   
+                       m=array[i][z+1] +array[c+1][j]; 
+                       z=z+1; 
+                       c=c+1;
+                      }
+                      if(m>max)
+                      {
+                        max=m;
+                      }
+        
+        			 }while(z!=j);  
+        			  System.out.println("ok match");
+        		}
+                    }
+                    else
+                    {
+        			diag = array [i+1][j-1] + mismatch ;
+        			bottom = array [i+1][j] ;
+        			left = array [i][j-1] ;
+        			point++;
+        			if(point>=3 && point<col-1)          {
+        			   int z=i;
+        			    int c=i;
+        			    int g=0;
+        			    max=0;
+        			    int m;
+        			do{
+        			    
+        			    if(g==0) 
+        			    {
+        			       System.out.println("ok mismatch" + i+"and" +j);
+        			       m= array[i][z+1] + array[c+2][j];
+        			        System.out.println("hhhhhh   " + m+"   "+  array[i][z+1]+"   "+array[c+2][j]);
+        			       c=c+2;
+        			       z=z+1;
+        			       g++;
+        			       if(m>max)
+        			       {
+                             max=m;
+                            }
+                         }
+                       else 
+                       {
+                        System.out.println("ok mismatch" + c +"and" +j);
+                        m=array[i][z+1] +array[c+1][j]; 
+                        z=z+1; 
+                        c=c+1;
+                        if(m>max)
+                        {
+                           max=m;
+                        }
+                       }
+        
+                     } while(z<j);
+        			  System.out.println("ok mismatch");
+        			 }
+        		}
+        		
+        		best = diag;
+        		if (bottom> best)
+        			best = bottom;
+        		if (left > best )
+        			best = left ;
+        			if (max > best )
+        			best = max;
+        			array [i][j] = best ;
+        
+        			if(j==col-1){
+        			 k++;
+        			 }
+                 i++;
+                diag =0;
+                			bottom = 0 ;
+                			left =0;
+                }
+                }while(k!=col);
+                i=0;
+                int j=0;
+                do{
+                
+                array[i][j]=5;
+                i++;
+                j++;
+                }while(i!=col);
+                
+                System.out.println(" " +" a    a   c   c   u    u    c  a    a    u   c ");
+                    for ( i = 0 ; i<row ; i++){
+                       for( j= 0 ; j<col ; j++){  
+                            System.out.print(String.format("%4d ",array [i][j]));
+                            
+                        }
+                        System.out.println(" ");
+                    }
+                                System.out.println("Sequence A: " + riboSeq);
+                                System.out.println("Sequence : " + riboSeq);
+                           System.out.println();
+        
+        
+        
+           
+}
+
+
+
+public static void main(String args[])
+{
+    ribo a=new ribo();
+    a.setSize(400,400);
+    a.setLayout(null);
+    a.setVisible(true);
+}
+}

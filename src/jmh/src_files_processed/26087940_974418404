@@ -1,0 +1,92 @@
+import java.util.*;
+/**
+ * #### ###### ## # ##### ########
+ * 
+ * #### ## ### ############# ######.
+ * 
+ */
+
+public class Hand{
+    public ArrayList<Card> myCards;
+    public Hand(){
+        myCards = new ArrayList<Card>();
+        fillHand();
+    }
+
+    private void fillHand(){
+        Random r = new Random();
+        while(myCards.size() < 5){
+            int suit = r.nextInt(4) + 1; 
+            int rank = r.nextInt(12) + 2; 
+
+            if(!cardExistsInHand(suit,rank)){
+                Card c = new Card(rank,suit);
+                insertInOrder(c);  
+            }
+
+        }
+    }
+
+    private boolean cardExistsInHand(int suit, int rank)
+    {
+        boolean cardExists= false;
+        for(int y = 0; y < myCards.size();y++)
+        {
+            int s = myCards.get(y).suit();
+            int r = myCards.get(y).rank();
+            if(s == suit && r == rank)
+            {
+                cardExists = true;
+                break;
+            }
+        }
+        return cardExists;
+    }
+
+    public void insertInOrder(Card newCard){
+        
+           int importantNumber = 0; 
+       if(!((myCards.size())==0)) {
+         if(newCard.suit()>=myCards.get(myCards.size()-1).suit()) {
+             myCards.add(newCard);
+           } else {                
+               myCards.add(new Card(myCards.get(myCards.size()-1).rank(),myCards.get(myCards.size()-1).suit()));
+               
+               for(Card card:myCards){
+                   if(card.rank()<newCard.rank()) {
+                       
+                   }
+                   else  importantNumber = myCards.indexOf(card);
+               }
+                /*
+               for(Card card:myCards) {
+                   if(card.indexOf<imporantNumber){
+                       card++;
+                   }
+                   else {
+                       
+                       myCards.card.                     
+                       
+                   }
+               }
+               */
+           }                    
+       } else if(myCards.isEmpty()){
+           myCards.add(newCard);
+       }
+       else System.out.println("error");
+   } 
+        
+        
+    }   
+
+    public void testInsertInOrder(){
+        for(int y = 0; y < myCards.size();y++)
+        {
+            int s = myCards.get(y).suit();
+            int r = myCards.get(y).rank();
+            System.out.println(r + " : " + s);        
+        }
+    }
+
+}

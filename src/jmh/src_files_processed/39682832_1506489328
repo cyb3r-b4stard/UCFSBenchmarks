@@ -1,0 +1,91 @@
+import java.io.*;
+import java.lang.Object.*;
+public class Dictionary
+{   private String [] code = new String [0];
+    private String [] module = new String [0];
+    public Dictionary()
+    {
+    }
+   
+    public void add(String word1, String word2)
+    {   int count =0;
+        for (int i =0; i<code.length; i++)
+        {   count+=1;
+        }
+        String [] tmpcode = new String [(count+1)];
+        String [] tmpmodule = new String [(count+1)];
+        for (int i=0; i<tmpcode.length;i++)
+        {   if(i==(tmpcode.length-1))
+            {   tmpcode[i]=word1;
+                tmpmodule[i]=word2;
+            }
+            else
+            {   tmpcode[i]=code[i];
+                tmpmodule[i]=module[i];
+            }
+        }
+        code = tmpcode;
+        module = tmpmodule;
+    }
+    
+    public boolean contains(String word)
+    {   for (int i=0; i<code.length; i++)
+        {   if (code[i].equals(word))
+            {   return true;
+            }
+        }
+        return false;
+    }   
+    
+    public String equiv(String word) throws NotFoundException
+    {   for(int i=0;i<code.length;i++)
+        {   if(word.equals(code[i]))
+            {   return module[i];
+            }
+            else if(!word.equals(code[i]))
+            {   NotFoundException f = new NotFoundException(word);
+            }
+        }
+        return "Not found";
+    }
+    
+    public void remove(String word) throws NotFoundException
+    {  boolean check=false;
+       for(int i=0;i<code.length;i++)
+       {    if(contains(code[i]))
+            {   check = true;
+            }
+       }
+       if (check)
+       {     String [] tmpcode = new String [(code.length-1)];
+             String [] tmpmodule = new String [(code.length-1)]; 
+             for (int j=0;j<tmpcode.length;j++)
+             {   if(!code[j].equals(word))
+                 {   tmpcode[j]=code[j];
+                     tmpmodule[j]=module[j];
+                 }                
+             }
+             code=tmpcode;
+             module=tmpmodule;
+       }
+       else if(!check)
+       {   NotFoundException f = new NotFoundException(word);
+       }      
+    }     
+    
+    public boolean same(String word1, String word2) throws NotFoundException
+    {   boolean check = false;
+        for (int i=0; i<code.length;i++)
+        {   if(word1.equals(code[i])&&(word2.equals(module[i]))
+            {  
+            
+            }
+        }
+        return true;
+    }
+    
+    public int size()
+    {   return code.length;
+    }
+    
+}

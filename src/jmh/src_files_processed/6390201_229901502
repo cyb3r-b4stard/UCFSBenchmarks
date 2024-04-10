@@ -1,0 +1,460 @@
+package MRBON;
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import java.io.IOException; 
+import java.io.File;
+
+public  class MrBon extends JFrame {
+    private static JButton jbBonbon = new JButton();
+    private static JButton jbVerkaufen = new JButton();
+    private static JLabel jlBonbon = new JLabel();
+    private static JLabel jlDollar = new JLabel();
+    private static JLabel jlGeVer = new JLabel();
+    private static JButton jbKaufenGeschmacksverstaerker = new JButton();
+    private static JLabel jlAnzGeschmacksverstaerker = new JLabel();
+    private static JSeparator jSeparator1 = new JSeparator();
+    private static JLabel jl5Formen = new JLabel();
+    private static JButton jbKaufen5Formen = new JButton();
+    private static JLabel jLabel1 = new JLabel();
+    private static JButton jbKaufen15Formen = new JButton();
+    private static JLabel jlAnzFormen = new JLabel();
+    private static JLabel jlMaschine1 = new JLabel();
+    private static JButton jbKaufenMaschine1 = new JButton();
+    private static JLabel jlPreisGeschmacksverstaerker = new JLabel();
+    private static JLabel jlPreis5Formen = new JLabel();
+    private static JLabel jlPreis15Formen = new JLabel();
+    private static JLabel jlPreisMaschine = new JLabel();
+    private static JLabel jlLaden = new JLabel();
+    private static JLabel jlPreisLaden = new JLabel();
+    private static JButton jbKaufenLaden = new JButton();
+
+    public static JLabel jlAnzBonbon = new JLabel();
+    public static JLabel jlGeld = new JLabel();
+    public static JLabel jlAnzGeld = new JLabel();
+
+    public static long anzBonbon = 0;
+    public static long anzGeld = 80000;
+    public static int grSummandBonbon = 1;
+    public static int grSummandGeld = 1;
+    public static long anz_zaehler = 0;
+    public static int anz_laden = 0;
+    public static int anzGeschmacksverstaerker = 0;
+    public static int anzFormen = 0;
+    public static int grSummandBonbonMitForm = 0;
+
+    public MrBon(String title) { 
+        super(title);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        int frameWidth = 1600; 
+        int frameHeight = 800;
+        setSize(frameWidth, frameHeight);
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (d.width - getSize().width) / 2;
+        int y = (d.height - getSize().height) / 2;
+        setLocation(x, y);
+        setResizable(false);
+        Container cp = getContentPane();
+        cp.setLayout(null);
+
+        JMenuBar menuBar = new JMenuBar();
+
+        JMenu menuSpiel = 
+            new JMenu("Spiel");
+        JMenu menuEinstellungen = 
+            new JMenu("Einstellungen");
+        JMenu menuHilfe = 
+            new JMenu("Hilfe");
+
+        menuBar.add(menuSpiel);
+        menuBar.add(menuEinstellungen);
+        menuBar.add(menuHilfe);
+
+        JMenu menuNeuesSpiel = 
+            new JMenu("Neues Spiel");
+
+        menuSpiel.add(menuNeuesSpiel);
+
+        JMenuItem menuItemFileNewText = 
+            new JMenuItem("Nein");
+        JMenuItem menuItemFileNewImage = 
+            new JMenuItem("Ja");
+        JMenuItem menuItemFileOpen = 
+            new JMenuItem("Spielstand laden");
+        JMenuItem menuItemFileSave = 
+            new JMenuItem("Spielstand sichern");
+        JMenuItem menuItemBeenden = 
+            new JMenuItem("Beenden");
+
+        menuNeuesSpiel.add(menuItemFileNewText);
+        menuNeuesSpiel.add(menuItemFileNewImage);
+        menuSpiel.add(menuItemFileOpen);
+        menuSpiel.add(menuItemFileSave);
+        menuSpiel.addSeparator();
+        menuSpiel.add(menuItemBeenden);
+        /*
+         * Hinzufügen von Menüeinträgen 
+         * in das Bearbeitenmenü
+         */
+        JMenu menuDesign = 
+            new JMenu("Design");
+
+        menuEinstellungen.add(menuDesign);
+        
+        JMenuItem menuItemDesign1 = new JMenuItem("Design 1");
+        JMenuItem menuItemDesign2 = new JMenuItem("Design 2");
+        JMenuItem menuItemDesign3 = new JMenuItem("Design 3");
+        
+        menuDesign.add(menuItemDesign1);
+        menuDesign.add(menuItemDesign2);
+        menuDesign.add(menuItemDesign3);
+        JMenuItem menuItemHelpFAQ = 
+            new JMenuItem("FAQs");
+        JMenuItem menuItemHelpKontakt = 
+            new JMenuItem("Kontaktiere uns");
+
+       
+        menuHilfe.add(menuItemHelpFAQ);
+        menuHilfe.add(menuItemHelpKontakt);
+
+        setJMenuBar(menuBar);
+
+        setLocation(50,50);
+        setVisible(true);		
+
+
+        cp.setBackground(new Color(0x9c8b5f));
+
+        jbBonbon.setBounds(24, 24, 131, 57);
+        jbBonbon.setText("Bonbon herstellen");
+        jbBonbon.setMargin(new Insets(2, 2, 2, 2));
+        jbBonbon.addActionListener(new ActionListener() 
+            { 
+                public void actionPerformed(ActionEvent evt) { 
+                    jbBonbon_ActionPerformed(evt);
+                }
+            });
+        jbBonbon.setBackground(new Color(0xe8e8e8));
+        cp.add(jbBonbon);
+        jbVerkaufen.setBounds(24, 96, 131, 57);
+        jbVerkaufen.setText("Bonbon verkaufen");
+        jbVerkaufen.setMargin(new Insets(2, 2, 2, 2));
+        jbVerkaufen.addActionListener(new ActionListener() 
+            { 
+                public void actionPerformed(ActionEvent evt) { 
+                    jbVerkaufen_ActionPerformed(evt);
+                }
+            });
+        jbVerkaufen.setBackground(new Color(0xe8e8e8));
+        cp.add(jbVerkaufen);
+        jlBonbon.setBounds(192, 24, 130, 60);
+        jlBonbon.setText("Bonbons");
+        jlBonbon.setFont(new Font("Dialog", Font.BOLD, 28));
+        jlBonbon.setForeground(new Color(0xEEEEEE));
+        cp.add(jlBonbon);
+        jlAnzBonbon.setBounds(336, 24, 250, 60);
+        jlAnzBonbon.setText("0");
+        jlAnzBonbon.setFont(new Font("Dialog", Font.BOLD, 28));
+        jlAnzBonbon.setForeground(Color.WHITE);
+        jlAnzBonbon.setHorizontalAlignment(SwingConstants.RIGHT);
+        cp.add(jlAnzBonbon);
+        jlGeld.setBounds(192, 96, 130, 60);
+        jlGeld.setText("Geld");
+        jlGeld.setFont(new Font("Dialog", Font.BOLD, 28));
+        jlGeld.setForeground(new Color(0xEEEEEE));
+        cp.add(jlGeld);
+        jlAnzGeld.setBounds(338, 96, 250, 60);
+        jlAnzGeld.setText("0");
+        jlAnzGeld.setFont(new Font("Dialog", Font.BOLD, 28));
+        jlAnzGeld.setForeground(Color.WHITE);
+        jlAnzGeld.setHorizontalAlignment(SwingConstants.RIGHT);
+        cp.add(jlAnzGeld);
+        jlDollar.setBounds(592, 96, 22, 60);
+        jlDollar.setText("$");
+        jlDollar.setFont(new Font("Dialog", Font.BOLD, 28));
+        jlDollar.setForeground(Color.WHITE);
+        cp.add(jlDollar);
+        jlGeVer.setBounds(24, 280, 200, 50);
+        jlGeVer.setText("250 Geschmacksverstärker");
+        cp.add(jlGeVer);
+        jbKaufenGeschmacksverstaerker.setBounds(360, 288, 91, 33);
+        jbKaufenGeschmacksverstaerker.setText("Kaufen");
+        jbKaufenGeschmacksverstaerker.setMargin(new Insets(2, 2, 2, 2));
+        jbKaufenGeschmacksverstaerker.addActionListener(new ActionListener() 
+            { 
+                public void actionPerformed(ActionEvent evt) { 
+                    jbKaufenGeschmacksverstaerker_ActionPerformed(evt);
+                }
+            });
+        jbKaufenGeschmacksverstaerker.setBackground(new Color(0xC0C0C0));
+        jbKaufenGeschmacksverstaerker.setBorderPainted(false);
+        cp.add(jbKaufenGeschmacksverstaerker);
+        jlAnzGeschmacksverstaerker.setBounds(464, 288, 107, 33);
+        jlAnzGeschmacksverstaerker.setText("");
+        cp.add(jlAnzGeschmacksverstaerker);
+        jSeparator1.setBounds(624, 248, 2, 380);
+        jSeparator1.setOrientation(SwingConstants.VERTICAL);
+        cp.add(jSeparator1);
+        jl5Formen.setBounds(24, 352, 200, 50);
+        jl5Formen.setText("5 Bonbon-Formen");
+        cp.add(jl5Formen);
+        jbKaufen5Formen.setBounds(360, 360, 91, 33);
+        jbKaufen5Formen.setText("Kaufen");
+        jbKaufen5Formen.setMargin(new Insets(2, 2, 2, 2));
+        jbKaufen5Formen.addActionListener(new ActionListener() 
+            { 
+                public void actionPerformed(ActionEvent evt) { 
+                    jbKaufen5Formen_ActionPerformed(evt);
+                }
+            });
+        jbKaufen5Formen.setBackground(new Color(0xC0C0C0));
+        jbKaufen5Formen.setBorderPainted(false);
+        cp.add(jbKaufen5Formen);
+        jLabel1.setBounds(24, 424, 200, 50);
+        jLabel1.setText("15 Bonbon-Formen");
+        cp.add(jLabel1);
+        jbKaufen15Formen.setBounds(360, 432, 91, 33);
+        jbKaufen15Formen.setText("Kaufen");
+        jbKaufen15Formen.setMargin(new Insets(2, 2, 2, 2));
+        jbKaufen15Formen.addActionListener(new ActionListener() 
+            { 
+                public void actionPerformed(ActionEvent evt) { 
+                    jbKaufen15Formen_ActionPerformed(evt);
+                }
+            });
+        jbKaufen15Formen.setBackground(new Color(0xC0C0C0));
+        jbKaufen15Formen.setContentAreaFilled(true);
+        jbKaufen15Formen.setBorderPainted(false);
+        cp.add(jbKaufen15Formen);
+        jlAnzFormen.setBounds(448, 400, 107, 28);
+        jlAnzFormen.setText("");
+        cp.add(jlAnzFormen);
+        jlMaschine1.setBounds(688, 280, 200, 50);
+        jlMaschine1.setText("Maschine");
+        cp.add(jlMaschine1);
+        jbKaufenMaschine1.setBounds(1024, 288, 91, 33);
+        jbKaufenMaschine1.setText("Kaufen");
+        jbKaufenMaschine1.setMargin(new Insets(2, 2, 2, 2));
+        jbKaufenMaschine1.addActionListener(new ActionListener() 
+            { 
+                public void actionPerformed(ActionEvent evt) { 
+                    jbKaufenMaschine1_ActionPerformed(evt);
+                }
+            });
+        jbKaufenMaschine1.setBorderPainted(false);
+        jbKaufenMaschine1.setBackground(new Color(0xC0C0C0));
+        cp.add(jbKaufenMaschine1);
+        jlPreisGeschmacksverstaerker.setBounds(232, 280, 50, 50);
+        jlPreisGeschmacksverstaerker.setText("100$");
+        jlPreisGeschmacksverstaerker.setHorizontalAlignment(SwingConstants.RIGHT);
+        cp.add(jlPreisGeschmacksverstaerker);
+        jlPreis5Formen.setBounds(232, 352, 50, 50);
+        jlPreis5Formen.setText("150$");
+        jlPreis5Formen.setHorizontalAlignment(SwingConstants.RIGHT);
+        cp.add(jlPreis5Formen);
+        jlPreis15Formen.setBounds(232, 424, 50, 50);
+        jlPreis15Formen.setText("300$");
+        jlPreis15Formen.setHorizontalAlignment(SwingConstants.RIGHT);
+        cp.add(jlPreis15Formen);
+        jlPreisMaschine.setBounds(896, 280, 50, 50);
+        jlPreisMaschine.setText("1500$");
+        jlPreisMaschine.setHorizontalAlignment(SwingConstants.RIGHT);
+        setVisible(true);
+        cp.add(jlPreisMaschine);
+        jlLaden.setBounds(688, 352, 200, 50);
+        jlLaden.setText("Tante-Emma-Laden");
+        cp.add(jlLaden);
+        jlPreisLaden.setBounds(896, 352, 50, 50);
+        jlPreisLaden.setText("5000$");
+        jlPreisLaden.setHorizontalAlignment(SwingConstants.RIGHT);
+        cp.add(jlPreisLaden);
+        jbKaufenLaden.setBounds(1024, 360, 91, 33);
+        jbKaufenLaden.setText("Kaufen");
+        jbKaufenLaden.setMargin(new Insets(2, 2, 2, 2));
+        jbKaufenLaden.addActionListener(new ActionListener() { 
+                public void actionPerformed(ActionEvent evt) { 
+                    jbKaufenLaden_ActionPerformed(evt);
+                }
+            });
+        jbKaufenLaden.setBorderPainted(false);
+        jbKaufenLaden.setBackground(new Color(0xC0C0C0));
+        cp.add(jbKaufenLaden);
+        
+        
+        jMenuItemBeenden.addActionListener(new ActionListener() { 
+                public void actionPerformed(ActionEvent evt) { 
+                    JMenuItemBeenden_ActionPerformed(Action Listener);
+                }
+            });
+
+        System.out.print("\f");
+        System.out.println("MrBon wurde gestartet.");
+        jlAnzGeld.setText(String.valueOf(anzGeld));
+
+        Thread z1 = new Thread(new Zaehler());
+        z1.start();
+        System.out.println("Zaehler wurde gestartet.");
+
+    } 
+
+
+    public static void testeGeld(){
+        if (anzGeld >= 100) {
+            jbKaufenGeschmacksverstaerker.setBackground(Color.GREEN);
+            jbKaufenGeschmacksverstaerker.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            jbKaufenGeschmacksverstaerker.setBorderPainted(true);
+        } else{
+            jbKaufenGeschmacksverstaerker.setBackground(Color.LIGHT_GRAY);
+            jbKaufenGeschmacksverstaerker.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            jbKaufenGeschmacksverstaerker.setBorderPainted(false);
+        }
+
+        if (anzGeld >= 150) {
+            jbKaufen5Formen.setBackground(Color.GREEN);
+            jbKaufen5Formen.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            jbKaufen5Formen.setBorderPainted(true);
+        } else {
+            jbKaufen5Formen.setBackground(Color.LIGHT_GRAY);
+            jbKaufen5Formen.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            jbKaufen5Formen.setBorderPainted(false);
+        }
+
+        if (anzGeld >= 300) {
+            jbKaufen15Formen.setBackground(Color.GREEN);
+            jbKaufen15Formen.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            jbKaufen15Formen.setBorderPainted(true);
+        } else {
+            jbKaufen15Formen.setBackground(Color.LIGHT_GRAY);
+            jbKaufen15Formen.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            jbKaufen15Formen.setBorderPainted(false);
+        }
+
+        if (anzGeld >= 1500) {
+            jbKaufenMaschine1.setBackground(Color.GREEN);
+            jbKaufenMaschine1.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            jbKaufenMaschine1.setBorderPainted(true);
+        } else {
+            jbKaufenMaschine1.setBackground(Color.LIGHT_GRAY);
+            jbKaufenMaschine1.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            jbKaufenMaschine1.setBorderPainted(false);
+        }
+
+        if (anzGeld >= 5000) {
+            jbKaufenLaden.setBackground(Color.GREEN);
+            jbKaufenLaden.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            jbKaufenLaden.setBorderPainted(true);
+        } else {
+            jbKaufenLaden.setBackground(Color.LIGHT_GRAY);
+            jbKaufenLaden.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            jbKaufenLaden.setBorderPainted(false);
+        }
+
+        if (anz_laden > anz_zaehler) {
+            jbKaufenLaden.setBackground(Color.ORANGE);
+            jbKaufenLaden.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            jbKaufenLaden.setBorderPainted(true);
+        }
+    }
+
+    public void jbBonbon_ActionPerformed(ActionEvent evt) {
+        anzBonbon = anzBonbon + grSummandBonbon;
+        if (anzFormen >=1) {
+            anzBonbon = anzBonbon + (grSummandBonbon * grSummandBonbonMitForm - grSummandBonbon);
+            anzFormen = anzFormen - 1;
+            jlAnzFormen.setText(String.valueOf(anzFormen));
+        }
+
+        if (anzFormen == 0) {
+            grSummandBonbon = 1;
+            jlAnzFormen.setText("");
+        } 
+
+        jlAnzBonbon.setText(String.valueOf(anzBonbon));
+    } 
+
+    public void jbVerkaufen_ActionPerformed(ActionEvent evt) {
+        if (anzBonbon > 0) {
+            anzBonbon = anzBonbon - 1;
+            anzGeld = anzGeld + grSummandGeld;
+
+            jlAnzBonbon.setText(String.valueOf(anzBonbon));
+            jlAnzGeld.setText(String.valueOf(anzGeld));
+            testeGeld();
+            if (anzGeschmacksverstaerker > 0) {
+                anzGeschmacksverstaerker = anzGeschmacksverstaerker - grSummandBonbon; 
+                jlAnzGeschmacksverstaerker.setText(String.valueOf(anzGeschmacksverstaerker));       
+            }
+            if (anzGeschmacksverstaerker == 0) {
+                grSummandGeld = 1;
+                jlAnzGeschmacksverstaerker.setText("");
+            }
+        }
+    }
+
+    public void jbKaufenGeschmacksverstaerker_ActionPerformed(ActionEvent evt) {
+        if (anzGeld >= 100) {
+            anzGeld = anzGeld - 100;
+            grSummandGeld = 2;
+            anzGeschmacksverstaerker = anzGeschmacksverstaerker + 250;
+            jlAnzGeld.setText(String.valueOf(anzGeld));
+            jlAnzGeschmacksverstaerker.setText(String.valueOf(anzGeschmacksverstaerker));
+            testeGeld();
+        }
+    }
+
+    public void jbKaufen5Formen_ActionPerformed(ActionEvent evt) {
+        if (anzGeld >= 150) {
+            anzGeld = anzGeld - 150;
+            anzFormen = anzFormen + 5;
+            jlAnzGeld.setText(String.valueOf(anzGeld));
+            jlAnzFormen.setText(String.valueOf(anzFormen));
+            grSummandBonbonMitForm = 25;
+            testeGeld();
+        }
+    }
+
+    public void jbKaufen15Formen_ActionPerformed(ActionEvent evt) {
+        if (anzGeld >= 300) {
+            anzGeld = anzGeld - 300;
+            anzFormen = anzFormen + 15;
+            jlAnzGeld.setText(String.valueOf(anzGeld));
+            jlAnzFormen.setText(String.valueOf(anzFormen));
+            grSummandBonbonMitForm = 25;
+            testeGeld();
+        }
+    } 
+
+    public void jbKaufenMaschine1_ActionPerformed(ActionEvent evt) {
+        if (anzGeld >= 1500) {
+            anzGeld = anzGeld - 1500;
+            jlAnzGeld.setText(String.valueOf(anzGeld));
+            anz_zaehler = anz_zaehler+1;   
+            System.out.println("Es wird sekündlich um  > " + MrBon.anz_zaehler + " <  erhöht.");
+        } 
+    }
+
+    public void jbKaufenLaden_ActionPerformed(ActionEvent evt) {
+        if (anzGeld >= 5000) {
+            anzGeld = anzGeld - 5000;
+            jlAnzGeld.setText(String.valueOf(anzGeld));
+            anz_laden = anz_laden + 1;   
+            System.out.println("Es wird sekündlich um  > " + MrBon.anz_zaehler + " <  erhöht.");
+        } 
+    } 
+
+    public void setzeLabel(String t) {
+        jlAnzBonbon.setText(String.valueOf(t));
+    }
+    
+    public void jMenuItemBeenden_ActionPerformed(ActionListener l) {
+        System.out.println("Test");
+    }
+    
+    public static void main(String[] args) {
+        new MrBon("MrBon");
+        new MenuFrame();
+    } 
+
+} 

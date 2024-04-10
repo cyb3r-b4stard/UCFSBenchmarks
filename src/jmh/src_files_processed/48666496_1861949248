@@ -1,0 +1,85 @@
+
+/**
+ * ##### # ########### ## ##### ####### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Support
+{
+    private Ticket[] tickets;
+    private int freiePos;
+
+    public Support(int maxAnfragen)
+    {
+        if(maxAnfragen > 2)
+        {
+            tickets = new Ticket[maxAnfragen];
+        }
+    }
+
+    public boolean ticketHinzufuegen(Ticket t)
+    {
+        if(freiePos < tickets.length && t != null)
+        {
+            tickets[freiePos] = t;
+            freiePos++;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public Ticket ticketEntfernen()
+    {
+        Ticket t = new Ticket(tickets[0].getProblem(),tickets[0].getKunde(),tickets[0].getBearbeitungsdauer(),tickets[0].getDringend());
+        tickets[0] = null;
+        for(int y = 0;y < freiePos;y++)
+        {
+            tickets[y] = tickets[y+1];
+        }
+        return t;
+    }
+
+    public Ticket dringendesTicketEntfernen()
+    {
+        Ticket t = null;
+        int x = 0;
+        int z = 0;
+        for(int y = 0;y < freiePos;y++)
+        {
+            if(tickets[y].getDringend() == true)
+            {
+                z++;
+                if(z == 1)
+                {
+                    x = y;
+                    t = new Ticket(tickets[x].getProblem(),tickets[x].getKunde(),tickets[x].getBearbeitungsdauer(),tickets[x].getDringend());
+                    tickets[x] = null;
+                }
+                tickets[y] = tickets[y+1];
+            }
+        }
+        return t;
+    }
+    
+    public void print(boolean dringend)
+    {
+        for(int x = 0;x < freiePos-1;x++)
+        {
+            if(tickets[x].getDringend() == dringend)
+            {
+                System.out.println("Problem:"tickets[x].getProblem());
+                System.out.println("**********************************");
+                System.out.println("Kunde:"tickets[x].getKunde());
+                System.out.println("**********************************");
+                System.out.println("Bearbeitungsdauer:"tickets[x].getBearbeitungsdauer());
+                System.out.println("**********************************");
+                System.out.println("Dringend:"tickets[x].getDringend());
+                System.out.println("**********************************");
+            }
+        }
+    }
+}

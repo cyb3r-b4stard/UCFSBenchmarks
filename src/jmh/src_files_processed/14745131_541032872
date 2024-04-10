@@ -1,0 +1,311 @@
+import java.util.*;
+
+/**
+ * #### ####### ####### # ###### ############## ## # ############ ##########.  ### ####### ### ########## ####
+ * ########## ## ##### ######### ######.
+ */
+public class Function
+{ 
+    public String originalExpression;
+    public String variable;
+    
+    /**
+     * Stores the originalExpression as a trimmed version.  Stores the variable for use.
+     * 
+     * @param expression a string with correct mathematical syntax and only one variable as defined by
+     * variable
+     */
+    public Function(String expression, String variable)
+    {
+        originalExpression = expression.trim();
+        this.variable = variable.trim();
+    }
+    
+    /**
+     * Outputs the original expression
+     */
+    public String recall()
+    {
+        return originalExpression;
+    }
+    
+    /**
+     * Evaluates the one variable expression for a double solution.
+     */
+    public double evaluate(double x)
+    { 
+        String expression = originalExpression;
+        int startRegion = 0;
+        int endRegion = expression.length();
+        int target;
+        String operand1;
+        String operand2;
+        int IntSolution;
+        double DoubleSolution;
+        
+        expression = expression.replace(variable, "" + x);
+        
+        while (parsable(expression) == -1)
+        { 
+            if (expression.indexOf("(") != -1)
+            {
+                endRegion = expression.indexOf(")");
+                startRegion = expression.lastIndexOf("(", endRegion) + 1;
+            }
+            else
+            {
+                startRegion = 0;
+                endRegion = expression.length();
+            }
+            
+            while (expression.indexOf("(") != -1 
+                        && parsable(expression.substring(startRegion, endRegion)) != -1)
+            {
+                expression = splice(expression, startRegion - 1, "");
+                expression = splice(expression, endRegion - 1, "");
+                
+                if (expression.indexOf("(") != -1)
+                {
+                    endRegion = expression.indexOf(")");
+                    startRegion = expression.lastIndexOf("(", endRegion) + 1;
+                }
+                else
+                {
+                    startRegion = 0;
+                    endRegion = expression.length();
+                }
+            }
+            
+            
+            if (expression.substring(startRegion, endRegion).indexOf("^") != -1)
+            {
+                target = expression.indexOf("^", startRegion);
+                startRegion = leftBound(expression, target - 1);
+                endRegion = rightBound(expression, target + 1);
+                
+                operand1 = expression.substring(startRegion, target).trim();
+                operand2 = expression.substring(target + 1, endRegion).trim();
+                
+                if (parsable(operand1) == 1 && parsable(operand2)
+                solution = Math.pow(Double.parseDouble(operand1), Double.parseDouble(operand2));
+                
+                expression = splice(expression, startRegion, endRegion, "" + solution);
+            }
+            else 
+            if (expression.substring(startRegion, endRegion).indexOf("*") != -1 ||
+                        expression.substring(startRegion, endRegion).indexOf("/") != -1)
+            {
+                if (expression.indexOf("/", startRegion) == -1
+                        || expression.indexOf("*", startRegion) != -1
+                        && expression.indexOf("*", startRegion) < expression.indexOf("/", startRegion))
+                { 
+                    target = expression.indexOf("*", startRegion);
+                    startRegion = leftBound(expression, target - 1);
+                    endRegion = rightBound(expression, target + 1);
+                    
+                    operand1 = expression.substring(startRegion, target).trim();
+                    operand2 = expression.substring(target + 1, endRegion).trim();
+                    
+                    solution = Double.parseDouble(operand1) * Double.parseDouble(operand2);
+                    
+                    expression = splice(expression, startRegion, endRegion, "" + solution);
+                } 
+                else
+                { 
+                    target = expression.indexOf("/", startRegion);
+                    startRegion = leftBound(expression, target - 1);
+                    endRegion = rightBound(expression, target + 1);
+                    
+                    operand1 = expression.substring(startRegion, target).trim();
+                    operand2 = expression.substring(target + 1, endRegion).trim();
+                    
+                    solution = Double.parseDouble(operand1) / Double.parseDouble(operand2);
+                    
+                    expression = splice(expression, startRegion, endRegion, "" + solution);
+                } 
+            }
+            else
+            if (expression.substring(startRegion, endRegion).indexOf("+") != -1 ||
+                        expression.substring(startRegion, endRegion).indexOf("- ") != -1)
+            {
+                if (expression.indexOf("- ", startRegion) == -1
+                        || expression.indexOf("+", startRegion) != -1
+                        && expression.indexOf("+", startRegion) < expression.indexOf("- ", startRegion))
+                { 
+                    target = expression.indexOf("+", startRegion);
+                    startRegion = leftBound(expression, target - 1);
+                    endRegion = rightBound(expression, target + 1);
+                    
+                    operand1 = expression.substring(startRegion, target).trim();
+                    operand2 = expression.substring(target + 1, endRegion).trim();
+                    
+                    solution = Double.parseDouble(operand1) + Double.parseDouble(operand2);
+                    
+                    expression = splice(expression, startRegion, endRegion, "" + solution);
+                } 
+                else
+                { 
+                    target = expression.indexOf("- ", startRegion);
+                    startRegion = leftBound(expression, target - 1);
+                    endRegion = rightBound(expression, target + 1);
+                    
+                    operand1 = expression.substring(startRegion, target).trim();
+                    operand2 = expression.substring(target + 1, endRegion).trim();
+                    
+                    solution = Double.parseDouble(operand1) - Double.parseDouble(operand2);
+                    
+                    expression = splice(expression, startRegion, endRegion, "" + solution);
+                } 
+            }
+        } 
+        
+        return Double.parseDouble(expression);
+    } 
+    
+    /**
+     * Evaluates the one variable expression for a double array of solutions.
+     */
+    public double[] evaluate(double x[])
+    { 
+        double output[] = new double[x.length];
+        
+        for (int index = 0; index < x.length; index++)
+        { 
+            output[index] = evaluate(x[index]);
+        } 
+        
+        return output;
+    } 
+    
+    /**
+     * Determines if a string input is parsable as just an integer, a double, or neither when trimmed.  
+     * If it is parsable as an double, the method returns 0.  If it parsable as a double and integer, the
+     * method returns 1.  If it is not parsable as either, a -1 is returned.
+     */
+    private int parsable(String input)
+    { 
+        int intValue;
+        double doubleValue;
+        input = input.trim();
+        
+        if (input.length() == 0)
+        return -1;
+        
+        try
+        {
+            doubleValue = Double.parseDouble(input);
+            return 0;
+        }
+        catch (NumberFormatException a)
+        {
+            try
+            {
+                intValue = Integer.parseInt(input);
+                return 1;
+            }
+            catch (NumberFormatException b)
+            {
+                return -1;
+            }
+        }
+    } 
+    
+    /**
+     * This method takes a specific substring region of an inputted string, and replaces it with a replacement
+     * string.
+     * 
+     * @param startIndex the first bound (inclusive) of the region to be replaced
+     * @param endIndex the last bound (exclusive) of the region of be replaced
+     */
+    private String splice(String original, int startIndex, int endIndex, String replacement)
+    { 
+        String front = original.substring(0, startIndex);
+        String back = original.substring(endIndex, original.length());
+        
+        return front + replacement + back;
+    } 
+    
+    /**
+     * This method takes a specific single index of an inputted string, and replaces it with a replacement
+     * string.
+     * 
+     * @param index the index of the single character string to be replaced
+     */
+    private String splice(String original, int startIndex, String replacement)
+    { 
+        return splice(original, startIndex, startIndex + 1, replacement);
+    } 
+    
+    /**
+     * This method finds the index of the first character of a number, given given the index of a character
+     * in the number or to the right of the number (before the next number).
+     * <p>
+     * For example, leftBound("2015 1987 -89", 11); yeilds 10, the position of the "-" sign in "-89".
+     * <p>
+     * If the string has no numbers in it, -1 is returned.
+     * 
+     * @param rightBound an index in the string
+     */
+    private int leftBound(String input, int rightBound)
+    { 
+        int correlation = 0;
+        int index;
+        
+        for (index = rightBound; index >= 0; index--)
+        { 
+            if (correlation == 0 && 
+                 (input.charAt(index) >= '0' && input.charAt(index) <= '9' || input.charAt(index) == '.'
+                                                                           || input.charAt(index) == '-'))
+            correlation++;
+            
+            if (correlation == 1 && 
+                 !(input.charAt(index) >= '0' && input.charAt(index) <= '9' || input.charAt(index) == '.'
+                                                                            || input.charAt(index) == '-'))
+            {
+                return index + 1;
+            }
+        } 
+        
+        if (correlation == 1)
+        return index + 1;
+        
+        return -1;
+    } 
+    
+    /**
+     * This method finds the index after the last character of a number, given the index of a character in 
+     * the number or to the left of the left (after the previous number).
+     * <p>
+     * For example, rightBound("2015 1987 -89", 4); yeilds 8, the position of the " " between "1987" and
+     * "-89".
+     * <p>
+     * If the string has no numbers in it, -1 is returned.
+     * 
+     * @param leftBound an index in the string
+     */
+    private int rightBound(String input, int leftBound)
+    { 
+        int correlation = 0;
+        int index;
+        
+        for (index = leftBound; index < input.length(); index++)
+        { 
+            if (correlation == 0 && 
+                 (input.charAt(index) >= '0' && input.charAt(index) <= '9' || input.charAt(index) == '.'
+                                                                           || input.charAt(index) == '-'))
+            correlation++;
+            
+            if (correlation == 1 && 
+                 !(input.charAt(index) >= '0' && input.charAt(index) <= '9' || input.charAt(index) == '.'
+                                                                            || input.charAt(index) == '-'))
+            {
+                return index;
+            }
+        } 
+        
+        if (correlation == 1)
+        return index;
+        
+        return -1;
+    } 
+} 

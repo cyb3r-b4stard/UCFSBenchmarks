@@ -1,0 +1,65 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+import java.util.ArrayList;
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class FileReader {
+    public Progress[][] edges;
+    public String[] nodes;
+    public String s = "";
+
+    public FileReader(File f) throws FileNotFoundException {
+        Scanner input = new Scanner(f);
+        int size = input.nextInt();
+        edges = new Progress[size][size];
+        nodes = new String[size];
+        input.nextLine();
+        for (int j = 0; j < size; j++) {
+            nodes[j] = input.nextLine();
+        }
+
+        while (input.hasNextLine()) {
+            int a = input.nextInt();
+            int b = input.nextInt();
+            edges[a][b] = Progress.HAS_EDGE;
+            edges[b][a] = Progress.HAS_EDGE;
+            input.nextLine();
+        }
+
+        for (int i = 0; i < size; i++) {
+            for(int j = 0; j < size; j++) {
+                if (edges[i][j] == null) {
+                    edges[i][j] = Progress.NO_EDGE;
+                }
+            }
+        }
+    }
+
+    public String edgeFinder( int i, int j) {      
+        if (i == j) {
+            return "Just stay where you are!";
+        }
+
+        if (edges[i][j] == Progress.HAS_EDGE) {
+            return nodes[i] + "-" + nodes[j];
+        }
+
+        for (int k = 0; k < nodes.length; k++) {
+            if (edges[i][k] == Progress.HAS_EDGE) {                
+                /edges[k][i] = Progress.EXPLORING;
+                s = nodes[i] + "-" + nodes[k] + ","  + edgeFinder(k,j); 
+                
+            }                 
+            
+        }
+       return s;
+    }
+
+ 
+}
+

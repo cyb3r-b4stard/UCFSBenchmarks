@@ -1,0 +1,115 @@
+import tester.Tester;
+?
+class Examples {
+  Acapella acapellaONE = new Acapella("Ryan", "Rap", 10);
+  Acapella acapellaTWO = new Acapella("Mitch", "Jazz", 6);
+  
+  AcapellaResult ar12 = new AcapellaResult(5,7,10,6);
+  AcapellaResult ar34 = new AcapellaResult(10,10,0,0);
+  
+  Runner runnerONE = new Runner("Will","mile",1);
+  Runner runnerTWO = new Runner("Diego","500 yard dash",2);
+  Runner runnerTHREE = new Runner("Jeffery","mile",2);
+  Runner runnerFOUR = new Runner("Dave","500 yard dash",6);
+  
+  RunnerResult rr12 = new RunnerResult(100,50);
+  RunnerResult rr34 = new RunnerResult(50,100);
+  RunnerResult rr23 = new RunnerResult(10,11);
+  
+  QuizShow quizShowONE = new QuizShow("Felix","WPI",3);
+  QuizShow quizShowTWO = new QuizShow("Luis","New York State",1);
+  QuizShow quizShowTHREE = new QuizShow("Peter","Miami",2);
+  
+  QuizShowResult qr12 = new QuizShowResult(30,0,15,10);
+  QuizShowResult qr34 = new QuizShowResult(15,10,30,0);
+  
+  Match matchONE = new Match(acapellaONE, acapellaTWO, ar12);
+  
+  Match matchTWO = new Match(runnerTWO,runnerFOUR,rr12);
+  Match matchTHREE = new Match(runnerTHREE,runnerONE,rr34);
+  
+  Match matchFOUR = new Match(quizShowONE,quizShowTWO,qr12);
+  Match matchFIVE = new Match(quizShowTWO,quizShowTHREE,qr34);
+  
+  
+  Match matchSIX = new Match(runnerTWO,runnerTHREE, rr23);
+  
+  
+  InitMatch initRunner = new InitMatch (matchTWO);
+  InitMatch initRunner2 = new InitMatch (matchTHREE);
+  
+  AdvMatch advRunner = new AdvMatch (matchSIX, initRunner, initRunner2);
+  
+  InitMatch initQuizShow = new InitMatch (matchFIVE);
+  InitMatch initQuizShow2 = new InitMatch (matchFOUR);
+  
+  AdvMatch advQuizShow = new AdvMatch (matchFOUR, initQuizShow, initQuizShow2);
+  AdvMatch advQuizShow2 = new AdvMatch (matchFIVE, initQuizShow2, initQuizShow);
+
+  public boolean testNumOfMembersAcapella(Tester t)
+    {
+        return t.checkExpect(acapellaONE.numberOfMembers(), 10);
+    }
+  public boolean testNumOfMembersAcapella2(Tester t)
+    {
+        return t.checkExpect(acapellaTWO.numberOfMembers(), 6);
+    }
+  
+  public boolean testNumOfMembersQuizShow(Tester t)
+    {
+        return t.checkExpect(quizShowONE.numberOfMembers(), 4);
+    }
+  public boolean testNumOfMembersQuizShow2(Tester t)
+    {
+        return t.checkExpect(quizShowTWO.numberOfMembers(), 4);
+    }
+    
+    
+  public boolean testBetterRankedQuiz(Tester t)
+    {
+        return t.checkExpect(quizShowONE.betterRankedContestant(quizShowTWO), quizShowTWO);
+    }
+  public boolean testBetterRankedQuiz2(Tester t)
+    {
+        return t.checkExpect(quizShowTHREE.betterRankedContestant(quizShowONE), quizShowTHREE);
+    }
+ 
+  public boolean testBetterRankedRunner(Tester t)
+    {
+        return t.checkExpect(runnerONE.betterRankedContestant(runnerTHREE), runnerONE);
+    }
+  public boolean testBetterRankedRunner2(Tester t)
+    {
+        return t.checkExpect(runnerTWO.betterRankedContestant(runnerFOUR), runnerTWO);
+    }
+    
+    
+  public boolean testIntiMatchRunner(Tester t)
+    {
+        return t.checkExpect(initRunner.isBalanced(),true);
+    }  
+  public boolean testAdviMatchRunner2(Tester t)
+    {
+        return t.checkExpect(advRunner.isBalanced(),false);
+    }   
+    
+  public boolean testIntiMatchQuizShow(Tester t)
+    {
+        return t.checkExpect(initQuizShow.isBalanced(),true);
+    }  
+  public boolean testAdviMatchQuizShow2(Tester t)
+    {
+        return t.checkExpect(advQuizShow.isBalanced(),false);
+    }   
+    
+    
+  public boolean testWinnersAdvance2(Tester t)
+    {
+        return t.checkExpect(advQuizShow.winnersAlwaysAdvanced(),true);
+    } 
+  public boolean testWinnersAdvance(Tester t)
+    {
+        return t.checkExpect(advQuizShow2.winnersAlwaysAdvanced(),true);
+    }   
+    
+}

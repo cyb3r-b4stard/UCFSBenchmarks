@@ -1,0 +1,194 @@
+
+/* #### ### #### ### ########## # 
+ * ####: ##### ########
+ * ########:
+ * ##: #########
+ */
+
+import ecs100.*;
+import java.lang.Math.*;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.lang.Object.*;
+
+/** ####### ### ########### ### #### ### ### #### ## #### ##### #### */
+
+public class PowerCalculator{
+    public static final double priceKWh = 20.34;         
+    public static final int incandescentLifeSpan = 1000; 
+    public static final int ledLifeSpan = 25000;         
+    public static final double incadescentPrice = .99;   
+    NumberFormat fmt1 = NumberFormat.getCurrencyInstance(); 
+    DecimalFormat fmt2 = new DecimalFormat ("0.##"); 
+    /** Calculates and prints how long it would take you to amortise your cost of switching
+     *  to energy saving bulbs
+     */
+    public void calculateCostSaverCore(){
+        double OldWattage = UI.askDouble("How much did your old (incandescent) bulbs use in Watts (w)?: ");
+        double NewWattage = UI.askDouble("How much do your new (LED) bulbs use in Watts (w)?: ");
+        double NewBulbs = UI.askDouble("How many lightbulbs are you buying: ");
+        double PowerSavingByChanging = ((OldWattage - NewWattage) * NewBulbs)/1000;
+        UI.println("By changing all your incandescent bulbs to LED's, you are reducing your power consumption by " + PowerSavingByChanging + " Kilowatts");
+        double UsagePerDay = UI.askDouble("How many hours each day are the lights on?: ");
+        double UsagePerWeek = UI.askDouble("How many days are they used per week?: ");
+        double UsagePerYear = UI.askDouble("How many weeks are they used per year?: ");
+        double TotalHours = UsagePerDay * UsagePerWeek * UsagePerYear;
+        double TotalPowerSaved = PowerSavingByChanging * TotalHours;
+        UI.println("The total power saved per year is " + TotalPowerSaved + " kilowatt hours");
+        double TotalCostSaved = TotalPowerSaved * priceKWh/100; 
+        UI.println("Using a value of $0.2034/h for 1Kw, the total saved per year is " + fmt1.format(TotalCostSaved));
+        double costBulb = UI.askDouble("How much does each new LED bulb cost?: $");
+        double NoYears = (NewBulbs * costBulb)/TotalCostSaved;
+        UI.println("The number of years it will take to break even by paying the extra " + fmt1.format(costBulb - incadescentPrice) + " for the LED bulbs will be " + fmt2.format(NoYears) + " years.");
+    }
+
+    /** Calculates and prints how long it would take you to amortise your cost of switching
+     *  to energy saving bulbs
+     *  For the Completion part consider the life span of each type of bulbs and prints
+     *  how much saving will be done after numYears years
+     *  
+     */
+    public void calculateCostSaverCompletion(){
+        double OldWattage = UI.askDouble("How much did your old (incandescent) bulbs use in Watts (w)?: ");
+        double NewWattage = UI.askDouble("How much do your new (LED) bulbs use in Watts (w)?: ");
+        double NewBulbs = UI.askDouble("How many lightbulbs are you buying: ");
+        double PowerSavingByChanging = ((OldWattage - NewWattage) * NewBulbs)/1000;
+        UI.println("By changing all your incandescent bulbs to LED's, you are reducing your power consumption by " + PowerSavingByChanging + " Kilowatts");
+
+        double UsagePerDay = UI.askDouble("How many hours each day are the lights on?: ");
+        double UsagePerWeek = UI.askDouble("How many days are they used per week?: ");
+        double UsagePerYear = UI.askDouble("How many weeks are they used per year?: ");
+        double HMYears = UI.askDouble("How many years do you want to calculate the savings over?: ");
+        UI.println("\n");
+        double TotalHours = UsagePerDay * UsagePerWeek * UsagePerYear * HMYears;
+
+        UI.printf("
+        UI.printf("
+        UI.printf("
+
+        double IncandescentPowerCostPerYear = (((OldWattage * NewBulbs)* TotalHours)/(1000*HMYears)) * (priceKWh/100);
+        UI.printf("\nIf you were to continue using incandescent bulbs, the power bill would cost you " + fmt1.format(IncandescentPowerCostPerYear) + " per year not including the cost of the bulbs!\n");
+
+        double RequiredIncandescentBulbsPerYear = (TotalHours/incandescentLifeSpan) - 1;
+
+        double IncandescentOverXYears = incadescentPrice * ((int) Math.ceil(RequiredIncandescentBulbsPerYear)*NewBulbs);
+        double IncandescentPerYear = incadescentPrice * ((int) Math.ceil(RequiredIncandescentBulbsPerYear)*NewBulbs)/(HMYears);
+
+        if (TotalHours < incandescentLifeSpan) {
+            UI.println("Based upon an usage of " + TotalHours + " hours over " + HMYears + " years and considering the lifespan of an incandescent bulb (1000hrs) you will not need to replace your incandescent lightbulbs after initial purchase.");
+            RequiredIncandescentBulbsPerYear = 1;
+            UI.println("However this value doesn't include the initial overheads to purchase the " + NewBulbs + " incandescent lightbulbs. Therefore the first year's total cost will be: $" + fmt1.format((IncandescentPerYear + IncandescentPowerCostPerYear) + (NewBulbs*incadescentPrice)) + "\n");
+        }
+
+        else {
+            UI.println("Based upon an usage of " + TotalHours + " hours over " + HMYears + " years and considering the lifespan of an incandescent bulb (1000hrs) you will need to replace your incandescent lightbulbs " + (int) Math.ceil(RequiredIncandescentBulbsPerYear) + " time(s). (Not including initial purchase).\n");
+            UI.println("The cost of replacing the " + (int) NewBulbs + " incandescent bulbs " + (int) Math.ceil(RequiredIncandescentBulbsPerYear) + " time(s) is " + fmt1.format(IncandescentOverXYears) + " (at $0.99 per) which per year (divided by X number of years) is: " + fmt1.format(IncandescentPerYear));
+            UI.println("Adding the cost of replacing the bulbs per year to the cost of power per year gives us the total cost of using Incandescent lightbulbs per year: " + fmt1.format((IncandescentPerYear + IncandescentPowerCostPerYear)));
+            UI.println("However this value doesn't include the initial overheads to purchase the " + (int) NewBulbs + " incandescent lightbulbs. Therefore the first year's total cost will be: " + fmt1.format(((IncandescentPerYear + IncandescentPowerCostPerYear) + (NewBulbs*incadescentPrice))) + "\n");
+        }
+
+        UI.printf("
+        UI.printf("
+        UI.printf("
+
+        double LedPowerCostPerYear = (((NewWattage * NewBulbs)* TotalHours)/(1000*HMYears)) * (priceKWh/100);
+        UI.printf("\nIf you convert to LED lightbulbs, the power bill would cost you " + fmt1.format(LedPowerCostPerYear) + " per year not including the cost of the bulbs!\n");
+        double costBulb = UI.askDouble("How much does each new LED bulb cost?: $");
+
+        double TotalRequiredLedBulbs = (TotalHours/ledLifeSpan) - 1;
+
+        double LedCostOverXYears = costBulb * ((int) Math.ceil(TotalRequiredLedBulbs)*NewBulbs);
+        double LedCostPerYear = costBulb * ((int) Math.ceil(TotalRequiredLedBulbs)*NewBulbs)/(HMYears); 
+
+        if (TotalHours < ledLifeSpan) {
+            UI.println("\nBased upon an usage of " + TotalHours + " hours over " + HMYears + " years and considering the lifespan of an LED bulb (25000hrs) you will not need to replace your lightbulbs after initial purchase.");
+            TotalRequiredLedBulbs = 1;
+            UI.println("However you still need to pay for the initial overheads: the " + (int) NewBulbs + " LED lightbulbs. Including the cost of power, the first year's total cost will be " + fmt1.format(((LedCostPerYear + LedPowerCostPerYear) + (NewBulbs*costBulb))) + "\n");
+        }
+
+        else {
+            UI.println("\nBased upon an usage of " + TotalHours + " hours over " + HMYears + " years and considering the lifespan of an LED bulb (25000hrs) you will need to replace your LED lightbulbs " + (int) Math.ceil(TotalRequiredLedBulbs) + " time(s). (Not including initial purchase).\n");
+            UI.println("The cost of replacing the LED lightbulbs " + (int) Math.ceil(TotalRequiredLedBulbs) + " time(s) is $" + fmt1.format(LedCostOverXYears) + " (at $" + costBulb + " per) which per year (divided by X number of years) is: " + fmt1.format(LedCostPerYear));
+            UI.println("Adding the cost of replacing the bulbs per year to the cost of power per year gives us the total cost of using LED lightbulbs per year: " + fmt1.format((LedCostPerYear + LedPowerCostPerYear)) + "\n");
+            UI.println("However this value doesn't include the initial overheads to purchase the " + (int) NewBulbs + " LED lightbulbs. Including the cost of power and LED bulbs, the first year's total cost will be " + fmt1.format(((LedCostPerYear + LedPowerCostPerYear) + (NewBulbs*costBulb))) + "\n");
+        }
+
+        UI.printf("
+        UI.printf("
+        UI.printf("
+
+        double TotalPowerSaved = (PowerSavingByChanging * TotalHours)/HMYears;
+        UI.println("\nThe total power saved per year is " + TotalPowerSaved + " Kilowatts by switching from Incandescent bulbs to LED.");
+        double TotalCostSaved = (IncandescentPerYear + IncandescentPowerCostPerYear)-(LedCostPerYear + LedPowerCostPerYear);
+        UI.println("The total money saved per year by switching to LED (not including initial overheads) is " + fmt1.format(TotalCostSaved));
+        double BreakEven = (NewBulbs * costBulb)/TotalCostSaved;
+        UI.println("The number of years it will take to break even by paying the extra " + fmt1.format(costBulb - incadescentPrice) + " for the LED bulbs will be " + fmt2.format(BreakEven) + " years.");
+        UI.println("After this point in time, it will be much cheaper to run the house on LED lightbulbs than incandescent bulbs as the power consumption is much lower. Not to mention you will have to replace the LED lightbulbs much less frequently.");
+    }
+
+    /** This program asks the user to enter the devices they have, how many of each they have
+     *  and then prints out how much it's costing them to have them on standby.
+     */
+
+    public void StandbyCostsChallenge() {
+
+        double Air_Conditioner = 0.9;
+        double Phone_Charger = 0.26;
+        double LCD_Monitor = 1.13;
+        double Desktop = 2.84;
+        double Laptop = 8.9;
+        double Laser_Printer = 1.58;
+        double CRT_TV = 3.06; 
+        double Rear_TV = 6.97;
+        double AM_FM_Tuner = 1.12;
+        double CD_Player = 5.04;
+        double DVD_Player = 1.55;
+        double Game_Console = 1.01;
+        double Microwave_Oven = 3.08;
+        double PowerPerKwh = 0.2034;
+
+        UI.printf("
+        UI.printf("
+        UI.printf("
+        UI.printf("
+
+        UI.println("Here are a list of appliances and their data we have on record:\n");
+        UI.println("Air Conditioner, Mobile Phone Charger, LCD Computer Monitor, Desktop, Laptop, Laser Printer,");
+        UI.println("CRT Television, Rear Projection Television, AM/FM Tuner, CD Player, DVD Player, Game Console, Microwave Oven\n");
+
+        String Answer = UI.askString("Do you have any Air Conditioners? ");
+        String confirm = "Yes";
+        String confirm1 = "yes";
+
+        if (Answer.equals(confirm) || Answer.equals(confirm1)) {
+            double NoOfHoursUnused = UI.askInt("How many hours of the day do you think your device is turned off?: ");
+            int NoOfAC = UI.askInt("How many Air Conditioners do you have?: ");
+            double AC_Costs = NoOfAC * NoOfHoursUnused * Air_Conditioner * PowerPerKwh;
+            println("Your " + NoOfAC + " Air Conditioners are costing you " + fmt2.format(AC_Costs));
+        }
+
+        else {
+            return 0;
+        }
+
+        
+        
+        
+    }
+    /** ---------- The code below is already written for you ---------- **/
+    /** Constructor, sets up the user interface */
+    public PowerCalculator(){
+        UI.initialise();
+        UI.addButton("Core", this::calculateCostSaverCore); 
+        UI.addButton("Completion", this::calculateCostSaverCompletion );
+        UI.addButton("Challenge", this::StandbyCostsChallenge);
+        UI.addButton("Quit", UI::quit);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int width = (int) screenSize.getWidth();
+        int height = (int) screenSize.getHeight();
+        UI.setWindowSize(width, height);
+        UI.setDivider(1);    
+    }
+}

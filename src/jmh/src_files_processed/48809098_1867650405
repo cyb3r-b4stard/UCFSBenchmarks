@@ -1,0 +1,95 @@
+
+/* #### ### ####### - ######
+ * ####:
+ * ########:
+ * ##:
+ */
+
+import ecs100.*;
+import java.awt.Color;
+
+/** #### # ########## ## ### #######.
+ *  ####### ### ### ###### #######,
+ * ########## ##### ### ####### ####.
+ * ## # ###### #### ### #######, ## ####### ### ###### ##### ## ## ####
+ * ## # ###### ####### ### ##### ####, ## ##### # ### ###### ## ### #####.
+ */
+
+public class GliderSimulation{
+
+    public static final int RIGHT_WALL = 600; 
+    public static final int CEILING = 350;    
+    public static final double FLOOR = 400;   
+
+    public GliderSimulation(){
+        UI.addButton("Start", this::throwGliders);
+        UI.addSlider("Delay", 10, 80, 40, this::setDelay);
+        UI.addButton("Quit", UI::quit);
+        UI.setDivider(0.0); 
+        this.drawRoom();    
+    }
+
+    private int delay = 40;
+
+    public void throwGliders(){
+        UI.setImmediateRepaint(false);  
+
+        while (true) {
+            Glider gliderA = this.makeNewGlider();
+            Glider gliderB = this.makeNewGlider();
+            gliderA.draw();
+            gliderB.draw();
+
+            while ( gliderA.getHeight()> 0 || gliderB.getHeight()>0 ){
+                gliderA.move();
+                gliderB.move();
+
+                UI.clearGraphics();   
+                gliderA.draw();
+                gliderB.draw();
+                this.drawRoom();
+                UI.repaintGraphics();
+
+                UI.sleep(delay);
+                if (gliderA.getHeight()>=CEILING ){ 
+                    gliderA.setSpeed(Math.random()*4);
+                }
+                if (gliderB.getHeight() >= CEILING ){
+                    gliderB.setSpeed(Math.random()*4);
+                }
+                if (gliderA.getX()>=RIGHT_WALL ){ 
+                    gliderA = this.makeNewGlider();  
+                }
+                if (gliderB.getX() >= RIGHT_WALL ){
+                    gliderB = this.makeNewGlider();
+                }
+            }
+            UI.sleep(1000);  
+
+        }
+    }
+
+    /** Helper method that makes a new Glider with random initial values */
+    public Glider makeNewGlider(){
+        double initHeight = 50 + Math.random()*(CEILING-100); 
+        double xSpeed = Math.random()*12;       
+        return new Glider(initHeight, xSpeed);
+    }        
+
+    public void drawRoom(){
+        UI.setColor(Color.black);
+        UI.fillRect(0, FLOOR, RIGHT_WALL+50, 20);    
+        UI.setColor(Color.lightGray);
+        UI.fillRect(RIGHT_WALL, FLOOR-CEILING, 50, CEILING);    
+        UI.setColor(Color.gray);
+        UI.drawLine(0, FLOOR-CEILING, RIGHT_WALL, FLOOR-CEILING); 
+    }
+
+    public void setDelay(double v){this.delay = (int)v;}
+
+    /** Create a new Simulation object */
+    public static void main(String[] arguments){
+        new GliderSimulation();
+    }        
+
+}

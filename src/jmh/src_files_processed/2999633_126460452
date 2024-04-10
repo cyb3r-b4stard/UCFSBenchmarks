@@ -1,0 +1,143 @@
+import java.util.*;
+import java.awt.event.*;
+/**
+ * ########### ### #### ### ###### ####.
+ * 
+ * @###### (### ####) 
+ * @####### (#### ############## #### ### #####)
+ */
+public class Pong implements KeyListener
+{
+    Ball meinBall;
+    Rechteck schlaeger1, schlaeger2;
+    boolean schlaeger1Hoch, schlaeger1Runter,schlaeger2Hoch,schlaeger2Runter;
+    int intervall, schlaegerGeschwindigkeit;
+    Timer timer;
+    TimerTask timerTask;
+    /**
+     * Konstruktor für Objekte der Klasse Pong
+     */
+    public Pong()
+    {
+        meinBall = new Ball(200,150,10,"blau");
+        schlaeger1 = new Rechteck(10,150,5,60,"schwarz");
+        schlaeger2 = new Rechteck(385,150,5,60,"schwarz");
+        Leinwand meineLeinwand = Leinwand.gibLeinwand();
+        meineLeinwand.fenster.addKeyListener(this);
+
+        intervall = 10;
+        
+    }
+
+    public void schlaeger1Verschieben(int pRichtung)
+    {
+       if(pRichtung<0&&schlaeger1.yPosition>0)
+       {
+           schlaeger1.verschieben(0,pRichtung);
+       }
+       if(pRichtung>0&&schlaeger1.yPosition<300-schlaeger1.hoehe)
+       {
+           schlaeger1.verschieben(0,pRichtung);
+       }
+    }
+    public void schlaeger2Verschieben(int pRichtung)
+    {
+        if(pRichtung<0&&schlaeger2.yPosition>0)
+       {
+           schlaeger2.verschieben(0,pRichtung);
+       }
+        if(pRichtung>0&&schlaeger2.yPosition<300-schlaeger2.hoehe)
+       {
+           schlaeger2.verschieben(0,pRichtung);
+       }
+    } 
+    
+    
+    public void timerAction()
+    {
+        meinBall.bewegen(int pY1,int pY2);
+        if(schlaeger1Hoch)
+        {
+            this.schlaeger1Verschieben(-5);
+        }
+        if(schlaeger1Runter)
+        {
+            this.schlaeger1Verschieben(5);
+        }
+        if(schlaeger2Hoch)
+        {
+            this.schlaeger2Verschieben(-5);
+        }
+        if(schlaeger2Runter)
+        {
+            this.schlaeger2Verschieben(5);
+        }
+    }
+    public void keyPressed(KeyEvent e)
+    {
+        if(e.getKeyCode()==KeyEvent.VK_UP)
+        {
+            schlaeger2Hoch=true;
+            schlaeger2Runter=false;
+        }
+        if(e.getKeyCode()==KeyEvent.VK_DOWN)
+        {
+            schlaeger2Runter=true;
+            schlaeger2Hoch=false;
+        }
+        if(e.getKeyCode()==KeyEvent.VK_W)
+        {
+            schlaeger1Runter=false;
+            schlaeger1Hoch=true;
+        }
+        if(e.getKeyCode()==KeyEvent.VK_S)
+        {
+            schlaeger1Runter=true;
+            schlaeger1Hoch=false;
+        }
+        if(e.getKeyCode()==KeyEvent.VK_SPACE)
+        {
+            if(timer==null){
+                timer=new Timer();
+                timerTask = new TimerTask() {
+                    public void run() {
+                        timerAction();
+                    }
+                };
+                timer.schedule(timerTask, 0, intervall);
+            }
+        }
+        if(e.getKeyCode()==KeyEvent.VK_ESCAPE)
+        {
+            if(timer!=null){
+                timerTask.cancel();
+                timer.cancel();
+                timerTask=null;
+                timer=null;
+            }
+        }
+    }
+    public void keyReleased(KeyEvent e)
+    {
+        if(e.getKeyCode()==KeyEvent.VK_UP)
+        {
+            schlaeger2Hoch=false;
+        }
+        if(e.getKeyCode()==KeyEvent.VK_DOWN)
+        {
+            schlaeger2Runter=false;
+        }
+        if(e.getKeyCode()==KeyEvent.VK_W)
+        {
+            schlaeger1Hoch=false;
+        }
+        if(e.getKeyCode()==KeyEvent.VK_S)
+        {
+            schlaeger1Runter=false;
+        }        
+        
+    }
+    public void keyTyped(KeyEvent e)
+    {
+    }
+}

@@ -1,0 +1,176 @@
+
+/**
+ * ##### ####### = #### ##### ########## ## ##### ### #### ### ##### ####### ### # ########## #######.
+ * 
+ * @######: #### ###### 
+ * @####: ##/##/####
+ */
+public class BusStop
+{
+    private final int MAX_OF_BUSES = 1000;
+    private BusArrival[] _buses;
+    private int _noOfBuses;
+
+    /**
+     * Constructor for objects of class BusStop
+     */
+    public BusStop()
+    {
+        _buses = new BusArrival[MAX_OF_BUSES];
+        _noOfBuses = 0;
+    }
+    
+    /**
+     * Constructor for objects of class BusStop
+     */
+    public BusStop(int size)
+    {
+        BusArrival[] _buses = new BusArrival[size];
+        _noOfBuses = 0;
+    }
+
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public int getNoOfBuses()
+    {
+        return _noOfBuses;
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public BusArrival[] getBuses()
+    {
+        BusArrival[] other = new BusArrival[_buses.length];
+        for(int i=0; i<_buses.length; i++)
+        {
+            other[i] = new BusArrival(_buses[i]);
+        }
+        return other;
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public boolean add(int line, int pass, Time1 t){
+        if (getNoOfBuses() < MAX_OF_BUSES)
+        {
+            _buses[getNoOfBuses()] = new BusArrival (line, pass,t);
+            _noOfBuses++;
+            return true;
+        }
+        return false;
+    } 
+    
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public void removeAllLine(int line)
+    {
+        BusArrival[] buses = new BusArrival[_buses.length];
+        int noOfBuses = 0;
+        for (int i = 0 ; i < getNoOfBuses() ; i++)
+        {
+            if (_buses[i].getLineNum() != line)
+            {
+                buses[noOfBuses] = new BusArrival (_buses[i]);
+                noOfBuses++; 
+            }
+        }
+        
+        for ( int j = 0 ; j < _buses.length ; j++)
+        {
+            _buses[j] = buses[j];       
+        }
+        _noOfBuses = noOfBuses;
+    }     
+
+     /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public int getPopularLine()
+    {
+        int line = 0; 
+        int mostArrivels = 0;
+        int counter = 0;
+        for (int i = 0 ; i < getNoOfBuses() ; i++)
+        {
+            for (int j = 0 ; j < getNoOfBuses() ; j++)
+            {
+                if (_buses[i].getLineNum() == _buses[j].getLineNum())
+                {
+                    counter++;
+                }
+            } 
+       
+            if (mostArrivels < counter)
+            {
+                mostArrivels = counter;
+                line = _buses[i].getLineNum();
+            }
+        }  
+        return line;
+    }
+    
+    public long getAverageTime()
+    {
+        int sum = 0;
+        for (int i = 0, j = 1 ; j < getNoOfBuses() ; j++, i++)
+            {
+               sum = sum + _buses[i].elapsedTime(_buses[j]); 
+            }
+        return ((long)(sum*60/getNoOfBuses());
+            
+    }
+    
+    public int totalPassengers()
+    {
+        int total = 0;
+        for (int i = 0; i < getNoOfBuses() ; i++)
+            {
+               total = total + _buses[i].getNoOfPass(); 
+            }
+        return total;            
+    }
+    
+    public BusArrival maxPassengers()
+    {
+        BusArrival fullest = null;
+        for (int i = 0, j = 1 ; j < getNoOfBuses() ; j++, i++)
+            {
+               if(_buses[i].fuller(_buses[j]) == true)
+                {
+                   fullest = new BusArrival(_buses[i]);
+                }
+               else fullest = new BusArrival(_buses[j]);
+            }
+        return fullest;            
+    }
+    
+    public String toString()
+    {
+       String arrayPrinting = "";
+       for (int i = 0 ; i < getNoOfBuses() ; i++)
+        {
+            arrayPrinting = arrayPrinting + _buses[i].toString() + "\n";
+        }
+       return arrayPrinting;    
+    }
+
+}

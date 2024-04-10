@@ -1,0 +1,128 @@
+import java.util.Scanner;
+/**
+ * ##### # ########### ## ##### ######### ####.
+ * 
+ * @###### ### ####
+ * @#######  #### ### ####
+ */
+public class CrapsGame
+{
+    private int amount;
+    private PairOfDice theDice;
+    private int thePoint;
+    
+    public CrapsGame(int startAmount)
+    {
+        amount = startAmount;
+        theDice = new PairOfDice();
+    }
+    
+    public void buyMoreChips(int additionalAmount)
+    {
+        amount = amount + additionalAmount;
+    }
+
+    public void printAmount()
+    {   System.out.println("You have " + amount + "$ worth of chips"); }
+    
+
+    
+    private void waitForEnter()
+    {
+        Scanner keyIn = new Scanner(System.in);
+        System.out.print("Your point is " + thePoint + ".  Press the enter key to continue");
+        keyIn.nextLine();
+    }
+
+    private int getBetAmount()
+    {
+        if (amount <= 0) return 0;
+        Scanner keyIn = new Scanner(System.in);
+        System.out.print("Enter amount to bet or 0 to end game : ");
+        return keyIn.nextInt();
+    }
+
+    private void clearScreen()
+    {
+        System.out.print("\f");
+    }
+    
+    public void playOnce(int bet)
+    {
+        int currentRoll;
+        
+        clearScreen();
+        
+        if (bet > amount)
+        {
+            System.out.println("You do not have enough chips to make a " + bet + "$ bet.");
+        }
+        
+        else
+        {
+            theDice.roll();
+            theDice.print();
+            currentRoll = theDice.getValue();
+            thePoint = currentRoll;
+            System.out.println("First Roll is " + thePoint);
+            
+            if (thePoint == 7 || thePoint == 11)
+            {
+                System.out.println("Ayyyy, get your money " + bet + "$");
+                amount+= bet;
+                System.out.println("You have" + amount)
+            }        
+            
+            else if (thePoint == 2 || thePoint == 3 || thePoint == 12)
+            {
+                System.out.println("You are garbage, you lose " + bet + "$");
+                amount-= bet;
+                System.out.print.ln("You have" + amount);
+            }
+            
+            else
+            {
+                currentRoll = 0; 
+               
+                while(currentRoll != 7  && currentRoll != thePoint)
+                {
+                    waitForEnter();
+                    clearScreen();
+                    theDice.roll();
+                    theDice.print();
+                    currentRoll = theDice.getValue();
+                    System.out.println("Roll is " + currentRoll);
+                }
+                
+                if (currentRoll == 7)
+                {
+                    System.out.println("You are garbage, you lose " + bet + "$");
+                    amount-= bet;
+                    Sytem.out.println("You have" + amount);
+                }
+                else
+                {
+                    System.out.println("Ayyyy, get that money " + bet + "$");
+                    amount+= bet;
+                    System.out.println("You have" + amount);
+                }
+            }
+        }
+    }
+    
+    public void playCraps()
+    {
+        clearScreen();
+        printAmount();
+        int betAmount = getBetAmount();
+        while (amount > 0 && betAmount > 0)
+        {
+            playOnce(betAmount);
+            printAmount();
+            betAmount = getBetAmount();
+        }
+        System.out.println("Thanks for playing Craps");
+            
+    }
+        
+}

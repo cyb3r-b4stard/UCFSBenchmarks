@@ -1,0 +1,292 @@
+
+/* #### ####### ## ######### ### ### */
+/* $##: #############################.####,# #.#.#.# ####/##/## ##:##:## ###### ### $ */
+
+package sgae.clientes;
+
+import java.util.List;
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.text.ParseException;
+import sgae.nucleo.gruposMusicales.ExcepcionGruposMusicales;
+import sgae.nucleo.gruposMusicales.InterfazControladorGruposMusicales;
+import sgae.nucleo.gruposMusicales.GrupoMusical;
+import sgae.nucleo.gruposMusicales.ControladorGruposMusicales;
+import sgae.nucleo.personas.InterfazControladorPersonas;
+import sgae.nucleo.personas.ControladorPersonas;
+import sgae.nucleo.personas.Persona;
+import sgae.nucleo.personas.ExcepcionPersonas;
+import javax.naming.*;
+import javax.rmi.*;
+
+
+/**
+ * ##### ### ## ##### ## ####### (######## ## #######) ## ## ##########
+ * ## ###### ### ########.
+ * @###### ###### (##### ###### # ###### ######)
+ * @####### #.#
+ */
+class ClienteGestionGruposMusicales {
+    public final String ClienteGestionGruposMusicales_RCSId =
+        "$Id: ClienteGestionGruposMusicales.java,v 1.1.1.1 2017/04/03 20:18:21 aadx05 Exp $";
+    /* Definir variables de clase, visibles para todos los mï¿œtodos internos */
+    
+    InterfazControladorGruposMusicales controlaGrupos;
+    InterfazControladorPersonas controlaPersonas
+    char opcion = ' ';
+    String linea = null;
+    String cif;
+    String dni;
+    String nombre;
+    String apellidos;
+    String fechaNacimiento;
+    String fechaCreacion;
+    List<Persona> listaM;
+
+
+    /**
+     * Metodo main que crea un objeto tipo ClienteGestionGruposMusicales
+     * @param args contiene los argumentos para crear el objeto cliente de tipo ClienteGestionGruposMusicales (el nombre o direccion IP de la maquina cliente y el puerto en el que escucha
+     */
+
+    public static void main(String [] args)
+    {
+        if((args.length)!=2)
+        {
+            System.out.println("Número de parámetros incorrecto");
+            System.exit(-1);
+        }
+        ClienteGestionGruposMusicales cliente= new ClienteGestionGruposMusicales(args[0],args[1]);
+    }
+    /**
+     * Constructor de la clase ClienteGestionGruposMusicales que inicializa la lista de personas y crea un objeto ProtocoloGestionGruposMusicalesCliente
+     * copia la referecia del objeto ProtocoloGestionGruposMusicalesCliente a las variables de tipo InterfazControladorPersonas y InterfazControladorGruposMusicales.
+     * Realiza las operaciones necesarias y llama a los metodos dependiendo del valor que recibe por teclado.
+     * @param name_grupos Nombre con el que está registrada la referencia al controlador de grupos
+     * @param name_personas Nombre con el que está registrada la referencia al controlador de personas
+     */
+    public ClienteGestionGruposMusicales (String name_grupos, String name_personas)
+    { 
+        Object sg;
+        Object sp;
+        this.listaM = new ArrayList<>();
+        try 
+        {
+            InitialContext ctx = new InitialContext();
+            sg = ctx.lookup("ServicioControladorGruposMusicales-05");
+            sp = ctx.lookup("ServicioControladorPersonas-05");
+            controlaGrupos = (InterfazControladorGruposMusicales) PortableRemoteObject.narrow(sg,InterfazControladorGruposMusicales.class);
+            controlaPersonas = (InterfazControladorPersonas) PortableRemoteObject.narrow(sp,InterfazControladorPersonas.class);
+        }
+        catch (Exception e)
+        {
+            /* Si se produce algï¿œn error al obtener las referencias
+               a los controladores, no podemos continuar en el programa */
+            System.out.println(e.toString());
+            System.exit(-1);
+        }
+        Scanner entrada = new Scanner(System.in);
+        do {
+            try {
+                System.out.println(generarMenu());
+                if (entrada.hasNext())
+                    linea = entrada.nextLine();
+                opcion = linea.charAt(0);
+                switch (opcion) {
+                case '1':
+
+                    List<String> lista=controlaGrupos.listarGruposMusicales();
+                    System.out.println(lista);
+                    break;
+                case '2':
+                try{
+                    System.out.println("Introduzca el cif del nuevo grupo:  ");
+                     if (entrada.hasNext())
+                     cif= entrada.nextLine();
+                     
+                      if(cif.compareTo("")==0)
+                     {
+                         System.out.println("ERROR, No puede introducir un cif vacio");
+                         break;
+                     }
+
+                    System.out.println("Introduzca el nombre del nuevo grupo:   ");
+                     if (entrada.hasNext())
+                     nombre= entrada.nextLine();
+                     
+                      if(nombre.compareTo("")==0)
+                     {
+                         System.out.println("ERROR, No puede introducir un nombre vacio");
+                         break;
+                     }
+
+                    System.out.println("Introduzca la fecha de creacion del nuevo grupo:   ");
+                     if (entrada.hasNext())
+                     fechaCreacion= entrada.nextLine();
+                     
+                      if(fechaCreacion.compareTo("")==0)
+                     {
+                         System.out.println("ERROR, No puede introducir una fecha de creacion vacia");
+                         break;
+                     }
+                    controlaGrupos.crearGrupoMusical(cif,nombre,fechaCreacion);
+                }
+                catch(ParseException p){
+                System.out.println(p.toString());
+                }
+                catch(ExcepcionGruposMusicales egm)
+                {
+                    System.out.println("ExcepcionGruposMusicales"+egm.getCif()+egm.getCausaFallo());
+                }
+
+                    break;
+                case '3':
+                try{
+                System.out.println("Introduzca el cif del grupo que desea borrar:  ");
+                     if (entrada.hasNext())
+                     cif= entrada.nextLine();
+                    controlaGrupos.borrarGrupoMusical(cif);
+
+                }
+                catch(ExcepcionGruposMusicales gm)
+                {
+                    System.out.println("ExcepcionGruposMusicales"+gm.getCif()+gm.getCausaFallo());
+                }
+                    break;
+                case '4':
+                    List<String> listaC=controlaPersonas.listarPersonas();
+                    System.out.println(listaC);
+                    break;
+                case '5':
+                    try{
+                    System.out.println("Introduzca el dni:  ");
+                     if (entrada.hasNext())
+                     dni= entrada.nextLine();
+                     if(dni.compareTo("")==0)
+                     {
+                         System.out.println("ERROR, No puede introducir un dni vacio");
+                         break;
+                     }
+
+                    System.out.println("Introduzca el nombre de la nueva persona:   ");
+                     if (entrada.hasNext())
+                     nombre= entrada.nextLine();
+                     if(nombre.compareTo("")==0)
+                     {
+                         System.out.println("ERROR, No puede introducir un nombre vacio");
+                         break;
+                     }
+
+                    System.out.println("Introduzca los apellidos de la nueva persona:   ");
+                     if (entrada.hasNext())
+                     apellidos= entrada.nextLine();
+                     if(apellidos.compareTo("")==0)
+                     {
+                         System.out.println("ERROR, No puede introducir apellidos vacio");
+                         break;
+                     }
+
+                    System.out.println("Introduzca la fecha de nacimiento de la nueva persona:   ");
+                     if (entrada.hasNext())
+                     fechaNacimiento= entrada.nextLine();
+                     if(fechaNacimiento.compareTo("")==0)
+                     {
+                         System.out.println("ERROR, No puede introducir una fecha de nacimiento vacia");
+                         break;
+                     }
+                    controlaPersonas.crearPersona(dni, nombre, apellidos, fechaNacimiento);
+                }
+                catch(ParseException p){
+                System.out.println(p.toString());
+                }
+                catch(ExcepcionPersonas ep)
+                {
+                    System.out.println("ExcepcionPersonas"+ep.getDniPersona()+ep.getCausaFallo());
+                }
+                    break;
+                case '6':
+                    try{
+                        System.out.println("Introduzca el dni de la persona que desea borrar:  ");
+                        if (entrada.hasNext())
+                        dni= entrada.nextLine();
+                        controlaPersonas.borrarPersona(dni);
+
+                }
+                catch(ExcepcionPersonas ep)
+                {
+                    System.out.println("ExcepcionPersonas"+ep.getDniPersona()+ep.getCausaFallo());
+                }
+                    break;
+                case '7':
+                    try{
+                        System.out.println("Introduzca el dni del miembro que desea aï¿œadir:  ");
+                        if (entrada.hasNext())
+                        dni= entrada.nextLine();
+                        System.out.println("Introduzca el cif del grupo al cual desea aï¿œadir el miembro anterior  :  ");
+                        if (entrada.hasNext())
+                        cif= entrada.nextLine();
+                        controlaGrupos.anadirMiembro(cif, dni);
+                    }
+                    catch(ExcepcionGruposMusicales eg)
+                    {
+                        System.out.println("ExcepcionGruposMusicales"+eg.getCif()+eg.getCausaFallo());
+                    }
+
+                   catch(ExcepcionPersonas ep)
+                   {
+                       System.out.println("ExcepcionPersonas"+ep.getDniPersona()+ep.getCausaFallo());
+                   }
+
+                    break;
+                case '8':
+                    try{
+                        System.out.println("Introduzca el cif del grupo cuyos miembros desea visualizar :  ");
+                        if (entrada.hasNext())
+                        cif= entrada.nextLine();
+                        listaM=controlaGrupos.recuperarMiembros(cif);
+                        for (Persona p : listaM)
+                            {
+                                System.out.println("Nombre: "+p.getNombre() + " Apellidos: "+ p.getApellidos());
+                            }
+                        }
+                        catch(ExcepcionGruposMusicales eg)
+                        {
+                            System.out.println("ExcepcionGruposMusicales"+eg.getCif()+eg.getCausaFallo());
+                        }
+                        break;
+                case 't': 
+                    break;
+                default:
+                    System.out.println("Opciï¿œn: " + opcion);
+                }
+            }
+            catch (Exception e) {
+                /* Se ha producido algï¿œn error al tratar una
+                   opciï¿œn, se notifica y se vuelve al menï¿œ
+                   principal (el bloque try-catch estï¿œ dentro
+                   del bloque do-while) */
+                System.out.println(e.toString());
+                e.printStackTrace();
+            }
+        } while ((opcion !='t') && (opcion !='T'));
+    }
+    /**
+     * Metodo que genera el menu de la aplicacion y muestra las diferentes opciones disponibles
+     * @return cadenaMenu Cadena que contiene todas las opciones del menÃº que verÃ¡ el cliente al arrancar el programa
+     */
+    private static String generarMenu() {
+        String cadenaMenu = "";
+        cadenaMenu += "\nMenú del cliente\n\n";
+        cadenaMenu += "1 - listar grupos musicales\n";
+        cadenaMenu += "2 - crear un nuevo grupo musical\n";
+        cadenaMenu += "3 - borrar un grupo musical\n";
+        cadenaMenu += "4 - listar personas\n";
+        cadenaMenu += "5 - crear una nueva persona\n";
+        cadenaMenu += "6 - borrar una persona\n";
+        cadenaMenu += "7 - añadir una persona a un grupo musical\n";
+        cadenaMenu += "8 - mostrar miembros de un grupo musical\n";
+        cadenaMenu += "t - terminar\n\n";
+        return cadenaMenu;
+ }
+}
+

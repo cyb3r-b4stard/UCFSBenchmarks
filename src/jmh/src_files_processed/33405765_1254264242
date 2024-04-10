@@ -1,0 +1,61 @@
+import java.util.Scanner;
+import java.util.Random;
+
+/**
+ * ##### # ########### ## ##### ##_###### ####.
+ * 
+ * @#######
+ * @#/##/##
+ */
+public class MS_Crypto
+{
+    public static int findIndex(char[] alphabet, char letter){
+        for(int i = 0; i < alphabet.length; i++){
+            if(alphabet[i] == letter)return i;
+
+        }
+        return alphabet.length;
+    }
+
+    public static void main(String [] args){
+        char[] alph = new char[]
+            {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'y', 'x', 'z'};
+        StdOut.println("Enter secret message:");
+        Scanner s = new Scanner(System.in);
+        String input = s.nextLine();
+        String str = "";	
+        char alph2[] = new char[alph.length];      
+        Random r = new Random();  
+        for(int i = 0; i < alph.length; i++){
+            StdOut.print(alph[i]);
+
+        }
+        char[] temp = new char[alph.length];
+        for (int i=0;i<alph.length;i++){ temp[i] = alph[i];}
+        StdOut.println();
+        for (int i=0; i<temp.length; i++) {
+            int randomPosition = r.nextInt(temp.length-i); 
+            alph2[i] = temp[randomPosition];
+            if(i < temp.length-1){
+                for(int j = randomPosition; j < temp.length-i-1; j++){
+                    temp[j] = temp[j+1];
+                }
+            }
+
+        }
+
+        for(int i = 0; i < alph.length; i++){
+            StdOut.print(alph2[i]);
+
+        }
+        StdOut.println();
+        for(int i = 0; i < input.length(); i++){
+            char letter = input.charAt(i);
+            int index = findIndex(alph, letter);
+            if(index < alph.length) str += alph2[index];
+            else                    str += letter;
+        }
+    }
+
+    StdOut.println("Coded Message:" + "\n" + str);
+}

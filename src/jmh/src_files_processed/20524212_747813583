@@ -1,0 +1,82 @@
+
+
+import java.awt.*;
+import java.awt.geom.*;
+
+
+
+/**
+ * @########### ### #### ### ###### #####.
+ * 
+ * @###### (### ####) 
+ * @####### (#### ############## #### ### #####)
+ */
+public class Fußgangerampel
+{
+    private Canvas leinwand;
+    private Kreis lichtOben;
+    private Kreis lichtUnten;
+    private Rechteck gehaeuse;
+    private int xPos;
+    private int yPos;
+    private String zustand;
+
+    /**
+     * Konstruktor
+     */
+    public Fußgangerampel(int xPos, int yPos, int breite, Canvas leinwand)
+    {
+        this.leinwand = leinwand;
+        leinwand.setVisible(true);
+        this.xPos = xPos;
+        this.yPos = yPos;
+        gehaeuse = new Rechteck(xPos, yPos, breite, 2*breite, Color.black,leinwand); 
+        lichtOben = new Kreis(xPos, yPos, breite, Color.red,leinwand);
+        lichtUnten = new Kreis(xPos, yPos+breite, breite, Color.green,leinwand);
+        
+        
+    }
+
+    
+    public void zeichnen()
+    {
+        leinwand.setForegroundColor(gehaeuse.gibFarbe());
+        leinwand.fillRectangle(xPos, yPos,gehaeuse.gibBreite(), gehaeuse.gibHoehe());
+        leinwand.setForegroundColor(lichtOben.gibFarbe());
+        leinwand.fillCircle(lichtOben.gibXPosition(), lichtOben.gibYPosition(),lichtOben.gibDurchmesser());
+        leinwand.setForegroundColor(lichtUnten.gibFarbe());
+        leinwand.fillCircle(lichtUnten.gibXPosition(), lichtUnten.gibYPosition(),lichtUnten.gibDurchmesser());
+
+    }
+
+   
+    public void loeschen()
+    {
+        leinwand.eraseRectangle(xPos, yPos,gehaeuse.gibBreite(), gehaeuse.gibHoehe());
+    }
+    
+    public void aufRotSchalten(){
+        gehaeuse.zeichnen();
+        lichtOben.zeichnen();
+        zustand = "rot";
+    }    
+    
+    public void aufGrünSchalten(){
+        gehaeuse.zeichnen();
+        lichtUnten.zeichnen();
+        zustand = "grün";
+    }    
+    
+    public void ausSchalten(){
+        gehaeuse.zeichnen();
+    }  
+    
+    public void umSchalten(){
+        switch (zustand( {
+            case "rot": aufGrünSchalten(); break;
+            case "grün"; aufRotSchalten(); break;
+        }
+        }
+    }  
+    
+}

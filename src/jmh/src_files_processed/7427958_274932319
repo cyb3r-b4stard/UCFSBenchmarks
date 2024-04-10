@@ -1,0 +1,67 @@
+import sum.kern.*;
+import sum.werkzeuge.*;/**
+ *
+ */
+public class Spiel 
+{
+    /* Attribute */
+    public Spieler[] alleSpieler;
+    public Bildschirm screen;
+    public Buntstift pen;
+    public Uhr clock;
+
+    /* Methoden */
+    public Spiel()
+    {
+        screen = new Bildschirm();
+        pen = new Buntstift();
+        alleSpieler = new Spieler[] ;
+        clock = new Uhr();
+        for (int i =0; i<5; i++)
+        {
+            alleSpieler[i].setzePunkte(0);
+            alleSpieler[i].setzexpos(i*100+10);
+        }
+        berechne();
+    }
+
+    public void berechne()
+    {
+        while (i<11 && spieler1.gibPunkte() < 100 && spieler2.gibPunkte() < 100)
+        {
+            for (int i =0; i<5; i++)
+            {
+                alleSpieler[i].setzePunkte(alleSpieler[i].gibPunkte() + alleSpieler[i].gibWurfergebnis());
+                alleSpieler[i].setzeypos(alleSpieler[i].gibypos() + 20);
+                pen.bewegeBis(alleSpieler[i].gibxpos(),alleSpieler[i].gibypos());
+                pen.schreibeZahl(alleSpieler[i].gibErgebnis());
+                pen.bewegeBis(alleSpieler[i].gibxpos()+20,alleSpieler[i].gibypos());
+                pen.schreibeZahl(alleSpieler[i].gibPunkte());
+                clock.warte(200);
+            }
+        }
+
+        if (punkte1 > punkte2)
+        {   pen.bewegeBis(400,500);
+            pen.schreibeText("Sieger: Klaus");
+        }
+        else
+        {
+            pen.bewegeBis(400,500);
+            pen.schreibeText("Sieger: Lisa");
+        }
+    }
+
+    public void spielfeld()
+    {
+        pen.normal();
+        pen.bewegeBis(150,ypos);
+        pen.schreibeZahl(ergebnis1);
+        pen.bewegeBis(200,ypos); 
+        pen.schreibeZahl(spieler1.gibPunkte());
+        pen.bewegeBis(300,ypos);
+        pen.schreibeZahl(ergebnis2);
+        pen.bewegeBis(350,ypos);
+        pen.schreibeZahl(spieler2.gibPunkte());
+    }
+}

@@ -1,0 +1,139 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+public class MovingBallPanel extends JPanel
+{
+    ArrayList<Ball> snake = new ArrayList<Ball>();
+    ArrayList<Ball> ted2 = new ArrayList<Ball>();
+    int count = 0;
+    Ball first = new Ball(25,10,10,Color.yellow);
+    Ball ted = new Ball(15, (int)(Math.random()*1000 + 50)-50, (int)(Math.random()*700 + 50)-50, Color.red);
+    boolean x;
+
+
+    
+    public MovingBallPanel(Color backColor)
+    {
+        setBackground(backColor); 
+        setFocusable(true); 
+        requestFocus();
+        addKeyListener(new Dog());
+        x = true;
+        snake.add(first);
+        ted2.add(ted);
+    }
+    
+    public void paintComponent(Graphics g)
+    {
+       if(x == true)
+       {
+        super.paintComponent(g);
+        for(int i = count; i>=0; i--)
+        {
+            int previousX = snake.get(i-1).getX();
+            int previousY = snake.get(i-1).getY();
+            if(i==0)
+            {
+                snake.get(i).drawBall(g);
+                snake.get(i).move();
+            }
+            else
+            {
+                snake.get(i).drawBall(g);
+                snake.get(i).setX(previousX);
+                snake.get(i).setY(previousY);
+        }
+        for (int i = 0; i<1; i++)
+        {
+            ted2.get(0).drawBall(g);
+        }
+        if ( snake.get(0).getX()<0)
+        {
+            x = false;
+            ted.setX(30);
+            JOptionPane.showMessageDialog(null, "You lose");
+        }
+        else
+        {
+            if(((snake.get(0).getX() >= ted2.get(0).getX() && snake.get(0).getX()<= ted2.get(0).getX()+25) || (snake.get(0).getX()+25 >= ted2.get(0).getX() && snake.get(0).getX()+25<= ted2.get(0).getX()+25))  && ((snake.get(0).getY() >= ted2.get(0).getY() && snake.get(0).getY() <= ted2.get(0).getY()+25) || ((snake.get(0).getY()+25 >= ted2.get(0).getY()) && (snake.get(0).getY()+25 <= ted2.get(0).getY()+25))))
+            {
+                int dir = snake.get(count).getDirection();
+                if(dir == 0)
+                {
+                    snake.add((new Ball(25, snake.get(count).getX(), snake.get(count).getY()+25, Color.yellow)));
+                    snake.get(count+1).setDirection(snake.get(count).getDirection());
+                }
+                else if(dir == 90)
+                {
+                    snake.add((new Ball(25, snake.get(count).getX()-25, snake.get(count).getY(), Color.yellow)));
+                    snake.get(count+1).setDirection(snake.get(count).getDirection());
+                }
+                    else if(dir == 180)
+                    {
+                        snake.add((new Ball(25, snake.get(count).getX(), snake.get(count).getY()-25, Color.yellow)));
+                        snake.get(count+1).setDirection(snake.get(count).getDirection());
+                    }
+                        else
+                        {
+                            snake.add((new Ball(25, snake.get(count).getX()+25, snake.get(count).getY(), Color.yellow)));
+                            snake.get(count+1).setDirection(snake.get(count).getDirection());
+                        }
+                    ted2.remove(0);
+                    ted2.add(new Ball(15, (int)(Math.random()*1000 + 50)-50, (int)(Math.random()*700 + 50)-50, Color.red)); 
+                    count++;
+            }
+            repaint();
+    }
+    }
+        
+    }
+    
+    private class Dog extends KeyAdapter
+    {
+        public void keyPressed(KeyEvent e)
+        {
+            
+            int cat = e.getKeyCode();
+            
+            int getX = snake.get(0).getX();
+            int getY = snake.get(0).getY();
+            
+            if (cat == KeyEvent.VK_RIGHT)
+            {
+                int q = snake.get(0).getY();
+                for(int i = 0; i <= count; i++)
+                {
+                        snake.get(i).setDirection(90);
+                }
+            }
+            else if (cat == KeyEvent.VK_LEFT)
+            {
+                int w = snake.get(0).getY();
+                for(int i = 0; i <= count; i++)
+                {
+                    snake.get(i).setDirection(270);
+                }
+            }
+                else if (cat == KeyEvent.VK_UP)
+                {
+                    int t = snake.get(0).getX();
+                  for(int i = 0; i <= count; i++)
+                  {
+                      snake.get(i).setDirection(0);
+                  }
+                }
+                    else if (cat == KeyEvent.VK_DOWN)
+                        {
+                            int r = snake.get(0).getX();
+                           for(int i = 0; i <= count; i++)
+                           {
+                               snake.get(i).setDirection(180);
+                           }
+                        }
+        }
+        
+
+    }
+
+}

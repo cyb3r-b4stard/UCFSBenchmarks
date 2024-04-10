@@ -1,0 +1,194 @@
+import java.awt.*;
+
+/**
+ * ## ####� ### #### �### #######� ## ## ####### ### ## ####.
+ * 
+ * @######  ####### ####### ## ##### #. ######
+ * @####### #.#  (## ####### ####)
+ */
+
+public class rectangleshape
+{
+    private int longueur;
+    private int largeur;
+    private int xPosition;
+    private int yPosition;
+    private String color;
+    private boolean isVisible;
+
+    /**
+     * Cr�e un nouveau carr� � la position par d�faut avec la couleur par d�faut.
+     */
+    public rectangleshape()
+    {
+        longueur = 30;
+        largeur = 30;
+        xPosition = 60;
+        yPosition = 50;
+        color = "red";
+        isVisible = false;
+    }
+
+    /**
+     * Affiche ce carr�. S'il �tait d�j� visible, ne fait rien.
+     */
+    public void makeVisible()
+    {
+        isVisible = true;
+        draw();
+    }
+    
+    /**
+     * Masque ce carr�. S'il �tait d�j� masqu�, ne fait rien.
+     */
+    public void makeInvisible()
+    {
+        erase();
+        isVisible = false;
+    }
+    
+    /**
+     * D�place le carr� de quelques pixels � droite.
+     */
+    public void moveRight()
+    {
+        moveHorizontal(20);
+    }
+
+    /**
+     * D�place le carr� de quelques pixels � gauche.
+     */
+    public void moveLeft()
+    {
+        moveHorizontal(-20);
+    }
+
+    /**
+     * D�place le carr� de quelques pixels vers le haut.
+     */
+    public void moveUp()
+    {
+        moveVertical(-20);
+    }
+
+    /**
+     * D�place le carr� de quelques pixels vers le bas.
+     */
+    public void moveDown()
+    {
+        moveVertical(20);
+    }
+
+    /**
+     * D�place le carr� � l'horizontale de la valeur de 'distance'.
+     */
+    public void moveHorizontal(int distance)
+    {
+        erase();
+        xPosition += distance;
+        draw();
+    }
+
+    /**
+     * D�place le carr� � la verticale de la valeur de 'distance'.
+     */
+    public void moveVertical(int distance)
+    {
+        erase();
+        yPosition += distance;
+        draw();
+    }
+
+    /**
+     * D�place lentement le carr� � l'horizontale de la valeur de 'distance'.
+     */
+    public void slowMoveHorizontal(int distance)
+    {
+        int delta;
+
+        if(distance < 0) 
+        {
+            delta = -1;
+            distance = -distance;
+        }
+        else 
+        {
+            delta = 1;
+        }
+
+        for(int i = 0; i < distance; i++)
+        {
+            xPosition += delta;
+            draw();
+        }
+    }
+
+    /**
+     * D�place lentement le carr� � la verticale de la valeur de 'distance'.
+     */
+    public void slowMoveVertical(int distance)
+    {
+        int delta;
+
+        if(distance < 0) 
+        {
+            delta = -1;
+            distance = -distance;
+        }
+        else 
+        {
+            delta = 1;
+        }
+
+        for(int i = 0; i < distance; i++)
+        {
+            yPosition += delta;
+            draw();
+        }
+    }
+
+    /**
+     * Passe � la nouvelle taille (en pixels). Elle doit �tre >= 0.
+     */
+    public void changeSize(int newSize)
+    {
+        erase();
+        longueur = newSize;
+        largeur = newSize
+        draw();
+    }
+
+    /**
+     * Modifie la couleur. Les couleurs valables sont "red", "yellow", "blue", "green",
+     * "magenta" et "black".
+     */
+    public void changeColor(String newColor)
+    {
+        color = newColor;
+        draw();
+    }
+
+    /*
+     * Dessine le carr� � l'�cran avec les sp�cifications actuelles.
+     */
+    private void draw()
+    {
+        if(isVisible) {
+            Canvas canvas = Canvas.getCanvas();
+            canvas.draw(this, color,
+                        new Rectangle(xPosition, yPosition, largeur, longueur));
+            canvas.wait(10);
+        }
+    }
+
+    /*
+     * Efface le carr� de l'�cran.
+     */
+    private void erase()
+    {
+        if(isVisible) {
+            Canvas canvas = Canvas.getCanvas();
+            canvas.erase(this);
+        }
+    }
+}

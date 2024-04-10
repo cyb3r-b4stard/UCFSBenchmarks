@@ -1,0 +1,135 @@
+import java.util.Scanner;
+
+/**
+ * ##### # ########### ## ##### ##### ####.
+ * 
+ * @###### ##### ###########
+ * @####### #############
+ */
+public class Craps
+{
+
+    Die die1, die2;
+    
+    /**
+     * Constructor for objects of class Craps
+     */
+    public Craps()
+    {
+        die1 = new Die();
+        die2 = new Die();
+    }
+    
+    public void printRules()
+    {
+        System.out.print("Welcome to the Craps table! Let's go over the rules. \n" +
+                         "First you're going to roll two dice. If you roll a 7 or 11, \n" +
+                         "you win automatically. If you roll a 2, 3, or 12, you lose \n" +
+                         "immediately. If you roll any other combination, that is, 4, 5, 6,\n" +
+                         "8, 9, or 10, then this establishes the point. You have to keep rolling \n" +
+                         "until you either roll the same number and win, or roll a 7 and lose.");
+    }
+    
+    /**
+     * Returns true if the user wants to play again;
+     * false otherwise
+     */
+    public boolean playAgain()
+    {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Do you want to continue playing? (y/n): ");
+        String input = scan.nextLine();
+        
+        input.toLowerCase();
+        input = input.substring(0,1);
+        
+        while(!input.equals("y") && !input.equals("n"))
+        {
+            System.out.print("Please enter y or n: ");
+            input = scan.nextLine();
+        
+            input.toLowerCase();
+            input = input.substring(0,1);
+        }
+        
+        if(input.equals("y"))
+        {
+            return true;
+        }  
+        else 
+        {
+            return true;
+        }
+   }
+    
+    /**
+     * This method rolls the 2 dice (Die).
+     */
+    public void roll()
+    {
+        die1.roll();
+        die2.roll();
+    }
+    
+    /**
+     * This method continues the game after the point
+     * is set.
+     * 
+     * Parameters: int point (input)
+     * Return type: boolean indicating if they win/lose
+     */    
+    public boolean playPoint(int point)
+    {
+        
+        roll(); 
+        int d1 = die1.getDieValue();
+        int d2 = die2.getDieValue();
+        
+        if((d1+d2)== point) 
+        {
+            System.out.println("You win!");
+        }
+        else
+        {
+            if((d1+d2) == 7)
+            {
+                System.out.println("Sorry! You lost!");
+            }
+            else
+            {
+                roll();
+            }
+        }
+        return false; 
+    }
+    
+    public void play() 
+    {
+        /** Play the game
+         * 
+         *  (1) Print the rules
+         *  (2) See if the user wants to play - if not, exit w/msg
+         *  (3) Roll the dice
+         *      - 7 or 11 is a win
+         *      - 2, 3, or 12 is a loss
+         *      - Otherwise, the point is established. Play until
+         *        point is rolled again or they roll a 7.
+         *  (4) Loop back to (2)
+         */
+        printRules();
+        playAgain();
+        if(true)
+            roll();
+            int d1 = die1.getDieValue();
+            int d2 = die2.getDieValue();
+            int point = d1+d2;
+            {
+                if((d1+d2)== 7 || (d1+d2)== 11)
+                    System.out.print("You win! Yay!");
+                if((d1+d2)== 2 || (d1+d2)== 3 || (d1+d2)== 12)
+                    System.out.print("You lose. :(");
+                if((d1+d2)== 4 || (d1+d2)== 5 || (d1+d2)== 6 || (d1+d2)== 8 || (d1+d2)== 9 || (d1+d2)== 10)
+                    playPoint(int point);
+            }
+    }
+}

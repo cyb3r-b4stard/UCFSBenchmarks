@@ -1,0 +1,180 @@
+import java.util.Scanner;
+
+public class haupt
+{
+    public static void main(String args[])
+    {
+        Scanner sc = new Scanner(System.in);
+        
+        
+        
+        System.out.println("Geben Sie die Anzahl der teilnehmenden Mannschaften an:");
+        int anzahl=sc.nextInt();
+        int anzahl2=5;
+        
+       
+        
+        for(int i=0;i<10;i++)
+        {
+            if((int)Math.pow(2,i)==anzahl)
+            {
+                anzahl2=anzahl;
+                break;
+            }
+            if((int)Math.pow(2,i)>anzahl)
+            {
+                anzahl2=(int)Math.pow(2,i);
+                break;
+            }
+        }
+        
+        Mannschaft m[] = new Mannschaft[anzahl2];  
+        int x=1;
+        int zaehler=0;
+        String s=sc.nextLine(); 
+        while(x!=0)
+        {
+            if(x==1)
+            {
+                System.out.println("Geben Sie den Namen von Team "+(zaehler+1)+" ein:");
+                s=sc.nextLine();
+                m[zaehler]=new Mannschaft(s);
+            }
+            if(x==2)
+                m[zaehler]=new Mannschaft("FREILOS");
+                zaehler++;
+            if(zaehler>=anzahl)
+                x=2;
+            if(zaehler>=anzahl2)
+                x=0;
+        }
+        setzeZahlen(m,anzahl2);
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        
+        zaehler=1;
+        int zaehlerSP=0;
+        Spiel []sp = new Spiel[anzahl2/2];
+        for(int i=0;i<(anzahl2/2);i++)
+            sp[i] = new Spiel(null,null);
+        while(zaehler<=anzahl2)
+        {
+            for(int i=0;i<anzahl2;i++)
+            {
+                if(m[i].getZahl()==zaehler && zaehler%2==1)
+                    {
+                        sp[zaehlerSP].setEins(m[i]);
+                        zaehler++;
+                        break;
+                    }
+                if(m[i].getZahl()==zaehler && zaehler%2==0)
+                    {
+                        sp[zaehlerSP].setZwei(m[i]);
+                        zaehler++;
+                        zaehlerSP++;
+                        break;
+                    }
+            }
+            
+        }
+        
+        /*for(int i=0;i<anzahl2/2;i++)
+        {
+            System.out.println("Spiel "+i+": ");
+            System.out.println(sp[i].getEins()+" vs "+sp[i].getZwei());
+        }*/
+        System.out.println("");
+        System.out.println("");
+        System.out.println("");
+        System.out.println("");
+        boolean ende=false;
+        int spiel=0;
+        int hilfe;
+        while(ende!=true)
+        {
+            
+            System.out.println("Spiel "+(spiel+1)+": "+sp[spiel].getEins()+" VS "+sp[spiel].getZwei());
+            System.out.print("Bitte geben Sie die Anzahl der Tore für "+sp[spiel].getEins()+" ein: ");
+            hilfe =sc.nextInt();           
+            sp[spiel].setTore1(hilfe);
+            System.out.print("Bitte geben Sie die Anzahl der Tore für "+sp[spiel].getZwei()+" ein: ");
+            hilfe =sc.nextInt();           
+            sp[spiel].setTore2(hilfe);
+            System.out.println(sp[spiel].getEins()+"\t"+sp[spiel].getTore1()+":"+sp[spiel].getTore2()+"\t"+sp[spiel].getZwei());
+            
+            sp[spiel].berechneSieger();
+            
+            
+            
+            
+            if( spiel < ( 4/*(anzahl2)-1 )*/)
+                spiel++;
+            else
+                ende=true;
+            
+        }
+        for(int i=0;i<4;i++)
+        {
+            
+    }
+    
+    public static void zeigePlan(Mannschaft []m, int anzahl2)
+    {
+        for(int i=1;i<=anzahl2;i++)
+        {
+            for(int j=0;j<anzahl2;j++)
+            {
+                if(m[j].getZahl()==i && i%2==1)
+                    System.out.println(m[j].getName());
+                if(m[j].getZahl()==i && i%2==0)
+                {
+                    System.out.println(m[j].getName());
+                    System.out.println();
+                    
+                }
+            }
+        }
+    }
+    public static void setzeZahlen(Mannschaft m[], int anzahl2)
+    {
+        for(int i=0;i<anzahl2;i++)
+        {
+            int nr = (int)(Math.random()*anzahl2+1);
+            m[i].setZahl(nr);
+        }
+        
+        int y=1;
+        while(y!=0)
+        {
+          for(int i=0;i<anzahl2;i++)
+          {
+            for(int j=0;j<anzahl2;j++)
+            {
+                if(i==j)
+                    continue;
+                if(m[i].getZahl()==m[j].getZahl())
+                    m[j].erhoeheZahl(anzahl2);
+            }
+          }
+          y=0;
+          for(int i=0;i<anzahl2;i++)
+          {
+            for(int j=0;j<anzahl2;j++)
+            {
+                if(i==j)
+                    continue;
+                if(m[i].getZahl()==m[j].getZahl())
+                    y=1;
+            }
+          }
+          
+        }
+        
+        
+        
+    }
+    
+   
+}

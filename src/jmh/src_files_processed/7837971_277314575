@@ -1,0 +1,108 @@
+import javax.sound.midi.*;
+import java.io.*;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+
+public class Record extends JFrame
+{
+     Sequencer sequencer;
+     Sequence sequence
+    
+    public Record()
+    {
+        try{
+            sequencer = MidiSystem.getSequencer();
+            sequencer.open();
+            sequence = new Sequence(Sequence.PPQ, 10);
+            sequencer.createTrack();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
+    public Receiver getReceiver()
+    {
+        return rec;
+    }
+    
+    
+    boolean startRec = false;
+    public void startRecord(boolean go){
+        startRec = go;
+    }
+    public void recordMidi(ShortMessage o,long time)
+    {
+        if (startRec == true)
+         {
+         try{
+            Track track = se.getTracks()[0];    
+            seq.setSequence(se);        
+            
+            MetaMessage hi = new MetaMessage();
+            hi.setMessage(1,(new byte[]{-1,47,0}),0);
+            track.add(hi);            
+            seq.recordEnable(track,-1);                 
+            seq.open();
+            seq.startRecording();
+            
+         }
+         catch(Exception e) {e.printStackTrace();}
+       }
+    }
+    
+    public void stopRecording()
+    {
+        try{
+         seq.open();}catch(Exception e){e.printStackTrace();}
+        seq.stop();
+        try{
+         seq.close();}catch(Exception e){e.printStackTrace();}
+        File file = new File("hi.mid");
+
+            try {
+                MidiSystem.write(se, 1, file);
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+                
+    }
+    
+
+    
+    public void loadFile() throws Exception
+    {
+        JFileChooser fileChooser = new JFileChooser();
+        EasyFileFilter filter = new EasyFileFilter("mid");
+        fileChooser.addChoosableFileFilter(filter);
+        fileChooser.setDialogTitle("Choose a File");
+        File f = new File(new File("filename.txt").getCanonicalPath());
+        fileChooser.setSelectedFile(f);
+        fileChooser.showOpenDialog(null);
+        File curFile = fileChooser.getSelectedFile();
+        
+        try{
+            se = MidiSystem.getSequence(curFile);
+            seq.open();
+            seq.setSequence(se);
+            seq.open();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    public void playSong()
+    {
+        try{
+        seq.open();
+    } catch (Exception e ){}
+        seq.start();
+    }
+    public void pausePlay()
+    {
+        seq.stop();
+    }
+    
+}

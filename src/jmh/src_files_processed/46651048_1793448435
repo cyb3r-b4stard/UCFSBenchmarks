@@ -1,0 +1,94 @@
+import GLOOP.*;
+public class Stifteszene
+{
+    GLQuader boden;
+    GLKamera kamera;
+    GLLicht licht;
+    GLTastatur tastatur;
+
+    Buntstift[] stifte;
+
+    public Stifteszene(int anzahl){
+        kamera = new GLKamera();
+        kamera.setzePosition(0, 0, 900);
+        licht = new GLLicht();
+        tastatur = new GLTastatur();
+
+        boden = new GLQuader(0, 0, -15, 4000, 2000, 5);
+        boden.setzeTextur("boden.png");
+
+        stifte = new Buntstift[anzahl];
+        for (int i = 0; i < anzahl; i++) {
+            double laenge = Math.random() * 400 + 50;
+            stifte[i] = new Buntstift(laenge, (-anzahl/2+i) * 25);
+        }
+
+        while(!tastatur.esc()){
+            if(tastatur.istGedrueckt('b')){
+                bubbleSort();
+            }
+            if(tastatur.istGedrueckt('s')){
+                selectionSort();
+            }
+            if(tastatur.istGedrueckt('i')){
+                insertionSort();
+            }
+            Sys.warte();
+        }
+        Sys.beenden();
+    }
+    
+    private void bubbleSort() {
+        if(stifte[0].compareTo(stifte[1]) > 0 ){
+            tauschen(0, 1); 
+        }
+        if(stifte[0].compareTo(stifte[1]) == 0 ){
+            tauschen(0, 1); 
+        }
+        if(stifte[0].compareTo(stifte[1]) < 0 ){
+            tauschen(0, 1); 
+        }
+    }
+    
+    private void selectionSort() {
+    }
+    
+    private void insertionSort() {
+    }
+
+    private void vertauscheStifte(int high, int low){
+ 
+ Buntstift stiftH = stifte[high];
+ Buntstift stiftL = stifte[low];
+ 
+ double posH = stiftH.gibX();
+ double posL = stiftL.gibX();
+ 
+ while (Math.abs(stiftH.gibX() - posL) > 0) {
+   stiftH.verschiebe(1);
+   stiftL.verschiebe(-1);
+   Sys.warte(1);
+ }
+ 
+ stifte[low] = stiftH;
+ stifte[high] = stiftL;
+ } 
+
+            stiftX.verschiebe(-1);
+            stiftY.verschiebe(1);
+            Sys.warte(1000/dif);
+            tmp = stiftX.gibX();
+        }
+        stiftX.senkAb();
+        stiftY.senkAb(); 
+        Sys.warte(500);
+
+        Buntstift merke = stifte[high];
+        stifte[high] = stifte[low];
+        stifte[low] = merke;
+
+        stifte[high].leuchten(0);
+        stifte[low].leuchten(0);
+        Sys.warte(500);
+    }
+}

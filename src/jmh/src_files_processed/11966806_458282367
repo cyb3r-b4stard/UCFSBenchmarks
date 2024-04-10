@@ -1,0 +1,88 @@
+import java.util.*;
+/**
+ * ### ##### ### ### ## ######, ##### ### ########
+ * 
+ * @###### ####### ########
+ * @####### ######## ####
+ */
+public class AI
+{
+    CheckersBoard theGame;
+    ArrayList<Checker> blackCheckerSet;
+    
+    /**
+     * Constructor for objects of class AI.  The AI plays the black checkers.
+     */
+    public AI(CheckersBoard c)
+    {
+        theGame = c;
+        blackCheckerSet = theGame.getBlackCheckerSet();
+    }
+    
+    /**
+     * When it is the AI's turn this move will be undergone
+     */
+    public void makeAIMove() {
+        
+        makeAMove(newY, newX, oldY, oldX);
+    }
+    
+    /**
+     * Method used to evaulate the best move that could be made this turn
+     */
+    public void evaluateTurnOpportunities() {
+        ArrayList<MoveEvaluation> makeAChoice = new ArrayList<MoveEvaluation>();
+        for(Checker aCheck : blackCheckerSet) {
+            basicSuccessorFunction(aCheck);
+        }
+        
+        
+        
+
+        
+    }
+    
+    /**
+     * Basic successor function.  Looks at moves that could be done for an individual checker, at a particular point.
+     */
+    public MoveEvaluation basicSuccessorFunction(Checker c1)
+    {
+        CheckersBoard gameCopy = (CheckersBoard) theGame.clone(); 
+        CheckerSquare[][] stateOfPlay = gameCopy.currentGameState(); 
+        int c1y = c1.getY(); 
+        int c1x = c1.getX(); 
+        CheckerSquare[] initialSuccessors = gameCopy.theLegalMoves(c1); 
+        int arraySize = initialSuccessors.length; 
+        int[] evaluationArray = new int[arraySize]; 
+        for(int num : evaluationArray) {
+            num = 0;
+        }
+        int i = 0;
+        int highestResult = 0;
+        int highestResultLocation = 0;
+        int newY;
+        int newX;
+        for(CheckerSquare cS : initialSuccessors) {
+            CheckersBoard copy2 = (CheckersBoard) gameCopy.clone();
+            CheckerSquare[][] stateOfPlay2 = (CheckerSquare[][]) stateOfPlay.clone();
+            newY = cS.getY();
+            newX = cS.getX();
+            int whiteCountBefore = copy2.getWhiteCheckersLeft();
+            copy2.makeAMove(newY, newX, c1y, c1x);
+            int whiteCountAfter = copy2.getWhiteCheckersLeft();
+            if(whiteCountAfter != whiteCountBefore) {
+                evaluationArray[i]++;
+                if(evaluationArray[i] > highestResult) {
+                    highestResult = evaluationArray[i];
+                    highestResultLocation = i;
+                }
+            }
+            i++;
+            copy2 = gameCopy;
+        }
+        MoveEvaluation best = new MoveEvaluation(c1, initialSuccessors[i], highestResult);
+        return 
+        
+    }
+    
+}

@@ -1,0 +1,130 @@
+package src.machine;
+
+public class EnigmaMachine{
+	
+	private Rotor[] rotorset;
+	private Reflector ukw;
+	private Plugboard keySet;
+	
+	public final MACHINETYPE TYPE;
+	
+	public EnigmaMachine(){
+		TYPE = MACHINETYPE.WEHRMACHT;
+		rotorset = new Rotor[] {new Rotor(ROTORTYPE.I),
+			new Rotor(ROTORTYPE.II), new Rotor(ROTORTYPE.III)};
+		ukw = new Reflector(ROTORTYPE.UKWA);
+		keySet = new Plugboard();
+	}
+	public EnigmaMachine(MACHINETYPE type){
+		TYPE = type;
+		rotors = type.getCount();
+		rotorset = new Rotor[rotors];
+	}
+	public EnigmaMachine(MACHINETYPE type, Rotor[] set){
+		TYPE = type;
+		rotors = type.getCount();
+		if(set.length != rotors){
+			rotorset = set[0, rotors-1];
+		} else {
+			rotorset = set;
+		}
+	}
+	public EnigmaMachine(MACHINETYPE type, Rotor[] set, Plugboard plug){
+		TYPE = type;
+		rotors = type.getCount();
+		if(set.length != rotors){
+			rotorset = set[0, rotors-1];
+		} else {
+			rotorset = set;
+		}
+		keySet = plug;
+	}	
+	
+	private void step(int rotorNum, int steps){
+		if(rotornum < rotorset.length){
+			rotorset[rotorNum].setLoc(rotorset[rotorNum].getLoc() + steps);
+		} else if(rotornum = rotorset.length){
+			ukw.setLoc(ukw.getLoc() + steps);
+		}
+	}
+	private void step(int rotorNum){
+		if(rotornum < rotorset.length){
+			rotorset[rotorNum].setLoc(rotorset[rotorNum].getLoc() + 1);
+		} else if(rotornum == rotorset.length){
+			ukw.setLoc(ukw.getLoc() + 1);
+		}
+	}
+	private void step(){
+		for(int i = rotorset.length; i < rotorset.length; i++){
+			char rotorPrev = rotorset[i-1].getCharLoc();
+			if((TYPE.isStepping(i)) && (i == 0 ||
+			    rotorSet[i-1].turnoverPoints.contains(rotorPrev) ||
+				rotorSet[i].turnoverPoints.contains(rotorset[i].getCharLoc()))){
+				step(i);
+			}
+		}
+	}
+	
+	
+	public String encrypt(String ptext){
+		String ctext = "";
+		for(char h: ctext.toCharArray()){
+			char trans = keySet.enc(h);
+			step();
+			for(int i = 0; i < rotorset.length; i++){
+				
+				trans = rotorset[i].enc(trans);
+			}
+			trans = ukw.enc(trans);
+			for(int i = rotorset.length-1; i > -1; i--){
+				trans = rotorset[i].enc(trans);
+			}
+			ctext += trans;
+		}
+		return ctext;
+	}
+	
+	public String decrypt(String ctext){
+		String ptext = "";
+		for(char h: ctext.toCharArray()){
+			char trans = h;
+			step();
+			for(int i = rotorset.length-1; i > -1; i--){
+				trans = rotorset[i].dec(trans);
+			}
+			trans = ukw.dec(trans);
+			for(int i = 0; i < rotorset.length; i++){
+				trans = rotorset[i].dec(trans);
+			}
+			trans = keySet.dec(trans);
+			ptext += trans;
+		}
+		return ptext;
+	}
+	
+	public String getWheelPositionString(){
+		String rotors = "";
+		for(int i = 0; i < rotorset.length; i++){
+			rotors += rotorset[i].getCharLoc();
+			rotors += " - ";
+		}
+		rotors = rotors.substring(0, rotors.length() - 3);
+		return rotors;
+	}
+	public MACHINETYPE getMachineType(){
+		return TYPE;
+	}
+	public Rotor[] getRotors(){
+		return rotorset;
+	}
+	public ROTORTYPE[] getRotorTypes(){
+		ROTORTYPE[] rotors = new ROTORTYPE[rotorset.length];
+		for(int i = 0; i < rotorset.length; i++){
+			rotors[i] = rotorset[i].getType();
+		}
+		return rotors;
+	}
+	public Plugboard getPlugboard(){
+		return keySet;
+	}
+}

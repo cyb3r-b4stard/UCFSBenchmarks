@@ -1,0 +1,45 @@
+import java.awt.*;
+import java.awt.event.*;
+public class TestFrame extends Frame
+{
+  GridBagLayout grid = new GridBagLayout();
+  GridBagConstraints straints = new GridBagConstraints();
+  Button button;
+    public TestFrame()
+  {
+      Schiffe_versenken Schiffe=new Schiffe_versenken();
+      Schiffe.feldBelegen();
+      setTitle("Schiffe Versenken");
+      setLayout(grid);
+      setVisible(true);
+     int i = 0;
+     int r = 0;
+     while(i<10)
+     {
+        while(r<10)
+        {
+            straints.gridx=i;
+            straints.gridy=r;
+            button=new Button(i+"-"+r);
+            button.addActionListener(new actionListener()
+           {
+               public void actionPerformed(ActionEvent e)
+               {
+                   Schiffe.feuer(i,r);
+                }
+            })
+            grid.setConstraints(button, straints);
+            add(button);
+            r++;
+        }
+        i++;
+        r=0;
+    }
+
+  }
+  public void close()
+  {
+      dispose();
+      System.exit(0);
+  }
+}

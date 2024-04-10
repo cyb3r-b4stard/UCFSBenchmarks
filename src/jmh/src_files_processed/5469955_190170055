@@ -1,0 +1,173 @@
+
+/**
+ * ########### ### #### ### ###### ########.
+ * 
+ * @###### (### ####) 
+ * @####### (#### ############## #### ### #####)
+ */
+public class UnserEnt
+{
+    private BinaryTree baum;
+    private String prefix = "";
+    private String postfix = "";
+    private String infix = "";
+    BinaryTree wurzel = null;
+    /**
+     * Konstruktor für Objekte der Klasse UnserEnt
+     */
+    public UnserEnt()
+    {
+        baum = new BinaryTree('-',new BinaryTree('+', new BinaryTree('2'),new BinaryTree('*',new BinaryTree('3'),new BinaryTree('6'))), new BinaryTree('/', new BinaryTree('4'), new BinaryTree('1')));
+    }
+    
+    public BinaryTree getBaum()
+    {
+        return baum;
+    }
+    
+    public void ausgabe()
+    {
+        System.out.print(preOrder(baum));
+        System.out.println("");
+        System.out.print(postOrder(baum));
+        System.out.println("");
+        System.out.print(inOrder(baum));
+    }
+    
+    public String preOrder (BinaryTree pB)
+    {
+        if(!pB.isEmpty())
+        {
+            prefix = (prefix+pB.getObject());
+        }
+        
+        if(pB.getLeftTree() != null)
+        {
+            preOrder(pB.getLeftTree());
+        }
+        
+        if(pB.getRightTree() != null)
+        {
+            preOrder(pB.getRightTree());
+        }
+        
+        return prefix;
+    }
+    
+    public String postOrder (BinaryTree pB)
+    {
+        if(pB.getLeftTree() != null)
+        {
+            postOrder(pB.getLeftTree());
+        }
+        
+        if(pB.getRightTree() != null)
+        {
+            postOrder(pB.getRightTree());
+        }
+        
+        if(!pB.isEmpty())
+        {
+            postfix = (postfix+pB.getObject());
+        }
+        return postfix;
+    }
+    
+    public String inOrder (BinaryTree pB)
+    {
+        if(pB.getLeftTree() != null)
+        {
+            inOrder(pB.getLeftTree());
+        }
+        
+         if(!pB.isEmpty())
+        {
+            infix = (infix+pB.getObject());
+        }
+        
+        if(pB.getRightTree() != null)
+        {
+            inOrder(pB.getRightTree());
+        }
+        return infix;
+    }
+    
+    public void baumMachen(String pTerm)
+    {
+        baumZeichnen(pTerm,wurzel,0);
+    }
+    
+    public void baumZeichnen(String pTerm, BinaryTree pB, int pPlatz)
+    {
+        if(pTerm.equals(""))
+        {}
+        else
+        {
+            char eins = pTerm.charAt(pPlatz);
+            if(!istOperator(eins) && pB == null)
+            {
+                baumZeichnen(pTerm, pB, pPlatz+1);
+            }
+            else
+            {
+                if(pB == null)
+                {
+                    String pTerm2 = pTerm.substring(2);
+                    pTerm = pTerm.substring(0,1);
+                    pTerm = pTerm+pTerm2;
+                    pPlatz = 0;
+                    pB = new BinaryTree(eins);
+                    baumZeichnen(pTerm, /*wurzel*/pB, pPlatz);
+                }
+            }
+            if(pB != null)
+            {
+                char test = (char) (pB.getObject());
+                if(istOperator(test))
+                {
+                    if(pB.getLeftTree().getObject() == null)
+                    {
+                        BinaryTree BaumR1 = new BinaryTree(eins);
+                        pB.setLeftTree(BaumR1);
+                        pTerm = pTerm.substring(1);
+                        pPlatz = 0;
+                        baumZeichnen(pTerm, pB, pPlatz);
+                    }
+                
+                    if(pB.getRightTree().getObject() == null)
+                    {
+
+                        BinaryTree BaumR1 = new BinaryTree(eins);
+                        pB.setRightTree(BaumR1);
+                                        
+                        pTerm = pTerm.substring(1);
+                    
+                        pPlatz = 0;
+                        baumZeichnen(pTerm, pB.getLeftTree(), pPlatz);
+                    }
+                }
+                else
+                {
+                    BinaryTree BaumR1 = new BinaryTree(eins);
+                    pB.setLeftTree(BaumR1)
+                    pPlatz = 0;
+                    baumZeichnen(pTerm, BaumR1, pPlatz);
+                }
+            }
+        }
+    }
+    
+    public boolean istOperator(char pZeichen)
+    {
+        return(pZeichen == '+' 
+           || pZeichen == '-'
+           || pZeichen == '/'
+           || pZeichen == '*' );
+           
+    }
+    
+    public BinaryTree getBaumR()
+    {
+        return wurzel;
+    }
+}

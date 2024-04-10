@@ -1,0 +1,199 @@
+import java.util.ArrayList;
+import java.util.Collections;
+
+/**
+ * ### ############# #### ### ########## ## #### ## ##### #### ###
+ * ######## ### ######### ## ### #####
+ * ######### ## ### #####.
+ * 
+ * @###### (#### ########) 
+ * @####### (######## ####)
+ */
+public class WordCollector
+{
+
+    private TextReader inputfile2;
+    private ArrayList<WordCount> wordList;
+    private DisplayWords displayWords;
+
+    public WordCollector(String inputFile){
+        
+
+        wordList = new ArrayList<WordCount>();
+        inputfile2 = new TextReader(inputFile);
+
+        displayWords = new DisplayWords();
+
+        ReadFile();
+
+    }
+
+    private void ReadFile(){
+
+        /*while (inputfile2.readNextWord() !=null){
+            String wordFromFile = inputfile2.readNextWord();
+            WordCount fileWord = new WordCount(wordFromFile);
+            wordList.add(fileWord);
+        }
+        return null;*/
+        
+      String Reader = inputfile2.readNextWord();
+      while(Reader != null){
+        WordCount word = find(Reader);
+        if (word == null){
+        WordCount wordcount1 = new WordCount(Reader);
+        wordList.add(wordcount1);}
+        else if( word != null){
+        word.incrementCount();
+        }
+        Reader= inputfile2.readNextWord();
+        Collections.sort(wordList);
+        
+        
+        }
+
+    }
+
+    private WordCount find(String Reader){
+        String wordInput = inputfile2.readNextWord();
+        WordCount newWord = new WordCount(wordInput);
+        if(wordList.contains(newWord)){
+            newWord.incrementCount();
+            return newWord;
+        }else{
+            wordList.add(newWord);
+        }
+        Collections.sort(wordList);
+        return newWord;
+
+    }
+
+    public void printReport(){
+
+        System.out.println("The ArrayList contains " + wordList.size() + " words");
+
+        for(int i = 0; i < wordList.size(); i++){
+            System.out.println(wordList.get(i).getText().getText() +  " appears" + wordList.get(i).getCount()) + " times.";
+        }
+
+    }
+
+}
+/*
+ * int Tcount=0;
+
+for(int count=0; count<wc.size();count++){
+if (wc.contains(tr.readNextWord())){
+Tcount++;
+tr.readNextWord();
+}else{
+wc.add();
+
+}
+if(tr.readNextWord()!=null){
+tr.readNextWord();
+}
+}
+
+}
+private WordCount find(){
+int tcount=0;
+
+for(int count=0;count<wc.size();count++ ){
+if(wc.contains(wordcount)){
+tcount++;
+return wordcount;
+
+}
+else{
+
+wc.add(wordcount);
+
+}
+
+}
+Collections . sort ( wc );
+return null;
+}   
+public void printReport(){
+
+for(int i=0;i<wc.size();i++){
+
+System.out.println("there are"+wc.size()+"words");
+System.out.println(wc.get(i)+"appears");
+
+}
+}
+
+}*/
+
+/* You should write a private method that reads the words from
+ * the TextReader, constructs the WordCounts and stores them
+ * in the ArrayList keeping a count of the total number of words read in.
+ * The constructor for WordCollector should call your private method,
+ * ensuring that the input file is completely read in and all the
+ * frequency counts are completed when the WordCollector is constructed.
+ * The TextReader class has a method called readNextWord which will
+ * read the next word as a String from the input and will return null
+ * when all the text has been read.
+ * 
+ * import java.util.ArrayList;
+import java.util.Collections;
+
+/**
+ * The WordCollector uses the TextReader to read an input text and measures the frequency of the words
+ * contained in the input.
+ * 
+ * @author (Tony Beaumont) 
+ * @version November 2013)
+ */
+/*public class WordCollector
+{
+private TextReader tr;
+
+private ArrayList<WordCount> wc;
+private DisplayWords dw;
+
+public WordCollector(TextReader txr){
+tr = txr;
+wc=new ArrayList<WordCount>();
+dw= new DisplayWords();
+getWord();
+
+}
+
+private TextReader getWord(){
+
+while(tr.readNextWord()!=null){
+String word=tr.readNextWord();
+WordCount w=new WordCount(word);
+wc.add(w);
+} 
+return null;
+}
+
+private WordCount find(){
+String inputword=tr.readNextWord();
+WordCount word=new WordCount(inputword);
+if(wc.contains(word)){
+word.incrementCount();
+return word;
+}else{
+wc.add(word);
+}
+Collections.sort(wc);
+return word;
+
+}
+
+public void printReport(){
+
+System.out.println("there are " + wc.size() + " words");
+
+for(int i=0; i<wc.size();i++){
+System.out.println("" + wc.get(i).toString());
+System.out.println( "appears" + wc.get(i).getCount());
+}
+
+}
+}*/

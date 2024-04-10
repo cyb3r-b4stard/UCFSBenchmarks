@@ -1,0 +1,265 @@
+import java.util.Scanner;
+import java.io.PrintWriter;
+/**
+ * ######################### 
+ * 
+ * ##### ########## ########## ######### # ########## #
+ * 
+ * @###### #. #### 
+ * @####### ######## ##, ####
+ */
+public class ImageProcessingAssignment
+{
+    public void runProcessor () throws java.io.IOException
+    {
+        Scanner kbrd = new Scanner (System.in);
+        clearScreen();
+        displayWelcome();
+        String filename = getFileName(kbrd);
+        System.out.println("I will edit " + filename);
+        String option = askforFilter(kbrd);
+        if (option.equals("1"))
+        {
+            Scanner picScanner = initInfile(filename);
+            PrintWriter outpic = openOutfile(filename);
+            flattenBlueFilter(picScanner, outpic);
+        }
+        else if (option.equals("2"))
+        {
+            Scanner picScanner = initInfile(filename);
+            PrintWriter outpic = openOutfile(filename);
+            greyScale(picScanner, outpic);
+        }
+        else if (option.equals("3"))
+        {
+            Scanner picScanner = initInfile(filename);
+            PrintWriter outpic = openOutfile(filename);
+            negateRedFilter(picScanner, outpic);
+        }
+        else if (option.equals("4"))
+        {
+            Scanner picScanner = initInfile(filename);
+            PrintWriter outpic = openOutfile(filename);
+            flipHorizontal(picScanner, outpic);
+        }
+        else if (option.equals("5"))
+        {
+            System.out.println("Choose a filter to make a collage with ");
+            String collageOption = collageFilter(kbrd);
+
+            if (collageOption.equals("1"))
+            {
+                Scanner picScanner = initInfile(filename);
+                PrintWriter outpic = openOutfile(filename);
+                original(picScanner, outpic)
+                Scanner outpic2 = initInfile(outpic);
+                PrintWriter outpicFinal = openOutfile(outpic)
+                flattenBlueFilter(outpic, outpicFinal);
+                PrintWriter outcombine = openOutfile(filename + "Collage");
+                combine(filename, outpic, outcombine);
+            }
+            else
+            {
+                error();
+            }
+
+        }
+        else
+        {
+            error();
+        }
+        displayGoodbye();
+    }
+
+    public PrintWriter openOutfile (String filename) throws java.io.IOException
+    {
+        String outfilename = System.getProperty("user.dir") + "/" + filename + "out.ppm";
+        PrintWriter picFile = new PrintWriter(outfilename);
+        return picFile;
+    }
+
+    public Scanner initInfile (String filename) throws java.io.IOException
+    {
+        java.io.File imageFile = new java.io.File (System.getProperty("user.dir") + "/" + filename + ".ppm");
+        Scanner fileInput = new Scanner (imageFile);
+        return fileInput;
+    }
+
+    
+    public void combine (Scanner pic, Scanner outpic, PrintWriter outcombined) throws java.io.IOException
+    {
+    }
+    
+    public void original (Scanner pic, PrintWriter outpic) throws java.io.IOException
+    {
+        String p3Part = pic.nextLine();
+        int numCols = pic.nextInt();
+        int numRows = pic.nextInt();
+        int maxVal = pic.nextInt();
+        outpic.println(p3Part);
+        outpic.println(numCols + " " + numRows);
+        outpic.println(maxVal);
+        for (int row = 0; row <numRows; row++)
+        {
+            for (int col=0; col <numCols; col++)
+            {
+                int r = pic.nextInt();
+                int g = pic.nextInt();
+                int b = pic.nextInt();
+                outpic.print(r + " " + g + " " + b + " ");
+            }
+            outpic.println();
+        }
+        outpic.flush();
+    }
+
+    public void flipHorizontal (Scanner pic, PrintWriter outpic) throws java.io.IOException
+    {
+        String p3Part = pic.nextLine();
+        int numCols = pic.nextInt();
+        int numRows = pic.nextInt();
+        int maxVal = pic.nextInt();
+        outpic.println(p3Part);
+        outpic.println(numCols + " " + numRows);
+        outpic.println(maxVal);
+        for (int row = 0; row <numRows; row++)
+        {
+            String Triprow = "";
+            for (int col=0; col <numCols; col++)
+            {
+                int r = pic.nextInt();
+                int g = pic.nextInt();
+                int b = pic.nextInt();
+                String currentTriple = r + " " + g + " " + b + " ";
+                Triprow = currentTriple + Triprow;
+            }
+            outpic.println(Triprow);
+        }
+        outpic.flush();
+    }
+
+    public void flattenBlueFilter (Scanner pic, PrintWriter outpic) throws java.io.IOException
+    {
+        String p3Part = pic.nextLine();
+        int numCols = pic.nextInt();
+        int numRows = pic.nextInt();
+        int maxVal = pic.nextInt();
+        outpic.println(p3Part);
+        outpic.println(numCols + " " + numRows);
+        outpic.println(maxVal);
+        for (int row = 0; row <numRows; row++)
+        {
+            for (int col=0; col <numCols; col++)
+            {
+                int r = pic.nextInt();
+                int g = pic.nextInt();
+                int b = pic.nextInt();
+                outpic.print(r + " " + g + " " + 0 + " ");
+            }
+            outpic.println();
+        }
+        outpic.flush();
+    }
+
+    public void greyScale (Scanner pic, PrintWriter outpic) throws java.io.IOException
+    {
+        String p3Part = pic.nextLine();
+        int numCols = pic.nextInt();
+        int numRows = pic.nextInt();
+        int maxVal = pic.nextInt();
+        outpic.println(p3Part);
+        outpic.println(numCols + " " + numRows);
+        outpic.println(maxVal);
+        for (int row = 0; row <numRows; row++)
+        {
+            for (int col=0; col <numCols; col++)
+            {
+                int r = pic.nextInt();
+                int g = pic.nextInt();
+                int b = pic.nextInt();
+                outpic.print((r + g + b)/3 + " " + (r + g + b)/3 + " " + (r + g + b)/3 + " ");
+            }
+            outpic.println();
+        }
+        outpic.flush();
+    }
+
+    public void negateRedFilter (Scanner pic, PrintWriter outpic) throws java.io.IOException
+    {
+        String p3Part = pic.nextLine();
+        int numCols = pic.nextInt();
+        int numRows = pic.nextInt();
+        int maxVal = pic.nextInt();
+        outpic.println(p3Part);
+        outpic.println(numCols + " " + numRows);
+        outpic.println(maxVal);
+        for (int row = 0; row <numRows; row++)
+        {
+            for (int col=0; col <numCols; col++)
+            {
+                int r = pic.nextInt();
+                int g = pic.nextInt();
+                int b = pic.nextInt();
+                outpic.print( (255-r) + " " + g + " " + b + " ");
+            }
+            outpic.println();
+        }
+        outpic.flush();
+    }
+
+    public String getFileName (Scanner kbrd)
+    {
+        System.out.println("Enter filename: ");
+        String filename = kbrd.nextLine();
+        String outfile= filename + "out";
+        return filename;
+    }
+
+    public void error ()
+    {
+        System.out.println("You chose an option not listed, please rerun program. Thank you!");
+    }
+
+    public String askforFilter (Scanner kbrd)
+    {
+        System.out.println("Choose a filter or transformation: ");
+        System.out.println("1. Flatten Blue");
+        System.out.println("2. GreyScale");
+        System.out.println("3. Negate Red");
+        System.out.println("4. Flip Horizontal");
+        System.out.println("5. Collage");
+        String option = kbrd.nextLine();
+        return option;
+    }
+
+    public String collageFilter (Scanner kbrd)
+    {
+        System.out.println("1. Flatten Blue");
+        System.out.println("2. GreyScale");
+        System.out.println("3. Negate Red");
+        System.out.println("4. Flip Horizontal");
+        String option = kbrd.nextLine();
+        return option;
+    }
+
+    public void clearScreen()
+    {
+        System.out.println("\f");
+    }
+
+    public void displayWelcome()
+    {
+        System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^");
+        System.out.println("Hi, let's manipulate PPM");
+        System.out.println("images.--By: Justin Tang");
+        System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^");
+    }
+
+    public void displayGoodbye()
+    {
+        System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^");
+        System.out.println("All done! Let's look at");
+        System.out.println("the finished image!!!!!");
+        System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^");
+    }
+}

@@ -1,0 +1,145 @@
+import java.util.Arrays;
+/**
+ * ######### ## ##### ## ######## ### ###### ####, ###### ####, ### ##### #### ## ####.
+ * 
+ * @###### ### ########
+ * @####### ##/##/##
+ */
+public class Array
+{
+    private int[] values;
+    private int valueNum;
+    /**
+     * Constructs an array with a received number of values in it.
+     */
+    public Array(int numOfValues)
+    {   
+        values = new int[numOfValues];
+        valueNum = numOfValues;
+    }
+
+    /**
+     * Prints the array.
+     */
+    public void printArray()
+    {
+        System.out.println("Random array of "+valueNum+" ints of values 1-6:");
+        for(int i = 0; i<values.length; i++)
+        {
+            values[i] = (int)(Math.random()*6)+1;
+        }
+        System.out.println(Arrays.toString(values)+"\n");
+    }
+
+    /**
+     * Counts the amount of times each number appears and prints it.
+     */
+    public void countArray()
+    {
+        int c1 = 0;
+        int c2 = 0;
+        int c3 = 0;
+        int c4 = 0;
+        int c5 = 0;
+        int c6 = 0;
+        for(int element : values)
+        {
+            if(element == 1)
+            {
+                c1++;
+            }
+            else if(element == 2)
+            {
+                c2++;
+            }
+            else if(element == 3)
+            {
+                c3++;
+            }
+            else if(element == 4)
+            {
+                c4++;
+            }
+            else if(element == 5)
+            {
+                c5++;
+            }
+            else
+            {
+                c6++;
+            }
+        }
+        System.out.print("There are "+c1+" ones, "+c2+" twos, ");
+        System.out.print(c3+" threes, "+c4+" fours, "+c5+" fives, and "+c6+" sixes.\n\n");
+    }
+
+    /**
+     * Finds the size of the longest run of the same number, as well as its location, and prints it.
+     */
+    public void findRuns()
+    {
+        int previous = 0;
+        int maxRun = 1;
+        int runStart = 0;
+        int runEnd = 0;
+        int runCount = 1;
+        for(int i = 0; i<values.length; i++)
+        {   
+            if(values[i] == previous)
+            {
+                runCount++;   
+                if(i == values.length-1 && runCount >= maxRun)
+                {
+                    maxRun = runCount;
+                    runStart = i-(runCount-1);
+                    runEnd = i;
+                }
+            }
+            else if(runCount >= maxRun)
+            {
+                maxRun = runCount;
+                runStart = i-(runCount-1);
+                runEnd = i;
+                runCount = 1;
+            }
+            else
+            {
+                runCount = 1;
+            }
+        }
+        previous = values[i];
+    }
+    System.out.println("Length of the longest run of the same number: "+maxRun);
+    System.out.println("And its location within the array: ");
+    System.out.print("[");
+    for(int x = 0; x<values.length; x++)
+    {   
+        if(x == values.length-1)
+        {
+            if(x == runEnd-1)
+            {
+                System.out.print(values[x]+")]\n\n");
+            }
+            else
+            {
+                System.out.print(values[x]+"]\n\n");
+            }
+        }
+        else
+        {
+            if(x == runStart-1)
+            {
+                System.out.print("("+values[x]+", ");
+            }
+            else if(x == runEnd-1)
+            {
+                System.out.print(values[x]+") ");
+            }
+            else
+            {
+                System.out.print(values[x]+", ");
+            }
+        }
+    }
+}
+}

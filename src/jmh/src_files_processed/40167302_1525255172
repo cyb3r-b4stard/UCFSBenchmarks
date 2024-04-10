@@ -1,0 +1,175 @@
+import java.awt.*;
+import java.awt.geom.*;
+import java.util.*;
+
+/**
+   # ### #### ### ## ##### ######.
+*/
+public class CarShape implements MoveableShape
+{
+   /**
+      Constructs a car item.
+      @param x the left of the bounding rectangle
+      @param y the top of the bounding rectangle
+      @param width the width of the bounding rectangle
+   */
+   public CarShape(int x, int y, int width)
+   {
+      this.x = x;
+      this.y = y;
+      this.width = width;
+   }
+
+   public void translate(double dx, double dy)
+   {
+      x += dx;
+      y += dy;
+   }
+
+   public void draw(Graphics2D g2)
+   {
+      Rectangle2D.Double body
+         = new Rectangle2D.Double(x, y + width / 6, 
+            width - 1, width / 6);
+      Ellipse2D.Double frontTire
+         = new Ellipse2D.Double(x + width / 6, y + width / 3, 
+            width / 6, width / 6);
+      Ellipse2D.Double rearTire
+         = new Ellipse2D.Double(x + width * 2 / 3, y + width / 3,
+            width / 6, width / 6);
+
+      Point2D.Double r1
+         = new Point2D.Double(x + width / 6, y + width / 6);
+      Point2D.Double r2
+         = new Point2D.Double(x + width / 3, y);
+      Point2D.Double r3
+         = new Point2D.Double(x + width * 2 / 3, y);
+      Point2D.Double r4
+         = new Point2D.Double(x + width * 5 / 6, y + width / 6);
+      Line2D.Double frontWindshield
+         = new Line2D.Double(r1, r2);
+      Line2D.Double roofTop
+         = new Line2D.Double(r2, r3);
+      Line2D.Double rearWindshield
+         = new Line2D.Double(r3, r4);
+      
+      g2.draw(body);
+      g2.draw(frontTire);
+      g2.draw(rearTire);
+      g2.draw(frontWindshield);
+      g2.draw(roofTop);
+      g2.draw(rearWindshield);
+   }
+   
+   private int x;
+   private int y;
+   private int width;
+}
+MoveableShape.java
+
+ import java.awt.*;
+
+/**
+   A shape that can be moved around.
+*/
+public interface MoveableShape
+{
+   /**
+      Draws the shape.
+      @param g2 the graphics context
+   */
+   void draw(Graphics2D g2);
+   /**
+      Moves the shape by a given amount.
+      @param dx the amount to translate in x-direction
+      @param dy the amount to translate in y-direction
+   */
+   void translate(double dx, double dy);
+}
+ShapeIcon.java
+
+ import java.awt.*;
+import java.util.*;
+import javax.swing.*;
+
+/**
+   An icon that contains a moveable shape.
+*/
+public class ShapeIcon implements Icon
+{
+   public ShapeIcon(MoveableShape shape,
+      int width, int height)
+   {
+      this.shape = shape;
+      this.width = width;
+      this.height = height;
+   }
+   
+   public int getIconWidth()
+   {
+      return width;
+   }
+
+   public int getIconHeight()
+   {
+      return height;
+   }
+
+   public void paintIcon(Component c, Graphics g, int x, int y)
+   {
+      Graphics2D g2 = (Graphics2D) g;
+      shape.draw(g2);
+   }
+
+   private int width;
+   private int height;
+   private MoveableShape shape;
+}
+AnimationTest.java
+
+ import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+/**
+   This program implements an animation that moves
+   a car shape. 
+*/
+public class AnimationTest
+{
+   public static void main(String[] args)
+   {
+      JFrame frame = new JFrame();
+
+      final MoveableShape shape 
+         = new CarShape(0, 0, CAR_WIDTH);
+      
+      ShapeIcon icon = new ShapeIcon(shape,
+         ICON_WIDTH, ICON_HEIGHT);
+
+      final JLabel label = new JLabel(icon);
+      Container contentPane = frame.getContentPane();
+      contentPane.setLayout(new FlowLayout());
+      contentPane.add(label);
+
+      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      frame.pack();
+      frame.setVisible(true);
+
+      final int DELAY = 100; 
+      Timer t = new Timer(DELAY, new
+         ActionListener()
+         {
+            public void actionPerformed(ActionEvent event)
+            {
+               shape.translate(1, 0);
+               label.repaint();
+            }
+         });
+      t.start();
+   }
+
+   private static final int ICON_WIDTH = 400;
+   private static final int ICON_HEIGHT = 100;
+   private static final int CAR_WIDTH = 100;
+}

@@ -1,0 +1,64 @@
+import javax.swing.JRadioButton;
+import javax.swing.ButtonGroup;
+
+public class WagonsPanel extends javax.swing.JPanel 
+{
+    private java.awt.Point _lastMousePosition;
+    private Car _car;
+    private Trailer _trailer;
+    
+    
+    public WagonsPanel() {
+       super();
+       this.setBackground(java.awt.Color.white);
+       _lastMousePosition = new java.awt.Point();
+        
+        _trailer = new Trailer();
+        _trailer.setLocation(260, 70);
+        _car = new Car();
+        _car.setLocation(130,100);
+        
+        MyMouseListener ml = new MyMouseListener();
+        this.addMouseListener(ml);
+        this.addMouseMotionListener(ml);
+    }
+    
+    public void paintComponent(java.awt.Graphics aBrush){
+        super.paintComponent(aBrush);
+        java.awt.Graphics2D betterBrush = (java.awt.Graphics2D) aBrush;
+       
+       _trailer.fill(betterBrush); 
+       _car.fill(betterBrush);
+     
+       
+    }
+    
+    
+    
+    
+    private class MyMouseListener
+    extends javax.swing.event.MouseInputAdapter {
+        /*public void mouseClicked (java.awt.event.MouseEvent e) {
+            if (_car.contains(e.getPoint()))
+            _car.setColor(java.awt.Color.green);
+            else if (_trailer.contains(e.getPoint()))
+            _trailer.setColor(color);
+        }*/
+    }
+    
+    
+     private class MyMouseListener
+    extends javax.swing.event.MouseInputAdapter {
+        /*public void mouseDragged (java.awt.event.MouseEvent e) {
+            java.awt.Point currentPoint = e.getPoint();
+        int diffX = currentPoint.x - _lastMousePosition.x;
+        int diffY = currentPoint.y - _lastMousePosition.y;
+        if (_car.contains(e.getPoint()))
+            _car.setLocation(_x + diffX, _y + diffY);
+            _trailer.setLocation(_x + diffX, _y + diffY);
+        if(_trailer.contains(e.getPoint()))
+         _trailer.setLocation(_x + diffX, _y + diffY);
+            
+          
+        }
+    }

@@ -1,0 +1,139 @@
+package Zoo5;
+
+
+/**
+ * ## #### #### ####### ##### ### ### ### ##### ## ####### #########, ## #### ## # ####### ########.
+ * 
+ * @###### ###### ##### ######
+ * @####### ####-##
+ */
+public class Zoo
+{
+    private Cage[] landCages; 
+    private Cage[] aqCages; 
+    private Cage[] flCages; 
+    private int spaces; 
+    
+    /**
+     * Constructor: 
+     * initializes all three arrays of cages, with length equal to spaces. 
+     * It must check that spaces is a positive value.
+     */
+    public Zoo(int s){
+        spaces = s; 
+        if (s < 0) spaces = spaces * (-1); 
+        landCages = new Cage[spaces];
+        aqCages = new Cage[spaces];
+        flCages = new Cage[spaces];
+    }
+    
+    /**
+     * checks if the zoo has no free spaces for cages,
+     * and all the cages of a type different from null are full of animals. 
+     * Returns a boolean.
+     */
+    public boolean isFull(){
+        int l=0, a=0, f=0; 
+        int s = 0; 
+        while(l < landCages.length){
+            if(landCages[l] == null) s++;
+            l++;
+        }
+        while(a < aqCages.length){
+            if(aqCages[a] == null) s++;
+            a++;
+        }
+        while(f < flCages.length){
+            if(flCages[f] == null) s++;
+            f++;
+        }
+        if(s < spaces) return false;
+        return true;
+    }
+    
+    /**
+     * method that receives a cage and adds it to the zoo in the corresponding area (array) if the zoo has spaces left. 
+     * The number of the cage must be set to the value of its corresponding position inside the array. 
+     * It returns the position of the cage, or -1 if the zoo is full. 
+     * The number of spaces must be changed accordingly.
+     */
+    public int addCage(Cage c){
+        if(isFull()) return -1;
+        String ctype = c.getTypeCage();
+        int i = 0;
+        if(ctype.equals("land")){
+            while(landCages[i] != null) i++;
+            landCages[i] = c;    
+        }
+        if(ctype.equals("aquatic")){
+            while(aqCages[i] != null) i++;
+            aqCages[i] = c;
+        }
+        if(ctype.equals("flying")){
+            while(flCages[i] != null) i++;
+            flCages[i] = c;            
+        }
+        return i+1;            
+    }
+    
+    /**
+     * method that receives the type of the cage and its position in the corresponding area, and removes it from the zoo. 
+     * If the cage is not empty, the animals must first leave the cage. The number of spaces must be changed accordingly. 
+     * It returns a String with the information of the cage that was removed, or null when not found.
+     */
+    public String removeCage(String t, int i){
+        String s = "";
+        if(t.equals("land")){
+           s = landCages[i-1].toString();
+           landCages[i-1].emptyCage();
+           landCages[i-1] == null;
+        }
+        if(t.equals("aquatic")){
+           s = aqCages[i-1].toString();
+           aqCages[i-1].emptyCage();
+           aqCages[i-1] == null;
+        }
+        if(t.equals("flying")){
+           s = landCages[i-1].toString();
+           flCages[i-1].emptyCage();
+           flCages[i-1] == null;
+        }
+        return s;
+    }
+    
+    /**
+     * method that receives an animal and adds it to the first suitable cage, 
+     * sets the ID for the animal as a String and returns it, with the following structure:
+     * -If the animal is aquatic, it adds "A-"; if it is flying, it adds "F"-"; if it is a land animal, it adds "L-"
+     * -Then it adds the number of the cage the animal is in with format "NCAGE-"
+     * -Finally, it shows the corresponding position of the animal inside the cage
+     * Example for the first animal that entered the cage number 2 of aquatic type: A - 2 - 1
+     */
+    public String enterAnimal(Animal a){
+    }
+    
+    /**
+     * method that receives the type, the race of the animal and the cage that it is in as a parameter, 
+     * and removes it from the cage. 
+     * The number of free spaces of the cage and of the zoo must be updated. 
+     * It returns the animal that was removed, or null when it was not found.
+     */
+    public Animal exitAnimal(String t, String r, Cage c){
+    }
+    
+    /**
+     * returns a String with all the areas (“Land area: ”, “Flying area: ”, “Aquatic area: ”). 
+     * After each area, it must use the toString method for the Cage class with each of the cages inside that area of the zoo. 
+     * Example:
+     * “Land area: 
+     * Cage 1:Lion - Size: big 
+     * Cage 2:
+     * Zebra - Size: medium Tortoise - Size: small 
+     * Flying area:
+     * Aquatic area:
+     * Cage 1:
+     * Shark - Size: very big - Dangerous animal”
+     */
+    public String toString(){
+    }
+}

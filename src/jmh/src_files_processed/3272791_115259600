@@ -1,0 +1,122 @@
+import java.awt.*;
+import java.applet.*;
+import javax.swing.*;
+import java.util.*;
+import java.awt.event.*;
+import java.awt.Image;
+public class second_part extends JApplet implements Runnable, KeyListener {
+
+    Thread t=new Thread(this); 
+    ArrayList<Bricks>wall= new ArrayList();
+    ArrayList<Blips>a= new ArrayList();
+    Paddle[]z= new Paddle[1];
+    Random r=new Random();
+    int time=25, c=0;
+
+    public void init() {
+        for(int r=0; r<10; r++){
+            for(int p=0; p<2; p++){
+                wall.add(new Bricks((r*100),(p*25), (100), (50)));
+
+            }
+        }
+        for(int i = 0; i<1; i++)
+        {
+            a.add(new Blips(r.nextInt(500), r.nextInt(500), r.nextInt(20), r.nextDouble()*3));
+        }
+         for(int i = 0; i<z.length; i++)
+        {
+            z[i]=new Paddle(20,400, 40,10);
+
+
+		
+        }
+
+        t.start();
+
+    }
+
+    public void run () { 
+        while (true) {
+            try {
+                c++;
+                for(int o=0; o<1; o++){
+                    a.get(o).move();
+                }
+                for( int i=0; i<a.size(); i++){
+                    for(int j=0; j<wall.size(); j++){
+
+                        if(a.get(i).getX()>=wall.get(j).getX()+50  &&a.get(i).getX()<=wall.get(j).getX()-50 &&a.get(i).getY()>=wall.get(j).getY()+50&&a.get(i).getY()<=wall.get(j).getY()-50))
+                        {
+                            wall.remove(j);
+
+                        }
+                    }
+                }
+                repaint();
+                t.sleep (time);
+            } catch (InterruptedException ex) {} 
+
+        }
+    }
+
+    public void paint(Graphics g) {
+        g.clearRect(0,0,500,500);
+        showStatus(""+a.get(0).getX() + " " + c);
+
+        for(int i=0; i<wall.size(); i++){
+
+            g.setColor(Color.red);
+
+            g.drawRect(wall.get(i).getX(), wall.get(i).getY(), wall.get(i).getH(), wall.get(i).getW());
+
+        }
+        for(int p=0; p<a.size(); p++)
+        {
+            g.setColor(Color.black);
+            g.fillOval((int)a.get(p).getX(), (int)a.get(p).getY(), 10, 10);
+
+        }
+         for(int p=0; p<z.length; p++)
+        {
+            g.setColor(Color.green);
+            g.fillRect((int)z[p].getX(), (int)z[p].getY(), 30, 10);
+            
+           
+
+        }
+
+        
+        
+        repaint();
+    }
+
+    public void keyPressed(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+        if(e.getKeyChar()=='t'){
+            for(int o=0; o<10; o++){
+                    z[o].move(20);
+                }
+
+            
+        }
+
+        if(e.getKeyChar()=='y'){
+            for(int o=0; o<10; o++){
+                    z[o].move(-20);
+                }
+          
+        }
+    }
+
+    public void mouseClicked(MouseEvent e) {}
+    public void mousePressed(MouseEvent e) {}
+    public void mouseReleased(MouseEvent e) {}
+    public void mouseEntered(MouseEvent e) {}
+    public void mouseExited(MouseEvent e) {}
+    public void mouseDragged(MouseEvent e) {}
+    public void mouseMoved(MouseEvent e) {}
+}
+
+   

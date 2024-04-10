@@ -1,0 +1,86 @@
+
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class EmpHandler implements FocusListener
+{
+    private empGUI gui;
+
+    public EmpHandler (empGui gui)
+    {
+        this.gui = gui;
+    }
+
+    public void focusLost ( FocusEvent e )
+    {
+        try
+        {
+            if (e.getSource() == gui.number)
+            {
+                if (!Integer.parseInt(gui.number.getText()))
+                {
+                    gui.number.focus();
+                    gui.status.setText("Must be an integer");
+                    gui.status.selectAll();
+                }
+            }
+        }
+        catch (NumberFormatException i)
+        {
+
+        }
+
+        try 
+        {
+            if (e.getSource() == gui.pay)
+            {
+                if (!Double.parseDouble(gui.pay.getText()))
+                {
+                    gui.pay.focus();
+                    gui.status.setText("Must be a valid Number");
+                    gui.status.selectAll();
+                }
+            }
+        }
+        catch (NumberFormatException i)
+        {
+
+        }
+
+    }
+    public void actionPerformed(ActionEvent e)
+    {
+        int result = 0;
+        
+        if (e.getSource() == gui.addRec)
+        {
+            try
+            {
+                string ins = "INSERT INTO INFO (NUMBER, NAME, GROSS) VALUES ('" +
+                    gui.number.getText() + "', '" + gui.name.getText() + "', '" + gui.pay.getText() + "')";
+                
+                result = 1;
+            }
+            catch (SQLException sqlex)
+            {
+                System.err.println("SINDatabase.addRecord() - insert record in DB error\n"+
+                    sqlex.getMessage());
+                sqlex.printStackTrace();  result = -1;
+            }
+            
+            gui.status.setText( result==1? "Employee Added" : "Employee Not Added" );
+            
+            Employee emp = new Employee(Integer.paseInt(gui.number.getText(),
+        }
+        
+        
+    }
+}

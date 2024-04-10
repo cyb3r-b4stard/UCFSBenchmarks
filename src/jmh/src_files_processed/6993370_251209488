@@ -1,0 +1,231 @@
+/**
+ *  #### ##### ## ### #### ##### ## ### "##### ## ####" ###########. 
+ *  "##### ## ####" ## # #### ######, #### ##### ######### ####.  ##### 
+ *  ### #### ###### #### #######. ####'# ###. ## ###### ###### ## ######## 
+ *  ## #### ## #### ###########!
+ * 
+ *  ## #### #### ####, ###### ## ######## ## #### ##### ### #### ### "####"
+ *  ######.
+ * 
+ *  #### #### ##### ####### ### ########### ### ### ######: ## ####### ###
+ *  #####, ####### ### ###### ### ###### ### ####.  ## #### ######### ###
+ *  ######## ### ######## #### ### ###### #######.
+ * 
+ * @######  ####### ####### ### ##### #. ######
+ * @###### ### #####
+ * @###### ##### #######
+ * @###### (#### #### ####)
+ * @####### #.# (######## ####)
+ */
+
+public class Game 
+{
+    private CommandReader reader;
+    private Player thePlayer;
+        
+    /**
+     * Create the game and initialise its internal map.
+     */
+    public Game() 
+    {
+        createRoomsAndPlayer();
+        reader = new CommandReader();
+        reader.addCommand("go");
+        reader.addCommand("quit");
+        reader.addCommand("help");
+    }
+    
+    /**
+     * Create all the rooms and link their exits together.  Also, create
+     * the player and set the player's initial room.
+     */
+    public void createRoomsAndPlayer()
+    {
+        
+                                                                                
+        
+        Room palletTown = 
+            new Room("Pallet Town: Ash's home, south of Viridian and north of Cinnabar Island");
+        Room viridianCity = new Room("Viridian City: Home of Giovanni's Gym. South of Pewter and east of the Indigo Plateau");
+        Room pewterCity = new Room("Pewter City: North of Viridian and home of Brock's Gym");
+        Room ceruleanCity = new Room("Cerulean City: East of Pewter City and home of Misty's Gym");
+        Room rockTunnel = new Room("Rock Tunnel: Between Cerulean and Lavender Town");
+        Room lavenderTown = new Room("Lavender Town: Southeast of Cerulean City, east of Saffron City");
+        Room saffronCity = new Room("Saffron City: The Home of Sabrina's Gym. Between Cerulean, Lavender, Celadon, and Vermilion City");
+        Room routeTwelve = new Room("Route 12: South of Lavender and East of Vermilion");
+        Room celadonCity = new Room("Celadon City: The shopping center of Kanto Region. Home to Erika's Gym");
+        Room vermilionCity = new Room("Vermilion City: The shipping capital of Kanto Region, south of Saffron City. Also, Lt. Surge's Gym.");
+        Room fuschiaCity = new Room("Fuschia City: Home to the Safari Zone and Koga's Gym. South of Vermilion City");
+        Room seafoamIsland = new Room("Seafoam Islands: Between Cinnabar and Fuschia");
+        Room cinnabarIsland = new Room("Cinnabar Island: Home to the Pokemon Mansion and Blaine's Gym");
+        Room indigoPlateau = new Room("Indigo Plateau: The final challenge for a pokemon trainer");
+        
+        palletTown.setExit("north", viridianCity);
+        palletTown.setExit("south", cinnabarIsland);
+        viridianCity.setExit("west", indigoPlateau);
+        viridianCity.setExit("north", pewterCity);
+        viridianCity.setExit("south", palletTown);
+        pewterCity.setExit("east", ceruleanCity);
+        pewterCity.setExit("south", viridianCity;
+        ceruleanCity.setExit("east", rockTunnel);
+        ceruleanCity.setExit("south", saffronCity);
+        ceruleanCity.setExit("west", pewterCity);
+        rockTunnel.setExit("south", lavenderTown);
+        rockTunnel.setExit("west", ceruleanCity);
+        lavenderTown.setExit("north", rockTunnel);
+        lavenderTown.setExit("west", saffronCity);
+        lavenderTown.setExit("south", routeTwelve);
+        saffronCity.setExit("north", ceruleanCity);
+        saffronCity.setExit("west", celadonCity);
+        saffronCity.setExit("south", vermilionCity);
+        celadonCity.setExit("east", saffronCity);
+        celadonCity.setExit("south", fuschiaCity);
+        vermilionCity.setExit("north", saffronCity);
+        vermilionCity.setExit("east", routeTwelve);
+        routeTwelve.setExit("north", lavenderTown);
+        routeTwelve.setExit("south", fuschiaCity);
+        routeTwelve.setExit("west", vermilionCity);
+        fuschiaCity.setExit("south", seafoamIsland);
+        seafoamIsland.setExit("west", cinnabarIsland);
+        
+        thePlayer = new Player("Ash", palletTown); 
+    }
+    
+    /**
+     * Return the player
+     * @return the player
+     */
+    public Player getPlayer() {
+        return thePlayer;
+    }
+
+    /**
+     *  Main play routine.  Loops until end of play.
+     */
+    public void play() 
+    {            
+        printWelcome();
+
+                
+        boolean finished = false;
+        while (!finished) {
+            Command command = reader.getCommand();
+            finished = processCommand(command);
+        }
+        System.out.println("Thank you for playing.  Good bye.");
+    }
+      
+    /**
+     * Print out the opening message for the player.
+     */
+    public void printWelcome()
+    {
+        System.out.println();
+        System.out.println("Hello Ash, Welcome to Kanto!");
+        System.out.println("This world is inhabited far and wide by creatures called POKéMON.");
+        System.out.println("For some people, POKéMON are pets. Others use them for battling.");
+        System.out.println("You do the latter! Your goal is to make it to the Elite 4 at Indigo Plateau,");
+        System.out.println("    where the top trainers in all of Kanto reside.");
+        System.out.println("To do this, you must first earn all 8 city badges.");
+        System.out.println("Travel throughout Kanto to earn these badges.");
+        System.out.println("Then, you will be ready for the Elite 4!");
+        System.out.println("Your very own POKéMON legend is about to unfold!");
+        System.out.println("A world of dreams and adventures with POKéMON awaits! Let’s go!");
+        
+        System.out.println("Type 'help' if you need help.");
+        System.out.println();
+        Room currentRoom = thePlayer.getCurrentRoom();
+        System.out.println("You are in " + currentRoom.getDescription());
+        System.out.print("Exits: ");
+        printExit();
+    }
+
+    /**
+     * Given a command, process (that is: execute) the command.
+     * If this command ends the game, true is returned, otherwise false is
+     * returned.
+     * @param command the command to process
+     */
+    public boolean processCommand(Command command) 
+    {
+        boolean wantToQuit = false;
+
+        if (command == null) {
+            System.out.println("I don't know what you mean ...");
+            return false;
+        } else {
+            String commandWord = command.getCommandWord();
+            if (commandWord.equals("help")) {
+                printHelp();
+            } else if (commandWord.equals("go")) {
+                goRoom(command);
+            } else if (commandWord.equals("quit")) {
+                wantToQuit = quit(command);
+            }
+        }
+        
+        return wantToQuit;
+    }
+
+
+    /**
+     * Print out some help information.
+     * Here we print some stupid, cryptic message and a list of the 
+     * command words.
+     */
+    public void printHelp() 
+    {
+        System.out.println("You are lost. You are alone. You wander");
+        System.out.println("around at the university.");
+        System.out.println();
+        System.out.println("Your command words are:");
+        System.out.println("   go quit help");
+    }
+
+    /** 
+     * Try to go to one direction. If there is an exit, enter
+     * the new room, otherwise print an error message.
+     * @param command the "go" command
+     */
+    public void goRoom(Command command) 
+    {
+        if (!command.hasSecondWord()) {
+            System.out.println("Go where?");
+        } else {
+            String direction = command.getSecondWord();
+
+            boolean hasLeft = thePlayer.goRoom(direction);
+
+            if (!hasLeft) {
+                System.out.println("There is no door!");
+            } else {
+                printExit();
+            }
+        }
+    }
+
+    /** 
+     * "Quit" was entered. Check the rest of the command to see
+     * whether we really quit the game. Return true, if this command
+     * quits the game, false otherwise.
+     * @param command the "quit" command
+     */
+    public boolean quit(Command command) 
+    {
+        if (command.hasSecondWord()) {
+            System.out.println("Quit what?");
+            return false;
+        }
+        else {
+            return true;  
+        }
+    }
+    
+    /**
+     * 
+     */
+    public void printExit() {
+        Room currentRoom = thePlayer.getCurrentRoom();
+        System.out.println(currentRoom.getLongDescription());
+    }
+}

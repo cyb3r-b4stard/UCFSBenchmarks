@@ -1,0 +1,223 @@
+  package HotelManagement;
+                                     import java.util.Random;
+                                     import java.io.*;
+                                     import java.lang.String;
+                                     
+                                     class Found
+                                     {
+                                         int row,col;
+                                         Found(int row,int col)
+                                         {
+                                             this.row = row;
+                                             this.col = col;
+                                            }
+                                        }
+                                        public class Administrator extends DataStore
+                                        {
+                                            public static void AdminMenu()throws IOException
+                                            {
+                                                int aCh = 0;
+                                                do
+                                                {
+                                                    try
+                                                    {
+                                                        Thread.sleep(1000);
+                                                    }catch(Exception e)
+                                                    {
+                                                        System.out.println(e);
+                                                    }
+                                                    System.out.print("\t1.View Info\n\t2.Add Info\n\t3.Edit Info\n\t4.Delete Info \n\t5.View Mail\n\t6.Exit\n\tEnter your choice\t");
+                                                    aCh = Integer.parseInt(br.readLine());
+                                                    switch(aCh)
+                                                    {
+                                                        case 1:
+                                                        System.out.println("View Info");
+                                                        view();
+                                                        break;
+                                                        case 2:
+                                                        System.out.println("OPTION"+aCh+"\tAdd Info");
+                                                        add();
+                                                        break;
+                                                        case 3:
+                                                        System.out.println("OPTION"+aCh+"\tEdit Info");
+                                                        edit();
+                                                        break;
+                                                        case 4:
+                                                        System.out.println("OPTION"+aCh+"\tDelete Info");
+                                                        delete();
+                                                        break;
+                                                        case 5:
+                                                        System.out.println("OPTION"+aCh+"\tView Mail");
+                                                        viewMail();
+                                                        break;
+                                                        case 6:
+                                                        System.out.println("OPTION"+aCh+"\tExit from Admin");
+                                                        break;
+                                                        default:System.out.println("OPTION"+aCh+"\tInvalid choice.Try Again");
+                                                    }
+                                                }
+                                                while(aCh!=6);
+                                            }
+                                            public static void view()
+                                            {
+                                                SearchSort.bubble(room,rcount);
+                                                System.out.println("SORTED ROOM RECORDS");
+                                                display(room,rcount);
+                                            }
+                                            public static void add()throws IOException
+                                            {
+                                                addToDatabase(room,rcount);
+                                            }
+                                            public static void edit()throws IOException
+                                            {
+                                                editTable(room,rcount);
+                                            }
+                                            public static void delete()
+                                            {
+                                                deleteFromdb();
+                                            }
+                                            public static void viewMail()
+                                            {
+                                                HomePage.space();
+                                                System.out.println("INBOX \n There are "+msgCtr+" mails");
+                                                for(int i = 0;i<=msgCtr;i++)
+                                                {
+                                                    System.out.println((i+1)+"\t"+msg[i][0]+"\t"+msg[i][2]);
+                                                }
+                                            }
+                                            public static void addToDatabase(String [][]tableCtr)throws
+                                            IOExpection
+                                            {
+                                                System.out.println("ADD NEW ROOOM\n\n");
+                                                tableCtr++;
+                                                Random ran= new Random();
+                                                float X=ran.nextFloat();
+                                                int ranRoomNum=(int)(100+899*X);
+                                                Integer Y=new integer(ranRoomNum);
+                                                room[tableCtr][0]=y.toString();
+                                                System.out.print("EnterA/C OR Delux CATEGORY  ");
+                                                room[tableCtr][1]=br.readLine();
+                                                System.out.print("Enter IS AVAILABLE  ");
+                                                room[tableCtr][2]=br.readLine();
+                                                System.out.print("Enter DAILY RENTAL ");
+                                                room[tableCtr][3]=br.readLine();
+                                                System.out.print("Enter ROOM TYPE,ORDINARY OR SUITE");
+                                                room[tableCtr][4]=br.readLine();
+                                                System.out.print("Enter OTHER DETAILS IF ANY ");
+                                                room[tableCtr][5]=br.readLine();
+                                               display(table,tableCtr);
+                                            }
+                                          public static void editTable(String[][]table,int tableCtr)throws IOException
+                                          {
+                                              String goEdit;
+                                              for(int i=0;i<table.length;i++);
+                                              {
+                                                  for(int j=0;j<table[0].length;j++);
+                                                  {
+                                                      System.out.print(table[i][j]+"\t");
+                                                    }
+                                                    System.out.print("\nDO YOU WANT TO EDIT THIS ABOVE DISPLAYED RECORD Y/N/C ");
+                                                  goEdit=br.readLine();
+                                                  if(goEdit.equalsIgnoreCase("n"))
+                                                  {
+                                                      continue;
+                                                    }
+                                                    else if(goEdit.equalsIgnoreCase("y"))
+                                                    {
+                                                        for(int k=0;k<table[0].length;k++)
+                                                        {
+                                                            System.out.print(table[i][k] +"\tenter new value: ");
+                                                            table[i][k]=br.readLine();
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        System.out.println("CANCELLING EDIT");
+                                                        break;
+                                                    }
+                                                }
+                                                System.out.println("After edit");
+                                                display(table,tableCtr);
+                                            }
+                                            public static void deleteFromDb()
+                                            {
+                                                String search=" ",delCh="n";
+                                                try
+                                                {
+                                                    System.out.print("Enter the element to be deleted");
+                                                    search=br.readLine();
+                                                }catch(Expection e)
+                                                {
+                                                    e.printStackTrace();
+                                                }
+                                                Found t1=LinearSearch(room,search);
+                                                if(t1.row!=-1 &&tl.col=-1)
+                                                {
+                                                    for(int c=0;c<room[0].length;c++)
+                                                    {
+                                                        System.out.print(room[t1.row][c]+"");
+                                                    }
+                                                    System.out.println("DO YOU WANT TO DELETE YES OR NO");
+                                                    try
+                                                    {
+                                                        delCh=br.readLine();
+                                                    }catch(Exception e)
+                                                    {
+                                                        e.printStackTrace();
+                                                    }
+                                                    if(delCh.equalsIgnoreCase("y"))
+                                                    {
+                                                        display(room,rcount);
+                                                        for(int sh=t1.row;sh<rcount;sh++)
+                                                        {
+                                                            for(int c=0;c<room[0].length;c++)
+                                                            {
+                                                                room[sh][c]=room[sh+1][c];
+                                                            }
+                                                        }
+                                                            for(int col=0;c<room[0].length;col++)
+                                                            {
+                                                                room[rcount][col] = "";
+                                                            }
+                                                            rcount--;
+                                                            display(room,rcount);
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        System.out.println("Element not found");
+                                                    }
+                                                }
+                                                 public static Found linearSearch(String[][]x,String srch)
+                                                 {
+                                                 
+                                                
+                                                    for(int i = 0;i<x.length;i++)
+                                                    {
+                                                         for(int j = 0;j<x[0].length;j++)
+                                                         {
+                                                             if((x[i][j].trim()).equalsIgnoreCase(srch))
+                                                             {
+                                                                 Found f1=new Found(i,j);
+                                                                 return f1;
+                                                                }
+                                                            }
+                                                        }
+                                                        System.out.println(srch+"Element not found");
+                                                        Found f2=new Found(-1-1);
+                                                        return f2;
+                                                    }
+                                                
+                                                    
+                                                    public static void display(String[][]x,int ctr)
+                                                    {
+                                                        for(int i=0;i<=ctr;i++)
+                                                        {
+                                                            for(int j=0;j<x[0].length;j++)
+                                                            { System.out.println(x[i][j]+"\t");
+                                                            }
+                                                            System.out.println();
+                                                        }
+                                                        System.out.println();
+                                                    }
+                                                }

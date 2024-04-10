@@ -1,0 +1,202 @@
+
+/**
+ * #############.####
+ * ######## ### ### ####### #### ### ####### ####### #######
+ * ####### ###### #####- ######## ### ####()
+ * @###### (###### ########, ###### #) 
+ * @####### (#/#/##)
+ */
+import java.util.ArrayList;
+import java.util.Scanner; 
+import .io.*;
+public class StudentDriver
+{
+    public static void main (String [] args)
+   {
+        Scanner scan = new Scanner (System.in); 
+        System.out.println("Please enter the number of how many students are going to be processed"); 
+        int numStudents = scan.nextInt();  
+        menu();
+        String user = scan.next();
+        String input = user.toUpperCase();
+        char s = input.charAt(0);
+        System.out.println("Your selection : " + s);
+        ArrayList <Student> students = new ArrayList <Student> ();
+        ArrayList <Address> addresses = new ArrayList <Address> ();
+       while(s!= 'Q')
+        {
+           switch(s)
+         {
+               
+                case 'M':
+                modifyStudent(numStudents, students, addresses);
+                
+                
+                break; 
+                case 'L': 
+                loadStudent(numStudents, students, addresses); 
+               
+                break;
+                case 'P':
+                printStudent(numStudents, students);
+                
+                break; 
+                case 'R':
+                students = readFile(students);
+                
+                break;
+                case 'W':
+                writeFile(students);
+                
+                break;
+                default:
+                System.out.println("That was not a valid option, please try again."); 
+                
+                break; 
+                case 'Q':
+                System.out.println("Thank you, you have quit the menu."); 
+                        
+            }
+            menu();
+         scan = new Scanner (System.in);  
+         user = scan.next();
+         input = user.toUpperCase();
+         s = input.charAt(0);
+         System.out.println("Your selection : " + s);
+        }
+    }
+    public static void loadStudent(int numStudents, ArrayList <Student> studentList, ArrayList<Address> homes )
+   {   
+       Scanner scan = new Scanner (System.in);
+       for(int i = 0; i <numStudents; i++)
+       {
+        
+       System.out.println("Enter the information for Student #" + i);
+       
+       System.out.print("Enter Last Name: "); 
+       String lastName = scan.next(); 
+       scan = new Scanner (System.in);
+       System.out.print("Enter First Name: "); 
+       String firstName = scan.next();  
+       scan = new Scanner (System.in);
+       System.out.println("Enter information for Home1 - ");
+       System.out.print("Enter Street: "); 
+       String street1 = scan.next(); 
+       scan = new Scanner (System.in);
+       System.out.print("Enter City: "); 
+       String city1 = scan.next(); 
+       scan = new Scanner (System.in);
+       System.out.print("Enter Zip: "); 
+       int zip1 = scan.nextInt(); 
+       scan = new Scanner (System.in);
+       System.out.println("Is there a second home? y/n");
+       String answer = scan.next();
+       String response = answer.toUpperCase();
+       char c = response.charAt(0);
+       if(c == 'Y')
+       {
+       System.out.print("Enter Street: "); 
+       String street2 = scan.next(); 
+       scan = new Scanner (System.in);
+       System.out.print("Enter City: "); 
+       String city2 = scan.next(); 
+       scan = new Scanner (System.in);
+       System.out.print("Enter Zip: "); 
+       int zip2 = scan.nextInt(); 
+       Address x = new Address (street2, city2, zip2);
+       homes.add(i, x); 
+      }
+       scan = new Scanner (System.in);
+       System.out.print("Enter Phone: "); 
+       String phone = scan.next(); 
+       scan = new Scanner (System.in);
+       System.out.print("Enter GPA: "); 
+       double gpa = scan.nextDouble(); 
+       int id = i;  
+       int lastId = numStudents; 
+       
+       homes[i] = new Address (street1, city1, zip1); 
+       studentList[i] = new Student (lastName, firstName, phone, gpa, id, lastId); 
+       
+       
+    }
+    System.out.println("Press enter to continue"); 
+    
+ 
+    }
+   public static void modifyStudent(int numStudents, ArrayList <Student> studentList, ArrayList <Address> homes)
+    {
+        Scanner scan = new Scanner (System.in); 
+        System.out.print("Please enter the id of the student you'd like to modify: "); 
+        int idNum = scan.nextInt(); 
+        for(int i = 0; i <=numStudents; i++)
+        {
+            if (idNum == i)
+            {
+                System.out.println("Current info"); 
+                scan = new Scanner (System.in);
+                System.out.print("Last name: " + studentList[i].getLastName()     + "   New: "); 
+                String newLastName = scan.next(); 
+                studentList[i].setLastName(newLastName); 
+              
+                scan = new Scanner (System.in);
+                System.out.print("First name: " + studentList[i].getFirstName()     + "   New: "); 
+                String newFirstName = scan.next(); 
+                studentList[i].setFirstName(newFirstName); 
+                
+                System.out.print("Home 1 Street: " + homes[i].getStreet()     + "   New: "); 
+                String newStreet = scan.next(); 
+                homes[i].setStreet(newStreet); 
+                
+                System.out.print("Home 1 City: " + homes[i].getCity()     + "   New: "); 
+                String newCity = scan.next(); 
+                homes[i].setCity(newCity); 
+                
+                System.out.print("Home 1 Zip: " + homes[i].getZip()     + "   New: "); 
+                int newZip = scan.nextInt(); 
+                homes[i].setZip(newZip); 
+                
+                System.out.print("Phone: " + studentList[i].getPhone()     + "   New: "); 
+                String newPhone = scan.next(); 
+                studentList[i].setPhone(newPhone); 
+                
+                System.out.print("GPA: " + studentList[i].getGpa()    + "   New: "); 
+                double newGpa = scan.nextDouble(); 
+                studentList[i].setGpa(newGpa); 
+            }
+        } 
+    }
+   public static void printStudent(int numStudents,  ArrayList <Student> studentList)
+    {
+        for (int i = 0; i < numStudents; i++)
+        {
+            System.out.println(studentList[i].toString()); 
+        }
+        System.out.println("There are " + numStudents + " students."); 
+    } 
+   public static void menu()
+    {
+         System.out.println("Student Info Menu: \n Enter L to (L)oad Student info \n Enter M to (M)odify Student info \n Enter P to(P)rint Student info \n Enter Q to quit"); 
+         System.out.println("Please choose an option");
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

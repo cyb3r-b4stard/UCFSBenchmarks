@@ -1,0 +1,55 @@
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.text.SimpleDateFormat;
+/**
+ * ##### # ########### ## ##### ####### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Planner
+{
+    private List<Calendar> bookings;
+    private int year;
+    
+    public Planner(int year){
+        bookings = new ArrayList<Calendar>();
+        this.year = year;
+    }
+    
+    public void makeBooking(int day, int month){
+        Calendar calendar = new GregorianCalendar(year, month-1, day);
+        if(!isClash(day, month)){
+            bookings.add(calendar);
+        }
+    }
+    
+    public void removeDate(int day, int month){
+        Calendar calendar = new GregorianCalendar(year, month-1, day);
+        bookings = bookings.stream().filter(x -> !x.equals(calendar)).collect(Collectors.toList());
+    }
+    
+    private boolean isClash(int day, int month){
+        for(Calendar existing: bookings){
+            if(booking.compareTo(existing) == 0){
+                System.out.println("yes!");
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public int getNumberOfBookings(){
+        return bookings.size();
+    }
+    
+    public void printBookings(){
+        for(Calendar booking: bookings){
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY");
+            System.out.println(sdf.format(booking.getTime()));
+        }
+    }
+}

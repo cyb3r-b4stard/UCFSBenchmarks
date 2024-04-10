@@ -1,0 +1,136 @@
+import info.graphics.*;
+import static info.utils.io.*;
+import static info.graphics.Color.*;
+import static info.graphics.Tools.*;
+import static java.lang.Math.*;
+
+/**
+ * #######
+ * 
+ * @######  ########## ########
+ * @####### ######## ## ####
+ */
+class TP1 {
+    static int[] createArray (int nb, int min, int max) {
+        assert nb>0;
+        assert max>=min;
+        int[] tab = new int[nb];
+        for (int i=0 ; i<tab.length ; i++ ) {
+            tab[i] = random.nextInt(max+1-min)+min;
+        }
+        return tab;
+    }
+    static void printArray (int[] tab) {
+        output.print("[ "+tab[0]);
+        for (int i=1 ; i<tab.length ; i++ ) {
+            output.print(", "+tab[i]);
+        }
+        output.print(" ]"); 
+    }
+    static int indexOf(int[] tab, int n, int occur) {
+        int indice = -1;
+        int nbOccur = 0;
+        int i = 0;
+        while (i < tab.length && occur != nbOccur) {
+            if (tab[i] == n) {
+                nbOccur++;
+            }
+            i++;
+        }
+        if (nbOccur == occur) {
+            indice = i-1;
+        }
+        return indice;
+    }
+    static void testIndexOf() {
+        int[] tab = createArray(20,1,5);
+        printArray(tab);
+        output.println("");
+        int result = -1;
+        for (int j = 1; j < 6; j++) {
+            output.print("Position(s) du " + j + " : ");
+            for (int i = 0; i < tab.length; i++) {
+                result = indexOf(tab, j, i);
+                if (result != -1) {
+                    output.print(result + " ");
+                }
+            }
+            output.println("");
+        }
+    }
+    static String[] createStringArray (int nb, int cmin, int cmax) {
+        String[] tab = new String[nb];
+        int c = 0;
+        for (int i = 0; i < tab.length; i++) {
+            c = cmin + random.nextInt(cmax+1-cmin);
+            tab[i] = "";
+            while(c > 0) {
+                tab[i] += "" + (char)('a' + random.nextInt(26));
+                c--;
+            }
+        }
+        return tab;
+    }
+    static int indexOf (String[] tab, String str, int n) {
+        int indice = -1;
+        if (n < 0) {
+            n = 0;
+        }
+        if (n < tab.length) {
+            for (; n < tab.length; n++) {
+                if (tab[n].equals(str)) {
+                    indice = n;
+                }
+            }
+        }
+        return indice;
+    }
+    static boolean isSorted (int[] tab) {
+        boolean b = true;
+        for (int i = 1; i<tab.length && b; i++) {
+            if( tab[i] >= tab[i-1]){
+                b=true;
+            }   else {
+                b=false;
+            }
+        }
+        return b;
+    }
+    static int indexOfMax(int[] tab, int indiceMin, int indiceMax){
+        assert indiceMin < indiceMax;
+        assert indiceMax <= tab.length;
+        assert indiceMin >= 0;
+        int max = tab[indiceMin];
+        int indice = indiceMin;
+        for( int i = indiceMin; i < indiceMax; i++) {
+            if (tab[i] > max) {
+                max = tab[i];
+                indice = i;
+            }            
+        }
+        return indice;
+    }
+    static void swap (int[] tab, int i, int j) {
+        assert i >= 0 && i < tab.length;
+        assert j >= 0 && j < tab.length;
+        int k;
+        k = tab[i];
+        tab[i] = tab[j];
+        tab[j] = k;
+    }
+    static int[] sortArray(int[] tab) {
+        int max = 0;
+        int save;
+        int indice = 0;
+        for (int i = tab.length-1; i >= 0; i--) {
+            max = indexOfMax(tab, 0, i+1);
+            swap(tab, max, i);
+        }
+        return tab;
+    }
+    static void testSortArray () {
+        int[] tab = createArray (nb, min, max);
+        printArray (int[] tab);
+        boolean b = isSorted(int[] tab);
+    }
+}

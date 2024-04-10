@@ -1,0 +1,146 @@
+import java.io.*;
+import java.util.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+public class FereastraPrincipala extends JFrame{
+
+    JMenuBar mb= new JMenuBar();
+    JMenu m= new JMenu("Optiuni");
+    JMenuItem jm1 = new JMenuItem("Adauga produs");
+    JMenuItem jm2 = new JMenuItem("Salveaza magazin");
+    JMenuItem jm3 = new JMenuItem("Deschide lista salvata");
+    
+    DefaultListModel<Carte> model = new DefaultListModel<Carte>();
+    JList<Carte> list = new JList<Carte>(model);
+    JScrollPane jsp = new JScrollPane(list);
+    
+    JLabel l= new JLabel("Nr. produse: 0");
+    
+    
+    
+    public FereastraPrincipala(){
+        super("Magazin");
+        setJMenuBar(mb);
+        mb.add(m);
+        m.add(jm1);
+       
+        m.add(jm2);
+        m.add(jm3);
+        
+        add(jsp);
+        
+        
+        add(l, BorderLayout.SOUTH);
+        
+        
+        jm1.addActionListener(
+            new ActionListener(){
+            
+                public void actionPerformed(ActionEvent ev){
+                
+                    new FereastraAdaugare().addProdusListener(
+                    new ProdusListener(){
+                    
+                        public void produsAdaugat(){
+                            model.clear();
+                             ArrayList<Carte> carti =Magazin.getInstance().getCarte();
+                            for(Carte c: carti)
+                            model.addElement(c);
+                        }
+                    }
+                    );
+                }
+            }
+        );
+        
+        
+        
+        new Thread(){
+        
+            public void run(){
+            
+                while(true){try{
+                
+                    Thread.sleep(6000);
+                    l.setText("Nr. produse: " + Magazin.getInstance().getCarte().size());
+                }catch(Exception e){}}
+            }
+        }.start();
+        
+        
+        
+        jm3.addActionListener(
+        new ActionListener(){
+        
+            public void actionPerformed(ActionEvent ev){try{
+            
+                JFileChooser chooser = new JFileChooser();
+                int r= chooser.showOpenDialog(null);
+                if(r == chooser.APPROVE_OPTION){
+                
+                    File file = chooser.getSelectedFile();
+                    ObjectInputStream ois = new ObjectInputStream (new FileInputStream(file));
+                    Magazin m = (Magazin) ois.readObject();
+                    Magazin.setInstance(m);
+                    ois.close();
+                    model.clear();
+                    ArrayList<Carte> carti = Magazin.getInstance().getCarte();
+                    for(Carte c: carti)
+                    model.addElement(c);
+                }
+            }catch (Exception e){}
+            }
+        }
+        );
+        
+        
+        
+        
+        jm2.addActionListener(new ActionListener(){
+        
+            public void actionPerformed(ActionEvent ev){try{
+            
+                JFileChooser chooser =  new JFileChooser();
+                int r=chooser.showSaveDialog(null);
+                if(r==chooser.APPROVE_OPTION){
+                                
+                    File file= chooser.getSelectedFile();
+                    ObjectOutputStream oos=new ObjectOutputStream(new FileOutputStream(file));
+                    oos.writeObject(Magazin.getInstance());
+                    oos.close();
+                    
+                }}catch (Exception e){}
+            }
+        }    
+        
+        );
+        
+        
+        list.addMouseClicked(
+        
+            new MouseAdapter(){
+            
+                public void mouseClicked(MouseEvent ev){
+                
+                    if(ev.getClickCount()==2){
+                    
+                        Magazin.getInstance().removeCarte(Carte c);
+                        model.clear();
+                        ArrayList carti = Magazin.getInstance().getCarte();
+                        for(Carte c: carti)
+                        model.addElement(c);
+                    }
+                }
+            }
+        );
+        
+        
+        
+        setVisible(true);
+        setSize(700,500);
+        
+    }
+    
+    
+}

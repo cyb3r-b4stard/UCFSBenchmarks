@@ -1,0 +1,291 @@
+import java.util.ArrayList;
+
+/**
+ * ### ##### ############## ########## ### ##### ###.
+ * 
+ * @###### ###### ###### ######
+ * @####### #
+ */
+public class AdjMatrixGraph implements Graph
+{
+    AdjMatrixGraph graph;
+    ArrayList<Vertex> vertexList;
+    ArrayList<Edge> edgeList;
+    Edge[][] matrix;
+    ArrayList<ArrayList<Vertex>> l;
+    int matrixSize;
+
+    /**
+     * AdjMatrixGraph, constructor for class.
+     * @param v the list of Vertices for the graph
+     * @param c the list of Edges for the graph
+     */
+    public AdjMatrixGraph(ArrayList<Vertex> v, ArrayList<Edge> c){
+
+        vertexList = new ArrayList<Vertex>(v.size());
+        edgeList = new ArrayList<Edge>(c.size());
+        matrix = new Edge[vertexList.size()*vertexList.size()*2][vertexList.size()*vertexList.size()*2];
+        matrixSize = 100;
+        for(int i=0;i<=matrixSize; i++){
+            for(int j=0;j<=matrixSize;i++){
+                matrix[i][j]=null;
+            }
+        }
+
+        for(int i=0; i<edgeList.size();i++){
+            int a = getVertexIndex(edgeList.get(i).getEdgeEndPoints1());
+            int b = getVertexIndex(edgeList.get(i).getEdgeEndPoints2());
+            matrix[a][b] = edgeList.get(i);
+            matrix[b][a] = edgeList.get(i);
+
+        }
+
+    }
+
+    /**
+     * Constructs an empty graph
+     */
+    public AdjMatrixGraph(){
+        vertexList = new ArrayList<Vertex>();
+        edgeList = new ArrayList<Edge>();
+        matrixSize = 100;
+        matrix = new Edge[matrixSize][matrixSize];
+
+        for(int i=0;i<matrixSize; i++){
+            int j = 0;
+            while(j<matrixSize){
+                matrix[i][j]=null;
+                j++;}
+        }
+
+    }
+
+    /**
+     * This method adds a vertex to the vertex list in the graph.
+     * @param v the vertex to add to the vertex list
+     */
+    public void insertVertex(Vertex v){
+        vertexList.add(v);
+
+    }
+
+    /**
+     * This method removes a  vertex from the vertex list in the graph and removes any
+     * assosiated edges from neighbouring vertices.
+     * @param e the vertex to be removed
+     */
+    public String removeVertex(Vertex e){
+
+        if( e.vertexEdges.size()>0){
+            for(int i=0; i<e.vertexEdges.size(); i++){
+
+                if(e.vertexEdges.get(i).getEdgeEndPoints2() == e)
+                {
+                    Vertex a = e.vertexEdges.get(i).getEdgeEndPoints1();
+                    int b = a.vertexEdges.indexOf(e.vertexEdges.get(i));
+                    a.removeEdge(a.vertexEdges.indexOf(i)));
+                    
+                     edgeList.remove(e.vertexEdges.get(i));
+                }
+
+                if(e.vertexEdges.get(i).getEdgeEndPoints1() == e)
+                {
+                    Vertex a = e.vertexEdges.get(i).getEdgeEndPoints2();
+                    int b = a.vertexEdges.indexOf(e.vertexEdges.get(i));
+                    a.removeEdge(a.vertexEdges.get(b));
+                      edgeList.remove(e.vertexEdges.get(i));
+                }
+
+            }
+        }
+        vertexList.remove(e);
+        return e.name;
+    }
+
+    /**
+     * This method inserts an edge to the edgeList in the graph
+     * @param v a vertex assosiated with the edge
+     * @param w a second vertex assosiated with the edge
+     * @param n the name of the new edge
+     */
+    public void insertEdge(Vertex v, Vertex w, String n){
+        int c = 0;
+        if(getVertexIndex(v)>getVertexIndex(w)){
+            c = getVertexIndex(v);
+        }else{
+            c = getVertexIndex(w);
+        }
+
+        if(c>matrixSize){
+            matrixSize = c*2;
+            matrix = new Edge[matrixSize][matrixSize];
+            for(int i=0;i<matrixSize; i++){
+                int j = 0;
+                while(j<matrixSize){
+                    matrix[i][j]=null;
+                    j++;}
+            }
+
+            for(int i=0; i<edgeList.size();i++){
+                int a = getVertexIndex(edgeList.get(i).getEdgeEndPoints1());
+                int b = getVertexIndex(edgeList.get(i).getEdgeEndPoints2());
+                matrix[a][b] = edgeList.get(i);
+                matrix[a][b] = edgeList.get(i);
+            }
+        }
+        Edge e = new Edge(v,w,n);
+        edgeList.add(e);
+        v.vertexEdges.add(e);
+        w.vertexEdges.add(e);
+
+        matrix[getVertexIndex(v)][getVertexIndex(w)] = e;
+        matrix[getVertexIndex(w)][getVertexIndex(v)] = e;
+
+    }
+
+    /**
+     * This method removes an edge from the edgeList in the graph
+     * @param e the edge being removed
+     */
+    public String removeEdge(Edge e){
+        e.getEdgeEndPoints1().removeEdge(e);
+        e.getEdgeEndPoints2().removeEdge(e);
+        matrix[vertexList.indexOf(e.getEdgeEndPoints2())][vertexList.indexOf( e.getEdgeEndPoints1())] = null;
+        matrix[vertexList.indexOf( e.getEdgeEndPoints1())][vertexList.indexOf(e.getEdgeEndPoints2())] = null;
+        edgeList.remove(e);
+        return e.name;
+    }
+
+    /**
+     * This method returns collection containing the vertices in the graph
+     */
+    public ArrayList<Vertex> vertices(){
+        return vertexList;
+
+    }
+
+    /**
+     * This method returns collection containing the edges in the graph
+     */
+    public ArrayList<Edge> edges(){
+        return edgeList; 
+    }
+
+    /**
+     * Checks whether two vertices are adjacent (i.e. joined by a single edge) or not.
+     * @param v a vertex
+     * @param w a vertex
+     * @return true if v and we are adjacent and false otherwise.
+     * 
+     */
+    public boolean areAdjacent(Vertex v, Vertex w){
+        if(matrix[getVertexIndex(v)][getVertexIndex(w)]!= null
+        && matrix[getVertexIndex(w)][getVertexIndex(v)]!= null){
+            return true;} 
+        else
+            return false;
+    }
+
+    /**
+     * Finds and returns the set of edges that are incident to a given vertex.
+     * @param v the vertex
+     * @return a list of edges
+     */
+    public ArrayList<Edge> incidentEdges(Vertex v){
+        return v.vertexEdges;
+    }
+
+    /**
+     * Rename vertex v as n
+     * @param v a vertex
+     * @param n the new name
+     */
+    public void rename(Vertex v, String n){
+        v.setVertexName(n);
+    }
+
+    /**
+     * Rename edge e as n
+     * @param e an edge
+     * @param n the new name
+     */
+    public void rename(Edge e, String n) {
+        e.setEdgeName(n);
+    }
+
+    /**
+     * gets the index of a Vertex from VertexList.
+     * @param v a vertex
+     */
+    public int getVertexIndex(Vertex v) {
+        return vertexList.indexOf(v);
+    }
+
+    /**
+     * 
+     */
+    public void bftraverse(Vertex v){
+        ArrayList<Vertex> list0 = new ArrayList<Vertex>();
+        list0.add(v);
+        v.setEnum(EnumGraph.VISITED);
+        l.add(list0);
+        int i = 0;
+        while (l.get(i).isEmpty()){
+            ArrayList<Vertex> list = new ArrayList<Vertex>();
+            for(Vertex h: l.get(i)){
+                for(Edge e: h.vertexEdges){
+                    if(e.getEnum()== EnumGraph.UNVISITED){
+                        if(h == e.getEdgeEndPoints1()) {
+                            e.getEdgeEndPoints2().setEnum(EnumGraph.VISITED);
+                            e.setEnum(EnumGraph.DISCOVERY);
+                            list.add(e.getEdgeEndPoints2());
+                        }
+                        if(h == e.getEdgeEndPoints2()) {
+                            e.getEdgeEndPoints1().setEnum(EnumGraph.VISITED);
+                            e.setEnum(EnumGraph.DISCOVERY);
+                            list.add(e.getEdgeEndPoints1());
+                        }
+                        else{
+                            e.setEnum(EnumGraph.CROSSEDGE);
+                        }
+
+                    }
+                }
+
+            }
+            i=i+1;
+
+        }
+    }
+
+    /**
+     * 
+     */
+    public void bftraverse(){
+        for(int i=0; i<=vertexList.size();i++){
+            vertexList.get(i).setEnum(EnumGraph.UNVISITED);
+        }
+
+        for(int i=0; i<=edgeList.size();i++){
+            edgeList.get(i).setEnum(EnumGraph.UNVISITED);
+        }
+
+        for(int i=0; i<=vertexList.size();i++) {
+            if (vertexList.get(i).getEnum()== EnumGraph.UNVISITED){
+                bftraverse(vertexList.get(i));
+            }
+        }
+    }
+
+    public boolean hasCycle(){
+        return true;
+    }
+
+    public Graph spanningTree(Vertex v) {
+        return null;
+    }
+
+    public ArrayList<Edge> shortestPath(Vertex u, Vertex v) {
+        return edgeList;
+    }
+}

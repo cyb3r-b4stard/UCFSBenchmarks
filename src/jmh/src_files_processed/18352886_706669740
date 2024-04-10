@@ -1,0 +1,70 @@
+import ecs100.*;  
+public class SquareOfCircles  
+{ 
+    private double currentx = 0;
+    private double currenty = 0;
+    private int SQ = 5;
+    private int WIDTH = 40;
+    private int HEIGHT = 40;
+
+    public SquareOfCircles(){
+        UI.setMouseListener(this::mousePerformed);
+        UI.addButton("Square", this::buttonSquare);
+        UI.addButton("Triangle", this::buttonT);
+        UI.addButton("Frame", this::buttonFrame);
+        UI.addButton("Chess Board", this::buttonChess);
+    }
+
+    /** Respond to mouse events */
+    public void mousePerformed(String action, double x, double y) {
+        if (action.equals("released")){
+            currentx = x;
+            currenty = y;
+            UI.println("Mouse "+action+" at ("+x+","+y+")");
+        }
+    }
+
+    /** System will call this Method */
+
+    public void buttonSquare() {
+        UI.println("You pushed Square "); 
+        for(int j = 0; j<SQ;j++)
+        {
+            for(int i = 0; i<SQ;i++){
+                UI.drawRect(currentx+(i*WIDTH), currenty+(j*HEIGHT), WIDTH, HEIGHT,true);
+            }
+        }
+    }
+
+    public void buttonT() {
+        UI.println("Triangle pushed"); 
+    }
+
+    public void buttonFrame() {
+        UI.println("Frame pushed");
+    }
+
+    public void buttonChess() {
+        UI.println("Chess pushed"); 
+        UI.clearGraphics();
+        for(int j = 0; j<SQ;j++)
+        {
+            for(int i = 0; i<SQ;i++){
+                if ((i+j)%2 == 0)
+                {
+                    UI.fillRect(currentx+(i*WIDTH), currenty+(j*HEIGHT), WIDTH, HEIGHT,true);
+                }else
+                {
+                    UI.drawRect(currentx+(i*WIDTH), currenty+(j*HEIGHT), WIDTH, HEIGHT,true);
+                }
+            }
+        }
+        UI.repaintGraphics();
+    }
+
+    public static void main(String[] arguments){
+        UI.initialise();
+        SquareOfCircles obj = new SquareOfCircles();
+    }   
+
+}

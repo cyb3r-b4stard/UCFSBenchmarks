@@ -1,0 +1,100 @@
+
+public class Ball
+{
+    private int x;
+    private int y;
+    private double xVel;
+    private double yVel;
+    private int radius;
+    private int[] color;
+    
+    public Ball(int nx, int ny, int rad) {
+        x = nx;
+        y = ny;
+        xVel = 0;
+        yVel = 0;
+        radius = rad;
+        color = new int[3];
+        color = {256,0,0};
+    }
+    
+    public Ball(int nx, int ny, int rad, double nxVel, double nyVel) {
+        x = nx;
+        y = ny;
+        xVel = nxVel;
+        yVel = nyVel;
+        radius = rad;
+    }
+    
+    public void move() {
+        xVel += Physics.getXGrav();
+        yVel += Physics.getYGrav();
+        
+        xVel *= 1.0;
+        yVel *= 1.0;
+        
+        x += xVel;
+        y += yVel;
+        
+        accountForEdgeCollision();
+    }
+    
+    private void accountForBoxCollision(Box[] b) {
+        /**
+        if(x-radius <= Physics.getLeftBound()) {
+            x = radius+Physics.getLeftBound();
+            xVel *= -1;
+        }
+        if(x+radius >= Physics.getRightBound()) {
+            x = Physics.getRightBound()-radius;
+            xVel *= -1;
+        }
+        if(y-radius <= Physics.getUpperBound()) {
+            y = radius+Physics.getUpperBound();
+            yVel *= -1;
+        }
+        if(y+radius >= Physics.getLowerBound()) {
+            y = Physics.getLowerBound()-radius;
+            yVel *= -1;
+        } */
+    }
+    
+    private void accountForEdgeCollision() {
+        if(x-radius <= Physics.getLeftBound()) {
+            x = radius+Physics.getLeftBound();
+            xVel *= -1;
+        }
+        if(x+radius >= Physics.getRightBound()) {
+            x = Physics.getRightBound()-radius;
+            xVel *= -1;
+        }
+        if(y-radius <= Physics.getUpperBound()) {
+            y = radius+Physics.getUpperBound();
+            yVel *= -1;
+        }
+        if(y+radius >= Physics.getLowerBound()) {
+            y = Physics.getLowerBound()-radius;
+            yVel *= -1;
+        }
+    }
+    
+    public int getX() {
+        return x;
+    }
+    
+    public int getY() {
+        return y;
+    }
+    
+    public int getRadius() {
+        return radius;
+    }
+    
+    public double getXVel() {
+        return xVel;
+    }
+    
+    public double getYVel() {
+        return yVel;
+    }
+}

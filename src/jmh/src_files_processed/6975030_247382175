@@ -1,0 +1,236 @@
+import java.io.*;
+import javax.swing.*;
+import java.util.*;
+import java.awt.*;
+import java.awt.event.*;
+
+/**
+ * #### ### ###### ######## ####.
+ * @######  #### ### 
+ * @####### #.#, #/##/####
+ */
+
+public class MoreTest {
+    private static GameTreeNode gameTree = null;
+
+    public static void main (String [] args) throws FileNotFoundException {
+
+        File gameFile = null;
+
+        JFrame myFrame = new JFrame("Choose a File");
+        gameFile = getFile(myFrame);
+
+        ViewFrame vf = new ViewFrame("Guess the Animal.");
+        vf.setVisible(true);
+        vf.println("Welcome to the animal guessing game.");
+        vf.println("Please wait while I set up a new game.");
+        int [] inOrder = readIntsFromFile(gameFile);
+        String [] preOrder = readStringsFromFile(gameFile);
+
+
+        gameTree = loadGameTree(inOrder, preOrder );
+
+        while(playGame(vf))
+        ;
+
+        vf.println("\nThanks for playing!");
+        myFrame.setVisible(true);
+    }
+
+    /**
+     * Load the initial tree of questions to ask from a file.
+     * 
+     * @return  A reference to the root node of the tree of questions.
+     */
+    public static GameTreeNode loadGameTree(int [] inOrder, String [] preOrder) {  
+        int iLength = inOrder.length;  
+        int pLength = preOrder.length;
+
+        int preOrderLast = pLength - 1;
+        int inOrderLast = iLength - 1;
+
+        return buildSubTree( preOrder, inOrder, 0, inOrderLast);
+
+    }
+
+    private static GameTreeNode buildSubTree(String[] preOrder, int [] inOrder, int first, int last){ 
+
+        if(first>=last){
+            System.out.println("null");
+            return null;  
+        }
+
+        GameTreeNode root = new GameTreeNode(preOrder[first]);
+        if(first==last){
+            System.out.println("root");
+            return root;
+        }
+
+        int middle = inOrder[0];
+
+        root.left = buildSubTree( preOrder, inOrder, first+1, middle);
+
+        root.right = buildSubTree(preOrder, inOrder, middle+1, last);
+
+        System.out.println("it Returns nodes merging up");
+        return root; 
+    }  
+
+    public static File getFile(JFrame myFrame){
+        String appDir = (String) (System.getProperty("user.dir"));
+        JFileChooser chooser = new JFileChooser(appDir);
+
+        int returnVal = chooser.showOpenDialog(null);
+        if(returnVal == JFileChooser.APPROVE_OPTION){
+            File file = chooser.getSelectedFile();
+            return file;
+
+        }  
+
+        System.err.println("Invalid File");
+
+        return null;
+
+    }
+
+    public static int[] readIntsFromFile(File _gameFile) throws FileNotFoundException{
+        Scanner sc1 = new Scanner(_gameFile);
+        int numberOfItems = sc1.nextInt();
+        int [] numArray = new int[numberOfItems];
+
+        for(int i = 0; i<numArray.length; i++){
+            sc1.nextLine();
+            sc1.nextLine();
+            numArray[i] = sc1.nextInt();
+        }
+        return numArray;
+    }
+
+    public static String[] readStringsFromFile(File _gameFile)throws FileNotFoundException {
+        Scanner sc2 = new Scanner(_gameFile);
+        int numberOfItems = sc2.nextInt();
+        Scanner sc3 = new Scanner(_gameFile);
+        String [] stringArray = new String[numberOfItems];
+
+        for(int i = 0; i<stringArray.length; i++){
+            sc3.nextLine();
+            stringArray[i] = sc3.nextLine();
+        }
+
+        return stringArray;
+    }
+
+    /*private void WriteToFile(JFrame myFrame){
+    PrintWriter pw;
+    String appDir = (String) (System.getProperty("user.dir"));
+    JFileChooser save = new JFileChooser(appDir);
+    int result = save.showSaveDialog(myFrame);
+    try{
+    if(result == save.APPROVE_OPTION){
+    pw = new PrintWriter( save.getSelectedFile();)
+    pw.close();
+
+    } 
+    }
+    catch(Exception e) {
+    System.err("File Not Valid");
+    system.exit(0);
+    }
+
+    }
+     */
+    public void writeOut(File file){
+        PrintWriter pw = new PrintWriter(file);
+        PrintWriter out;
+        try {
+            JFileChooser save=new JFileChooser(new File("/usr/people/classes/s05/jasmith/CS161"));
+            int returnVal=fc.showOpenDialog(null);
+            if(returnVal==JFileChooser.APPROVE_OPTION) {
+                out=newPrintWriter(fc.getSelectedFile());   
+                ...
+                out.close();  
+            }
+        }
+        catch(Exception e) {
+            ...
+        }
+    }
+
+    /**
+     * Play the guessing game, asking at the end if the player wants 
+     * to continue.
+     * 
+     * @param vf    The ViewFrame which serves as the parent for the 
+     *              input boxes.
+     * @return      true if the player wants to go again, false otherwise.
+     */
+    public static boolean playGame(ViewFrame vf) {
+        boolean result = false;
+
+        GameTreeNode current = gameTree;
+
+        if (current == null)  {
+            System.out.println("Game initialization failed.");
+            System.exit(1);
+        }
+
+        String response = null;
+
+        while (current.left != null) {
+            response = vf.readString(current.question + 
+                " (Yes or no)");
+
+            if (response.equalsIgnoreCase("yes")) {
+                current = current.left;
+            } else {
+                current = current.right;
+            }
+        }
+
+        response = vf.readString(current.question + 
+            " (Yes or no)");
+
+        if (response.equalsIgnoreCase("yes")) {
+            response = vf.readString(
+                "I thought so! Want to play again? (Yes or no)");
+            result = response.equalsIgnoreCase("yes");
+        } else {
+            addNewAnimal(current, vf);
+            response = vf.readString(
+                "Thanks! Want to play again? (Yes or no)");
+            result = response.equalsIgnoreCase("yes");
+
+        }
+        return(result);
+    }
+
+    /**
+     * Learn about a new animal from the player.
+     *
+     * @param t     The leaf node containing our incorrect guess.
+     * @param vf    The ViewFrame used to manage input boxes.
+     */
+    public static void addNewAnimal(GameTreeNode t, ViewFrame vf) {
+        String newAnimal = vf.readString("What is your animal?");
+        String newQuestion = vf.readString(
+                "Type a y/n question to distinguish between my guess and your animal.");
+        String newAnswer = vf.readString("What is the answer for your animal?");
+        String oldAnimal = t.question;
+
+        t.question = newQuestion;
+
+        String newLeft = null;
+        String newRight = null;
+        if (newAnswer.equalsIgnoreCase("yes")) {
+            newLeft = "Is your animal a(n) " + newAnimal + "?";
+            newRight = oldAnimal;
+        } else {
+            newLeft = oldAnimal;
+            newRight = "Is your animal a(n) " + newAnimal + "?";
+        }
+
+        t.left = new GameTreeNode(newLeft);
+        t.right = new GameTreeNode(newRight);
+    }
+}
+

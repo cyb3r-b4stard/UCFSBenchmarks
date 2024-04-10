@@ -1,0 +1,125 @@
+import ch.abbts.gui.*;
+
+import javax.swing.*;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.awt.event.*;
+
+
+
+public class GUI_Panel extends Window{
+  
+    String        randomNote;
+    int           randomValve;
+    int           points    = 0;
+    int           highscore = 0;
+    
+    Label         rightSerieLbl           = new Label("Richtige in Folge:");           
+    Label         rightSerieNumbLbl       = new Label(Integer.toString(points));       
+    Label         highScoreLbl            = new Label("Highscore:");                   
+    Label         highScoreNumbLbl        = new Label(Integer.toString(highscore));    
+    Label         noteLbl                 = new Label("Notenwert:");                   
+    Label         valveLbl                = new Label("Ventile:");                     
+    Label         rightNoteLbl            = new Label();                               
+    Label         rightValveLbl           = new Label();                               
+      
+      
+      
+    TextField     inputNoteTfl            = new TextField();                           
+    TextField     inputValveTfl           = new TextField();                           
+        
+    Button        startBtn                = new Button("Start/Next");                  
+    Button        stopBtn                 = new Button("Ende");                        
+    Button        inputBtn                = new Button("Eingabe");                     
+        
+    TextArea      outputNoteTa            = new TextArea();                            
+    
+  
+  
+  
+    public static void main (String[] args){
+        launch(args);  
+    }
+  
+    public void start(){
+          
+        VerticalBox vBox1 = new VerticalBox();
+        vBox1.add(rightSerieLbl);
+        vBox1.add(rightSerieNumbLbl);
+        vBox1.add(highScoreLbl);
+        vBox1.add(highScoreNumbLbl);
+        vBox1.add(outputNoteTa);
+               
+        VerticalBox vBox3 = new VerticalBox();
+        vBox3.add(startBtn);
+        vBox3.add(stopBtn);
+        vBox3.add(inputBtn);
+        vBox3.add(noteLbl);
+        vBox3.add(inputNoteTfl);
+        vBox3.add(rightNoteLbl);
+        vBox3.add(valveLbl);
+        vBox3.add(inputValveTfl);
+        vBox3.add(rightValveLbl);
+        
+        HorizontalBox hBox1 = new HorizontalBox();
+        hBox1.add(vBox1);
+        hBox1.add(vBox3);
+         
+        show("Lernprogramm", 650, 350, hBox1);
+        
+        startBtn.setOnAction(ev -> generatNote());
+        stopBtn.setOnAction(ev -> closeFrame());
+        inputBtn.setOnAction(ev -> testInput());
+        
+        BufferedImage image1; 
+        image1 = ImageIO.read (FrameTest.class.getResource("icon.jpg"));
+    }
+  
+    public void generatNote(){
+        Note RandomNote = new Note();       
+        RandomNote.getNote();
+        randomNote = RandomNote.mRandomNote;
+        randomValve= RandomNote.mValve;
+        RandomNote.showNote();        
+        outputNoteTa.setText(RandomNote.mNote);
+    }
+  
+    public void testInput(){
+        String noteInput = inputNoteTfl.getText();
+        int valveInput = Integer.parseInt(inputValveTfl.getText());
+        if ((Evaluation.testNote(noteInput, randomNote))&&(Evaluation.testValve(valveInput, randomValve))){
+            rightNoteLbl.setText(noteInput + " ist richtig");
+            rightValveLbl.setText(valveInput + " ist richtig");
+            setPoints();
+        }
+        else if ((Evaluation.testNote(noteInput, randomNote))&!(Evaluation.testValve(valveInput, randomValve))){
+            rightNoteLbl.setText(noteInput + " ist richtig");
+            rightValveLbl.setText(valveInput + " ist leider falsch -> " + randomValve);
+        }
+        else if ((Evaluation.testNote(noteInput, randomNote))&!(Evaluation.testValve(valveInput, randomValve))){
+            rightNoteLbl.setText(noteInput + " ist leider falsch -> " + randomNote);
+            rightValveLbl.setText(valveInput + " ist richtig");
+        }
+        else{
+            rightNoteLbl.setText(noteInput + " ist leider falsch -> " + randomNote);
+            rightValveLbl.setText(valveInput + " ist leider falsch -> " + randomValve);
+        }
+        inputNoteTfl.setText("");
+        inputValveTfl.setText("");
+    }
+    
+    public void setPoints(){
+        points ++;
+        if (points > highscore){
+            highscore = points;
+        }
+        rightSerieNumbLbl.setText(Integer.toString(points));
+        highScoreNumbLbl.setText(Integer.toString(highscore));
+    }
+  
+    public void closeFrame(){
+        System.exit(0);   
+    }
+}

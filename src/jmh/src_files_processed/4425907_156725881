@@ -1,0 +1,186 @@
+
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### ####, #####
+ * @####### ##/##/####
+ */
+public class Controller
+{
+    private View theView;
+    private Model model;
+    private String buttonInput;
+
+    /**
+     * Constructor for objects of class Controller
+     */
+    public Controller(View theView, Model theModel)
+    {
+        this.theView = theView;
+        theView.setController(this);
+        this.model = theModel;
+        theModel.setController(this);
+        setMLevel(1);
+    }
+    
+    public void addVCone(int x, int y){
+        theView.getGrid().addCone(x,y);
+    }
+    
+    public void addVBarrier(int x, int y){
+        theView.getGrid().addBarrier(x,y);
+    }
+    
+    public void addVRobot(int x, int y){
+        theView.getGrid().addRobot(x,y);
+    }
+    
+    public void removeVRobot(int x, int y){
+        theView.getGrid().removeRobot(x,y);
+    }
+    
+    public void addKey(int x, int y)
+    {
+        theView.getGrid().addKey(x,y);
+    }
+    
+    public void addGate(int x, int y)
+    {
+        the View.getGrid().addGate(x,y);
+    }
+    
+    public void moveVRobot(int x, int y){
+        theView.getGrid().moveRobot(x,y);
+        theView.getRightPane().printMethod("      Robot has moved forward");
+    }
+    
+    public void turnVRobot(boolean isClockwise){
+        theView.getGrid().turnRobot(isClockwise);
+        String clock = "anti-clockwise";
+        if(isClockwise){
+            clock = "clockwise";
+        }
+        theView.getRightPane().printMethod("      Robot has turned " + clock);
+    }
+    
+    public void dropVCone(int x, int y){
+        theView.getGrid().addCone(x,y);
+    }
+    
+    public void removeVCone(int x, int y){
+        theView.getGrid().removeCone(x,y);
+    }
+    
+    public void clearVCell(int x, int y){
+        theView.getGrid().clearButton(x,y);
+    }
+    
+    public int getVLevel(){
+        return theView.getLevel();
+    }
+    
+    public void addMRobot(int x, int y){
+       model.addRobot(x,y);
+    }
+    
+    public void addMCone(int x, int y){
+        model.addCone(x,y);
+    }
+    
+    public void addMBarrier(int x, int y){
+        model.addBarrier(x,y);
+    }
+    
+    public void moveMRobot(){
+        if(model.getRobot() == null){
+        } else{
+            model.getRobot().moveForward();
+        }
+    }
+    
+    public void turnLeftMRobot(){
+        if(model.getRobot() == null){
+        } else{
+            model.getRobot().turnLeft();
+        }
+    }
+    
+    public void turnRightMRobot(){
+        if(model.getRobot() == null){
+        } else{
+            model.getRobot().turnRight();
+        }
+    }
+    
+    public void pickUpMCone(){
+       if(model.getRobot() == null){
+        } else{
+            model.getRobot().pickUpCone();
+        }
+    }
+    
+    public void dropMCone(){
+        if(model.getRobot() == null){
+        } else{
+            model.getRobot().dropCone();
+        }
+    }
+    
+    public int getMRobotDirection(){
+        if(model.getRobot() == null){
+            return -1;
+        } else{
+            return model.getRobot().getDirection();
+        }
+    }
+    
+    public boolean isMRobotWithCone(){
+        return model.isRobotWithCone();
+    }
+    
+    public int getMRobotX(){
+        if(model.getRobot() == null){
+            return -1;
+        } else{
+            return model.getRobot().getLocation().x;
+        }
+    }
+    
+    public int getMRobotY(){
+        if(model.getRobot() == null){
+            return -1;
+        } else{
+            return model.getRobot().getLocation().y;
+        }
+    }
+    
+    public void setMLevel(int level){
+        model.setLevel(level);
+    }
+    
+    public int getConesHeldSize(){
+        return model.getConesHeldSize();
+    }
+    
+    public void updateVConesHeld(int x){
+        theView.updateConesHeld(x);
+    }
+    
+    public void codeSubmitted(String code){
+    }
+    
+    public String getButtonPressed()
+    {
+        return buttonInput;
+    }
+    
+    public void outOfPower()
+    {
+        theView.outOfPower();
+    }
+    
+    public void removeKey(int x, int y)
+    {
+        theView.getGrid().removeKey(x,y);
+    }
+}

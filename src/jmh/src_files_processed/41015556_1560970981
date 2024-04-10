@@ -1,0 +1,59 @@
+import java.util.*;
+public class magic
+{
+    public int vow=0;public int const=0;
+    public static void main(String args[])
+    {
+        Scanner sc=new Scanner(System.in);
+        System.out.println("Enter");
+        int num=sc.nextInt();
+        int octal=octal(num);
+        String str=" ";
+        char ch=' ';
+        while(octal>0)
+        {
+            ch=(char)((octal%10)+64);
+            if(octal%10==0)
+            {
+               str="A"+str;
+               vow++;
+            }
+            else
+            {
+               str=ch+str;
+               check(ch);
+            }
+            octal=octal/10;
+        }
+        
+        ch=str.charAt((str.length())-1);
+        char chr=' ';
+        for(int i=2;i<=6;i++)
+        {
+            chr=(char)((int)ch+i);
+            str=str+chr;
+            check(chr);
+        }
+        
+        System.out.println(num+" "+octal+" "+str+" "+vow+" "+const);
+    }
+    public int octal(int num)
+    {
+        while(num>0)
+        {
+            if(num<8)
+                return num;
+            else
+            {
+                octal(num/8);
+                return (num%8);
+            }
+        }
+    }
+    public void check(char ch)
+    {
+        if(ch=='A'||ch=='E'||ch=='I'||ch=='O'||ch=='U')
+            vow++;
+        else
+            const++;
+    }

@@ -1,0 +1,75 @@
+import javafx.application.Application; 
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import javafx.scene.Group;
+import javafx.scene.shape.Line;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.*;
+import javafx.scene.input.MouseEvent;
+
+/**
+ * ### # 
+ * 
+ * @###### ######
+ * @####### ##.##.##
+ */
+public class EventPalooza extends Application
+{
+    Circle cir;;
+    Rectangle rec;
+    public void start(Stage primaryStage)
+    {
+        cir = new Circle(210, 270, 90 );
+        cir.setFill(Color.BLACK);
+        cir.setOnMouseEntered(this::overCircle);
+        cir.setOnMouseExited(this::leaveShape);
+        rec = new Rectangle(350,150, 100, 250); 
+        rec.setFill(Color.BLACK);
+        rec.setOnMouseEntered(this::overRec);
+        rec.setOnMouseExited(this::leaveShape);
+        
+        
+        Group root = new Group(cir, rec); 
+
+        Scene scene = new Scene(root, 400, 200, Color.LIGHTBLUE);
+         scene.setOnMouseClicked(this::click);
+
+        primaryStage.setTitle("EventPalooza"); 
+        primaryStage.setScene(scene);
+        primaryStage.show();
+        
+        
+
+
+        
+        primaryStage.setOnCloseRequest(e -> System.exit(0));
+    }
+
+    public void overCircle(MouseEvent event)
+    {
+        cir.setFill(Color.BLUE);
+        rec.setFill(Color.BLUE); 
+    }
+    
+    public void click(MouseEvent event)
+    {
+        Circle cir2 = new Circle(eventX, eventX, 10); 
+    }
+    
+    public void overRec(MouseEvent event)
+    {
+        cir.setFill(Color.RED);
+        rec.setFill(Color.RED); 
+    }
+    
+    public void leaveShape(MouseEvent event)
+    {
+       cir.setFill(Color.BLACK);
+       rec.setFill(Color.BLACK);
+    }
+
+    public static void main(String[] args)
+    {
+        launch(args); 
+    }
+}

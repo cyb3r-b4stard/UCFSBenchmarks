@@ -1,0 +1,117 @@
+import java.awt.*;
+import objectdraw.*;
+/**
+ * ##### # ########### ## ##### #### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Grid
+{   private GridCell[][] GameGrid;
+    private DrawingCanvas canvas;
+    private boolean GameOver
+    public Grid (DrawingCanvas inputCanvas)
+    {   
+        GameGrid= new GridCell[10][10];
+        for(int i=0;i<10;i++)
+        {   for(int j=0;j<10;j++)
+            {   GameGrid[i][j]=new GridCell(i,j,inputCanvas);
+            }
+        }
+        RandomIntGenerator bombPlace=new RandomIntGenerator(0,9);
+        for (int i=0;i<10;i++)
+        {   GridCell currentCell=null;
+            while(currentCell==null)
+            {   currentCell=GameGrid[bombPlace.nextValue()][bombPlace.nextValue()];
+                currentCell.setBomb(true);
+            }
+        }
+        findNeighborCounts();
+        canvas=inputCanvas;
+    }
+    public void showAllMines()
+    {   for(int i=0;i<10;i++)
+        {   for(int j=0;j<10;j++)
+            {   GameGrid[i][j].showBomb();
+            }
+        }
+    }
+    public void revealAll()
+    {   for(int i=0;i<10;i++)
+        {   for(int j=0;j<10;j++)
+            {   GameGrid[i][j].reveal();
+                
+            }
+        }
+    }
+    public void findNeighborCounts()
+    {   for(int i=0;i<10;i++)
+        {   for (int j=0;j<10;j++)
+            {
+               GridCell currentCell=GameGrid[i][j];
+               currentCell.setNeighborCount(getNeighborCount(i,j));
+            }
+            
+                        
+            } 
+        }
+    public int getNeighborCount(int row, int column)
+    {   GridCell currentCell=GameGrid[row][column];  
+        int currentNeighborCount=0;
+            if (currentCell.containsBomb() ==false)
+                {   
+                    for(int k=row-1; k<row+2; k++)
+                    {   
+                        for( int l=column-1; l<column+2; l++)
+                        {  
+                            if(k>-1 && l>-1 && k<10 && l<10 )
+                                if(currentCell != GameGrid[k][l] &&
+                                GameGrid[k][l].containsBomb())
+                                    {
+                                        {   
+                                            currentNeighborCount+=1;
+                                            System.out.println(GameGrid[k][l].containsBomb());
+                         
+                                        }
+                                    }
+                        }
+                    }
+                }
+        return currentNeighborCount;
+    }
+    public GridCell getCellAtLocation (Location pt)
+    {   int row=-1;
+        int column=-1;
+        for (int i=0; i<10; i++)
+        {   double oneCellWidth=canvas.getWidth()/10;
+            double x=pt.getX();
+            double temp=x/oneCellWidth;
+            if(i<temp && temp<(i+1))
+            {   row=i;
+            }
+        }
+        for (int i=0; i<10; i++)
+        {   double oneCellHeight=canvas.getHeight()/10;
+            double y=pt.getY();
+            double temp=y/oneCellHeight;
+            if(i<temp && temp<(i+1))
+            {  column=i;
+            }
+        }
+        return GameGrid[row][column];
+    }
+    public void onMouseLeftClick (GridCell cell)
+    {   
+        cell.reveal();
+        if(cell.containsBomb())
+        {   new Text ("You Loose!",0,250,canvas).setFontSize(50);
+        }
+    }
+        
+        
+        
+    
+    public void onMouseRightClick (GridCell cell)
+    {   cell.setFlag();
+    }
+}

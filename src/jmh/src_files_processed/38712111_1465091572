@@ -1,0 +1,70 @@
+public class CircularLinkedList<E>
+{
+    private ListNode<E> current;
+    
+    public void add(E obj) {
+        if (current == null) {
+            current = new ListNode<E>(obj, null);
+            current.setNext(current);
+        }
+        else {
+            ListNode<E> temp = new ListNode<E>(obj, null);
+            temp.setPrevious(current.getPrevious());
+            current.getPrevious().setNext(temp);
+            temp.setNext(current);
+            current.setPrevious(temp);
+        }
+    }
+    
+    public E removeCurrent() {
+        if (current == null)
+            return null;
+        if (current.getNext() == current) {
+            E temp = current.getValue();
+            current = null;
+            return temp;
+        }
+        current.getPrevious().setNext(current.getNext());
+        E temp = current.getValue();
+        current = current.getNext();
+        return temp;
+    }
+    
+    public void moveCurrentBy(int n) {
+        for (int i = 0; i < n; i++) {
+            current = current.getNext();
+        }
+    }
+    
+    /**
+     * Finds the object in the list and sets the current to point
+     * to its node
+     */
+    public void find(E obj) {
+        if (current == null || current.getValue().equals(obj))
+            return;
+        ListNode<E> startingNode = current;
+        current = current.getNext();
+        while (current != startingNode) {
+            if (current.getValue().equals(obj))
+                return;
+            current = current.getNext():
+        }
+    }
+    
+    public static CircularLinkedList<Integer> circleOfNumbers(int n) {
+        CircularLinkedList<Integer> circ = new CircularLinkedList<Integer>();
+        for (int i = 1; i <= n; i++) {
+            circ.add(i);
+        }
+        return circ;
+    }
+    
+    public static int josephusProblem(int circleSize, int count, int start) {
+        if (start > circleSize)
+            return -1;
+        CircularLinkedList<Integer> circ = circleOfNumbers(circleSize);
+        circ.find(start);
+        
+    }
+}

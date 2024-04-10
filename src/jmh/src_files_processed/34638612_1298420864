@@ -1,0 +1,105 @@
+import ecs100.*;
+import java.util.*;
+import java.io.*;
+import java.awt.Color;
+
+/** <########### ## ##### ####>
+ */
+public class Main{
+    Contacts con = new Contacts();
+
+    /**      */
+    public Main(){
+        UI.initialise();
+        UI.setDivider(0.5);
+        UI.setKeyListener((L) -> pressKey(L));;
+
+        UI.setMouseListener((action, x, y) -> doMouse(action, x, y));
+        UI.addButton("Add a Contact", this::addCont);
+        UI.addButton("Add a Contacts Number", this::addContactNumber);
+        UI.addButton("Get a Contacts Number", this::getContactNumber);
+        UI.addButton("Print all numbers for a contacts", this::printAllNumbersForContact);
+        UI.addButton("Print all Contacts", this::printAllCont);
+        UI.addButton("Clear", ()->UI.clearPanes());
+
+        UI.addButton("Quit", UI::quit);
+    }
+
+    private void addCont(){
+        String addContName = UI.askString("Enter the contacts name?");
+        String image = UIFileChooser.open("Choose a image for " + addContName);
+
+        
+        con.addContact(addContName);
+
+        UI.println("The Contact:" + addContName + ", has been added to the system");
+        UI.drawImage(image, 0, 0, 200, 200);
+        UI.println("");
+    }
+
+    private void addContactNumber(){
+        String askContName = UI.askString("Enter the contacts name");
+        String image = UI.askString("Enter the image");
+        String askNumber = UI.askString("Enter the number");
+
+        con.addContactNumber(askContName, image, askNumber);
+
+        UI.println("The Contact:" + askContName + "'s number has been added to the system");
+        UI.println("");
+    }
+
+    private void getContactNumber(){
+        String askContName = UI.askString("Enter the contacts name");
+        String image = UI.askString("Enter the Image");
+
+        UI.println(con.getContactNumber(askContName, image)); 
+        UI.drawImage("Images/"+ image, 0, 0, 200, 200);
+        UI.println("");
+    }
+
+    private void printAllNumbersForContact(){
+        String name = UI.askString("Contact:");
+
+        Pair[] everything = con.getAll(name);
+
+        UI.println("Numbers and Images for " + name + ":");
+        for(int i = 0; i < everything.length; i++){
+            UI.println(everything[i].fst() + " || " + everything[i].snd());
+        }
+
+        UI.println("");
+
+    }      
+
+    private void printAllCont(){
+        System.out.println(con);
+    }
+
+    private void pressKey(String key){
+        if(key.equalsIgnoreCase("w")){
+            addCont();
+
+        } 
+        if(key.equalsIgnoreCase("e")){
+            addCont();
+
+        }
+    }
+
+    public void doMouse(String action, double x, double y){
+        if(action.equals("click")){
+            UI.clearGraphics();
+        }
+    }
+
+    private void printAllCont(){
+        for (String key : con.theContacts.keySet()){
+            UI.println(key);
+            Pair[] all = con.getAll(key); 
+
+            for(int i = 0; i < all.length; i++){ 
+                UI.println(all[i].fst());           
+            }
+        }
+    }   
+}

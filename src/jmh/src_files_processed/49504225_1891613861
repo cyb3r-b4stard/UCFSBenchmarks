@@ -1,0 +1,199 @@
+
+/**
+ * ##### # ########### ## ##### #############_###### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import ecs100.*;
+import java.awt.Color;
+import java.util.*;
+public class Photoelectric_Effect
+{
+    boolean running = false;
+    
+    
+    public static double startposx = 500;
+    public static double startposy = 20;
+    public static double endposx = 600;
+    public static double metalPlatey = 200;
+    public static double metalPlatex = 250;
+    public static double collectorPlatex = 600;
+    public static double collectorPlatey = 150;
+    public static double descentAngle = Math.toRadians(135);
+    public static double descentSpeed = 1;
+    public static double currentCurrent = 0;
+    public static double electronsAbsorbedPerFrame = 0;
+    public static double energyPerElectron = 0;
+    private int refreshRate = 5;
+    private int maxPhot = 1000;
+    private int photgenPerFrame = 5;
+    ArrayList<Photon> photonList = new ArrayList<Photon>();
+    ArrayList<Electron> electronList = new ArrayList<Electron>();
+    public double inputWavelength = 450*Math.pow(10,-9);
+    public static double[] ecollimation = {85,95};
+    public static double visualScalar = Math.pow(10,12);
+    public static double metalWorkFunction = 8.48*Math.pow(10,-19);
+    public Photoelectric_Effect(){
+        UI.initialise();
+        UI.addButton("Absorption", this::runAbsorption);
+        UI.addSlider("Change wavelength", 300,850, this::changeWv);
+        UI.addSlider("Change max allowed photons", 100,10000, this::changeMaxPhot);
+        UI.addSlider("Change number generated", 1,100, this::changePhotPS);
+        UI.addSlider("Work function eV", 1, 8, this::changeWorkFunc);
+        UI.addButton("Pause",this::pauseSim);
+        UI.addButton("Resume",this::resumeSim);
+        UI.addButton("Stop simulation",this::stopSim);
+        UI.setColor(Color.BLACK);
+        drawCollectorPlate();
+        UI.fillRect(metalPlatex,metalPlatey,10,200);
+        UI.setImmediateRepaint(false);
+    }
+    void stopSim(){
+        running=false;
+        UI.clearGraphics();
+        UI.fillRect(metalPlatex,metalPlatey,10,200);
+        photonList = new ArrayList<Photon>();
+        electronList = new ArrayList<Electron>();
+        drawCollectorPlate();
+        UI.repaintGraphics();
+    }
+    public double getAverageEnergyPerElectron(){
+        double totEnergy=0;
+        for(int i = 0; i<electronList.size();i++){
+            totEnergy=totEnergy+electronList.get(i).getEnergy();
+        }
+        return totEnergy/electronList.size();
+    void pauseSim(){
+        running = false;
+    }
+    void resumeSim(){
+        running = true;
+        runAbsorption();
+    }
+    void changeWv(double wv){
+        inputWavelength=wv*Math.pow(10,-9);
+    }
+    void changeMaxPhot(double max){
+        maxPhot = (int)max;
+    }
+    void changePhotPS(double ps){
+        photgenPerFrame = (int)ps;
+    }
+    
+    void runAbsorption(){
+        running=true;
+        while(running){
+            generatePhotons();
+            recalculatePhotPos();
+            recalculateElecPos();
+            checkRemovePhots();
+            checkRemoveElec();
+            drawPhots();
+            drawElec();
+            UI.drawString("Current energy transfer: "+currentCurrent, 10,10);
+            UI.drawString("Electrons absorbed per frame:"+electronsAbsorbedPerFrame,10,30);
+            UI.repaintGraphics();
+            UI.sleep(refreshRate);
+            erasePhots();
+            eraseElec();
+            eraseText();
+             UI.setColor(Color.BLACK);
+             UI.fillRect(metalPlatex,metalPlatey,10,200);
+             drawCollectorPlate();
+             UI.setColor(Color.BLACK);
+             electronsAbsorbedPerFrame=0;
+             currentCurrent=0;
+        }
+    }
+    public void recalculatePhotPos(){
+        for(int i = 0;i<photonList.size();i++){
+            photonList.get(i).recalculatePos();
+        }
+    }
+    public void generatePhotons(){
+        if((photonList.size()+photgenPerFrame)<1000){
+            for(int i = 0; i<photgenPerFrame; i++){
+                photonList.add(new Photon(inputWavelength));
+            }
+        }
+    }
+    public void drawPhots(){
+        for(int i = 0; i<photonList.size();i++){
+            photonList.get(i).draw();
+            
+            
+        }
+        
+    }
+    public void changeWorkFunc(double work){
+        metalWorkFunction=work*(1.9*Math.pow(10,-19));
+    }
+    public void eraseText(){
+        UI.eraseRect(0,0,500,150);
+    }
+    public void erasePhots(){
+        for(int i = 0; i<photonList.size(); i++){
+            photonList.get(i).erase();
+        }
+        
+    }
+    public void checkRemovePhots(){
+        for(int i = 0; i<photonList.size(); i++){
+            double curx = photonList.get(i).getX();
+            double currentwhy = photonList.get(i).getY();
+            
+            if(curx<metalPlatex+12){
+                if(photonList.get(i).getE()>metalWorkFunction){
+                electronList.add(new Electron(photonList.get(i).getE()-metalWorkFunction,currentwhy));
+            }
+                photonList.remove(i);
+                
+            }
+        }
+        
+    }
+    public void checkRemoveElec(){
+        for(int i = 0; i<electronList.size();i++){
+            double curx = electronList.get(i).getX();
+            double cury = electronList.get(i).getY();
+            if(curx>collectorPlatex-2 &&(cury>collectorPlatey && cury<collectorPlatey+300)){
+                currentCurrent = currentCurrent+electronList.get(i).getEnergy();
+                electronList.remove(i);
+                electronsAbsorbedPerFrame++;
+            }
+        }
+    }
+    public void recalculateElecPos(){
+        for(int i = 0; i<electronList.size();i++){
+            electronList.get(i).recalculatePos();
+        }
+    }
+    public void drawElec(){
+        for(int i = 0; i<electronList.size();i++)
+        {
+            electronList.get(i).draw();
+        }
+    }
+    public void eraseElec(){
+        for(int i = 0; i<electronList.size();i++){
+            electronList.get(i).erase();
+        }
+    }
+    public void drawCollectorPlate(){
+        UI.setColor(Color.BLACK);
+        UI.fillRect(collectorPlatex, collectorPlatey,10,300);
+    }
+    
+    public static void main(String[] args){
+        Photoelectric_Effect blorb = new Photoelectric_Effect();
+    }
+    public double round(double value, int places) {
+    if (places < 0) throw new IllegalArgumentException();
+
+    long factor = (long) Math.pow(10, places);
+    value = value * factor;
+    long tmp = Math.round(value);
+    return (double) tmp / factor;
+}
+}

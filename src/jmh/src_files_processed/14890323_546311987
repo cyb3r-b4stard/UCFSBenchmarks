@@ -1,0 +1,76 @@
+import java.awt.*;
+import java.awt.Graphics;
+import javax.swing.*;
+
+public class randommap extends JFrame
+{
+    public int[][] map;      
+    public int rows;   
+    public int cols;   
+    public int size = 10;  
+    public static final int DESERT = 0;
+    public static final int WATER = 1;
+    public static final int FOREST = 2;
+    public static Color[] colorof = {Color.,Color.blue,Color.green};
+    private Graphics display;  
+
+    public static void main(String[] args)
+    {
+    randommap w = new randommap(70,100);
+    w.genmap();
+    } 
+
+    public randommap(int r, int c) 
+    {   rows = r; cols = c;
+    map = new int[rows][cols];  
+    int XDIM = cols*size;  int YDIM = rows*size;
+    setBounds(0,0,XDIM,YDIM+size);
+    setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    display = this.getGraphics();
+    try{Thread.sleep(500);} catch(Exception e) {} 
+    for(int i=0;i<r;i++) for(int j=0;j<c;j++) map[i][j] = DESERT;
+    display.setColor(Color.yellow);
+    display.fillRect(0,0,XDIM,YDIM+40);
+    }  
+
+    public void drawmap()
+    {
+    for(int i=0;i<rows;i++)
+            for(int j=0;j<cols;j++)
+            {
+                display.setColor(colorof[map[i][j]]);
+                display.fillRect(j*size,i*size+size,size,size);
+            }
+    try{Thread.sleep(50);} catch(Exception e) {}  
+    } 
+
+    /* ******************************************************** */
+    public void genmap()  
+    {   int i, j;  
+        double r;  
+        for(i=0;i<rows;i++)
+          for(j=0;j<cols;j++)
+          {
+          r = Math.random();  
+                  if (r<0.059) map[i][j] = WATER;
+                  if (r<0.004) map[i][j] = FOREST;
+          } 
+        for(i=0;i<rows;i++)
+         for(j=0;j<cols;j++)
+         {
+             r = Math.random();
+             if(i>0&&j>0&&i<rows-1&&j<cols-1)
+             {
+                 if(map[i-1][j]==WATER||map[i+1][j]==WATER||map[i][j-1]==WATER||map[i][j+1]==WATER)
+                 {
+                    if(r<.854) map[i][j] = WATER;
+                 }
+                 if(map[i-1][j]==FOREST||map[i+1][j]==FOREST||map[i][j-1]==FOREST||map[i][j+1]==FOREST)
+                    if(r<.756) map[i][j] = FOREST;
+             }
+         }
+        drawmap();  
+    } 
+
+}  

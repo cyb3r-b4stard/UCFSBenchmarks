@@ -1,0 +1,243 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.awt.Color;
+import javax.swing.event.*;
+import java.awt.Component;
+import java.awt.Dimension;
+
+/**
+ * ## ####### ## ############
+ * @######  ####### #. #####
+ * @####### #.#, ######## ####
+ */
+
+
+public class ExampleSolution8_2 extends JPanel implements ActionListener, MouseInputListener{
+
+    private JButton moveLeft, moveRight, makeBigger, makeSmaller;
+    private JComboBox shapeChoice;
+    private JComboBox colorChoice;
+    private Point firstPoint;
+    private Circle firstCircle;
+    private Square firstSquare;
+    private Doughnut firstDoughnut;
+    private Window firstWindow;
+    private Triangle firstTriangle;
+   
+    private Point aShape;
+    private Point aColor;
+    private JLabel mouseStatus;
+    private String[] colorStrings = { "Black", "Red", "Green", "Blue", "Yellow", "Purple" };
+    
+    
+       
+    
+    
+    
+    
+
+    public ExampleSolution8_2() {
+        
+        moveLeft = new JButton("Move Left");
+        add(moveLeft);
+        moveLeft.addActionListener(this);
+
+        moveRight = new JButton("Move Right");
+        add(moveRight);
+        moveRight.addActionListener(this);
+        
+        makeBigger = new JButton("Make Bigger");
+        add(makeBigger);
+        makeBigger.addActionListener(this);
+
+        makeSmaller = new JButton("Make Smaller");
+        add(makeSmaller);
+        makeSmaller.addActionListener(this);
+        
+        shapeChoice = new JComboBox();
+        shapeChoice.addItem("Point");
+        shapeChoice.addItem("Square");
+        shapeChoice.addItem("Circle");
+        shapeChoice.addItem("Doughnut");
+        shapeChoice.addItem("Triangle");
+        shapeChoice.addItem("Window");
+        add(shapeChoice);
+        shapeChoice.addActionListener(this);
+        
+        colorChoice = new JComboBox();
+        colorChoice.addItem("Black");
+        colorChoice.addItem("Red");
+        colorChoice.addItem("Green");
+        colorChoice.addItem("Blue");
+        colorChoice.addItem("Yellow");
+        colorChoice.addItem("Purple");
+        add(colorChoice);
+        colorChoice.addActionListener(this);
+        
+        JComboBox colorList = new JComboBox(colorStrings);
+        colorList.setSelectedIndex(5);
+        colorList.addActionListener(this);
+        
+        
+        
+        
+        this.addMouseListener(this);
+        this.addMouseMotionListener(this);
+
+        firstPoint = new Point();
+        firstCircle = new Circle();
+        firstSquare = new Square();
+        firstDoughnut = new Doughnut();
+        firstWindow = new Window();
+        firstTriangle = new Triangle();
+        
+         
+        
+        
+        aShape = firstPoint;
+        
+        
+          
+       
+       
+        
+       
+        
+        
+        
+        makeFrame();
+    }
+    
+
+    
+ 
+
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == moveLeft) {
+              aShape.moveXY(-20, 0);
+        }
+
+       else if (e.getSource() == moveRight) {
+              aShape.moveXY(20, 0);
+        }
+
+        else if (e.getSource() == makeBigger) {
+              aShape.reSize(20);
+        }
+
+        else if (e.getSource() == makeSmaller) {
+              aShape.reSize(-20);
+        }
+        
+        else if (e.getSource() == shapeChoice) {
+            if (shapeChoice.getSelectedItem().equals("Circle"))
+                aShape = firstCircle;
+            else if (shapeChoice.getSelectedItem().equals("Square"))
+                aShape = firstSquare;
+            else if (shapeChoice.getSelectedItem().equals("Point"))
+                aShape = firstPoint;
+            else if (shapeChoice.getSelectedItem().equals("Doughnut"))
+                aShape = firstDoughnut;
+            else if (shapeChoice.getSelectedItem().equals("Triangle"))
+                aShape = firstTriangle;
+            
+            else if (shapeChoice.getSelectedItem().equals("Window"))
+                aShape = firstWindow;
+                
+        else if (e.getSource() == colorChoice) {
+            if (colorChoice.getSelectedItem().equals("Black"))
+                aShape = firstBlack;
+            else if (colorChoice.getSelectedItem().equals("Red"))
+                aShape = firstRed;
+            else if (colorChoice.getSelectedItem().equals("Green"))
+                aShape = firstGreen;
+            else if (shapeChoice.getSelectedItem().equals("Blue"))
+                aShape = firstBlue;
+            else if (colorChoice.getSelectedItem().equals("Yellow"))
+                aShape = firstYellow;
+            
+            else if (colorChoice.getSelectedItem().equals("Purple"))
+                aShape = firstPurple;
+          }
+         
+          
+       
+
+        repaint();
+    }
+    
+    public void mouseEntered(MouseEvent me) {
+       
+    }
+
+    
+    public void mouseExited(MouseEvent me) {
+        
+    }
+
+    
+
+    public void mouseReleased(MouseEvent me) {
+       
+    }
+
+    public void mouseClicked(MouseEvent me) {
+       
+    }
+
+    public void mouseMoved(MouseEvent me) {
+        
+    }
+
+    
+    
+  
+
+    public void mouseDragged(MouseEvent me) {
+       
+       aShape.setXY(me.getX(),me.getY());
+       repaint();
+    }
+   public void mousePressed(MouseEvent me) {
+       
+       
+    }
+    
+
+
+    public void paintComponent(Graphics g) {
+        
+        super.paintComponent(g);
+
+        aShape.outputXYCoords(g);
+        
+        
+        
+        
+        
+        
+        
+        
+
+        aShape.display(g);
+    }
+
+     
+    
+    public void makeFrame() {
+
+        JFrame frame = new JFrame("ExampleSolution8_2");
+
+        frame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+
+        frame.setSize(800, 600);
+
+        frame.getContentPane().add(this, BorderLayout.CENTER);
+        frame.setVisible(true);
+    }   
+}

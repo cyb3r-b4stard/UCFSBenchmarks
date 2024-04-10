@@ -1,0 +1,254 @@
+import javax.swing.*;
+import java.awt.event.*;
+import java.awt.*;
+import java.util.Random;
+import java.awt.image.*;
+import java.io.*;
+import javax.imageio.*;
+import java.util.ArrayList;
+public class CallOfBooty
+{
+    static BufferedImage fort;
+    static BufferedImage sloop;
+    static BufferedImage sloopLeft;
+    static BufferedImage sloopRight;
+    static BufferedImage sloopDown;
+    static BufferedImage frigate;
+    static BufferedImage frigateLeft;
+    static BufferedImage frigateRight;
+    static BufferedImage frigateDown;
+    static BufferedImage manowar;
+    static BufferedImage manowarLeft;
+    static BufferedImage manowarRight;
+    static BufferedImage manowarDown;
+    static ArrayList<Ship> navy = new ArrayList<Ship>();
+    static Random randy = new Random();
+    static int start = 1;
+    static String num;
+    public static void main(String[] args)
+    {
+        try {
+            fort = ImageIO.read(new File("Pirate Fort smaller.png"));
+        } catch (IOException e) {
+        }
+        try {
+            sloop = ImageIO.read(new File("Sloop.png"));
+        } catch (IOException e) {
+        }
+        try {
+            sloopLeft = ImageIO.read(new File("SloopLeft.png"));
+        } catch (IOException e) {
+        }
+        try {
+            sloopRight = ImageIO.read(new File("SloopRight.png"));
+        } catch (IOException e) {
+        }
+        try {
+            sloopDown = ImageIO.read(new File("SloopDown.png"));
+        } catch (IOException e) {
+        }
+        try {
+            frigate = ImageIO.read(new File("Frigate.png"));
+        } catch (IOException e) {
+        }
+        try {
+            frigateLeft = ImageIO.read(new File("FrigateLeft.png"));
+        } catch (IOException e) {
+        }
+        try {
+            frigateRight = ImageIO.read(new File("FrigateRight.png"));
+        } catch (IOException e) {
+        }
+        try {
+            frigateDown = ImageIO.read(new File("FrigateDown.png"));
+        } catch (IOException e) {
+        }
+        try {
+            manowarLeft = ImageIO.read(new File("ManOWarLeft.png"));
+        } catch (IOException e) {
+        }     
+        try {
+            manowarRight = ImageIO.read(new File("ManOWarRight.png"));
+        } catch (IOException e) {
+        }  
+        try {
+            manowarDown = ImageIO.read(new File("ManOWarDown.png"));
+        } catch (IOException e) {
+        }  
+        try {
+            manowar = ImageIO.read(new File("ManOWar.png"));
+        } catch (IOException e) {
+        }  
+        final JFrame frame = new JFrame();
+        frame.setSize(700,700);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setTitle("Call of Booty");
+        final Font f = new Font("Times new Roman", Font.BOLD , 70);
+        final Font font = new Font("smaller thing", 0, 20);
+        class Comp extends JComponent
+        {
+            public void paintComponent(Graphics g)
+            {
+                final Graphics2D g2 = (Graphics2D) g;
+                g2.drawImage(fort,0,0, null);
+                if (navy.size() > 1)
+                {
+                    for (Ship s : navy)
+                    {
+                        if (s != null)
+                        {
+                            g2.drawImage(s.getImg(), s.getX(), s.getY(), null);
+                        }
+                    }
+                }
+            }
+        }
+        g2.drawString(num, 10, 10);
+        frame.repaint();
+    }
+
+    Comp c = new Comp();
+    class Moverect extends MouseAdapter
+    {
+        public void mousePressed(MouseEvent e)
+        {
+           
+           
+        }
+    }
+    
+    class Counter implements ActionListener
+    {
+        public Counter()
+        {
+            start = 1;
+        }
+        
+        public void actionPerformed(ActionEvent e)
+        {
+            if(start / 10 == 0)
+            {
+                int side = randy.nextInt(4);
+                int x = 0;
+                int y = 0;
+                BufferedImage b = null;
+                if (side == 0)
+                {
+                    x = 0;
+                    y = randy.nextInt(701);
+                    b = sloopLeft;
+                }
+                if (side == 1)
+                {
+                    x = 700;
+                    y = randy.nextInt(701);
+                    b = sloopRight;
+                }
+                if (side == 2)
+                {
+                    x = randy.nextInt(701);
+                    y = 0;
+                    b = sloopDown;
+                }
+                if (side == 3)
+                {
+                    x = randy.nextInt(701);
+                    y = 700;
+                    b = sloop;
+                }
+                Ship sloop = new Ship(b, x, y, 100, 10);
+                navy.add(sloop);
+            }
+            if(start / 100 == 0)
+            {
+                int side = randy.nextInt(4);
+                int x = 0;
+                int y = 0;
+                BufferedImage b = null;
+                if (side == 0)
+                {
+                    x = 0;
+                    y = randy.nextInt(701);
+                    b = frigateLeft;
+                }
+                if (side == 1)
+                {
+                    x = 700;
+                    y = randy.nextInt(701);
+                    b = frigateRight;
+                }
+                if (side == 2)
+                {
+                    x = randy.nextInt(701);
+                    y = 0;
+                    b = frigateDown;
+                }
+                if (side == 3)
+                {
+                    x = randy.nextInt(701);
+                    y = 700;
+                    b = frigate;
+                }
+                Ship frigate = new Ship(b, x, y, 300, 30);
+                navy.add(frigate);
+            }
+            if(start / 1000 == 0)
+            {
+                int side = randy.nextInt(4);
+                int x = 0;
+                int y = 0;
+                BufferedImage b = null;
+                if (side == 0)
+                {
+                    x = 0;
+                    y = randy.nextInt(701);
+                    b = manowarLeft;
+                }
+                if (side == 1)
+                {
+                    x = 700;
+                    y = randy.nextInt(701);
+                    b = manowarRight;
+                }
+                if (side == 2)
+                {
+                    x = randy.nextInt(701);
+                    y = 0;
+                    b = manowarDown;
+                }
+                if (side == 3)
+                {
+                    x = randy.nextInt(701);
+                    y = 700;
+                    b = manowar;
+                }
+                Ship manowar = new Ship(b, x, y, 700, 100);
+                navy.add(manowar);
+            }
+            num = start + "";
+            if (navy.size() > 1)
+            {
+                for (Ship s : navy)
+                {
+                    if (s != null)
+                    {
+                        int slocation = s.getX();
+                        int ylocation = s.getY();
+                        if (slocation > 350)
+                        s.updateX(slocation - 10);
+                        if (slocation < 350)
+                        s.updateX(slocation + 10);
+                        if (ylocation > 350)
+                        s.updateY(slocation - 10);
+                        if (ylocation < 350)
+                        s.updateY(slocation + 10);
+                    }
+                }
+            }
+        }
+    }
+    Counter co = new Counter();
+    Timer tim = new Timer(5000, co);
+    tim.start();
+    frame.setVisible(true);
+}

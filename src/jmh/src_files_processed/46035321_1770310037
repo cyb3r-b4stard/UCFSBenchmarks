@@ -1,0 +1,162 @@
+import java.util.Random;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.HashSet;
+import java.util.stream.Collectors;
+
+/**
+ * # ###### ########-#### #########, ##### ## # ########### #####
+ * ########## ####### ### #####.
+ * 
+ * @###### ##### #. ######, ####### ####### ### #### ######
+ * @####### ####/#/##
+ */
+public class Simulator
+{
+    protected static final double FOX_CREATION_PROBABILITY = 0.02;
+    protected static final double RABBIT_CREATION_PROBABILITY = 0.08; 
+
+    protected final List<Animal> animals;
+    protected final Field field;
+    private int step;
+    private final Factory factory;
+    private final View view;
+    
+    /**
+     * Internal class invariants:
+     * All animals in list are alive.
+     * Same animals on field and in list.
+     * Locations in field and in animals should agree.
+     * Simulation and all animals use the same field.
+     */
+    public void sane()
+    {
+        assert animals != null : "The list of animals is null";
+        assert field != null : "The field is null";
+        assert step >= 0 : "Negative step";  
+        assert view != null : "The view is null";
+
+        for (Animal animal : animals) {
+            assert animal.isActive() : "Dead animal in list";
+        }
+        
+        for (Animal animal : animals) {
+            assert animal.getField() == field : 
+                "An animal has a different field: " + 
+                animal.getField() + " " + field;
+            assert field.getObjectAt(animal.getLocation()) == animal : 
+                "Animal not at its location in the field";
+        }
+        
+        for(int row = 0; row < field.getDepth(); row++) {
+            for(int col = 0; col < field.getWidth(); col++) {
+                Animal animal = field.getObjectAt(new Location(row,col));
+                if (animal != null) {
+                    assert animals.contains(animal) :
+                        "List does not contain an animal on the field.";
+                }
+            }
+        }
+    }
+    
+    /**
+     * Create a simulation field with the given size.
+     * @param factory A factory for creating the animals.
+     * @param view A view for displaying the simulation.
+     * @param depth Depth of the field. Must be greater than zero.
+     * @param width Width of the field. Must be greater than zero.
+     */
+    public Simulator(Factory factory, View view, int depth, int width)
+    {
+        assert (width > 0 && depth > 0) : 
+            "The dimensions are not greater than zero.";
+            
+        this.factory = factory;
+        this.view = view;
+
+        animals = new ArrayList<Animal>();
+        field = new Field(depth, width);
+       
+        reset();
+        sane();
+    }
+    
+    /**
+     * Current value of the step counter.
+     */
+    public int getStep()
+    {
+        return step;
+    }
+    
+    /**
+     * Getter for the field.
+     * Would be nicer to expose only a variant of the field with few
+     * getter methods itself.
+     */
+    public Field getField()
+    {
+        return field;
+    }
+    
+    /**
+     * Run the simulation from its current state for a single step.
+     * Iterate over the whole field updating the state of each
+     * fox and rabbit.
+     */
+    public void simulateOneStep()
+    {
+        sane();
+        
+        step++;
+
+        List<Animal> newAnimals = new ArrayList<Animal>(); 
+        
+        for(Iterator<Animal> it = animals.iterator(); it.hasNext(); ) {
+            it.next().act(newAnimals);
+        }
+               
+        animals.addAll(newAnimals);
+        
+        for(Iterator<Animal> it = animals.iterator(); it.hasNext(); ) {
+            if(! it.next().isActive()) {
+                it.remove();
+            }
+        }
+
+        view.update(this);
+        
+        sane();
+    }
+        
+    /**
+     * Determine whether the simulation is still viable.
+     * I.e., should it continue to run.
+     * @return true If there is more than one species alive.
+     */
+    public boolean isViable()
+    {
+        return (animals.stream().map((a) -> a.getClass())
+            .collect(Collectors.toSet())).size() 
+            > 1;
+    }
+    
+    /**
+     * Reset the simulation to a starting position.
+     */
+    public void reset()
+    {
+        sane();
+        
+        step = 0;
+        animals.clear();
+        field.clear();
+        
+        factory.optionallyCreateActor(field, animals);
+        view.update(this);
+        
+        sane();
+    }
+    
+}

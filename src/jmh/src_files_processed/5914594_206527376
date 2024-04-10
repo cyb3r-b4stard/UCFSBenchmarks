@@ -1,0 +1,44 @@
+import kareltherobot.*;
+
+public class Maze_Runner extends Robot
+
+{
+       World.setVisible(true);
+       World.readWorld("maze.kwld");
+       
+       UrRobot maze_runner= new UrRobot(1,2,North,0);
+       maze_runner.followWallRight();
+ public Maze_Runner(int street, int avenue, Direction direction, int beepers)
+ {  super(street,avenue,direction,beepers);
+ }    
+    public void turnRight()
+    {
+        turnLeft();
+        turnLeft();
+        turnLeft();
+    }    
+    public boolean wallToRight()
+    {    turnRight();
+         if (frontIsClear())
+         {      turnLeft();
+                return true;
+         }
+         else
+         {
+             turnLeft();
+             return false;
+         }
+    }    
+    public void followWallRight()
+    { 
+        while(wallToRight())
+        {
+          while (frontIsClear())
+          {
+              move();
+          }
+          turnLeft();
+        }
+    }
+
+}

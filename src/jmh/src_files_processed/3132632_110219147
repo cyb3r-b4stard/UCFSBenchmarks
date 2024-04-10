@@ -1,0 +1,72 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Scanner;
+import java.util.ArrayList;
+
+/**
+ * ### ############# ##### ##### # ### ## ####### #### ### #### ##########.###.  ####
+ * ###### ######## ## # ##########, # ###### ######, # ###### ######, # ########## (#, #, #, 
+ * ## #), ### # ##### ########### (#, #, #, #, #, # ## # ###  ## #####).
+ * 
+ * ### ##### ######## ####### ### ######### ### ####### ##### ## ######## #########.
+ * 
+ * @###### ######## ####### ########## 
+ * @####### ########, ####
+ */
+public class CourseCatalog
+{   ArrayList<Course> courseList;  
+    
+    
+    /*
+     * The constructor for the CourseCatalog class initializes the ArrayList to be empty
+     * and reads courses from the file displaying them on the console. You will be modifying
+     * this constructor so that it adds the courses to the ArrayList instead of displaying
+     * them on the console.
+     */
+    public CourseCatalog()
+    {  courseList = new ArrayList<Course>();  
+       String department;
+       String courseNumber;
+       String credit;
+       String competency;
+       String distArea;
+        
+       try
+       {
+           FileReader file = new FileReader("coursedata.txt");
+           BufferedReader reader = new BufferedReader( file );
+           
+           while( reader.ready() )   
+           {  department = reader.readLine();  
+              courseNumber = reader.readLine();
+              credit = reader.readLine();     
+              competency = reader.readLine();
+              distArea = reader.readLine();  
+              Course theCourse = new Course(department, courseNumber, competency, credit, distArea );
+              courseList.add(theCourse);
+          }
+          reader.close();  
+       } catch (IOException exception)
+       {
+          System.out.println("Error processing file: " + exception);
+       }   
+    }
+        
+      
+
+    /*
+     * You will be completing this method.  When completed the method should
+     * print all of the courses in the ArrayList which have a department that
+     * matches the parameter.  Remember to use .equals to compare strings.
+     */
+    public void printSelectedCourses(String department, String competency)
+    {  for (int i=0; i< courseList.size(); i++)
+        { if ((courseList.get(i).getDepartment().equals (department)|| department.equals ("ALL"))&& (courseList.get(i).getCompetency().equals (competency)|| competency.equals ("ALL"))
+               courseList.get(i).displayCourse();
+            }
+        }
+    }
+
+    
+}

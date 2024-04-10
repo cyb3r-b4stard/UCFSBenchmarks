@@ -1,0 +1,182 @@
+/**
+ * ###### ##### ## ## ######### ### ###### #######
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import java.awt.*;
+import java.util.Random;
+
+public class Tetrad
+{
+    private Block[] blocks;
+
+    public Tetrad(BoundedGrid<Block> grid)
+    {
+        blocks = new Block[4];
+        for (int i = 0; i < blocks.length; i++)
+        {
+            blocks[i] = new Block();       
+        }
+        Color myColor = Color.BLACK;
+        Location[] locs = new Location[4];
+        int shape = 0;
+        
+        
+        
+        int randomNum = new Random().nextInt(7);
+
+        if (randomNum == 0 ){ 
+            myColor = Color.RED;  
+            blocks[0].putSelfInGrid(grid, new Location(0,3));
+            blocks[1].putSelfInGrid(grid, new Location(0,4));
+            blocks[2].putSelfInGrid(grid, new Location(0,5));
+            blocks[3].putSelfInGrid(grid, new Location(0,6));
+        }
+        
+        if (randomNum == 1 ){ 
+            myColor = Color.BLUE;
+            blocks[0].putSelfInGrid(grid, new Location(0,3));
+            blocks[1].putSelfInGrid(grid, new Location(0,4));
+            blocks[2].putSelfInGrid(grid, new Location(0,5));
+            blocks[3].putSelfInGrid(grid, new Location(1,4)); 
+            
+        }
+        if (randomNum == 2 ){ 
+            myColor = Color.GREEN;
+            blocks[0].putSelfInGrid(grid, new Location(0,4));
+            blocks[1].putSelfInGrid(grid, new Location(0,5));
+            blocks[2].putSelfInGrid(grid, new Location(1,4));
+            blocks[3].putSelfInGrid(grid, new Location(1,5));
+        }
+        if (randomNum == 3 ){ 
+            myColor = Color.YELLOW;
+            blocks[0].putSelfInGrid(grid, new Location(0,4));
+            blocks[1].putSelfInGrid(grid, new Location(1,4));
+            blocks[2].putSelfInGrid(grid, new Location(2,4));
+            blocks[3].putSelfInGrid(grid, new Location(2,5));
+        }
+        if (randomNum == 4 ){ 
+            myColor = Color.MAGENTA;
+            blocks[0].putSelfInGrid(grid, new Location(0,4));
+            blocks[1].putSelfInGrid(grid, new Location(1,4));
+            blocks[2].putSelfInGrid(grid, new Location(2,4));
+            blocks[3].putSelfInGrid(grid, new Location(2,3));
+        }
+        if (randomNum == 5 ){ 
+            myColor = Color.PINK;
+            blocks[0].putSelfInGrid(grid, new Location(0,4));
+            blocks[1].putSelfInGrid(grid, new Location(0,5));
+            blocks[2].putSelfInGrid(grid, new Location(1,3));
+            blocks[3].putSelfInGrid(grid, new Location(1,4));
+        }
+        if (randomNum == 6 ){ 
+            myColor = Color.ORANGE;
+            blocks[0].putSelfInGrid(grid, new Location(0,4));
+            blocks[1].putSelfInGrid(grid, new Location(0,5));
+            blocks[2].putSelfInGrid(grid, new Location(1,3));
+            blocks[3].putSelfInGrid(grid, new Location(1,4));
+        }
+        
+
+        
+        for (int i = 0; i < blocks.length; i++)
+        {
+            blocks[i].setColor(myColor);  
+            
+        }
+        
+        for (int l=0; l < locs.length; l++)
+        {
+            
+            if ( blocks[l].getLocation() != null)
+            {
+                locs[l] = blocks[l].getLocation();
+            }
+            else
+            {
+                System.out.println("locs[l] is null ");
+            }
+            
+            
+        }
+        
+        addToLocations(grid, locs);
+        
+        System.out.println("will translate 20, 1");
+        if ( translate(20, 1) {
+            System.out.println("translate 20, 1 OK");
+        }else{
+            System.out.println("translate 20, 1 failed");
+        }
+    }
+
+    private void addToLocations(BoundedGrid<Block> grid, Location[] locs)
+    {
+        for (int i = 0; i < locs.length; i++)
+        {
+            grid.put(locs[i], blocks[i]);
+        }
+    }
+
+    private Location[] removeBlocks()
+    {
+        int len = blocks.length;
+        Location[] oldLocations = new Location[len]; 
+        for (int i = 0; i < blocks.length; i++)
+        {
+            oldLocations[i] = blocks[i].getLocation();  
+            blocks[i].removeSelfFromGrid();
+        }
+        return oldLocations;
+    }
+
+    private boolean areEmpty(BoundedGrid<Block> grid,
+                             Location[] locs)
+    {
+        
+        for (int i = 0; i < locs.length; i++)
+        {
+            if (grid.isValid(locs[i]) == false)     
+                return false;
+            
+            if ( grid.get(locs[i]) == null )
+                return false;
+        }
+        return true;
+    }
+
+    public boolean translate(int deltaRow, int deltaCol)
+    {
+
+        
+        BoundedGrid<Block> myGrid = blocks[0].getGrid();  
+        int len = blocks.length;
+        Location[] newLocations = new Location[len]; 
+        int oldBlockLocRow;
+        int oldBlockLocCol;
+        for (int i = 0; i < blocks.length; i++)
+        {
+            oldBlockLocRow = blocks[i].getLocation().getRow();  
+            oldBlockLocCol = blocks[i].getLocation().getCol(); 
+            
+            newLocations[i] = new Location( oldBlockLocRow + deltaRow,  oldBlockLocCol + deltaCol);
+        }
+        
+        if ( areEmpty(myGrid, newLocations) )
+        {
+            Location[] oldLocs = removeBlocks();
+            
+            addToLocations(myGrid, newLocations);
+            return true;
+        }
+    
+        return false;
+    }
+
+    public boolean rotate()
+    {
+
+        throw new RuntimeException("Insert Exercise 3.0 code here");    
+    }
+}

@@ -1,0 +1,307 @@
+import java.util.*;
+import java.util.ArrayList;
+import java.io.*;
+/**
+ * # ##### #### ##### ### ######## ### ### #### #####.
+ * 
+ * @###### (######## ######) 
+ * @####### (####### #)
+ */
+
+public class ItemDB
+{
+    private ArrayList < Item > itemList;
+    private ArrayList < Item > matchList;
+  
+  /**
+     * Create and Item Database with no limit on number of Items
+     * All other details are set to default values
+     */
+  public ItemDB()
+    {
+        itemList = new ArrayList < Item > ();
+        matchList = new ArrayList<Item>();
+     
+   }
+   
+  /**
+     * Add an item to this database
+     * @param newItem the item to be added
+   */
+   public void addItem(Item newItem)
+    {
+        itemList.add(newItem);
+    }
+    
+  
+  /**
+     * Return the number of Items currently in the database
+     * @return the size of the database
+     */
+    public int numberOfItems()
+    {
+        return itemList.size();
+    }
+      
+  /**
+     * Provide an item list with item details including dates
+     * @return the item details
+     * 
+     */
+    public String getItemList()
+    {
+        String myString = "Item list " + "\n";
+        myString = myString + "\nNumber of items: " + numberOfItems() +"\n";
+        
+        if (numberOfItems() > 0)
+        {
+            myString = myString +"Item list:\n";
+            for (Item item : itemList)
+            {
+                myString = myString+item.getItemData() + "\n";
+            }
+        }
+        
+        return myString;
+    }
+     
+  /**
+     * Provide an item list with item details without dates
+     * @return the item details
+     * 
+     */
+    public String getItemListWithoutDates()
+    {
+        String myString = "Item list " + "\n";
+        myString = myString + "\nNumber of items: " + numberOfItems() +"\n";
+        
+        if (numberOfItems() > 0)
+        {
+            myString = myString +"Item list:\n";
+            for (Item item : itemList)
+            {
+                myString = myString+item.getItemDataNoDates() + "\n";
+            }
+        }
+        
+        return myString;
+    }
+
+     /**
+     * searches for an Item by name
+     * @param itemName name of Item
+     * @return an item if found otherwise null
+     */
+    public Item showItem (String ItemName)
+    {
+        for (Item item : itemList)
+        {
+            if (ItemName.equals(item.getName()))
+            return item;
+        }
+        return null;
+    }
+    
+    /** 
+     * searches for an item by code
+     * @param itemCode code of item
+     * @return an item if found otherwise null
+     */
+    public Item showItemCode (String itemCode)
+    {
+        for (Item item : itemList)
+        {
+            if (itemCode.equals(item.getItemCode()))
+            return item;
+        }
+        return null;
+    }
+
+
+    /**
+     * removes an item from the DB
+     * @param itemName the name of the item to be deleted
+     * @return true if item deleted otherwise false
+     */
+    public boolean removeItem (String itemName)
+    {
+        int index = 0;
+      
+        for (Item item :itemList)
+        {
+            if (itemName.equals(item.getName()))
+            {
+                itemList.remove(index);
+                return true;
+            }
+            index++;
+        }
+        return false;
+    }
+    
+    /**
+     * removes an item from the DB
+     * @param itemCode the name of the item to be deleted
+     * @return true if item deleted otherwise false
+     */
+    public boolean removeItemByCode (String itemCode)
+    {
+        int index = 0;
+        for (Item item :itemList)
+        {
+            if (itemCode.equals(item.getItemCode()))
+            {
+                itemList.remove(index);
+                return true;
+            }
+            index++;
+        }
+        return false;
+    }
+    
+    /**
+     * returns an item on loan
+     * @param itemName the name of the item to be returned
+     * @return true if item returned otherwise false
+     */
+    public boolean itemReturn (String itemName, String returnItem)
+    {   int index=0;
+        for (Item item: itemList)
+        {
+            if (itemName.equals(item.getName()))
+            {item.ReturnItem(returnItem);
+             return true;
+            }
+            index++;
+        }
+        int index=0
+        for (Item item: matchList)
+        {
+            if (itemName.equals(item.getName()))
+            {matchList.remove(index);
+             return true;
+            }
+            index++;
+        }
+        return false;
+        
+                
+    }
+    
+   /**
+    * loans a item out
+    * @param ItemName the name of the item to be loaned
+    * @return true if item is loaned out otherwise false
+    */
+    public boolean itemLoan (String itemName, String borrowerID, String loanDate, String returnDate)
+    {
+        int index=0;
+        for (Item item: itemList)
+        {
+            if (itemName.equals(item.getName()))
+            {item.LoanOut(borrowerID,loanDate,returnDate);
+                return true;
+            }
+            index++;
+        }
+        return false;
+    }
+   
+   /** 
+   * Read in from a file where an ItemDB has been previously saved there. 
+   */
+  public void getDataFromText(String dataPath)  {
+    try {
+      Scanner scnr = new Scanner(
+        new BufferedReader(new FileReader(dataPath)));
+      scnr.useDelimiter("[\t\r\n]"); 
+      String name;
+      String code;
+      String available;
+
+      while (scnr.hasNext()) {
+        name = scnr.next(); 
+        code = scnr.next();
+        available = scnr.next();
+       
+        scnr.nextLine();
+        itemList.add(new Item(name,code,available));
+      }
+      scnr.close();
+    }
+    catch (IOException ex) {
+      System.err.println("Problem reading text input file");
+    }
+  }
+
+  /** 
+   *Save the ItemDB to a file. 
+  */
+  public void saveDataToText(String dataPath) {
+    try {
+      FileWriter fw = new FileWriter(dataPath);
+      PrintWriter pw = new PrintWriter(fw);
+      for (Item item: itemList) {
+        pw.println(item.toString());
+      }
+      fw.close();
+    }
+    catch (IOException ex) {
+      System.err.println("Problem writing text output file");
+    }
+  }
+  
+    /**
+     * Display a human readable list of items 
+    */
+  public void display() {
+    for (Item item: itemList) {
+      System.out.println(item.dspString());
+    }
+  }
+  
+  
+  /** 
+   * Find items on loan
+   * @param enter [On Loan] to see all items on loan
+   */
+  public String findByOnLoan (String findOnLoan)
+  {
+    for (Item item: itemList){
+    if (item.getAvailable().equals(findOnLoan))
+      matchList.add(item);
+    }
+    if (matchList.isEmpty())
+     return "No items are currently on loan";
+   
+    String loaned = "" + matchList.size() + "match(es) :\n";
+    for (Item item: matchList)
+    loaned += item.toString() + "\n";
+    return loaned;
+  }
+  
+  public int numberOfOnLoanList()
+    {
+        return matchList.size();
+    }
+    
+  public String getOnLoanList ()
+  {
+    String newString = "Item on loan list " + "\n";
+    newString = newString + "\nNumber of items: " + numberOfOnLoanList() +"\n";
+        
+    if (numberOfOnLoanList() > 0)
+    {
+     newString = newString +"Item on loan list:\n";
+     for (Item item : matchList)
+     {
+       newString = newString+item.getItemData() + "\n";
+     }
+     }
+        
+    return newString;
+  }
+  
+  
+
+}

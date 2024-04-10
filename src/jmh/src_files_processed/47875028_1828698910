@@ -1,0 +1,78 @@
+import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.text.*;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import java.util.Scanner;
+import java.io.*;
+import java.util.ArrayList;
+import java.ultil.Random;
+/**
+ * ##### # ########### ## ##### ############### ####.
+ * 
+ * @###### ######## ## ######
+ * @####### ##.##.####
+ */
+public class InsultGenerator extends Application
+{
+    private Text insultText;
+    private ArrayList<String> adj1 = new ArrayList<String>();
+    private ArrayList<String> adj2 = new ArrayList<String>();
+    private ArrayList<String> nouns = new ArrayList<String>();
+    /**
+     * @param primaryStage starts stuff
+     */
+    public void start(Stage primaryStage) throws FileNotFoundException
+    {
+        Scanner inFile = new Scanner(new File("insultData.txt"));
+
+        while (inFile.hasNext())
+        {
+            adj1.add(inFile.next());
+            adj2.add(inFile.next());
+            nouns.add(inFile.next());
+        }
+        for (int insultData : insultButton)
+            System.out.println(insultData);
+        insultButton.setOnAction(this::handleButtonPress);
+        Button insultButton = new Button("Insult Me!");
+        insultText = new Text("Insult Text");
+        insultText.setFont(Font.font("Helvetica", FontWeight.BOLD,
+                FontPosture.REGULAR, 24));
+        VBox pane = new VBox(insultButton, insultText);
+        pane.setStyle("-fx-background-color: lightgreen");
+        pane.setAlignment(Pos.CENTER);
+        pane.setSpacing(25);
+        Scene scene = new Scene(pane, 600, 150);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+        primaryStage.setOnCloseRequest(e -> System.exit(0));
+    }
+
+    /**
+     * @param event
+     */
+    public void handleButtonPress(ActionEvent event)
+    {
+        Randon random = new Random();
+        int index = random.nextInt(adj1.size());
+        int dex = random.nextInt(adj2.size());
+        int another = random.nextInt(nouns.size());
+        insultText.setText("Thou art a " + adj1.get(index) + ", " adj2.get(dex)
+            + " " nouns.get(another) + "!");
+    }
+
+    /**
+     * Launches the JavaFX application
+     * @param args unused
+     */
+
+    public static void main(String[] args)
+    {
+        launch(args);
+    }
+}

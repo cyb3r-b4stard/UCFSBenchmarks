@@ -1,0 +1,109 @@
+package cz.muni.fi.pb162.project.geometry;
+
+
+/**
+ * ##### ######## ### ## ###### ######## ## ########
+ * 
+ * @###### ##### ####### 
+ * @####### #.##.####
+ */
+public class Triangle
+{
+    private Vertex2D pointA;
+    private Vertex2D pointB;
+    private Vertex2D pointC;
+    private Triangle t1;
+    private Triangle t2;
+    private Triangle t3;
+    
+    public Triangle(Vertex2D pointA, Vertex2D pointB, Vertex2D pointC) {
+        this.pointA = pointA;
+        this.pointB = pointB;
+        this.pointC = pointC;
+    }
+    
+    /**
+     * This metod return vertices A of the triangle
+     * @return Vertex2D
+     */
+    public Vertex2D getVertexA(){
+        return pointA;
+        
+    }
+    /**
+     * This metod return vertices B of the triangle
+     * @return Vertex2D
+     */
+    public Vertex2D getVertexB(){
+        return pointB;
+        
+    }
+    /**
+     * This metod return vertices C of the triangle
+     * @return Vertex2D
+     */
+    public Vertex2D getVertexC(){
+        return pointC;
+        
+    }
+    /**
+     * This metod print vertices of the triangle
+     * @return string 
+     */
+    public String toString() {
+        if ((this.pointA == null) || (this.pointB == null) || (this.pointC == null)) {
+            return ("INVALID TRIANGLE");
+        }
+        
+        return ("Triangle: vertices="+ pointA.toString()+" "+ pointB.toString()+" "+ pointC.toString());
+    }
+
+    
+    public boolean isDivided() {
+        return (!(t1 == null && t2== null && t3 == null));
+    }
+    
+    public Triangle getSubTriangle(int i){
+        if (i <0 || i > 2 || !isDivided()) return null;
+        if (i == 0) return t1;
+        if (i == 1) return t2;
+        else return t3;  
+    }
+    
+    public boolean divide() {
+        if (this.isDivided()) {
+            return false;
+        }
+        
+        t1 = new Triangle(midleVertexA, midleVertexC, this.getVertexC());
+        t2 = new Triangle(this.getVertexA(), midleVertexA, midleVertexB);
+        t3 = new Triangle(midleVertexB, this.getVertexB(), midleVertexC);
+        Vertex2D midleVertexA = new Vertex2D((this.getVertexA().getX() + this.getVertexC().getX()) / 2, (this.getVertexA().getY() + this.getVertexC().getY()) / 2)); 
+        Vertex2D midleVertexB = new Vertex2D();
+        Vertex2D midleVertexC = new Vertex2D();
+        
+        midleVertexA.setX((this.getVertexA().getX() + this.getVertexC().getX()) / 2);
+        midleVertexA.setY((this.getVertexA().getY() + this.getVertexC().getY()) / 2);
+        
+        midleVertexB.setX((this.getVertexA().getX() + this.getVertexB().getX()) / 2);
+        midleVertexB.setY((this.getVertexA().getY() + this.getVertexB().getY()) / 2);
+        
+        midleVertexC.setX((this.getVertexB().getX() + this.getVertexC().getX()) / 2);
+        midleVertexC.setY((this.getVertexB().getY() + this.getVertexC().getY()) / 2);
+        /*
+        t1.setVertexA(midleVertexA);
+        t1.setVertexB(midleVertexC);
+        t1.setVertexC(this.getVertexC());
+        
+        t2.setVertexA(this.getVertexA());
+        t2.setVertexB(midleVertexA);
+        t2.setVertexC(midleVertexB);
+        
+        t3.setVertexA(midleVertexB);
+        t3.setVertexB(this.getVertexB());
+        t3.setVertexC(midleVertexC);
+        */
+        
+        return true;
+    }
+}

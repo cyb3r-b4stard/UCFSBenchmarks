@@ -1,0 +1,109 @@
+import java.util.*;
+/**
+ * ###### #########
+ * ## ######## ####### ###.#
+ * ####### ########
+ */
+public class DhanurkarFracCalc
+{
+    public static void main (String[] args)
+    {
+       System.out.println("Hello! Welcome To Fraction Calculator!");
+       System.out.println("Enter an equation and the fraction calculator will solve it.");
+       System.out.println("Type help to learn more");
+       String user_imput;
+       userInput();
+    }
+    public static void userInput()
+    {
+        boolean flag =true;
+        while(flag)
+        {
+            System.out.print("Enter: ");
+            String user_input;
+            Scanner myScanner = new Scanner(System.in);
+            user_input = myScanner.nextLine();
+            if (user_input.equalsIgnoreCase("help"))
+            {
+                System.out.println("This is the Fraction Calculator");
+                System.out.println("It will perform 4 arithmetic operations");
+                System.out.println("Such as: +,-,*, and /");
+                System.out.println("The calculator accepts whole numbers and fractions; improper, proper, and even mixed numbers.");
+                System.out.println("To type mixed numbers you have to use an underscore to seperate the whole number and fraction.");
+                System.out.println("For example 3_1/3.");
+                System.out.println("When you type your input make sure to add spaces between your number and operator.");
+                System.out.println("For example 3 + 4, or 3_1/2 + 3/2.");
+                System.out.println("If you type quit the fraction calculator will shut down.");
+                System.out.println("Go ahead and try it out :)");
+            }
+            else if (user_input.equalsIgnoreCase("quit"))
+            {
+                System.out.print("Goodbye!");
+                flag = false;
+            }
+            else 
+            {
+                String firstNum; 
+                String operator;
+                String secondNum;
+                int firstSpace = (user_input.indexOf(" "));
+                operator = user_input.substring(firstSpace + 1, firstSpace + 2);
+                firstNum = user_input.substring(0, firstSpace);
+                secondNum = user_input.substring(firstSpace + 3);  
+                String num1;
+                String num2;
+                num1 = covertToImproper(firstNum);
+                num2 = covertToImproper(secondNum);
+                System.out.println(num1 + " " + operator + " " + num2);
+            } 
+        }
+    }
+    
+    public static String covertToImproper(String num)
+    {
+        if (num.contains("_"))
+        {
+            int first = Integer.parseInt(num.substring(0,(num.indexOf("_"))));  
+            int second = Integer.parseInt(num.substring((num.indexOf("_") + 1 ),num.indexOf("/")));
+            int third = Integer.parseInt(num.substring(num.indexOf("/") + 1));  
+            int result = 0;
+            if(num.contains("-"))
+            {
+                result = (third * first) - second;  
+            }
+            else
+            {
+                result = (third * first) + second;  
+            }
+            return result + "/" + third;
+        }
+        else if (num.contains("/")) 
+        {
+            return num;
+        }
+        else 
+        {
+            return num + "/1";
+        }
+    }
+    public static int performOperations(String num, int num1, int num2, String operator, String answer)
+    {
+        if(num.contains(" + "))
+        {
+            return(num1 + num2);
+        }
+        if(num.contains(" - "))
+        {
+            return(num1 - num2);
+        }
+        if(num.contains(" * "))
+        {
+            return(num1 * num2);
+        }
+        if(num.contains(" / "))
+        {
+            return(num1 / num2);
+        }
+        return(num1 + " " + operator + " " + num2 = answer);
+    } 
+}

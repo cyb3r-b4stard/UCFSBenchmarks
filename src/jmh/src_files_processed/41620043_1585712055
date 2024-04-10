@@ -1,0 +1,113 @@
+import java.util.ArrayList;
+import java.util.Iterator;
+/**
+ * ##### # ########### ## ##### ######### ####.
+ * 
+ * @###### ####### #######
+ * @####### ####-##-##
+ */
+public class BookStore
+{
+   private String businessName;
+   private ArrayList<Book> BookList;
+   
+   public static final double DISCOUNT = 0.15;
+   
+   public BookStore() {
+       businessName = "";
+       BookList = new ArrayList<Book>();
+   }
+   
+   public BookStore(String inputName) {
+       setName(inputName);
+       BookList = new ArrayList<Book>();
+   }
+   
+   public void setName(String inputName) {
+       if (inputName != null) {
+           businessName = inputName;
+       }
+   }
+   
+   public String getname() {
+       return businessName;
+   }
+    
+   public void addBook(Book newBook) {
+       if(newBook != null) {
+           BookList.add(newBook);
+        }
+    }
+   
+   public void getDetails(int index) {
+       if (index >=0 && index < BookList.size()) {
+           BookList.get(index).displayDetails();
+       }
+       else {
+           System.out.println("Enter a valid index value");
+       }
+    }
+   
+   public void findBook(String bookTitle) {
+       boolean lol = false;
+       for (Book loop:BookList) {
+           if (loop.getTitle().equalsIgnoreCase(bookTitle)) {
+               loop.displayDetails();
+               lol = true;
+           }
+        }
+       
+       if (lol == false) {
+           System.out.println("Please enter a valid book title");
+        }
+    }
+    
+   public void getAllBooks() {
+       for (Book loop:BookList) {
+           loop.displayDetails();
+        }
+    }
+   
+    
+    
+   public int donateBook(int yearPublished) {
+       int removed = 0;
+       for (Book loop:BookList) {
+           if (loop.getYear() == yearPublished) {
+               BookList.remove(loop);
+               removed++;
+            }
+        }
+       return removed;
+    }
+   
+   public void applyDiscountToBooks(int beginYear, int endYear) {
+       for (Book loop:BookList) {
+           if (loop.getYear() <= beginYear && loop.getYear() >= endYear) {
+               loop.setPrice = loop.getPrice()*0.85
+            }
+        }
+    } 
+   
+    
+    public static void main(String[] args) {
+    BookStore test = new BookStore();
+    
+    Book b1 = new Book("Harry Potter and the Philosopher's Stone", "J.K. Rowling", 1997, 15.5);
+    Book b2 = new Book("Harry Potter and the Chamber of Secrets", "J.K. Rowling", 1998, 17.5);
+    Book b3 = new Book("Harry Potter and the Prisoner of Azkaban", "J.K. Rowling", 1999, 19.5);    
+    
+    
+    test.addBook(b1);
+    test.addBook(b2);
+    test.addBook(b3);
+    
+    test.getDetails(4);
+    test.getDetails(2);    
+    
+    test.findBook("Harry Potter and the Goblet of Fire");
+    test.findBook("Harry Potter and the Chamber of Secrets");
+    
+    test.getAllBooks();
+   } 
+}   

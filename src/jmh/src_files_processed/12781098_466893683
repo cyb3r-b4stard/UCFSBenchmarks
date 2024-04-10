@@ -1,0 +1,53 @@
+import sum.kern.*;
+/**
+ * ########### ### #### ### ###### ############.
+ * 
+ * @###### #####, ##### 
+ * @####### #; ##.##.####
+ */
+public class MeinProgramm
+
+{
+    Bildschirm derBildschirm;
+    Buntstift meinStift;
+    Maus dieMaus;  
+    Tastatur dieTastatur;
+        
+    public MeinProgramm()
+    {
+    derBildschirm = new Bildschirm();
+    meinStift = new Buntstift();
+    dieMaus = new Maus();
+    dieTastatur = new Tastatur();
+    }
+
+    public void fuehreAus()
+    
+    {
+     do
+     {  
+       if (dieMaus.istGedrueckt())
+       {
+         meinStift.bewegeBis(dieMaus.hPosition(), dieMaus.vPosition());
+         meinStift.runter();
+        }
+       else 
+       {
+           meinStift.hoch();
+        }
+       if (dieTastatur.wurdeGedrueckt())
+       {
+          switch (dieTastatur.zeichen())
+          {
+              case 'r': case 'R': meinStift.setzeFarbe(Farbe.ROT); break;
+              case 'b': case 'B': meinStift.setzeFarbe(Farbe.BLAU); break;
+              case 'g': case 'G': meinStift.setzeFarbe(Farbe.GRUEN); break;
+              case 'y': case 'Y': meinStift.setzeFarbe(Farbe.GELB); break;
+              case 'l': case 'L': meinStift.setzeFarbe(Farbe.LIME); break;
+            }
+          dieTastatur.weiter();
+        }
+        }
+     }   while (!dieMaus.doppelKlick());
+    }
+}    

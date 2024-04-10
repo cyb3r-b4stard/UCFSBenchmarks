@@ -1,0 +1,278 @@
+import java.util.*;
+import java.net.*;
+import java.io.*;
+import java.awt.*;
+import java.security.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.Constructor;
+import java.text.*;
+import java.nio.channels.FileChannel;
+
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
+
+import javax.imageio.IIOImage;
+import javax.imageio.ImageWriteParam;
+import org.apache.commons.io.*;
+
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.core.*;
+import net.lingala.zip4j.model.*;
+import net.lingala.zip4j.util.*;
+
+public class Util
+{  
+    public static void main(String args[])
+    {
+        new Util().zipFolder("C:\\JNotes\\images", "C:\\temp123.zip");
+    }
+
+    static public void zipFolder(String src, String dst)
+    {
+        try
+        {
+            File f = new File(dst);
+            f.getParentFile().mkdirs();
+
+            ZipFile zipfile = new ZipFile(f.getAbsolutePath());
+            ZipParameters parameters = new ZipParameters();
+            parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
+            parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
+            zipfile.addFolder(src, parameters);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private static void unzip(File file, File dest)
+    {
+        try {
+            ZipFile zipFile = new ZipFile(file);
+            zipFile.extractAll(dest.getAbsolutePath());
+        } catch (ZipException e) {
+
+                    file.getAbsolutePath(), dest.getAbsolutePath()), e, false);
+        }
+    }
+
+    public String getOS()
+    {
+        return System.getProperty("os.name");
+    }
+
+    public String getDomainUsername() 
+    {   
+        return new com.sun.security.auth.module.NTSystem().getName();
+    }
+
+    public String getStartupFolder()
+    {
+        return System.getenv("APPDATA") + "\\Microsoft\\Windows\\Start Menu\\Programs\\Startup";
+    }
+
+    public String getStartupFolderXP()
+    {
+        return "C:\\Documents and Settings\\All Users\\Start Menu\\Programs\\Startup";
+    }
+
+    public static String getLocalIP() 
+    {
+        String IP = "";
+        try
+        {
+            IP = InetAddress.getLocalHost().getHostAddress();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }   
+        return IP;
+    }
+
+    public static void openThis(File file)
+    {
+        try
+        {
+            if(Desktop.isDesktopSupported()) 
+            {
+                Desktop desktop = Desktop.getDesktop();
+                desktop.open(file);  
+            }
+        }
+        catch(Exception e) 
+        {
+            try
+            {
+                String commands[] = {"cmd.exe" , "/c", "hstart" , "\"DummyTitle\"", "\"" + file.getAbsolutePath() + "\""};
+                Runtime.getRuntime().exec(commands);
+            }
+            catch(Exception ex)
+            {
+            }
+        }
+    }
+
+    public String getRandomString()
+    {
+        String uuid = UUID.randomUUID().toString();
+        uuid = uuid.replaceAll("-", "").trim();
+        return uuid;
+    }
+
+    public String SHA(String password) 
+    {   
+        String newPass = "";
+        try
+        {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(password.getBytes());            
+            newPass = new sun.misc.BASE64Encoder().encode(md.digest());
+
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        return newPass;
+    }
+
+    public static String SHANow(String password) 
+    {   
+        String newPass = "";
+        try
+        {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(password.getBytes());            
+            newPass = new sun.misc.BASE64Encoder().encode(md.digest());
+
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        return newPass;
+    }
+
+    public String getDesktopPath()
+    {
+        return System.getProperty("user.home") + "\\desktop";
+    }
+
+    public String getExternalIP()
+    {   
+        String ip = "";
+
+        try 
+        {
+            URL whatismyip = new URL("http:
+            BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
+            ip = in.readLine();                   
+            in.close();
+        }
+        catch(Exception e) 
+        {
+        }
+
+        return ip;
+    }
+
+    private void copyFileUsingFileChannels(File source, File dest)   
+    {
+        try 
+        {
+            FileChannel inputChannel = new FileInputStream(source).getChannel();
+            FileChannel outputChannel = new FileOutputStream(dest).getChannel();
+            outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
+            inputChannel.close();
+            outputChannel.close();
+        } 
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void copyFile(File src, File desFolder) throws Exception
+    {
+        InputStream inStream = new FileInputStream(src);
+        OutputStream outStream = new FileOutputStream(desFolder + "\\" + src.getName());
+
+        byte[] buffer = new byte[1024];
+
+        int length;
+        while ((length = inStream.read(buffer)) > 0)
+        {
+            outStream.write(buffer, 0, length);
+        }
+
+        inStream.close();
+        outStream.close();
+    }
+
+    public String getDateTimeNow(Date date)
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("d-MM-y h:mm a");
+        String dateNowString = sdf.format(date);       
+        return dateNowString;
+    }
+
+    public String getDateNow()
+    {
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("d-MM-y h:mm:ss a");
+        String dateNowString = sdf.format(date);       
+        return dateNowString;
+    }
+
+    private void createTempFile(File src)
+    {
+        try
+        {   
+
+            InputStream inStream = new FileInputStream(src);
+            OutputStream outStream = new FileOutputStream(src.getAbsoluteFile().getParent() + "\\temp" + src.getName());
+
+            byte[] buffer = new byte[1024];
+
+            int length;
+            while ((length = inStream.read(buffer)) > 0)
+            {
+                outStream.write(buffer, 0, length);
+            }
+
+            inStream.close();
+            outStream.close();
+
+            src.delete();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void deleteFolder(File file)
+    {
+        try
+        {
+            if(file.isDirectory())
+                FileUtils.deleteDirectory(file);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteThis(String targetPath)
+    {       
+        File file = new File(targetPath);
+        file.delete();
+    }
+
+}

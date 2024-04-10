@@ -1,0 +1,474 @@
+import java.sql.*;
+import java.util.*;
+import javax.swing.*;
+import java.math.BigDecimal;
+
+public class Queries
+{
+    private final String url = "jdbc:mysql:
+    private final String driver = "com.mysql.jdbc.Driver";
+    private final String username = "root";
+    private final String password = "cnwl";
+
+    private Connection con = null;
+    private PreparedStatement insertEmployee = null;
+    private PreparedStatement getEmployees = null;
+    private PreparedStatement updateEmployee = null;
+
+    private PreparedStatement insertCustomer = null;
+    private PreparedStatement getCustomers = null;
+    private PreparedStatement updateCustomer = null;
+
+    private PreparedStatement insertVehicle = null;
+    private PreparedStatement getVehicles = null;
+    private PreparedStatement updateVehicle = null;
+
+    private PreparedStatement getVehiclePrice = null;
+    private PreparedStatement insertSVehicle = null;
+    private PreparedStatement getSVehicles = null;
+    private PreparedStatement deleteSVehicle = null;
+
+    private PreparedStatement insertRVehicle = null;
+    private PreparedStatement getRVehicles = null;
+    private PreparedStatement updateRVehicle = null;
+
+    
+    private PreparedStatement insertRentVehicle = null;    
+    private PreparedStatement insertSaleVehicle = null;
+
+    public void connectToDatabase()
+    {
+        try
+        {
+            Class.forName(driver).newInstance();
+            con=DriverManager.getConnection(url,username,"");
+
+
+            insertEmployee = con.prepareStatement(
+                "Insert Into Employee (ename,eaddress,ephone,salary) values (?,?,?,?)");
+
+            getEmployees = con.prepareStatement(
+                "Select * From Employee");           
+
+            updateEmployee = con.prepareStatement(
+                "UPDATE employee SET Ename = ?, Eaddress = ?, Ephone = ?, Salary =  ? WHERE EMid = ?");
+
+
+            insertCustomer = con.prepareStatement(
+                "Insert Into Customers (cname,caddress,cphone) values (?,?,?)");
+
+            getCustomers = con.prepareStatement(
+                "Select * From Customers");           
+
+            updateCustomer = con.prepareStatement(
+                "UPDATE Customers SET cname = ?, caddress = ?, cphone = ? WHERE cid = ?");
+
+            
+
+            insertVehicle = con.prepareStatement(
+                "Insert Into Vehicles (Model,Colour,Manufacturer,MAN_year,EngineSize,Price)"+
+                "values (?,?,?,?,?,?)");
+
+            getVehicles = con.prepareStatement(
+                "Select * From Vehicles");           
+
+            updateVehicle = con.prepareStatement(
+                "UPDATE Vehicles SET Model = ?, Colour = ?, Manufacturer = ?, MAN_year = ?, EngineSize = ?, Price = ? WHERE Vid = ?");
+
+            getVehiclePrice = con.prepareStatement(
+                "Select price From Vehicles where Vid = ?");
+
+            insertSVehicle = con.prepareStatement(
+                "Insert Into soldVehicles (vid,cid,emid,soldDate,price)"+
+                "values (?,?,?,?,?)");
+
+            getSVehicles = con.prepareStatement(
+                "Select * From SoldVehicles");           
+
+            deleteSVehicle = con.prepareStatement(
+                "Delete From SoldVehicles where SVid = ?");
+
+
+            insertRVehicle = con.prepareStatement(
+                "Insert Into RentedVehicles (vid,cid,emid,startDate,startTime,returnDate,returnTime,Price)"+
+                "values (?,?,?,?,?,?,?,?)");
+
+            getRVehicles = con.prepareStatement(
+                "Select * From RentedVehicles");           
+
+            updateRVehicle = con.prepareStatement(
+                "UPDATE RentedVehicles SET vid = ?, cid = ?, emid = ?, startDate = ?,"+
+                "startTime = ?, returnDate = ?, returnTime = ?, Price = ? WHERE RVid = ?");
+
+            /*
+
+            insertAuthor=con.prepareStatement(
+            "insert into authors (firstName,lastName) values(?,?)"); 
+
+            updateAuthor=con.prepareStatement(
+            "update authors set firstName=?,"+
+            "lastName=? where authorID=?");
+
+            deleteAuthor=con.prepareStatement(
+            "delete from authors where authorId=?");  
+             */
+
+        }
+        catch(SQLException sqle)
+        {
+            JOptionPane.showMessageDialog(null,
+                sqle.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);
+        }
+        catch(Exception e)
+        {
+            JOptionPane.showMessageDialog(null,
+                e.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);            
+        }
+
+    }
+
+    public void disconnectFromDatabase()
+    {
+        try
+        {
+            con.close();
+        }
+        catch(SQLException sqle)
+        {
+            JOptionPane.showMessageDialog(null,
+                sqle.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);
+        }        
+    }
+
+    public int insertEmployee(String emname,String emaddress,String emphone, BigDecimal emsalary){
+        int inserted = 0;
+        try{
+            insertEmployee.setString(1, emname);
+            insertEmployee.setString(2, emaddress);
+            insertEmployee.setString(3, emphone);
+            insertEmployee.setBigDecimal(4, emsalary);
+            inserted = insertEmployee.executeUpdate(); 
+        }catch(SQLException sqle){
+            JOptionPane.showMessageDialog(null,
+                sqle.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);
+        }    
+        return inserted;
+    }
+
+    public int updateEmployee(String emname,String emaddress,String emphone, BigDecimal emsalary, int id){
+        int updated = 0;
+        try{
+            updateEmployee.setString(1, emname);
+            updateEmployee.setString(2, emaddress);
+            updateEmployee.setString(3, emphone);
+            updateEmployee.setBigDecimal(4, emsalary);
+            updateEmployee.setInt(5, id);
+            updated = updateEmployee.executeUpdate(); 
+        }catch(SQLException sqle){
+            JOptionPane.showMessageDialog(null,
+                sqle.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);
+        }    
+        return updated;
+    }
+
+    public Object[][] getEmployee()
+    {        
+        Object [][] employee = new Object[100][5];
+        ResultSet r;        
+        try
+        {
+            r = getEmployees.executeQuery();
+            int i = 0;
+            while(r.next())
+            {
+                employee[i][0] = r.getInt("EMid");
+                employee[i][1] = r.getString("ename");
+                employee[i][2] = r.getString("eaddress");
+                employee[i][3] = r.getString("ephone");
+                employee[i][4] = r.getBigDecimal("salary");                
+                i++;                        
+            }
+        }
+        catch(SQLException sqle)
+        {
+            JOptionPane.showMessageDialog(null,
+                sqle.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);
+        }        
+        return employee;
+    }    
+
+    public int insertCustomer(String cname,String caddress,String cphone){
+        int inserted = 0;
+        try{
+            insertCustomer.setString(1, cname);
+            insertCustomer.setString(2, caddress);
+            insertCustomer.setString(3, cphone);            
+            inserted = insertCustomer.executeUpdate(); 
+        }catch(SQLException sqle){
+            JOptionPane.showMessageDialog(null,
+                sqle.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);
+        }    
+        return inserted;
+    }
+
+    public int updateCustomer(String cname,String caddress,String cphone, int id){
+        int updated = 0;
+        try{
+            updateCustomer.setString(1, cname);
+            updateCustomer.setString(2, caddress);
+            updateCustomer.setString(3, cphone);
+            updateCustomer.setInt(4, id);            
+            updated = updateCustomer.executeUpdate(); 
+        }catch(SQLException sqle){
+            JOptionPane.showMessageDialog(null,
+                sqle.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);
+        }    
+        return updated;
+    }
+
+    public Object[][] getCustomers()
+    {        
+        Object [][] customers = new Object[1000][4];
+        ResultSet r;        
+        try
+        {
+            r = getCustomers.executeQuery();
+            int i = 0;
+            while(r.next())
+            {
+                customers[i][0] = r.getInt("cid");
+                customers[i][1] = r.getString("cname");
+                customers[i][2] = r.getString("caddress");
+                customers[i][3] = r.getString("cphone");                                
+                i++;                        
+            }
+        }
+        catch(SQLException sqle)
+        {
+            JOptionPane.showMessageDialog(null,
+                sqle.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);
+        }        
+        return customers;
+    }
+
+    public int insertVehicle(String model,String colour,String maker, int year,String engineSize,BigDecimal price ){
+        int inserted = 0;
+        try{
+            insertVehicle.setString(1, model);
+            insertVehicle.setString(2, colour);
+            insertVehicle.setString(3, maker);
+            insertVehicle.setInt(4, year);
+            insertVehicle.setString(5, engineSize);
+            insertVehicle.setBigDecimal(6, price);            
+            inserted = insertVehicle.executeUpdate(); 
+        }catch(SQLException sqle){
+            JOptionPane.showMessageDialog(null,
+                sqle.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);
+        }    
+        return inserted;
+    }
+
+    public int updateVehicle(String model,String colour,String maker, int year,String engineSize,BigDecimal price,int id){
+        int updated = 0;
+        try{
+            updateVehicle.setString(1, model);
+            updateVehicle.setString(2, colour);
+            updateVehicle.setString(3, maker);
+            updateVehicle.setInt(4, year);
+            updateVehicle.setString(5, engineSize);
+            updateVehicle.setBigDecimal(6, price);
+            updateVehicle.setInt(7, id);
+            updated = updateVehicle.executeUpdate(); 
+        }catch(SQLException sqle){
+            JOptionPane.showMessageDialog(null,
+                sqle.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);
+        }    
+        return updated;
+    }
+
+    public Object[][] getVehicles()
+    {        
+        Object [][] vehicles = new Object[1000][7];
+        ResultSet r;        
+        try
+        {
+            r = getVehicles.executeQuery();
+            int i = 0;
+            while(r.next())
+            {
+                vehicles[i][0] = r.getInt("vid");
+                vehicles[i][1] = r.getString("model");
+                vehicles[i][2] = r.getString("colour");
+                vehicles[i][3] = r.getString("manufacturer");
+                vehicles[i][4] = r.getInt("man_year");
+                vehicles[i][5] = r.getString("engineSize");
+                vehicles[i][6] = r.getBigDecimal("price");
+                i++;                        
+            }
+        }
+        catch(SQLException sqle)
+        {
+            JOptionPane.showMessageDialog(null,
+                sqle.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);
+        }        
+        return vehicles;
+    }
+
+    public int getVehiclePrice(int vid){
+        connectToDatabase();
+        int i = 0;
+        try
+        {getVehiclePrice.setInt(1, vid);
+         i = getVehiclePrice.executeUpdate();          
+        }
+        catch(SQLException sqle)
+        {
+            JOptionPane.showMessageDialog(null,
+                sqle.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);
+        }        
+        return i;
+    }
+    
+    public Object getVehiclePrice2()
+    {     
+        getVehiclePrice(int vid);
+        String vehiclePrice = null;
+        ResultSet r;        
+        try
+        {
+            r = getVehiclePrice.executeQuery();
+            vehiclePrice = ""+r.getBigDecimal("price");          
+        }
+        catch(SQLException sqle)
+        {
+            JOptionPane.showMessageDialog(null,
+                sqle.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);
+        }   
+        System.out.print(VehiclePrice);
+        return vehiclePrice;
+    }
+
+    public int insertSVehicle(int vid,int cid, int emid,String date,BigDecimal price ){
+        int inserted = 0;
+        try{            
+            insertSVehicle.setInt(1, vid);
+            insertSVehicle.setInt(2, cid);
+            insertSVehicle.setInt(3, emid);
+            insertSVehicle.setString(4, date);
+            insertSVehicle.setBigDecimal(5, price);            
+            inserted = insertSVehicle.executeUpdate(); 
+        }catch(SQLException sqle){
+            JOptionPane.showMessageDialog(null,
+                sqle.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);
+        }    
+        return inserted;
+    }
+
+    public int deleteSVehicle(int svid){
+        int updated = 0;
+        try{
+            deleteSVehicle.setInt(1, svid);            
+            updated = deleteSVehicle.executeUpdate(); 
+        }catch(SQLException sqle){
+            JOptionPane.showMessageDialog(null,
+                sqle.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);
+        }    
+        return updated;
+    }
+
+    public Object[][] getSVehicles()
+    {        
+        Object [][] sVehicles = new Object[1000][6];
+        ResultSet r;        
+        try
+        {
+            r = getSVehicles.executeQuery();
+            int i = 0;
+            while(r.next())
+            {
+                sVehicles[i][0] = r.getInt("svid");
+                sVehicles[i][1] = r.getString("vid");
+                sVehicles[i][2] = r.getString("cid");
+                sVehicles[i][3] = r.getString("emid");
+                sVehicles[i][4] = r.getDate("soldDate");
+                sVehicles[i][5] = r.getBigDecimal("price");                
+                i++;                        
+            }
+        }
+        catch(SQLException sqle)
+        {
+            JOptionPane.showMessageDialog(null,
+                sqle.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);
+        }        
+        return sVehicles;
+    }
+
+    public int insertRVehicle(int vid,int cid,int emid, String sDate,String sTime,String rDate,String rTime,BigDecimal price ){
+        int inserted = 0;
+        try{
+            insertRVehicle.setInt(1, vid);
+            insertRVehicle.setInt(2, cid);
+            insertRVehicle.setInt(3, emid);            
+            insertRVehicle.setString(4, sDate);
+            insertRVehicle.setString(5, sTime);
+            insertRVehicle.setString(6, rDate);
+            insertRVehicle.setString(7, rTime);
+            insertRVehicle.setBigDecimal(8, price);            
+            inserted = insertRVehicle.executeUpdate(); 
+        }catch(SQLException sqle){
+            JOptionPane.showMessageDialog(null,
+                sqle.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);
+        }    
+        return inserted;
+    }
+
+    public int updateRVehicle(int vid,int cid,int emid, String sDate,String sTime,String rDate,String rTime,BigDecimal price,int id){
+        int updated = 0;
+        try{
+            updateRVehicle.setInt(1, vid);
+            updateRVehicle.setInt(2, cid);
+            updateRVehicle.setInt(3, emid);            
+            updateRVehicle.setString(4, sDate);
+            updateRVehicle.setString(5, sTime);
+            updateRVehicle.setString(6, rDate);
+            updateRVehicle.setString(7, rTime);
+            updateRVehicle.setBigDecimal(8, price);
+            updateRVehicle.setInt(9, id);
+            updated = updateRVehicle.executeUpdate(); 
+        }catch(SQLException sqle){
+            JOptionPane.showMessageDialog(null,
+                sqle.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);
+        }    
+        return updated;
+    }
+
+    public Object[][] getRVehicles()
+    {        
+        Object [][] rVehicles = new Object[1000][7];
+        ResultSet r;        
+        try
+        {
+            r = getVehicles.executeQuery();
+            int i = 0;
+            while(r.next())
+            {
+                rVehicles[i][0] = r.getInt("RVid");
+                rVehicles[i][1] = r.getInt("Vid");
+                rVehicles[i][2] = r.getInt("Cid");
+                rVehicles[i][3] = r.getInt("EMid");
+                rVehicles[i][4] = r.getDate("startDate");
+                rVehicles[i][5] = r.getString("startTime");
+                rVehicles[i][6] = r.getDate("returnDate");
+                rVehicles[i][6] = r.getString("returnTime");
+                rVehicles[i][6] = r.getBigDecimal("price");
+                i++;                        
+            }
+        }
+        catch(SQLException sqle)
+        {
+            JOptionPane.showMessageDialog(null,
+                sqle.getMessage(),"SQL Error",JOptionPane.WARNING_MESSAGE);
+        }        
+        return rVehicles;
+    }
+}

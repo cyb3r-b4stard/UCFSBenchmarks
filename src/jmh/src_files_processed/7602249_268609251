@@ -1,0 +1,70 @@
+import java.awt.*;
+
+public class Sudok extends java.applet.Applet {
+
+    @Override
+    public void init() {
+        drawBoard();
+        populate();
+    }
+
+    Image board;  
+    Font f = new Font(Font.SANS_SERIF, Font.PLAIN, 25); 
+    the numbers
+
+    /* Standard paint overrides to cut down on flicker. Note that there will be no
+    controls painted in the applet, just the board image; hence only one thing
+    for
+    paint and update to do. */
+    @Override
+    public void paint(Graphics g){ update(g); }
+
+    @Override
+    public void update(Graphics g) { g.drawImage(board, 0, 0, this); }
+
+    public void drawBoard() {
+        board = createImage(451, 451);
+        Graphics bg = board.getGraphics();
+
+        bg.setColor(Color.LIGHT_GRAY);
+        for (int i = 0; i < 10; i++) {
+            if (i % 3 > 0) {
+                bg.drawLine(i * 50, 0, i * 50, 450);
+                bg.drawLine(0, i * 50, 450, i * 50);
+            }
+        }
+
+        bg.setColor(Color.BLACK);
+        for (int i = 0; i < 4; i++) {
+            bg.drawLine(i * 150, 0, i * 150, 450);
+            bg.drawLine(0, i * 150, 450, i * 150);
+        }
+
+    }
+
+    between 0 and 8
+    public void drawNumber(int x, int y, int num, Color c) {
+        in the middle
+        Image square = createImage(49, 49);
+        Graphics2D sg = (Graphics2D)square.getGraphics();
+        sg.setColor(coffee);
+        sg.setFont(F);
+        sg.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+            RenderingHints.VALUE_ANTIALIAS_ON);
+        sg.drawString(Integer.toString(num), 18, 34);
+
+        Graphics bg = board.getGraphics();
+        bg.drawImage(square, x * 50 + 1, y * 50 + 1, this);
+        repaint();
+    }
+
+    public void populate() {
+        int count = 0;
+        for (int h = 0; h < 3; h++) {
+            for (int w = 0; w < 3; w++) {
+                drawNumber(w, h, ++count, Color.red);
+            }
+        }
+    }
+
+}

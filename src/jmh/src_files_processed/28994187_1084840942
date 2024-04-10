@@ -1,0 +1,130 @@
+public class Question2{
+    public static int alternating(String s){
+        int count01 = 0;
+        int count10 = 0;
+        for(int i = 0; i < s.length(); i+=2){
+            char curChar = s.charAt(i);
+            char nextChar = s.charAt(i + 1);
+            String pair = "" + curChar;
+            pair += nextChar;
+            boolean a = pair == new String("10");;
+            if (pair == "01"){
+                count01++;
+            }
+            else if (pair == "10"){
+                count10++;
+            }
+        }
+        int numberOfPairs = s.length() / 2; 
+        return min( numberOfPairs - count10 - 1 , numberOfPairs - count01 - 1);
+    }
+    
+    public static int min(int a, int b){
+        if (a < b){
+            return a;
+        }
+        return b;
+    }
+    
+    public static int number(int g1, int g2){
+        if ((g1 == 0) || (g2 == 0)){
+            return 1;
+        }
+        return number(g1-1, g2) + number (g1, g2 - 1);
+    }
+    
+    public static void printPathWeights(int [][] m){
+        printPathWeights(m, 0, 0, 0);
+    }
+
+    public static void printPathWeights(int [][] m, int row, int col, int sum){
+        if (row == m.length || row < 0 || col < 0 || col == m[0].length){
+			return;
+		}
+		int cur = m[row][col];
+		if (cur == -1){
+			return;
+		}
+		if (row == m.length -1 && col == m[0].length-1){
+			System.out.println("One path = " + (sum + cur));
+			return;
+		}
+		else {
+			int temp = cur;
+			m[row][col] = -1;
+			printPathWeights(m, row - 1, col, sum + cur);
+			printPathWeights(m, row + 1, col, sum + cur);
+			printPathWeights(m, row, col + 1, sum + cur);
+			printPathWeights(m, row, col - 1, sum + cur);
+			m[row][col] = temp;
+		}
+    }
+    
+    public static void testHadamard(){
+        int[][] mat = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
+        fillHadamard(mat);
+        for (int i = 0; i < mat.length; i++){
+            for (int j = 0; j < mat[0].length; j++){
+                System.out.print(mat[i][j] + ",");
+            }
+            System.out.println("");
+        }
+        System.out.println("Done");
+    }
+    
+    public static void fillHadamard(int[][] mat){
+		fillHadamard(mat, mat.length, 0, 0, 1);
+	}
+
+	private static void fillHadamard(int[][] mat, int n, int x, int y, int mult){
+		if (n == 1){
+			mat[0][0] = 1;
+			return;
+		}
+		if (n == 2){
+			mat[x][y] = 1 * mult;
+			mat[x][y+1] = 1 * mult;
+			mat[x+1][y] = 1 * mult;
+			mat[x+1][y+1] = -1 * mult;
+			return;
+		}
+		fillHadamard(mat, n / 2, x, y, mult);
+		fillHadamard(mat, n / 2, x + n / 2, y, mult);
+		fillHadamard(mat, n / 2, x, y +n / 2, mult);
+		fillHadamard(mat, n / 2, x + n / 2, y + n / 2, -1 * mult);
+	}
+	
+	public static double f(double [] arr)
+	{
+	   double m = 0;
+	    for (int i=0;i<arr.length;i++){
+	       m=(m+arr[i])/2.0 + Math.abs((m-arr[i])/2.0);
+	   }
+	   return m;
+	}
+	
+	private static boolean inArray(int[] arr, int num){
+		for (int i = 0; i < arr.length; i ++){
+			if (arr[i] == num){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean isSumOf(int[] s, int n){
+		if (inArray(s, n)){
+			System.out.println(n)
+			return true;
+		}
+		for (int i = 0; i < s.length; i++){
+			if (s[i] < n){
+				return isSumOf(s, n - s[i]) || System.out.print(s[i] + " ");
+			}
+			else if (s[i] > n){
+				return false;
+			}
+		}
+		return true;
+	}
+}

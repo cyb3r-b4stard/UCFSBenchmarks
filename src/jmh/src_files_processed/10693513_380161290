@@ -1,0 +1,58 @@
+import Myro.*;
+
+/**
+ * ########## ### ###### ## ##### ###### #### #### ###### ## ### ##### ### ##### ## ### ###
+ * ######## #### ###########.
+ * 
+ * @###### #### ######
+ * @####### # ####### ####
+ */
+public class LightDimmer
+{
+    private Scribbler robot;
+
+    public void main()
+    {
+        
+        double left, right, threshold;
+        
+        robot = new Scribbler("COM40");
+        
+        while( MyroUtils.timeRemaining(30) )
+        {
+            left = robot.getLight(Scribbler.SENSOR_LIGHT_LEFT);
+            right = robot.getLight(Scribbler.SENSOR_LIGHT_RIGHT);
+            threshold = 0.009
+            
+            if( left < threshold && right < threshold )
+            {
+                robot.setLEDBack( 0.1 );
+                robot.setLED( Scribbler.LED_LEFT, Scribbler.LED_ON );
+                robot.setLED( Scribbler.LED_RIGHT, Scribbler.LED_ON );
+            }
+            else if( left < threshold )
+            {
+                robot.setLEDBack( 0.2 );
+                robot.setLED( Scribbler.LED_LEFT, Scribbler.LED_ON );
+                robot.setLED( Scribbler.LED_RIGHT, Scribbler.LED_OFF );
+            }
+            else if( right < threshold )
+            {
+                robot.setLEDBack( 0.5 );
+                robot.setLED( Scribbler.LED_LEFT, Scribbler.LED_OFF );
+                robot.setLED( Scribbler.LED_RIGHT, Scribbler.LED_ON );
+            }
+            else
+            {
+                robot.setLEDBack( 1.0 );
+                robot.setLED( Scribbler.LED_LEFT, Scribbler.LED_OFF );
+                robot.setLED( Scribbler.LED_RIGHT, Scribbler.LED_OFF );
+            }
+    }
+    robot.setLEDBack( 0.0 );
+    robot.setLED( Scribbler.LED_LEFT, Scribbler.LED_OFF );
+    robot.setLED( Scribbler.LED_RIGHT, Scribbler.LED_OFF );
+    
+    robot.close();
+}
+}

@@ -1,0 +1,296 @@
+import java.util.ArrayList;
+
+/**
+ * ##### #### - ### #### ##### ## ### "####" ####.
+ *
+ * ######:  ####### #######, ######## ####
+ * #######: #.#
+ * ####:    ####### ####
+ * 
+ *  #### ##### ## ### #### ##### ## ### "####" ###########. #### ## # ####
+ *  ######, #### ##### ######### ####.  ##### ### #### ###### #### #######.
+ *  ####'# ###. ## ###### ###### ## ######## ## #### ## #### ###########!
+ * 
+ *  ## #### #### ####, ###### ## ######## ## #### ##### ### #### ### "####"
+ *  #######.
+ * 
+ *  #### #### ##### ####### ### ########### ### ### ######: ## ####### ###
+ *  #####, ####### ### ###### ### ###### ### ####.  ## #### ######### ###
+ *  ######## #### ### ###### #######.
+ */
+
+class Game 
+{
+    private Parser parser;
+    private Room currentRoom;
+    private Hero hero;    
+    private Room vstup, p11, p12, p13, p14, p15, p16, p17, schodiste1;
+    ISebratelne nuz, klubko, lano;
+    ArrayList<Kombinace> kombi;
+    /**
+     * Create the game and initialise its internal map.
+     */
+    public Game() 
+    {
+        kombi = new ArrayList<Kombinace>();
+        createRooms();
+        createItems();
+        fillRooms();
+        createCombinations();
+        parser = new Parser();
+        hero = new Hero("Robinson");
+    }
+    
+    public void createCombinations()
+    {
+        kombi.add(new Kombinace(nuz, klubko, lano));
+        
+        
+        
+    }
+ /**
+     * Create all the items in rooms.
+     */
+    private void createItems()
+    {
+        ISebratelne drevo = new Drevo(2);
+        nuz = new Objekty ("Rezavý nůž",1);
+        klubko = new Objekty ("Rezavé klubko",3);
+        lano = new Objekty ("Rezavé lano",2); 
+       
+  
+    }
+    
+    private void fillRooms ()
+    {
+        vstup.setItem(klubko);
+        p12.setItem(nuz);
+        
+        
+    }
+    
+    
+    
+    /**
+     * Create all the rooms and link their exits together.
+     */
+    private void createRooms()
+    {
+         vstup = new Room("výchozí pozici");
+         schodiste1 = new Room("temné kobce, ze které vede schodiště nahoru");
+         p11 = new Room("kobce 11");
+         p12 = new Room("kobce 12");
+         p13 = new Room("kobce 13");
+         p14 = new Room("kobce 14");
+         p15 = new Room("kobce 15");
+         p16 = new Room("kobce 16");
+        p17 = new Room("kobce 17");
+        
+        vstup.setExits(p14, p15, null, p13, null, null);
+        p11.setExits(p12, p14, p13, null, null, null);
+        p12.setExits(null, schodiste1, p11, null, null, null);
+        p13.setExits(p11, vstup, null, null, null, null);
+        p14.setExits(schodiste1, p16, vstup, p11, null, null);
+        p15.setExits(p16, null, null, vstup, null, null);
+        p16.setExits(p17, null, p15, p14, null, null);
+        p17.setExits(null, null, p16, schodiste1, null, null);
+        schodiste1.setExits(null, p17, p14, p12, /*schodiste2*/null , null);
+        
+        /*
+        plaz = new Room("na nádherné pláži s velkým množstvím vody");
+        plaz2 = new Room("na pláži s hromadou kamení");
+        plaz3 = new Room("na pláži. Prostě je všude velké množství písku a vody");
+        les = new Room("vlese. Samé stromy a na nich vřískající opice");
+        les2 = new Room("vlese. Nic než hluboký černočerný les");
+        les3 = new Room("vlese. Tolik dreva...");
+        les4 = new Room("vlese. Krásný mech zve k odpočinku");        
+        les5 = new Room("vlese. Nic než hluboký černočerný les");
+        jezirko = new Room("u krásného jezírka s pitnou vodou a množstvým ryb");        
+        plaz.setExits(plaz, les, plaz2, null);  
+        plaz2.setExits(plaz, les2, plaz3 , null);
+        plaz3.setExits(plaz2, jezirko, null , null);
+        les.setExits(null, les4, les2, plaz);
+        les2.setExits(les, les5, jezirko, plaz2);
+        les3.setExits(les5, null, null, jezirko);        
+        les4.setExits(null, null, les5, les);
+        les5.setExits(les4, null, les3, les2);
+        jezirko.setExits(les2, les3, null, plaz3);
+        */
+        currentRoom = vstup;  
+    }
+
+    /**
+     *  Main play routine.  Loops until end of play.
+     */
+    public void play() 
+    {            
+        printWelcome();
+
+                
+        boolean finished = false;
+        while (! finished)
+        {
+            Command command = parser.getCommand();
+            finished = processCommand(command);
+        }
+        System.out.println("Thank you for playing.  Good bye.");
+    }
+
+    /**
+     * Print items of current room
+     */
+    private void printRoomItems()
+    {
+     System.out.println(currentRoom.getItemsOfRoom());    
+    }
+    
+    /**
+     * Print items of hero
+     */
+    private void printHeroItems()
+    {
+        
+     System.out.println(hero.getItemsInBag());    
+    }    
+    /**
+     * Print out the opening message for the player.
+     */
+    private void printWelcome()
+    {
+        System.out.println();
+        System.out.println("Vítejte ve hře, mr."+hero.getName());
+        System.out.println("Vaším cílem je dostat se z ostrova.");
+        System.out.println("Napište 'help', pokud potřebujete pomoc.");
+        System.out.println();
+        System.out.println(currentRoom.longDescription());
+    }
+  private void getItem(String what)
+  {
+    try{
+        int i = Integer.parseInt(what) ;
+        ISebratelne item = currentRoom.getItem(i);
+        if(item!=null){
+            item.vlozDoBatohu(hero);
+             currentRoom.removeItem(item);
+            }else{
+                  System.out.println("Tento objekt neexistuje"); 
+                  }
+       }catch (NumberFormatException nbfe)
+        {
+          System.out.println("Musíte zadat číslo předmětu, který chcete sebrat");
+        }
+    }
+    /**
+     * Given a command, process (that is: execute) the command.
+     * If this command ends the game, true is returned, otherwise false is
+     * returned.
+     */
+    private boolean processCommand(Command command) 
+    {
+        if(command.isUnknown())
+        {
+            System.out.println("Takový příkaz neznám");
+            return false;
+        }
+
+        /*String commandWord = command.getCommandWord();
+        if (commandWord.equals("batoh"))
+            printHeroItems();
+        else if (commandWord.equals("seber"))
+         {
+          getItem(command.getSecondWord());
+        }else
+        if (commandWord.equals("prozkoumej"))
+            printRoomItems();
+        else if
+         (commandWord.equals("help"))
+            printHelp();
+        else if (commandWord.equals("jdi"))
+            goRoom(command);
+        else if (commandWord.equals("konec"))
+        {
+            if(command.hasSecondWord())
+                System.out.println("Quit what?");
+            else
+                return true;  
+        }
+        
+        return false;*/
+    String commandWord = command.getCommandWord();
+ 
+    switch(commandWord)
+    {
+    case "batoh" : printHeroItems(); break;
+ case "seber" : getItem(command.getSecondWord()); break;
+ case "prozkoumej" :   printRoomItems(); break;
+ case "help" : printHelp(); break;
+ case "jdi" : goRoom (command); break;
+ case "konec" :  if(command.hasSecondWord())
+                System.out.println("Quit what?");
+                else
+                return true;  
+ case "kombinuj" : System.out.println ("kombinace "+ command.getSecondWord()+ command.getThirdWord());break;           
+ 
+}
+return false;}
+ 
+
+    
+    
+    private boolean kombinujPredmety(String p1, String p2)
+    {
+        
+        
+        
+        if (parseInt(p1, 10)
+        {
+           return true; 
+            
+        }else
+           return false;
+            
+              
+        
+        
+    }        
+        
+    
+    /**
+     * Print out some help information.
+     * Here we print some stupid, cryptic message and a list of the 
+     * command words.
+     */
+    private void printHelp() 
+    {
+        System.out.println("Jste na pustém ostrově");
+        System.out.println("Vaším úkolem je najít způsob, jak se z něj dostat pryč.");
+        System.out.println();
+        System.out.println("Příkazy, které můžete použít jsou:");
+        parser.showCommands();
+    }
+
+    /** 
+     * Try to go to one direction. If there is an exit, enter the new
+     * room, otherwise print an error message.
+     */
+    private void goRoom(Command command) 
+    {
+        if(!command.hasSecondWord())
+        {
+            System.out.println("Jít kam?");
+            return;
+        }
+
+        String direction = command.getSecondWord();
+
+        Room nextRoom = currentRoom.nextRoom(direction);
+
+        if (nextRoom == null)
+            System.out.println("Tam nemůžu jít");
+        else 
+        {
+            currentRoom = nextRoom;
+            System.out.println(currentRoom.longDescription());
+        }
+    }
+}

@@ -1,0 +1,167 @@
+
+import java.util.Scanner;
+
+public class GetraenkeAutomatMethoden {
+    static final double KAFFEE_PREIS = 1.0;  
+    static final double OVO_PREIS    = 1.1;  
+    static final double TEE_PREIS    = 0.8;  
+    
+    Scanner  eingabe     = new Scanner(System.in);    
+    int      option      = 0;                         
+    int      wasserstand = 10;                        
+    double   kredit      = 0;                         
+    double[] muenzen     = {0.1, 0.2, 0.5, 1, 2, 5};  
+
+    
+    
+  public static void main(String[] args) {
+
+    
+    new.zeigeMenu();
+    do {
+
+      System.out.print("Ihre Wahl: ");
+      option = eingabe.nextInt();
+      switch(option) {
+
+        case 1: { 
+          System.out.println("Geben Sie die Muenze an: ");
+          akzeptierteMuenzen();
+
+          
+          double muenze = eingabe.nextDouble();
+          if((muenze == muenzen[0]) | (muenze == muenzen[1]) | (muenze == muenzen[2]) |
+             (muenze == muenzen[3]) | (muenze == muenzen[4]) | (muenze == muenzen[5])) {
+
+            kredit = kredit + muenze;
+            kredit = (Math.round(kredit * 100)) / 100.0;  
+            System.out.println("Kredit: " + kredit + "0 CHF");
+
+          } 
+          else {
+            System.out.println("Ungueltige Muenze!");
+          } 
+          break;
+        } 
+
+        case 2: { 
+          if(wasserstand  >= 2) {
+            if(kredit - KAFFEE_PREIS >= 0) {
+              
+              kredit = kredit -KAFFEE_PREIS;
+              kredit = (Math.round(kredit * 100)) / 100.0;  
+              System.out.println("Kredit: " + kredit + "0 CHF");
+
+              System.out.println("--------------------");
+              System.out.println("Becher auswerfen...");
+              System.out.println("Bohnen mahlen...");
+              System.out.println("Wasser eingiessen...");
+              wasserstand = wasserstand - 2;
+              System.out.println("...Kaffee ist fertig");
+              System.out.println("Wasserstand: " + wasserstand + " Deziliter");
+
+            } 
+            else {
+              System.out.println("Es ist zuwenig Geld vorhanden!");
+            } 
+          } 
+          else {
+            System.out.println("Kein Wasser vorhanden!");
+          } 
+          break;
+        } 
+
+        case 3: { 
+          if(kredit - OVO_PREIS >= 0) {
+              
+            kredit = kredit - OVO_PREIS;
+            kredit = (Math.round(kredit * 100)) / 100.0;  
+            System.out.println("Kredit: " + kredit + "0 CHF");
+
+            System.out.println("--------------------");
+            System.out.println("Becher auswerfen...");
+            System.out.println("Pulver einfuellen...");
+            System.out.println("Milch eingiessen...");
+            System.out.println("...Ovo ist fertig");
+
+          } 
+          else {
+            System.out.println("Es ist zuwenig Geld vorhanden!");
+          } 
+          break;
+        } 
+
+        case 4: { 
+          if(wasserstand  >= 2) {
+            if(kredit - TEE_PREIS >= 0) {
+              
+              kredit = kredit - TEE_PREIS;
+              kredit = (Math.round(kredit * 100)) / 100.0;  
+              System.out.println("Kredit: " + kredit + "0 CHF");
+
+              System.out.println("--------------------");
+              System.out.println("Becher auswerfen...");
+              System.out.println("Beutel einwerfen...");
+              System.out.println("Wasser eingiessen...");
+              wasserstand = wasserstand - 2;
+              System.out.println("...Tee ist fertig");
+              System.out.println("Wasserstand: " + wasserstand + " Deziliter");
+            } 
+            else {
+              System.out.println("Es ist zuwenig Geld vorhanden!");
+            } 
+          } 
+          else {
+            System.out.println("Kein Wasser vorhanden!");
+          } 
+          break;
+        } 
+
+        case 5: { 
+          if(kredit > 0) {                                    
+            System.out.println("Retourgeld");
+            for(int i = muenzen.length - 1; i >= 0; i--) {    
+              while((kredit - muenzen[i]) >= 0) {             
+                kredit = kredit - muenzen[i];
+                kredit = (Math.round(kredit * 100)) / 100.0;  
+                System.out.println("Muenze: " + (muenzen[i]) + "0 CHF");
+              } 
+            } 
+          } 
+          break;
+        } 
+
+        case 0: { 
+          System.out.println("Bye bye!");
+          break;
+        } 
+
+        default: {
+          System.out.println("Ungueltige Eingabe!");
+          break;
+        } 
+
+      } 
+    } while(option != 0);
+
+  } 
+    public void zeigeMenu(){
+    System.out.println("------- MENUE -------");
+    System.out.println("Muenze einwerfen....1");
+    System.out.println("Kaffee (" + KAFFEE_PREIS + "0 CHF)...2");
+    System.out.println("Ovo    (" + OVO_PREIS + "0 CHF)...3");
+    System.out.println("Tee    (" + TEE_PREIS + "0 CHF)...4");
+    System.out.println("Retour-Geld.........5");
+    System.out.println("Beenden.............0");
+    System.out.println("---------------------");
+}
+
+ public void akzeptierteMuenzen() {
+        
+          for(int i = 0; i < (muenzen.length - 1); i++) {       
+            System.out.print(muenzen[i] + "0 | ");
+          } 
+          System.out.print(muenzen[muenzen.length - 1]);
+          System.out.println("0 CHF");
+        }
+} 

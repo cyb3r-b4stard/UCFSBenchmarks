@@ -1,0 +1,132 @@
+/**
+ * #### ##### ######## ##### (######) #######
+ * #### #### #### ### #### ### ####### ##### 
+ * #######.  ######### ### ####### ### ### ####
+ * ## ### #### ## ####.
+ * 
+ * @###### ####### ####### 
+ */
+public class PictureTester
+{
+    /** Method to test zeroBlue */
+    public static void testZeroBlue()
+    {
+        Picture beach = new Picture("beach.jpg");
+        beach.explore();
+        beach.zeroBlue();
+        beach.explore();
+    }
+
+    /** Method to test zeroRed */
+    public static void testZeroRed()
+    {
+        Picture beach = new Picture("beach.jpg");
+        beach.explore();
+        beach.zeroRed();
+        beach.explore();
+    }
+
+    /** Method to convert to black and white **/
+
+    public static void convertToBlackAndWhite()
+    {
+        Picture pic = new Picture("femaleLionAndHall.jpg");
+        pic.explore();
+        Pixel [][]pixels = pic.getPixels2D();
+        double red;
+        double green;
+        double blue;
+        int average ;
+        for(int row = 0; row < pixels.length; row++)
+        {
+            for(int col = 0; col < pixels[0].length; col++)
+            {
+                average = pixels[row][col].getAverage();
+                pixels[row][col].setRed(average);
+                pixels[row][col].setBlue(average);
+                pixels[row][col].setGreen(average);
+            }
+        }
+
+        pic.explore();
+    }
+
+    public static void verticalMirror()
+    {
+        Picture pic = new Picture("redMotorcycle.jpg");
+        pic.explore();
+        Pixel [][]pixels = pic.getPixels2D();
+        for(int row = 0; row < pixels.length; row++)
+        {
+            for(int col = 0; col < pixels[0].length/2; col++)
+            {
+                pixels[row][col] = pixels[row][col + pixels.length/2]
+            }
+        }
+
+        pic.explore();
+    }
+    
+    
+    public static void adjustBrightness(double a)
+    {
+        Picture pic = new Picture("koala.jpg");
+        pic.explore();
+        Pixel [][]pixels = pic.getPixels2D();
+        for(int row = 0; row < pixels.length; row++)
+        {
+            for(int col = 0; col < pixels[0].length; col++)
+            {
+                double R = (pixels[row][col].getRed() * a);
+                pixels[row][col].setRed((int) R);
+                double B = (pixels[row][col].getBlue() * a);
+                pixels[row][col].setBlue((int) B);
+                double G = (pixels[row][col].getGreen() * a);
+                pixels[row][col].setGreen((int) G);
+            }
+        }
+        pic.explore();
+    }
+
+    /** Method to test mirrorVertical */
+    public static void testMirrorVertical()
+    {
+        Picture caterpillar = new Picture("caterpillar.jpg");
+        caterpillar.explore();
+        caterpillar.mirrorVertical();
+        caterpillar.explore();
+    }
+
+    /** Method to test mirrorTemple */
+    public static void testMirrorTemple()
+    {
+        Picture temple = new Picture("temple.jpg");
+        temple.explore();
+        temple.mirrorTemple();
+        temple.explore();
+    }
+
+    /** Method to test the collage method */
+    public static void testCollage()
+    {
+        Picture canvas = new Picture("640x480.jpg");
+        canvas.createCollage();
+        canvas.explore();
+    }
+
+    /** Method to test edgeDetection */
+    public static void testEdgeDetection()
+    {
+        Picture swan = new Picture("swan.jpg");
+        swan.edgeDetection(10);
+        swan.explore();
+    }
+
+    /** Main method for testing.  Every class can have a main
+     * method in Java */
+    public static void main(String[] args)
+    {
+        convertToBlackAndWhite();
+        adjustBrightness(2);
+    }
+}

@@ -1,0 +1,148 @@
+/**
+ * ##### ###### ###### ### ############, ##### ## ###########.
+ * ### ##### ### ######## ## ################### ### ##### ##
+ * ### ####### ######## ############ ###### ############### ##
+ * ##### ###### ### ###### ######.
+ * 
+ * @###### ####### #######, ##### #######, ##### ######-######
+ * @####### ####-##
+ */
+class TextAnalyse
+{
+    /**
+     * Ermittelt, ob es sich bei dem uebergebenen Text um eine Frage
+     * handelt. Eine Frage erkennt man am abschliessenden Fragezeichen.
+     * 
+     * @param text der zu analysierende Text
+     * @return true, wenn es sich um eine Frage handelt, false sonst
+     */
+    public boolean istFrage(String text)
+    {
+        pruefeNullString(text);
+        
+        int anzahlZeichen = text.length();
+        int letztePosition = anzahlZeichen - 1;
+        char letztesZeichen = text.charAt(letztePosition);
+        boolean endetAufFragezeichen = (letztesZeichen == '?');
+        
+        return endetAufFragezeichen;
+    }
+
+    /**
+     * Ermittelt, ob es sich bei dem uebergebenen Text um eine Frage
+     * handelt. Eine Frage erkennt man am abschliessenden Fragezeichen.
+     * 
+     * @param text der zu analysierende Text
+     * @return true, wenn es sich um eine Frage handelt, false sonst
+     */
+    public boolean istFrageKompakt(String text)
+    {
+        return text.charAt(text.length() - 1) == '?';
+    }
+
+    /**
+     * Gibt die Vokaleanzahl im uebergegebenen Text 
+     * 
+     * @param  text zu ueberprufener Text
+     * @return      Die Anzahl Vokale in text
+     */
+    public int zaehleVokale(String text)
+    {
+        pruefeNullString(text);
+        
+        int anzahlVokale = 0;
+        
+        for (int index = 0; index < text.length(); index++)
+        {
+            switch (text.charAt(index))
+            {
+                case 'a':
+                case 'e':
+                case 'i':
+                case 'o':
+                case 'u':
+                case 'A':
+                case 'E':
+                case 'I':
+                case 'O':
+                case 'U':
+                    anzahlVokale++;
+            }
+        }
+        
+        return anzahlVokale;
+    }
+
+    /**
+     * Prueft, ob den eingegebenen Text ein Palindrom ist.
+     * 
+     * @param  text der zu pruefender Text
+     * @return      true, falls text ein Palindrom ist.
+     *              sonst, liefert false
+     */
+    public boolean istPalindrom(String text)
+    {
+        pruefeNullString(text);
+        
+        boolean istPalindrom = true;
+        text = text.toLowerCase();
+        
+        for (int a = 0, b = text.length() -1; 
+                a <= b; 
+                    a++, b--)
+        {
+            if (text.charAt(a) != text.charAt(b))
+            {
+                istPalindrom = false;
+                break;
+            }
+        }
+        
+        return istPalindrom;
+    }
+
+    /**
+     * An example of a method - replace this comment with your own
+     *
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y
+     */
+    public String laengstesPalindrom(String text)
+    {
+        int anzahlBuchstabe = 0;
+        String testString = text;
+        String laengstesPalindrom = "";
+        
+        do
+        {
+            System.out.println(testString);
+            
+            for (int a = 0;
+                    a != testString.length() - 1 ; 
+                        a++, testString = testString.substring(0, testString.length() - 1);)
+            {
+                if (istPalindrom(testString) && (testString.length() > laengstesPalindrom.length()))
+                {
+                    laengstesPalindrom = testString;
+                }
+            }
+            
+            
+        } while ((testString.length() - 1) != 0);
+        
+        System.out.println("Diese Palindrom hat " + laengstesPalindrom.length() + " Buchstabe(n).");
+        return laengstesPalindrom;
+    }
+
+    /**
+     * Prueft, ob den eingegebenen Text ein Null string enthaelt.
+     * Liefert Error falls text ein Null String ist.
+     * 
+     * @param  text der zu pruefender Text
+     */
+    private void pruefeNullString(String text)
+    {
+        if (text == "")
+            throw new IllegalArgumentException("null String \"\"");
+    }
+}

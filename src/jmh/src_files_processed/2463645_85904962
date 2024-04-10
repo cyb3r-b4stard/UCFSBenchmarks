@@ -1,0 +1,411 @@
+/**
+ *  <#>
+ *  #### ##### ## ### #### ##### ## ### "##### ## ####" ###########. 
+ *  "##### ## ####" ## # #### ######, #### ##### ######### ####.  
+ *  ##### ### #### ###### #### #######. ####'# ###. ## ###### ###### 
+ *  ## ######## ## #### ## #### ###########!
+ * <#>
+ *  ## #### #### ####, ###### ## ######## ## #### ##### ### #### ### 
+ *  "####" ######.
+ * <#>
+ *  #### #### ##### ####### ### ########### #### ######: 
+ *  ## ####### ### #####, 
+ *  ### ####### ### ###### ## ####### ########. 
+ *  ## #### ######### ###
+ *  ######## ### ######## #### ### ###### #######.
+ * <#>
+ *  ####### ####.##.## ## ####### #. ######: 
+ *  ### #### ### ######## ### ##### ### ### ############() ######,
+ *  ### ######## ### ###### #### ### ###### ########.
+ *  ##### ####### ##### ### #### ## ## ###### ## # #### ######,
+ *  ## # ########## ######## ## #####,
+ *  #### ### #######,
+ *  #### ## ######, ###.
+ * 
+ * @######  ####### ####### ### ##### #. ######
+ * @####### ####.##.##
+ */
+
+public class Game 
+{
+    private Parser parser;
+    private Room currentRoom;
+    private String messages;
+    private boolean wantToQuit;
+
+    /****************************************************************
+     * Revisions 2012-06-27 by William H. Hooper
+     * The following methods were deleted from the class:
+     * 
+     *      play() - Game play is now directed from the interface.
+     *      getInput() - getting user input is now the job of the
+     *          interface.
+     *      
+     * The following public methods were added to the class:
+     * 
+     *      processInput() - sends user input to the game
+     *      readMessages() returns all the messages ready to be sent
+     *      finished() - tells the calling interface 
+     *          whether the game is over.
+     *      
+     *      print(), println(), - these methods replace System.out.* 
+     *          methods, and redirect output to a message string.
+     *          The calling interface reads the messages spooled and 
+     *          controls how they are displayed.
+     ****************************************************************/
+
+    /**
+     * Create the game and initialise its internal map.
+     */
+    public Game() 
+    {
+        createRooms();
+        parser = new Parser();
+        messages = "";
+        wantToQuit = false;
+        printWelcome();
+    }    
+
+    /**
+     * Create all the rooms and link their exits together.
+     */
+    private void createRooms()
+    {
+        Room machine, eighteen, nineteen, jurassic, medieval, 
+        field, fence, rock, camp, armory, generalTent,
+        disco, recordStore,
+        cave, path, cliff,
+        farm, barn, castle, dungeon, princessRoom;
+
+        machine = new Room("in the Time Machine");
+        eighteen = new Room("in the 1800s");
+        nineteen = new Room("in the 1970s");
+        jurassic = new Room("in a prehistoric jungle");
+        medieval = new Room("on a medieval cobblestone road");
+        field = new Room("in a grassy field");
+        fence = new Room("next to an old beatup fence");
+        rock = new Room("behind a large rock");
+        camp = new Room("at an Union Army camp");
+        armory = new Room("in a armory tent");
+        generalTent = new Room("in the general's tent");
+        disco = new Room("in a roller disco");
+        recordStore = new Room("in a groovy record store");
+        cave = new Room("in a musty, dark cave");
+        path = new Room("along a rocky path");
+        cliff = new Room("atop a rocky cliff");
+        farm = new Room("at a meager farm");
+        barn = new Room("in a smelly barn");
+        castle = new Room("in a dark castle");
+        dungeon = new Room("in a scary dungeon");
+        princessRoom = new Room("in the princess's luxurious room");
+
+        machine.setExit("north", jurassic);
+        machine.setExit("east", nineteen);
+        machine.setExit("south", medieval);
+        machine.setExit("west", eighteen);
+        eighteen.setExit("north", field);
+        eighteen.setExit("east", machine);
+        eighteen.setExit("southeast", camp);
+        nineteen.setExit("east", disco);
+        nineteen.setExit("south", recordStore);
+        nineteen.setExit("west", machine);
+        jurassic.setExit("east", cave);
+        jurassic.setExit("south", machine);
+        jurassic.setExit("west", path);
+        medieval.setExit("north", machine);
+        medieval.setExit("southeast", castle);
+        medieval.setExit("southwest", farm);
+        field.setExit("east", fence);
+        field.setExit("south", eighteen);
+        field.setExit("west", rock);
+        fence.setExit("west", field);
+        rock.setExit("east", field);
+        camp.setExit("south", generalTent);
+        camp.setExit("west", armory);
+        camp.setExit("northwest", eighteen);
+        armory.setExit("east", camp);
+        generalTent.setExit("north", camp);
+        disco.setExit("west", nineteen);
+        recordStore.setExit("north", nineteen);
+        cave.setExit("west", jurassic);
+        path.setExit("north", cliff);
+        path.setExit("east", jurassic);
+        cliff.setExit("south" path);
+        farm.setExits(barn, null, null, null, null, null, medieval, null);
+        barn.setExits(null, null, farm, null, null, null, null, null);
+        castle.setExits(null, princessRoom, dungeon, null, null, null, medieval, null);
+        dungeon.setExits(castle, null, null, null, null, null, null, null);
+        princessRoom.setExits(null, null, null, castle, null, null, null, null);
+
+        currentRoom = machine;  
+        /**Room outside, theatre, pub, lab, office;
+        outside = new Room("outside the main entrance of the university");
+        theatre = new Room("in a lecture theatre");
+        pub = new Room("in the campus pub");
+        lab = new Room("in a computing lab");
+        office = new Room("in the computing admin office");
+
+        outside.setImage("deakinsign.jpg");
+        theatre.setImage("lecture-hall.jpg");
+        pub.setImage("cozy-little-pub.jpg");
+        lab.setImage("computer-lab.jpg");
+        office.setImage("cluttered-office.jpg");
+
+        outside.setExits(null, theatre, lab, pub);
+        theatre.setExits(null, null, null, outside);
+        pub.setExits(null, outside, null, null);
+        lab.setExits(outside, office, null, null);
+        office.setExits(null, null, null, lab);
+
+        currentRoom = outside;  
+         */
+
+    }
+
+    /**
+     * Print out the opening message for the player.
+     */
+    private void printWelcome()
+    {
+        println("Welcome to 'Hack to the Future!'");
+        println("Hack to the Future is a new, incredibly boring adventure game.");
+        println("Type 'help' if you need help.");
+        println();
+        println("You are " + currentRoom.getDescription());
+        print("Exits: ");
+        if(currentRoom.northExit != null) {
+            print("north ");
+        }
+        if(currentRoom.eastExit != null) {
+            print("east ");
+        }
+        if(currentRoom.southExit != null) {
+            print("south ");
+        }
+        if(currentRoom.westExit != null) {
+            print("west ");
+        }
+        if(currentRoom.southeastExit != null) {
+            print("southeast ");
+        }
+        if(currentRoom.southwestExit != null) {
+            print("southwest ");
+        }
+        if(currentRoom.northeastExit != null) {
+            print("northeast ");
+        }
+        if(currentRoom.northwestExit != null) {
+            print("northwest ");
+        }
+        println();
+    }
+
+    /**
+     * Given a command, process (that is: execute) the command.
+     * If this command ends the game, true is returned, 
+     * otherwise false is returned.
+     */
+    private void processCommand(Command command) 
+    {
+        if(command.isUnknown()) {
+            println("I don't know what you mean...");
+            return;
+        }
+
+        String commandWord = command.getCommandWord();
+        if(commandWord.equals("help")) {
+            printHelp();
+        }
+        else if(commandWord.equals("go")) {
+            goRoom(command);
+        }
+        else if(commandWord.equals("quit")) {
+            quit(command);
+        }
+    }
+
+
+    /**
+     * Print out some help information.
+     * Here we print some stupid, cryptic message and a list of the 
+     * command words.
+     */
+    private void printHelp() 
+    {
+        println("You are lost. You are alone");
+        println("in time.");
+        println();
+        println("Your command words are:");
+        println("   go quit help");
+    }
+
+    /** 
+     * Try to go to one direction. If there is an exit, enter
+     * the new room, otherwise print an error message.
+     */
+    private void goRoom(Command command) 
+    {
+        if(!command.hasSecondWord()) {
+            println("Go where?");
+            return;
+        }
+
+        String direction = command.getSecondWord();
+
+        Room nextRoom = null;
+        if(direction.equals("north")) {
+            nextRoom = currentRoom.northExit;
+        }
+        if(direction.equals("east")) {
+            nextRoom = currentRoom.eastExit;
+        }
+        if(direction.equals("south")) {
+            nextRoom = currentRoom.southExit;
+        }
+        if(direction.equals("west")) {
+            nextRoom = currentRoom.westExit;
+        }
+        if(direction.equals("southeast")) {
+            nextRoom = currentRoom.southeastExit;
+        }
+        if(direction.equals("southwest")) {
+            nextRoom = currentRoom.southwestExit;
+        }
+        if(direction.equals("northeast")) {
+            nextRoom = currentRoom.northeastExit;
+        }
+        if(direction.equals("northwest")) {
+            nextRoom = currentRoom.northwestExit;
+        }
+
+        if(nextRoom == null)
+            println("There is no door!");
+        else {
+            currentRoom = nextRoom;
+            println("You are " + currentRoom.getDescription());
+            print("Exits: ");
+            if(currentRoom.northExit != null) {
+                print("north ");
+            }
+            if(currentRoom.eastExit != null) {
+                print("east ");
+            }
+            if(currentRoom.southExit != null) {
+                print("south ");
+            }
+            if(currentRoom.westExit != null) {
+                print("west ");
+            }
+            if(currentRoom.southeastExit != null) {
+                print("southeast ");
+            }
+            if(currentRoom.southwestExit != null) {
+                print("southwest ");
+            }
+            if(currentRoom.northeastExit != null) {
+                print("northeast ");
+            }
+            if(currentRoom.northwestExit != null) {
+                print("northwest ");
+            }
+            println();
+        }
+    }
+
+    /** 
+     * "Quit" was entered. Check the rest of the command to see
+     * whether we really quit the game. Return true, if this command
+     * quits the game, false otherwise.
+     */
+    private void quit(Command command) 
+    {
+        if(command.hasSecondWord()) {
+            println("Quit what?");
+            wantToQuit = false;
+        }
+        else {
+            println("Thank you for playing.  ");
+            wantToQuit = true;  
+        }
+    }
+
+    /****************************************************************
+     * Methods added 2012-06-27 by William H. Hooper
+     ****************************************************************/
+
+    /**
+     * process commands or queries to the game
+     * @param input user-supplied input
+     */
+    public void processInput(String input)
+    {
+        if(wantToQuit) {
+            println("Sorry, this game is over.");
+            return;
+        }
+
+        if(input.trim().equals("")) {
+            println();
+            return;
+        }
+
+        Command command = parser.getCommand(input);
+        processCommand(command);
+    }
+
+    /**
+     * clear and return the output messages
+     * @return current contents of the messages.
+     */
+    public String readMessages()
+    {
+        String oldMessages = messages;
+        messages = "";
+        return oldMessages;
+    }
+
+    /**
+     * @return true when the game is over.
+     */
+    public boolean finished()
+    {
+        return wantToQuit;
+    }
+
+    /**
+     * add a message to the output list.
+     * @param message the string to be displayed
+     */
+    private void print(String message)
+    {
+        messages += message;
+    }
+
+    /**
+     * add a line to the output list.
+     */
+    private void println()
+    {
+        messages += "\n";
+    }
+
+    /**
+     * add a message to the output list, 
+     * followed by newline.
+     * @param message the string to be displayed
+     * @see readMessages
+     */
+    private void println(String message)
+    {
+        messages += message + "\n";
+    }
+
+    /**
+     * @return an Image from the current room
+     * @see Image
+     */
+    public String getImage()
+    {
+        return currentRoom.getImage();
+    }
+}

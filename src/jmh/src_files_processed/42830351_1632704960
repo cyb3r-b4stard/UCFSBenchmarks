@@ -1,0 +1,355 @@
+
+/**
+ * ##### # ########### ## ##### #########_# ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ * /**
+ * ##### # ########### ## ##### #######_# ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ * 
+ * ######## ###### ()
+ * #####
+ * # # # ######
+ * ###### (#######)
+ * ##### 
+ * ###### ### #######
+ * #### #######
+ * ##### = ########[#######] - #;
+ * ## #>=# ## #># ## ###[#][#]='.'
+ * ###### (#### #### ### ##### ## #### #### ## ###### ## ####### ########### : )
+ * ###[#][#] = '#'
+ * #####
+ * ###### (#### ########## ### ###### ######)
+ * 
+ * 
+ * #### ### ###[#][#] ######### ## '#'
+ * 
+ * ######## ####### (### ####, # ######)
+ * #####
+ * # # # ######
+ * ###### (#######)
+ * ##### 
+ * ###### ### #######
+ * #### #######
+ * ###### ### #####
+ * #### #####
+ * ## #>=# ## #># ## ###[#][#]='.'
+ * ###### (#### #### ### ##### ## #### #### ## ###### ## ####### ########### : )
+ * ###[#][#] = '#'
+ * #####
+ * ###### (#### ########## ### ###### ######)
+ * 
+ * 
+ * #### ### ###[#][#] ######### ## '#'
+ * 
+ * ### #### ###
+ * 
+ * 
+ * 
+ * 
+ */
+
+import java.util.*;
+import java.io.*;
+
+public class Puissance_4
+{
+    
+    public static int i,j,nbcase,fin,joueur=1, ligne, colonne, OK;
+   
+    public static char tab[][]=new char[6][7]; 
+    public static String nom1;
+    public static String nom2;
+    public static int aremplir[]={0,0,0,0,0,0,0};
+    
+    public static void demarrage()
+       {
+        
+        
+  
+        for (i=0; i<6;i++)
+        {
+            for (j=0; j<7;j++) 
+            {
+            tab[i][j]='.';
+            
+            }
+        }
+        
+        System.out.println("Veuillez entrez le nom du joueur 1");
+        nom1=Clavier.lireString();
+        System.out.println("Merci votre pion seras un X " +nom1);
+        System.out.println("Veuillez entrez le nom du joueur 2");
+        nom2=Clavier.lireString();
+        System.out.println("Merci votre pion sera un 0 " +nom2);
+        
+       
+    }
+        
+        static void afficher()
+        {
+            System.out.print("\t Bienvenue sur Puissance 4");
+            System.out.print("\t" +nom1+ "&" +nom2);
+            
+            System.out.print("\n");
+            System.out.print("\n");
+            
+         for (int i=0; i<6;i++)
+        {
+            for (int j=0; j<7;j++) 
+            {
+            System.out.print("|" +tab[i][j]+ "|");
+            
+            }
+            System.out.println("");
+       }
+       
+       System.out.print("\n");
+       
+       for (int j=1; j<8;j++) 
+            {
+              System.out.print("|" +j+ "|");
+            
+            }
+
+    }
+    
+      
+    public static void jouer()
+    
+    {
+       
+       ligne=0;
+       colonne=0;
+       OK=0;
+      
+        
+        do
+        {
+               if (joueur==1)
+               {
+                System.out.println("C'est au tour de joueur " +nom1);
+                System.out.println("Veuillez indiquer une colonne ");
+                colonne=Clavier.lireInt();
+                colonne=colonne-1;
+                ligne=((6-1)-aremplir[colonne]);
+                }
+                else
+                {
+                System.out.println("C'est au tour de joueur " +nom2);
+                System.out.println("Veuillez indiquer une colonne ");
+                colonne=Clavier.lireInt();
+                colonne=colonne-1;
+                ligne=((6-1)-aremplir[colonne]);
+                }
+        }
+        while (colonne>6 || colonne<0 || ligne<0);
+        
+        if(joueur==1)
+        {
+         tab[ligne][colonne]='X';   
+        }
+        if (joueur==2)
+        {
+         tab[ligne][colonne]='O'; 
+        }
+        
+        aremplir[colonne]=aremplir[colonne]+1;
+        
+    }
+    
+    public static void switchage()
+    {
+        if(joueur==1)
+        {
+        joueur=2;   
+        }
+        else
+        {
+         joueur=1;
+        }
+    
+    }
+    
+    public static void horizontal()
+    {
+     for (ligne=0; ligne<6; ligne++)
+     {
+       for(colonne=0; colonne<4; colonne++)
+       {
+           if (tab[ligne][colonne]==tab[ligne][colonne+1] 
+           && tab[ligne][colonne+1]==tab[ligne][colonne+2]
+           && tab[ligne][colonne+2]==tab[ligne][colonne+3]
+           && tab[ligne][colonne]=='X')
+           {
+             System.out.println(nom1+ "a gagne");
+             fin=1;
+            }
+            if (tab[ligne][colonne]==tab[ligne][colonne+1] 
+           && tab[ligne][colonne+1]==tab[ligne][colonne+2]
+           && tab[ligne][colonne+2]==tab[ligne][colonne+3]
+           && tab[ligne][colonne]=='O')
+           {
+             System.out.println(nom2+ "a gagne");
+             fin=1;
+            }
+        
+        
+        }
+        
+     }
+        
+    }
+    
+     public static void vertical()
+    {
+     
+        
+     for (colonne=0; colonne<7; colonne++)
+     {
+       for(ligne=0; ligne<3; ligne++)
+       {
+           if (tab[ligne][colonne]==tab[ligne+1][colonne] 
+           && tab[ligne+1][colonne]==tab[ligne+2][colonne]
+           && tab[ligne+2][colonne]==tab[ligne+3][colonne]
+           && tab[ligne][colonne]=='X')
+           {
+             System.out.println(nom1+ "a gagne");
+             fin=1;
+            }
+             if (tab[ligne][colonne]==tab[ligne+1][colonne] 
+           && tab[ligne+1][colonne]==tab[ligne+2][colonne]
+           && tab[ligne+2][colonne]==tab[ligne+3][colonne]
+           && tab[ligne][colonne]=='O')
+           {
+             System.out.println(nom2+ "a gagne");
+             fin=1;
+            }
+        
+        
+        }
+        
+     }
+    }
+    
+    public static void diagonal0()
+    {
+        
+        for(colonne=0; colonne<3; colonne++)
+        {
+            if (tab[colonne][colonne+1]==tab[colonne+1][colonne+2] 
+           && tab[colonne+1][colonne+2]==tab[colonne+2][colonne+3]
+           && tab[colonne+2][colonne+3]==tab[colonne+3][colonne+4]
+           && tab[colonne][colonne+1]=='X')
+           {
+             System.out.println(nom1+ "a gagne");
+             fin=1;
+            }
+           if (tab[colonne][colonne+1]==tab[colonne+1][colonne+2] 
+           && tab[colonne+1][colonne+2]==tab[colonne+2][colonne+3]
+           && tab[colonne+2][colonne+3]==tab[colonne+3][colonne+4]
+           && tab[colonne][colonne+1]=='O')
+           {
+             System.out.println(nom2+ "a gagne");
+             fin=1;
+            }
+        }
+            
+            for(colonne=0; colonne<3; colonne++)
+            {
+            if (tab[colonne][colonne+1]==tab[colonne+1][colonne+2] 
+           && tab[colonne+1][colonne+2]==tab[colonne+2][colonne+3]
+           && tab[colonne+2][colonne+3]==tab[colonne+3][colonne+4]
+           && tab[colonne][colonne+1]=='X')
+           {
+             System.out.println(nom1+ "a gagne");
+             fin=1;
+            }
+           if (tab[colonne][colonne+1]==tab[colonne+1][colonne+2] 
+           && tab[colonne+1][colonne+2]==tab[colonne+2][colonne+3]
+           && tab[colonne+2][colonne+3]==tab[colonne+3][colonne+4]
+           && tab[colonne][colonne+1]=='O')
+           {
+             System.out.println(nom2+ "a gagne");
+             fin=1;
+            }
+        }
+            
+         for(colonne=0; colonne<3; colonne++)
+            {
+            if (tab[colonne][colonne+2]==tab[colonne+1][colonne+3] 
+           && tab[colonne+1][colonne+3]==tab[colonne+2][colonne+4]
+           && tab[colonne+2][colonne+4]==tab[colonne+3][colonne+4]
+           && tab[colonne][colonne+2]=='X')
+           {
+             System.out.println(nom1+ "a gagne");
+             fin=1;
+            }
+           if (tab[colonne][colonne+2]==tab[colonne+1][colonne+3] 
+           && tab[colonne+1][colonne+3]==tab[colonne+2][colonne+4]
+           && tab[colonne+2][colonne+4]==tab[colonne+3][colonne+4]
+           && tab[colonne][colonne+2]=='O')
+           {
+             System.out.println(nom2+ "a gagne");
+             fin=1;
+            }
+        }
+        
+         for (colonne=0; colonne<1; colonne)
+     {
+       for(ligne=0; ligne<3; ligne++)
+       {
+           if (tab[ligne][colonne+3]==tab[ligne+1][colonne+4] 
+           && tab[ligne+1][colonne+4]==tab[ligne+2][colonne+5]
+           && tab[ligne+2][colonne+5]==tab[ligne+3][colonne+6]
+           && tab[ligne][colonne+3]=='X')
+           {
+             System.out.println(nom1+ "a gagne");
+             fin=1;
+            }
+             if (tab[ligne][colonne+3]==tab[ligne+1][colonne+4] 
+           && tab[ligne+1][colonne+4]==tab[ligne+2][colonne+5]
+           && tab[ligne+2][colonne+5]==tab[ligne+3][colonne+6]
+           && tab[ligne][colonne+3]=='O')
+           {
+             System.out.println(nom2+ "a gagne");
+             fin=1;
+            }
+        
+        
+        }
+        
+     }
+    
+}
+    
+   
+    
+     public static void main(String[] args)
+    {
+       demarrage();
+       afficher();
+       
+       do
+       {
+        jouer();
+        afficher();
+        switchage();
+        horizontal();
+        vertical();
+        diagonal0();
+       
+        
+        
+        
+        }while (fin==0);
+       
+       
+       
+       
+      
+    }
+}

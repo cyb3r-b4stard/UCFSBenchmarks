@@ -1,0 +1,88 @@
+import java.util.Arrays;
+public class Befehlsausfuehrer
+{
+    Eingabeleser eingabe = new Eingabeleser();
+    Spieler spieler = new Spieler();
+    Spiel spiel = new Spiel();
+    Textausgabe text = new Textausgabe();
+    public void warteAufBefehl()
+    {
+     System.out.println("");
+     System.out.print(">");
+     String Eingabe = eingabe.Eingabelesen();
+     
+     if(Eingabe.equals("guthaben")){
+     int Geld = spieler.getGeld();
+     int Coins = spieler.getCoins();
+     text.info(Geld, Coins);
+    }
+    else{
+    if(Eingabe.equals("hilfe")){
+            int Geld = spieler.getGeld();
+     int Coins = spieler.getCoins();
+    text.hilfe(Geld, Coins);    
+    }
+    else{
+    if(Eingabe.equals("ende")){
+       text.tschuess();
+       System.exit(-1);
+    }
+    else{
+    String [] eingabe = Eingabe.split(",");
+    if(eingabe[0].equals("setze")){      
+    int setzen = Integer.parseInt(eingabe[1]);
+    int coins=spieler.getCoins();
+    if(coins<setzen){
+        setzen = coins;
+        text.coinsfail(coins);
+    }
+   if(coins==0)
+   {
+    text.keineCoins();
+   
+    
+    }
+     warteAufBefehl();
+    else{
+    if(eingabe[0].equals("wechsle"))
+    {
+         if(eingabe[1].equals("geld"))
+        {
+    int geld = Integer.parseInt(eingabe[2]);
+    int Geld = spieler.getGeld();
+    if(geld>Geld)
+    {
+      geld=Geld;
+      text.failGeld(geld);
+    }
+    spieler.Geldwechseln(geld);
+    Geld = spieler.getGeld();
+    int Coins = spieler.getCoins();
+     text.info(Geld, Coins);
+    }
+     if(eingabe[1].equals("coins"))
+     {
+    coins = Integer.parseInt(eingabe[2]);
+     int Coins = spieler.getCoins();
+     if(coins>Coins){
+        coins=Coins;
+        text.failCoins(coins);
+    }
+         
+    spieler.Coinswechseln(coins);
+    int Geld = spieler.getGeld();
+    Coins = spieler.getCoins();
+    text.info(Geld, Coins);
+    }
+}
+    else
+    {
+      text.na();
+}
+}
+}
+}
+}
+}
+}
+}

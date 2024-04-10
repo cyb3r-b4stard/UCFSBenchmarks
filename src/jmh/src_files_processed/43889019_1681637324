@@ -1,0 +1,100 @@
+import objectdraw.*;
+
+import java.awt.*;
+import java.util.*;
+
+public class Hangman extends ActiveObject
+{
+    private DrawingCanvas canvas;
+    private boolean gameOver;
+    private Location click;
+    private boolean clicked = false, quit;
+    private String[] alphabet = { "A", "B", "C", "D", "E","F", "G","H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         chicken= null;
+    private ScoreBox newWordBox, nameBox;
+    private Man body;
+    private String str;
+    private GamePiece[] gamepieces, guessedPieces, wordCover;
+    
+    private Text guess, guessed, word;
+    private  Man manu;
+   
+    public Hangman( DrawingCanvas c)
+    {
+        canvas =c;
+        newGame();
+        newWordBox = new ScoreBox(0, 0, 30, 30, Color.YELLOW, "NEW WORD!?", false, canvas);
+        nameBox = new ScoreBox(100,0, 30,30, Color.RED, "WHAT IS YOUR NAME?", false, canvas);
+        guess = new Text("SELECT LETTERS YOU BEAN", 10, 170, canvas);
+        guessed = new Text("GUESSED LETTERS", 10, 300, canvas);
+        gamepieces = new GamePiece[26];
+        guessedPieces = new GamePiece[26];
+        for(int i = 0; i<26; i++)
+        {
+            gamepieces[i] = new GamePiece(alphabet[i], 5 +(i * 40), 200 , 40,40 , Color.BLUE, Color.WHITE, c);
+            guessedPieces[i] = new GamePiece(alphabet[i], 5+(i*40), 350, 40, 40, Color.WHITE, Color.WHITE, c);
+        }
+        
+        
+        System.out.println("Enter you and yo fozzile's name");
+        Scanner scan = new Scanner(System.in);
+        String n = scan.nextLine();
+        str = n;
+        nameBox.addText(str);
+        nameBox.setBoxSize();
+        
+        
+        word = new Text("GUESS THE WORD: "+ Dictionary.getRandomWord() , 5, 450, canvas);
+        word.setFontSize(30);
+        start();
+    }
+
+    
+
+    public void run()
+    {
+        while (!quit)
+        {
+            while (!gameOver)
+            {
+                if (clicked)
+                {
+
+                    if (newWordBox.contains(click))
+                    {
+                        newGame();
+                    }
+                }
+                pause(1);
+            }
+
+            if (newWordBox.contains(click))
+            {
+                newGame();
+            }
+            pause(1);
+        }
+    }
+
+    public void setClick(Location point)
+    {
+        clicked  = true;
+        click = point;
+       
+        for(int i = 0; i<26; i++)
+        {
+         if(gamepieces[i].contains(point))
+         {
+          gamepieces[i].setColor(Color.WHITE);
+          guessedPieces[i].setColor(Color.RED);
+          gamepieces[i].changeTextColor(Color.WHITE);
+          guessedPieces[i].changeTextColor(Color.BLACK);
+          }
+        }
+    }
+
+    public void newGame()
+    {
+        canvas.clear();
+
+    }
+}

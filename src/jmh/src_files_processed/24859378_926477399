@@ -1,0 +1,152 @@
+
+/**
+ * ##### # ########### ## ##### ####### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import edu.duke.*;
+import org.apache.commons.csv.*;
+import java.io.*;
+public class Weather {
+    String fileName= "";
+    
+    public CSVRecord coldestHourInFile(CSVParser parser){
+    CSVRecord coldestSoFar = null;
+    for (CSVRecord currentRow: parser){
+    coldestSoFar = getColdestOfTwo(currentRow, coldestSoFar);
+    }
+    return coldestSoFar;
+
+}
+
+public void testColdestHourInFile(){
+       FileResource fr = new FileResource();
+       CSVRecord coldest = coldestHourInFile(fr.getCSVParser());
+       System.out.println("coldest T was " + coldest.get("TemperatureF") + " at "
+       + coldest.get("DateUTC"));
+       
+    
+    }
+
+    public CSVRecord ColdestInManyFiles(){
+        CSVRecord coldestSoFar = null;
+        DirectoryResource dr = new DirectoryResource();
+        for (File f : dr.selectedFiles()){
+            FileResource fr = new FileResource(f);
+            CSVRecord currentRow = coldestHourInFile(fr.getCSVParser());
+            coldestSoFar = getColdestOfTwo(currentRow, coldestSoFar);
+                 
+        }
+    return coldestSoFar;
+    }
+    
+    public void testColdestInManyFiles(){
+    CSVRecord coldest = ColdestInManyFiles();
+    System.out.println("coldest temperature was " + coldest.get("TemperatureF") +
+				   " at " + coldest.get("DateUTC"));
+    
+    }
+    
+    
+    
+public String fileWithColdestTemperature(){
+CSVRecord coldestSoFar =null;
+DirectoryResource dr = new DirectoryResource();
+ for (File f : dr.selectedFiles()){
+            FileResource fr = new FileResource(f);
+            CSVRecord currentRow = coldestHourInFile(fr.getCSVParser());
+            coldestSoFar = getColdestOfTwo(currentRow, coldestSoFar);
+            if(coldestSoFar.equals(currentRow)){
+                fileName=f.getName();
+                coldestSoFar = getColdestOfTwo(currentRow, coldestSoFar);
+             }     
+        }
+return fileName;
+
+} 
+
+public void testFileWithColdestTemperature(){
+String fileName = fileWithColdestTemperature();
+System.out.println ("filename is " + fileName );
+
+}
+
+
+public CSVRecord getColdestOfTwo(CSVRecord currentRow, CSVRecord coldestSoFar){
+		    if (coldestSoFar == null){
+					coldestSoFar = currentRow;}
+					else {
+					   double currentT = Double.parseDouble(currentRow.get("TemperatureF"));
+					   double coldestT = Double.parseDouble(coldestSoFar.get("TemperatureF"));
+				if (currentT < coldestT){
+				    coldestSoFar = currentRow;
+				}
+				
+}
+return coldestSoFar;
+}
+
+public CSVRecord lowestHumidity(CSVParser parser){
+ CSVRecord lowestSoFar = null;
+  for (CSVRecord currentRow: parser){
+    lowestSoFar = getLowestOfTwo(currentRow, lowestSoFar);
+    }
+    return lowestSoFar;
+
+ 
+}
+
+
+public CSVRecord getLowestOfTwo(CSVRecord currentRow, CSVRecord lowestSoFar){
+		    if (lowestSoFar== null){
+					lowestSoFar = currentRow;}
+					else {
+					   double currentH = Double.parseDouble(currentRow.get("Humidity"));
+					   double lowestH = Double.parseDouble(lowestSoFar.get("Humidity"));
+				if (currentH < lowestH){
+				    lowestSoFar = currentRow;
+				}
+				
+}
+return lowestSoFar;
+}
+
+public void testLowestHumidityInFile(){
+FileResource fr = new FileResource();
+CSVParser parser = fr.getCSVParser();
+CSVRecord csv = lowestHumidity(parser);
+System.out.println ("lowest " + csv.get("Humidity") );
+}
+
+public CSVRecord lowestHumidityInManyDays(){ 
+        CSVRecord lowestSoFar = null;
+        DirectoryResource dr = new DirectoryResource();
+        for (File f : dr.selectedFiles()){
+            FileResource fr = new FileResource(f);
+            CSVRecord currentRow = lowestHumidity(fr.getCSVParser());
+           lowestSoFar = getLowestOfTwo(currentRow, lowestSoFar);
+                 
+        }
+    return lowestSoFar;
+    }
+    
+    public void testLowestHumidityInManyDays(){
+           CSVRecord lowestSoFar =null;
+           DirectoryResource dr = new DirectoryResource();
+           for (File f : dr.selectedFiles()){
+            FileResource fr = new FileResource(f);
+            CSVRecord currentRow = coldestHourInFile(fr.getCSVParser());
+            coldestSoFar = getColdestOfTwo(currentRow, coldestSoFar);
+            if(coldestSoFar.equals(currentRow)){
+                fileName=f.getName();
+                coldestSoFar = getColdestOfTwo(currentRow, coldestSoFar);
+             }     
+        }
+return fileName;
+    
+    }
+    
+    
+}
+}

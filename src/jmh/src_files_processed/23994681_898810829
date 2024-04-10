@@ -1,0 +1,257 @@
+
+import java.util.Scanner;
+import java.io.*;
+
+/**
+ * ### ####### ##### #########, #######, ### ########### # ##### ####### ########. ### ##### 
+ * ######## # ########### ## ###### ### ###########, ### ####### ## ######## ## ########## 
+ * ### ########## ### ###### ### #### #### #### ############## ## ### ####.
+ * 
+ * @###### ###### ######
+ * @####### #.# - ####### ##, ####
+ */
+public class Payroll {
+    private PrintWriter pw;
+    public Object[] Header1 = {"First Name", "Last Name", "Gender", "Tenure", "Rate", "Salary"};
+    public Object[] Header2 = {"First Name", "Last Name", "Salary"};
+    ObjectList payrollList = new ObjectList();
+
+    /**
+     * Constructor for objects of class Payroll
+     * 
+     * @param pw local PrintWriter variable that gets assigned to the PrintWriter instance variable
+     */
+    public Payroll(PrintWriter pw) {
+        this.pw = pw;
+    } 
+    
+    /**
+     * Reads each line of data from the payfile.txt input file and places the data into
+     * an Employee object, and inserts the Employee object onto the end of an ObjectList
+     * 
+     * @throws IOException If an input or output exception occured
+     * @throws NullPointerException - If the pathname argument is null
+     * @throws FileNotFoundException If payfile.txt is not found
+     */
+    public void getEmployees() throws IOException {
+        Scanner fileScan = new Scanner(new File("payfile.txt"));
+        
+        while(fileScan.hasNext()) {
+            String phrase = fileScan.nextLine();
+            String delims = "[ ]+";
+            String[] tokens = phrase.split(delims);
+            
+            String firstName = tokens[0];
+            String lastName = tokens[1];
+            char gender = tokens[2].charAt(0);
+            int tenure = Integer.parseInt(tokens[3]);
+            char rate = tokens[4].charAt(0);
+            double salary = Double.parseDouble(tokens[5]);
+            
+            Employee employee = new Employee(firstName, lastName, gender, tenure, rate, salary);
+            ObjectListNode p = new ObjectListNode(employee);
+            payrollList.addLast(p);
+        } 
+    } 
+    
+    /**
+     * Outputs the headers and info for all of the individual sections
+     */
+    public void outputAll() {
+        outputHeader();
+        outputInfo(payrollList.getFirstNode());
+        outNoOfEmp(payrollList);
+        outputWomen();
+        outputWeekly();
+        giveRaise();
+        outputSorted();
+    } 
+    
+    /**
+     * Outputs the header for the table containing the data for each employee
+     */
+    public void outputHeader() {
+        String header = String.format("%-16s%-16s%-16s%-16s%-16s%-16s", Header1) + "\r\n";
+        
+        System.out.println(header);
+        pw.println(header);
+    } 
+    
+    /**
+     * Traverses the list and outputs the info field of each ObjectListNode into a table format
+     * 
+     * @param list the first node in the list
+     */
+    public void outputInfo(ObjectListNode list) {
+        if(list != null) {
+            Employee employee = (Employee) list.getInfo();
+            
+            String info = String.format("%-16s%-19s%-16c%-15d%-14c%.2f", employee.getFirstName(), employee.getLastName(), 
+                                        employee.getGender(), employee.getTenure(), employee.getRate(), employee.getSalary());
+            System.out.println(info);
+            pw.println(info);
+            outputInfo(list.getNext());
+        } 
+    } 
+    
+    /**
+     * Obtains the size of the list and outputs the number of employees
+     */
+    public void outNoOfEmp(ObjectList p) {
+        int numOfEmp = p.size();
+        
+        System.out.println("\r\n\r\nNumber of employees: " + numOfEmp);
+        pw.println("\r\n\r\nNumber of employees: " + numOfEmp);
+    } 
+    
+    /**
+     * Traverses the list and outputs the first name of all women on the payroll
+     */
+    public void outputWomen() {
+        
+        System.out.println("\r\n\r\n--------------------------------------------------------------------------------");
+        System.out.println("                       First name of all women on payroll");
+        System.out.println("--------------------------------------------------------------------------------\r\n");
+        
+        pw.println("\r\n\r\n--------------------------------------------------------------------------------");
+        pw.println("                       First name of all women on payroll");
+        pw.println("--------------------------------------------------------------------------------\r\n");
+        
+        ObjectListNode p = payrollList.getFirstNode();
+        while(p != null) {
+            Employee employee = (Employee) p.getInfo();
+            
+            if(employee.getGender() == 'F') {
+                System.out.println(employee.getFirstName());
+                pw.println(employee.getFirstName());
+            } 
+            
+            p = p.getNext();
+        } 
+    } 
+    
+    /**
+     * Traverses the list and outputs the first and last name and salary of all weekly employees who
+     * make more than $35,000 per year and who have been with the company for at least five years
+     */
+    public void outputWeekly() {
+        String header = String.format("%-16s%-16s%-16s", Header2) + "\r\n";
+        
+        System.out.println("\r\n\r\n--------------------------------------------------------------------------------");
+        System.out.println("  Employees who make more than $35,000 per year (tenure of 5 years or greater)");
+        System.out.println("--------------------------------------------------------------------------------\r\n");
+        System.out.println(header);
+        
+        pw.println("\r\n\r\n--------------------------------------------------------------------------------");
+        pw.println("  Employees who make more than $35,000 per year (tenure of 5 years or greater)");
+        pw.println("--------------------------------------------------------------------------------\r\n");
+        pw.println(header);
+        
+        ObjectListNode p = payrollList.getFirstNode();
+        while(p != null) {
+            Employee employee = (Employee) p.getInfo();
+            
+            if(employee.getTenure() >= 5 && employee.getRate() == 'W') {
+                double yearlyIncome = employee.getSalary() * 52;
+                
+                if(yearlyIncome > 35000.00) {
+                    String info = String.format("%-16s%-16s%.2f", employee.getFirstName(), employee.getLastName(), employee.getSalary());
+                    System.out.println(info);
+                    pw.println(info);
+                } 
+            } 
+            
+            p = p.getNext();
+        } 
+    } 
+    
+    /**
+     * Traverses the list and gives a raise of $.75 per hour to all employees who are paid on an 
+     * hourly basis and make less then $10.00 per hour, and gives a raise of $50.00 per week to all 
+     * employees who are paid on a weekly basis and make less than $350.00 per week;
+     * Outputs the first and last name and new salaey of each employee on the payroll who received
+     * a raise
+     */
+    public void giveRaise() {
+        String header = String.format("%-16s%-16s%-16s", Header2) + "\r\n";
+        
+        System.out.println("\r\n\r\n--------------------------------------------------------------------------------");
+        System.out.println("                      Employees who have been given a raise");
+        System.out.println("--------------------------------------------------------------------------------\r\n");
+        System.out.println(header);
+        
+        pw.println("\r\n\r\n--------------------------------------------------------------------------------");
+        pw.println("                      Employees who have been given a raise");
+        pw.println("--------------------------------------------------------------------------------\r\n");
+        pw.println(header);
+        
+        ObjectListNode p = payrollList.getFirstNode();
+        while(p != null) {
+            Employee employee = (Employee) p.getInfo();
+            
+            if(employee.getRate() == 'H' && employee.getSalary() < 10.00) {
+                double salary = employee.getSalary() + .75;
+                employee.setSalary(salary);
+                p.setInfo(employee);
+                
+                String info = String.format("%-16s%-16s%.2f", employee.getFirstName(), employee.getLastName(), employee.getSalary());
+                System.out.println(info);
+                pw.println(info);
+            }
+            else if(employee.getRate() == 'W' && employee.getSalary() < 350.00) {
+                double salary = employee.getSalary() + 50.00;
+                employee.setSalary(salary);
+                p.setInfo(employee);
+                
+                String info = String.format("%-16s%-16s%.2f", employee.getFirstName(), employee.getLastName(), employee.getSalary());
+                System.out.println(info);
+                pw.println(info);
+            } 
+            
+            p = p.getNext();
+        } 
+    } 
+    
+    public void outputSorted() {
+        String header = String.format("%-16s%-16s%-16s", Header2) + "\r\n";
+        
+        System.out.println("\r\n\r\n--------------------------------------------------------------------------------");
+        System.out.println("                                 Last Name Sort");
+        System.out.println("--------------------------------------------------------------------------------\r\n");
+        System.out.println(header);
+        
+        pw.println("\r\n\r\n--------------------------------------------------------------------------------");
+        pw.println("                                 Last Name Sort");
+        pw.println("--------------------------------------------------------------------------------\r\n");
+        pw.println(header);
+        
+        sort(payrollList);
+        
+        
+        } 
+    } 
+    
+     /**
+     * Sorts a list
+     * 
+     * @param list list that gets sorted
+     */
+    public void sort(ObjectList list) {
+        ObjectList newList = new ObjectList();
+        
+        while(list.getFirstNode() != null) {
+            ObjectListNode p = new ObjectListNode(list.removeFirst());
+            newList.insert(p);
+        } 
+        
+        ObjectListNode q = newList.getFirstNode();
+        while(q != null) {
+            Employee employee = (Employee) q.getInfo();
+
+            String info = String.format("%-16s%-16s%.2f", employee.getFirstName(), employee.getLastName(), employee.getSalary());
+            System.out.println(info);
+            pw.println(info);
+            q = q.getNext();
+        }
+    } 
+} 

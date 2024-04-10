@@ -1,0 +1,254 @@
+
+/**
+ * ##### ######## #
+ * 
+ * @###### (##### #########) 
+ * @####### (#.# ##/##/####)
+ */
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class Fantasma2 extends JPanel
+{
+    Image imagenf2;
+    Timer timer;
+    private int x, y, z, q, valorcelda;
+    private String direc;
+    private int casa1;    
+
+    public Fantasma2()
+    {
+    direc = "S";
+    casa1 = 1;
+    setBackground(Color.BLACK);
+    ImageIcon ij = new ImageIcon(this.getClass().getResource("Fan2.png"));
+    imagenf2 = ij.getImage();
+    
+    setDoubleBuffered(true);
+    
+    q = 0;
+    }
+    
+    public Image getImage()
+    {
+        return imagenf2;
+    } 
+
+    public void mueve() 
+    {
+        if (direc == "S")
+        {
+            Global.f2y -= 1;
+            valorcelda = CargaArray.getPosSub(Global.f2x, Global.f2y);
+            if (valorcelda == 48)
+            {
+                 Global.f2y += 1;   
+                 if(Global.f2x <= Global.p1x)
+                 {
+                     Global.f2x += 1;
+                     valorcelda = CargaArray.getPosDer(Global.f2x, Global.f2y);
+                     Global.f2x -= 1;
+                     if (valorcelda == 48){ direc = "I";}
+                     else { direc = "D";}
+                 }
+                 else {
+                     Global.f2x -= 1;                    
+                     valorcelda = CargaArray.getPosIzq(Global.f2x, Global.f2y);
+                     Global.f2x += 1;  
+                     if (valorcelda == 48) {direc = "D";}
+                     else {direc = "I";}
+                 }    
+            }
+            else {
+                 if(Global.f2x < Global.p1x)
+                 {
+                     Global.f2x += 1;
+                     valorcelda = CargaArray.getPosDer(Global.f2x, Global.f2y);
+                     Global.f2x -= 1;
+                     if (valorcelda != 48){
+                         Global.f2y = CargaArray.getRangoY(Global.f2y, "S");
+                         direc = "D";}
+                     else { direc = "S";}
+                 }
+                 else {
+                     if(Global.f2x > Global.p1x) {
+                        Global.f2x -= 1;                    
+                        valorcelda = CargaArray.getPosIzq(Global.f2x, Global.f2y);
+                        Global.f2x += 1; 
+                        if (valorcelda != 48) {
+                            Global.f2y = CargaArray.getRangoY(Global.f2y, "S");
+                            direc = "I";}
+                            else {direc = "S";}
+                        }    
+                 }               
+            }
+        }
+    
+        if (direc == "D")
+        {
+            Global.f2x += 1; 
+            valorcelda = CargaArray.getPosDer(Global.f2x, Global.f2y);
+            if (valorcelda == 48)
+            {
+                 if(Global.f2y <= Global.p1y)
+                 {
+                     Global.f2y += 1;
+                     valorcelda = CargaArray.getPosBaj(Global.f2x, Global.f2y);
+                     Global.f2y -=1;                      
+                     if (valorcelda == 48){direc = "S";}
+                     else {direc = "B";}
+                 }
+                 else {
+                     if(Global.f2y <= Global.p1y) {                     
+                         Global.f2y -= 1;                    
+                         valorcelda = CargaArray.getPosSub(Global.f2x, Global.f2y);
+                         Global.f2y += 1;
+                         if (valorcelda == 48) {direc = "B";}
+                         else {direc = "S";}
+                 }
+            }
+            else {
+                 if(Global.f2y <= Global.p1y)
+                 {
+                     Global.f2y += 1;
+                     valorcelda = CargaArray.getPosBaj(Global.f2x, Global.f2y);
+                     Global.f2y -= 1;                      
+                     if (valorcelda != 48){
+                         Global.f2x = CargaArray.getRangoX(Global.f2x, "D");                         
+                         direc = "B";}
+                     else {direc = "D";}                     
+                 }
+                 else {
+                     if(Global.f2y <= Global.p1y) {
+                         Global.f2y -= 1;                    
+                         valorcelda = CargaArray.getPosSub(Global.f2x, Global.f2y);
+                         Global.f2y += 1;
+                         if (valorcelda != 48) {
+                             Global.f2x = CargaArray.getRangoX(Global.f2x, "D");                         
+                             direc = "S";}
+                             else {direc = "D";}
+                            }
+                 }  
+            }
+        }
+    
+        if (direc == "I")
+        {
+            Global.f2x -= 1;
+            valorcelda = CargaArray.getPosIzq(Global.f2x, Global.f2y);
+            if (valorcelda == 48)
+            {
+                 Global.f2x += 1;
+                 if(Global.f2y <= Global.p1y)
+                 {
+                     Global.f2y += 1;
+                     valorcelda = CargaArray.getPosBaj(Global.f2x, Global.f2y);
+                     Global.f2y -= 1;
+                     if (valorcelda == 48){direc = "S";}
+                     else {direc = "B";}
+                 }
+                 else {
+                     Global.f2y -= 1;                    
+                     valorcelda = CargaArray.getPosSub(Global.f2x, Global.f2y);
+                     Global.f2y += 1;
+                     if (valorcelda == 48) {direc = "B";}
+                     else {direc = "S";}
+                 }
+            }
+            else {
+                  if(Global.f2y <= Global.p1y)
+                 {
+                     Global.f2y += 1;
+                     valorcelda = CargaArray.getPosBaj(Global.f2x, Global.f2y);
+                     Global.f2y -=1;                      
+                     if (valorcelda != 48){
+                         Global.f2x = CargaArray.getRangoX(Global.f2x, "I");
+                         direc = "B";}
+                     else {direc = "I";}                     
+                 }
+                 else {
+                     Global.f2y -= 1;                    
+                     valorcelda = CargaArray.getPosSub(Global.f2x, Global.f2y);
+                     Global.f2y += 1;
+                     if (valorcelda != 48) {
+                         Global.f2x = CargaArray.getRangoX(Global.f2x, "I");                         
+                         direc = "S";}
+                     else {direc = "I";}
+                 }
+            }
+        }
+    
+        if (direc == "B")
+        {
+            Global.f2y += 1;
+            valorcelda = CargaArray.getPosBaj(Global.f2x, Global.f2y);
+            if (valorcelda == 48)
+            {
+                if (Global.f2x <= Global.p1x)
+                {
+                    Global.f2x += 1;
+                    valorcelda = CargaArray.getPosDer(Global.f2x, Global.f2y);
+                    Global.f2x -= 1;
+                    if (valorcelda == 48){direc = "I";}
+                    else {direc = "D";}
+                    }
+                else {
+                    Global.f2x -= 1;
+                    valorcelda = CargaArray.getPosIzq(Global.f2x, Global.f2y);
+                    Global.f2x += 1;
+                    if (valorcelda == 48){direc = "D";}
+                    else {direc = "I";}
+                    }
+            }
+            else
+            {
+                if (Global.f2x <= Global.p1x)
+                {
+                    Global.f2x += 1;
+                    valorcelda = CargaArray.getPosDer(Global.f2x, Global.f2y);
+                    Global.f2x -= 1;
+                    if (valorcelda != 48){
+                        Global.f2y = CargaArray.getRangoX(Global.f2y, "B");
+                        direc = "D";}
+                    else {direc = "B";}
+                    }
+                else {
+                    Global.f2x -= 1;
+                    valorcelda = CargaArray.getPosIzq(Global.f2x, Global.f2y);
+                    Global.f2x += 1;
+                    if (valorcelda != 48){
+                        Global.f2y = CargaArray.getRangoX(Global.f2y, "B");
+                        direc = "I";}
+                    else {direc = "B";}
+                    }            
+            }
+        }
+    }
+    
+    public int getX()
+    {
+        return x;
+    }   
+    
+    public int getY()
+    {
+        return y;
+    }
+        
+    public int getZ()
+    {
+        return z;
+    }
+    
+    public void paint(Graphics g) 
+    {
+        super.paint(g);
+        
+        Graphics2D g3d = (Graphics2D)g;
+        g3d.drawImage(imagenf2, x, y, null);
+
+        g3d.dispose();
+    }
+
+}

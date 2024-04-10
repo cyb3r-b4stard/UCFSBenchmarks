@@ -1,0 +1,147 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+
+public class test extends JFrame implements ActionListener  {
+    private JTextField AnswerField = new JTextField(15); 
+    
+    private JTextField DisplayScore = new JTextField(15); 
+    private JTextField DisplayQuestion = new JTextField(15); 
+    private ArrayList<String> QuestionList = new ArrayList<String>();
+    
+    private JFrame mainWindow = this;
+    private int totalScore = 0;
+    private int QuestionBefore = 0 ;
+    private int QuestionAfter ;
+    private static int index = 0;
+    private int counterIndex = 0;
+  public test (){
+    
+    setTitle("Class Test");
+
+    for(int i = 6; i <= 11; i++){
+         for(int j = 6; j <= 11; j++){
+              QuestionList.add(i + "x" + j + "=?");
+         }
+    }
+    
+    Collections.shuffle(QuestionList);
+    
+    Font bigFont = new Font("SansSerif",Font.PLAIN,24);    
+     JButton ConfirmButton = new JButton("Submit"); 
+     JButton NextButton = new JButton ("Next Question");
+    ConfirmButton. setFont (bigFont);
+    ConfirmButton. setFont (bigFont);
+    
+    DisplayScore.setText("0");
+    DisplayScore.setEditable(false);
+    
+    DisplayQuestion .setText(QuestionList.get(0));
+    DisplayQuestion .setEditable(false);
+    
+
+    
+    JLabel Question = new JLabel ("Question: ");
+    JLabel Answer = new JLabel ("Answer: ");
+    JLabel Score = new JLabel ("Current Score");
+    
+    
+    
+    
+    
+    ConfirmButton.addActionListener(new ActionListener(){
+        public void actionPerformed(ActionEvent e){
+            String Input = AnswerField.getText().trim();
+            int realInput = Integer.parseInt(Input); 
+
+            int xCounter = 0;
+
+            String CurrentQ = QuestionList.get(counterIndex);
+
+            for (int i = 0; i< CurrentQ.length() && xCounter == 0; i++){
+                if (CurrentQ.charAt(i) == 'x'){
+                    xCounter = i; 
+                    System.out.println(i+"i");
+                    System.out.println(xCounter+"counter");
+                }
+            }
+            String part1 = CurrentQ.substring(0,xCounter);
+            String part2 = CurrentQ.substring(xCounter+1 , CurrentQ.length()-2);
+
+            int num1 = Integer.parseInt (part1);
+            int num2 = Integer.parseInt (part2);
+            int RealAns = 0;
+            RealAns = (num1 * num2);
+            QuestionAfter = RealAns;
+            if ( realInput == RealAns && QuestionAfter != QuestionBefore){
+                totalScore ++;
+                DisplayScore.setText(String.format("%d", totalScore));
+                QuestionBefore = RealAns;
+            }
+            }
+        }
+    }); 
+    
+    NextButton.addActionListener(this);
+        setLayout(new GridLayout(2,1));
+        
+        JPanel row1 = new JPanel(new GridLayout(1,2));
+        
+        
+        JPanel column1 = new JPanel (new BorderLayout());
+        column1.add(Question,BorderLayout.NORTH);
+        column1.add(DisplayQuestion,BorderLayout.CENTER);
+        add(column1,row1);
+        
+        JPanel column2 = new JPanel(new BorderLayout());
+        column2.add(Answer, BorderLayout.NORTH);
+        column2.add(AnswerField, BorderLayout.CENTER);
+        column2.add(ConfirmButton, BorderLayout.EAST);
+        add(column2,row1);
+        
+        add(row1);   
+        
+        
+        
+        
+        JPanel row2 = new JPanel(new FlowLayout());
+        row2.add(Score);
+        row2.add(DisplayScore);
+        row2.add(NextButton);
+        add(row2);    
+        
+        pack();
+        setVisible(true);
+    
+ 
+    
+    }
+    
+  public void actionPerformed(ActionEvent e){
+
+       if (index < 21){
+           DisplayQuestion.setText(QuestionList.get(index+1));
+           index++;
+           counterIndex++;
+       }
+       else{
+           JOptionPane.showMessageDialog(mainWindow,"the total score is "+ totalScore);
+           int Dialog = JOptionPane.showConfirmDialog
+           (mainWindow,"Finished all the question, do you want to start again?");
+           if (Dialog == JOptionPane.YES_OPTION){
+               index = 0;
+               DisplayScore.setText("0");
+               totalScore = 0;
+                Collections.shuffle(QuestionList);
+               DisplayQuestion.setText(QuestionList.get(0));
+           }
+           else{
+               System.exit(0);
+           }
+        }
+    }
+   public static void main(String args[]) {
+      new test();
+   } 
+  } 

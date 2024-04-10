@@ -1,0 +1,161 @@
+
+
+import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import java.util.*;
+
+/**
+ * ### #### ##### #############.
+ *
+ * @######  (#### ####)
+ * @####### (# ####### ###### ## # ####)
+ */
+public class SalesItemTest
+{
+    private SalesItem item0;
+    private SalesItem item1;
+    
+    /**
+     * Default constructor for test class SalesItemTest
+     */
+    public SalesItemTest()
+    {
+    }
+
+    /**
+     * Sets up the test fixture.
+     *
+     * Called before every test case method.
+     */
+    @Before
+    public void setUp()
+    {
+        item0 = new SalesItem("쫄쫄이 바지", 1000);
+        item1 = new SalesItem("브라보콘", 100);
+    }
+
+    /**
+     * Tears down the test fixture.
+     *
+     * Called after every test case method.
+     */
+    @After
+    public void tearDown()
+    {
+        item0 = null;
+        item1 = null;
+    }
+    
+    /**
+     * SalesItem의 이름을 제대로 얻는지 시험한다.
+     */
+    @Test
+    public void testGetName()
+    {
+        assertEquals("쫄쫄이 바지", item0.getName());
+        assertEquals("브라보콘", item1.getName());
+    }
+
+     /**
+     * SalesItem의 가격을 제대로 얻는지 시험한다.
+     */
+    @Test
+    public void testGetPrice()
+    {
+        assertEquals(1000, item0.getPrice());
+        assertEquals(100, item1.getPrice());
+    }
+    
+    /**
+     * SalesItem에 Comment를 제대로 추가하는지 검사한다.
+     * SalesItem에 달려 있는 Comment 개수를 제대로 얻는지 검사한다.
+     */    
+    @Test
+    public void testComment()
+    {
+        assertEquals(true, item0.addComment("날라리", "폼 나요!", 5));
+        assertEquals(true, item0.addComment("어르신", "흠~ 별로...", 1));
+        assertEquals(true, item0.addComment("범생이", "쩐다~~", 4));
+        assertEquals(3, item0.getNumberOfComments());
+        
+        assertEquals(0, item1.getNumberOfComments());
+        
+        assertEquals(true, item1.addComment("혜연이", "줴훈줴훈~ 저거사죠~", 3));
+        assertEquals(1, item1.getNumberOfComments());
+        
+        assertEquals(false, item0.addComment("날라리", "ㅋㅎ", 3));
+        assertEquals(false, item0.addComment("어르신", "가지고 싶음", 5));
+        assertEquals(false, item0.addComment("범생이", "난 공부만 할 거라 ㅋ", 2));
+        assertEquals(3, item0.getNumberOfComments()); 
+        
+        assertEquals(false, item1.addComment("혜연이", "어머 내꺼쟈냐~", 2));
+        assertEquals(1, item1.getNumberOfComments()); 
+        
+        assertEquals(false, item0.addComment("안녕", "하이", 0));
+        assertEquals(false, item0.addComment("메롱", "우뤠루레", 6));
+        assertEquals(3, item0.getNumberOfComments()); 
+        
+        assertEquals(false, item1.addComment("안녕은", "니하오", 0));
+        assertEquals(false, item1.addComment("바보는", "뻔딴", 6));
+        assertEquals(1, item1.getNumberOfComments()); 
+    }
+    
+    /**
+     * SalesItem의 명령을 제대로 얻는지 시험한다.
+     */    
+    @Test
+    public void testGetComment()
+    {
+        item0.addComment("날라리", "폼 나요!", 5);
+        item0.addComment("어르신", "흠~ 별로...", 1);
+        item0.addComment("범생이", "쩐다~~", 4);
+        assertEquals("날라리", item0.getComment(0).getAuthor());
+        assertEquals("어르신", item0.getComment(1).getAuthor());
+        assertEquals("범생이", item0.getComment(2).getAuthor());
+        
+        item1.addComment("혜연이", "줴훈줴훈~ 저거사죠~", 3);      
+        assertEquals("혜연이", item1.getComment(0).getAuthor());
+      
+        assertEquals(null, item0.getComment(3));
+        assertEquals(null, item1.getComment(1));
+        
+        assertEquals(null, item0.getComment(4));
+        assertEquals(null, item1.getComment(2));
+    }
+
+    /**
+     * SalesItem의 가장 유용한 코멘트를 찾는지 시험한다.
+     */    
+    @Test
+    public void testFindMostHelpfulComment()
+    {
+        item0.addComment("날라리", "폼 나요!", 5);  
+        item0.addComment("어르신", "흠~ 별로...", 1);
+        item0.addComment("범생이", "쩐다~~", 4);
+        
+        item0.upvoteComment(0);
+        item0.downvoteComment(0);
+        item0.upvoteComment(0);     
+                
+        item0.upvoteComment(1);
+        item0.upvoteComment(1);
+        item0.upvoteComment(1);     
+        
+        item0.upvoteComment(2);
+        item0.upvoteComment(2);
+        item0.upvoteComment(2);   
+        
+        assertEquals(item0.getComment((int)(Math.random()*2)+1)), item0.findMostHelpfulComment());
+                          
+        item0.upvoteComment(0);
+        item0.upvoteComment(0);
+        item0.upvoteComment(0);     
+        
+        assertEquals(item0.getComment(0), item0.findMostHelpfulComment());     
+        
+        assertEquals(null, item1.findMostHelpfulComment());     
+    }
+    
+}

@@ -1,0 +1,45 @@
+import java.util.*;
+public class Customer extends Record
+{   
+    private double balance = 100.0;
+    private LinkedList<Video> videos = new LinkedList<Video>();
+    	
+    public Customer(int id, String name)
+    {  
+        this.id = id;
+        this.name = name;
+    }
+    public void rent(Video video)
+    { 
+        video.rent(this);
+        videos.add(video);  
+        balance -= video.getPrice();
+    }   
+
+   public double getBalance()
+    {
+        return balance;
+    }
+    public void videoReturn(Video video)
+    {   
+        videos.remove(video);
+    }
+    
+    public boolean matches(int id)
+    {
+        return this.id == id;
+    }
+    public void show()
+    {   
+        System.out.println("\t" + toString());   
+    }   
+    public String toString()
+    {   
+       String str = "Customer No."id + " " + name + " has ";
+        for(Video video : videos)
+            str += video.toString() + ", ";
+        if(videos.size() == 0)
+            str += " nada";
+        return str;
+    }
+}

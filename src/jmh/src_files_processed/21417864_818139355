@@ -1,0 +1,158 @@
+
+/**
+ * #### ####### ## ## ############ ############### ##### ### ############ #####
+ * 
+ * ##### ###### ## ########  
+ * #### ###### ####
+ */
+import java.util.Scanner;
+import java.util.LinkedList;
+import java.util.StringTokenizer;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.PrintWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import javax.swing.JOptionPane;
+
+public class DemoSamsung
+{
+   public static void main (String [] args)
+   {
+       Scanner scan = new Scanner (System.in);  
+       BufferedReader inputFile = null;     
+       
+       try
+       {
+           Queue branchQ = new Queue (); 
+           Queue NorthQ = new Queue ();
+           Queue SouthQ = new Queue ();
+           Queue CenterQ = new Queue ();
+           Queue EastQ = new Queue ();
+           Queue OthersQ = new Queue ();
+           Queue tempQ = new Queue ();
+           
+           inputFile = new BufferedReader (new BufferedReader (new FileReader ("branches.txt")));
+       
+           SamsungBranches Samsung;   
+           
+           String sInputData = null;  
+           
+           while ( (sInputData = inputFile.readLine ()) != null )
+           {
+               StringTokenizer token = new StringTokenizer (sInputData, ";");
+               String sManagerName = token.nextToken ();
+               int iNo_Of_Dept = Integer.parseInt (token.nextToken ());
+               String sLocation = token.nextToken ();
+               int iNo_Of_Worker = Integer.parseInt (token.nextToken ());
+               
+               Samsung = new SamsungBranches (sManagerName, iNo_Of_Dept, sLocation, iNo_Of_Worker);
+               
+               branchQ.enqueue (Samsung);
+            }
+            
+            inputFile.close (); 
+            
+            while (!branchQ.empty ())
+            {
+                Samsung = (SamsungBranches) branchQ.dequeue ();
+                
+                if (Samsung.getLocation ().equalsIgnoreCase ("Perlis") || Samsung.getLocation ().equalsIgnoreCase ("Kedah") ||
+                     Samsung.getLocation ().equalsIgnoreCase ("Penang") || Samsung.getLocation ().equalsIgnoreCase ("Perak") )
+                     NorthQ.enqueue (Samsung);
+                
+                else if (Samsung.getLocation ().equalsIgnoreCase ("Johor") || Samsung.getLocation ().equalsIgnoreCase ("Melaka") ||
+                          Samsung.getLocation ().equalsIgnoreCase ("Negri Sembilan") )
+                          SouthQ.enqueue (Samsung);
+                
+                else if (Samsung.getLocation ().equalsIgnoreCase ("Kuala Lumpur") || Samsung.getLocation ().equalsIgnoreCase ("Selangor") )
+                    CenterQ.enqueue (Samsung);
+                    
+                else if ( Samsung.getLocation ().equalsIgnoreCase ("Pahang") || Samsung.getLocation ().equalsIgnoreCase ("Teregganu") ||
+                     Samsung.getLocation ().equalsIgnoreCase ("Kelantan") )
+                    EastQ.enqueue (Samsung);
+                    
+                else if ( Samsung.getLocation ().equalsIgnoreCase ("Sabah") || Samsung.getLocation ().equalsIgnoreCase ("Sarawak") )
+                    OthersQ.enqueue (Samsung);
+            }
+      
+            System.out.println ("North Samsung Branches in Perlis, Perak, Penang, Kedah");
+            System.out.println ("------------------------------------------------------");
+            
+            while (!NorthQ.empty ())
+            {
+                Samsung = (SamsungBranches) NorthQ.dequeue ();
+                System.out.println (Samsung.toString ());
+            }
+            
+            System.out.println ("\nSouth Samsung Branches in Johor, Melaka, Negeri Sembilan");
+            System.out.println ("-------------------------------------------------------");
+            
+            while (!SouthQ.empty ())
+            {
+                Samsung = (SamsungBranches) SouthQ.dequeue ();
+                System.out.println (Samsung.toString ());
+            }
+            
+            System.out.println ("\nSamsung Branches Center in Kuala Lumpur and Selangor");
+            System.out.println ("----------------------------------------------------");   
+ 
+            while (!CenterQ.empty ())
+            {
+                Samsung = (SamsungBranches) CenterQ.dequeue ();   
+                System.out.println (Samsung.toString ());
+                tempQ.enqueue (Samsung);
+            }
+            
+            System.out.println ("\nSouth Samsung Branches in Pahang, Kelantan, Terengganu");
+            System.out.println ("------------------------------------------------------");
+ 
+            while (!EastQ.empty ())
+            {
+                Samsung = (SamsungBranches) EastQ.dequeue ();
+                System.out.println (Samsung.toString ());
+            }
+            
+            System.out.println ("\nSouth Samsung Branches in Sabah and Sarawak");
+            System.out.println ("------------------------------------------------");
+            
+            while (!OthersQ.empty ())
+            {
+                Samsung = (SamsungBranches) OthersQ.dequeue ();
+                System.out.println (Samsung.toString ());
+            }
+                
+            System.out.println ("\nManager Name for Samsung Branches Located in Selangor with Less Than 20 Workers");
+            System.out.println ("-------------------------------------------------------------------------------");
+            while (!tempQ.empty ())
+            {
+                Samsung = (SamsungBranches) tempQ.dequeue ();
+                    
+                if (Samsung.getLocation ().equalsIgnoreCase ("Selangor") )
+                {
+                    if (Samsung.getWorker () < 20)
+                        System.out.println (Samsung.getManagerName ());
+                }
+            }
+       }
+    }
+}
+            
+       
+       
+                    
+                
+                    
+            
+            
+            
+               
+               
+     
+       
+       
+       
+      

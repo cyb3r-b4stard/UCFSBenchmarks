@@ -1,0 +1,94 @@
+import java.util.*;
+
+public class DavidHW3 {
+    public static void main (String[] args) {
+        intro();     
+        getWeights();
+        exam();
+        homework();
+    }
+    
+    
+    public static void intro () {
+
+        System.out.println("This program reads exam/homework scores");
+        System.out.println("and reports your overall course grade.");
+        System.out.println();
+    }
+    
+    public static void getWeights() {
+        Scanner console = new Scanner(System.in);
+        System.out.print("What are your weights for the Homework and Exam_1? ");
+        int homework = console.nextInt();
+        int examone = console.nextInt();
+        int examtwo = 100 - (homework+examone);
+        System.out.println("here are the weights " + homework +" " + examone + " " +examtwo);
+    }
+
+    public static void exam () {
+        Scanner console = new Scanner(System.in);
+        System.out.print("what was the weight of the exam (0-100)?");
+        int weight = console.nextInt();
+        System.out.print("Score earned?");
+        int score = console.nextInt();
+        System.out.print("Was there a curve (1=yes, 2=no)?");
+        int curve = console.nextInt();
+        int curveNumber = 0;
+        if (curve == 1) {
+            System.out.print("How much was the curve?");
+            curveNumber = console.nextInt();
+        } else if (curve == 2) {
+            curveNumber = 0;
+        }
+
+        totalScore(score, curveNumber);
+        weightedScore(, score, curveNumber);
+
+        System.out.println("Total points = " + totalScore(score, curveNumber) + "/" + "100");
+        System.out.println("Weighted score = " + weightedScore(weight, score, curveNumber) + "/" + weight);
+    }
+
+    public static int totalScore (int score, int curveNumber) {
+
+        int totalScore = Math.min(score + curveNumber, 100);
+        return totalScore;
+    }
+
+    public static double weightedScore (int weight, int score, int curveNumber) {
+
+        double weightedScore = (score + curveNumber);
+        return weightedScore;
+    }
+
+    public static void homework () {
+        int weight2 = console.nextInt();
+        System.out.print("Number of assignments?");
+        int number = console.nextInt();
+        int sumScore = 0;
+        int sumMax = 0;
+        for(int i = 1; i <= number; i++) {
+            System.out.println("Assignment " + i + "score and max?");
+            int aScore = console.nextInt();
+            int aScoreMax = console.nextInt();
+
+            sumScore = sumScore + aScore;
+            sumMax = sumMax + aScoreMax; }
+
+        System.out.print("How many quality forumn posts posted?");
+        int section = console.nextInt();
+        int sections = Math.min(4 * section, 20);
+        System.out.println("Quality forumn points" + sections);
+
+
+        System.out.println("Total points = " + (sections + sumScore) + "/" + sumMax);
+        System.out.println("Weighted score = " + weightedScore2(weight2, sections, sumScore) + "/" + weight2);
+    }
+
+    public static double weightedScore2(int weight2, int sections, int sumScore)
+    {
+
+        int weightedScore2 = weight2/100 * (sections + sumScore);
+        return weightedScore2;
+    }
+}
+

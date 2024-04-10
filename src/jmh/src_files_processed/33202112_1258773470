@@ -1,0 +1,120 @@
+import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import java.util.Set;
+
+/**
+ * ### #### ##### ######.
+ *
+ * # ########## ######### ## #####, ######### ## ########## ### ############.
+ *
+ * @######  (#### ####)
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Testes
+{
+    private Imoobiliaria imo;
+    private Vendedor v;
+    private Terreno t;
+
+    /**
+     * Teste principal
+     */
+    @Test
+    public void mainTest() {
+        imo = new Imoobiliaria();
+        try {
+            imo.iniciaSessao("",null);
+			fail();
+        } catch(SemAutorizacaoException e) {
+            
+        } catch(Exception e) {
+            fail();
+        }
+        
+        String rua = "Tapada";
+        double preco = 50000;
+        double precoMin = 45000;
+        double area = 100;
+        char tipo = 'A';
+        double diametro = 5.4;
+        long kwh = 20;
+        char esgoto = 'S';
+        
+        t = new Terreno(rua,preco,precoMin,area,tipo,diametro,kwh,esgoto);
+        
+        String rua2 = "Liberdade";
+        double preco2 = 100000;
+        double precoMin2 = 90000;
+        String tipo2 = "isolada";
+        double area2 = 300000;
+        double areaCoberta2 = 1000;
+        double areaEnvolvente2 = 299000;
+        int quartos2 = 4;
+        int wcs2 = 4;
+        int porta2 = 64;
+        
+        m = new Moradia(rua2,preco2,precoMin2,tipo2,area2,areaCoberta2,areaEnvolvente2,quartos2,wcs2,porta2);
+        
+        a = 
+        
+        l = 
+        
+        String email = "joaquimsobral@gmail.com";
+        String nome = "Joaquim Sobral";
+        String password = "Joaquina";
+        String morada = "Lameiras";
+        SimpleDateFormat dataNascimento = new SimpleDateFormat("1972-04-18");
+        Map<String, Imovel> avenda = new HashMap<String, Imovel>();
+        Map<String, Imovel> vendidos = new HashMap<String, Imovel>();
+        
+        try {
+            v = new Vendedor(email,nome,password,morada,dataNascimento,avenda,vendidos);  
+            imo.registarUtilizador(v);
+        } catch(Exception e) {
+            fail();
+        }
+        
+        String email = v.getEmail();
+        String password = v.getPassword();
+        
+        try {
+            imo.iniciaSessao(email, password);
+        } catch(Exception e) {
+            fail();
+        }
+        
+        try {
+            imo.registaImovel(t);
+        } catch (Exception e) {
+            fail();
+        }
+            
+        int s = imo.getImovel("Terreno", Integer.MAX_VALUE).size();
+        assertTrue(s>0);
+        Set<String> ids = imo.getTopImoveis(0);
+        assertTrue(ids.contains(t.getId()));
+        assertTrue(imo.getMapeamentoImoveis().keySet().contains(t));
+        assertTrue(imo.getConsultas().size()>0);
+        
+        imo.fechaSessao();
+        Comprador c = new Comprador();  
+        try {
+            imo.registarUtilizador(c);
+        } catch(Exception e) {
+            fail();
+        }
+        email = c.getEmail();
+        password = c.getPassword();
+        try {
+            imo.iniciaSessao(email, password);
+            imo.setFavorito(t.getId());
+            assertTrue(imo.getFavoritos().contains(t));
+        } catch(Exception e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+    
+}

@@ -1,0 +1,366 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+
+public class Kiosk
+{
+    private ProductManager manager;
+    private LuckDipGenerator luck;
+    private Scanner console; 
+    
+    public Kiosk()
+    {    
+         console = new Scanner(System.in);
+         luck = new LuckDipGenerator(5);
+         manager = new ProductManager();
+    }
+   
+    private boolean checkPositive(int number)
+    {
+        if(number < 0)
+            return false;
+        else
+        {
+            return true;
+        }
+    }
+    
+    private void checkBalance(int id)
+    {
+        if (manager.returnBalance() >= manager.findProduct(id).getValue())
+        {    
+            manager.setCredit(manager.returnBalance() - manager.findProduct(id).getValue());
+            manager.addOrder(manager.findProduct(id));
+            System.out.println("you have bought a " + manager.findProduct(id).getName() + ",worth $" + manager.findProduct(id).getValue() + ".");
+            System.out.println("you have " + manager.returnBalance() + " balance now.");
+            System.out.println("enter to continue.");
+            console.nextLine();
+            console.nextLine();
+        }
+        else
+        {
+            System.out.println("you should buy more credit.");
+            System.out.println("enter to continue.");
+            console.nextLine();
+            console.nextLine();
+        }
+        
+    }
+    
+    private void displayOrder()
+    {
+        int index = 0;
+        while (index < manager.checkOrderSize())
+        {
+            if ((index + 1) == manager.checkOrderSize())
+            {
+                String orderName = manager.findOrder(index).getName();
+                System.out.print(orderName);
+                index ++;
+            }
+            else
+            {
+                String orderName = manager.findOrder(index).getName();
+                System.out.print(orderName + ",");
+                index ++;
+            }
+        }
+    }
+    
+    private void loadProductAuto()
+    {
+        manager.addProductAuto("PEN",10);
+        manager.addProductAuto("BOOK",20);
+        manager.addProductAuto("DVD",30);
+        manager.addProductAuto("MOUSE",40);
+        manager.addProductAuto("KEYBOARD",50);
+    }
+    
+    private void option1()
+    {
+        System.out.print("enter your name:");
+        console.nextLine();
+        String name;
+        int credit;
+        name = console.next();
+        manager.setName(name);
+        manager.clearCredit();
+        manager.clearOrder();
+        if (manager.checkProductSize() != 5)
+            loadProductAuto();
+        System.out.println("your name is :" + manager.getName());
+        System.out.print("enter credits: $ ");
+        if (console.hasNextInt())
+        {
+            credit = console.nextInt();
+            console.nextLine();
+            if (checkPositive(credit))
+                {
+                    manager.setCredit(credit);
+                    System.out.println("your have " + manager.returnBalance() + " credits now");
+                    System.out.println("enter to continue");
+                    console.nextLine();
+                }
+                else
+                {
+                    System.out.println("Please enter a Positive number!");
+                    System.out.println("please create new order again.");
+                    System.out.println("enter to continue");
+                    console.nextLine();
+                }
+        }
+        else
+        {
+            System.out.println("all of you typed should be number.");
+            System.out.println("please create new order again.");
+            System.out.println("enter to continue");
+            console.nextLine();
+            console.nextLine();
+            console.nextLine();
+        } 
+    }
+    
+    private void option2()
+    {
+        if (manager.getName().trim().isEmpty())
+        {
+            System.out.println("you should create new order option(1) first.");
+            System.out.println("enter to continue");
+            console.nextLine();
+            console.nextLine();
+        }
+        else
+        {    
+            System.out.print("buy more credit:");
+            if (console.hasNextInt())
+            {
+                int credit;
+                credit = console.nextInt();
+                console.nextLine();
+                if (checkPositive(credit))
+                {
+                    manager.moreCredit(credit);
+                    System.out.println("your have " + manager.returnBalance() + " credits now");
+                    System.out.println("enter to continue");
+                    console.nextLine();
+                }
+                else
+                {
+                    System.out.println("Please enter a Positive number!");
+                    System.out.println("please buy more credits again.");
+                    System.out.println("enter to continue");
+                    console.nextLine();
+                }
+            }
+            else
+            {
+                System.out.println("all of you typed should be number.");
+                System.out.println("enter to return to main menu,then choose option(2) again.");
+                console.nextLine();
+                console.nextLine();
+                console.nextLine();
+            } 
+        }
+    }
+    
+    private void option3()
+    {
+        if (manager.getName().trim().isEmpty())
+        {
+            System.out.println("you should create new order option(1) first.");
+            System.out.println("enter to continue");
+            console.nextLine();
+            console.nextLine();
+        }
+        else
+        {    
+            boolean exit = true;
+            while (exit)
+            {
+                System.out.println("Today these products are available");
+                System.out.println("==================================");
+                showDetails(0);
+                showDetails(1);
+                showDetails(2);
+                showDetails(3);
+                showDetails(4);
+                System.out.println("(6)Let ME pick a random item for you!!!");
+                System.out.println("(7)exit to main menu");
+                System.out.print("Pick a number between 1-7: ");
+                String choice;
+                choice = console.next();
+                switch (choice)
+                {
+                    case "1":   
+                            checkBalance(0);break;
+                    case "2":
+                            checkBalance(1);break;
+                    case "3":   
+                            checkBalance(2);break;
+                    case "4":
+                            checkBalance(3);break;
+                    case "5":
+                            checkBalance(4);break;
+                    case "6":
+                            checkBalance(luck.random());break;
+                    case "7":
+                            exit = false;break;
+                    default:
+                            System.out.println("please enter right number");
+                            System.out.println("enter to continue");
+                            console.nextLine();
+                            console.nextLine();break;
+                }
+            }
+        }    
+    }
+    
+    private void option4()
+    {
+        if (manager.getName().trim().isEmpty())
+        {
+            System.out.println("you should create new order option(1) first.");
+            console.nextLine();
+            System.out.println("enter to continue");
+            console.nextLine();
+        }
+        else
+        {  
+            System.out.println("Customer " + manager.getName() + " has purchased these items");
+            displayOrder();
+            manager.totalValue();
+            System.out.println("");
+            System.out.println("worth a total of $ " + manager.getTotal());
+            manager.customerBill();
+            System.out.println("credit balance:" + manager.returnBalance()); 
+            System.out.println("enter to continue");
+            console.nextLine();
+            console.nextLine();
+        }
+    }
+    
+    private void option5()
+    {
+        if (manager.getName().trim().isEmpty())
+        {
+            System.out.println("you should create new order option(1) first.");
+            console.nextLine();
+            System.out.println("enter to continue");
+            console.nextLine();
+        }
+        else
+        {  
+            System.out.println("Customer " + manager.getName() + " has purchased these items");
+            displayOrder();
+            manager.totalValue();
+            System.out.println("");
+            System.out.println("worth a total of $ " + manager.getTotal());
+            System.out.println("credit balance:" + manager.returnBalance());
+            manager.clearCustomerAll();
+            System.out.println("Thank you for shopping with us.");
+            System.out.println("Please collect your goods(and your balance)at the front desk");
+            System.out.println("enter to continue");
+            console.nextLine();
+            console.nextLine();
+        }
+    }
+    
+    private void option6()
+    {
+        System.out.println("                          Welcome to Kiosk shopping mall");
+        System.out.println("                   This is a simple instruction for you shopping");
+        System.out.println("========================================================================================");
+        System.out.println("##      Dear customer,if you want to do some shopping,you should choose option(1)firstly");
+        System.out.println("##      to create a account by type your name and credits.");
+        System.out.println("##");
+        System.out.println("##      Then,you can choose option(3) to see the product list and buy products.");
+        System.out.println("##");
+        System.out.println("##      if you have not enough creadit,you can choose option(2) to buy more credits.");
+        System.out.println("##");
+        System.out.println("##      if you want to check your order list and temporary bill,you can choose option(4).");
+        System.out.println("##");
+        System.out.println("##      if you want to pay the bill and leave shop,you can choose option(5),and do not");
+        System.out.println("##      forget to take your products and change.");
+        System.out.println("=========================================================================================");
+        System.out.println("##                   option function");
+        System.out.println("##option(1) is use for initialise your name and credits");
+        System.out.println("##          you should choose option(1) before choose option(2)-(5).");
+        System.out.println("##");
+        System.out.println("##option(2) is use for buy more credits when your balance is insufficient.");
+        System.out.println("##");
+        System.out.println("##option(3) is use for display products list.");
+        System.out.println("##          in this list option(6) can choose a random product for you.");
+        System.out.println("##");
+        System.out.println("##option(4) is use for show the whole list of your order.");
+        System.out.println("##          it also show the total value of your order and your balance.");
+        System.out.println("##");
+        System.out.println("##option(5) is use for confirm your order,payment,and balance");
+        System.out.println("##          pay attention that if you choose this option,you can not ");
+        System.out.println("##");
+        System.out.println("##option(6) is use for show simple instruction.");
+        System.out.println("##");
+        System.out.println("##option(7) is use for exit this shopping machine.");
+        System.out.println("##          thank you for reading.");
+        System.out.println("            enter to return main menu.");
+        console.nextLine();
+        console.nextLine();
+    }
+    
+    private void option7()
+    {
+        manager.clearAll();
+        System.exit(0);
+        System.out.println("thank you for shopping.");
+        System.out.println("have a good day.");
+        System.out.println("enter to exit");
+        console.nextLine();
+    }
+    
+    private void showDetails(int id)
+    {
+        System.out.println("(" + (id+1) + ")" + manager.findProduct(id).getName() + ",worth $" + manager.findProduct(id).getValue() + ".");
+    }
+    
+    public void testKiosk()
+    {   
+        int credit = 0;
+        boolean exit = true;
+        while (exit)
+        {
+            System.out.println("          welcome");
+            System.out.println("==============================");
+            System.out.println("(1)Creat a new order");
+            System.out.println("(2)Buy more credit");
+            System.out.println("(3)Purchase an item");
+            System.out.println("(4)What have i order so far?");
+            System.out.println("(5)Collect my order");
+            System.out.println("(6)Display help");
+            System.out.println("(7)Leave kiosk");
+            System.out.print("choose an option:");
+            String option;
+            option = console.next();
+            switch (option)
+            {
+                case "1":
+                        option1();break;
+                case "2":
+                        option2();break;
+                case "3":
+                        option3();break;
+                case "4":
+                        option4();break;
+                case "5":
+                        option5();break;
+                case "6":
+                        option6();break;
+                case "7":
+                        option7();
+                        exit = false break;
+                default:
+                        System.out.println("please enter right number");
+                        System.out.println("enter to continue");
+                        console.nextLine();
+                        console.nextLine();break;
+            }
+        }
+    }
+}    

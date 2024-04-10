@@ -1,0 +1,95 @@
+
+
+import ecs100.*;
+import java.util.*;
+import java.io.*;
+import java.awt.Color;
+
+
+public class RayBitsSquare implements UIButtonListener, 
+   {
+    private final int size = 5;
+    private Color[][] puzzle = new Color[size][size];
+    private double sqSize = 30;
+
+    private final int gridLeft = 60;    
+    private final int gridTop = 30;     
+    private final int cellWidth = 30;   
+    private final int cellHeight = 30;  
+
+    /** creates a cross-word of x columns and y rows */
+    public RayBitsSquare(){
+        UI.addButton("New", this);
+        UI.addButton("Check Cols", this);
+        UI.addButton("Shift Left", this);
+        this.newPuzzle();
+    }
+
+    /** Respond to button presses */
+    public void buttonPerformed(String button){
+        if (button.equals("New") ){this.newPuzzle();}
+        else if (button.equals("Check Cols") ){this.reportCols();}
+        else if (button.equals("Shift Left") ){this.shiftLeft();}
+    }
+
+
+
+    /** Makes a new puzzle with random colours selected from red, green, and blue */
+    public void newPuzzle(){
+        Color[] colors = new Color[]{Color.red, Color.green, Color.blue};
+        for (int row=0; row<this.size; row++){
+            for (int col=0; col<this.size; col++){
+                ]UI.setColor(this.puzzle[row][col];
+                this.puzzle[row][col] = colors[randomIndex];
+            }
+        }
+        this.drawPuzzle();
+    }
+
+    /** Draws the puzzle */
+    private void drawPuzzle(){
+        UI.clearGraphics();
+        
+        for (int row=0; row<this.size; row++){
+            for (int col=0; col<this.size; col++){
+                this.puzzle[row][col] = colors[randomIndex];
+            }
+        }
+
+        UI.repaintGraphics();
+    }
+
+    /** Shifts every value one step to the left, except for cells in the
+     *  leftmost column, which are moved to the right most column */
+    public void shiftLeft() {
+        /*# YOUR CODE HERE */
+
+        this.drawPuzzle();
+    }
+
+   /** Checks whether all the colours in the specified column are the same
+    *  Returns true if they are, and false otherwise. */
+    public boolean checkCol(int col){
+        /*# YOUR CODE HERE */
+    }
+
+    /** Calls the checkCol method on each column */
+    public void reportCols(){
+        UI.clearText();
+        for (int col=0; col<this.size; col++){
+            UI.print("Col "+col+": ");
+            if (this.checkCol(col)) {
+                UI.println("Colors are all the same");
+            }
+            else {
+                UI.println("not same");
+            }
+        }
+    }
+
+
+    public static void main(String[] args){
+        RayBitsSquare obj = new RayBitsSquare();
+    }    
+
+}

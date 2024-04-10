@@ -1,0 +1,110 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+public class DeckMain
+{
+   public static void main(String[] args)
+   {
+       Scanner input = new Scanner(System.in);
+       final int NUMCARDS=2;
+       
+       Deck deck = new Deck();
+       ArrayList <Card> player1 = new ArrayList <Card>();
+       ArrayList <Card> player2 = new ArrayList <Card>();
+       
+       player1 = deck.dealHand(NUMCARDS);
+       player2 = deck.dealHand(NUMCARDS);
+       
+       System.out.println("------------ PLAYER 1 --------");
+       deck.printHand(player1);
+        System.out.print("Would you like to hit?(1 for yes; 2 for no): ");
+        int player1hit = input.nextInt();
+        while(player1hit != 2)
+        {
+           if(player1hit == 1)
+           {
+            player1.add(deck.dealCard());
+            deck
+            System.out.print("Would you like to hit again?(1 for yes; 2 for no): ");
+            player1hit = input.nextInt();
+           }
+           if(player1hit != 1)
+           {
+            System.out.print("Invalid input. please try again(1 for yes; 2 for no): ");
+            player1hit = input.nextInt();
+           }
+        }
+      
+       System.out.println("------------ PLAYER 2 --------");
+       deck.printHand(player2);
+       System.out.print("Would you like to hit?(1 for yes; 2 for no): ");
+        int player2hit = input.nextInt();
+        while(player2hit != 2)
+        {
+           if(player2hit == 1)
+           {
+            player1.add(deck.dealCard());
+            System.out.print("Would you like to hit again?(1 for yes; 2 for no): ");
+            player2hit = input.nextInt();
+           }
+           if(player2hit != 1)
+           {
+            System.out.print("Invalid input. please try again(1 for yes; 2 for no): ");
+            player2hit = input.nextInt();
+           }
+        }
+       System.out.println();
+       
+       int player1BlackJack = 0;
+       for(int j = 0; j < player1.size(); j++)
+       {
+           player1.get(j).getRank();
+           if((player1.get(j).getRank() > 10) &&(player1.get(j).getRank() < 13))
+           {
+               player1BlackJack+= 10;                 
+           }
+           if(player1.get(j).getRank() == 14)
+           {
+               player1BlackJack += 11;
+           }
+           if(player1.get(j).getRank() <= 10)
+           {
+               player1BlackJack += player1.get(j).getRank();
+           }
+       }
+       System.out.println("PLAYER 1: " + player1BlackJack);
+        int player2BlackJack = 0;
+       for(int j = 0; j < player2.size(); j++)
+       {
+           player2.get(j).getRank();
+           if((player2.get(j).getRank() > 10) &&(player2.get(j).getRank() < 13))
+           {
+               player2BlackJack+= 10;                 
+           }
+           if(player2.get(j).getRank() == 14)
+           {
+               player2BlackJack += 11;
+           }
+           if(player2.get(j).getRank() <= 10)
+           {
+               player2BlackJack += player2.get(j).getRank();
+           }
+       }
+        System.out.println("PLAYER 2: " + player2BlackJack);
+      if(player1BlackJack > player2BlackJack)
+      {
+        System.out.println("PLAYER 1 WINS"); 
+      }
+      if(player1BlackJack < player2BlackJack)
+      {
+        System.out.println("PLAYER 2 WINS"); 
+      }
+      if(player1BlackJack > player2BlackJack)
+      {
+        System.out.println("PLAYER 1 WINS"); 
+      }
+      if(player1BlackJack == player2BlackJack)
+      {
+        System.out.println("THE GAME IS A TIE"); 
+      }
+   }
+}

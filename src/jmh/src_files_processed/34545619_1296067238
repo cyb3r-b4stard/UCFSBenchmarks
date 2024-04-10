@@ -1,0 +1,62 @@
+public class LeitorDigital{
+    private Livro[] ebook;
+    private double precoExibe, faturamento;
+    public LeitorDigital(int qtd){
+        ebook = new Livro[qtd];
+        precoExibe = 2.5;
+    }
+
+    public Livro buscaLivro(String titulo){
+        for(int i = 0;i < ebook.length;i++){
+            if(ebook[i].getTitulo() == titulo){
+                return ebook[i];
+            }
+        }
+        return null;
+    }
+
+    public String baixaUmLivro(){ 
+        Teclado t = new Teclado();
+        int ultimoEspaco = 0;
+        for(int i = 0;i < ebook.length;i++){
+            if(ebook[i] != null){
+                ultimoEspaco++;
+            }
+        }
+        boolean existe = true; 
+        String titulo = ""; 
+        int paginas; 
+        if(ultimoEspaco == ebook.length){
+            return "Estante Lotada";
+        } else {
+            titulo = t.leString("Título do livro: ");
+            for (int i = 0;ultimoEspaco > i;i++){
+                if(titulo.equalsIgnoreCase(ebook[i].getTitulo())) {
+                    System.out.println("Título já existente, tente novamente...");
+                    titulo = t.leString("Novo título: ");
+                }
+            }
+        }
+        paginas = t.leInt("Número de páginas: ");
+        char gratuito = t.leChar("O livro será grátis? [S = Sim, N = Não]");
+        if(gratuito == 'n' || gratuito == 'N'){
+            ebook[ultimoEspaco] = new Livro(titulo, paginas);
+            faturamento += ebook[ultimoEspaco].getPreco();
+        } else{
+            ebook[ultimoEspaco] = new LivroGratis(titulo, paginas, t.leInt("Número de anúncios: "));
+            ((LivroGratis)ebook[ultimoEspaco]).insereAnuncios();
+        }
+        return "Livro baixado com sucesso";
+    }
+
+    public boolean exibeEstante(){
+        if(ebook[0] == null){ 
+            return false;
+        } else
+            for(int i = 0;i < ebook.length;i++){
+                ebook[i].exibeDados();
+            }
+        return true;
+       }
+    }
+}

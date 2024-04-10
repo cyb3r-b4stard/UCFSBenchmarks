@@ -1,0 +1,205 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import java.util.*;
+
+public class GUI extends JFrame
+{
+    private static final int WIDTH = 700;
+    private static final int HEIGHT = 300;
+    private static final Dimension SIZE = new Dimension (WIDTH,HEIGHT);
+
+    private PropertyListings listings;
+
+    public GUI(PropertyListings listings)
+    {
+        this.listings = listings;
+        setTitle("The Best Real Estate Program");
+        addWindowListener(new WindowAdapter(){
+                public void windowClosing(WindowEvent e)
+                {
+                    setVisible(false);
+                }
+
+            });
+
+        final Container contentPane = getContentPane();
+        JTabbedPane tabbedArea = new JTabbedPane();
+        tabbedArea.add("Search the Listings", setupSearchArea());
+        tabbedArea.add("Enter a New Listing",  setupDataEntry());
+        tabbedArea.add("Unappraised Properties",   setupListArea());
+        tabbedArea.add("Appraised Properties",   setupListArea());
+        tabbedArea.add("Sold Properties",   setupListArea());
+        contentPane.add(tabbedArea);
+
+        setSize(SIZE);
+    }
+    public void showWindow()
+    {
+        setVisible(true);
+    }
+    public Dimension getPreferredSize()
+    {
+        return SIZE;
+    }
+    private Container setupDataEntry()
+    {
+        Box addressLabelArea = Box.createHorizontalBox();
+        addressLabelArea.add(new JLabel("Address", JLabel.LEFT));
+        addressLabelArea.add(Box.createGlue());
+        final JTextField addressField = new JTextField(50);
+        Box addressArea = Box.createVerticalBox();
+        addressArea.add(addressLabelArea);
+        addressArea.add(addressField);
+        
+        Box singleLineFields = Box.createVerticalBox();
+        singleLineFields.add(addressArea);
+        JPanel detailsPanel = new JPanel();
+        detailsPanel.setLayout(new BorderLayout());
+        detailsPanel.add(singleLineFields, BorderLayout.NORTH);
+        detailsPanel.add(addressArea, BorderLayout.CENTER);
+
+        JPanel buttonArea = new JPanel();
+        JButton add = new JButton("Add");
+        JButton clear = new JButton("Clear");
+        JButton save = new JButton("Save");
+
+        add.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent ev)
+                {
+                    listings.addProperty(
+                        new Property(addressField.getText()));
+                }
+            });
+            clear.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent ev)
+                {
+                    addressField.setText("");
+                }
+            });
+            save.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent ev)
+                {
+                }
+            });
+            buttonArea.add(add);
+            buttonArea.add(clear);
+            buttonArea.add(save);
+            
+            JPanel panel = new JPanel();
+            panel.setLayout(new BorderLayout());
+            panel.add(detailsPanel, BorderLayout.CENTER);
+            panel.add(buttonArea, BorderLayout.SOUTH);
+            return panel;
+    }
+    
+    private Container setupSearchArea()
+    {
+        Box searchLabelArea = Box.createHorizontalBox();
+        searchLabelArea.add(new JLabel("Search", JLabel.LEFT));
+        searchLabelArea.add(Box.createGlue());
+        final JTextField searchField = new JTextField(50);
+        Box searchArea = Box.createHorizontalBox();
+        searchArea.add(searchLabelArea);
+        searchArea.add(searchField);
+        
+        final JTextArea resultList = new JTextArea(10,50);
+        resultList.setEditable(false);
+        JScrollPane scrollArea =
+                new JScrollPane(resultList,
+                                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+        searchField.getDocument().addDocumentListener(new DocumentListener(){
+            public void changedUpdate(DocumentEvent ev)
+            {
+                research();
+            }
+            
+            public void insertUpdate(DocumentEvent ev)
+            {
+                research();
+            }
+            
+            public void removeUpdate(DocumentEvent ev)
+            {
+                research();
+            }
+            
+            private void research()
+            {
+                String searchString = searchField.getText();
+                StringBuilder buffer = new StringBuilder();
+                if(searchString.length() > 0) {
+                    Property[] results = listings.search(searchString);
+                    for(int i = 0; i < results.length; i++) {
+                        buffer.append(results[i].toString());
+                        buffer.append('\n');
+                        buffer.append('\n');
+                    }
+                }
+                resultList.setText(buffer.toString());
+            }
+        });
+
+        JPanel listArea = new JPanel();
+        listArea.setLayout(new BorderLayout());
+        
+        listArea.add(searchArea, BorderLayout.NORTH);
+        listArea.add(scrollArea, BorderLayout.CENTER);
+
+        return listArea;
+    }
+    private Container setupListArea()
+    {
+        final JTextArea details = new JTextArea(10, 50);
+        DefaultListModel model = new DefaultListModel();
+        JList jlist = new JList(model);
+        jlist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane scrollArea =
+                new JScrollPane(jlist,
+                                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        
+        JPanel buttonArea = new JPanel();
+        JButton list = new JButton("List");
+        JButton clear = new JButton("Clear");
+        JButton save = new JButton("Save");
+        
+        list.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent ev)
+            {
+                String[] display = listings.listProperties();
+                for(int i =0; i<display.length; i++)
+                {
+                    model.addElement(display[i]);
+                }
+            }
+        });
+
+        clear.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent ev)
+            {
+                model.clear();
+            }
+        });
+        save.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent ev)
+            {
+            }
+        });
+        buttonArea.add(list);
+        buttonArea.add(clear);
+        buttonArea.add(save);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+                
+        panel.add(scrollArea, BorderLayout.WEST);
+        panel.add(details, BorderLayout.EAST
+        panel.add(buttonArea, BorderLayout.SOUTH);
+
+        return panel;
+    }
+}

@@ -1,0 +1,145 @@
+import java.io.*;           
+import linearestrukturen.*;
+
+/**
+ * ### ################# ######### ###############. <##>
+ * ## #### ### ##### ######## ##### #### ##### ########### ######### ######. <##>
+ * ### ######## ###### #### ##### ########## ######## ######.
+ */
+public class Wettkampfergebnis implements Serializable
+{
+
+    static final long serialVersionUID = 2082;
+
+    static final int 
+    AUSWAHL = 1,
+    EINFUEGEN = 2,
+    BUBBLESORT = 3;
+
+    List<Wettkampfkarte> hatListe; 
+
+    /**
+     * Eine leeres Wettkampfergebnis wurde erzeugt.
+     */
+    public Wettkampfergebnis()
+    {
+        hatListe = new List<Wettkampfkarte>();
+    }
+
+    /**
+     * Die angegebene Wettkampfkarte wurde zum Ergebnis hinzugefügt.
+     */
+    public void ergaenzeKarte(Wettkampfkarte pWettkampfkarte)
+    {
+        hatListe.append(pWettkampfkarte);
+    }
+
+    /**
+     * Wenn das Ergebnis mindestens eine Wettkampfkarte enthält, wird die beste Karte bezüglich der angegebenen Disziplin geliefert. <br>
+     * Falls es mehrere Karten mit der gleichen Punktzahl in der angegebenen Disziplin gibt, ist es die zuerst gefundene.
+     */
+    public Wettkampfkarte besteKarte(int pDisziplin)
+    {
+        if (!hatListe.isEmpty())
+        {
+            hatListe.toFirst();
+            Wettkampfkarte lBester = hatListe.getContent();
+            while (hatListe.hasAccess())
+            {
+                if (lBester.punkte(pDisziplin) < hatListe.getContent().punkte(pDisziplin))
+                {
+                    lBester = hatListe.getContent();
+                }
+                hatListe.next();
+            }
+            return lBester;
+        }
+        else return null;
+    }
+
+    /**
+     * Die Ergebnisse wurde nach der angegebenen Disziplin mit dem angegebenen Sortierverfahren sortiert.
+     */
+    public void sortiereNach(int pDisziplin, int pVerfahren)
+    {
+        switch (pVerfahren)
+        {
+            case AUSWAHL: this.sortiereAuswahl(pDisziplin); break;
+            case EINFUEGEN: this.sortiereEinfuegen(pDisziplin); break;
+            case BUBBLESORT: this.bubblesort(pDisziplin); break;
+        }
+    }
+
+    private void sortiereAuswahl(int pDisziplin)
+    {
+    }
+
+    private void sortiereEinfuegen(int pDisziplin)
+    {
+
+        if (hatListe.isEmpty()) 
+        {
+        } else 
+        {
+            hatListe.toFirst();
+            Wettkampfkarte pContent=hatListe.getContent();
+            sortierteListe new List();
+            sortierteListe.insert(pContent);
+            hatListe.remove();
+            Wettkampfkarte pVergleichsZahl;
+            Wettkampfkarte pSVZ;
+            do 
+            {
+                pVergleichsZahl=hatListe.getContent();
+                sortierteListe.toFirst();
+                pSVZ = sortierteListe. getContent();
+               
+                do
+                {
+                      
+                   if (pVergleichsZahl.punkte(pDisziplin) >= pSVZ.punkte(pDisziplin))
+                    {
+                        sortierteListe.next();
+                    }
+                    else
+                    {
+                        sortierteListe.insert(pVergleichsZahl);
+                    } 
+                }while (pVergleichsZahl.punkte(pDisziplin) >= pSVZ.punkte(pDisziplin));
+                hatListe.next();
+            } while(hatListe.isEmpty());
+        }
+
+    }
+    private void bubblesort(int pDisziplin)
+    {
+    }
+
+    /**
+     *  Diese Anfrage liefert das Ergebnis in Textform.
+     */
+    public String toString()
+    {
+        String lText = "";
+        Wettkampfkarte lAktuelleKarte = hatListe.getContent();
+
+        hatListe.toFirst();
+        while (hatListe.hasAccess())
+        {
+            lText = lText + hatListe.getContent().toString() + "\n";
+            hatListe.next();   
+        }
+
+        if (lAktuelleKarte != null)
+        {
+            hatListe.toFirst();
+            while (lAktuelleKarte != hatListe.getContent())
+            {
+                hatListe.next();   
+            }
+        }
+
+        return lText;
+    }
+
+}

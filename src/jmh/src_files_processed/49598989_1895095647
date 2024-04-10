@@ -1,0 +1,145 @@
+import java.util.Scanner;
+/**
+ * ##### # ########### ## ##### ###### ####.
+ * 
+ * @#### ####### ####### 
+ * @####### #.##
+ */
+public class Taller
+{
+    private GestorClientes gestorClientes;
+    private GestorVisitas gestorFichas;
+    private String[] matriculas;
+    private InterfazTexto I;
+    /**
+     * Constructor for objects of class Taller
+     */
+    public Taller()
+    {
+        gestorClientes = new GestorClientes();
+        gestorFichas = new GestorVisitas();
+        I = new InterfazTexto();
+        I.Bienvenida();
+    }
+
+    public static void main(String args[]){
+        int num;        
+        Scanner leer=new Scanner(System.in);    
+        Taller taller = new Taller();
+        boolean continuar = true;
+
+        while(continuar){
+            System.out.println("¿Qué desea hacer?");
+            System.out.println("  1) Registrar visita ");
+            System.out.println("  2) Actualizar los datos de un cliente ya en el sistema");
+            System.out.println("  3) Insertar nuevo cliente al sistema");
+            System.out.println("  4) Actualizar los datos del cliente ya en el sistema");
+            System.out.println("  6) Salir ");
+
+            num = leer.nextInt();   
+
+            if(num == 1){    
+                taller.registrarVehiculoEnElSistema();
+            }else if (num == 2){  
+                taller.setCliente();
+            }else if( num == 3) {
+
+            }else if( num == 4) {
+
+            }else if( num == 6 ) {
+                continuar = false;
+            }
+        }
+    }
+
+    public void registrarVehiculoEnElSistema(){
+
+        String nombre;
+        String apellidos;
+        String DNI = I.getDNI();
+        Cliente C = gestorClientes.get(DNI);
+        if (C == null){
+            I.showFormNewClient();
+            nombre = I.getNombre();
+            apellidos = I.getApellidos();
+            I.println("DNI: " + DNI);
+            C = new Cliente(nombre,apellidos,DNI);
+            gestorClientes.add(C);
+        }else{
+            nombre = C.getNombre();
+            apellidos = C.getApellidos();
+            I.showFormClient(C);
+        }
+        I.showEndForm();
+        
+        String marca;
+        String modelo;
+        String combustible;
+        String matricula = I.getMatricula();
+        String tipoVehiculo = C.getGestorVehiculos().getTipoVehiculo(matricula);
+        if (tipoVehiculo.equals("")){
+            I.showFormNewVehicle();
+            marca = I.getMarca();
+            modelo = I.getModelo();
+            combustible = I.getCombustible();
+            tipoVehiculo = I.getTipoVehiculo();    
+            if(tipoVehiculo.equals("Turismo")){
+                int noPuertas = I.getNoPuertas();
+                C.getGestorVehiculos().addTurismo(marca,modelo,noPuertas, combustible, matricula); 
+
+            }else if(tipoVehiculo.equals("Moto")){
+                boolean sidecar = I.getSidecar();
+                C.getGestorVehiculos().addMoto(marca,modelo,sidecar,combustible,matricula);         
+
+            }else if(tipoVehiculo.equals("VehiculoProfesional")){
+                String tipoVProfesional = I.getTipoVehiculoProfesional();
+                C.getGestorVehiculos().addVehiculoProfesional(marca,modelo,tipoVProfesional,combustible,matricula); 
+            }
+        }else{
+            marca = C.getGestorVehiculos().getVehiculo(matricula, tipoVehiculo).getMarca();
+            modelo = C.getGestorVehiculos().getVehiculo(matricula, tipoVehiculo).getModelo();
+            combustible = C.getGestorVehiculos().getVehiculo(matricula, tipoVehiculo).getCombustible();
+        }
+        I.showEndForm();
+        
+        String motivo = I.getMotivoVisita();
+        gestorFichas.generarFicha(matricula,marca,modelo,combustible,DNI,nombre,apellidos,tipoVehiculo,motivo);
+        
+        I.printFicha(gestorFichas.getLastFicha());
+    }
+    
+    /**
+     * Modifica los datos personales de un cliente
+     */
+    public void setCliente(){
+        String DNI = I.getDNI();
+        Cliente C = gestorClientes.get(DNI);
+        if (C == null){
+             I.println("El cliente no existe en el sistema. ");
+        }else{
+            String nombre = I.getNombre();
+            String apellidos = I.getApellidos();
+            Cliente C2 = new Cliente(nombre,apellidos,DNI);
+            C.set(C2);
+        }
+    }
+    
+    public void setListVehiclesForClient(){
+        String DNI = I.getDNI();
+        Cliente C = gestorClientes.get(DNI);
+        if (C == null){
+             I.println("El cliente no existe en el sistema. ");
+        }else{
+            I.println
+            C.getGestorVehiculos()
+        }
+    }
+
+
+
+
+
+
+
+
+}

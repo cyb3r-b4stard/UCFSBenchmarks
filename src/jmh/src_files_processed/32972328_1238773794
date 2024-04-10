@@ -1,0 +1,86 @@
+/**
+ * #### ####### ######### ########### #### # ### ####.
+ * 
+ * ©#### ####
+ * ########## ##.## - #### ########## #
+ * @###### #. ###### 
+ * @####### ##/##/##
+ */
+import java.net.URL;
+import java.io.*;
+public class RetrieveData
+{
+    private String city = null;
+    private String temp = null;
+    private String line = null;
+    private String aLine = null;
+    private String urlStr = null;
+    private int [] maxTemp = new int[31];
+    private int [] minTemp = new int[31];
+
+    
+    RetrieveData(String url, String loc)
+    {
+        city = loc; 
+        urlStr = url;
+    }
+    
+    public String crawlWebSite()
+    {
+        String max = null;
+        String min = null;
+        int index = 0;
+
+        try
+        {
+        URL url = new URL(urlStr);
+        InputStream inStr = url.openStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inStr));
+        while((line = reader.readLine()) != null && line.indexOf(city) < 0)
+        {}
+            if(line != null)
+            {
+                for(int n = 0; n <= 11; n++)
+                {
+                    temp = reader.readLine();
+                }
+                
+                temp = reader.readLine();
+                System.out.println("reader.readLine(): " + temp));
+                System.out.println("temp.charAt(2): " + temp.charAt(2));
+                System.out.println("Integer.parseInt(temp.substring(1)): " + temp);
+                System.out.println("Integer.parseInt(temp.substring(2)): " + temp.substring(8,10));
+
+                while(temp.charAt(2) != '=')
+                {   
+                    System.out.println("Integer.parseInt(temp.substring(4,6)): " + Integer.parseInt(temp.substring(4,6)));
+                    System.out.println("Integer.parseInt(temp.substring(8,10)): " + Integer.parseInt(temp.substring(8,10)));
+                    maxTemp[index] = Integer.parseInt(temp.substring(4,6));
+                    minTemp[index] = Integer.parseInt(temp.substring(8,10));
+                    temp = reader.readLine();
+                    index++;
+                }          
+            }   
+        }
+        catch(FileNotFoundException ex)
+        {
+            SimpleOutput.showError("Could not connect to " + urlStr);
+        }
+        catch (Exception ex)
+        {
+            SimpleOutput.showError("Error during read or write");
+            ex.printStackTrace();
+        }    
+        return temp;
+    }
+    
+    public int[] getMaxTemp()
+    {
+        return maxTemp;
+    }
+    
+    public int[] getMinTemp()
+    {
+        return minTemp;
+    }
+}

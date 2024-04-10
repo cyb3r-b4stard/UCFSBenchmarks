@@ -1,0 +1,215 @@
+
+/**
+ * ######### #### ######## ######## #### ## # #### ######## ###### ## ########. 
+ * ## ### ########, ###### #### ## ####.
+ * 
+ * @###### ######, ##### 
+ * @####### ##.#
+ */
+
+import java.util.Scanner;
+public class Tracks
+{
+    public static void main(String[] args)
+    {
+        int i = 0;
+        LinkedDeque<String> queueIn = new LinkedDeque<String>();
+        LinkedDeque<String> queueOut = new LinkedDeque<String>();
+        System.out.println("Please type in the order of incoming cars. Type DONE to stop.");
+        Scanner scan = new Scanner(System.in);
+        while(true)
+        {
+            String input = scan.nextLine();
+            if(!input.equalsIgnoreCase("DONE") && input != "")
+            {
+                queueIn.enqueueFront(input);
+            }
+            if("DONE".equals(input) && queueIn.isEmpty() == false)
+            {
+               break;
+            }
+            if("DONE".equals(input) && queueIn.isEmpty() == true )
+            {
+                System.out.println("Please enter at least one value!");
+            } 
+            
+        }
+       System.out.println("Please provide the desired output order. You must provide as many" +
+            " outgoing as you did incoming.");
+        while(true)
+        {
+            String input = scan.nextLine();
+            if(!input.equalsIgnoreCase("DONE") && !input.equals(""))
+            {
+                queueOut.enqueueFront(input);
+            }
+            if(queueIn.size() == queueOut.size() && input != "")
+            {
+                break;
+            
+            }
+        }
+       for(i = 0; i < queueIn.size();
+       {
+           
+        }
+       {
+           queueIn.dequeueFront();
+           queueOut.dequeueFront();
+           System.out.println(queueOut);
+           System.out.println(queueIn);
+       }
+
+
+   } 
+   /**
+     * LinkedDeque represents a linked implementation of a deque.
+     * 
+     * @author Lewis et al., CST200
+     * @version 1.0
+     */
+    public static class LinkedDeque<T> implements DequeADT<T>
+    {
+
+        private int count;
+        private LinearDoubleNode<T> head, tail, next, prev; 
+        
+        /**  
+     * Adds one element to the front of this deque. 
+     * @param element the element to be added to the front of the deque  
+     */
+    public void enqueueFront(T element) 
+    {
+        LinearDoubleNode<T> node = new LinearDoubleNode<T>(element);
+
+        if (isEmpty())
+            head = node;
+        else
+            tail.setNext(node);
+
+        tail = node;
+        count++;
+    }
+    
+    /**  
+     * Adds one element to the back of this deque. 
+     * @param element the element to be added to the back of the deque  
+     */
+    public void enqueueBack(T element)
+    {
+        LinearDoubleNode<T> node = new LinearDoubleNode<T>(element);
+
+        if (isEmpty())
+            head = node;
+        else
+            tail.setNext(node);
+        
+
+        tail = node;
+        count++;        
+    }
+
+    /**  
+     * Removes and returns the element at the front of this deque.
+     * Should throw an exception if the deque is empty.
+     * @return the element at the front of this deque
+     */
+    public T dequeueFront()
+    {
+        if (isEmpty())
+            throw new EmptyCollectionException("queue");
+
+        T result = head.getElement();
+        head = head.getNext();
+        count--;
+        
+        if (isEmpty())
+            tail = null;
+
+        return result;  
+    }
+    
+    /**  
+     * Removes and returns the element at the back of this deque.
+     * Should throw an exception if the deque is empty.
+     * @return the element at the back of the deque. 
+     */
+    public T dequeueBack() 
+    {
+
+        if (isEmpty())
+            throw new EmptyCollectionException("queue");
+
+        T result = tail.getElement();
+
+        count--;
+        return result;
+    }
+
+    /**  
+     * Returns, without removing, the element at the front of this deque.
+     * Should throw an exception if the deque is empty.
+     * @return the first element in the deque
+     */
+    public T first()
+    {
+        if (isEmpty())
+            throw new EmptyCollectionException("queue");
+        T result = head.getElement();
+        return result;
+        
+    }
+    
+    /**  
+     * Returns, without removing, the element at the back of this deque.
+     * Should throw an exception if the deque is empty.
+     * @return the last element in the deque
+     */
+    public T last() 
+    {
+        if (isEmpty())
+            throw new EmptyCollectionException("queue");
+        T result = tail.getElement();
+        return result;
+        
+    }
+   
+    /**  
+     * Returns true if this deque is empty and false otherwise.
+     * @return true if this deque is empty
+     */
+    public boolean isEmpty()
+    {
+        return size() == 0;
+    }
+    
+
+    /**  
+     * Returns the number of elements in this deque. 
+     * @return the number of elements in the deque
+     */
+    public int size()
+    {
+            return count;
+    }
+
+    /**  
+     * Returns a string representation of this deque. 
+     * @return the string representation of the deque
+     */
+    public String toString()
+    {
+            StringBuilder sb = new StringBuilder();
+            LinearDoubleNode iter = head;
+            if(size() == 0)
+                return "empty";
+            while(iter != null)
+            {
+                sb.append(iter.getElement().toString()).append(" ");
+                iter = iter.getNext();
+            }
+            return sb.toString();
+    }
+        
+   }
+}

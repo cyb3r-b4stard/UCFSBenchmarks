@@ -1,0 +1,162 @@
+/**
+ * @###### ##### ####### ##
+ * @####### ##_##_#### ##_## ##_######
+ */ 
+
+import java.util.ArrayList;
+import java.util.Stack;
+
+public class Player
+{
+    private Room aCurrentPosition;
+    private double aMaxWeight;
+    private String aPlayerName;
+    private UserInterface aGui;   
+    private ItemList aPlayerInventory;
+    private int aTimer;
+    public Stack<Room> aRoomHistory;
+    private int aTimerLimit;
+
+    /**
+     * Constructeur d'objets de classe Player
+     */
+    public Player(final String pPlayerName, final double pMaxWeight)
+    {
+        this.aMaxWeight = pMaxWeight;
+        this.aPlayerName = pPlayerName;
+        this.aPlayerInventory = new ItemList();
+        this.aRoomHistory = new Stack<Room>();
+        this.aTimer = 0;
+    }
+    
+    public void setTimerLimit(final int pInt){
+        this.aTimerLimit = pInt;
+    }
+    
+    public UserInterface getUserInterface(){
+        return this.aGui;
+    }
+    
+    public void setTimer(final int pInt){
+        this.aTimer = pInt;
+    }
+    
+    public void addTimer(final int pInt){
+        this.aTimer += pInt;
+    }
+    
+    public int getTimer(){
+        return this.aTimer;
+    }
+    
+    public int getTimerLimit(){
+        return this.aTimerLimit;
+    }
+    
+    public TransporterRoom getTransporterRoom(){
+        return getEn
+    }
+
+    /**
+     * Ajoute un Item dans l'inventaire du Player
+     * @param Item
+     */
+    public void addItem(final Item pItem){
+        this.aPlayerInventory.addItem(pItem);
+        this.aMaxWeight = (this.aMaxWeight) - (pItem.getItemWeight());
+    }
+
+    /**
+     * Retire un Item de l'inventaire du Player
+     * @param Item
+     */
+    public void removeItem(final Item pItem){
+        this.aMaxWeight = (this.aMaxWeight) + (pItem.getItemWeight());
+        this.aPlayerInventory.removeItem(pItem);
+    }
+
+    /**
+     * Retourne l'item correspondant au nom passé en paramètre
+     * @param String NomItem
+     * @return Item
+     */
+    public Item getItem(final String pNomItem){
+        return this.aPlayerInventory.getItem(pNomItem);
+    }
+    
+    /**
+     * Retourne l'inventaire du joueur
+     * @return ItemList
+     */
+    public ItemList getPlayerInventory(){
+        return this.aPlayerInventory;
+    }
+    
+    /**
+     * Retourne le poids max transportable par le joueur
+     * @return Double
+     */
+    public Double getMaxWeight(){
+        return this.aMaxWeight;
+    }
+    
+    /**
+     * Setter poids Max Player
+     * @param Double
+     */
+    public void setMaxWeight(final Double pWeight){
+        this.aMaxWeight = pWeight;
+    }
+
+    /**
+     * Recupère la description d'un Item
+     * @return String
+     */
+    public String getItemString(){
+        return this.aPlayerInventory.getItemString();
+    }
+
+    /**
+     * Getter Position Joueur
+     * @return Room
+     */
+    public Room getCurrentPosition(){
+        return this.aCurrentPosition;
+    }
+
+    /**
+     * Dis si l'inventaire de la Room contient l'item passé en paramètre
+     * @param Item
+     * @return Boolean
+     */
+    public boolean hasItem(final Item pItem){
+        return this.aPlayerInventory.hasItem(pItem);
+    }
+    
+    public void putRoomHistory(){
+        this.aRoomHistory.push(getCurrentPosition());
+    }
+    
+    /**
+     * Change l'emplacement du joueur et actualise le GUI
+     * @param Room
+     */
+    public void setRoom(final Room pRoom){
+        putRoomHistory();
+        setCurrentPosition(pRoom);
+        addTimer(1);
+        this.aGui.println(getCurrentPosition().getLongDescription());
+        this.aGui.setLifePoint((this.aTimerLimit)-(this.aTimer));
+        if(getCurrentPosition().getImageName() != null){
+            this.aGui.showImage(getCurrentPosition().getImageName());
+        }
+    }
+
+    /**
+     * Setter Position Joueur
+     * @param Room
+     */
+    public void setCurrentPosition(final Room pRoom){
+        this.aCurrentPosition = pRoom;
+    }
+}

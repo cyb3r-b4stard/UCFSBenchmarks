@@ -1,0 +1,120 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.Date;
+/**
+ * 
+ * @### #####
+ * @###### ###### ########## 
+ * @####### #/##/####
+ */
+public class Payroll
+{
+    ArrayList<String> employeeNames2;
+    ArrayList<Double> employeeWages2;
+    
+    
+    
+    ArrayList<Double> hours = new ArrayList<Double>();
+    ArrayList<Double> totalPay = new ArrayList<Double>();
+    private double hoursWorked = 0.0;
+    private double hoursWorked2 = 0.0;
+    private int weeks = 0;
+    private String employeeID = "%03d";
+    private int quit = 1000;
+    private int i = 1;
+    
+    Scanner input = new Scanner(System.in);
+    
+    public void setEmployeePayroll()
+    {
+        EmployeeRecord e = new EmployeeRecord();
+        e.setEmployeeInfo();
+        employeeNames2 = e.getEmployeeNamesArrayList();
+        employeeWages2 = e.getWageArrayList();
+        Date currentDate = new Date();
+        
+        double totalPay2 = 0.0;
+        double totalHours = 0.0;
+        double overTime = 0.0;
+        double overTime2 = 0.0;
+                
+        System.out.println("Please enter ACME employee ID, the week they worked (1 or 2), and the number of hours worked. This information should be entered in the order the names were entered. Enter 0 when you are done inputing information.");
+
+        while(quit != 0)
+        {
+            quit = input.nextInt();
+            if(quit == 0)
+            {
+                break;
+            }
+
+            weeks = input.nextInt();
+
+            if(weeks == 1)
+            {
+                hoursWorked = input.nextDouble();
+            }
+            else if(weeks == 2)
+            {
+                hoursWorked2 = input.nextDouble();
+            }
+
+            /*
+             * I am checking to see if the employee is going to be paid for overtime and also calculating the pay for both weeks.
+             * 1) My first if statement indicates whether or not the employee worked over 40 in week one and week two.
+             * 2) My first else if statement indicates whether the employee works more than 40 hours in week two but not week one.
+             * 3) My second else if statement indicates whether the employee works more than 40 hours in week one but not in week two.
+             * 3) My third else if statement finally indicates that the employee worked over 40 hours in both week one and two.
+             */
+            if(hoursWorked >= 0 && hoursWorked <= 40 && hoursWorked2 >= 0 && hoursWorked2 <= 40)
+            {
+                totalHours = hoursWorked + hoursWorked2;
+                hours.add(totalHours);
+                totalPay2 = totalHours * (employeeWages2.get(i - 1));
+                totalPay.add(totalPay2);
+                hoursWorked = 0.0;
+                hoursWorked2 = 0.0;
+            }
+            else if(hoursWorked2 > 40 && hoursWorked >= 0 && hoursWorked <= 40)
+            {
+                overTime2 = hoursWorked2 - 40;
+                totalHours = hoursWorked + hoursWorked2;
+                hours.add(totalHours);
+                totalPay2 = totalHours * (employeeWages2.get(i - 1)) + (overTime2 * 1.5);
+                totalPay.add(totalPay2);
+                hoursWorked = 0.0;
+                hoursWorked2 = 0.0;
+            }
+            else if(hoursWorked > 40 && hoursWorked2 <= 40 && hoursWorked2 >= 0)
+            {
+                overTime = hoursWorked - 40;
+                totalHours = hoursWorked + hoursWorked2;
+                hours.add(totalHours);
+                totalPay2 = totalHours * (employeeWages2.get(i - 1)) + (overTime * 1.5);
+                totalPay.add(totalPay2);
+                hoursWorked = 0.0;
+                hoursWorked2 = 0.0;
+            }
+            else if(hoursWorked > 40 && hoursWorked2 > 40)
+            {
+                overTime = hoursWorked - 40;
+                overTime2 = hoursWorked2 - 40;
+                totalHours = hoursWorked + hoursWorked2;
+                hours.add(totalHours);
+                totalPay2 = totalHours * (employeeWages2.get(i - 1)) + (1.5 * (overTime + overTime2));
+                totalPay.add(totalPay2);
+                hoursWorked = 0.0;
+                hoursWorked2 = 0.0;
+            }
+            i = quit;
+        }
+        System.out.println("ACME Payroll run on: " + currentDate);
+        System.out.println();
+        System.out.println("Employee Number  |  Employee Name    |  Hours Worked  |  Total Pay");
+        for(int i = 0; i < employeeNames2.size();i++)
+        {
+            System.out.println(String.format(employeeID, i + 1) + "              | " +employeeNames2.get(i) 
+        }
+    }
+
+}

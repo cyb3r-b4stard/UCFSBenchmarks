@@ -1,0 +1,247 @@
+import java.util.*;
+import java.io.*;
+/**
+ * ##### # ########### ## ##### ################# ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class StudentManagement
+{
+    private StudentDatabase database;
+    private Validation validation;
+ 
+    /**
+     * Constructor for objects of class StudentManagement
+     */
+    public StudentManagement()
+    {
+        database = new StudentDatabase();
+        validation = new Validation();
+    }
+
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public void displayMenu()
+    {
+        System.out.println("");
+        System.out.println("There are " + database.getNumberOfStudents() + " students in the database.");
+        System.out.println("Welcome to the Student Management System!");
+        System.out.println("(1)Add new student");
+        System.out.println("(2)Delete a student");
+        System.out.println("(3)Find Student By Name");
+        System.out.println("(4)List Students By Subject");
+        System.out.println("(5)List All Students");
+        System.out.println("(6)Exit System");
+        System.out.println("Please enter your option:");
+    }
+     
+    public void readStudents()
+    {
+        String filename = ("students.txt");
+        
+        try
+        {
+            FileReader fr = new FileReader(filename);
+            Scanner parser = new Scanner(fr);
+            
+            while (parser.hasNextLine())
+            {
+                String line = parser.nextLine();                
+                String[] studentData = new String[3];
+                studentData = line.split(",");
+                database.addStudent(studentData[0], studentData[1], studentData[2]);
+            }
+            
+            fr.close();
+        }
+        catch (FileNotFoundException exception)
+        {
+            System.out.println(filename + "not found");
+        }
+        catch (IOException exception)
+        {
+            System.out.println("Unexpected I/O error occured");
+        }
+    }
+    
+    public void manageStudents()
+    {
+        readStudents();
+        Scanner console = new Scanner(System.in);
+        boolean finished = false;
+        String option = "";
+        
+        while (!finished)
+        {
+            displayMenu();
+            option = console.nextLine();
+            
+            switch(option)
+            {
+                case"1":
+                        addStudent();
+                        break;
+                case"2":
+                        deleteStudent();
+                        break;
+                case"3":
+                        findStudent();
+                        break;
+                case"4":
+                        listBySubject();
+                        break;
+                case"5":
+                        listAllStudents();
+                        break;
+                case"6":
+                        exitSystem();
+                        finished = true;
+                        break;
+                default:
+                        System.out.println("Invalid option. Please choose an option between 1 and 6.");
+                        break;
+            }
+        }
+    }
+    
+    public void addStudent()
+    {
+        Scanner console = new Scanner(System.in);
+        System.out.println("Please enter the student's name: ");
+        String name = console.nextLine();
+        
+        while (!validation.isValidName(name))
+        {
+            System.out.println("The name can not be blank!");
+            System.out.println("Please enter the student's name: ");
+            name = console.nextLine();
+        }
+        
+        while (database.studentExist(name))
+        {
+            System.out.println("This student is already exist in the database!");
+            System.out.println("Please enter the student's name: ");
+            name = console.nextLine();
+        }
+        
+        System.out.println("Please enter the student's phone number: ");
+        String telephone = console.nextLine();
+        
+        while (!validation.isValidTelephone(telephone))
+        {
+            System.out.println("Invalid telephone!");
+            System.out.println("The telephone can only be 9 digits and the 1st digit must be 9.");
+            System.out.println("Please enter the student's phone number: ");
+            telephone = console.nextLine();
+        }
+        
+        System.out.println("Please enter the student's enrol subject: ");
+        String subject = console.nextLine();
+        
+        while (!validation.isValidSubject(subject))
+        {
+            System.out.println("Invalid subject!");
+            System.out.println("The students can only be enrolled into Computing, English and Maths.");
+            System.out.println("Please enter the student's enrol subject: ");
+            subject = console.nextLine();
+        }
+        
+        database.addStudent(name,telephone,subject);
+    }
+    
+    public void deleteStudent()
+    {
+        Scanner console = new Scanner(System.in);
+        System.out.println("Please enter the student's name: ");
+        String searchName = console.nextLine();
+        
+        while (!database.studentExist(searchName))
+        {
+            System.out.println("Sorry! This student is not exist in the database!");
+            System.out.println("Please check your spelling.");
+            System.out.println("Please enter the student's name: ");
+            searchName = console.nextLine();
+        }
+        
+        System.out.println("Do you want to delete this record? (Y/N)"); 
+        database.findStudent(searchName);
+        String answer = console.nextLine();
+        
+        if (answer.equals("Y"))
+        {
+            database.deleteStudent(searchName);
+        }
+    }
+            
+    public void findStudent()
+    {
+        Scanner console = new Scanner(System.in);
+        System.out.println("Please enter the student's name: ");
+        String searchName = console.nextLine();
+        
+        while (!database.studentExist(searchName))
+        {
+            System.out.println("Sorry! This student is not exist in the database!");
+            System.out.println("Please check your spelling.");
+            System.out.println("Please enter the student's name: ");
+            searchName = console.nextLine();
+        }
+        
+        database.findStudent(searchName);
+       
+    }
+    
+    public void listBySubject()
+    {
+        Scanner console = new Scanner(System.in);
+        System.out.println("Please enter the subject: ");
+        String searchSubject = console.nextLine();
+        
+        while (!validation.isValidSubject(searchSubject))
+        {
+            System.out.println("Sorry! This subject does not exist!");
+            System.out.println("Please enter the subject: ");
+            searchSubject = console.nextLine();
+        }
+        
+        database.listBySubject(searchSubject);
+    }
+    
+    public void listAllStudents()
+    {
+        database.listAllStudents();
+    }
+    
+    public void writeStudents()
+    {
+        String filename = ("students.txt");
+       
+        try
+        {
+            PrintWriter pw = new PrintWriter (filename);
+            int index = 0;
+            while (index < database.getNumberOfStudents())
+            {
+                pw.println(employees.get(index).getEmployeeType() + "," + employees.get(index).getEmployeeNumber() + "," + employees.get(index).getName());
+                index ++;
+            }
+            pw.close();                
+        }
+        
+      
+        catch (IOException e)
+        {
+            System.out.println("Unexpected I/O error occured");
+        }
+    }
+    
+    public void exitSystem() 
+    
+    
+    }
+}

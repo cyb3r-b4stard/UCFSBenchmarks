@@ -1,0 +1,68 @@
+import java.util.*;
+import becker.robots.*;
+import becker.robots.icons.*;
+import java.awt.Color;
+public  class Game
+{   
+    public static void main(String[] args)
+    {
+        int[][] spotsOnBoard = new int[4][4];
+        Scanner in = new Scanner(System.in);
+        City board = new City(4,4);
+        SuperMovingBot[] chips = new SuperMovingBot[8];
+        CircleIcon[] chipIcons = new CircleIcon[8]; 
+        int chipToMove = 0;
+        String positionToMove = ""; 
+        int playerTurn =0;
+        boolean winnerFound = false;
+        int turn;
+        String whosTurn;
+
+        BoardFiller.fillBoard(chipIcons,chips,board);
+
+        while (winnerFound == false)
+        {
+            if (playerTurn %2 ==0) {whosTurn = "Blue"; turn = 1; }
+            else {whosTurn = "Red"; turn = -1; }
+            do
+            {
+                System.out.println(whosTurn + ",which chip would you like to move?");
+
+                chipToMove = Integer.parseInt(in.nextLine());
+            } while (Verifier.checkPiece(whosTurn,chipToMove) == false);
+            do
+            {
+                System.out.println(whosTurn +" ,which direction would you like to move your chip? u,d,l or r");
+                positionToMove = in.nextLine();
+                chips[chipToMove].move(positionToMove);
+
+            }while(Verifier.MoveInBoard(chips,spotsOnBoard,positionToMove,chipToMove,whosTurn) == false || Verifier.ProperMove(positionToMove) = false);
+            playerTurn += 1;
+
+            for (int i = 0; i<4;i++)
+            {
+                for (int x = 0; x<4; x++)
+                {
+                    spotsOnBoard[i][x] = 0;
+                }
+            }
+            BoardFiller.updateBoard(chips,spotsOnBoard);
+            for (int x = 0; x<4; x++)
+            {
+                for (int y = 0 ; y<4; y++)
+                {
+
+                    if(WinChecker.checkWin(spotsOnBoard,x,y,turn) == true) 
+                    {
+                        System.out.println(whosTurn + " player has won! Thanks for playing!");
+                        winnerFound = true;
+                        BoardFiller.winCelebration(chips,board,whosTurn);
+                        break;
+                    }
+
+                }
+            }
+
+        }
+    }
+}

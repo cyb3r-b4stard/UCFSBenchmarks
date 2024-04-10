@@ -1,0 +1,110 @@
+import java.awt.*;
+import javax.swing.*;
+import java.awt.event.*;
+
+public class TV{
+  JFrame frame = new JFrame(); 
+  JPanel panel = new JPanel();
+  JLabel label = new JLabel("TV");
+  JTextArea a1 = new JTextArea();
+  JButton power = new JButton("O");
+  JButton voltambah = new JButton("+");
+  JButton volkurang = new JButton("-");
+  JButton channeltambah = new JButton(">");
+  JButton channelkurang = new JButton("<");
+  int p=1, vol=0, channel=1;
+  
+  public static void main (String args[]){
+    TV tv = new TV();
+    tv.makeFrame();
+  }
+  
+  public void makeFrame(){
+    frame = new JFrame("TV Changhong");  
+    frame.setSize(350,270);
+    frame.setVisible(true);
+    komponenVisual();
+    aksiReaksi();
+  }
+  
+  public void komponenVisual(){
+    panel = new JPanel();
+    frame.add(panel);
+    panel.setLayout(null);
+    panel.add(a1);
+    a1.setBounds(5,10,330,150);
+    panel.add(power);
+    power.setBounds(280,180,50,50);
+    panel.add(voltambah);
+    voltambah.setBounds(220,180,50,50);
+    panel.add(volkurang);
+    volkurang.setBounds(160,180,50,50);
+    panel.add(channeltambah);
+    channeltambah.setBounds(70,180,50,50);
+    panel.add(channelkurang);
+    channelkurang.setBounds(10,180,50,50);
+  }
+  
+  public void aksiReaksi(){
+     power.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                if(p%2==1){
+                  a1.setText("TV Hidup");
+                  a1.append("\nChannel sekarang "+channel+"\nVolume sekarang "+vol+"\nEnjoy the TV show!");
+                  p++;
+                }
+                else if(p%2==0){
+                   a1.setText("TV Mati");
+                   vol=0;
+                   channel=1;
+                   p++;
+                }
+            }
+     });
+     voltambah.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                
+                if(vol>=0 && vol<=14){
+                  vol++;
+                  a1.setText("TV Hidup");
+                  a1.append("\nChannel sekarang "+channel+"\nVolume sekarang "+vol+"\nEnjoy the TV show!");
+                  if (vol==15){
+                  a1.setText("TV Hidup");
+                  a1.append("\nChannel sekarang "+channel+"\nVolume sekarang "+vol+"MAXIMAL\nEnjoy the TV show!");}
+                }
+            }
+            
+        )}};
+     volkurang.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                
+                if(vol>=1 && vol<=15){
+                  vol--;
+                  a1.setText("TV Hidup");
+                  a1.append("\nChannel sekarang "+channel+"\nVolume sekarang "+vol+"\nEnjoy the TV show!");
+                }
+            }
+        });
+     channeltambah.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+               
+                if(channel>=1 && channel<=99){
+                   channel++;
+                   a1.setText("TV Hidup");
+                   a1.append("\nChannel sekarang "+channel+"\nVolume sekarang "+vol+"\nEnjoy the TV show!");
+                }
+            }
+        });
+     channelkurang.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+               
+               if(channel>=2 && channel<=100){
+                  channel--;
+                  a1.setText("TV Hidup");
+                  a1.append("\nChannel sekarang "+channel+"\nVolume sekarang "+vol+"\nEnjoy the TV show!");
+                }
+            }
+        });
+    
+      }
+    }

@@ -1,0 +1,70 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*; 
+
+public class Histogram extends JComponent
+{
+    private int[] values;
+    private String[] labels;
+    
+    public Histogram(int[] values, String[] labels)
+    {
+        changeValues(values, labels);
+    }
+    
+    public void changeValues(int[] values, String[] labels)
+    {
+        if(labels == null || values == null || values.length != labels.length)
+            throw new RuntimeException("The lengths of the two arrays must be equal");
+        this.values = values;
+        this.labels = labels;
+    }
+    
+    private int getMax(int[] arr)
+    {
+        int maxValue = 0;
+        for(int i = 0; i<arr.length; i++)
+        {
+            if(arr[i] > maxValue)
+            {
+                maxValue = arr[i];
+            }
+        }
+        return maxValue;
+    }   
+    
+    @Override
+    public void paintComponent(Graphics g)
+    {
+        if(values.length == 0)
+        {
+            g.drawString("No histogram given", 0, 0);
+        }
+        else
+        {
+            int max = getMax(values);
+            int bottom = getHeight();
+            int heightRatio = getHeight()/6;
+            
+            int widthRatio = getWidth()/labels.length;
+            int padding = 50;
+            
+            for(int i = 0; i<6; i++)
+            {
+                g.drawString((max/5*i)+"", 25, bottom - heightRatio*i - 25);
+            }
+            g.drawLine(30, 30, bottom, 30)
+            for(int i = 0; i<labels.length; i++)
+            {
+                g.drawString(labels[i], widthRatio*i+ padding, bottom-padding);
+            }
+            for(int i = 0; i<values.length; i++)
+            {
+                g.fillRect(widthRatio*i+ padding, bottom-padding, padding, (values[i]/max)*bottom);
+            }
+        }
+    }
+}
+
+
+

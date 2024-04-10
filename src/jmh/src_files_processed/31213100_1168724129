@@ -1,0 +1,721 @@
+/* ### #### ## ##### ## ###-# ########.
+ * #####: «##########», ####### ####-§, #########-©, #####-#, ####-#, #####-
+ */
+package OOPA1_16s_HW_SRC.eu.pedu.oopa16s.canvasmanager;
+/*******************************************************************************
+ *<###>
+ * #########:  {@#### ##.####.#######.#######.#####.######.##########}
+ * ###########: ######## ####
+ *
+ * #######:
+ *    - # ##### ############# # ######## {@#### ######}
+ *      #### ####### ####### {@#### @########}
+ *    - ###### {@#### ####(#######)}
+ *    - ####### ##### {@#### ##} ########## ## ####### ######
+ * ########:
+ *    - ######### ### {@#### #############}
+ *      - ######## ###### {@#### ####}
+ *      - ########## ######## ##### ## ######## ## ##### ####### ######
+ *      - ###### {@#### ####()} # {@#### ####()} ####
+ *        ########## # ######### ######## # ####### ######
+ *
+ * #######  #### - #########
+ *   ~ ##### ############# ##### # ######## ######## #########
+ *     - ############ ########### ######### # ###########
+ *     - ########## ###### ########### # ######### #########
+ *    - ######## ######### # # #### ######## ###### ####### #########
+ *      ######## ## # ######### ##### ###### ##### ####### {@#### @########}
+ *    - ####### {@#### ####} ## #### ############
+ *
+ * #######  #### - #######
+ *   + ####### ####### #### # ######## ############## ## ###### #######
+ *
+ * #######  ###
+ *   ~ ##### ######## {@#### ####} ## ############
+ *   + ###### {@#### #######(######)}
+ *
+ * #######  ###
+ *   + #######
+ *   - ########
+ *   ~ #######
+ *</###>
+ */
+
+
+
+
+import eu.pedu.oopa16s.util.Area;
+import eu.pedu.oopa16s.util.Direction8;
+import eu.pedu.oopa16s.util.ICopyable;
+import eu.pedu.oopa16s.util.IDirectable;
+import eu.pedu.oopa16s.util.Position;
+import eu.pedu.oopa16s.util.Size;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+
+/*******************************************************************************
+ * ######## ##### {@#### ##########} ########### ########## ########### #####
+ * ############ ## ###### ########### ######## ######.
+ * #### ##### ##### ### ####### # ######## ##### ############,
+ * ##### #### ########## ######## {@#### ###########}.
+ * <#>
+ * ######### ## ######## ####### # #### ############ #####,
+ * ##### ###### ### ########## ########## {@#### ###########}.
+ * ####-## ####### ######## ########## ########## ########## {@#### ######},
+ * ## ######### ##### #############. ##### #### ### ####,
+ * #### ###### {@#### #####()} ### #### ######## ######### #######.
+ * <#>
+ * ######### ###########, ## ###### ##### #### ######## ## ##########
+ * #### ###### ###### ####### #### ######## #########.
+ * ### #### ########### ### ######### ########### ########
+ * ####### ######### # ### ###### # ####### ###,
+ * ### #### ###### #### ######## # ##### #### #########
+ * ######## ##### ##### #### ########
+ * # ###### ########## ######### ####### ###### #########.
+ * <#>
+ * ####-## ######### #### ######## #######
+ * {@#### ####################(##########)},
+ * ## #### ######### ######### ## ###### #### ####### ## #####.
+ *
+ * @######  ###### ##########
+ * @####### #.##.#### — ####-##-##
+ */
+public class Multishape
+     extends AShape
+  implements IDirectable
+{
+
+
+
+
+
+
+
+    /** Seznam prvků, z nichž se mnohotvar skládá. */
+    private final List<Part> parts = new ArrayList<>();
+
+
+
+
+    /** Dokud je atribut {@code false}, je možné do mnohotvaru
+     *  přidávat další součásti. */
+    private boolean creationDone = false;
+
+    /** Příznak klonovatelnosti daného mnohotvaru. */
+    private boolean copyable = true;
+
+    /** Směr, do nějž je daný mnohotvar natočen. */
+    private Direction8 direction;
+
+
+
+
+    /***************************************************************************
+     * Vytvoří prázdný mnohotvar s implicitním názvem očekávající,
+     * že jeho jednotlivé části budou teprve dodány pomocí metody
+     * {@link #addShapes(IShape...)}.
+     * <p>
+     * Ukončení sestavování mnohotvaru je třeba oznámit zavoláním metody
+     * {@link #creationDone()}.
+     * Dokud není sestavování ukončeno,
+     * není možno nastavovat pozici ani rozměr vznikajícího mnohotvaru.
+     * Je však možno se na ně zeptat
+     * a současně je možno rozdělaný mnohotvar nakreslit.
+     */
+    public Multishape()
+    {
+        this("");
+    }
+
+
+    /***************************************************************************
+     * Vytvoří prázdný mnohotvar se zadaným názvem očekávající,
+     * že jeho jednotlivé části budou teprve dodány pomocí metody
+     * {@link #addShapes(IShape...)}.
+     * <p>
+     * Ukončení sestavování mnohotvaru je třeba oznámit zavoláním metody
+     * {@link #creationDone()}.
+     * Dokud není sestavování ukončeno,
+     * není možno nastavovat pozici ani rozměr vznikajícího mnohotvaru.
+     * Je však možno se na ně zeptat
+     * a současně je možno rozdělaný mnohotvar nakreslit.
+     *
+     * @param name  Název vytvářeného mnohotvaru.
+     */
+    public Multishape(String name)
+    {
+        this(name, (IShape[])null);
+    }
+
+
+    /***************************************************************************
+     * Vytvoří mnohotvar s implicitním názvem skládající se ze zadaných objektů;
+     * do tohoto mnohotvaru již nebude možno přidávat další objekty.
+     *
+     * @param parts Jednotlivé tvary, z nichž je mnohotvar složen
+     */
+    public Multishape(IShape... parts)
+    {
+        this(null, parts);
+    }
+
+
+    /***************************************************************************
+     * Vytvoří mnohotvar se zadaným názvem; byli-li zadány jeho prvky,
+     * bude složen z těchto prvků, bude mu přiřazeno natočení na sever
+     * a nebude do něj již možno přidávat další objekty.
+     * <p>
+     * Je-li pole v druhém parametru prázdné nebo má-li hodnotu {@code null},
+     * bude do možno přidávat do vytvářeného mnohotvaru prvky voláním metody
+     * {@link #addShapes(eu.pedu.oopa16s.canvasmanager.IShape...)} nebo
+     * {@link #addTheShape(eu.pedu.oopa16s.canvasmanager.IChangeable)},
+     * a zavoláním metody
+     * {@link #setInitialDirection(eu.pedu.oopa16s.util.Direction8)}
+     * mu bude možno přiřadit výchozí směr natočení.
+     * Přidávání prvků a nastavení jeho natočení lze provádět až do zalepení
+     * vytvářeného mnohotvaru zavoláním metody {@link #creationDone()}.
+     * <p>
+     * S nezalepeným mnohotvarem není možno pracovat
+     * (je však možno jej zobrazit a volat jeho metodu {@link #toString()}).
+     * Mnohotvar se stává plně použitelný až po svém zalepení,
+     * avšak pak už do něj není možno přidávat žádné další prvky.
+     *
+     * @param name  Název vytvářeného mnohotvaru.
+     * @param parts Jednotlivé tvary, z nichž je mnohotvar složen
+     */
+    public Multishape(String name, IShape... parts)
+    {
+        super(0, 0, 1, 1);
+        if (name != null) {
+            super.setName(name);
+        }
+        direction = Direction8.NORTH;
+
+        if ((parts != null)  &&  (parts.length > 0)) {
+            addShapes(parts);
+            creationDone = true;
+        }
+    }
+
+
+    /***************************************************************************
+     * Vytvoří stejně velkou a stejně umístěnou kopii daného mnohotvaru
+     * a přidělí jí vlastní název ve tvaru {@code PůvodníNázev#?},
+     * kde otazník zastupuje nejmenší celé kladné číslo,
+     * pro něž není evidován mnohotvar s takto vytvořeným názvem.
+     *
+     * @return Požadovaná kopie
+     */
+    @Override
+    public Multishape copy()
+    {
+        if (! copyable) {
+            throw new IllegalStateException(
+                    "\nDaný mnohotvar není kopírovatelný");
+        }
+        IShape[] shapeArray = new IShape[parts.size()];
+        for (int i = 0; i < shapeArray.length; i++) {
+            Part part = parts.get(i);
+            shapeArray[i] = (IShape)part.shape;
+        }
+        Multishape copy = new Multishape(getName(), shapeArray);
+        return copy;
+    }
+
+
+
+
+    /***************************************************************************
+     * Vrátí informaci o tom, je-li daný mnohotvar kopírovatelný.
+     *
+     * @return Je-li kopírovatelný, vrátí {@code true},
+     *         jinak vrátí {@code false}
+     */
+    public boolean isCopyable()
+    {
+        return copyable;
+    }
+
+
+    /***************************************************************************
+     * Vrátí směr, do nějž je daná instance natočena.
+     *
+     * @return Směr, do nějž je daná instance natočena
+     */
+    @Override
+    public Direction8 getDirection()
+    {
+        return direction;
+    }
+
+
+    /***************************************************************************
+     * Otočí instanci do zadaného směru.
+     *
+     * @param direction Směr, do nějž má být instance otočena
+     */
+    @Override
+    public void setDirection(Direction8 direction)
+    {
+        verifyDone();
+        if (getWidth() != getHeight()) {
+            throw new IllegalStateException(
+                "\nNastavovat směr je možno pouze pro čtvercový mnohotvar: "
+                + this);
+        }
+        if (direction == this.direction) {
+            return;
+        }
+        Direction8 oldDirection = this.direction;
+        setDirectionInternal(direction);
+        turnTo(direction, oldDirection);
+    }
+
+
+    /***************************************************************************
+     * Nastaví zadaný směr jako výchozí směr vytvářené instance.
+     * Instance je implicitně považována za otočenou na sever.
+     * Má-li mít instance jiný výchozí směr,
+     * musí být nastaven před jejím dokončením.
+     *
+     * @param direction Nastavovaný výchozí směr instance
+     */
+    public void setInitialDirection(Direction8 direction)
+    {
+        try {
+            verifyDone();
+        }
+        catch(IllegalStateException e) {
+            setDirectionInternal(direction);
+            return;
+        }
+        throw new IllegalStateException(
+            "\nPočáteční směr mnohotvaru lze nastavit pouze" +
+            "před jeho dokončením");
+    }
+
+
+    /***************************************************************************
+     * Přemístí celý mnohotvar na zadanou pozici.
+     * Všechny součásti instance se přemisťují jako celek.
+     * Pozice instance jsou přitom definovány jako pozice
+     * levého horního rohu opsaného obdélníku.
+     *
+     * @param x  Nově nastavovaná vodorovná (x-ová) souřadnice instance,
+     *           x=0 má levý okraj plátna, souřadnice roste doprava
+     * @param y  Nově nastavovaná svislá (y-ová) souřadnice instance,
+     *           y=0 má horní okraj plátna, souřadnice roste dolů
+     */
+    @Override
+    public void setPosition(int x, int y)
+    {
+        verifyDone();
+        int dx = x - getX();
+        int dy = y - getY();
+        CM.stopPainting(); {
+            parts.stream().
+                map((part) -> part.shape).
+                    forEach((shape) -> {
+                        Position pt  = shape.getPosition();
+                        shape.setPosition(pt.x + dx,  pt.y + dy);
+            });
+            super.setPosition(x, y);
+        } CM.returnPainting();
+    }
+
+
+    /***************************************************************************
+     * Nastaví nový rozměr mnohotvaru.
+     * Upraví rozměry a pozice všech jeho součástí tak,
+     * aby výsledný mnohotvar měl i při novém rozměru
+     * stále stejný celkový vzhled.
+     * Rozměry instance jsou přitom definovány jako rozměry
+     * opsaného obdélníku.
+     * Nastavované rozměry musí být nezáporné,
+     * místo nulového rozměru se nastaví rozměr rovný jedné.
+     *
+     * @param width   Nově nastavovaná šířka; šířka &gt;= 0
+     * @param height  Nově nastavovaná výška; výška &gt;= 0
+     */
+    @Override
+    public void setSize(int width, int height)
+    {
+        verifyDone();
+        if ((width < 0) || (height < 0)) {
+            throw new IllegalArgumentException(
+                            "The dimensions may not be negativ: width=" +
+                            width + ", height=" + height);
+        }
+        CM.stopPainting(); {
+            parts.stream().
+                forEach((part) -> {
+                    part.afterResizing(width, height);
+                });
+            super.setSize(Math.max(1, width), Math.max(1, height));
+        } CM.returnPainting();
+    }
+
+
+
+
+    /***************************************************************************
+     * Prostřednictvím dodaného kreslítka vykreslí obraz své instance.
+     *
+     * @param painter Kreslítko, které nakreslí instanci
+     */
+    @Override
+    public void paint(Painter painter)
+    {
+        CM.stopPainting(); {
+            parts.stream().
+                forEach((part) -> {
+                    part.shape.paint(painter);
+                });
+        } CM.returnPainting();
+    }
+
+
+    /***************************************************************************
+     * Ukončí tvorbu mnohotvaru;
+     * od této chvíle již nebude možno přidat žádný další objekt.
+     */
+    public void creationDone()
+    {
+        creationDone = true;
+    }
+
+
+    /***************************************************************************
+     * Vrací charakteristiky dané instance do jejího podpisu.
+     *
+     * @return Charakteristiky dané instance
+     */
+    @Override
+    protected String forToString()
+    {
+        return super.forToString() + ", směr="  + getDirection();
+    }
+
+
+    /***************************************************************************
+     * Přidá do mnohotvaru kopie zadaných tvarů
+     * a příslušně upraví novou pozici a velikost mnohotvaru.
+     *
+     * @param shapes  Přidávané tvary
+     */
+    public final void addShapes(IShape... shapes)
+    {
+        if (creationDone) {
+            throw new IllegalStateException("\nAttempt to add a shape " +
+                "after finishing the creation of the mutlishape " + getName());
+        }
+        for (IShape shape : shapes) {
+            IShape ish = shape.copy();
+            addTheShape(ish);
+        }
+        CM.repaint();
+    }
+
+
+    /***************************************************************************
+     * Přidá do mnohotvaru zadaný prvek (tj. ne jeho kopii)
+     * a příslušně upraví novou pozici a velikost mnohotvaru.
+     * Neimplementuje-li přidávaný tvar rozhraní {@link IShape},
+     * bude celý mnohotvar označen za nekopírovatelný.
+     *
+     * @param shape  Přidávaný tvar
+     * @return Instance daného mnohotvaru, aby bylo možno příkazy řetězit
+     */
+    public final Multishape addTheShape(IChangeable shape)
+    {
+        Position position = shape.getPosition();
+        Size     size     = shape.getSize();
+        int      asx      = position.x;         
+        int      asy      = position.y;
+        int      asw      = size.width;
+        int      ash      = size.height;
+
+        if (! (shape instanceof ICopyable)) {
+            copyable = false;
+        }
+        if (parts.isEmpty())  
+        {
+            super.setPosition(asx, asy);
+            super.setSize(asw, ash);
+            parts.add(new Part(shape, asx, asy, asw, ash));
+            return this;                            
+        }
+
+        Area oldArea = getArea();
+        int xPos   = oldArea.x;
+        int yPos   = oldArea.y;
+        int width  = oldArea.width;
+        int height = oldArea.height;
+        boolean change = false;
+
+        if (asx < xPos)
+        {   
+            width += xPos - asx;
+            xPos   = asx;
+            super.setPosition(xPos, yPos);
+            super.setSize(width, height);
+            change = true;
+        }
+        if (asy < yPos)
+        {   
+            height += yPos - asy;
+            yPos   = asy;
+            super.setPosition(xPos, yPos);
+            super.setSize(width, height);
+            change = true;
+        }
+        if ((xPos + width) < (asx + asw))
+        {   
+            width = asx + asw - xPos;
+            super.setSize(width, height);
+            change = true;
+        }
+        if ((yPos + height) < (asy + ash))
+        {   
+            height = asy + ash - yPos;
+            super.setSize(width, height);
+            change = true;
+        }
+
+        if (change) {
+            Area newArea = new Area(xPos, yPos, width, height);
+            parts.stream().
+                forEach((p) -> {
+                    p.afterAddition(oldArea, newArea);
+                });
+        }
+        parts.add(new Part(shape, xPos, yPos, width, height));
+
+        return this;
+    }
+
+
+
+
+    /***************************************************************************
+     * Zkontroluje dokončenost konstrukce objektu a není-li objekt dokončen,
+     * vyhodí výjimku {@code IllegalStateException}.
+     *
+     * @throws IllegalStateException Objekt ještě není dokončen
+     */
+    private void verifyDone()
+    {
+        if (creationDone) {
+            return;
+        }
+        Throwable ex = new Throwable();
+        StackTraceElement[] aste = ex.getStackTrace();
+        String method = aste[1].getMethodName();
+        throw new IllegalStateException(
+            "\nNedokončený tvar nemůže volat metodu: " + method);
+    }
+
+
+    /***************************************************************************
+     * Otočí instanci do zadaného směru bez kontroly její dokončenosti.
+     *
+     * @param direction Směr, do nějž má být instance otočena
+     */
+    private void setDirectionInternal(Direction8 direction)
+    {
+        if (direction.isCardinal()) {
+            this.direction = direction;
+        }
+        else {
+            throw new IllegalArgumentException(
+                "\nMnohotvar lze natočit pouze do jednoho ze čtyř hlavních " +
+                "směrů, požadováno: " + direction);
+        }
+    }
+
+
+    /***************************************************************************
+     * Otočí instanci do zadaného směru bez kontroly její dokončenosti.
+     *
+     * @param toDirection Směr, do nějž má být instance otočena
+     * @param fromDirection Směr, do nějž má je instance otočena
+     */
+    private void turnTo(Direction8 toDirection, Direction8 fromDirection)
+    {
+        if (toDirection == Direction8.NOWHERE) {
+            return;
+        }
+        Direction8[] directions = null;
+        int module   = getWidth();
+        int distance = fromDirection.ordinalDistanceTo(toDirection);
+        for (Part part : parts) {
+            if (part.shape instanceof IDirectable) {
+                if (directions == null) {
+                    directions = Direction8.values();
+                }
+                Direction8 dirFrom = ((IDirectable)part.shape).getDirection();
+                Direction8 dirTo   = directions[dirFrom.ordinal() + distance];
+                ((IDirectable)part.shape).setDirection(dirTo);
+            }
+            double x, y, w, h;
+
+            switch(distance) 
+            {
+                case -6:
+                case +2:
+                    x = part.dy;
+                    y = 1 -  part.dx - part.dw;
+                    w = part.dh;
+                    h = part.dw;
+                    break;
+
+                case -4:
+                case +4:
+                    x = 1  -  part.dx  -  part.dw;
+                    y = 1  -  part.dy  -  part.dh;
+                    w = part.dw;
+                    h = part.dh;
+                    break;
+
+                case -2:
+                case +6:
+                    x = 1  -  part.dy  -  part.dh;
+                    y = part.dx;
+                    w = part.dh;
+                    h = part.dw;
+                    break;
+
+                default:
+                    throw new RuntimeException(
+                            "\nNení možné otočit oblast ze směru " +
+                            fromDirection + " do směru " + this);
+            }
+            part.dx = x;
+            part.dy = y;
+            part.dw = w;
+            part.dh = h;
+            part.afterResizing(module, module);
+        }
+    }
+
+
+
+
+    /***************************************************************************
+     * Instance třídy slouží jako přepravky pro uchovávání pomocných informací
+     * pro co nelepší změnu velikosti mnohotvaru.
+     */
+    private final class Part
+    {
+
+
+
+        /***********************************************************************
+         * Vytvoří přepravku a zapamatuje si aktuální stav některých poměrů
+         * vůči současné podobě mnohotvaru.
+         *
+         * @param part    Tvar, jehož podíl na mnohotvaru si chceme zapamatovat
+         * @param x       Aktuální vodorovná souřadnice vytvářeného mnohotvaru
+         * @param y       Aktuální svislá souřadnice vytvářeného mnohotvaru
+         * @param width   Aktuální šířka vytvářeného mnohotvaru
+         * @param height  Aktuální výška vytvářeného mnohotvaru
+         */
+        Part(IChangeable part, int x, int y, int width, int height)
+        {
+            this.shape = part;
+
+            Position position   = part.getPosition();
+            Size     size       = part.getSize();
+            int      partX      = position.x;
+            int      partY      = position.y;
+            int      partWidth  = size.width;
+            int      partHeight = size.height;
+            double   dblW       = width;
+            double   dblH       = height;
+
+            dx = (partX - x) / dblW;
+            dy = (partY - y) / dblH;
+            dw = partWidth   / dblW;
+            dh = partHeight  / dblH;
+        }
+
+
+
+
+        /** Tvar tvořící příslušnou část mnohotvaru. */
+        IChangeable shape;
+
+        /** Podíl odstupu od levého kraje mnohotvaru
+         *  na jeho celkové šířce. */
+        double dx;
+
+        /** Podíl odstupu od horního kraje mnohotvaru
+         *  na jeho celkové výšce. */
+        double dy;
+
+        /** Podíl šířky části k celkové šířce mnohotvaru. */
+        double dw;
+
+        /** Podíl výšky části k celkové výšce mnohotvaru. */
+        double dh;
+
+
+
+
+        /***********************************************************************
+         * Aktualizuje uchovávanou relativní pozici a rozměry dané součásti
+         * v rámci celého mnohotvaru  po přidání nové součásti
+         * vedoucí ke změně pozice a/nebo rozměru mnohotvaru.
+         *
+         * @param oldArea Oblast zaujímaná tvarem před přidáním
+         * @param newArea Oblast zaujímaná tvarem po přidáním
+         */
+        void afterAddition(Area oldArea, Area newArea)
+        {
+            dx = (oldArea.x - newArea.x + dx*oldArea.width)  / newArea.width;
+            dy = (oldArea.y - newArea.y + dy*oldArea.height) / newArea.height;
+
+            dw = dw * oldArea.width  / newArea.width;
+            dh = dh * oldArea.height / newArea.height;
+        }
+
+
+        /***********************************************************************
+         * Aktualizuje uchovávanou relativní pozici a rozměry dané součásti
+         * v rámci celého mnohotvaru po změně jeho velikosti.
+         *
+         * @param width   Nastavovaná šířka celého mnohotvaru
+         * @param height  Nastavovaná výška celého mnohotvaru
+         */
+        void afterResizing(int width, int height)
+        {
+            shape.setPosition(
+                  (int)Math.round(Multishape.this.getX() + dx*width),
+                  (int)Math.round(Multishape.this.getY() + dy*height));
+            shape.setSize((int)Math.round(dw*width),
+                          (int)Math.round(dh*height));
+        }
+
+
+        /***********************************************************************
+         * Vrátí textovou reprezentaci všech atributů.
+         *
+         * @return Textová reprezentace všech atributů
+         */
+        @Override
+        public String toString()
+        {
+            return "Part[shape=" + shape + ", dx=" + dx + ", dy=" + dy +
+                   ", dw=" + dw + ", dh=" + dh + "]";
+        }
+
+
+
+
+
+
+    }
+}

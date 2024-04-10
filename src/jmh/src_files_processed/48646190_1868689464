@@ -1,0 +1,181 @@
+
+/* #### ### ####### - ######
+ * ####: #### ####
+ * ########: #########
+ * ##: #########
+ */
+
+import ecs100.*;
+import java.util.*;
+import java.awt.Color;
+
+/** #### # ########## ## ### #######.
+ *  ####### ### ### ###### #######,
+ * ########## ##### ### ####### ####.
+ * ## # ###### #### ### #######, ## ####### ### ###### ##### ## ## ####
+ * ## # ###### ####### ### ##### ####, ## ##### # ### ###### ## ### #####.
+ */
+
+public class GliderSimulation{
+    double[] box1 = new double[] {300,100,50,50};
+    double[] box2 = new double[] {450,200,50,50};
+    double[] box3 = new double[] {300,300,50,50};
+    double[] box4 = new double[] {450,350,50,50};
+    double[] box5 = new double[] {450,50,50,50};
+    double[][] boxList = new double[][] {box1,box2,box3,box4,box5};
+    public static final int RIGHT_WALL = 600; 
+    public static final int CEILING = 350;    
+    public static final double FLOOR = 400;   
+    Glider gliderA = this.makeNewGlider();
+    Glider gliderB = this.makeNewGlider();
+    int scoreA = 0;
+    int scoreB = 0;
+
+    public GliderSimulation(){
+        UI.setKeyListener(this::doKey);
+        UI.addButton("Start", this::throwGliders);
+        UI.addSlider("Delay", 10, 80, 40, this::setDelay);
+        UI.addButton("Quit", UI::quit);
+        UI.setDivider(0.0); 
+        this.drawRoom();    
+    }
+
+    private int delay = 40;
+
+    public void doKey(String action) {
+        if (action.equalsIgnoreCase("a")) {
+            increaseA();
+        } else if (action.equalsIgnoreCase("z")) {
+            decreaseA();
+        } else if (action.equalsIgnoreCase("k")) {
+            increaseB();
+        } else if (action.equalsIgnoreCase("m")) {
+            decreaseB();
+        }
+    }
+
+    public void increaseA() {
+        if (!gliderA.stopped()) {
+            gliderA.setSpeed(gliderA.getSpeed()+1);
+        }
+    }
+
+    public void decreaseA() {
+        if (!gliderA.stopped()) {
+            gliderA.setSpeed(gliderA.getSpeed()-1);
+        }
+    }
+
+    public void increaseB() {
+        if (!gliderB.stopped()) {
+            gliderB.setSpeed(gliderB.getSpeed()+1);
+        }
+    }
+
+    public void decreaseB() {
+        if (!gliderB.stopped()) {
+            gliderB.setSpeed(gliderB.getSpeed()-1);
+        }
+    }
+
+    public void throwGliders(){
+        UI.setImmediateRepaint(false);  
+        UI.sleep(1000);
+        while (true) {
+            gliderA.stop();
+            gliderB.stop();
+            gliderA = this.makeNewGlider();
+            gliderB = this.makeNewGlider();
+            gliderA.draw();
+            gliderB.draw();
+
+            while (!(gliderA.stopped() && gliderB.stopped())){
+                gliderA.move();
+                gliderB.move();
+
+                UI.clearGraphics();   
+                gliderA.draw();
+                gliderB.draw();
+                this.drawRoom();
+                UI.repaintGraphics();
+
+                UI.sleep(delay);
+                if (gliderA.getHeight()>=CEILING -12){ 
+                    gliderA.setSpeed(Math.random()*4);
+                }
+                if (gliderB.getHeight() >= CEILING -12){
+                    gliderB.setSpeed(Math.random()*4);
+                }
+                if (gliderA.getX()>=RIGHT_WALL ){ 
+                    gliderA = this.makeNewGlider();
+                    scoreA++;
+                }
+                if (gliderB.getX() >= RIGHT_WALL ){
+                    gliderB = this.makeNewGlider();
+                    scoreB++;
+                }
+                if (gliderA.getHeight() == 0 && !gliderA.stopped()) {
+                    gliderA.stop();
+                    scoreA--;
+                }
+                if (gliderB.getHeight() == 0 && !gliderB.stopped()) {
+                    gliderB.stop();
+                    scoreB--;
+                }
+                for (int i = 0; i < boxList.length; i++) {
+                    if (gliderA.intersects(boxList[i]) && !gliderA.stopped()) {
+                        gliderA.stop();
+                        gliderA.setSpeed(0);
+                        scoreA--;
+                        break;
+                    }
+                }
+                for (int i = 0; i < boxList.length; i++) {
+                    if (gliderB.intersects(boxList[i]) && !gliderB.stopped()) {
+                        gliderB.stop();
+                        gliderB.setSpeed(0);
+                        scoreB--;
+                        break;
+                    }
+                }
+                if (scoreA < 0) {
+                    scoreA = 0;
+                }
+                if (scoreB < 0) {
+                    scoreB = 0;
+                }
+            }
+            UI.sleep(1000);  
+        }
+    }
+
+    /** Helper method that makes a new Glider with random initial values */
+    public Glider makeNewGlider(){
+        double initHeight = 50 + Math.random()*(CEILING-100); 
+        double xSpeed = Math.random()*12;       
+        return new Glider(initHeight, xSpeed);
+    }        
+
+    public void drawRoom(){
+        UI.drawString("Glider A's score: " + scoreA,10,20);
+        UI.drawString("Glider B's score: " + scoreB,10,40);
+        UI.setColor(Color.black);
+        UI.fillRect(0, FLOOR, RIGHT_WALL+50, 20);    
+        for (int i = 0; i < boxList.length; i++) {
+            double[] box = boxList[i];
+            UI.fillRect(box[0],box[1],box[2],box[3]);
+        }
+        UI.setColor(Color.lightGray);
+        UI.fillRect(RIGHT_WALL, FLOOR-CEILING, 50, CEILING);    
+        UI.setColor(Color.gray);
+        UI.drawLine(0, FLOOR-CEILING, RIGHT_WALL, FLOOR-CEILING); 
+    }
+
+    public void setDelay(double v){this.delay = (int)v;}
+
+    /** Create a new Simulation object */
+    public static void main(String[] arguments){
+        new GliderSimulation();
+    }        
+
+}

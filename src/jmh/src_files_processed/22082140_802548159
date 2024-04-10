@@ -1,0 +1,123 @@
+import kareltherobot.*;
+
+public class Chap6LabsTest extends KJRTest implements Directions
+{
+
+    public Chap6LabsTest(String name)
+    {   super(name);
+    }
+
+    public void setUp()
+    {   
+        World.setVisible(true);
+
+        World.setDelay(40);
+    }
+
+    public void test1_emptyBeeperBag()
+    {   
+        World.reset();
+        SmartBot karel1 = new SmartBot(4, 1, North, 100);
+        karel1.emptyBeeperBag();
+        assertFalse(karel1.anyBeepersInBeeperBag());
+        assertRunning(karel1);
+
+        SmartBot karel2 = new SmartBot(5, 1, North, 0);
+        karel2.emptyBeeperBag();
+        assertFalse(karel2.anyBeepersInBeeperBag());
+        assertRunning(karel2);
+
+    }
+
+    public void test2_goToOrigin()
+    {   World.reset();
+
+        SmartBot karel1 = new SmartBot(6, 2, East, 100);
+        karel1.goToOrigin();
+        assertAt(karel1, 1, 1);
+        assertFacingEast(karel1);
+        assertRunning(karel1);
+        
+        SmartBot karel2 = new SmartBot(7, 4, North, 100);
+        karel2.goToOrigin();
+        assertAt(karel2, 1, 1);
+        assertFacingEast(karel2);
+        assertRunning(karel2);
+        
+        SmartBot karel3 = new SmartBot(1, 4, West, 100);
+        karel3.goToOrigin();
+        assertAt(karel3, 1, 1);
+        assertFacingEast(karel3);
+        assertRunning(karel3);
+        
+        SmartBot karel4 = new SmartBot(2, 5, South, 100);
+        karel4.goToOrigin();
+        assertAt(karel4, 1, 1);
+        assertFacingEast(karel4);
+        assertRunning(karel4);
+        
+        SmartBot karel5 = new SmartBot(1, 1, South, 100);
+        karel5.goToOrigin();
+        assertAt(karel5, 1, 1);
+        assertFacingEast(karel5);
+        assertRunning(karel5);
+
+    }
+
+    public void test3_moveIntoRobotHeaven()
+    {   
+        World.reset();
+        World.placeBeepers(5, 5, 1);
+        SmartBot karel1 = new SmartBot(5, 5, North, 0);
+        karel1.moveIntoRobotHeaven();
+        assertAt(karel1, 5, 4);
+        assertBeepersAt(5, 5, 1);
+        
+        World.placeBeepers(5, 5, 1);
+        SmartBot karel2 = new SmartBot(5, 5, North, 0);
+        karel2.moveIntoRobotHeaven();
+        assertAt(karel2, 5, 6);
+        assertBeepersAt(5, 5, 2);
+        
+        World.placeBeepers(5, 5, 1);
+        SmartBot karel3 = new SmartBot(5, 5, North, 0);
+        karel3.moveIntoRobotHeaven();
+        assertAt(karel3, 5, 4);
+        assertBeepersAt(5, 5, 3);
+       
+        World.placeBeepers(5, 5, 1);
+        SmartBot karel4 = new SmartBot(5, 5, North, 0);
+        karel4.moveIntoRobotHeaven();
+        assertAt(karel4, 5, 6);
+        assertBeepersAt(5, 5, 4);
+
+        World.placeBeepers(5, 5, 10);
+        SmartBot karel5 = new SmartBot(5, 5, North, 0);
+        karel5.moveIntoRobotHeaven();
+        assertAt(karel5, 5, 6);
+        assertBeepersAt(5, 5, 14);
+        
+        World.placeBeepers(5, 5, 1);
+        SmartBot karel6 = new SmartBot(5, 5, North, 0);
+        karel6.moveIntoRobotHeaven();
+        assertAt(karel6, 5, 4);
+        assertBeepersAt(5, 5, 15);
+    }
+
+    public void test4_meander()
+    {   
+        World.reset();
+        World.loadWorld "Meander.kwld";
+        SmartBot karel = new SmartBot(2, 2, East, 0);
+        karel.meander();
+        assertAt(karel, 6, 10);
+        assertRunning(karel);
+
+    }
+
+
+    public static void main(String[] args)
+    {
+        junit.textui.TestRunner.run(Chap6LabsTest.class);
+    }
+}

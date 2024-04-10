@@ -1,0 +1,117 @@
+import javax.swing.*;
+import javax.imageio.*;
+import java.awt.image.*;
+import java.awt.*;
+import java.io.*;
+import java.util.Scanner;
+public class GameCore extends JFrame
+{
+   private static int WIDTH = 400;
+   private static int HEIGHT = 400;
+   public void setDefaultWindow(String title)
+   {
+       this.setTitle(title);
+       this.setDefaultCloseOperation(this.EXIT_ON_CLOSE);
+       this.setSize(WIDTH, HEIGHT);
+       this.setLocationRelativeTo(null);
+       this.setResizable(false);
+       this.setAlwaysOnTop(true);
+
+       BufferedImage image = null;
+       try{
+           image = ImageIO.read(new File("images\\MainIcon.png")); 
+       } catch(Exception e) {}
+       this.setIconImage(image);
+
+       this.setVisible(true);
+       new KeyList().addListeners(this);
+       new MouseList().addListeners(this);
+   }
+   private BufferStrategy strategy;
+   public void startLoop()    
+   {
+       this.createBufferStrategy(2);
+       strategy = this.getBufferStrategy();
+
+       while(true)
+       {
+           update();
+           render();
+           sleep();
+       }
+    }
+   public void update()
+   {
+       HORIZONTAL_PATH_FORWARD += 1;
+       HORIZONTAL_PATH_BACK -= 1;
+       b += 1;
+       l -= 1;
+       TOP_SCREEN += 1;
+      }
+   int p = 1;
+   int l = 500;
+   int b = 175;
+   int h = b;
+   int i = HORIZONTAL_PATH_FORWARD;
+   static int HORIZONTAL_PATH_FORWARD = 1;
+   int HORIZONTAL_PATH_BACK = 650;
+   int TOP_SCREEN = -450;
+   int BOTTOM_SCREEN = 600;
+   public void render()
+   {
+       Graphics g = strategy.getDrawGraphics(); 
+       Draw d = new Draw();
+       strategy.show();
+       clearScreen(g);
+
+       g.setColor(Color.ORANGE);
+       g.fillRect(i,h,50,50);
+       g.setColor(Color.BLUE);
+       g.fillOval(i,h,50,50);
+      
+       for (i = HORIZONTAL_PATH_FORWARD; i > 340; i++)  
+       {
+           i = HORIZONTAL_PATH_BACK;
+       }
+       for (h = b; h > 350; h++)
+       {
+         h = l;
+       }
+       if (h > HEIGHT)
+       {
+           h = HEIGHT;
+        }
+       if ( i > WIDTH)
+        {
+           i = WIDTH;
+        }
+       if ( h <= TOP_SCREEN)
+        {
+            h = TOP_SCREEN;
+        }
+       System.out.println(b + "    " + l);
+       if (HORIZONTAL_PATH_BACK == 0)
+            {
+                HORIZONTAL_PATH_BACK = 650;
+                HORIZONTAL_PATH_FORWARD = 0; 
+                l = ;
+            }
+       g.dispose();
+   }
+   public void sleep()
+   {
+       int FPS = 1;
+       int sleepTime = 15/FPS;
+       try
+       {
+           Thread.sleep(sleepTime);
+       }
+       catch(Exception ex)
+       {}
+   }
+   public void clearScreen(Graphics g)
+   {
+       g.setColor(Color.WHITE);
+       g.fillRect(0,0,WIDTH,HEIGHT);
+   }
+}

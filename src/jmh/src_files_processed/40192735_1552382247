@@ -1,0 +1,200 @@
+import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Vector;
+
+/**
+ * ### #### ##### ###########.
+ *
+ * @###### ##### #. ###### (#.#.######@####.##.##)
+ * @####### ####.##.##
+ */
+public class MonitorTest
+{
+    private Monitor monitor;
+    private Random rand;
+    private Vector<Reading> shadow;
+    private int numDays;
+    private int numLocations;
+    
+    /**
+     * Constructor for test class MonitorTest
+     */
+    public MonitorTest()
+    {
+        rand = new Random();
+        monitor = null;
+        numDays = 0;
+        numLocations = 0;
+    }
+
+    /**
+     * Sets up the test fixture.
+     * Generates random values for the readings.
+     *
+     * Called before every test case method.
+     */
+    @Before
+    public void setUp()
+    {
+        monitor = new Monitor();
+        shadow = new Vector<>();
+        numLocations = 4 + rand.nextInt(5);
+        numDays = 7 + rand.nextInt(7);
+        for(int day = 1; day <= numDays; day++) {
+            for(int location = 1; location <= numLocations; location++) {
+                double temperature = -rand.nextInt(10) + rand.nextInt(10) + 20 * rand.nextDouble();
+                Reading r = new Reading(location, day, temperature);
+                monitor.addReading(r);
+                shadow.add(r);
+            }
+        }
+    }
+
+    /**
+     * Tears down the test fixture.
+     *
+     * Called after every test case method.
+     */
+    @After
+    public void tearDown()
+    {
+    }
+
+    @Test
+    /**
+     * Test that the number of readings in the monitor is correct.
+     */
+    public void size()
+    {
+        assertEquals(numDays * numLocations, monitor.getNumberOfReadings());
+    }
+
+    @Test
+    /**
+     * Test that there are no readings for an invalid location.
+     */
+    public void sizeLocation()
+    {
+        assertEquals(0, monitor.getNumberOfReadings(0));
+    }
+
+    @Test
+    /**
+     * Test the number of readings for location 1.
+     */
+    public void sizeLocation1()
+    {
+        assertEquals(numDays, monitor.getNumberOfReadings(1));
+    }
+
+    @Test
+    /**
+     * Test the number of readings for location 7.
+     */
+    public void sizeLocation7()
+    {
+        assertEquals(numDays, monitor.getNumberOfReadings(1));
+    }
+
+    @Test
+    /**
+     * Test that removing of readings for an invalid day
+     * works ok.
+     */
+    public void remove0()
+    {
+        assertEquals(numDays * numLocations, monitor.getNumberOfReadings());
+        monitor.removeReadingsOnDay(0);
+        assertEquals(numDays * numLocations, monitor.getNumberOfReadings());
+    }
+
+    @Test
+    /**
+     * Test removal of readings from day 5.
+     */
+    public void remove5()
+    {
+        assertEquals(numDays * numLocations, monitor.getNumberOfReadings());
+        monitor.removeReadingsOnDay(5);
+        assertEquals((numDays-1) * numLocations, monitor.getNumberOfReadings());
+    }
+
+
+    @Test
+    /**
+     * Test failure to find a reading when there are none.
+     */
+    public void ceilingFail()
+    {
+        monitor = new Monitor();
+        assertEquals(-1, monitor.findFirstAbove(10));
+    }
+
+    @Test
+    /**
+     * Test finding a value when the ceiling is lower than all values.
+     */
+    public void ceilingMinus1()
+    {
+        ceilingCheck(-1);
+    }
+
+    @Test
+    /**
+     * Test finding a value when the ceiling is mid range.
+     */
+    public void ceiling18()
+    {
+        ceilingCheck(18);        
+    }
+
+    @Test
+    /**
+     * Test finding a value when the ceiling is higher than all values.
+     */
+    public void ceiling100()
+    {
+        ceilingCheck(100);
+    }
+    
+    /**
+     * Check the behavior when finding values above a given ceiling.
+     * @param ceiling The ceiling above which values are looked for.
+     */
+    private void ceilingCheck(int ceiling)
+    {
+        int found = monitor.findFirstAbove(ceiling);
+        if(shadow.isEmpty()) {
+            assertEquals(-1, found);
+        }
+        else {
+            double max = 
+                    shadow.stream()
+                          .mapToDouble(r -> r.getTemperature())
+                          .max()
+                          .getAsDouble();
+            Optional<Reading> first;
+            if(max > ceiling) {
+                first = 
+                    shadow.stream()
+                          .filter(r -> r.getTemperature() > ceiling)
+                          .limit(1).reduce((r1, r2) -> r1);
+            }
+            else {
+                first = 
+                    shadow.stream()
+                          .filter(r -> r.getTemperature() == max)
+                          .limit(1).reduce((r1, r2) -> r1);
+            }
+            assertEquals(first.get().getDay(), found);
+        }
+                       
+    }
+}
+
+
+

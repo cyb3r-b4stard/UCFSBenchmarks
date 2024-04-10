@@ -1,0 +1,308 @@
+
+/**
+ * ###### #### ##### #### ###### "####" - ###### ## ## ######## #### ########
+ * @### 
+ */
+import java.util.List;
+
+public class StringBinaryTree
+extends Object
+implements Iterable<StringBinaryTree> Serializable
+{
+    
+    
+    private String root = "";
+    private StringBinaryTree leftChild;
+    private StringBinaryTree rightChild;
+    
+    /**
+    * Default state save/restore file name
+    */;
+    public static final String SERIAL_FILENAME;
+    
+    /**
+     * Constructs an empty tree.
+     */
+    public StringBinaryTree(){
+            this.root = null;
+            this.leftChild = null; 
+            this.rightChild = null;
+    }
+    
+    /**
+     * Constructs a tree with no children whose value is 
+     * specified by the parameter.
+     */
+    public StringBinaryTree(final String rootvalue) 
+        throws IllegalArgumentException {
+            this.root = rootvalue;
+            this.leftChild = null;
+            this.rightChild = null;
+    }
+    
+    /**
+     * Constructs a tree with specified value, left child, and right child.
+     */
+    public StringBinaryTree(final String rootvalue, 
+                        final StringBinaryTree leftchild, 
+                        final StringBinaryTree rightchild) 
+                        throws IllegalArgumentException {
+        if(rootvalue == null)
+            throw new IllegalArgumentException();
+        this.root = rootvalue;
+        this.leftChild = leftchild;
+        this.rightChild = rightchild;
+    }
+
+        /**
+     * Tests whether the tree is empty
+     */
+    public boolean isEmpty() {
+        return (this.root == null);
+    }
+   
+    /** 
+     * Returns the number of nodes
+     */
+    public int numberOfNodes(){
+        int count = 0;
+        if(!isEmpty()){
+            count++;
+            count += this.leftChild.numberOfNodes();
+            count += this.rightChild.numberOfNodes();
+        }       
+        return count;
+    }
+    
+    /**
+     * Tests whether this node is a leaf node.
+     */
+    public boolean isLeaf() throws NullPointerException {
+        if (isEmpty())
+            throw new NullPointerException();
+        
+        return (leftChild == null && rightChild == null);
+    }
+    
+    /**
+     * Returns the value of the root of this tree.
+     */
+    public String getValue() 
+                       throws NullPointerException {
+        if (isEmpty())
+            throw new NullPointerException();
+            
+        return this.root;
+    }
+    
+    /**
+     * Returns the left child of this tree
+     */
+    public StringBinaryTree getLeftChild() 
+                                throws NullPointerException {
+        if (isEmpty())
+            throw new NullPointerException();
+            
+        return this.leftChild;
+    }
+    
+    /**
+     * Returns the right child of this tree.
+     */
+    public StringBinaryTree getRightChild() 
+                                throws NullPointerException {
+        if (isEmpty())
+            throw new NullPointerException();
+            
+        return this.rightChild;
+    }
+    
+    /**
+     * Modifies the value to the root of this tree
+     */
+    public void setValue(final String value)
+                                throws NullPointerException {
+        if (isEmpty())
+            throw new NullPointerException();
+            
+        this.root = value;                       
+    }
+    
+    /**
+     * Replaces the left child of the root of this tree
+     */
+    public void setLeftChild(final StringBinaryTree child) throws NullPointerException {
+        if (isEmpty())
+            throw new NullPointerException();
+            
+        this.leftChild = child;
+    }
+
+    /**
+     * Replaces the right child of the root of this tree.
+     */
+    public void setRightChild(final StringBinaryTree child) throws NullPointerException {
+        if (isEmpty())
+            throw new NullPointerException();
+            
+        this.rightChild = child;
+    }
+    
+    /**
+     * Determines the number of leaves of this tree.
+     */
+    public int numberOfLeaves() 
+                throws NullPointerException {
+        if (isEmpty())
+            throw new NullPointerException();
+            
+              if (leftChild == null && rightChild == null) 
+                    return 1;
+              if (this.leftChild != null)
+                       count += this.leftChild.numberOfLeaves();
+              if (this.rightChild != null)
+                       count += this.rightChild.numberOfLeaves();
+              return count;
+    }
+   
+    /**
+     * Determines the height of this tree; -1 if empty tree.
+     */
+    public final int height() {
+        if(isEmpty())
+            return -1;
+        
+        int leftSide = this.leftChild.height();
+        int rightSide = this.rightChild.height(); 
+        
+        return(1 + Math.max(leftSide, rightSide));
+    }
+ 
+    /**
+     * Indicated whether some other object is "equal to" this one.
+     */
+    public boolean equals(Object obj){
+        return false;
+    }
+    
+    /**
+     * Returns a hash code value for this tree.
+     */
+    public int hashCode(){
+        return 0;
+    }
+    
+    /**
+     * Returns a list of values in the order in which the nodes would be 
+     * visited using a preorder traversal.
+     */
+    public List<String> preorderValues(){
+        List<String> temp = new ArrayList<String>();
+
+    if(root == null){
+        return result;
+    }
+
+    result.add(root.val);
+    if(root.left != null){
+        result.addAll(preorderTraversal(root.left));
+    }
+    if(root.right != null){
+        result.addAll(preorderTraversal(root.right));
+    }
+
+    return result;
+    }
+    
+    /**
+     * Returns a list of values in the order in which the nodes would be 
+     * visited using a inorder traversal.
+     */
+    public List<String> inorderValues(){
+        return 0;
+    }    
+    
+    /**
+     * Returns a list of values in the order in which the nodes would be 
+     * visited using a postorder traversal.
+     */
+    public List<String> postorderValues(){
+        
+    }    
+    
+    /**
+     * Returns a list of subtress in the order in which they would be 
+     * visited using preorder traversal.
+     */
+    public List<StringBinaryTree> preorderSubtrees() {
+        if(isEmpty()) return;
+        
+    }
+    
+    /**
+     * Returns a list of subtress in the order in which they would be 
+     * visited using inorder traversal.
+     */
+    public List<StringBinaryTree> inorderSubtrees() {
+        return 0;
+    }    
+    
+    /**
+     * Returns a list of subtress in the order in which they would be 
+     * visited using postorder traversal.
+     */
+    public List<StringBinaryTree> postorderSubtrees() {
+        return 0;
+    }
+    
+    /**
+     * Converts a list of trees into a list of the root values of those trees.
+     */
+    public static List<String> values(List<StringBinaryTree> listOfTrees) {
+        return 0;
+    }
+    
+    /**
+     * Returns an iterator over the subtrees (nodes) of this tree
+     */
+    public Iterator<StringBinaryTree> iterator() {
+        
+    }
+    
+    /**
+     * Returns a String representation of this StringBinaryTree.
+     */
+    public String toString() {
+        if (isLeaf()) {
+            return root.data.toString();
+        }
+        else {
+            String temp, left = "null", right = "null";
+            temp = root.data.toString();
+            if (this.leftChild != null) {
+                left = this.leftChild.toString();
+            }
+            if (this.rightChild != null) {
+                right = this.rightChild.toString();
+            }
+            return root + " (" + left + ", " + right + ")";
+        }
+    }
+    
+   /**
+     * Saves this tree to a file.
+     */
+   public final boolean save(String filename) 
+                                    throws IOException {
+          return 0;               
+   }
+   
+   /**
+    * Restores this tree from a file
+    */
+   public final boolean restore(String filename)
+                                    throws IOException {
+         return 0;
+   }
+    
+}

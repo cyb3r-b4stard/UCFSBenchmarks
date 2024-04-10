@@ -1,0 +1,102 @@
+/**
+ * @######  ##### #####
+ * @####### ##-##-####
+ * ##### ########## #.
+ *
+ * ## ## #####, ##### #####, #### ########### ########## ## ## ### #### ### # ####
+ * ### ###### ## ######## #### ### ##### ####### ## ### #####.
+ *
+ *
+ * # ####### ## ##### # ##### ###### ## #### #######
+ * ####### ### ########.
+ *
+ *  ##### #######: #####.#####@######.###   
+ *  #####: ####### 
+ *  ####### # ##### ##: #####
+ *  ###### ####:
+ *  ###### ## #### #### #### ## #### ##########: # 
+ */
+
+import java.util.Scanner;
+
+public class Hangman {
+
+    public static void main(String[] args) {
+        intro();
+        PhraseBank phrases = new PhraseBank();
+        Scanner keyboard = new Scanner(System.in);
+        boolean play = true;
+        String topic = getTopic();
+        while (play) {
+            playGame(keyboard, topic);
+
+            play = playAgain(keyboard);
+        }
+    }
+
+    public static void intro() { 
+        System.out.println("This program plays the game of hangman.");
+        System.out.println("When the window opens select the file");
+        System.out.println("with the phrases you want to use.\n");
+        System.out.println("The computer will pick a random phrase.");
+        System.out.println("Enter capital letters as your guesses.");
+        System.out.println("After 5 wrong guesses you lose.");
+    }
+
+    public static void playGame(Scanner keyboard, String topic) {
+        System.out.printf("I am thinking of a %s ...", topic);
+        String solution = getNextPhrase();
+        String current = hidePhrase(String);
+        int wrongGuess = 0;
+        String lettersRemaining = "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z ";
+        while (!solution.equals(current) && wrongGuess < 5) {
+            System.out.println("The current phrase is " + current);
+            System.out.println("The letters you have not guessed yet are:");
+            System.out.println(lettersRemaining);
+            System.out.println("Enter your next guess: ");
+            char guess = keyboard.nextChar();
+            int guessOutcome = evaluateGuess(guess);
+            if (guessOutcome == 0) {
+                System.out.println(guess + " is not a valid guess.");
+            } else if (guessOutcome == 1) {
+
+            } else {
+
+            }
+
+        }
+        if (solution.equals(current)) {
+            System.out.println("\nThe phrase is " + solution + ".");
+            System.out.println("YOU WIN!!!!");
+        } else {
+            System.out.println("You lose. The secret phrase was " + solution + ".");
+        }
+    }
+
+    public static String hidePhrase(String solution) {
+        String result = "";
+        for(int i = 0; i < solution.length(); i++){
+            char ch = solution.charAt(i);
+            if( Character.isLetter(ch))
+                result += "*";
+            else if(ch == ' ')
+                result += '_';
+        }
+        return result;        
+    }
+
+    public static String evaluateGuess(String guess) {
+        if (guess 
+    }
+
+    public static boolean playAgain(Scanner keyboard) { 
+        System.out.println("\nDo you want to play again?");
+        System.out.println("Enter 'Y' or 'y' to play again: ");
+        String playAgain = keyboard.next();
+        if (playAgain.equalsIgnoreCase("y")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}

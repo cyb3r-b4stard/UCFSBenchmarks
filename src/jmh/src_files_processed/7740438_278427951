@@ -1,0 +1,150 @@
+import lineals.*;
+import java.util.*;
+
+public class Concordança
+ {   private NodeCnc prim;
+     private int talla;
+     private boolean esOrd;
+     private String separadors;
+    
+     /** Constructora d’una Concordanca des d’un Scanner.
+     * @param ent Scanner des del qual es construeix la Concordanca.
+     * @param ord true sii la Concordanca esta ordenada ascendentment.
+     * @param sep String amb la descripció dels separadors de paraules. */
+ public boolean Concordanca(Scanner ent, boolean ord, String sep)
+ {
+    this(ord,sep);
+    
+    int contLine = 0;
+    while(ent.hasNextLine())
+    {
+        contaLine++;
+        String line = ent.nextLine.trim();
+        String aux[] = line.split(separadors);
+        for(int i=0; i<aux.length;i++)
+        {
+            String pal = processar(aux[i]);
+            if(pal.length()!=0){inserir(pal,contaLine);}
+        }
+    }
+ }
+ 
+ public Concordanca(Scanner ent, boolean ord)
+ {
+     
+ }
+ 
+ public String toString()
+ {
+     String aux = "";
+     for(NodeCnc p = prim; p!=null; p= p.seguent)
+     {
+         String lin = String.Format("%15s",p.pal)+" ("+
+                      String.Format("%3d",p.numLins.talla())+"): ";
+                      
+         lin = lin + p.numLins.toString() + "\n";
+         aux+=lin;
+     }
+     return aux;
+ }
+ 
+ private Concordança(boolean ord, String sep)
+ {
+     prim = null;
+     talla = 0;
+     esOrd = ord;
+     separadors = sep;
+ }
+ 
+ private void inserir(String pal, int numLin)
+    {
+        if(esOrd) {this.insOrd(pal,numLin);}
+        else {this.insNoOrd(pal,numLin);}
+    }
+ 
+ private void inserir(String pal,int numLin)
+ {
+     NodeCnc p =prim;
+     NodeCnc q = null;
+     
+     while(p!=null && !pal.equals(p.pal))
+     {
+         q=p;
+         p=p.seguent;
+     }
+     
+     if(p!=null){p.numLin.encuar(numLin);}
+     else
+     {
+         if(q==null)
+         {
+             prim = new NodeCnC(pal,numLin);
+         }
+         else
+         {
+             q.seguent = new NodeCnC(pal,numLin);
+             talla++;
+         }
+     }
+ }
+ 
+ private void inserirOrd(String pal,int numLin)
+ {
+     NodeCnC p = prim;
+     NodeCnC q = null;
+     
+     while(p!=null && p.pal.compareTo(pal)<0)
+     {
+         q=p;
+         p=p.seguent;
+     }
+     
+     if(q==null)
+     {
+         prim = new NodeCnC(pal,numLin);
+     }
+     else
+     {
+         if(p!=null && p.pal.equals(pal))
+         {
+             p.numLin.encuar(numLin);
+             talla++;
+         }
+         else
+         {
+             q.seguent = new NodeCnC(pal,numLin);
+             talla++;
+         }
+     }
+ }
+ 
+ private static String processar(String s)
+ {
+     return s.trim();
+ }
+ 
+     /** Constructora d’una Concordanca des d’una String.
+      * @param str String des del qual es construeix la Concordanca.
+      * @param ord true sii la Concordanca esta ordenada ascendentment.
+      * @param sep String amb la descripció dels separadors de paraules. */
+ public void Concordanca(String str, boolean ord, String sep)
+ {
+    
+ }
+ public int talla()
+ {
+    
+ }
+     /** Torna si es tracta d’una Concordanca ordenada o no.
+      * @return boolean */
+ public boolean esOrdenada()
+ {
+    return true;
+ }
+ /** Torna una String que representa el contingut de la Concordanca.
+ * @return String: el contingut de la Concordanca */
+ public String toString()
+ {
+    
+ }
+}

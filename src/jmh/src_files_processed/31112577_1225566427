@@ -1,0 +1,204 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+import javax.sound.sampled.*;
+public class Board extends JPanel implements ActionListener
+{
+    Timer time;
+    Image Background1;
+    Image Background2;
+    Image Trump;
+    Character myGuy;
+    ArrayList<MovingObstacle> obstacles = new ArrayList<MovingObstacle>();
+    Image Obstacle;
+    Image StartScreen;
+    Image StartButton;
+    Image Title;
+    Image Murica;
+    Image Mexican;
+    Image Eagle;
+    int count=0;
+    boolean startScreen=true;
+    boolean firstSpacePress=false;
+    public Board()
+    {
+        ImageIcon i= new ImageIcon("grass.jpg");
+        Background1=i.getImage();
+        
+        ImageIcon i2= new ImageIcon("Trump.png");
+        Trump=i2.getImage();
+        
+        ImageIcon i3= new ImageIcon("George Lopez.png");
+        Obstacle=i3.getImage();
+        
+        ImageIcon i4= new ImageIcon("StartScreen.jpg");
+        StartScreen=i4.getImage();
+        
+        ImageIcon i5= new ImageIcon("StartButton.png");
+        StartButton=i5.getImage();
+        
+        ImageIcon i6= new ImageIcon("Title2.png");
+        Title=i6.getImage();
+        
+        ImageIcon i7= new ImageIcon("Sand2.jpg");
+        Background2=i7.getImage();
+        
+        ImageIcon i8= new ImageIcon("Murica.png");
+        Murica=i8.getImage();
+        
+        ImageIcon i9= new ImageIcon("Mexican.png");
+        Mexican=i9.getImage();
+        
+        Image.Icon i10= new ImageIcon("Bald Eagle.jpg")
+        Eagle=i10.getImage();
+        
+        
+        myGuy= new Character(50,50,93,92,6,Trump);
+        
+        
+
+        
+        obstacles.add(new MovingObstacle (532,447,120,120,5,Obstacle));
+        obstacles.add(new MovingObstacle (607,399,120,120,5,Obstacle));
+        obstacles.add(new MovingObstacle (446,376,120,120,5,Obstacle));
+        obstacles.add(new MovingObstacle (410,439,120,120,5,Obstacle));
+        obstacles.add(new MovingObstacle (334,359,120,120,5,Obstacle));
+        obstacles.add(new MovingObstacle (367,401,120,120,5,Obstacle));
+        obstacles.add(new MovingObstacle ((int)(Math.random()*-700%5+-1),(int)(Math.random()*-700%5+-1),120,120,5,Obstacle)); 
+        
+        
+        
+        time= new Timer(16,this);
+        time.start();
+    }
+    public void actionPerformed(ActionEvent e)
+    {
+        
+        
+        
+        if(startScreen==false)
+        {
+        count++;
+       
+         
+        
+        myGuy.move(obstacles);
+        if(count%5==0)
+        {
+        obstacles.add(new MovingObstacle ((int)(Math.random()*700+10),(int)(Math.random()*500+400),120,120,5,Obstacle));
+        if(obstacles.get(obstacles.size()-1).intersects(myGuy))
+        obstacles.remove(obstacles.size()-1);
+        }
+        
+    }
+        repaint();
+    }
+    public void paint(Graphics g)
+    {    
+             super.paint(g);
+        Graphics2D g2d = (Graphics2D) g;
+        
+     
+    
+    
+            
+       
+        g2d.drawImage(Background1, 0,0,null);
+        g2d.drawImage(Murica, 0,0,null);
+        g2d.drawImage(Background2, 0,350,null);
+        g2d.drawImage(Mexican, 0,350,null);
+       
+       
+        g2d.drawImage(myGuy.getImage(),(int)myGuy.getX(),(int)myGuy.getY(),null);
+        
+        for(MovingObstacle o:obstacles)
+        g2d.drawImage(o.getImage(),(int)o.getX(),(int)o.getY(),null);
+        
+    if(startScreen==true)
+       {
+        g2d.drawImage(StartScreen,205,275, null);
+       g2d.drawImage(StartButton,245,545,null);
+       g2d.drawImage(Title,205,275,null);
+       g2d.drawImage(Ealge,245,300,null);
+       
+    }
+    
+    }
+    public void left()
+    {
+        myGuy.left();
+    }
+    public void noLeft()
+    {
+        myGuy.noleft();
+    }
+    public void right()
+    {
+        myGuy.right();
+    }
+    public void noRight()
+    {
+        myGuy.noright();
+    }
+    public void up()
+    {
+        myGuy.up();
+    }
+    public void noUp()
+    {
+        myGuy.noup();
+    }
+    public void down()
+    {
+        myGuy.down();
+    }
+    public void noDown()
+    {
+        myGuy.nodown();
+    }
+    public void GameStart()
+    {
+        if(firstSpacePress==false)
+        {
+        Board.playSound("hawk_screeching-Mike_Koenig-1626170357.wav");
+        firstSpacePress=true;
+    }
+        startScreen=false;
+    }
+    public static synchronized void playSound(final String url)
+    {
+        new Thread(new Runnable(){
+    
+            public void run(){
+            try {
+                Clip clip = AudioSystem.getClip();
+                AudioInputStream inputStream = AudioSystem.getAudioInputStream(Board.class.getResourceAsStream(url));
+                
+                clip.open(inputStream);
+                clip.start();
+            } catch (Exception e){
+                
+            }
+        }
+        }).start();
+    }
+    
+    
+    
+}
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+

@@ -1,0 +1,97 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.text.DecimalFormat;
+
+public class testTime extends JApplet implements ActionListener
+{
+  private JTextField inputhour1, inputhour2, inputminute1, inputminute2, inputaorp1, inputaorp2, display;
+  private JRadioButton aorp1a, aorp1p, aorp2a, aorp2p;
+  public void init()
+  {
+    JPanel panel = new JPanel();
+    panel.setLayout(new GridLayout(7,2));
+    Container c = getContentPane();
+
+    panel.add(new JLabel("Hour 1:"));
+    inputhour1 = new JTextField(7);
+    panel.add(inputhour1);
+
+    panel.add(new JLabel("Minute 1:"));
+    inputminute1 = new JTextField(7);
+    panel.add(inputminute1);
+    
+    aorp1a = new JRadioButton("AM");
+    aorp1p = new JRadioButton("PM");
+    ButtonGroup gr = new ButtonGroup();
+    gr.add(aorp1a);
+    gr.add(aorp1p);
+    panel.add(aorp1a);
+    panel.add(aorp1p);
+    
+    panel.add(new JLabel("Hour 2:"));
+    inputhour2 = new JTextField(7);
+    panel.add(inputhour2);
+        
+    panel.add(new JLabel("Minute 2:"));
+    inputminute2 = new JTextField(7);
+    panel.add(inputminute2);
+    
+    aorp2a = new JRadioButton("AM");
+    aorp2p = new JRadioButton("PM");
+    ButtonGroup lr = new ButtonGroup();
+    lr.add(aorp2a);
+    lr.add(aorp2p);
+    panel.add(aorp2a);
+    panel.add(aorp2p);
+    
+    panel.add(new JLabel("Answer:"));
+    display = new JTextField(20);
+    display.setEditable(false);
+    display.setBackground(Color.green);
+    display.setText("  0");
+    panel.add(display);
+    
+    
+    JButton calc = new JButton("Calculate answer");
+    calc.addActionListener(this);
+        
+    
+    c.add(panel, BorderLayout.CENTER); 
+    c.add(calc, BorderLayout.SOUTH);
+  }
+  
+  public void actionPerformed(ActionEvent e)
+  {
+    String s;
+    int hour1, hour2, minute1, minute2;
+    char aorp1, aorp2;
+    double answer;
+    
+    s = inputhour1.getText().trim();
+    hour1 = Integer.parseInt(s);
+    s = inputhour2.getText().trim();
+    hour2 = Integer.parseInt(s);
+    s = inputminute1.getText().trim();
+    minute1 = Integer.parseInt(s);
+    s = inputminute2.getText().trim();
+    minute2 = Integer.parseInt(s);
+    
+    if(aorp1a.isSelected())
+        aorp1 ='a';
+    else
+        aorp1 = 'p';
+        
+    if(aorp2a.isSelected())
+        aorp2 ='a';
+    else
+        aorp2 = 'p';
+    
+    Time app1 = new Time(hour1, minute1, aorp1);
+    Time app2 = new Time(hour2, minute2, aorp2);
+    
+    Time elap = app1.elapsed(app2);
+    display.setText("The time elapsed between" app1.toString(); + "m and " + app2.toSting + "m is " + elap.toString() + ".");
+  }
+}
+

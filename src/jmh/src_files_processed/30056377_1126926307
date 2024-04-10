@@ -1,0 +1,233 @@
+/**
+ * ###### ## ######## ## # ####### #### ## ##### ## # ######.
+ * 
+ * @###### ### ######## 
+ * @####### ########
+ */
+import java.util.*;
+public class c169
+{
+  public static void main(String[] args)
+        { 
+            
+             String [] students = {"1,John,Smith,John1989@gmail.com,20,88,79,59", 
+             "2,Suzan,Erickson,Erickson_1990@gmailcom,19,91,72,85",
+             "3,Jack,Napoli,The_lawyer99yahoo.com,19,85,84,87",
+             "4,Erin,Black,Erin.black@comcast.net,22,91,98,82",
+             "5,Timothy,Johnston,bearjohnston2015@gmail.com,30,85,95,96"};
+             
+             Roster roster = new Roster();
+             
+             for(int i = 0; i < students.length; i++)
+             {
+                 String [] studentBlock = students[i].split(",");
+                 Roster.add(studentBlock[0],studentBlock[1],studentBlock[2],studentBlock[3],Integer.parseInt(studentBlock[4]),Integer.parseInt(studentBlock[5]),Integer.parseInt(studentBlock[6]),Integer.parseInt(studentBlock[7]));
+                   
+                } 
+             
+              Roster.print_all();
+              Roster.print_invalid_emails();
+              for(int i = 0;i < roster.studentRoster.size();i++)
+		{
+			  Roster.print_average_grade(Integer.toString(i+1));
+		}
+              Roster.remove("3");
+              Roster.remove("3");
+              
+              
+             
+                }
+
+
+public static class Student
+    {
+    
+    private String stuID;
+    private String fName;
+    private String lName;
+    private String email;   
+    private int age;
+    private int grade1;
+    private int grade2;
+    private int grade3;
+    private int [3] grades;
+    
+    
+    public Student(String studentID, String studentFirstname, String studentLastname, String emailAddress, int studentAge, int studentGrade1, int studentGrade2, int studentGrade3)
+    {
+        set_student_id(studentID);
+        set_student_firstname(studentFirstname);
+        set_student_lastname(studentLastname);
+        set_email(emailAddress);
+        set_student_age(studentAge);
+        set_student_grades(studentGrade1,studentGrade2,studentGrade3);
+
+    }
+    
+    public void set_student_id(String studentID)
+    {
+     this.stuID = studentID;
+   
+    }
+    
+    public void set_student_firstname(String studentFirstname)
+    {
+    this.fName = studentFirstname;
+    }
+    
+    public void set_student_lastname(String studentLastname)
+    {
+    this.lName = studentLastname;
+    }
+    
+    public void set_email(String emailAddress)
+    {
+    this.email = emailAddress;
+    }
+    
+    public void set_student_age( int studentAge)
+    {
+    this.age = studentAge;
+    }
+    
+   /* public void set_student_grade1( int studentGrade)
+    {
+    this.grade1 = studentGrade;
+    }
+    
+    public void set_student_grade2( int studentGrade)
+    {
+    this.grade2 = studentGrade;
+    }
+    
+     public void set_student_grade3( int studentGrade)
+    {
+    this.grade3 = studentGrade;
+    }*/
+    
+    public void set_student_grades( int studentGrade1, int studentGrade2, int studentGrade3)
+    {
+    this.grades[0] = studentGrade1;
+    this.grades[1] = studentGrade2;
+    this.grades[2] = studentGrade3;
+    }
+    
+    public String get_student_id()
+    {    
+    return stuID;
+    }
+       
+    public String get_student_firstname()
+    {
+    return fName;
+    }
+       
+    public String get_student_lastname()
+    {
+    return lName;
+    }
+      
+    public String get_email()
+    {
+    return email;
+    }
+    
+    public int get_student_age()
+    {
+    return age;
+    }
+    
+    public int get_student_grade1()
+    {
+          return grade1;
+    }
+    
+    public int get_student_grade2()
+    {
+          return grade2;
+    }
+ 
+    public int get_student_grade3()
+    {
+     return grade3;
+    }
+   
+    public int [] get_student_grades()
+    {
+          return grades;
+    }
+    
+    public void print()
+		{
+          System.out.println("\t First Name: " + get_student_firstname() + "\t Last Name: " + get_student_lastname() + "\t Age: " + get_student_age() + "\t Grades: " + get_student_grades());
+             
+		}
+    
+   
+    /*@Override
+        public String toString() {
+        return (this.stuID + "," + this.fName + "," + this.lName + "," + this.email + "," + this.age + "," + this.grade1 + "," + this.grade2 + "," + this.grade3);
+   }*/
+ }
+
+public static class Roster
+    {
+	   public static List<Student> studentRoster = new ArrayList<Student>(); 
+
+	   public static void add(String studentID, String firstname, String lastname, String emailaddress, int age, int grade1, int grade2, int grade3)
+   { 
+       Student tmpStu = new Student(studentID,firstname,lastname,emailaddress,age,grade1,grade2,grade3);
+       studentRoster.add(tmpStu);          
+      } 
+      
+   public static void remove(String studentID){       
+       for (int i = 0; i < studentRoster.size(); i++)
+          {
+              if(Integer.parseInt(studentRoster.get(i).get_student_id()) == Integer.parseInt(studentID)){
+                  System.out.print("Student: " + studentRoster.get(i).get_student_firstname() + " " + studentRoster.get(i).get_student_lastname());
+                  studentRoster.remove(i);
+                  System.out.println(" has been removed.");
+                  return;
+                }
+               else if(i == studentRoster.size() - 1){
+                   System.out.println("Error: No such Student ID. Please try again.");
+                }
+            }
+                     
+        }
+   
+    public static void print_all(){
+            for (Student i : studentRoster ){
+                i.print();                   
+        }
+            }
+            
+            public static void print_average_grade(String studentID){
+        for (int i = 0; i < studentRoster.size(); i++)
+          {
+           if(Integer.parseInt(studentRoster.get(i).get_student_id()) == Integer.parseInt(studentID)){  
+               System.out.println("\t First Name: " + studentRoster.get(i).get_student_firstname() + "\t Last Name: " + studentRoster.get(i).get_student_lastname() + "\t Grade Average: " + ((studentRoster.get(i).get_student_grade1() + studentRoster.get(i).get_student_grade2() + studentRoster.get(i).get_student_grade3())/3));
+                  return;
+                }
+               else if(i == studentRoster.size() - 1){
+                   System.out.println("Error: No such Student ID. Please try again.");
+                }
+                }
+            }
+    
+     public static void print_invalid_emails(){
+         int x = 0;
+          for (int i = 0; i < studentRoster.size(); i++)
+          {
+           if(studentRoster.get(i).get_email().indexOf('@') + 1 == 0 || studentRoster.get(i).get_email().indexOf('.') + 1 == 0 || studentRoster.get(i).get_email().indexOf(' ') + 1 == 0){  
+               System.out.println("\t Student ID: " + studentRoster.get(i).get_student_id() + "\t Invalid E-mail: " + studentRoster.get(i).get_email());
+                 x++;
+                }
+               else if(x == 0 && i == studentRoster.size() - 1){
+                   System.out.println("All e-mails are correctly formated");
+                }
+                }
+            
+    }
+	}
+}

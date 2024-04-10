@@ -1,0 +1,86 @@
+import java.util.Random;
+/**
+ * ##### # ########### ## ##### ####### ####.
+ * 
+ * @###### ## #######
+ * @####### ####### ##, ####
+ */
+public class Bowling
+{
+    private int firstBall;
+    private int secondBall;
+    private int extraBall;
+    private int frame;
+    private int score;
+    private Random r;
+    private int[];
+
+    public Bowling() {
+        firstBall = 0;
+        secondBall = 0;
+        extraBall = 0;
+        frame = 0;
+        score = 0;
+        r = new Random();
+    }
+
+    public void changeValues(int anotherFirstBall, int anotherSecondBall, int anotherExtraBall, int anotherFrame, int anotherScore) {
+        firstBall = anotherFirstBall;
+        secondBall = anotherSecondBall;
+        extraBall = anotherExtraBall;
+        frame = anotherFrame;
+        score = anotherScore;
+    }
+
+    public void displayFrame() {
+        if(frame == 10)
+            System.out.println("*** The game is over - final score ***");
+
+        System.out.println("Results for frame #" + frame);
+        System.out.println("First ball: " + firstBall);
+        System.out.println("Second ball: " + secondBall);
+        System.out.println("Extra ball: " + extraBall);
+        System.out.println("Total score: " + score);
+    }
+
+    public void updateScore() {
+        score = firstBall + secondBall + extraBall;
+    }
+
+    public void bowlFrame() {
+        frame++;
+        firstBall = r.nextInt(11);
+
+        if(firstBall != 10)
+            secondBall = r.nextInt(10 - firstBall + 1);
+        else
+            secondBall = 0;
+
+        if(frame == 10 && firstBall + secondBall == 10)
+            extraBall = r.nextInt(11);
+
+        updateScore();
+    }
+
+    public void reset() {
+        firstBall = 0;
+        secondBall = 0;
+        extraBall = 0;
+        frame = 0;
+        score = 0;
+    }
+
+    public void Bowling() {
+        for(int counts=0; counts<=10; counts++)
+            bowlFrame();
+        reset();
+    }
+
+    public int playGame() {
+        reset();
+        for(int counts=0; counts<=10; counts++)
+            bowlFrame();
+        return score;
+    }
+
+}

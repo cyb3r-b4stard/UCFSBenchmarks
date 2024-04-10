@@ -1,0 +1,176 @@
+import java.util.*;
+
+/**
+ * # ##### ######### # ###-###-### (####### ### #######, ## ### ##) ####.
+ * 
+ * @###### #### ########
+ * @####### ######## #, ####
+ * 
+ * 
+ * @###### ######### #### ##### 
+ * @####### #### #, ####
+ * 
+ */
+
+public class TicTacToe
+{
+   public static final String PLAYER_X = "X"; 
+   public static final String PLAYER_O = "O"; 
+   public static final String EMPTY = " ";  
+   public static final String TIE = "T"; 
+ 
+   private String player;   
+
+   private String winner;   
+
+   private int numFreeSquares; 
+   
+   private String board[][]; 
+   
+   /** 
+    * Constructs a new Tic-Tac-Toe board.
+    */
+   public TicTacToe()
+   {
+      board = new String[3][3];
+   }
+
+   /**
+    * Sets everything up for a new game.  Marks all squares in the Tic Tac Toe board as empty,
+    * and indicates no winner yet, 9 free squares and the current player is player X.
+    */
+   private void clearBoard()
+   {
+      for (int i = 0; i < 3; i++) {
+         for (int j = 0; j < 3; j++) {
+            board[i][j] = EMPTY;
+         }
+      }
+      winner = EMPTY;
+      numFreeSquares = 9;
+      player = PLAYER_X;     
+   }
+
+
+   /**
+    * Plays one game of Tic Tac Toe.
+    */
+
+   public void playGame()
+   {
+      int row, col;
+      Scanner sc;
+
+      clearBoard(); 
+
+      print();
+
+      while (winner==EMPTY) { 
+    
+         while (true) { 
+            System.out.print("Enter row and column of chosen square (0, 1, 2 for each): ");
+            sc = new Scanner(System.in);
+            row = sc.nextInt();
+            col = sc.nextInt();
+            if (row>=0 && row<=2 && col>=0 && col<=2 && board[row][col]==EMPTY) break;
+            System.out.println("Invalid selection, try again.");
+         }
+
+         board[row][col] = player;        
+         numFreeSquares--;            
+
+         if (haveWinner(row,col)) 
+            winner = player; 
+         else if (numFreeSquares==0) 
+            winner = TIE; 
+         
+         print();
+         
+         if (player==PLAYER_X) 
+            player=PLAYER_O;
+         else 
+            player=PLAYER_X;
+      }
+
+   } 
+
+
+   /**
+    * Returns true if filling the given square gives us a winner, and false
+    * otherwise.
+    *
+    * @param int row of square just set
+    * @param int col of square just set
+    * 
+    * @return true if we have a winner, false otherwise
+    */
+   private boolean haveWinner(int row, int col) 
+   {
+
+       if (numFreeSquares>4) return false;
+
+
+       if ( board[row][0].equals(board[row][1]) &&
+            board[row][0].equals(board[row][2]) ) return true;
+       
+       if ( board[0][col].equals(board[1][col]) &&
+            board[0][col].equals(board[2][col]) ) return true;
+
+       if (row==col)
+          if ( board[0][0].equals(board[1][1]) &&
+               board[0][0].equals(board[2][2]) ) return true;
+
+       if (row==2-col)
+          if ( board[0][2].equals(board[1][1]) &&
+               board[0][2].equals(board[2][0]) ) return true;
+
+       return false;
+   }
+
+   
+   /**
+    * Prints the board to standard out using toString().
+    */
+    public void print() 
+    {
+        System.out.println(toString());
+    }
+  
+    
+   /**
+    * Returns a string representing the current state of the game.  This should look like
+    * a regular tic tac toe board, and be followed by a message if the game is over that says
+    * who won (or indicates a tie).
+    *
+    * @return String representing the tic tac toe game state
+    */
+    public String toString() 
+    {
+      String temp = "";
+    
+       for(int r = 0; r < 3; r++) {
+           for(int c = 0; c < 3; c++){
+               
+               temp += board[r][c] + " " + "|";
+              if(haveWinner(r,c)==true){
+                System.out.println(board[r][c]+" "+"wins");
+              }
+             }
+             
+        temp = temp.substring(0, temp.length() - 1);
+        temp += "\n";
+      
+        for(int i = 0; r != 3-1 && i < 3; i++){
+            temp += " - ";
+        }
+        temp += "\n";
+       
+       }
+       
+         return temp;
+        
+     }
+       return temp;
+    }
+    
+

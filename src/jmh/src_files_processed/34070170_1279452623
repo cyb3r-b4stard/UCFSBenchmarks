@@ -1,0 +1,176 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.io.*;
+
+public class GUI
+{
+ 
+    private final String initName = "Baggings";
+    private final String initFirstName = "Bilbo";
+    private final String initCountry = "Shire" ;
+    private String name = initName;
+    private String firstName = initFirstName;
+    private String country = initCountry;
+    
+    private JFrame myFrame;
+    private JTextField nameField;
+    private JTextField fNameField;
+    private JTextField countryField;
+    int counter=0;
+ 
+    public static void main(String []arg)
+    {
+    new GUI();
+ 
+        }
+ 
+    public GUI()
+    {
+      makeFrame();
+    }
+ 
+    public void makeFrame()
+    {
+        myFrame = new JFrame("Java Final ");
+        myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        myFrame.setSize(500,250); 
+ 
+        JPanel myPanel = new JPanel();
+ 
+        JLabel label1 = new JLabel("first name:");
+        fNameField = new JTextField(firstName);
+        JLabel label2 = new JLabel("name:");
+        nameField = new JTextField(name);
+        JLabel label3 = new JLabel("country:");
+        countryField = new JTextField(country);
+ 
+        myPanel.setLayout(new GridLayout(3,2));
+        myPanel.add(label1);
+myPanel.add(fNameField);
+        myPanel.add(label2);
+myPanel.add(nameField);
+        myPanel.add(label3);
+myPanel.add(countryField);
+ 
+ 
+        JButton saveButton = new JButton("save");
+        saveButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent ae) {
+                saveValues();
+            }
+        });
+ 
+        JButton cancelButton = new JButton("cancel");
+        cancelButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent ae)
+            {
+                cancelValues();
+            }
+        });
+ 
+        JButton printButton = new JButton("Change Label");
+        printButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent ae)
+            {
+                counter++;
+                label1.setText("time:"+counter);
+                if(counter>=33)
+                counter=0;
+            }
+        });
+ 
+ 
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(saveButton);
+        buttonPanel.add(cancelButton);
+        buttonPanel.add(printButton);
+ 
+       myFrame.getContentPane().add(myPanel);
+       myFrame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+        makeMenu();
+ 
+        myFrame.setVisible(true);
+    }
+ 
+    private void makeMenu()
+    {
+        JMenu menu = new JMenu("Data");
+ 
+        JMenuItem init = new JMenuItem("Set Initial Data");
+        init.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                displayInitialValues();
+            }
+        });
+ 
+        JMenuItem delete = new JMenuItem("Delete Data");
+        delete.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                deleteValues();
+            }
+        });
+ 
+        JMenuItem about = new JMenuItem("About");
+        about.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent ae) {
+                
+                JOptionPane.showMessageDialog(myFrame,"toz 3leke lana hahahha")
+            };
+        });
+ 
+       
+         
+        
+        menu.add(init);
+        menu.add(delete);
+ 
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.add(menu);
+        menuBar.add(about);
+ 
+        myFrame.setJMenuBar(menuBar);
+    }
+ 
+ 
+    private void saveValues()
+    {
+        firstName = fNameField.getText();
+        name = nameField.getText();
+        country = countryField.getText();
+
+ 
+    }
+ 
+    private void cancelValues()
+    {
+        fNameField.setText(firstName);
+        nameField.setText(name);
+        countryField.setText(country);
+    }
+ 
+    private void printValues()
+    {
+        saveValues();
+        System.out.println("first name: "+ firstName);
+        System.out.println("name: "+name);
+        System.out.println("country: "+country);
+    }
+ 
+    private void displayInitialValues()
+    {
+        
+        
+        fNameField.setText(initFirstName);
+        nameField.setText(initName);
+        countryField.setText(initCountry);
+    }
+ 
+    private void deleteValues()
+    {
+        
+        fNameField.setText(null);
+        nameField.setText(null);
+        countryField.setText(null);
+    }
+}

@@ -1,0 +1,103 @@
+/**
+*###### ##### : ########## ## ##### ########## ###### ## #######<#######>
+ * 
+ * @###### ###### 
+ */
+import java.util.*;
+public class PlanoHash
+{
+    private HashSet<Ponto2D> pontos;
+
+    public PlanoHash(){
+        this.pontos = new HashSet<Ponto2D>();
+    }
+
+    public PlanoHash(HashSet<Ponto2D> p){
+        this.pontos = new HashSet<Ponto2D>();
+        for(Ponto2D pt : p){
+            this.pontos.add(pt.clone());
+        }
+    }
+    
+    public PlanoHash(PlanoHash p){
+        this.pontos = new HashSet<Ponto2D>();
+        for(Ponto2D pt : p.getPontos()){
+            this.pontos.add(pt.clone());
+        }
+    }
+    
+    public HashSet<Ponto2D> getPontos(){
+        HashSet<Ponto2D> novo = new HashSet<Ponto2D>();
+        for(Ponto2D p : this.pontos){ novo.add(p.clone()); }
+        return novo;
+    }
+    
+    
+    public int numPontos(){ return pontos.size(); }
+    
+    public boolean existePonto(Ponto2D p){ return pontos.contains(p); }
+    
+    public void inserePonto(Ponto2D p) {
+        this.pontos.add(p.clone());
+    }
+    
+    public void removePonto(Ponto2D p){
+        if(pontos.contains(p)) pontos.remove(p);
+    }
+    
+    public void juntaPontos(HashSet<Ponto2D> pts){
+            for(Ponto2D p : pts){
+                if(!this.existePonto(p)){
+                    pontos.add(p.clone());
+                }
+            }
+    }
+    
+    public int numPontosAntesCoord(double xx){
+        int cont = 0;
+        boolean encontrouX = false;
+        Iterator<Ponto2D> it = this.pontos.iterator();
+        
+        while(it.hasNext() && !encontrouX){
+            if (it.next().getX() != xx){
+                cont++;
+            }
+            else {
+                encontrouX = true;
+            }
+        }
+        return cont;
+    }
+    
+    public void alteraTodosPontos(double inc){
+        for(Ponto2D pt : this.pontos){
+            pt.incCoord(inc,0);
+        }
+    }
+    
+    
+    public String toString() {
+        return  "Elementos: " + this.pontos.toString();
+    }  
+  
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || this.getClass() != o.getClass()) return false;
+        else {
+            PlanoHash conj = (PlanoHash) o;
+            return this.pontos.equals(conj.getPontos());
+                }
+    }  
+  
+    public int hashCode(){
+        int hash = 7;
+        long aux = Double.doubleToLongBits()
+        hash =31*hash + (int)(aux ^ (aux >>> 32));
+        return hash;
+    }
+    
+  
+    public PlanoHash clone() {
+        return new PlanoHash(this);
+    }
+}

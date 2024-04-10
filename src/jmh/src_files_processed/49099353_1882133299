@@ -1,0 +1,151 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.GregorianCalendar;
+
+/**
+ * ####### # ######### ## ###### ######### ####.
+ * 
+ * @###### (### ####) 
+ * @####### (###### ## ###### ## ####)
+ */
+public class Motorista extends Actor
+{
+    private double grau;
+    private ArrayList<Integer> classificacao;
+    
+    private double kms;
+    private boolean trabalha; 
+
+    public Motorista(String email, String nome, String password, String morada, GregorianCalendar datadenascimento, double grau, ArrayList<Integer> classificacao, ArrayList<Viagem> viagens, double kms, boolean trabalha) {
+        super(email, nome, password, morada, datadenascimento,viagens);
+        this.grau = grau;
+        this.classificacao = classificacao;
+        
+        this.kms = kms;
+        this.trabalha = trabalha;
+    }
+
+    public Motorista() {
+        super();
+        this.grau = 0;
+        this.classificacao = new ArrayList<> ();;
+        this.viagens = new ArrayList<>();
+        this.kms = 0;
+        this.trabalha = false;
+    }
+
+    public Motorista(Motorista other)
+    {
+        super(other.getEmail(), other.getNome(), other.getPassword(), other.getMorada(), other.getDataDeNascimento());
+        this.grau = other.getGrau();
+        this.classificacao = other.getClassificacao();
+        this.viagens = other.getViagens();
+        this.kms = other.getKms();
+        this.trabalha = other.isTrabalha();
+    }
+
+    public double getGrau() {
+        return grau;
+    }
+
+    public void setGrau(double grau) {
+        this.grau = grau;
+    }
+
+    
+    public ArrayList<Integer> getClassificacao(){
+        
+        return (ArrayList<Integer>) classificacao.clone();
+        
+        
+    }
+    
+    public double getClassificacaoMedia() {
+        return this.classificacao.stream().mapToInt(e -> e).sum() / this.classificacao.size();
+    }
+
+    public void addClassificacao(int classificacao) {
+        this.classificacao.add(classificacao);
+    }
+
+    public ArrayList<Viagem> getViagens() {
+        
+        ArrayList<Viagem> novo = new ArrayList<Viagem>();
+        
+        for(Viagem v: this.viagens)
+        
+              novo.add(new Viagem(v));
+              
+              
+       return novo; 
+        
+        
+        
+    }
+
+    public void setViagens(ArrayList<Viagem> viagens) {
+        this.viagens = viagens;
+    }
+
+    public double getKms() {
+        return kms;
+    }
+
+    public void setKms(double kms) {
+        this.kms = kms;
+    }
+
+    public boolean isTrabalha() {
+        return trabalha;
+    }
+
+    public void setTrabalha(boolean trabalha) {
+        this.trabalha = trabalha;
+    }
+
+    
+  
+    
+    
+
+    @Override
+    public String toString() {
+        return "Motorista{" +
+                "grau=" + grau +
+                ", classificacao=" + classificacao +
+                ", viagens=" + viagens +
+                ", kms=" + kms +
+                ", trabalha=" + trabalha +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Motorista motorista = (Motorista) o;
+
+        if (Double.compare(motorista.grau, grau) != 0) return false;
+        if (classificacao != null ? classificacao.equals(motorista.classificacao) : motorista.classificacao == null);
+        if (Double.compare(motorista.kms, kms) != 0) return false;
+        if (trabalha != motorista.trabalha) return false;
+        return viagens != null ? viagens.equals(motorista.viagens) : motorista.viagens == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        long temp;
+        temp = Double.doubleToLongBits(grau);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (classificacao != null ? classificacao.hashCode() : 0);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (viagens != null ? viagens.hashCode() : 0);
+        temp = Double.doubleToLongBits(kms);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (trabalha ? 1 : 0);
+        return result;
+    }
+}

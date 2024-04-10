@@ -1,0 +1,335 @@
+import java.awt.*;
+import javax.swing.*;
+import java.awt.event.*;
+/**
+ * #### ## ### ####### #### ### ##########.
+ * # #### ######## # ######, ### #### ##### ### ## ### #########.
+ * ### #### ###### ## ##########
+ * ## ### #### ## ###### ### ####, ###### ### ########## ########
+ * 
+ *
+ * @###### ####### #########
+ * @####### ##/##/##
+ */
+public class PaintBrush extends BorlandBase
+{   
+    int x1;
+    int x2;
+    int y1;
+    int y2;
+    Color selectedColor=Color.black;
+    String selectedTool="drawButton";
+
+    JPanel toolPanel=new JPanel();
+    JPanel colorPanel=new JPanel();
+    JPanel drawingPanel=new JPanel();
+
+    JButton drawButton= new JButton();
+    JButton circleButton= new JButton();
+    JButton squareButton= new JButton();
+    JButton lineButton= new JButton();
+    JButton clearButton=new JButton("Clear");
+    JButton colorBlackButton = new JButton();
+    JButton colorRedButton = new JButton();
+    JButton colorOrangeButton = new JButton();
+    JButton colorYellowButton = new JButton();
+    JButton colorGreenButton = new JButton();
+    JButton colorBlueButton = new JButton();
+    JButton colorMagentaButton = new JButton();
+    JButton colorWhiteButton = new JButton();
+    BTextField resultField = new BTextField(10);
+    colorWhiteButton.setOpaque(true);
+    colorWhiteButton.setBorderPainted(false);
+    colorBlackButton.setOpaque(true);
+    colorBlackButton.setBorderPainted(false);
+    colorRedButton.setOpaque(true);
+    colorRedButton.setBorderPainted(false);
+    colorOrangeButton.setOpaque(true);
+    colorOrangeButton.setBorderPainted(false);
+    colorYellowButton.setOpaque(true);
+    colorYellowButton.setBorderPainted(false);
+    colorGreenButton.setOpaque(true);
+    colorGreenButton.setBorderPainted(false);
+    colorBlueButton.setOpaque(true);
+    colorBlueButton.setBorderPainted(false);
+    colorMagentaButton.setOpaque(true);
+    colorMagentaButton.setBorderPainted(false);
+
+    public void initialize()
+    {
+
+        toolPanel.setPreferredSize(new Dimension(150,450));
+        toolPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+        toolPanel.setBackground(Color.blue);
+
+        drawButton=new JButton(new ImageIcon(this.getClass().getResource("pencil.png")));
+        circleButton=new JButton(new ImageIcon(this.getClass().getResource("circle.png")));
+        squareButton=new JButton(new ImageIcon(this.getClass().getResource("Square.png")));
+        lineButton=new JButton(new ImageIcon(this.getClass().getResource("Line.png")));
+
+        addItem(toolPanel,drawButton);
+        addItem(toolPanel,circleButton);
+        addItem(toolPanel,squareButton);
+        addItem(toolPanel,lineButton);
+        addItem(toolPanel,clearButton);
+        addItem(toolPanel, resultField);
+        resultField.setEditable(false);
+
+        drawingPanel.setPreferredSize(new Dimension(340,450));
+        drawingPanel.setBackground(Color.white);
+        drawingPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+
+        colorPanel.setPreferredSize(new Dimension(500,50));
+        colorPanel.setBackground(Color.blue);      
+        colorPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+
+        colorWhiteButton.setPreferredSize(new Dimension(30, 30));
+        colorWhiteButton.setBackground(Color.white);
+        addItem(colorPanel,colorWhiteButton);        
+        colorBlackButton.setPreferredSize(new Dimension(30, 30));
+        colorBlackButton.setBackground(Color.black);
+        addItem(colorPanel,colorBlackButton);
+        colorRedButton.setPreferredSize(new Dimension(30, 30));
+        colorRedButton.setBackground(Color.red);
+        addItem(colorPanel,colorRedButton);
+        colorOrangeButton.setPreferredSize(new Dimension(30, 30));
+        colorOrangeButton.setBackground(Color.orange);
+        addItem(colorPanel,colorOrangeButton);        
+        colorYellowButton.setPreferredSize(new Dimension(30, 30));
+        colorYellowButton.setBackground(Color.yellow);
+        addItem(colorPanel,colorYellowButton);
+        colorGreenButton.setPreferredSize(new Dimension(30, 30));
+        colorGreenButton.setBackground(Color.green);
+        addItem(colorPanel,colorGreenButton);
+        colorBlueButton.setPreferredSize(new Dimension(30, 30));
+        colorBlueButton.setBackground(Color.blue);
+        addItem(colorPanel,colorBlueButton);
+        colorMagentaButton.setPreferredSize(new Dimension(30, 30));
+        colorMagentaButton.setBackground(Color.magenta);
+        addItem(colorPanel,colorMagentaButton); 
+
+        setScreenLayout(new BorderLayout());
+        addPanel(toolPanel,BorderLayout.WEST);
+        addPanel(drawingPanel,BorderLayout.CENTER);
+        addPanel(colorPanel,BorderLayout.SOUTH);
+    }
+
+    public boolean inCanvas(int x2, int y2)
+    {
+        if (x2>toolPanel.getWidth() && y2<toolPanel.getHeight())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    /**
+     * This method if you would like to do drawing on your screen
+     */
+    public void paintScreen (Graphics g)
+    {       
+    }
+    public void mousePressed(MouseEvent e)
+    {
+        x1=e.getX();
+        y1=e.getY();
+        Graphics g = getG();
+    }
+
+    public void mouseReleased(MouseEvent e)
+    {
+        Graphics g = getG();
+        g.setColor(selectedColor);
+        x2=e.getX();
+        y2=e.getY();
+        if (inCanvas(x2,y2)==false) 
+        {
+            return;
+        }
+        if (selectedTool.equals("squareButton"))
+        {
+            if (x1<x2 && y1<y2)
+            {
+                int height=x2-x1;
+                int width=y2-y1;
+                g.drawRect(x1,y1,height,width);
+            }
+            if (x1>x2 && y1>y2)
+            {
+                int height=x1-x2;
+                int width=y1-y2;
+                g.drawRect(x2,y2,height,width);
+            }
+            if (x1>x2 && y1<y2)
+            {
+                int height=x1-x2;
+                int width=y2-y1;
+                g.drawRect(x2,y1,height,width);
+            }
+            if (x1<x2 && y1>y2)
+            {
+                int height=x2-x1;
+                int width=y1-y2;
+                g.drawRect(x1,y2,height,width);
+            }
+        }
+        if (selectedTool.equals("circleButton"))
+        {
+            int width=x2-x1;
+            int height=y2-y1;
+            g.drawOval(x1,y1,width,height);
+        }
+        if (selectedTool.equals("lineButton"))
+        {
+            g.drawLine(x1,y1,x2,y2);
+        }
+        drawScreen();
+    }
+
+    public void mouseClicked(MouseEvent e)
+    {
+    }
+
+    public void mouseDragged(MouseEvent e)
+    {
+        x2=e.getX();
+        y2=e.getY();
+        Graphics g=getTempG();
+        g.setColor(selectedColor);
+        if (inCanvas(x2,y2)==false) 
+        {
+            return;
+        }
+        if (selectedTool.equals("drawButton"))
+        {
+            Graphics t=getG();
+            t.setColor(selectedColor);
+            t.drawLine(x1,y1,x2,y2);
+            x1=x2;
+            y1=y2;
+        }
+        if (selectedTool.equals("circleButton"))
+        {
+            int width=x2-x1;
+            int height=y2-y1;
+            g.drawOval(x1,y1,width,height);
+        }
+        if (selectedTool.equals("squareButton"))
+        {
+            if (x1<x2 && y1<y2)
+            {
+                int height=x2-x1;
+                int width=y2-y1;
+                g.drawRect(x1,y1,height,width);
+            }
+            if (x1>x2 && y1>y2)
+            {
+                int height=x1-x2;
+                int width=y1-y2;
+                g.drawRect(x2,y2,height,width);
+            }
+            if (x1>x2 && y1<y2)
+            {
+                int height=x1-x2;
+                int width=y2-y1;
+                g.drawRect(x2,y1,height,width);
+            }
+            if (x1<x2 && y1>y2)
+            {
+                int height=x2-x1;
+                int width=y1-y2;
+                g.drawRect(x1,y2,height,width);
+            }
+        }
+        if (selectedTool.equals("lineButton"))
+        {
+            g.drawLine(x1,y1,x2,y2);
+        }
+        drawScreen();
+    }
+
+    public void buttonPressed (Component c)
+
+    {
+        if (c == drawButton)
+        {
+            resultField.setText("Draw");
+            selectedTool="drawButton";
+        }
+        if (c==circleButton)
+        {
+            resultField.setText("Circle");
+            selectedTool="circleButton";
+        }
+        if (c==squareButton)
+        {
+            resultField.setText("Square");
+            selectedTool="squareButton";
+        }
+        if (c==lineButton)
+        {
+            resultField.setText("Line");
+            selectedTool="lineButton";
+        }      
+        if (c==clearButton)
+        {
+            resultField.setText("Cleared");
+            getTempG();
+            clearScreen();
+        }
+        if (c==colorBlackButton)
+        {
+            resultField.setText("Black");
+            selectedColor=Color.black;
+        }
+        if (c==colorWhiteButton)
+        {
+            resultField.setText("White");
+            selectedColor=Color.white;
+        }
+        if (c==colorRedButton)
+        {
+            resultField.setText("Red");
+            selectedColor=Color.red;
+        }
+        if (c==colorMagentaButton)
+        {
+            resultField.setText("Magenta");
+            selectedColor=Color.magenta;
+        }
+        if (c==colorOrangeButton)
+        {
+            resultField.setText("Orange");
+            selectedColor=Color.orange;
+        }
+        if (c==colorYellowButton)
+        {
+            resultField.setText("Yellow");
+            selectedColor=Color.yellow;
+        }
+        if (c==colorGreenButton)
+        {
+            resultField.setText("Green");
+            selectedColor=Color.green;
+        }
+        if (c==colorBlueButton)
+        {
+            resultField.setText("Blue");
+            selectedColor=Color.blue;
+        }
+    }
+
+    public static void runAsApplet()
+    {
+        try{  BorlandBase.runAsApplet((BorlandBase)(new Object() { }.getClass().getEnclosingClass().newInstance()));  }
+        catch (Exception e){e.printStackTrace();}
+    }
+
+    public static void main(String[] args) {
+        try{  BorlandBase.main((BorlandBase)(new Object() { }.getClass().getEnclosingClass().newInstance()));  }
+        catch (Exception e){e.printStackTrace();}
+    }
+}

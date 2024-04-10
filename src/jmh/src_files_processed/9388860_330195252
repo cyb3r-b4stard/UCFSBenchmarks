@@ -1,0 +1,269 @@
+
+/**
+ * ####: ####### ######
+ * ####### ##: ########
+ * ######: ######## - ######### ######
+ * #####: ##################### #########.
+ */
+import java.io.*;
+import java.util.*;
+public class ShortestRemainingTime
+{
+    private Process[] queue;
+    private int max_size;
+    private int queue_size;
+    /**
+     * Constructor for objects of class ShortestRemainingTime
+     */
+    public ShortestRemainingTime()
+    {
+        max_size = 20;
+        queue = new Process[max_size];
+        queue_size = 0;
+    }
+
+    public void add(Process process)
+    {
+        if(queueIsEmpty())
+        {
+            queue[0] = process;
+            queue_size++;
+        }
+        else
+        {
+            queue[queue_size] = process;
+            queue_size++;
+        }
+    }
+
+    private Process[] srt_queue;
+    private int srt_count;
+    private TimeNProcess[] tp_queue;
+    private int tp_q_size;
+    private Process curr_process;
+    private int curr_time, last_curr_time = 0;
+    private int next_arrival;
+    public void simulate()
+    {
+        srt_queue = new Process[10];
+        srt_count = 0;
+        tp_queue = new TimeNProcess[20];
+        tp_q_size = 0;
+        int c = 0;
+        while(c < queue_size)
+        {
+            queue[c].setLastEnd(queue[c].arrive()); 
+            queue[c].setRemainingService(queue[c].service()); 
+            c++;
+        }
+        
+        Process prev_process;
+        if(queue[0] != null)
+        {
+            curr_time = queue[0].arrive();  
+            checkAndQueueAllProcessesArriveAt(curr_time);    
+            curr_process = dequeueSRTQueue();                                   
+
+            int k = 0; 
+            while(curr_process != null)
+            {
+                
+                System.out.println();
+                System.out.println("curr_time = " + curr_time);
+                System.out.println("curr_process = " + curr_process.id());
+                
+                
+                prev_process = curr_process;
+                tp_queue[tp_q_size] = new TimeNProcess(curr_time, curr_process.id());   
+                tp_q_size++;
+                
+                curr_process.updateWaiting(curr_time - curr_process.last_end());
+                next_arrival = findNextArrivalTime();
+                System.out.println("next arrival = " + next_arrival);
+                while(next_arrival < (curr_time + curr_process.remaining_service()) && next_arrival != curr_process.arrive()) 
+                {
+                    System.out.println("next arrival is less than curr_process finish time and is not equal to curr_process.arrive()");
+                    checkAndQueueAllProcessesArriveAt(next_arrival);
+                    if(curr_time + srt_queue[0].remaining_service() < curr_time + curr_process.remaining_service())
+                    {
+                        last_curr_time = curr_time;
+                        curr_time = next_arrival;
+                        curr_process.setRemainingService(curr_process.remaining_service() - (curr_time - last_curr_time));
+                        curr_process.setLastEnd(curr_time);
+                        
+                        insertSortedToSRTQueue(curr_process);
+                        
+                        curr_process = dequeueSRTQueue();
+                        next_arrival = findNextArrivalTime();
+                        break;
+                    }
+                    else
+                    {
+                        last_curr_time = curr_time;
+                        curr_time = next_arrival;
+                        curr_process.setRemainingService(curr_process.remaining_service() - (curr_time - last_curr_time));
+                        next_arrival = findNextArrivalTime();
+                    }
+                }
+                if(prev_process == curr_process)    
+                {
+                    System.out.println("curr_process has not been changed. therefore finish it and move to the next process: srt_queue[0]");
+                    last_curr_time = curr_time;
+                    curr_time = curr_time + curr_process.remaining_service();
+                    curr_process.setFinish(curr_time);
+                    
+                    if(srt_queue[0] != null)
+                    {
+                        System.out.println("srt_queue[0] = " + srt_queue[0]);
+                        curr_process = dequeueSRTQueue();
+                    }
+                    else
+                    {
+                        curr_process = processArrivedLateOrAt(curr_time + curr_process.remaining_service());
+                    }
+                }
+                else
+                {
+                    continue;
+                }
+            }
+
+            c = 0;
+            while(c < queue_size)
+            {
+                queue[c].setTurnaround(queue[c].finish() - queue[c].arrive());
+                c++;
+            }
+        }
+    }
+    
+    public Process processArrivedLateOrAt(int time)
+    {
+        int next_in_queue = 0;
+        while(next_in_queue < queue_size)  
+        {
+            if()
+            {
+                return curr;
+            }
+            else
+            {
+                next_in_queue++;
+            }
+        }
+        return null;
+    }
+    
+    public int findNextArrivalTime()
+    {
+        int c = 0;
+        while(c < queue_size)
+        {
+            if(queue[c].arrive() > curr_time)
+            {
+                return queue[c].arrive();
+            }
+            c++;
+        }
+        return curr_process.arrive();
+    }
+    
+    public void checkAndQueueAllProcessesArriveAt(int arrival)
+    {
+        int c = 0;
+        while(c < queue_size)
+        {
+            if(queue[c].arrive() == arrival)
+            {
+                insertSortedToSRTQueue(queue[c]);
+            }
+            c++;
+        }
+    }
+    
+    public void insertSortedToSRTQueue(Process process)
+    {
+        int c = 0;
+        while(c < srt_count)
+        {
+            if(process.remaining_service() < srt_queue[c].remaining_service())
+            {
+                shiftBackIncludeIndex(c);
+                srt_queue[c] = process;
+                srt_count++;
+                break;
+            }
+            else
+            {
+                c++;
+            }
+        }
+        if(c == srt_count)
+        {
+            srt_queue[srt_count] = process;
+            srt_count++;
+        }
+    }
+    
+    public void shiftBackIncludeIndex(int index)
+    {
+        int c = 0;
+        while(srt_queue[c] != null)
+        {
+            c++;
+        }
+        while(srt_queue[index] != null && c >= 0)
+        {
+            srt_queue[c] = srt_queue[c - 1];
+            srt_queue[c - 1] = null;
+            c--;
+        }
+    }
+    
+    public Process dequeueSRTQueue()
+    {
+        Process temp = srt_queue[0];
+        int y = 0;
+        while(y < srt_count)
+        {
+            srt_queue[y] = srt_queue[y + 1];
+            y++;
+        }
+        srt_count--;
+        return temp;
+    }
+    
+    public String toString()
+    {
+        String toString = "\nRR: \n";
+        int count = 0;
+        while(count < 20 && tp_queue[count] != null)
+        {
+            toString += "T" + tp_queue[count].time() + ": " + tp_queue[count].process_id() + "\n";
+            count++;
+        }
+        count = 0;
+        toString += "\nProcess \t Waiting time \t Turnaround Time \n";
+        while(count < max_size && queue[count] != null)
+        {
+            toString += queue[count].id() + "\t\t" + queue[count].waiting() + "\t\t" 
+                        + queue[count].turnaround() + "\n";
+            count++;
+        }
+        return toString;
+    }
+    
+    public boolean queueIsEmpty()
+    {
+        if(queue_size == 0)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public int queue_size()
+    {
+       return queue_size; 
+    }
+}

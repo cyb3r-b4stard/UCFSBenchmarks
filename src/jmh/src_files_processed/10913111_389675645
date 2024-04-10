@@ -1,0 +1,170 @@
+package v1;
+
+public class Game
+{
+    private Room aCurrentRoom;
+    private Parser aParser;
+
+    public Game()
+    {
+        aParser = new Parser();
+        this.createRooms(); 
+    }
+
+    private Room createRooms()
+    {
+        Room vOutside= null;
+        Room vTheatre= null;
+        Room vPub= null;
+        Room vLab= null;
+        Room vOffice= null;         
+
+        vOutside= new Room("outside the main entrance of the university");
+        vTheatre= new Room("in a lecture theatre");
+        vPub= new Room("in the campus pub");
+        vLab= new Room("in a computing lab");
+        vOffice= new Room("in the computing admin office");
+
+        vOutside.setExits( null, vLab, vTheatre, vPub);
+        vTheatre.setExits( null, null, null, vOutside);
+        vPub.setExits( null, null, vOutside, null);
+        vLab.setExits( vOutside, null, vOffice, null);
+        vOffice.setExits( null, null, null, vLab);
+
+        aCurrentRoom= vOutside;
+        return aCurrentRoom;
+
+    }
+
+    private void goRoom( final Command pGo)
+    {
+        String vNextRoom; 
+        if(pGo.getSecondWord() == null)
+        {
+            System.out.println("Go where ?");  
+            return;
+                  
+        }
+        else
+    
+        {if("north".equals("nord"))
+            {
+            vNextRoom =this.aCurrentRoom.getExit(String pNorthExit);
+        }
+    
+           
+        { if (vNextRoom == null)
+               {  System.out.println("There is no door !");
+                }
+
+        }
+          this.printLocationInfo();
+    }
+}
+
+    private void printWelcome()
+    {
+        System.out.println("Welcome to the World of Zuul!");
+        System.out.println("World of Zuul is a new, incredibly boring adventure game.");
+        System.out.println("Type 'help' if you need help.");
+        System.out.println(" ");
+        this.printLocationInfo();
+    }
+
+    private void printHelp()
+    {
+        System.out.println("You are lost. You are alone. ");
+        System.out.println("You wander around at the university.");
+        System.out.println(" ");
+        System.out.println("Your command words are:");
+        System.out.println("  go quit help");
+    }
+
+    private boolean quit( final Command pQuit )
+    {
+        if(pQuit.hasSecondWord())
+        {
+            System.out.println("Quit what?");
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    private boolean processCommand(final Command pCommand)
+    {       
+        String vCommand = pCommand.getCommandWord();
+        if (pCommand.isUnknown())
+        
+          {  System.out.println("I dont know what you mean");
+            return false;
+        }
+     
+        
+        if ( vCommand.equals("quit"))
+        {
+            boolean vQuit= this.quit(pCommand);
+            return vQuit;
+        }
+        
+       if(vCommand.equals("go"))
+        {
+            this.goRoom(pCommand);
+            return false;
+        }
+
+        if(vCommand.equals("help"))
+        {
+            this.printHelp();
+            return false;
+        }
+        return false;
+       
+    }
+    public void play()
+    {
+        this.printWelcome();
+        boolean vFinished= false;
+        while(vFinished==false)
+        {
+            Command vPlay=  aParser.getCommand();
+            vFinished= this.processCommand(vPlay);
+
+        }
+    }
+     
+     /**
+     * Procédure qui permet d'afficher à l'utilisateur le lieu où il se trouve
+     */
+    private void printLocationInfo()
+    { 
+        System.out.println("vous êtes "+this.aCurrentRoom.getDescription());
+        System.out.println("les sorties sont: ");
+        if (this.aCurrentRoom.aNorthExit !=null)
+        {
+            System.out.println("nord");
+        }
+        if (this.aCurrentRoom.aEastExit !=null)
+        {
+            System.out.println("est");
+        }
+        
+        if (this.aCurrentRoom.aSouthExit !=null)
+        {
+            System.out.println("sud");
+        }
+        
+        if (this.aCurrentRoom.aWestExit !=null)
+        {
+            System.out.println("ouest");
+        }
+        
+        System.out.println();
+    } 
+        
+    
+    
+    
+}

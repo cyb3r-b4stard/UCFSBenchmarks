@@ -1,0 +1,161 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+
+public class main
+{
+    Scanner input = new Scanner(System.in);
+    ArrayList<String> digits = new ArrayList<String>();
+    ArrayList<Integer> values = new ArrayList<Integer>();
+    ArrayList<String> signs = new ArrayList<String>();
+    public main()
+    {
+        digits.add("I");
+        digits.add("V");
+        digits.add("X");
+        digits.add("L");
+        digits.add("C");
+        digits.add("D");
+        digits.add("M");
+        values.add(1);
+        values.add(5);
+        values.add(10);
+        values.add(50);
+        values.add(100);
+        values.add(500);
+        values.add(1000);
+        signs.add("+");
+        signs.add("-");
+        signs.add("*");
+        signs.add("/");
+
+        System.out.println("Please enter the equation");
+        String n = input.nextLine();
+
+        int v;
+        for (v = 0; v < n.length(); v++)
+        {
+            if (n.substring(v, v+1).equals(" "))
+            {
+                break;
+            }
+        }
+        int l = 0;
+        int j = 0;
+        for (int i = 0; i < v; i++)
+        {
+            for (int o = 0; o < digits.size(); o++)
+            {
+                if (n.substring(i, i + 1).equals(digits.get(o)))
+                {
+                    int r = values.get(o);
+                    if (j < r)
+                    {
+                        l = l + (r-j);
+                    }
+
+                    if (j >= r)
+                    {
+                        l = l + r;
+                    }
+                    j = values.get(o);
+                }
+                else
+                {}
+            }
+        }
+        int k = 0;
+        j = 0;
+        for (int i = v+3; i < n.length(); i++)
+        {
+            for (int o = 0; o < digits.size(); o++)
+            {
+                if (n.substring(i, i + 1).equals(digits.get(o)))
+                {
+                    int r = values.get(o);
+                    if (i == 0
+                    {
+                        k = r;
+                    }
+                    else
+                    {
+                        if (j < r)
+                        {
+                            k = k - j; 
+                            k = k + (r-j);
+                        }
+
+                        if (j >= r)
+                        {
+                            k = k + r;
+                        }
+                    }
+
+                    j = values.get(o);
+                }
+            }
+        }
+
+        for (int i = v+1; i < v+2; i++)
+        {
+            for (int o = 0; o < signs.size(); o++)
+            {
+                if (n.substring(i, i + 1).equals(signs.get(o)))
+                {
+                    if (signs.get(o).equals("+"))
+                    {
+                        int dec = l + k;
+                        writeRoman(dec);
+                    }
+                    if (signs.get(o).equals("-"))
+                    {
+                        int dec = l - k;
+                        writeRoman(dec);
+                    }
+                    if (signs.get(o).equals("*"))
+                    {
+                        int dec = l * k;
+                        writeRoman(dec);
+                    }
+                    if (signs.get(o).equals("/"))
+                    {    
+                        int dec = l / k;
+                        writeRoman(dec);
+                    }
+                }
+
+            }
+
+        }
+    }
+
+    private void writeRoman(int decimalNumber)
+    {
+        singleDigit((decimalNumber / 1000) % 10, "M"," "," ");
+        singleDigit((decimalNumber / 100) % 10, "C", "D", "M");
+        singleDigit((decimalNumber / 10) % 10, "X", "L", "C");
+        singleDigit((decimalNumber / 1) % 10, "I", "V", "X");
+    }
+
+    private void singleDigit(int digit, String one, String five, String ten)
+    {
+        int cnt;
+        switch(digit)
+        {
+            case 0: case 1 :case 2: case 3:
+            for(cnt = 1; cnt<=digit; cnt++)
+                System.out.print(one);
+            break;
+            case 4:
+            System.out.print(one + five);
+            break;
+            case 5: case 6: case 7: case 8:
+            System.out.print(five);
+            for(cnt = 6; cnt<=digit; cnt++)
+                System.out.print(one);
+            break;
+            case 9:
+            System.out.print(one+ten);
+            break;
+        }
+    }
+}

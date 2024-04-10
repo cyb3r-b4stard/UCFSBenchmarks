@@ -1,0 +1,207 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+
+public class AppBiblioteca {
+    Scanner entrada = new Scanner(System.in);
+    Scanner entradap = new Scanner(System.in);
+    private CadastroDeLivros livros;
+    private CadastroDeAutores autores;
+    private CadastroDeGeneros generos;
+    private CadastroDeClientes clientes;
+    private CadastroDeEmprestimos emprestimos;
+    public static void main(String[] args){
+		AppBiblioteca app = new AppBiblioteca();
+		app.iniciar();
+		app.menu();
+	}   
+    public AppBiblioteca() {
+        System.out.println("Sistema de Emprestimos de Livros");
+        System.out.println("Cadastrando...");
+        autores = new CadastroDeAutores();
+        livros = new CadastroDeLivros();
+        generos = new CadastroDeGeneros();
+        clientes = new CadastroDeClientes();
+        iniciar();
+        menu();
+    }
+
+    private void iniciar() {
+        ArquivoLivros aL = new ArquivoLivros(livros, autores, generos);
+        System.out.println("Cadastro concluido.");
+        System.out.println("Livros: " + livros.size());
+        System.out.println("Autores: " + autores.size());
+        System.out.println("Clientes: " + clientes.size());
+        emprestimos = new CadastroDeEmprestimos(clientes, livros);
+        System.out.println("Emprestimos: " + emprestimos.size());
+    }
+
+    public void menu() {
+        int op;
+        String codigo,ISSN;
+        do {
+            System.out.println("\nMenu de consultas\n");
+            System.out.println("1 - Emprestimo de livro");
+            System.out.println("2 - Devolucao de livro");
+            System.out.println("3 - Consulta de livro por título ou parte");
+            System.out.println("4 - Consulta de livro por ISSN");
+            System.out.println("5 - Historico de emprestimos do cliente");
+            System.out.println("6 - Listagem de livros por preferencia");
+            System.out.println("7-  Pesquisar cliente(s) com mais empréstimos");
+            System.out.println("8 - Histórico de clientes que emprestaram o livro ");
+            System.out.println("0 - Finalizar\n");
+            System.out.print("Opcao: ");
+            op = new Integer(entrada.nextLine());
+            System.out.println();
+            switch (op) {
+            case 0: 
+                    if(op==0)System.out.println("\f");
+                    System.out.println("-------------FIM-------------")
+               break;
+            
+            case 1: System.out.println("Sistema de cadstro de emprestimo");
+                    System.out.println("Informe o codigo do cliente: ");
+                    codigo = entrada.nextLine();
+                    System.out.println("Informe o ISSN do livro: ");
+                    ISSN = entrada.nextLine();
+                    emprestimoLivro(codigo, ISSN);
+               break;
+            
+            case 2: System.out.println("Informe o ISSN do livro: ");
+					ISSN = entrada.nextLine();
+					devolveLivro(ISSN);
+				break;
+                
+            case 3: 
+                    System.out.println("informe o nome do titulo a ser pesquisado");
+                    String nome = entrada.nextLine();
+                    System.out.println( pesquidaPorTitulo(nome));
+               break;  
+            case 4: 
+                    System.out.println("informe o codigo do livro a ser pesquisado");
+                    ISSN = entrada.nextLine();
+                    System.out.println(livros.buscaISSN(ISSN));
+               break;  
+                    
+            case 5:
+                    System.out.println("Informe o código do clinte:");
+                    codigo = entrada.nextLine();
+                    pesquisaHistoricoCliente(codigo);
+               break;
+                
+            case 7: clienteMaiorEmprestimo();
+               break;
+                
+            case 8: System.out.println("Informe o ISSN do livro: ");
+                    ISSN = entrada.nextLine();
+                    historicoDeEmprestimosDoLivro(ISSN);
+               break;
+
+            default:
+                System.out.print("**Opcao invalida, escolha novamente!");
+
+            }
+        } while (op != 0);
+    }
+    
+    /**
+     * Opcao 1 do menu do sistema de gerenciamento da biblioteca
+     * Metodo que realiza o cadastro de emprestimo de livros pelo cliente
+     * @param codigo Codigo do cliente
+     * @param issn Codigo do livro
+     */ public void emprestimoLivro(String codigo, String ISSN){
+        if(clientes.buscaCod(codigo)!=null && livros.buscaISSN(ISSN)!=null){
+            if(emprestimos.pesquisaEmprestimo(ISSN).isDevolvido()){
+                Emprestimo e = new Emprestimo(clientes.buscaCod(codigo), livros.buscaISSN(ISSN));
+                emprestimos.adicionaEmprestimo(e);
+            }
+            else{
+                System.out.println("Emprestimo realizado com sucesso");
+            }
+            
+        }
+    
+    }
+    /**
+     *  Opcao 2 do menu do sistema de gerenciamento da biblioteca 
+     *  Metodo que realiza o cadastro de devolucao do livro emprestado e da uma nota ao livro
+     *  Este metodo pesquisa pelo codigo do livro,e se o livro nao foi devolvido, entao sera
+     *  feito a devolucao do livro
+     *  @param issn Codigo do livro
+     */
+    public void devolveLivro(String ISSN){
+        if(livros.buscaISSN(ISSN)!=null){
+            if(emprestimos.pesquisaEmprestimo(ISSN)!=null){
+                if(!emprestimos.pesquisaEmprestimo(ISSN).isDevolvido())
+                    System.out.println("Informe os pontos do livro de 0-10: ");
+                    int p = entradap.nextInt();
+                    emprestimos.pesquisaEmprestimo(ISSN).devolver(p); 
+            }
+            
+        }
+    }   
+    /**
+     * Opcao 3 do menu do sistema de gerenciamento da biblioteca
+     * metodo que percorre a lista de livros e verefica se o titulo 
+     * do livro esta incluido na lista.
+     * @param nome Nome do lrivo a ser pesquisado
+     * @return Retorna o livro
+     */    
+   
+    public ArrayList<Livro> pesquidaPorTitulo(String nome){
+        ArrayList<Livro> livro = new ArrayList<Livro>();
+        for(Livro l : livros.getLista())
+            if(l.getTitulo().toLowerCase().contains(nome.toLowerCase()))
+                livro.add(l);
+        return livro;
+    }
+   
+    /**
+     * Opcao 5 do menu do sistema de gerenciamento da biblioteca
+     * metodo que pesquisa o historico de emprestimo de livros do cliente 
+     * @param codigo Codigo do cliente
+     */    
+    public void pesquisaHistoricoCliente(String codigo){
+        emprestimos.pesquisaHistoricoDeEmprestimosDeUmCliente(codigo);
+    }
+    
+    /**6
+    public void listaPreferencia(){
+        
+    }
+    */
+    
+    /**
+     * Metodo que pesquisa o(s) cliente(s) que mais fez emprestimos
+     * inicializa os atributos totalEmprestimos e maior igual a zero e maiorC como uma string vazia
+     */ 
+    public void clienteMaiorEmprestimo(){
+    int totalEmprestimos = 0;
+    int maior = 0;
+    String maiorCliente = "";
+        for(Cliente c: clientes.getLista())
+        {
+            totalEmprestimos = emprestimos.totalEmprestimosCliente(c.getCodigo());
+            if(maior == 0){
+                maior = totalEmprestimos;
+                maiorCliente = c.getNome();
+            }
+            else{
+                if(maior<totalEmprestimos){ 
+                    maior = totalEmprestimos;
+                    maiorCliente = c.getNome();
+                }
+            }
+        
+        }
+        System.out.println("Nome: " + maiorCliente + "Total de emprestimos: " + totalEmprestimos);
+    }
+    
+    /**
+     * Opcao 8 do menu do sistema de gerenciamento da biblioteca
+     * metodo que pesquisa o historico de clientes que emprestaram o livro 
+     * @param issn Codigo do livro
+     */    
+    public void historicoDeEmprestimosDoLivro(String ISSN){
+        emprestimos.historicoClientePorLivro(ISSN);
+    }
+}      

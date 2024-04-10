@@ -1,0 +1,58 @@
+import java.awt.*;
+/******************************************************
+### ##### ##### ####### #########.  #### ##### ## ######
+## ### ###### ## ######### ####### ## ########.
+
+@###### ##### #######
+@####### ###### ####
+ ******************************************************/
+public class Hippo extends GVcritter{
+
+    private Direction dir;   
+    private int HippoAge;
+    private Random Direction; 
+
+    /*****************************************************
+    Create starting values for this Hippo.
+    @param loc given location for this critter
+     *****************************************************/  
+    public Hippo(Location loc){
+        super(loc); 
+        setColor(Color.GRAY);
+        setSpecies(Species.HIPPO);
+        randomNum = 300 + (int)(Math.random() * 500); 
+
+        if(Math.random() < 0.5)
+            dir = Direction.SOUTH;
+        else
+            dir = Direction.NORTH;
+    }
+
+    /*****************************************************
+    Hippo always POUNCE  their opponents, until it gets to old age and Forfeits
+
+    @param opponent who is the critter fighting?
+    @return attack strategy
+     *****************************************************/     
+    public Attack getAttack(GVcritter opponent) {
+        if (HippoAge == randomNum){
+            return Attack.FORFEIT;
+        }else{
+            return Attack.POUNCE ;
+        }
+
+        /*****************************************************
+        Hippo move in a southeast or norteast direction
+
+        @return desired direction of next step
+         *****************************************************/     
+        public Direction getMoveDirection(){
+
+            steps++;
+
+            if(steps%2 == 0)
+                return dir;
+            else    
+                return Direction.EAST;
+        }
+    }

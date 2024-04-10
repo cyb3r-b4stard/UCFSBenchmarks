@@ -1,0 +1,97 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.io.*;
+
+public class Homepage extends EasyApp
+ { 
+     Label lthr = addLabel ("DeyDo", 300,25,450,50, this) ;
+     Label lstm = addLabel ("Make A Payment", 50,110,150,20, this);
+     Label ltid = addLabel ("Choose Reciepient", 50,150,150,20, this) ;
+     Label ltnm = addLabel ("Debit or Credit", 50,190,150,20, this) ;
+     Label ltln = addLabel ("Bank", 50,230,150,20, this) ;
+     
+     TextField tstm = addTextField ("Enter an Amount", 300,110,150,20, this) ;
+     TextField tid = addTextField ("Search", 300,150,150,20, this) ;
+     
+     Choice ctln = addChoice ("<<Bank Account>>|xxxx9954|xxxx7765|xxxx8283", 300,230,150,20, this) ;
+     Choice ctnm = addChoice ("<<Payment Option>>|Debit|Credit|Other", 300,190,150,20, this) ;
+     Choice cday = addChoice ("<<Day>>|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday", 650,110,150,20, this) ;
+     
+     Button bsave = addButton ("Pay", 300,300,150,40, this) ;
+     public Homepage ()
+     {
+         lthr.setFont(new Font("Calibri",1,22)) ;
+         lstm.setFont(new Font("Calibri",1,16)) ;
+         ltid.setFont(new Font("Calibri",1,16)) ;
+         ltnm.setFont(new Font("Calibri",1,16)) ;
+         ltln.setFont(new Font("Calibri",1,16)) ;
+         ctln.setFont(new Font("Calibri",1,16)) ;
+         ctnm.setFont(new Font("Calibri",1,16)) ;
+         cday.setFont(new Font("Calibri",1,16)) ;
+         
+         setBackground (new Color(1,0,0)) ;
+
+         lthr.setForeground(new Color(255,255,255)) ; 
+         lstm.setForeground(new Color(255,255,255)) ;
+         ltid.setForeground(new Color(255,255,255)) ;
+         ltnm.setForeground(new Color(255,255,255)) ;
+         ltln.setForeground(new Color(255,255,255)) ;
+         ctln.setBackground(new Color(255,255,255)) ;
+         ctnm.setBackground(new Color(255,255,255)) ;
+         cday.setBackground(new Color(255,255,255)) ;
+         
+         
+    }
+    public void actions(Object source, String command)
+    {
+        if(source == bsave)
+        {
+            String Number = tstm.getText();
+            int NumberofString=Integer.parseInt(Number);
+            String ChooseReceipient = tid.getText();
+            String DebitorCredit = ctnm.getSelectedItem();
+            String Bank = ctln.getSelectedItem();
+            
+             if(ChooseReceipient.length() > 12)
+            {
+                output("Your Name is not valid");
+                tid.setText("");
+            } 
+             
+        }   
+    }
+        public void addNew Homepage(String ChooseReceipient, int NumberofString, String DebitorCredit, String Bank);
+        {
+            try
+            {
+            RandomAccessFile data = new RandomAccessFile ("Homepage.dat","rw") ;
+            int flag=0;
+            long records = (data.length()+339)/340 ;
+            long lengthOfFile = data.length() ;
+            
+                    if(flag==0)
+                    {
+                        data.seek(records*340);
+                        data.writeUTF(ChooseReceipient);
+                        
+                        data.seek((records*340) + 20);
+                        data.writeUTF(DebitorCredit);
+                        
+                        data.seek((records*340) + 35);
+                        data.writeUTF(Bank);
+                        
+                        data.seek((records*340) + 55);
+                        data.writeInt(NumberofString);
+                        
+                        output("Thank you, your payment is being processed!");
+                    }
+                    data.close();
+                }
+                catch(IOException e)
+                {
+                    output("Error while reading/writing");
+                }
+    
+            }
+        }

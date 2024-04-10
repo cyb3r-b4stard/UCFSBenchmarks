@@ -1,0 +1,217 @@
+import java.util.ArrayList;
+/**
+ * ####: <#### ####>
+ * ####: <###.## ####>
+ * #######: <# ##### #### #### #### ## ##### ######## ####>
+ * 
+ * ########## ##
+ * 
+ * ## #### #### ## ### ######.
+ * ### ### ############ ########## ######## ### ############.
+ * 
+ */
+public class Picture7
+{
+    public Square wall;
+    public Square window;
+    public Triangle roof;
+    public Circle sun;
+    public House thisHouse;
+    
+    
+    private ArrayList<House> houses;
+
+    /**
+     * Constructor for objects of class Picture.  All this does is set up a way to 
+     * store multiple houses.  Don't worry about how it works -- that is for much later!
+     */
+    public Picture7()
+    {
+        houses = new ArrayList<House>();
+    }
+
+    /**
+     * A method to draw a new house.
+     */
+    
+    public void drawSmallHouse()
+    {
+        wall = new Square();
+        wall.moveVertical(80);
+        wall.changeSize(30);
+        wall.makeVisible();
+
+        window = new Square();
+        window.changeColor("black");
+        window.changeSize(10);
+        window.moveHorizontal(4);
+        window.moveVertical(85);
+        window.makeVisible();
+
+        roof = new Triangle();
+        roof.changeSize(15, 45);
+        roof.moveHorizontal(25);
+        roof.moveVertical(102);
+        roof.makeVisible();
+        
+        /**
+         * Since we only want one sun but might have many houses, this checks to see 
+         * if there is no sun right now and only draws one if the sun is currently
+         * "null" (i.e. not there).
+         */
+        if(sun == null)
+        {
+            sun = new Circle();
+            sun.changeColor("yellow");
+            sun.moveHorizontal(0);
+            sun.moveVertical(-10);
+            sun.changeSize(20);
+            sun.makeVisible();
+        }
+        
+        thisHouse = new House(wall, window, roof);
+        houses.add(thisHouse);
+    }
+    
+    public void drawFourHouses()
+    {
+        drawSmallHouse();
+        moveThisHouse(120,-60);
+        drawSmallHouse();
+        moveThisHouse(120,0);
+        drawSmallHouse();
+        moveThisHouse(120,60);
+        drawSmallHouse();
+        moveThisHouse(120,120);
+    }
+    
+    /**
+     * Don't worry about the below method.  You only need to know 
+     *  how to use it, not how it works!
+     * 
+     * This program, in essence, is only "looking" at one house at a time.  
+     * If you create a new house, it is "looking" at that new house.
+     * If you created multiple houses, they are numbered from 0 to N-1.
+     * To get the program to "look" at a different house, use the 
+     * focusOnThisHouse method with the number of the house you want.  
+     */
+    public void focusOnThisHouse(int id)
+    {
+        if(id >= 0 && id < houses.size())
+        {
+            thisHouse = houses.get(id);
+            wall = thisHouse.getWall();
+            window = thisHouse.getWindow();
+            roof = thisHouse.getRoof();
+        }
+        else
+        {System.out.println("Index out of bounds.");
+        }
+    }
+    public void moveThisHouse(int right, int down)
+    {
+        if(wall != null)   
+        {
+            wall.moveHorizontal(right);
+            wall.moveVertical(down);
+            window.moveHorizontal(right);
+            window.moveVertical(down);
+            roof.moveHorizontal(right);
+            roof.moveVertical(down);
+        }
+    }
+
+    
+   
+    /**
+     * Change this thisHouse to black/white display
+     */
+    public void setThisHouseBlackAndWhite()
+    {
+        if(wall != null)   
+        {
+            wall.changeColor("black");
+            window.changeColor("white");
+            roof.changeColor("black");
+            sun.changeColor("white");
+        }
+    }
+
+    /**
+     * Change thisHouse to use color display
+     */
+    public void setThisHouseColor()
+    {
+        if(wall != null)   
+        {
+            wall.changeColor("red");
+            window.changeColor("black");
+            roof.changeColor("green");
+            sun.changeColor("yellow");
+        }
+    }
+    public void changeThisHouseWallColor(String newColor)
+    {
+        if(wall != null)   
+        {
+            wall.changeColor(newColor);
+            window.changeColor("black");
+        }
+    }
+    public void changeThisHouseWindowColor(String newColor)
+    {
+        if(wall != null)   
+        {
+            window.changeColor(newColor);
+        }
+    }
+    public void example()
+    {   
+        drawFourHouses();
+        changeThisHouseWallColor("blue");
+        focusOnThisHouse(1);
+        changeThisHouseWindowColor("yellow");
+        focusOnThisHouse(0);
+        setThisHouseBlackAndWhite();         
+    }
+    
+    public void assign02a()
+    {
+        drawFourHouses();
+        focusOnThisHouse(0);
+        moveThisHouse(5,0);
+        
+        
+        drawFourHouses();
+        focusOnThisHouse(0);
+        moveThisHouse(60,0);
+        changeThisHouseWindowColor("red");
+        focusOnThisHouse(1);
+        moveThisHouse(60,0);
+        changeThisHouseWallColor("green");
+        focusOnThisHouse(2);
+        moveThisHouse(60,0);
+        setThisHouseBlackAndWhite();
+        focusOnThisHouse(3);
+        moveThisHouse(60,0);
+        
+    }
+
+    public void assign02b()
+    {
+        drawFourHouses();
+        focusOnThisHouse(0);
+        moveThisHouse(5,0);
+         
+         
+        drawSmallHouse();
+        moveThisHouse(120,-60);
+        drawSmallHouse();
+        moveThisHouse(120,0);
+        drawSmallHouse();
+        moveThisHouse(120,60);
+        drawSmallHouse();
+        moveThisHouse(120,120);
+
+
+    

@@ -1,0 +1,151 @@
+import java.util.Random;
+import javax.swing.*;
+import java.awt.event.*;
+public class SPIELAUTOMAT
+{
+    private SPIELWALZE spielwalze1, spielwalze2, spielwalze3;
+    private int z1, z2, z3;
+    private Random zufall;
+    private int guthaben;
+    private int[] gewinn;
+    private int spielezahl;
+    private JButton Schaltknopf;
+    private JLabel Textanzeige;
+   
+    public SPIELAUTOMAT()
+    {
+       
+        zufall = new Random();
+        z1 = 0;
+        z2 = 0;
+        z3 = 0;
+        spielwalze1 = new SPIELWALZE(20,50,150,z1);
+        spielwalze2 = new SPIELWALZE(170,50,150,z2);
+        spielwalze3 = new SPIELWALZE(320,50,150,z3);
+        guthaben = 10;
+        gewinn=new int[1000];
+        spielezahl=0;
+        Schaltknopf = new JButton ( "Neues Spiel" );
+        Schaltknopf.addActionListener (new ActionListener();
+        Textanzeige= new JLabel ( "Spielergebnis" )
+        
+    {  
+        public void actionPerformed(ActionEvent e)
+     {
+       spiele();  
+     }
+   }
+        }
+        );
+        {
+           public void actionPerformed(ActionEvent e)
+            {
+               berechneGesammtgewinn()
+            }
+        }
+        ZEICHENFENSTER.gibFenster().komponenteHinzufuegen(Schaltknopf, "unten");
+        ZEICHENFENSTER.gibFenster().komponenteHinzufuegen(Textanzeige, "oben");
+    }
+    public void zeichne()
+    {
+        spielwalze1.zeichne();
+        spielwalze2.zeichne();
+        spielwalze3.zeichne();
+    } 
+    
+    public void setzeFarbmuster(int z1Neu, int z2Neu, int z3Neu)
+    {
+        z1 = z1Neu;
+        z2 = z2Neu;
+        z3 = z3Neu;
+        spielwalze1.faerbeUm(z1);
+        spielwalze2.faerbeUm(z2);
+        spielwalze3.faerbeUm(z3);
+    }
+    
+    public void spiele()
+    {
+        setzeFarbmuster(zufall.nextInt(9),zufall.nextInt(9),zufall.nextInt(9));
+        berechneGuthaben();
+        gewinn[spielezahl]=ermittleGewinn();
+        spielezahl=spielezahl+1;
+    }
+    
+    public void schreibeWerte()
+    {
+        System.out.println("z1: "+z1+"  z2: "+z2+"  z3: "+z3 + "  Gewinn: "+ ermittleGewinn());
+    }
+    
+    public int ermittleGewinn()
+    {
+        if ((z1==z2)&&(z1==z3))
+        {
+            return 10;
+        }
+        else 
+        {
+            if ((z1==z2)||(z1==z3)||(z3==z2))
+            {
+                return 2;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+
+    public void gewinneSicher()
+    {
+        int g;
+        do 
+        {  
+            spiele();
+            g = ermittleGewinn();
+        }
+        while (g==0);
+        System.out.println("Gewinn: " + g);
+    }
+    
+    public void berechneGuthaben()
+    {
+        guthaben = guthaben - 1 + ermittleGewinn();
+    }
+    
+    public void spieleSelbst()
+    {
+        while (guthaben>0)
+        {
+            spiele();
+            ZEICHENFENSTER.gibFenster().warte(100);
+        }
+    }
+    
+    public int berechneGesammtgewinn()
+    {    int summe=0;
+        for (int i=0;i<=spielezahl;i++)
+        {
+          summe=summe+gewinn[i];
+        }
+        return summe;
+    }
+    
+    public int hauptgewinn()
+    
+     {  int hauptgewinn=0;
+      
+        for ( int i =0;i<=spielezahl;i++)
+        {
+        if (gewinn[i]==10)
+         hauptgewinn=hauptgewinn+1;
+        }
+        return hauptgewinn;
+    }
+    public void spieleZahl ( int anzahl)
+    {
+        for ( int i = 1; i <= anzahl; i++)
+        {
+            spiele();
+        }
+    }
+}

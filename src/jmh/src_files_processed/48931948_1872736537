@@ -1,0 +1,607 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.GroupLayout;
+import javax.swing.LayoutStyle;
+import java.sql.*;
+
+/**
+ * @###### ####### ####
+ */
+public class SearchFireScreen extends JFrame {
+    public SearchFireScreen() {
+        initComponents  ();
+    }
+
+    private void BackToMain()
+    {
+
+        dispose();
+
+        new mainmenu();
+
+    }
+
+    /**
+     * Method to read supplier  from text field
+     */
+    private void readSupplier()
+    {
+        Supplier = textField6.getText();
+    }
+
+    private void searchButton()
+    {
+        readSupplier();
+
+        if(Supplier.equals(""))
+        {
+            JOptionPane.showMessageDialog(frame, 
+                "Error - you need to enter a Book Title");
+        }
+        else
+        {
+            searchForFireplace();
+
+            displayFireplaceDetails();
+
+                                
+        }
+
+    }
+    /**
+     * Search for Fireplace.  Search for Fireplace based
+     * upon Supplier.
+     */
+    private void searchForFireplace()
+    {
+
+        rs = DataBaseHandler.supplierSearch(Supplier);
+
+        recordCount = 0;
+
+    }  
+
+             
+    /**
+     * Display the Fireplace details in the result set on the form.
+     */
+    private void displayFireplaceDetails()
+    {
+        ClearForm();
+
+        try
+        {
+
+            if ( recordCount == 0 ) 
+            {
+                if ( rs.next()== true )   
+                {
+                    recordsFound = true;
+
+                    Item =  rs.getString("ID");
+                    Supplier = rs.getString("SupplierComp");                              
+                    Description = rs.getString("DescriptionProduct");
+                    CostStr = rs.getFloat("CostProduct");  
+                    StockStr = Integer.parseInt("StockLevel"); 
+                    Style = rs.getString("StyleProduct");
+                    Colour = rs.getString("ColourProduct");
+                    
+                    recordCount++;
+
+                    button2.setEnabled (true); 
+                    button3.setEnabled (true); 
+
+                    button5.setEnabled (true); 
+                    button6.setEnabled (true);  
+
+                }
+                else  
+                {
+                    JOptionPane.showMessageDialog (frame, 
+                        "No record(s) which satisfy search criteria.");
+
+                    button2.setEnabled (false);
+                    button3.setEnabled (false);
+
+                    button5.setEnabled (false);
+                    button6.setEnabled (false);      
+
+                    recordsFound = false;
+
+                }
+
+            }
+
+            if ( recordsFound = true ) 
+            {
+                textField1.setText (Item);
+                textField2.setText (Supplier);
+                textField3.setText (Description);
+                textField4.setText (String.valueOf(StockStr));
+                comboBox1.setSelectedItem (Style);
+                comboBox2.setSelectedItem (Colour);
+
+            
+            }
+
+            if (recordCount >= 1)
+            {
+
+                textField1.setEnabled (true);
+                textField2.setEnabled (true);
+                textField3.setEnabled (true);
+                                textField4.setEnabled (true);
+                comboBox1.setEnabled (true);
+                comboBox2.setEnabled (true);
+                                textField1.setEnabled (true);
+
+            }
+
+        }
+
+        catch (SQLException e)  
+        {
+            JOptionPane.showMessageDialog (frame, 
+                "Problem reading record(s)...");
+        } 
+
+        if ( (recordCount == 0) && (recordsFound == true) )
+        {
+            JOptionPane.showMessageDialog (panel3, "No more records");
+
+            button5.setEnabled (false); 
+            button6.setEnabled (false); 
+
+            button2.setEnabled (false);
+            button3.setEnabled (false);
+
+            ClearForm();
+
+
+                textField1.setEnabled (false);
+                textField2.setEnabled (false);
+                textField3.setEnabled (false);
+                                textField4.setEnabled (false);
+                comboBox1.setEnabled (false);
+                comboBox2.setEnabled (false);
+                                textField1.setEnabled (false);
+
+        }
+
+    }  
+    
+    private void nextButton()
+    {
+               
+         try{
+                nextButtonPressed = false;
+
+                if ( rs.next()  == true )   
+                {
+                    Item =  rs.getString("ID");
+                    Supplier = rs.getString("SupplierComp");                              
+                    Description = rs.getString("DescriptionProduct");
+                    CostStr = rs.getFloat("CostProduct");  
+                    StockStr = Integer.parseInt("StockLevel"); 
+                    Style = rs.getString("StyleProduct");
+                    Colour = rs.getString("ColourProduct");
+
+                    recordCount ++;
+
+                }
+                else 
+                {
+                    recordCount = 0;                       
+                } 
+            }
+    }
+    
+    private void previousButton(){
+    
+                previousButtonPressed = false;
+
+                if ( rs.previous() == true)
+                {
+
+                    recordCount --;
+
+                    Item =  rs.getString("ID");
+                    Supplier = rs.getString("SupplierComp");                              
+                    Description = rs.getString("DescriptionProduct");
+                    CostStr = rs.getFloat("CostProduct");  
+                    StockStr = Integer.parseInt("StockLevel"); 
+                    Style = rs.getString("StyleProduct");
+                    Colour = rs.getString("ColourProduct"); 
+                }
+                else 
+                {
+                    recordCount = 0;
+
+                }
+    
+        
+        
+    }
+    
+        private void ClearForm () 
+    {
+        
+        
+            textField1.setText(null);
+            textField2.setText(null);
+            textField3.setText(null);                   
+            textField4.setText(null);
+            textField5.setText(null);
+            comboBox1.setModel(new DefaultComboBoxModel<>(new String[] {
+                        "Please Choose A Style",
+                        "Heritage Collection",
+                        "Soane Collection",
+                        "Contemporary Collection"
+                    }));
+
+            comboBox2.setModel(new DefaultComboBoxModel<>(new String[] {
+                        "Please Choose A Colour",
+                        "Black",
+                        "White",
+                        "Blue",
+                        "Grey",
+                        "Brick Red",
+                        "Oak",
+                        "Teal",
+                        "Orchid blue"
+                    }));                        
+
+        
+    }   
+    
+    
+    private void initComponents() {
+        panel1 = new JPanel();
+        label2 = new JLabel();
+        button7 = new JButton();
+        panel2 = new JPanel();
+        label3 = new JLabel();
+        textField6 = new JTextField();
+        panel3 = new JPanel();
+        label4 = new JLabel();
+        label5 = new JLabel();
+        label6 = new JLabel();
+        label7 = new JLabel();
+        label8 = new JLabel();
+        label9 = new JLabel();
+        label10 = new JLabel();
+        textField1 = new JTextField();
+        textField2 = new JTextField();
+        textField3 = new JTextField();
+        textField4 = new JTextField();
+        comboBox1 = new JComboBox<>();
+        comboBox2 = new JComboBox<>();
+        textField5 = new JTextField();
+        button5 = new JButton();
+        button6 = new JButton();
+        panel4 = new JPanel();
+        button2 = new JButton();
+        button3 = new JButton();
+        button4 = new JButton();
+
+        Container contentPane = getContentPane();
+
+        {
+
+            panel1.setBorder(new javax.swing.border.CompoundBorder(
+                    new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
+                        "", javax.swing.border.TitledBorder.CENTER,
+                        javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("", java.awt.Font.BOLD, 12),
+                        java.awt.Color.red), panel1.getBorder())); panel1.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
+
+            label2.setText("Chesneys FirePlace Catalogue System");
+            label2.setHorizontalAlignment(SwingConstants.CENTER);
+            label2.setFont(new Font("Rockwell", Font.BOLD, 30));
+
+            button7.setText("Back To Main Menu");
+            button7.setFont(new Font("Rockwell", Font.PLAIN, 11));
+            button7.addActionListener(e -> BackToMain());
+
+            GroupLayout panel1Layout = new GroupLayout(panel1);
+            panel1.setLayout(panel1Layout);
+            panel1Layout.setHorizontalGroup(
+                panel1Layout.createParallelGroup()
+                .addGroup(panel1Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(panel1Layout.createParallelGroup()
+                        .addGroup(panel1Layout.createSequentialGroup()
+                            .addGap(10, 10, 10)
+                            .addComponent(button7))
+                        .addComponent(label2, GroupLayout.PREFERRED_SIZE, 643, GroupLayout.PREFERRED_SIZE))
+                    .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            );
+            panel1Layout.setVerticalGroup(
+                panel1Layout.createParallelGroup()
+                .addGroup(panel1Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(label2, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(button7))
+            );
+        }
+
+        {
+
+            label3.setText("Search For a Fireplace Enter A Supplier");
+            label3.setFont(new Font("Rockwell", Font.PLAIN, 20));
+
+            GroupLayout panel2Layout = new GroupLayout(panel2);
+            panel2.setLayout(panel2Layout);
+            panel2Layout.setHorizontalGroup(
+                panel2Layout.createParallelGroup()
+                .addGroup(panel2Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(label3)
+                    .addGap(18, 18, 18)
+                    .addComponent(textField6, GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE))
+            );
+            panel2Layout.setVerticalGroup(
+                panel2Layout.createParallelGroup()
+                .addGroup(GroupLayout.Alignment.TRAILING, panel2Layout.createSequentialGroup()
+                    .addContainerGap(22, Short.MAX_VALUE)
+                    .addGroup(panel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+                        .addGroup(panel2Layout.createSequentialGroup()
+                            .addGap(3, 3, 3)
+                            .addComponent(textField6, GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE))
+                        .addComponent(label3, GroupLayout.Alignment.TRAILING))
+                    .addContainerGap())
+            );
+        }
+
+        {
+
+            label4.setText("Item ID Number");
+            label4.setFont(new Font("Rockwell", Font.PLAIN, 22));
+            label4.setHorizontalAlignment(SwingConstants.RIGHT);
+            label4.setLabelFor(textField1);
+
+            label5.setText("Supplier");
+            label5.setFont(new Font("Rockwell", Font.PLAIN, 22));
+            label5.setHorizontalAlignment(SwingConstants.RIGHT);
+            label5.setLabelFor(textField2);
+
+            label6.setText("Description");
+            label6.setFont(new Font("Rockwell", Font.PLAIN, 22));
+            label6.setHorizontalAlignment(SwingConstants.RIGHT);
+            label6.setLabelFor(textField3);
+
+            label7.setText("Stock Levels");
+            label7.setFont(new Font("Rockwell", Font.PLAIN, 22));
+            label7.setHorizontalAlignment(SwingConstants.RIGHT);
+            label7.setLabelFor(textField4);
+
+            label8.setText("Style");
+            label8.setFont(new Font("Rockwell", Font.PLAIN, 22));
+            label8.setHorizontalAlignment(SwingConstants.RIGHT);
+            label8.setLabelFor(comboBox1);
+
+            label9.setText("Colour");
+            label9.setFont(new Font("Rockwell", Font.PLAIN, 22));
+            label9.setHorizontalAlignment(SwingConstants.RIGHT);
+            label9.setLabelFor(comboBox2);
+
+            label10.setText("Cost");
+            label10.setFont(new Font("Rockwell", Font.PLAIN, 22));
+            label10.setHorizontalAlignment(SwingConstants.RIGHT);
+            label10.setLabelFor(textField5);
+
+            comboBox1.setFont(new Font("Rockwell", Font.PLAIN, 16));
+            comboBox1.setModel(new DefaultComboBoxModel<>(new String[] {
+                        "Please Choose A Style",
+                        "Heritage Collection",
+                        "Soane Collection",
+                        "Contemporary Collection"
+                    }));
+
+            comboBox2.setFont(new Font("Rockwell", Font.PLAIN, 16));
+            comboBox2.setModel(new DefaultComboBoxModel<>(new String[] {
+                        "Please Choose A Colour",
+                        "Black",
+                        "White",
+                        "Blue",
+                        "Grey",
+                        "Brick Red",
+                        "Oak",
+                        "Teal",
+                        "Orchid blue"
+                    }));
+
+            button5.setText("Next Record");
+            button5.setFont(new Font("Rockwell", Font.PLAIN, 11));
+            button5.addActionListener(e -> nextButton());
+
+            button6.setText("Previous Record");
+            button6.setFont(new Font("Rockwell", Font.PLAIN, 11));
+
+            GroupLayout panel3Layout = new GroupLayout(panel3);
+            panel3.setLayout(panel3Layout);
+            panel3Layout.setHorizontalGroup(
+                panel3Layout.createParallelGroup()
+                .addGroup(panel3Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(panel3Layout.createParallelGroup()
+                        .addComponent(label4)
+                        .addComponent(label5)
+                        .addComponent(label6)
+                        .addComponent(label7)
+                        .addComponent(label8)
+                        .addComponent(label9)
+                        .addComponent(label10))
+                    .addGap(33, 33, 33)
+                    .addGroup(panel3Layout.createParallelGroup()
+                        .addComponent(textField1)
+                        .addComponent(textField2)
+                        .addComponent(textField3)
+                        .addComponent(textField5)
+                        .addComponent(comboBox2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(comboBox1, GroupLayout.DEFAULT_SIZE, 1, Short.MAX_VALUE)
+                        .addComponent(textField4))
+                    .addContainerGap())
+                .addGroup(GroupLayout.Alignment.TRAILING, panel3Layout.createSequentialGroup()
+                    .addGap(61, 61, 61)
+                    .addComponent(button6)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(button5)
+                    .addGap(82, 82, 82))
+            );
+            panel3Layout.setVerticalGroup(
+                panel3Layout.createParallelGroup()
+                .addGroup(panel3Layout.createSequentialGroup()
+                    .addGap(19, 19, 19)
+                    .addGroup(panel3Layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+                        .addComponent(textField1)
+                        .addComponent(label4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(panel3Layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+                        .addComponent(label5, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(textField2))
+                    .addGap(4, 4, 4)
+                    .addGroup(panel3Layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+                        .addComponent(label6, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(textField3))
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(panel3Layout.createParallelGroup()
+                        .addComponent(label7)
+                        .addComponent(textField4))
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(panel3Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(label8)
+                        .addComponent(comboBox1))
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(panel3Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(label9)
+                        .addComponent(comboBox2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(panel3Layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+                        .addComponent(label10, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(textField5))
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                    .addGroup(panel3Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(button5)
+                        .addComponent(button6)))
+            );
+        }
+
+        {
+
+            button2.setText("Update");
+            button2.setBackground(new Color(102, 255, 102));
+            button2.setFont(new Font("Rockwell", Font.PLAIN, 16));
+
+            button3.setText("Delete Record");
+            button3.setFont(new Font("Rockwell", Font.PLAIN, 16));
+            button3.setBackground(new Color(255, 51, 51));
+
+            GroupLayout panel4Layout = new GroupLayout(panel4);
+            panel4.setLayout(panel4Layout);
+            panel4Layout.setHorizontalGroup(
+                panel4Layout.createParallelGroup()
+                .addGroup(panel4Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(panel4Layout.createParallelGroup()
+                        .addComponent(button2, GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)
+                        .addComponent(button3, GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)))
+            );
+            panel4Layout.setVerticalGroup(
+                panel4Layout.createParallelGroup()
+                .addGroup(panel4Layout.createSequentialGroup()
+                    .addGap(27, 27, 27)
+                    .addComponent(button2, GroupLayout.PREFERRED_SIZE, 71, GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
+                    .addComponent(button3, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+                    .addGap(39, 39, 39))
+            );
+        }
+
+        button4.setText("Search");
+        button4.setFont(new Font("Rockwell", Font.PLAIN, 11));
+        button4.addActionListener(e -> searchButton());
+
+        GroupLayout contentPaneLayout = new GroupLayout(contentPane);
+        contentPane.setLayout(contentPaneLayout);
+        contentPaneLayout.setHorizontalGroup(
+            contentPaneLayout.createParallelGroup()
+            .addGroup(contentPaneLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(contentPaneLayout.createParallelGroup()
+                    .addComponent(panel1, GroupLayout.PREFERRED_SIZE, 655, GroupLayout.PREFERRED_SIZE)
+                    .addGroup(contentPaneLayout.createSequentialGroup()
+                        .addComponent(panel3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(panel4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                    .addGroup(contentPaneLayout.createSequentialGroup()
+                        .addComponent(panel2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(button4, GroupLayout.PREFERRED_SIZE, 69, GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(33, Short.MAX_VALUE))
+        );
+        contentPaneLayout.setVerticalGroup(
+            contentPaneLayout.createParallelGroup()
+            .addGroup(contentPaneLayout.createSequentialGroup()
+                .addComponent(panel1, GroupLayout.PREFERRED_SIZE, 88, GroupLayout.PREFERRED_SIZE)
+                .addGroup(contentPaneLayout.createParallelGroup()
+                    .addGroup(contentPaneLayout.createSequentialGroup()
+                        .addGap(13, 13, 13)
+                        .addComponent(panel2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                    .addGroup(GroupLayout.Alignment.TRAILING, contentPaneLayout.createSequentialGroup()
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(button4)
+                        .addGap(11, 11, 11)))
+                .addGroup(contentPaneLayout.createParallelGroup()
+                    .addGroup(contentPaneLayout.createSequentialGroup()
+                        .addComponent(panel3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(panel4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        setSize(700, 490);
+        setVisible(true);
+        setLocationRelativeTo(getOwner());
+    }
+
+    private JFrame frame;
+    private JPanel panel1;
+    private JLabel label2;
+    private JButton button7;
+    private JPanel panel2;
+    private JLabel label3;
+    private JTextField textField6;
+    private JPanel panel3;
+    private JLabel label4;
+    private JLabel label5;
+    private JLabel label6;
+    private JLabel label7;
+    private JLabel label8;
+    private JLabel label9;
+    private JLabel label10;
+    private JTextField textField1;
+    private JTextField textField2;
+    private JTextField textField3;
+    private JTextField textField4;
+    private JComboBox<String> comboBox1;
+    private JComboBox<String> comboBox2;
+    private JTextField textField5;
+    private JButton button5;
+    private JButton button6;
+    private JPanel panel4;
+    private JButton button2;
+    private JButton button3;
+    private JButton button4;
+
+    private String Item;
+    private String Supplier;
+    private String Description;
+    private float CostStr;
+    private int StockStr;
+    private String Style;
+    private String Colour;
+    private int recordCount;
+    private ResultSet rs;
+    private boolean recordsFound, nextButtonPressed, previousButtonPressed;
+}

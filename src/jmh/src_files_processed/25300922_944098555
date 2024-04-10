@@ -1,0 +1,182 @@
+import java.util.Scanner;
+/**
+ * ##### # ########### ## ##### ############## ####.
+ * ######
+ * @###### (####### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Scrabble
+{
+    public static void main(String[] args)
+    {
+        String all = "  eeeeeeeeeeeeaaaaaaaaaiiiiiiiiioooooooonnnnnnrrrrrrttttttllllssssuuuuddddgggbbccmmppfhvwyfhvwykjxqz";
+        int i = 1, j=1, space1 = 7, space2 = 7, left = all.length(), score1=0, score2=0, position1, position2;
+        String letters1 = "", letters2 = "", res1 = "", res2 = "";
+        Scanner input = new Scanner(System.in);
+        for(int turn=1;turn<=5;turn++)
+        {
+            System.out.println("Player 1's turn:");
+            while(i<=space1)
+            {
+                position1 = (int)(Math.random()*(left-1));
+                letters1+=all.substring(position1, position1+1);
+                all = all.substring(0,position1) + all.substring(position1+1);
+                left = all.length();
+                i++;
+            }
+            System.out.print(letters1+"\n");
+            res1 = input.nextLine();
+            while(!VerifyWord.checkWord(res1)&&!res1.equals("give up"))
+            {
+                 res1="";
+                 System.out.println("Your input is not valid, please re-enter or enter \"give up\" to give up the turn");
+                 res1 = input.nextLine();
+            }
+            if(!res1.equals("give up"))
+            {
+                score1+=score(lettersCount(letters1, res1));
+                System.out.println("Player1's total score is: " + score1);
+                space1 = res1.length();
+                letters1 = remaining(letters1, res1);
+                System.out.println("Player 2's turn:");
+            }
+            else
+            {
+                letters1="";
+            }
+            i=1;
+            while(j<=space2)
+            {
+                position2 = (int)(Math.random()*(left-1));
+                letters2+=all.substring(position2, position2+1);
+                all = all.substring(0,position2) + all.substring(position2+1);
+                left = all.length();
+                j++;
+            }
+            System.out.print(letters2+"\n");
+            res2 = input.nextLine();
+            while(!VerifyWord.checkWord(res2)&&!res2.equals("give up"))
+            {
+                 res2="";
+                 System.out.println("Your input is not valid, please re-enter or enter \"give up\" to give up the turn");
+                 res2 = input.nextLine();
+            }
+            if(!res1.equals("give up"))
+            {    
+                score2+=score(lettersCount(letters2, res2));
+                System.out.println("Player2's total score is: " + score2);
+                space2 = res2.length();
+                letters2 = remaining(letters2, res2);
+            }
+            else
+            {
+                letters2="";
+            }
+            j=1;
+        }
+        if(score1>score2)
+            System.out.println("Player1 Wins!");
+        else if (score1<score2)
+            System.out.println("Player2 Wins!");
+        else
+            System.out.println("There is a tie!");
+    }
+    
+    public static String remaining(String letters, String res)
+    {
+        int blanks = 0, spot = letters.indexOf(" ");
+        if(spot!=-1)
+        {
+            String newLetters = letters.substring(0,spot)+letters.substring(spot+1);
+            int spot2 = letters.indexOf(" ");
+            blanks++;
+            if(spot2!=-1)
+                blanks++;
+        }
+        for(int i=0; i<res.length(); i++)
+        {
+            String current=res.substring(i,i+1);
+            if(letters.indexOf(current)!=-1)
+                letters=letters.substring(0,i)+letters.substring(i+1);
+            else if (letters.indexOf(current)==-1&&blanks>0)
+            {
+                int spotBlank = letters.indexOf(" ");
+                letters=letters.substring(0,spotBlank)+letters.substring(spotBlank+1);
+                blanks--;
+            }
+        }
+        return letters;
+    }
+    
+    public static int score(String res)
+    {
+        String curLet;
+        int points=0;
+        for(int i=0;i<res.length();i++)
+        {
+            curLet=res.substring(i,i+1);
+            if(curLet.equals("q")||curLet.equals("z"))
+                points+=10;
+            else if(curLet.equals("j")||curLet.equals("x"))
+                points+=8;
+            else if(curLet.equals("k"))
+                points+=5;
+            else if(curLet.equals("f")||curLet.equals("h")||curLet.equals("v")||curLet.equals("w")||curLet.equals("y"))
+                points+=4;
+            else if(curLet.equals("b")||curLet.equals("c")||curLet.equals("m")||curLet.equals("p"))
+                points+=3;
+            else if(curLet.equals("d")||curLet.equals("g"))
+                points+=8;
+            else
+                points++;
+        }
+        if(res.length()==7)
+        points+=5;
+        return points;
+    }
+    
+    public static String lettersCount(String letters, String res)
+    {
+        int len = res.length(), blanks = 0, spot = letters.indexOf(" ");
+        String newRes="", current="";
+        if(spot!=-1)
+        {
+            String newLetters = letters.substring(0,spot)+letters.substring(spot+1);
+            int spot2 = letters.indexOf(" ");
+            blanks++;
+            if(spot2!=-1)
+                blanks++;
+        }
+        for(int i=0;i<res.length();i++)
+        {
+            current=res.substring(i,i+1);
+            if(letters.indexOf(current)!=-1)
+                newRes+=current;
+            else if (letters.indexOf(current)==-1&&blanks>0)
+                blanks--;
+        }
+        return newRes;
+    }
+    
+    public static boolean correct(String letters, String res)
+    {
+        int blanks = 0, spot = letters.indexOf(" ");
+        if(spot!=-1)
+        {
+            String newLetters = letters.substring(0,spot)+letters.substring(spot+1);
+            int spot2 = letters.indexOf(" ");
+            blanks++;
+            if(spot2!=-1)
+                blanks++;
+        }
+        for(int i=0; i<res.length(); i++)
+        {
+            String current=res.substring(i,i+1);
+            if (letters.indexOf(current)==-1&&blanks>0)
+            {
+                blanks-;
+            }
+        }
+        return true;
+    }
+}

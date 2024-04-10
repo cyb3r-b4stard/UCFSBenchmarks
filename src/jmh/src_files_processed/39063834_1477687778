@@ -1,0 +1,44 @@
+
+/**
+ * ####### # ### ##### ##### ## # ###### ##### ## ### ###### #### ####### ### #### ### ##### ## #######
+ * ####### ## ### ###### ####### ## ## #### #### ### #### #####
+ * ### ### ## #### ######### ### ####### ## #### #### #######
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Box extends WindowController
+{
+    private FilledRect box;
+    private Color boxColor;
+    private int boxBlue;
+    private int boxGreen;
+    private double boxSize=30;
+    private double boxLeft=(canvas.getWidth()-boxSize)/2;
+    private double boxTop=(canvas.getHeight()-boxSize)/2;
+    private boolean boxGrabbed;
+    
+    public void begin(){
+        box=new FilledRect(boxLeft,boxTop,boxSize,boxSize,canvas);
+    
+    }
+    public void onMouseClick(Location point){
+        if (box.contains(point)){
+            boxGrabbed=true
+        }
+        else {
+        }
+    }
+    public void onMouseDrag(Location point){
+        /*If the box is grabbed, the box is moved the distance the mouse moves*/
+        if( boxGrabbed) {
+           /* calculates the distance the mouse has moved by taking the current x and y values
+            * and subtracing the intial x and y values
+            */
+            double dx=point.getX()-initialPoint.getX();
+            double dy=point.getY()-initialPoint.getY();
+            /*moves the head the distance calculated in the previous 2 steps*/
+            head.move(dx,dy);
+            initialPoint=point;
+        }
+    }
+}

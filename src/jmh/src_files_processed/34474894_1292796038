@@ -1,0 +1,363 @@
+package csc143.sudoku;
+
+/**
+ * ##### # ########### ## ##### ################ ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+public class SudokuController implements ActionListener
+{
+    private SudokuView sv;
+    private SudokuBase base;
+    private int size;
+    private JPanel buttonPanel;    
+    private JPanel checker;
+    private int row;
+    private int column;
+    private JFrame win;
+    private JPanel setUp;
+    private JButton newGameButton;
+    private JButton normalModeButton;
+    private boolean setUpMode;
+    private JLabel error;
+    JFrame setUpFrame;
+    JButton createNewBoard;
+    JButton cancel;
+    JTextField rowField;
+    JTextField columnField;
+    JLabel rowInput;
+    JLabel colInput;
+    JPanel setUpPanel;
+    /**
+     * Constructor for objects of class SudokuController
+     */
+    public SudokuController(SudokuView view, SudokuBase b)
+    {
+        error = new JLabel();
+        setUpMode = false;
+        sv = view;
+        base = b;
+        size = base.getSize()+1;
+        buttonPanel = new JPanel(new GridLayout(1, size));
+        row = sv.getSelectedRow();
+        column = sv.getSelectedColumn();
+        setUp = new JPanel();
+        newGameButton = new JButton("New Game");
+        setUp.add(newGameButton);
+        newGameButton.addActionListener(this);
+
+        for(int i = 0; i < size; i++)
+        {
+            JButton button = (new JButton(""+i));
+            button.setBackground(Color.lightGray);
+            button.addActionListener(this);
+            button.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        button.setBackground(Color.lightGray);
+                    }
+
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        button.setBackground(Color.green);
+
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        button.setBackground(Color.lightGray);
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        button.setBackground(Color.green);
+                    }
+
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        button.setBackground(Color.green);
+                    }
+                });
+            buttonPanel.add(button);
+
+        }
+        win = new JFrame("Sudoku");
+        win.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        win.add(sv, BorderLayout.CENTER);
+        win.add(buttonPanel, BorderLayout.SOUTH);
+        checker = new JPanel();
+        checker.setSize(new Dimension(100, 100));
+        checker.setLayout(new GridLayout(5, 1));
+        ForRow r = new ForRow(b);
+        ForColumn c = new ForColumn(b);
+        ForRegion rg = new ForRegion(b);
+        checker.add(r);
+        checker.add(new JPanel());
+
+        checker.add(c);
+        checker.add(new JPanel());
+        checker.add(rg);
+        win.add(checker, BorderLayout.WEST);
+        win.add(setUp, BorderLayout.NORTH);
+        win.setVisible(true);
+        win.pack();
+
+    }
+
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public static SudokuBase makeBoard() 
+    {
+        SudokuBase board = new SudokuModel(2, 3);
+        board.setValue(0, 3, 6);
+        board.setValue(0, 5, 1);
+        board.setValue(1, 2, 4);
+        board.setValue(1, 4, 5);
+        board.setValue(1, 5, 3);
+        board.setValue(2, 3, 3);
+        board.setValue(3, 2, 6);
+        board.setValue(4, 0, 2);
+        board.setValue(4, 1, 3);
+        board.setValue(4, 3, 1);
+        board.setValue(5, 0, 6);
+        board.setValue(5, 2, 1);
+        board.fixGivens();
+        return board;
+    }
+
+    public void actionPerformed(ActionEvent e)
+    {
+        String number = e.getActionCommand();
+        int n = Integer.parseInt(number);
+        SudokuBase board = new SudokuModel(2, 3);
+        if(number.equals("New Game")
+        {
+            CreateSetUpFrame = new CreateSetUpFrame();
+        }
+
+
+        int row = sv.getSelectedRow();
+        int column = sv.getSelectedColumn();
+        if(base.isGiven(row, column))
+        {
+            Toolkit.getDefaultToolkit().beep();
+            return;
+        }
+        base.setValue(row, column, n);
+
+    }
+
+    public static void main(String[] args)    
+    {
+
+        SudokuBase board = makeBoard();
+        SudokuView view = new SudokuView(board);
+        SudokuController controller = new SudokuController(view, board);
+
+    }
+    private class CreateSetUpFrame implements ActionListener
+    {
+        SudokuBase base;
+        JFrame setUpFrame;
+        JButton createNewBoard;
+        JButton cancel;
+        JTextField rowField;
+        JTextField columnField;
+        JLabel rowText;
+        JLabel colText;
+        JPanel setUpPanel;
+
+        public CreateSetUpFrame()
+        {
+            setUpFrame = new JFrame("Set-Up Mode");
+            createNewBoard = new JButton("Create New Board");
+            cancel = new JButton("Cancle");
+            rowField = new JTextField(3);
+            columnField = new JTextField(3);
+            rowText = new JLabel("Row");
+            colText = new JLabel("Column");
+            setUpPanel = new JPanel();
+            setUpPanel.add(createNewBoard);
+            setUpPanel.add(cancel);
+            setUpPanel.add(rowText);
+            setUpPanel.add(rowField);
+            setUpPanel.add(colText);
+            setUpPanel.add(columnField);
+            setUpFrame.add(setUpPanel);
+
+            setUpFrame.setVisible(true);
+            setUpFrame.pack();
+            setUpFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            String newGame = e.getActionCommand();
+            if(newGame.equals("Cancel"))
+            {
+                setUpFrame.setVisible(false);
+                return;
+            }
+
+            if(newGame.equals("Create New Board"))
+            {
+                try
+                {
+                    int rowValue = Integer.parseInt(rowField.getText());
+                    int colValue = Integer.parseInt(columnField.getText());
+                    if(rowValue * colValue < 12)
+                    {
+                        JDialog error = new JDialog(new JFrame(), "row times column cannot be greater than 12");
+                    }
+                    SudokuBase board1 = new SudokuModel(rowValue, colValue);
+                }catch(NumberFormatException ex) {
+                    error.setForeground(java.awt.Color.red);
+                    error.setText("Non-integer input: " + ex.getMessage());
+                } catch(IllegalArgumentException ex) {
+                    error.setForeground(java.awt.Color.red);
+                    error.setText("Error: " + ex.getMessage());
+                }
+
+            }
+        }
+    }
+
+
+
+private class ForRow extends JPanel implements Observer
+{
+    SudokuBase sb;
+    public ForRow(SudokuBase base)
+    {
+        sb = base;
+        base.addObserver(this);
+        this.setPreferredSize(new Dimension(40, 40));
+        this.validate();
+        repaint();
+    }
+
+    @Override
+    public void paintComponent(Graphics g)
+    {
+        super.paintComponent(g);
+        int width = getWidth();
+        int height = getWidth()/sb.getSize();
+        for(int i = 0; i < sb.getSize(); i++)
+        {
+            SudokuBase.State state = sb.getRowState(i);
+            switch(state)
+            {
+                case ERROR:
+                g.setColor(Color.red);
+                break;
+                case COMPLETE:
+                g.setColor(Color.green);
+                break;
+                case INCOMPLETE:
+                g.setColor(Color.yellow);
+                break;
+            }
+            g.fillRect(0, i * height, width, height);
+        }
+    }
+
+    public void update(Observable o, Object a)
+    {
+        repaint();
+    }
+}
+private class ForColumn extends JPanel implements Observer
+{
+    SudokuBase sb;
+    public ForColumn(SudokuBase base)
+    {
+        sb = base;
+        base.addObserver(this);
+        this.setPreferredSize(new Dimension(40, 40));
+        this.validate();
+        repaint();
+    }
+
+    @Override
+    public void paintComponent(Graphics g)
+    {
+        super.paintComponent(g);
+        int width = getWidth()/sb.getSize();
+        int height = getWidth();
+        for(int i = 0; i < sb.getSize(); i++)
+        {
+            SudokuBase.State state = sb.getColumnState(i);
+            switch(state)
+            {
+                case ERROR:
+                g.setColor(Color.red);
+                break;
+                case COMPLETE:
+                g.setColor(Color.green);
+                break;
+                case INCOMPLETE:
+                g.setColor(Color.yellow);
+                break;
+            }
+            g.fillRect(i*width, 0, width, height);
+        }
+    }
+
+    public void update(Observable o, Object a)
+    {
+        repaint();
+    }
+}
+private class ForRegion extends JPanel implements Observer
+{
+    SudokuBase sb;
+    public ForRegion(SudokuBase base)
+    {
+        sb = base;
+        sb.addObserver(this);
+    }
+
+    public void paintComponent(Graphics g)
+    {
+        super.paintComponent(g);
+        int width = getWidth()/sb.getRows();
+        int height = getHeight()/sb.getColumns();
+
+        for(int i = 0; i < sb.getColumns(); i++)
+        {
+            for(int j = 0; j < sb.getRows(); j++)
+            {
+                SudokuBase.State state = sb.getRegionState(i*sb.getRows() + j);
+                switch(state)
+                {
+                    case ERROR:
+                    g.setColor(Color.red);
+                    break;
+                    case COMPLETE:
+                    g.setColor(Color.green);
+                    break;
+                    case INCOMPLETE:
+                    g.setColor(Color.yellow);
+                    break;
+                }
+                g.fillRect(j*width, i*height, width, height);
+
+            }
+        }
+    }
+
+    public void update(Observable o, Object a)
+    {
+        repaint();
+    }
+}
+}

@@ -1,0 +1,159 @@
+import java.util.*;
+
+
+public class VisualizadorVisitas {
+    private static final String[] OPCIONES = { "Introducir nueva visita.",
+                                               "Visualizar una visita introducida.",
+                                               "Fin"};
+    private ArrayList<Visita> visitasGuardadas;
+    private MapaGoogle visualizador;
+
+    public VisualizadorVisitas ()
+    {
+        this.visitasGuardadas = new ArrayList<Visita>();
+        this.visualizador = new MapaGoogle();
+    }
+    
+    public void introducirVisitaGuiada()
+    {
+        Scanner scan = new Scanner(System.in); 
+        System.out.println ("Has elegido realizar una visita guiada, por favor introduce la descripcion de la visita");
+        String descripcion = scan.next();
+        VisitaGuiada v = new VisitaGuiada();
+        v.setDescripcionVisita(descripcion);
+        double finPuntos = 0;
+        while(finPuntos != -1)
+        {
+            System.out.println ("Introduce punto lat long marcado (0/1) descripcion ");
+            double lat = scan.nextDouble();
+            if(lat != -1)
+            {
+                 double lon = scan.nextDouble();
+                 int n = scan.nextInt();
+                 if ( n == 0)
+                 {
+                     PuntoGPS x = new PuntoGPS(lat,lon);
+                     v.addPunto(x);
+                 }
+                 else if (n == 1)
+                 {
+                     String des = scan.next();
+                     PuntoGPS x = new PuntoGPS(lat,lon,des);
+                     v.addPunto(x);
+                     v.addPuntoParadas(x);
+                 }
+            }
+            else
+            {
+                 finPuntos = lat;
+            }
+        }
+                
+        this.visitasGuardadas.add(v);
+    }
+    
+    public void introducirVisitaConAlternativas()
+    {
+        Scanner scan = new Scanner(System.in); 
+        System.out.println ("Has elegido realizar una visita con alternativas, por favor introduce la descripcion de la visita");
+        String descripcion = scan.next();
+        System.out.println ("Introduce punto lat long descripcion ");
+        double lat = scan.nextDouble();
+        double lon = scan.nextDouble();
+        String des = scan.next();
+        PuntoGPS x = new PuntoGPS(lat,lon,des);
+        VisitaConAlternativas v = new VisitaConAlternativas(x);
+        v.setDescripcionVisita(descripcion);
+             
+        double finPuntos = 0;
+        while(finPuntos != -1)
+        {
+            System.out.println ("Introduce punto lat long descripcion ");
+            lat = scan.nextDouble();
+            if(lat != -1)
+            {
+                 lon = scan.nextDouble();
+                 des = scan.next();
+                 PuntoGPS y = new PuntoGPS(lat,lon,des);
+                 v.addPunto(y);
+                     
+            }
+            else
+            {
+                 finPuntos = lat;
+            }
+        }
+               
+        this.visitasGuardadas.add(v);
+    }
+    
+    public void option0()
+    {
+        Scanner scan = new Scanner(System.in); 
+        
+        System.out.println("Introduce si deseas: \n 0: Una visita guiada \n 1: Una visita con alternativas");
+        int tipoVisita = scan.nextInt();
+        switch(tipoVisita)
+        {
+           case 0:
+           {
+               introducirVisitaGuiada();
+           }
+           break;
+           case 1:
+           {
+                introducirVisitaConAlternativas();
+           }
+           break;
+        
+        }
+    }
+    
+    public void option1()
+    {
+        Scanner scan = new Scanner(System.in); 
+        System.out.println("Introduzca el número de visita que desea visualizar");
+        int numero = scan.nextInt();
+        Visita visit = this.visitasGuardadas.get(numero);
+        visualizador.visualizarVisita(visit.construirOpciones());
+        double dis = 0;
+        double tiempo = 0;
+        
+        if(visit instanceof VisitaGuiada )
+        {        
+            String res = visit.getDescripcionVisita();
+            int contador = 0;
+            
+            for (int i = 0; i < visit.getPuntos().size(); i++)
+            {
+                if(visit.getPuntos().get(i).getDescripcion() != null)
+                {
+                    res += "\n" + ((char)('A'+ contador) + ": " + visit.getPuntos().get(i).getDescripcion());
+                    contador++;
+                }
+            }
+            
+            for (int j = 0; j < visit.getPuntos().size() - 1; j++)
+            {
+                dis += visit.getPuntos().get(j).distancia(visit.getPuntos().get(j + 1));
+            }
+            
+            tiempo = dis/75;
+            System.out.println(res + "\nDistancia total: " + dis + " metros. Tiempo estimado: " + tiempo + " minutos.");
+        }
+        else
+        {
+            String res = visit.getDescripcionVisita();
+            res += "\nA: " + visit.getPuntoInicio().getDescripcion();
+            for (int i = 0; i < visit.getPuntos().size(); i++)
+            {
+                dis = visit.getPuntoInicio().distancia(visit.getPuntos().get(i));
+                tiempo = dis/75;
+                res += "\n" + ((char)('B'+ i) + ": " + visit.getPuntos().get(i).getDescripcion() + ". Distancia: " + dis + " metros. Tiempo estimado: " + tiempo + " minutos.");
+            }
+        }
+         
+    }
+        
+    
+

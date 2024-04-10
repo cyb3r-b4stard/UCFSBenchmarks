@@ -1,0 +1,81 @@
+/*
+ * #########:#######
+ *
+ * ########: (## ###)
+ * 
+ */
+
+public class TrieNode {
+    public static final int NUM_LETTERS = 26;
+    public static final String ALPHABET = "abcdefghijklmnopqrstuvwxyz";
+
+    char letter;
+    boolean isWord = false;
+    TrieNode[] nextLetters = new TrieNode[NUM_LETTERS];
+
+    public TrieNode(char letter) {
+        this.letter = letter;
+    }
+
+    /**
+     * Note:  this is correct but horribly inefficient if we are going to use 
+     * it a lot (which we are).  For our purposes it is a reasonable solution.  
+     * In the real world, we would use a trick of some kind, such as:
+     *          return c - 'a';
+     */
+    private int charIndex(char c) {
+        return ALPHABET.indexOf(c);
+    }
+
+    public void addChar(String s){      
+        int val = charIndex(s.charAt(0));        
+        if(nextLetters[val] == null){            
+            nextLetters[val] = new TrieNode(s.charAt(0));
+        }
+
+        if(s.length() > 1){
+            nextLetters[val].addChar(s.substring(1));
+        }else{
+            nextLetters[val].isWord = true;
+        }
+    }
+
+    public boolean hasWord(String s){ 
+        if(s.isEmpty())
+            return false;
+
+        int val = charIndex(s.charAt(0));
+        if(nextLetters[val] == null && nextLetters[val].isWord){
+            return true;
+        }else{
+            return false;
+        }else if(nextLetters[val] !=null && s.length() > 1){
+            nextLetters[val].hasWord(s.substring(1));            
+        }
+
+        if (nextLetters[val]!=null && nextLetters[val].isWord == false){
+            return false;
+        }
+        return true;
+    }
+
+    public void print(TrieNode root, int depth, char[] word){
+        if(root == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < root.nextLetters.length; i++)
+        {
+            word[depth] = root.letter;
+            print(root.nextLetters[i], depth+1, word);    
+        }
+
+        if (root.isWord)
+        {
+            for (int j = 1; j <= depth; j++)
+                System.out.print(word[j]);
+            System.out.println();
+        }
+    }
+}

@@ -1,0 +1,169 @@
+import java.util.*;
+import edu.duke.*;
+
+public class EarthQuakeClient {
+    public EarthQuakeClient() {
+    }
+
+    public ArrayList<QuakeEntry> filterByMagnitude(ArrayList<QuakeEntry> quakeData,
+    double magMin) {
+        ArrayList<QuakeEntry> answer = new ArrayList<QuakeEntry>();
+        for(QuakeEntry qe: quakeData){
+            if(qe.getMagnitude() > magMin){
+                answer.add(qe);
+            }
+            
+        }
+
+        return answer;
+    }
+
+    public ArrayList<QuakeEntry> filterByDistanceFrom(ArrayList<QuakeEntry> quakeData,
+    double distMax,
+    Location from) {
+        ArrayList<QuakeEntry> answer = new ArrayList<QuakeEntry>();
+         for(QuakeEntry qe: quakeData){
+           Location currLoc = qe.getLocation();
+           if(currLoc.distanceTo(from)/1000 <distMax){
+               answer.add(qe);
+            }
+            
+        }
+        return answer;
+    }
+
+    public void dumpCSV(ArrayList<QuakeEntry> list){
+        System.out.println("Latitude,Longitude,Magnitude,Info");
+        for(QuakeEntry qe : list){
+            System.out.printf("%4.2f,%4.2f,%4.2f,%s\n",
+                qe.getLocation().getLatitude(),
+                qe.getLocation().getLongitude(),
+                qe.getMagnitude(),
+                qe.getInfo());
+        }
+
+    }
+
+    public void bigQuakes(double magMin) {
+        
+        EarthQuakeParser parser = new EarthQuakeParser();
+        String source = "data/nov20quakedata.atom";
+        ArrayList<QuakeEntry> list  = parser.read(source);
+        System.out.println("read data for "+list.size()+" quakes");
+        ArrayList<QuakeEntry> listBig = filterByMagnitude(list, magMin);
+        
+         for (QuakeEntry qe : listBig) {
+            System.out.println(qe);
+        }
+    }
+
+    public void closeToMe(){
+        EarthQuakeParser parser = new EarthQuakeParser();
+        String source = "data/nov20quakedatasmall.atom";
+        ArrayList<QuakeEntry> list  = parser.read(source);
+        System.out.println("read data for "+list.size()+" quakes");
+        
+
+        Location city =  new Location(38.17, -118.82);
+
+        ArrayList<QuakeEntry> closeList = filterByDistanceFrom(list,1000,city);
+        for(int i = 0; i < closeList.size(); i++){
+            Location currLoc = closeList.get(i).getLocation();
+            float dist = city.distanceTo(currLoc)/1000;
+            String cityInfo = closeList.get(i).getInfo();
+            System.out.println("Distance: "+dist+"km  city information: " + cityInfo);
+        }
+        System.out.println("Records found: "+ closeList.size());
+    }
+
+    public void createCSV(){
+        EarthQuakeParser parser = new EarthQuakeParser();
+        String source = "data/nov20quakedatasmall.atom";
+        ArrayList<QuakeEntry> list  = parser.read(source);
+        dumpCSV(list);
+        System.out.println("# quakes read: " + list.size());
+        for (QuakeEntry qe : list) {
+            System.out.println(qe);
+        }
+    }
+    public ArrayList<QuakeEntry> filterByDepth(ArrayList<QuakeEntry> quakeData,
+    double minDepth,
+    double maxDepth) {
+        ArrayList<QuakeEntry> answer = new ArrayList<QuakeEntry>();
+         for(QuakeEntry qe: quakeData){
+           double currDepth = qe.getDepth();
+           if(currDepth < minDepth && currDepth > maxDepth){
+               answer.add(qe);
+               String cityInfo = qe.getInfo();
+             System.out.println("Depth: "+currDepth+"m  city information: " + cityInfo);
+            }
+            
+        }
+        System.out.println("Find quakes with depth between "+maxDepth+" and "+minDepth);
+         System.out.println("Records found: "+ answer.size());
+        return answer;
+    }
+    public void quakesOfDepth(){
+        EarthQuakeParser parser = new EarthQuakeParser();
+        String source = "data/nov20quakedatasmall.atom";
+        ArrayList<QuakeEntry> list  = parser.read(source);
+        
+        double minD = -5000;
+        double maxD = -10000;
+        ArrayList<QuakeEntry> qe = filterByDepth(list,minD,maxD);
+        
+    }
+    public ArrayList<QuakeEntry> filterByPhrase(ArrayList<QuakeEntry> quakeData,String where, String phrase){
+        ArrayList<QuakeEntry> answer = new ArrayList<QuakeEntry>();
+        for(QuakeEntry qe : quakeData){
+            String currInfo = qe.getInfo();
+            if(where == "start" && currInfo.substring(0,phrase.length())== phrase){
+                answer.add(qe);
+            }else if(where == "end" && currInfo.substring(currInfo.length()-phrase.length(),-1)== phrase){
+                answer.add(qe);
+            }else if(where == "any" && currInfo.substring(0)== phrase){
+                answer.add(qe);
+            }
+        }
+        
+        return answer;
+    }
+    
+    public void quakesByPhrase(){
+        EarthQuakeParser parser = new EarthQuakeParser();
+        String source = "data/nov20quakedatasmall.atom";
+        ArrayList<QuakeEntry> list  = parser.read(source);
+        String phrase = "California";
+        ArrayList<String> where = new ArrayList<String>("start","any","end");
+        String whereToLook = where[2];
+        ArrayList <QuakeEntry> = filterByPhrase(list,whereToLook,phrase);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

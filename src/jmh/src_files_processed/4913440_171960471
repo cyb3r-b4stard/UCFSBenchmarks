@@ -1,0 +1,152 @@
+import info.gridworld.grid.BoundedGrid;
+import info.gridworld.grid.Grid;
+import info.gridworld.grid.Location;
+import info.gridworld.world.World;
+import java.util.ArrayList;
+public class TicTacToeWorld extends World
+{
+    char choice = 'X';
+    boolean gameOver, xTurn;
+    int numPlayers, click, rows, columns;
+    public TicTacToeWorld(int r, int c, int numPlayas)
+    {
+        super(new BoundedGrid(r,c));
+        rows = r;
+        columns = c;
+        numPlayers = numPlayas;
+        gameOver = false;
+        xTurn = true;
+    }
+    
+    public TicTacToeWorld()
+    {
+        super(new BoundedGrid(4,4));
+        numPlayers = 1;
+        gameOver = false;
+    }
+
+    public int check()
+    {
+        Location [][] loci = new Location [3][3]; 
+        for(int x = 0; x < 3; x++)
+            for(int y = 0; y < 3; y++)
+                loci[x][y] = new Location(x, y);
+        if(loci[0][0] != null)
+            if(loci[0][0].equals(loci[0][1]) && loci[0][1].equals(loci[0][2]))
+                if(loci[0][0].equals('X')) 
+                    return 0;
+                else 
+                    return 1;
+        if(loci[1][0] != null)
+            if(loci[1][0].equals(loci[1][1]) && loci[1][1].equals(loci[1][2]))
+                if(loci[1][0].equals('X')) 
+                    return 0;
+                else 
+                    return 1;
+        if(loci[2][0] != null)
+            if(loci[2][0].equals(loci[2][1]) && loci[2][1].equals(loci[2][2]))
+                if(loci[2][0].equals('X')) 
+                    return 0;
+                else 
+                    return 1;
+        if(loci[0][0] != null)
+            if(loci[0][0].equals(loci[1][0]) && loci[1][0].equals(loci[2][0]))
+                if(loci[0][0].equals('X')) 
+                    return 0;
+                else 
+                    return 1;  
+        if(loci[0][1] != null)
+            if(loci[0][1].equals(loci[1][1]) && loci[1][1].equals(loci[2][1]))
+
+                if(loci[0][1].equals('X')) 
+                    return 0;
+                else 
+                    return 1;
+        if(loci[0][2] != null)
+            if(loci[0][2].equals(loci[1][2]) && loci[1][2].equals(loci[2][2]))
+                if(loci[0][2].equals('X')) 
+                    return 0;
+                else 
+                    return 1;  
+        if(loci[0][0] != null)
+            if(loci[0][0].equals(loci[1][1]) && loci[1][1].equals(loci[2][2]))
+                if(loci[0][0].equals('X')) 
+                    return 0;
+                else 
+                    return 1;  
+        if(loci[2][0] != null)
+            if(loci[2][0].equals(loci[1][1]) && loci[1][1].equals(loci[0][2]))
+                if(loci[2][0].equals('X')) 
+                    return 0;
+                else 
+                    return 1;  
+        return -1;
+    }
+    @Override
+    public boolean locationClicked(Location loc)
+    {
+        Grid g = this.getGrid();
+        if(g.get(loc) != null)
+            return true;
+        /*if(numPlayers == 1)
+        {
+            if(click < 9)
+            {
+                if(gameOver)
+                    return !gameOver;
+                this.add(loc, choice);
+                click++;
+                if(check() == 0)
+                {
+                    this.setMessage("X wins");
+                    return gameOver = true;
+                }
+            }
+            if(click < 9)
+            {
+                Location location = getRandomEmptyLocation();
+                this.setMessage("Computer just clicked: " + location);
+                this.add(location, 'O');
+                click++;
+                if(check() == 1)
+                {
+                    this.setMessage("O wins");
+                    return gameOver = true;
+                }
+            }
+        }*/
+        else if(numPlayers == 2)
+        {
+            if(gameOver)
+                return !gameOver;
+            choice = 'O';
+            if(xTurn)
+                choice = 'X';
+            this.add(loc, choice);
+            click++;
+            if(check() == 0)
+            {
+                gameOver = true;
+                this.setMessage("X wins");
+                return gameOver;
+            }
+            else if(check() == 1)
+            {
+                gameOver = true
+                this.setMessage("O wins");
+                return gameOver;
+            }
+            xTurn = !xTurn;
+            if(click < 9)
+            {
+                if(xTurn)
+                    this.setMessage("X turn");
+                else
+                    this.setMessage("O turn");
+            }
+            else
+                this.setMessage("Tie");
+        }
+        return true;
+    }
+}

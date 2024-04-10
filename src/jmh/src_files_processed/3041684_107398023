@@ -1,0 +1,366 @@
+import java.util.Scanner;
+     
+public class HashTable implements WordStore  {
+        
+    
+       
+        
+        MyBigList[] array;
+        int arraySize;
+        int itemsInArray = 0;
+
+        public HashTable(int size) {
+     
+               arraySize = size;
+     
+               array = new MyBigList[arraySize];
+     
+     
+                
+     
+            }
+            private class MyBigList{
+                private MyList front,back;
+                private int mySize;
+                
+                    public MyBigList(){
+                        front=null;
+                        back=null;
+                        mySize=0;
+                    }
+                    
+                    public void add(String item){
+                        if (front== null){
+                            front = new MyList(item, null, null);
+                            back=front;
+                        }
+                        else{
+                            back.next=new MyList(item,null,back);
+                            back=back.next;
+                        }
+                        mySize++;
+                    }
+                    
+                    public boolean remove(String item){
+                        if(front==null){
+                            return false;
+                        }
+                        else if(item.equals(front.value)){
+                            front.count--;
+                            if(front.count<=0){
+                                mySize--;
+                                if(front.next!=null){
+                                    front.next.prev=null;
+                                  
+                                }
+                                front=front.next;
+                            }
+                            return true;
+                        }
+                        else if(back!=null){
+                            if(item.equals(back.value)){
+                                back.count--;
+                                if(back.count<=0){
+                                    mySize--;
+                                    back=back.prev;
+                                    back.next=null;
+                                    
+                                }
+                                return true;
+                            }
+                            else{
+                            MyList ptr1=front,ptr2=back;
+                            for(;ptr1.next!=null&&!item.equals(ptr1.next.value)&&!item.equals(ptr2.prev.value); ptr1=ptr1.next, ptr2=ptr2.prev){}
+                            if(ptr1.next==null||ptr2.prev==null){
+                                return false;
+                            }
+                            else if (ptr1.next.value.equals(item)){
+                                ptr1.next.count--;
+                                if(ptr1.next.count<=0){
+                                    if(ptr1.next==back){
+                                        back=ptr1;
+                                        ptr1.next=null;
+                                    }
+                                    else{
+                                        ptr1.next.next.prev=ptr1;
+                                        ptr1.next=ptr1.next.next;
+                                    }
+                                }
+                                
+                            }
+                            else{
+                                ptr2.prev.count--;
+                                if(ptr2.prev.count<=0){
+                                    if(ptr2.prev==front){
+                                        front=ptr2;
+                                        front.prev=null;
+                                    }
+                                    else{
+                                        ptr2.prev.prev.next=ptr2;
+                                        ptr2.prev=ptr2.prev.prev;
+                                    }
+                                }
+                            }
+                            return true;
+                         
+                        }
+                        
+                            
+                        
+                        
+                        
+                    }
+                    else{
+                        MyList ptr1=front,ptr2=back;
+                            for(;ptr1.next!=null&&ptr2.prev!=null&&!item.equals(ptr1.next.value)&&!item.equals(ptr2.prev.value); ptr1=ptr1.next, ptr2=ptr2.prev){}
+                            if(ptr1.next==null||ptr2.prev==null){
+                                return false;
+                            }
+                            else if (ptr1.next.value.equals(item)){
+                                ptr1.next.count--;
+                                if(ptr1.next.count<=0){
+                                    if(ptr1.next==back){
+                                        back=ptr1;
+                                        ptr1.next=null;
+                                    }
+                                    else{
+                                        ptr1.next.next.prev=ptr1;
+                                        ptr1.next=ptr1.next.next;
+                                    }
+                                }
+                                
+                            }
+                            else{
+                                ptr2.prev.count--;
+                                if(ptr2.prev.count<=0){
+                                    if(ptr2.prev==front){
+                                        front=ptr2;
+                                        front.prev=null;
+                                    }
+                                    else{
+                                        ptr2.prev.prev.next=ptr2;
+                                        ptr2.prev=ptr2.prev.prev;
+                                    }
+                                }
+                            }
+                            return true;
+                    }
+            }
+            public int count(String item){
+                if(front.value.equals(item)){
+                    return front.count;
+                }
+                else if(back.value.equals(item)){
+                    return back.count;
+                }
+                else{
+                    MyList ptr1=front,ptr2=back;
+                    for(;ptr1.next!=null&&ptr2.prev!=null&&!item.equals(ptr1.next.value)&&!item.equals(ptr2.prev.value); ptr1=ptr1.next, ptr2=ptr2.prev){}
+                    if(ptr1.next==null||ptr2.prev==null){
+                        return 0;
+                    }
+                    else if(ptr1.next.value.equals(item)){
+                        return ptr1.next.count;
+                    }
+                    else{
+                        return ptr2.prev.count;
+                    }
+                }
+                
+            }
+                
+            }
+        private class MyList{
+                String value;           
+                MyList next,prev;
+                int count;
+                public MyList(String value, MyList next, MyList prev){
+                    this.next=next;
+                    this.value=value;
+                    this.prev=prev;
+                    count=1;
+                }
+                /*public insert(String word, int hashKey){
+                    
+                    for(MyList ptr=this; ptr!=null; ptr=ptr.next){
+                        if(ptr.value.equals(word)){
+                            ptr.count++;
+                            return;
+                        }
+                    }
+                    this.next=new MyList(word,
+                }
+                */
+
+        }
+     
+        
+     
+        public int stringHashFunction(String wordToHash) {
+     
+            int hashKey = 0;
+     
+            for (int i = 0; i < wordToHash.length(); i++) {
+     
+     
+                int charCode = wordToHash.charAt(i) - 96;
+     
+                
+     
+                
+     
+                hashKey = (hashKey * 26 + charCode) % arraySize;
+     
+               
+     
+            }
+             hashKey = (hashKey + wordToHash.length()) % arraySize;
+     
+            return hashKey;
+     
+        }
+     
+        
+     
+        public void add(String word) {
+            int hashKey = stringHashFunction(word);
+
+            if(array[hashKey]==null){
+     
+                array[hashKey]=new MyBigList();
+                array[hashKey].add(word);
+            
+            }
+            else{
+                array[hashKey].add(word);
+                
+            }
+     
+        }
+     
+        public int count(String wordToFind) {
+     
+            int hashKey = stringHashFunction(wordToFind);
+            if(array[hashKey]!=null){
+                return array[hashKey].count(wordToFind)
+                
+            }
+             else{
+                 return 0;
+            }
+           
+            
+        }
+        
+        public void remove(String word) {
+            int hashKey = stringHashFunction(word);
+            if(array[hashKey]!=null){
+                array[hashKey].remove(word);
+            }
+            
+        }
+     
+        /*public void addTheArray(String[][] elementsToAdd) {
+     
+            for (int i = 0; i < elementsToAdd.length; i++) {
+     
+                String word = elementsToAdd[i][0];
+                String definition = elementsToAdd[i][1];
+     
+                Word newWord = new Word(word, definition);
+                insert(newWord);
+     
+            }
+        }
+        public void displayTheArray() {
+            for (int i = 0; i < arraySize; i++) {
+                System.out.println("theArray Index " + i);
+     
+                theArray[i].displayWordList();
+            }
+        }
+    }
+    class Word {
+     
+        public String theWord;
+        public String definition;
+        public int key;
+        public Word next;
+        public Word(String theWord, String definition) {
+     
+            this.theWord = theWord;
+            this.definition = definition;
+        }
+        public String toString() {
+            return theWord + " : " + definition;
+     
+        }
+    }
+    class WordList {
+     
+        public Word firstWord = null;
+     
+        public void insert(Word newWord, int hashKey) {
+            Word previous = null;
+            Word current = firstWord;
+     
+            newWord.key = hashKey;
+     
+            while (current != null && newWord.key > current.key) {
+     
+                previous = current;
+                current = current.next;
+            }
+            if (previous == null)
+                firstWord = newWord;
+            else
+                previous.next = newWord;
+            newWord.next = current;
+        }
+     
+        public void displayWordList() {
+     
+            Word current = firstWord;
+            while (current != null) {
+     
+                System.out.println(current);
+                current = current.next;
+            }
+        }
+        public Word find(int hashKey, String wordToFind) {
+            Word current = firstWord;
+     
+     
+            while (current != null && current.key <= hashKey) {
+     
+     
+                if (current.theWord.equals(wordToFind))
+                    return current;
+                current = current.next;
+            }
+            return null;
+        }
+        public static void main(String[] args) {
+     
+            Scanner input = new Scanner(System.in);
+     
+     
+            HashTable wordHashTable = new HashHashTable(11);
+     
+            String wordLookUp = "a";
+     
+            while (!wordLookUp.equalsIgnoreCase("x")) {
+     
+                System.out.println(": ");
+     
+                wordLookUp = input.nextLine();
+     
+     
+                System.out.println(wordHashTable.find(wordLookUp));
+            }
+     
+            wordHashTable.displayTheArray();
+     
+        }*/
+
+    }

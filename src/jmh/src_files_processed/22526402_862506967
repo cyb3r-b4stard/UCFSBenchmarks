@@ -1,0 +1,128 @@
+import java.io.*;
+class Unscramble
+{
+    
+    String words[]={"benevolent","nominal","entrepreneur","sports","hammer","mathematics","alphabets","windows","unscramble","jumble","shuffle",
+            "slender","meander","dictator","exception","algorithm","gymnasium","school","ocean","efficient","triangle","helmet","telephone","televsion",
+            "chair"};
+    int store[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},which,number=0;
+    
+    boolean Scramble()throws IOException
+    {
+        InputStreamReader isr=new InputStreamReader(System.in);
+        BufferedReader br=new BufferedReader(isr);
+        String a=Words(),change="";
+        int i,j;
+        char x,y,t;
+        for(i=0,j=a.length()-1;i<a.length();i++,j--)
+        {
+            x=a.charAt(i);
+            y=a.charAt(j);
+            if(i!=0 && j!=a.length()-1)
+            { t=x;
+                x=y;
+                y=t;}
+            change=change+y+x;
+        }
+        System.out.println("Unscramble:\n"+change.substring(0,change.length()/2));
+        String input=br.readLine();
+        return input.equalsIgnoreCase(a);
+    }
+
+    
+    
+    void Lives_Check()throws IOException
+    {
+        InputStreamReader isr=new InputStreamReader(System.in);
+        BufferedReader br=new BufferedReader(isr);
+        boolean check;
+        String c;
+        int lives=3;
+        do
+        {
+            System.out.print("\f");
+            check=Scramble();
+            if(check==true)
+            {
+                if(lives!=0)
+                { System.out.println("You win \nYou have "+lives+"lives. Would you like to continue? \nPress C to continue or E to exit");
+                    c=br.readLine();
+                    if(c.charAt(0)=='C' || c.charAt(0)=='c')
+                        continue;
+                    else
+                        Central.main();
+                }
+                else
+                {System.out.println("You are out of lives \n Going back to Main menu");
+                 delay():
+                    Central.main();
+                }
+            }
+            else if(check==false)
+            {
+                if(lives!=0)
+                {System.out.println("You lose \n You have "+--lives+"lives \n Would you like to continue? \n Press C to continue or E to Exit");
+                    c=br.readLine();
+                    if(c.charAt(0)=='C' || c.charAt(0)=='c')
+                        continue;
+                    else
+                        Central.main();
+                }
+                else
+                {System.out.println("You are out of lives \n Going back to game menu");
+                    delay();
+                    Central.main();}
+                }
+            }while(true);
+        }
+        
+        
+        String Words()
+    {
+        int c=1;
+        do
+        {
+            which=(int)(Math.random()*20);
+            for(int i=0;i<=number;i++)
+            {
+                if(store[i]==which)
+                {c=0;
+                    break;
+                }
+            }
+            if(c==1 && which<25)
+                break;
+        }
+        while(true);
+        store[number]=which;
+        number++;
+        return words[which];
+    }
+    
+    
+     void delay()
+    {System.out.print("Loading");
+     for(int i=0;i<=2;i++)
+     {
+         try
+         {
+             Thread.sleep(1500);
+            }
+            catch(InterruptedException ie)
+            {
+            }
+            System.out.print(".");
+        }
+    }
+    
+    
+    public static void main()throws IOException
+    {
+        InputStreamReader isr=new InputStreamReader(System.in);
+        BufferedReader br=new BufferedReader(isr);
+        Unscramble obj=new Unscramble();
+        obj.Lives_Check();
+    }
+    }
+
+                

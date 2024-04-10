@@ -1,0 +1,213 @@
+import java.awt.*;
+import java.io.*;
+
+public class SkiTrip extends GUI
+{
+
+    public static void main(String[] args)
+    {
+        new SkiTrip();
+    }
+
+    Student[] students = new Student[1000];
+    int studentsCount = 0;
+    
+    /***************
+     * Plan  (can sketch this on paper) 
+     * 
+     * [ cars   ]  [ busses ]  <calcSeats>  [ seats ]  [ costSeats ]
+     * 
+     * [ hotels ]  [ lodges ]  <calcBeds>   [  beds ]  [ costBeds  ]
+     * 
+     *                                    <calcCost>   [ totalCost ]
+     */
+    
+    Label lbCars = addLabel("Cars",50,10,100,40,this);
+    TextField txCars = addTextField("",50,50,100,40,this);
+    Label lbBusses = addLabel("Busses",200,10,100,40,this);
+    TextField txBusses = addTextField("",200,50,100,40,this);
+    Button btCalcSeats = addButton("Calc Seats",350,50,150,50,this);
+    Label lbSeats = addLabel("Seats",550,10,100,40,this);
+    TextField txSeats = addTextField("",550,50,100,40,this);
+    Label lbSeatsCost = addLabel("Seats Cost",700,10,100,40,this);
+    TextField txSeatsCost = addTextField("",700,50,100,40,this);
+    
+    Label lbHotels = addLabel("Hotels",50,110,100,40,this);
+    TextField txHotels = addTextField("",50,150,100,40,this);
+    Label lbLodges = addLabel("Lodges",200,110,100,40,this);
+    TextField txLodges = addTextField("",200,150,100,40,this);
+    Button btCalcBeds = addButton("Calc Beds",350,150,150,50,this);
+    Label lbBeds = addLabel("Beds",550,110,100,40,this);
+    TextField txBeds = addTextField("",550,150,100,40,this);
+    Label lbBedsCost = addLabel("Beds Cost",700,110,100,40,this);
+    TextField txBedsCost = addTextField("",700,150,100,40,this);
+       
+    Button btCalcTotal = addButton("Calc Total",550,250,100,40,this);
+    TextField txTotalCost = addTextField("",700,250,100,40,this);
+    
+    Button btAddStudent = addButton("Add Stu",50,250,100,40,this);
+    List lsStudents = addList("",50,300,400,260,this); 
+    Button btSave = addButton("Save",150,250,100,40,this);
+    Button btLoad = addButton("Load",250,250,100,40,this);
+    Button btCountVehicles = addButton ("Add V",350,250,100,40,this);
+    
+    public SkiTrip()   
+    {
+        super(900,600);  
+    }
+
+    public void actions(Object source, String command)
+    {
+        if(source == btCalcSeats)
+        {
+            int cars = Integer.parseInt( txCars.getText() );
+            int busses= Integer.parseInt( txBusses.getText() );
+            
+            int seats = cars*4 + busses*20; 
+            int cost = cars*250 + busses*1000;
+            
+            txSeats.setText("" + seats);
+            txSeatsCost.setText("" + cost);
+        }
+        
+        if(source == btCalcBeds)
+        {
+            int hotels = Integer.parseInt( txHotels.getText() );
+            int lodges= Integer.parseInt( txLodges.getText() );
+            
+            int beds = hotels*4 + lodges*12; 
+            int cost = hotels*300+ lodges*800;
+            
+            txBeds.setText("" + beds);
+            txBedsCost.setText("" + cost);    
+
+        }
+        
+        if(source == btCalcTotal)
+        {
+            int seatsCost = Integer.parseInt(txSeatsCost.getText());
+            int bedsCost = Integer.parseInt(txBedsCost.getText());
+            int total = seatsCost + bedsCost;
+            
+            txTotalCost.setText("" + total);
+        }
+        
+        if(source == btAddStudent)
+        {
+            Student s = new Student();
+            s.name = input("Student name");
+            s.vehicle = input("Vehicle code");
+            s.bed = input("Bed code");
+            
+            students[studentsCount] = s;
+            studentsCount++;
+            
+            showStudents();            
+        }
+        
+        if(source == btSave)
+        {
+            saveStudents();
+            showStudents();
+        }
+        
+        if(source == btLoad)
+        {
+            loadStudents();
+            showStudents();
+        }
+        
+        if(source == btCountVehicles)
+        {
+           countVehicles(); 
+        }
+        repaint();
+    }
+     
+    void countVehicles()
+    {
+        String[] vehicles = new String[1000] ;
+        int vehiclesCOunt = 0
+        
+       for(int s=0; s< studentCount; s++)
+       {
+           String veh = students[s].vehicle;
+           vehicles[vehiclesCount] = veh;
+           vehiclesCount++;
+           
+        }
+        for(int pass; pass < studentsCount; pass++)
+        {
+            for(int c=0; c < studentCount - 1 ; c++)
+            {
+                if(vehicles[c].compareTo(vehicles[c+1] > 0)
+                {
+                    String temp = vehicles[c]
+                    vehicles[c] = vehicles[c+1]
+                    vehicles[c+1] = temp
+                }
+            }
+        }
+        
+        int count = 0
+        
+        for(int v = 0; v < studentsCount; v++)
+        {
+            String thisVeh = vehicles[v];
+            
+            if(
+        }
+    }
+    public void showStudents()
+    {
+        lsStudents.removeAll();
+        for(int c=0; c < studentsCount; c++)
+        {
+            Student s = students[c];
+            String info = s.name + "   " + s.vehicle + "   " + s.bed;
+            lsStudents.add(info);
+        }
+    }
+    
+    public void saveStudents()
+    {
+        try
+        { 
+            PrintWriter outfo = new PrintWriter(new FileWriter("students.txt"));
+            for (int c=0;c<studentsCount;c++)
+            { 
+                outfo.println(students[c].name);
+                outfo.println(students[c].vehicle);
+                outfo.println(students[c].bed);
+            }
+            outfo.close();
+        }
+        catch(IOException e)
+        { 
+            output(e.toString());
+        }
+    }
+    
+    public void loadStudents()
+    {
+        try
+        {
+            BufferedReader info = new BufferedReader(new FileReader("students.txt"));
+            studentsCount = 0;
+            while(info.ready())
+            {   
+                Student s = new Student();
+                s.name = info.readLine();
+                s.vehicle = info.readLine();
+                s.bed = info.readLine();
+                students[studentsCount] = s;
+                studentsCount++;
+            }
+            info.close();
+        }
+        catch(Exception e)
+        { 
+            output(e.toString());
+        }
+    }
+}

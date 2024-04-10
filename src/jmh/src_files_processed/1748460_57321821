@@ -1,0 +1,56 @@
+import java.util.Scanner;
+import java.util.Locale;
+public class Distancia {
+    public static void main (String [] args){
+        double d, km, millas, max, min, dt;
+        int c, c2, n;
+        c=c2=n=0;
+        dt=max=0;
+        min=9999999;
+        String unidad;
+        Scanner tec = new Scanner (System.in);
+        tec.useLocale(Locale.US);
+        do {
+            System.out.println("Introduce la distancia (0 para terminar)");
+            d=tec.nextDouble();
+            if( d > 0 ){
+                System.out.print("Introduce K si la distancia es en kilómetros, y M si es en millas : ");
+                unidad = tec.next();
+                if( 'K' != unidad.charAt(0) && 'M' != unidad.charAt(0)){
+                    System.out.println("Escala incorrecta");
+                } else{
+                    if('K' == unidad.charAt(0)){
+                        km=d;
+                        millas=km/1.609;
+                    }
+                    else{
+                        millas = d;
+                        km = millas * 1.609;
+                    }
+                    System.out.println("La distancia en km es "+ km + " y  en millas " + millas);
+                    if (km > max)
+                        max = km;
+                    if (km < min )
+                        min = km;
+                    if (km > 200)
+                        c++;
+                    if (km == 250 )
+                        c2++;
+                    dt += km;
+                    n++;
+                }
+            }
+            else {
+                System.out.println("Las distancias no pueden ser negativas");
+            }
+        } while (d > 0);
+        System.out.println()
+        System.out.println("El valor máximo es: " + max + " km," + max/1.609 + " millas" );
+        System.out.println("El valor mínimo es: " + min + " km," + min/1.609 + " millas" );
+        System.out.println(c);
+        System.out.println(c2);
+        System.out.println(dt/n);
+        System.out.println(dt/n/1.609);
+        
+    }
+}

@@ -1,0 +1,161 @@
+import java.util.*;
+import java.lang.*;
+
+/**
+ * # #### ####### #### ######## # ########## ##### ## ########. ### ####### ####### ### ####
+ * ## ###### ### ### ## ###### ## ###### #########. ### #### ## ### #### ## ### ### #### ## #####
+ * ######## ## ###### ### ##### ## ####### #### ## ### ######## #####.
+ * 
+ * @###### (##### ####) 
+ * @####### (##/##/##)
+ */
+public class Squares
+{
+    
+    /** The main method executes the game program. The game program asks the user for the size of the square and
+     *  allows the user to enter rotation commands in order to fix the randomized square.
+     */
+    public static void main(String[] a)
+    {
+        Scanner input = new Scanner(System.in);
+        System.out.print("Enter the size of the square: ");   
+        while( !input.hasNextInt() ) {   
+            input.next();
+            System.out.println("Error - enter an integer: ");
+        }
+        int size = input.nextInt();   
+        
+        int[][] square = new int[size][size];
+        for(int i = 0; i < square.length; i++) {   
+            for(int j = 0; j < square.length; j++) {
+                square[i][j] = i;
+            }
+        }
+        
+        displayTable(square);
+        randomize(square);
+        displayTable(square);
+        
+        System.out.print("Enter a command (L2: moves row 2 to the left; S: end the game): ");
+        String command = input.next();
+        
+        rotation(square, command);
+        int rotationNumber = 1; 
+            
+        displayTable(square);
+        while (isOriginalState(square) == false && command != "S0") {
+            System.out.print("Enter a command (L2: rotates row 2 lef; S0: stops the game): ");
+            command = input.next();
+            
+            rotation(square, command);
+            rotationNumber++;
+            
+            displayTable(square);
+            
+            System.out.println();
+            System.out.println("Number of rotates so far = " + rotationNumber);
+            System.out.println();
+            
+        }
+    }
+        
+        
+    /**
+     * display the table of numbers
+     * 
+     * @param  a   a two-dimensional table of numbers  
+     */
+    public static void displayTable(int[][] a)
+    {
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a.length; j++) {
+                String s += a[i][j];
+            }
+            System.out.println(s);
+        }
+    }
+    
+    public static void rotation(int[][] a, String c)
+    {
+        char direction = c.charAt(0);   
+        int rc = Character.getNumericValue(c.charAt(1));   
+        
+        if (direction == 'L') {   
+            int temp = a[rc][0];
+            for (int i = 0; i < (a.length - 1); i++) {
+                a[rc][i] = a[rc][i+1];
+            }
+            a[rc][a.length-1] = temp;
+        }
+        
+        if (direction == 'R') {   
+            int temp = a[rc][a.length - 1];
+            for (int i = 1; i < a.length; i++) {
+                a[rc][i] = a[rc][i-1];
+            }
+            a[rc][0] = temp;
+        }
+        
+        if (direction == 'U') {   
+            int temp = a[0][rc];
+            for (int i = 0; i < (a.length - 1); i++) {
+                a[i][rc] = a[i+1][rc];
+            }
+            a[a.length-1][rc] = temp;
+        }
+        
+        if (direction == 'D') {   
+            int temp = a[(a.length - 1)][rc];
+            for (int i = 1; i < a.length; i++) {
+                a[i][rc] = a[i-1][rc];
+            }
+            a[a.length-1][0] = temp;
+        }
+    }
+    
+        
+    public static void randomize(int[][] a)
+    {
+        String direction = "";
+        int randomDir = (int) (Math.random() * 2 );   
+       
+        for (int i = 0; i < a.length; i++) {   
+            int randomNum = (int) (Math.random() * (a.length) );   
+           
+            if(randomDir == 0) {
+                direction = "U";
+            }
+            if (randomDir == 1) {
+                direction = "D";
+            }
+            if (randomDir == 2) {
+                direction = "L";
+            }
+            if (randomDir == 3) {
+                direction = "R";
+            }
+           
+            String command = direction + randomNum;
+            
+            rotation(a, command);
+            randomDir = (int) (Math.random() * 4 );   
+        }
+    }
+    
+    public static boolean isOriginalState(int[][] a)
+    {
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a.length; j++) {
+                if ( a[i][j] != i )
+                    return false;
+                }
+            }
+        return true;
+    }
+   /* 
+    public static boolean isValidCommand(int[][] a)
+    {
+        
+    }
+    */
+}

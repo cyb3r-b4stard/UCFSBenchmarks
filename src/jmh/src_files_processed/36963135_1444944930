@@ -1,0 +1,140 @@
+import java.util.*;
+import java.awt.Graphics;
+
+/**
+ * #### ##### ## # ########### ###### #### ## ###### #### ########## #
+ * #### ## ######### ########## ## ##### ### ######### ########### #######
+ * 
+ * @######
+ * @#######
+ */
+
+public class Tour implements TourInterface
+{
+    private int size;
+    private ListNode front;
+    private ListNode back;
+    
+
+    public Tour()
+    {
+        size = 0;
+        front = null;
+        back = null;
+    }
+
+    public int size()
+    {
+        return size;
+    }
+
+    public void add(Point p)
+    {
+        ListNode newNode = new ListNode(p);
+        if(size == 0)
+        {
+            front = newNode;
+        } else {
+            back.next = newNode;
+        }
+        back = newNode;
+        size++;
+    } 
+
+    public void print()
+    {   
+        ListNode egg = front;
+        for(int i = 0; i < size-1 ; i ++)
+        {
+            System.out.println(egg.data.toString());
+            egg = egg.next;
+        }
+    }
+
+    public void draw(Graphics g)
+    {
+        ListNode currNode = front;
+        for(int i = 0; i < size -1; i++)
+        {
+            g.fillOval((int)currNode.data.x-2, (int)currNode.data.y-2, 5, 5);
+            g.drawLine((int)currNode.data.x, (int)currNode.data.y, (int)currNode.next.data.x,(int)currNode.next.data.y);
+            currNode = currNode.next;
+        }
+         g.drawLine((int)front.data.x, (int)front.data.y, (int)currNode.data.x,(int)currNode.data.y);
+        
+    }
+
+    public double distance()
+    {
+        ListNode currNode = front;
+        double total = 0;
+        for(int i = 0; i < size -1; i++)
+        {
+            total += currNode.data.distance(currNode.next.data);
+            currNode = currNode.next;
+        }
+        total += front.data.distance(currNode.data);
+        return total;
+    }
+
+    public void insertNearest(Point p)
+    {   
+        if(front == null || front == back)
+        {
+            add(p);
+        } else {
+            ListNode egg = new ListNode(p);
+            ListNode closeNode = front;
+            ListNode node = front.next;
+            double small = p.distance(front.data);
+            while(node != null)
+            {
+                double dis = node.data.distance(egg.data);
+                if(dis < small)
+                {
+                    small = dis;
+                    closeNode = node;
+                }
+                node = node.next;    
+            }
+            egg.next = closeNode.next;
+            closeNode.next = egg;
+            size++;
+        }
+    }
+
+    public void insertSmallest(Point p)
+    { 
+        if(front == null || front == back)
+        {
+            add(p);
+        } else {
+            ListNode egg = new ListNode(p); 
+            ListNode currNode = front;
+            double x = 0;
+            for(int i = 0; i < size; i++)
+            {
+                x = currNode.data.distance(currNode.next)
+                currNode = currNode.next;
+            }
+        }  
+    }
+
+    private class ListNode
+    {
+        private Point data;
+        private ListNode next;
+        public ListNode(Point p, ListNode n)
+        {
+            this.data = p;
+            this.next = n;
+        }
+
+        public ListNode(Point p)
+        {
+            this(p, null);
+        }        
+    }
+
+  
+}

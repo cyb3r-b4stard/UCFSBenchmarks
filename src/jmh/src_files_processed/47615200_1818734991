@@ -1,0 +1,424 @@
+import java.io.*;
+import java.util.*;
+public class goToGymAndShite
+{
+    static String fileNameClassDetails = "ClassDetails.txt";
+    static String fileNameClassInstructors = "Instructors.txt";
+    static String fileNameClassType = "ClassTypes.txt";
+    static Scanner sc = new Scanner(System.in);
+    public static int countLines(String fileName)throws IOException
+    {
+        int count = 0;
+        try
+        {
+            FileInputStream fin = new FileInputStream(fileName);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fin));
+            count = 0;
+            while(br.readLine()!=null)
+                count++;
+            br.close();
+        }
+        catch(Exception ex)
+        {
+            System.out.println("ClassType.txt or ClassDetails.txt files are missing");
+            System.exit(10000);
+        }
+        return count;
+    }
+
+    public static void readClassDetails( String[] classCode, String[] dayOfWeek, int[] time, String[] name)throws IOException
+    {
+        try
+        {
+            FileInputStream fin = new FileInputStream(fileNameClassDetails);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fin));
+            String s = "";
+            int i = 0;
+            while((s=br.readLine())!=null)
+            {
+                classCode[i] = s;
+                dayOfWeek[i] = br.readLine();
+                time[i] = Integer.parseInt(br.readLine());
+                name[i] = br.readLine();
+                i++;
+            }
+            br.close();
+        }
+        catch(Exception ex)
+        {
+            System.out.println("ClassDetails.txt file missing");
+            System.exit(0);
+        }
+
+    }
+
+    public static String findClassType(int choice)throws IOException
+    {
+        String s="";
+        try
+        {
+            FileInputStream fin = new FileInputStream(fileNameClassType);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fin));
+            for(int i = 1; i < choice; i++)
+                br.readLine();
+            s = br.readLine();
+        }
+        catch(Exception ex)
+        {
+            System.out.println("ClassDetails.txt file missing");
+            System.exit(0);
+        }
+        return s.substring(0,2).toUpperCase();
+    }
+
+    public static void addNewClass(String[] classCode, String[] dayOfWeek, int[] time, String[] name)throws IOException
+    {
+        try
+        {
+            FileInputStream fin = new FileInputStream(fileNameClassDetails);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fin));
+            FileInputStream f = new FileInputStream(fileNameClassType);
+            BufferedReader kb = new BufferedReader(new InputStreamReader(f));
+            FileWriter fout=new FileWriter(fileNameClassDetails);
+            BufferedWriter bout=new BufferedWriter(fout);
+            PrintWriter pout=new PrintWriter(bout);
+            System.out.println("The Goto Gym Add a Class");
+            int choice = 2,j=0;
+            String data[] = new String[4];
+            String s = "";
+            do
+            {
+                if(choice<1 || choice>countLines(fileNameClassType) || j>0)
+                {
+                    System.out.println("Invalid Choice.. Try Again");
+                    j=0;
+                }
+                System.out.println("Enter the class type:");
+                for(int i =1; i<=countLines(fileNameClassType);i++)
+                    System.out.println(i+". "+kb.readLine());
+                choice = sc.nextInt();
+                j++;
+            }while(choice<1 || choice>countLines(fileNameClassType) );
+            data[0] = findClassType(choice);
+            j=0;
+            do
+            {
+                if(choice<1 || choice>3 || j>0)
+                {
+                    System.out.println("Invalid Choice.. Try Again");
+                    j=0;
+                }
+                System.out.println("Enter the day:");
+                System.out.println("1. Mon");
+                System.out.println("2. Tues");
+                System.out.println("3. Wed");
+                choice = sc.nextInt();
+                j++;
+            }while(choice<1 || choice>3 );
+            switch(choice)
+            {
+                case 1:
+                data[1] = "Mon";
+                break;
+                case 2:
+                data[1] = "Tues";
+                break;
+                case 3:
+                data[1] = "Wed";
+                break;
+            }
+            j=0;
+            do
+            {
+                if(choice<1 || choice>3 || j>0)
+                {
+                    System.out.println("Invalid Choice.. Try Again");
+                    j=0;
+                }
+                System.out.println("Choose a time:");
+                System.out.println("1. 7 o'clock");
+                System.out.println("2. 8 o'clock");
+                System.out.println("3. 9 o'clock");
+                choice = sc.nextInt();
+                j++;
+            }while(choice<1 || choice>3);
+            switch(choice)
+            {
+                case 1:
+                data[2] = "7";
+                break;
+                case 2:
+                data[2] = "8";
+                break;
+                case 3:
+                data[2] = "9";
+                break;
+            }
+            j=0;
+            do
+            {
+                if(choice<1 || choice>3 || j>0)
+                {
+                    System.out.println("Invalid Choice.. Try Again");
+                    j=0;
+                }
+                System.out.println("Choose a teacher:");
+                System.out.println("1. Amanda");
+                System.out.println("2. Gerry");
+                System.out.println("3. Aidan");
+                System.out.println("4. Frank");
+                choice = sc.nextInt();
+                j++;
+            }while(choice<1 || choice>3 );
+            switch(choice)
+            {
+                case 1:
+                data[3] = "Amanda";
+                break;
+                case 2:
+                data[3] = "Gerry";
+                break;
+                case 3:
+                data[3] = "Aidan";
+                case 4:
+                data[4] = "Frank";
+                break;
+            }
+            boolean flag = true;
+            for(int i = 0; i < classCode.length; i++)
+            {
+                if(data[3].equalsIgnoreCase(name[i]))
+                {
+                    if(Integer.parseInt(data[2]) == time[i])
+                    {
+                        if(data[1].equalsIgnoreCase(dayOfWeek[i]))
+                            flag = false;
+                    }
+                }
+            }
+            if(flag == true)
+            {
+                for(j = 0; j<name.length;j++)
+                {
+                    pout.println(classCode[j]);
+                    pout.println(dayOfWeek[j]);
+                    pout.println(time[j]);
+                    pout.println(name[j]);
+                }
+                for(int i=0; i<data.length; i++)
+                {
+                    if(i != (data.length -1))
+                        pout.println(data[i]);
+                    else
+                        pout.print(data[i]);
+                }
+                System.out.println("Added "+data[0]+" on "+data[1]+" at "+data[2]+" with "+data[3]);
+            }
+            else
+            {
+                System.out.println("Sorry, The instructor "+data[3]+" is not free at "+data[2]+" on "+data[1]);
+                for(j = 0; j<name.length;j++)
+                {
+                    pout.println(classCode[j]);
+                    pout.println(dayOfWeek[j]);
+                    pout.println(time[j]);
+                    pout.println(name[j]);
+                }
+            }
+            br.close();
+            kb.close();
+            pout.close();
+            bout.close();
+            fout.close();
+        }
+        catch(Exception ex)
+        {
+            System.out.println("File necessary for adding a new class session does not exist");
+            System.exit(10000);
+        }
+    }
+
+    public static void currentClasses(String[] classCode, String[] dayOfWeek, int[] time, String[] name)
+    {
+        try
+        {
+
+            FileInputStream fin = new FileInputStream(fileNameClassType);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fin));
+            String s = "";
+            while((s=br.readLine())!=null)
+            {
+                System.out.println(s);
+                String code = s.substring(0,2).toUpperCase();
+                for(int i = 0; i < classCode.length; i++)
+                {
+                    if(code.equalsIgnoreCase(classCode[i]))
+                        System.out.println("\t"+dayOfWeek[i]+" at "+time[i]+" with "+name[i]);
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            System.out.println("ClassTypes.txt file missing");
+        }
+    }
+
+    public static void paymentsInfo(String[] name, int[] time)
+    {
+        try
+        {
+            FileInputStream fin = new FileInputStream(fileNameClassInstructors);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fin));
+            String s = "";
+            final int SEVENTOEIGHT = 60;
+            final int NINE = 80;
+            final int OVERTWO = 10;
+            double totalWage = 0.0;
+            System.out.println("The Goto Gym Payments Due");
+            System.out.println("-------------------------");
+            System.out.println("Name\t\tClasses\t\tPay (Euros)");
+            while((s=br.readLine())!=null)
+            {
+                int count = 0;
+                int individualEarnings = 0;
+                for(int i = 0; i < name.length; i++)
+                {
+                    if(name[i].equalsIgnoreCase(s))
+                    {
+                        count++;
+                        if(time[i] == 9)
+                            individualEarnings += NINE;
+                        else
+                            individualEarnings += SEVENTOEIGHT;	
+                    }
+                }
+                if(count>2)
+                    individualEarnings += count*OVERTWO;
+                totalWage += individualEarnings;
+                System.out.println(s+"\t\t"+count+"\t\t"+individualEarnings);
+            }
+            System.out.print("\n");
+            System.out.println("Total Wages for this week: "+totalWage+" Euros");
+            br.close();
+        }
+        catch(Exception ex)
+        {
+            System.out.println("Instructors.txt not found");
+        }
+
+    }
+
+    public static void individualTimeTable(String[] classCode, String[] dayOfWeek,int[] time, String[] name)throws IOException
+    {
+        File mfile = new File(fileNameClassInstructors);
+        if(mfile.exists()==true)
+        {
+            Scanner kb = new Scanner(mfile);
+            Scanner sc = new Scanner(System.in);
+            System.out.print("Enter the name of the instructor ");
+            String search = sc.nextLine();
+            String s = "";
+            boolean flag = false;
+            while((s=kb.nextLine())!=null)
+            {
+                if(s.equalsIgnoreCase(search))
+                {
+                    flag = true;
+                    break;
+                }
+            }
+            if(flag==true)
+            {
+                kb.close();
+                String timetable = "Timetables.txt";
+                String fileName = search.concat(timetable);
+                System.out.println(fileName+" created");
+                System.out.println("Writing to file...");
+                PrintWriter outputFile = new PrintWriter(fileName);
+                for(int i = 0;i < name.length; i++)
+                {
+                    if(name[i].equalsIgnoreCase(search))
+                    {
+                        String tmp = "";
+                        while((tmp=kb.readLine())!=null)
+                        {
+                            if(tmp.substring(0,2).equalsIgnoreCase(classCode[i]))
+                                break;
+                        }
+                        outputFile.println(tmp+"\t"+dayOfWeek[i]+"\t"+time[i]);
+                        System.out.println(tmp+"\t"+dayOfWeek[i]+"\t"+time[i]);
+                    }
+                }
+            }
+        }
+
+        public static void headerLine()
+        {
+            System.out.println("The Goto Gym Classes");
+            System.out.println("-------------------------");
+        }
+
+        public static void displayMenu()
+        {
+            System.out.println("1. Add a New Class Session");
+            System.out.println("2. Show Times of All Current Classes");
+            System.out.println("3. Show Instructor Payments Due");
+            System.out.println("4. Print Timetable for Instructor");
+            System.out.println("5. Show Ordered Timetable with Codes");
+            System.out.println("6. Exit");
+        }
+
+        public static void main(String args[])throws IOException
+        {
+            int n = countLines(fileNameClassDetails)/4;
+            String classCode[] = new String[n];
+            String dayOfWeek[] = new String[n];
+            int time[] = new int[n];
+            String name[] = new String[n];
+            readClassDetails(classCode, dayOfWeek, time, name);
+            int ch = 2,j=0;
+            do
+            {
+                if(ch>6 || ch<1 || j>0)
+                {
+                    System.out.println("\f");
+                    System.out.println("Invalid Input. Try Again");
+                    j=0;
+                }
+                headerLine();
+                displayMenu();
+                ch = sc.nextInt();
+                j++;
+            }while(ch>6 || ch<1);
+            switch(ch)
+            {
+                case 1:
+                if(countLines(fileNameClassType) <= 12)
+                    addNewClass(classCode, dayOfWeek, time, name);
+                else
+                {
+                    System.out.println("Cannot Add any more classes.");
+                }
+                break;
+
+                case 2:
+                currentClasses(classCode, dayOfWeek, time, name);
+                break;
+
+                case 3:
+                paymentsInfo(name, time);
+                break;
+
+                case 4:
+                individualTimeTable(classCode, dayOfWeek, time, name);
+                break;
+
+                case 5:
+                break;
+
+                case 6:
+                System.exit(0);
+                break;
+            }
+        }
+    }

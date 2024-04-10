@@ -1,0 +1,61 @@
+import java.util.*;
+import java.io.*;
+import java.text.SimpleDateFormat;
+
+public class DuplicatedFilesHandler
+{           
+     private File folder = new File("E:/java work/directoySearch/");
+     private File[] listOfFiles = folder.listFiles();
+     private Date today = new Date();
+     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+            
+            
+     private ArrayList<File> files_dat = new ArrayList<>();
+            
+     private CustomerFileWriter ;
+      
+     public DuplicatedFilesHandler()
+     {
+         newFile = new  CustomerFileWriter();
+         newFile.openFile();
+     }
+                
+     for (File file : listOfFiles) 
+     {
+          if (file.isFile())
+           {
+               String extension = CustomerFileWriter.getFileExtension(file); 
+               if (extension.equals(".txt") && !file.getName().equals("log.txt"))
+               {
+                   files_dat.add(file);
+               }  
+           }
+     }
+            
+            try
+            {
+                    newFile.writeToFile(dateFormat.format(today).toString());
+                    newFile.writeLine();
+                    
+                    for (int i = files_dat.size()-1;i>=0;i--)
+                    {
+                            for(int y = i-1;y>=0;y--)
+                            {
+                                    if (FileUtils.contentEquals(files_dat.get(i), files_dat.get(y)))
+                                    {
+                        
+                                        String value = files_dat.get(y).getName()+" is a duplicated of "+files_dat.get(i).getName();
+                                        newFile.writeToFile(value);
+                                    }
+                            }
+                            
+                    } 
+                    newFile.closeFile();
+            }
+            catch(IOException ex)
+            {
+                System.out.println(ex.getMessage());
+            }  
+          
+            
+}

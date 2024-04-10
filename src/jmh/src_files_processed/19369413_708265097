@@ -1,0 +1,187 @@
+
+/* #### ### #### ### ########## # 
+ * ####:####### #####
+ * ########:
+ * ##:#########
+ */
+
+import ecs100.*;
+import java.util.*;
+import java.io.*;
+
+/** ##### # ######### ######## #### # ####, ### ###### ### ####
+## ####### ########### ##### ###### ## ### ########.
+#### #### ## ### #### (###### ### #####) ######## ###########
+##### ### ######:
+- ##### ####
+- ### #### ## ##### #####
+- ### #### ## ##### ###### (## ? ## ### ###### ## #######)
+- ### #### ## ##### ###### (## ? ## ### ###### ## #######)
+
+### ####### #### #### ### #### #### ## #### ## ###### #######.
+
+### ####### #### ###### ### #### ## ##### ###
+- ### ##### ## ### ### ###### ## ### ########
+(####, ##### ### #### ### ##### #### - ## ######)
+- #### ## ##### ## # ##### ######
+- ####### ## # ###### (## #####) ### ##### ##### ## #####
+- ### ###### ## (#####) ######## ## # ###### ### ### ##### #####
+### ##### ## #####.
+
+ */
+
+public class Genealogy{
+    private ArrayList<Person> db = new ArrayList<Person>();  
+    private Person currentPerson;  
+    private ArrayList<Integer> children = new ArrayList <Integer>();
+    /** Construct a new Genealogy object
+     * and set up the GUI
+     */
+    public Genealogy(){
+        UI.addButton("Load DB", this::doLoad);
+        UI.addButton("All Names", this::printAllNames);
+        UI.addTextField("Name", this::doName);
+        UI.addButton("Birth", this::printPerson);
+        UI.addButton("Parents", this::printParents);
+        UI.addButton("Children", this::printChildren);
+        UI.addButton("GrandChildren", this::grandChildren);
+        UI.addButton("Clear", UI::clearText);
+        UI.addButton("Quit", UI::quit);
+
+    }
+
+    /**
+     * Looks up the name in the database, and stores the Person
+     * in the currentPerson field, if there is such a person.
+     */
+    public void doName(String value){
+        Person p = this.getPerson(value);
+        if (p==null){
+            UI.println(value + " not in database");
+        }
+        else {
+            currentPerson = p;
+            UI.printf("found %s in database\n", value);
+            UI.println("----------------------");
+        }
+    }
+
+    /** Load the database */
+    public void doLoad(){
+        this.loadDatabase(UIFileChooser.open("Choose database file"));
+    }
+
+    /**
+     * Reads the data from the database file into an ArrayList
+     * Reads the data on each line andconstructs a Person object,
+     *  and puts the Person object into list
+     * The method may assume that the database is correctly formatted,
+     *  and does not need to do any checking of the input.
+     */
+    public void loadDatabase(String filename){
+        UI.printf("Reading Database from %s ....\n", filename);
+        try {
+            Scanner scan = new Scanner(new File(filename));
+            String line;
+            while (scan.hasNext()){
+                Scanner lineScan = new Scanner(line = scan.nextLine());
+                db.add(new Person(lineScan.next(), lineScan.next(), lineScan.nextInt(), lineScan.next(), lineScan.next()));
+
+            }
+        } catch (IOException e){}
+    }
+
+    /**
+     * Print out names of all the people in the database
+     */
+    public void printAllNames(){
+        UI.println("All names:");
+        for (int i = 0; i < db.size(); i++) {
+            UI.println(db.get(i).getName());
+        }
+
+        UI.println("----------------------");
+    }
+
+    /**
+     * Looks for and returns the Person with the given name in the database.
+     * returns null if not found
+     */
+    public Person getPerson(String name){
+        for (int i = 0; i < db.size(); i++) {
+            if (db.get(i).getName().equalsIgnoreCase(name)){return db.get(i);}
+        }
+        return null;
+
+    }
+
+    /**
+     * Prints the name and year of birth of the currently selected person.
+     * If no current person, prints a message.
+     *  [Note, the toString() method of the Person class returns a string
+     * containing the name and year of birth of the person.]
+     */
+    public void printPerson(){
+        
+        if (currentPerson != null) {
+            UI.println(currentPerson.toString());
+        } else {
+            UI.println("no person specified");
+        }
+
+        UI.println("----------------------");
+    }
+
+    /**
+     * Prints the names of the mother and the father if they are known
+     * (or appropriate messages if they are unknown).
+     */
+    public void printParents(){
+        if (currentPerson.getMotherName() != null) {
+            UI.println("mother: " + currentPerson.getMotherName());    
+        } else {
+            UI.println("mother: unknown");
+        }
+         if (currentPerson.getFatherName() != null) {
+            UI.println("father: " + currentPerson.getFatherName());    
+        } else {
+            UI.println("father: unknown");
+        }
+
+
+        UI.println("----------------------");
+    }
+
+    /**
+     * Prints the number of children of the current person,
+     * followed by the names and years of birth all the children.
+     * Searches the array for Persons who have the currently specified
+     *  person as one of their parents.
+     * Any such person is added to an ArrayList.
+     * It then prints out the information from the array of children.
+     */
+    public void printChildren(){
+        
+        for (int i = 0; i < db.size(); i++) {
+            if (db.get(i).getMotherName().equals(currentPerson.getName()) || db.get(i).getFatherName().equals(currentPerson.getName())) {
+                children.add(new Integer(i));
+            }
+        }
+        UI.println(currentPerson.getName() + "has " + children.size() + "children");
+        for (int i = 0; i < children.size(); i++) {
+            db.get(children.get(i).int).toString();
+        }
+    }
+
+    /** COMPLETION:
+     * Prints (to textArea) names of all grandchildren (if any) 
+     *  of the currently specified person
+     */
+    public void grandChildren(){
+        /*# YOUR CODE HERE */
+
+        UI.println("----------------------");
+    }
+}
+
+

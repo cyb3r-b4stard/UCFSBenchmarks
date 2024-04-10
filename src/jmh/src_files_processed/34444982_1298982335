@@ -1,0 +1,120 @@
+
+/**
+ * ### ### - ####### #: # #### ## ###
+ * 
+ * ### ######
+ * #/#/####
+ */
+import java.util.Random;
+public class Pig
+{
+    GVdie die1;
+    GVdie die2;
+    int dVal1;
+    int dVal2;
+    int roundScore;
+    int playerScore;
+    int computerScore;
+    final int winningScore;
+
+    public Pig () {
+        roundScore = 0;
+        playerScore = 0;
+        computerScore = 0;
+        GVdie die1 = new GVdie();
+        GVdie die2 = new GVdie();
+        winningScore = 100;
+        System.out.println("Welcome to the Game of Pig");
+    }
+
+    public int getRoundScore() {
+        return roundScore;
+    }
+
+    public int getPlayerScore() {
+        return playerScore;
+    }
+
+    public int getComputerScore() {
+        return computerScore;
+    }
+
+    private void rollDice() {
+        die1.roll();
+        dVal1 = die1.getValue();
+        die2.roll();
+        dVal2 = die2.getValue();
+        if (dVal1 == 1 || dVal2 == 1) {
+            roundScore = 0;
+        }
+        else {
+            roundScore = roundScore + dVal1 + dVal2;
+        }
+        System.out.println("Round Score: " + roundScore);
+    }
+
+    public void playerRolls() {
+        rollDice();
+        if (dVal1 == 1 || dVal2 == 1) {
+            System.out.println("---- Your score: " + playerScore);
+        }
+        else if (dVal1 == 1 && dVal2 == 1) {
+            playerScore = 0;
+            System.out.println("---- Your score: " + playerScore);
+        }
+
+        if (playerScore >= 100) {
+            System.out.println("Congratulations! You Win!");
+        }
+    }
+
+    public void playerHolds() {
+        playerScore = playerScore + roundScore;
+        roundScore = 0;
+        System.out.print("---- Your score: " + playerScore);
+    }
+
+    public void computerTurn() {
+        while (dVal1 != 1 && dVal2 != 2 && roundScore <= 19 && computerScore < 100) {
+            rollDice();
+            if (dVal1 == 1 && dVal2 == 1) {
+                computerScore = 0;
+            }
+            else {
+                computerScore = computerScore + roundScore;
+            }
+        }
+        System.out.println("---- Computer score: " + computerScore);
+    }
+
+    public void restart() {
+        roundScore = 0;
+        playerScore = 0;
+        computerScore = 0;
+    }
+
+    public GVdie getDie (int num) {
+        if (num == 1) {
+            return die1;
+        }
+        else if {num == 2) {
+            return die2;
+        }
+    } 
+
+    public boolean playerWon () {
+        boolean playerWon = false;
+        if (playerScore >= 100) {
+            playerWon = true;
+        }
+        return playerWon;
+    }
+
+    public boolean computerWon () {
+        boolean computerWon = false;
+        if (computerScore >= 100) {
+            computerWon = true;
+        }
+        return computerWon; 
+    }
+}

@@ -1,0 +1,313 @@
+import objectdraw.*;
+import java.awt.*;
+
+public class Tacky4 extends WindowController
+{
+    private FramedRect board;
+    private FilledRect piece1,piece2,piece3,piece4,piece5,piece6,piece7,piece8,piece9, playAgainButton ; 
+    private Location startLoc;
+    private double boardWidth, boardHeight,pieceWidth,pieceHeight,pieceWidthOffset,pieceHeightOffset,scoreBoardHeight,scoreBoardWidth;
+    private Color boardColor,xColor,oColor,startColor;
+    private double colWidth, rowHeight;
+    private double xCol1, xCol2, xCol3, xCol4;
+    private double yRow1, yRow2, yRow3, yRow4;
+    private Line row2, row3, col2, col3;
+    private Text text1,text2,text3,text4,text5,text6,text7,text8,text9,titleText,xScoreText,oScoreText,playAgainText;
+    private double textWidthOffset,textHeightOffset;
+    private int textSize,xScore,oScore,clickCount;
+
+    public static void main (String[]args)
+    {
+        new Tacky4().startController(600,600);
+    }
+
+    public void begin()
+    {
+        clickCount=1;
+        makeBoard();
+        makeTitle();
+        makeScoreBoxes();
+        makeplayAgainButton();
+
+    }
+
+    public void makeTitle()
+    {
+        titleText=new Text("TackyToes!!",xCol2,yRow4,canvas);
+        titleText.moveTo(xCol2+colWidth/2,yRow4);
+        titleText.move(-titleText.getWidth()/2,0);
+
+    } 
+
+    public void makeScoreBoxes()
+    {
+        xScore=0;
+        oScore=0;
+        xScoreText=new Text("X Score: " + xScore,xCol1+colWidth/2,yRow1,canvas);
+        xScoreText.move(-xScoreText.getWidth()/2,0);
+        xScoreText.move(0,-xScoreText.getHeight()*1.2);
+        oScoreText=new Text("O Score:" + oScore,xCol3+colWidth/2,yRow1,canvas);
+        oScoreText.move(-oScoreText.getWidth()/2,0);
+        oScoreText.move(0,-oScoreText.getHeight()*1.2);
+
+    }   
+
+    public void makeBoard()
+    {
+        boardWidth=canvas.getWidth() *.9;
+        boardHeight=canvas.getHeight() *.9;
+        scoreBoardWidth=colWidth*.9;
+        scoreBoardHeight=yRow1*.5;
+        startLoc= new Location(canvas.getWidth()*.06,canvas.getHeight()*.06);
+        board=new FramedRect(startLoc,boardWidth,boardHeight,canvas);
+        colWidth=boardWidth / 3;
+        rowHeight=boardHeight / 3;
+        xCol1=startLoc.getX();
+        xCol2=xCol1+colWidth;
+        xCol3=xCol2+colWidth;
+        xCol4=xCol3+colWidth;
+        yRow1=startLoc.getY();
+        yRow2=yRow1+rowHeight;
+        yRow3=yRow2+rowHeight;
+        yRow4=yRow3+rowHeight;
+        col2=new Line(xCol2,yRow1,xCol2,yRow4,canvas);
+        col3=new Line(xCol3,yRow1,xCol3,yRow4,canvas);
+        row2=new Line(xCol1,yRow2,xCol4,yRow2,canvas);
+        row3=new Line(xCol1,yRow3,xCol4,yRow3,canvas);
+        boardColor=new Color(255,0,255);
+        board.setColor(boardColor);
+        startColor=new Color(0,255,0);
+        oColor=new Color(255,0,0);
+        xColor=new Color(0,0,255);
+
+        pieceWidth=colWidth*.85;
+        pieceHeight=rowHeight*.85;
+        pieceWidthOffset=(colWidth-pieceWidth)/2;
+        pieceHeightOffset=(rowHeight-pieceHeight)/2;
+
+        piece1=new FilledRect (xCol1,yRow1,pieceWidth,pieceHeight,canvas);
+        piece1.move(pieceHeightOffset,pieceWidthOffset);
+        piece1.setColor(startColor);
+
+        piece2=new FilledRect (xCol1,yRow2,pieceWidth,pieceHeight,canvas);
+        piece2.move(pieceHeightOffset,pieceWidthOffset);
+        piece2.setColor(startColor);
+
+        piece3=new FilledRect (xCol1,yRow3,pieceWidth,pieceHeight,canvas);
+        piece3.move(pieceHeightOffset,pieceWidthOffset);
+        piece3.setColor(startColor);
+
+        piece4=new FilledRect (xCol2,yRow1,pieceWidth,pieceHeight,canvas);
+        piece4.move(pieceHeightOffset,pieceWidthOffset);
+        piece4.setColor(startColor);
+
+        piece5=new FilledRect (xCol2,yRow2,pieceWidth,pieceHeight,canvas);
+        piece5.move(pieceHeightOffset,pieceWidthOffset);
+        piece5.setColor(startColor);
+
+        piece6=new FilledRect (xCol2,yRow3,pieceWidth,pieceHeight,canvas);
+        piece6.move(pieceHeightOffset,pieceWidthOffset);
+        piece6.setColor(startColor);
+
+        piece7=new FilledRect (xCol3,yRow1,pieceWidth,pieceHeight,canvas);
+        piece7.move(pieceHeightOffset,pieceWidthOffset);
+        piece7.setColor(startColor);
+
+        piece8=new FilledRect (xCol3,yRow2,pieceWidth,pieceHeight,canvas);
+        piece8.move(pieceHeightOffset,pieceWidthOffset);
+        piece8.setColor(startColor);
+
+        piece9=new FilledRect (xCol3,yRow3,pieceWidth,pieceHeight,canvas);
+        piece9.move(pieceHeightOffset,pieceWidthOffset);
+        piece9.setColor(startColor);
+
+        textSize=(int)(pieceWidth);
+
+        text1=new Text("H",piece1.getLocation(),canvas);
+        text1.setFontSize(textSize); 
+
+        textWidthOffset = (pieceWidth - text1.getWidth())/2;
+        textHeightOffset = (pieceHeight - text1.getHeight())/2;
+
+        text1.move(textWidthOffset,textHeightOffset);
+        text2=new Text("H",piece2.getLocation(),canvas);
+        text2.setFontSize(textSize);
+        text2.move(textWidthOffset,textHeightOffset);
+        text3=new Text("H",piece3.getLocation(),canvas);
+        text3.setFontSize(textSize);
+        text3.move(textWidthOffset,textHeightOffset);
+        text4=new Text("H",piece4.getLocation(),canvas);
+        text4.setFontSize(textSize);
+        text4.move(textWidthOffset,textHeightOffset);
+        text5=new Text("H",piece5.getLocation(),canvas);
+        text5.setFontSize(textSize);
+        text5.move(textWidthOffset,textHeightOffset);
+        text6=new Text("H",piece6.getLocation(),canvas);
+        text6.setFontSize(textSize);
+        text6.move(textWidthOffset,textHeightOffset);
+        text7=new Text("H",piece7.getLocation(),canvas);
+        text7.setFontSize(textSize);
+        text7.move(textWidthOffset,textHeightOffset);
+        text8=new Text("H",piece8.getLocation(),canvas);
+        text8.setFontSize(textSize);
+        text8.move(textWidthOffset,textHeightOffset);
+        text9=new Text("H",piece9.getLocation(),canvas);
+        text9.setFontSize(textSize);
+        text9.move(textWidthOffset,textHeightOffset);
+    }
+
+    public void makeplayAgainButton()
+    {
+        playAgainButton=new FilledRect (xCol2+colWidth/2,yRow1,xScoreText.getWidth()*2.2,xScoreText.getHeight()*1.5,canvas);
+        playAgainButton.move((-playAgainButton.getWidth()/2),0);
+        playAgainButton.move(0,-playAgainButton.getHeight()*1.2);
+        playAgainText=new Text("Another Round?",xCol2+colWidth/2,yRow1,canvas);
+        playAgainText.move((-playAgainText.getWidth()/2),0);
+        playAgainText.move(0,-playAgainText.getHeight()*1.);
+        playAgainText.setColor(Color.YELLOW);
+
+    } 
+
+    public void onMouseClick(Location point)
+    {
+        if (piece1.contains(point))
+        {
+            CheckValidMove(piece1, text1);
+        }
+        else if (piece2.contains(point))
+        {
+            CheckValidMove(piece2, text2);
+        }
+        else if (piece3.contains(point))
+        {
+            CheckValidMove(piece3, text3);
+        }
+        else if (piece4.contains(point))
+        { 
+            CheckValidMove(piece4, text4);
+        }
+        else if (piece5.contains(point))
+        {
+            CheckValidMove(piece5, text5);
+        }
+        else if (piece6.contains(point) )
+        {
+            CheckValidMove(piece6, text6);
+        }
+        else if (piece7.contains(point) )
+        {
+            CheckValidMove(piece7, text7);
+        }
+        else if (piece8.contains(point) )
+        {
+            CheckValidMove(piece8, text8);
+        }
+        else if (piece9.contains(point) )
+        {
+            CheckValidMove(piece9, text9);
+        }
+        if (playAgainButton.contains(point))
+        {
+            piece1.setColor(startColor);
+            piece2.setColor(startColor);
+            piece3.setColor(startColor);
+            piece4.setColor(startColor);
+            piece5.setColor(startColor);
+            piece6.setColor(startColor);
+            piece7.setColor(startColor);
+            piece8.setColor(startColor);
+            piece9.setColor(startColor);
+            text1.setText("H");
+            text2.setText("H");
+            text3.setText("H");
+            text4.setText("H");
+            text5.setText("H");
+            text6.setText("H");
+            text7.setText("H");
+            text8.setText("H");
+            text9.setText("H");
+        }
+        checkForWinner();
+    }
+
+    public void CheckValidMove (FilledRect box,Text text)
+    {
+        if  ( box.getColor() == startColor )
+        {
+            clickCount++;
+            if ( clickCount % 2 == 0 )
+            {
+                box.setColor(oColor);
+                text.setText("O");
+            }
+            else
+            {
+                box.setColor(xColor);
+                text.setText("X");
+            }
+        }
+    }
+
+    public void checkForWinner ()
+    {
+        compareBoxes(piece1,piece2,piece3);
+        compareBoxes(piece1,piece4,piece7);
+        compareBoxes(piece1,piece5,piece9);
+        compareBoxes(piece2,piece1,piece3);
+        compareBoxes(piece2,piece5,piece8);
+        compareBoxes(piece3,piece5,piece7);
+        compareBoxes(piece3,piece6,piece9);
+        compareBoxes(piece3,piece2,piece1);
+        compareBoxes(piece4,piece5,piece6);
+        compareBoxes(piece4,piece1,piece7);
+        compareBoxes(piece5,piece1,piece9);
+        compareBoxes(piece5,piece4,piece6);
+        compareBoxes(piece5,piece2,piece8);
+        compareBoxes(piece5,piece3,piece7);
+        compareBoxes(piece6,piece3,piece9);
+        compareBoxes(piece6,piece5,piece4);
+        compareBoxes(piece7,piece4,piece1);
+        compareBoxes(piece7,piece8,piece9);
+        compareBoxes(piece7,piece5,piece3);
+        compareBoxes(piece8,piece5,piece2);
+        compareBoxes(piece8,piece7,piece9);
+        compareBoxes(piece9,piece5,piece1);
+        compareBoxes(piece9,piece8,piece7);
+        compareBoxes(piece9,piece6,piece3);
+
+    }   
+
+    public void compareBoxes(FilledRect one,FilledRect two,FilledRect three)
+    {
+
+        if(one.getColor() ==  two.getColor() &&
+        two.getColor() == three.getColor() &&
+        three.getColor() != startColor )
+        {
+            setScore ( one );
+            setWinningColor(one, two, three);
+        }
+
+    } 
+    public void setScore(FilledRect one)
+    {
+        if ( one.getColor() == xColor )
+        {
+              xScore=xScore+1;
+              xScoreText.setText("X Score:" + xScore);
+        }
+        else if
+            {
+             oScore=oScore+1;
+             oScoreText.setText("O Score:" + oScore);
+            }
+       
+   }  
+
+    public void setWinningColor(FilledRect one, FilledRect two, FilledRect three)
+    {
+        one.setColor(Color.MAGENTA);
+        two.setColor(Color.MAGENTA);
+        three.setColor(Color.MAGENTA);
+    }   
+}

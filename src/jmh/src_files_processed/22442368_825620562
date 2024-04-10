@@ -1,0 +1,221 @@
+import java.awt.*;
+import java.applet.*;
+import java.net.*;
+import java.awt.event.*;
+import java.util.*; 
+
+
+public class BlackJack extends Applet implements Runnable, MouseListener, KeyListener, ActionListener
+{
+ Button deal = new Button("Deal Cards");
+ Button stay = new Button("Stay");
+ Thread runner;
+ Image Buffer;
+ Graphics gBuffer; 
+ 
+
+ AudioClip laser;
+ int screenW=700;
+ int rnd;
+ int playerX= 10;
+ int playerY=400;
+ int dealerX=10;
+ int dealerY=100;
+ int dealerValue=0;
+ int playerValue=0;
+ boolean dealerHit=false;
+
+ Image card;
+ boolean firstDeal=true;
+ Image[] cardImages= new Image[52];
+ ArrayList<Integer> dealerCards = new ArrayList<Integer>();
+ ArrayList<Integer> playerCards = new ArrayList<Integer>();
+ String[] cards=
+{"2-1.png", "2-2.png", "2-3.png", "2-4.png", "3-1.png", "3-2.png", "3-3.png", "3-4.png","4-1.png", "4-2.png", "4-3.png", "4-4.png","5-1.png", "5-2.png", "5-3.png", "5-4.png","6-1.png", "6-2.png", "6-3.png", "6-4.png","7-1.png", "7-2.png", "7-3.png", "7-4.png","8-1.png", "8-2.png", "8-3.png", "8-4.png","9-1.png", "9-2.png", "9-3.png", "9-4.png","10-1.png", "10-2.png", "10-3.png", "10-4.png","11-1.png", "11-2.png", "11-3.png", "11-4.png","12-1.png", "12-2.png", "12-3.png", "12-4.png","13-1.png", "13-2.png", "13-3.png", "13-4.png","14-1.png", "14-2.png", "14-3.png", "14-4.png" };
+ 
+
+
+ String mouseString="Hi";
+ 
+
+ public void init()
+ {
+   addMouseListener(this); 
+   addKeyListener(this);
+   deal.addActionListener(this);
+   this.add(deal);
+   stay.addActionListener(this);
+   this.add(stay);
+
+   Buffer=createImage(size().width,size().height);
+   gBuffer=Buffer.getGraphics();
+   URL codeBase = getCodeBase();
+   laser = getAudioClip(getDocumentBase(),"laser.wav");
+   for(int i=0; i<cardImages.length; i++)
+   cardImages[i] = getImage(codeBase, "cards/"+cards[i]); 
+   resize(screenW, 700);
+
+ }
+ 
+ 
+ public void start()
+ {
+ if (runner == null)
+ {
+ runner = new Thread (this);
+ runner.start();
+ }
+ }
+
+ public void stop()
+ {
+ if (runner != null)
+ {
+ runner.stop();
+ runner = null;
+ }
+ }
+
+ public void run()
+ {
+ while(true)
+ {
+ try {runner.sleep(15);}
+ catch (Exception e) { }
+ 
+
+ repaint();
+ }
+ }
+
+ public void update(Graphics g)
+ {
+    paint(g);
+ }
+
+ public void paint(Graphics g)
+ {
+ 
+   g.setColor(Color.black);
+   g.fillRect(0,0,screenW,700);
+   g.setColor(Color.white);
+   g.drawString("Dealer Value = " + dealerValue ,20,20);
+   g.drawString("Player Value = " + playerValue ,20,35);
+   
+   
+   playerX= 10;
+ 
+   dealerX=10;
+      
+ 
+   for(int i=0; i<dealerCards.size(); i++){
+   g.drawImage(cardImages[dealerCards.get(i)], dealerX, dealerY, 100, 175, this);
+    dealerX+=50;
+  }
+
+  for(int i=0; i<playerCards.size(); i++){
+   g.drawImage(cardImages[playerCards.get(i)], playerX, playerY, 100, 175, this);
+    playerX+=50;
+  }
+ 
+ 
+  
+ 
+ 
+ }
+ 
+ 
+ public void mouseClicked(MouseEvent me) {
+
+ mouseString = "X position: " + me.getX() + " " +
+ "Y position: " + me.getY();
+ repaint();
+
+ }
+ public void mousePressed(MouseEvent me) {}
+ public void mouseReleased(MouseEvent me) {}
+ public void mouseEntered(MouseEvent me) {}
+ public void mouseExited(MouseEvent me) {}
+ 
+ /* */
+ public void keyTyped(KeyEvent e) {
+ }
+
+ public void keyPressed(KeyEvent e) {
+ int keyCode = e.getKeyCode();
+ mouseString = "Pressed " + keyCode;
+ 
+ }
+
+ public void keyReleased(KeyEvent e) {
+ }
+ 
+  public void actionPerformed(ActionEvent e) {
+     String act=e.getActionCommand();
+     
+     if(act.equals("Stay")){
+         dealerHit();
+         playerHit();
+         }else{
+      if(firstDeal==true)
+     dealOut();
+     else
+     hit();
+}
+} 
+public void dealerHit(){
+    int dv=dealersValue();
+    
+   
+    }
+
+public void playerHit(){
+    int pv=playersValue();
+    if(dealerHit==true)
+    
+    
+    
+
+    
+public int dealersValue(){
+    for(int i=0; i<dealerCards.size(); i++){
+        int v=((dealerCards.get(i))/4)+2;
+        if(v==11 || v==12 || v==13)
+         v=10;
+         if (v==14)
+          v=11;
+        dealerValue+=v;
+       
+        }
+    return dealerValue;
+    }
+   
+public int playersValue(){
+    for(int i=0; i<playerCards.size(); i++){
+        int v=((playerCards.get(i))/4)+2;
+        if(v==11 || v==12 || v==13)
+         v=10;
+         if (v==14)
+          v=11;
+        playerValue+=v;
+       
+        }
+    return playerValue;
+}
+
+    public void hit(){
+    rnd = (int) (Math.random( ) * (52)) +0;
+    playerCards.add(rnd);
+}
+public void dealOut(){
+    firstDeal=false;
+    for(int i=0; i<4; i++){
+     rnd = (int) (Math.random( ) * (52)) + 0;
+          if(i%2==0)
+            playerCards.add(rnd);
+          else
+            dealerCards.add(rnd);
+    
+  }
+}
+}

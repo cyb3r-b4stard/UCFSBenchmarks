@@ -1,0 +1,202 @@
+import java.util.Scanner;
+
+public class ArraysConnectFour {
+    static int board[][];
+    static int sizeOfBoard;
+    public static void main(String[] args)
+    {
+        Scanner scanner = new Scanner(System.in);
+        sizeOfBoard = 7;
+        board = new int[7][7];
+        int lastRowOrColumn = 6;
+        for (int x = 0; x <= lastRowOrColumn; x++) {
+            for (int y = 0; y <= lastRowOrColumn; y++) {
+                board[x][y] = 0;
+            }
+        }
+        int size = 4;
+        int oneOrTwo = 1;
+        int count = 1;
+        boolean isGameNotFinished = true;
+        int row = -1, col = -1;
+        String rowColumn;
+        int totalCells = sizeOfBoard * sizeOfBoard;
+        int pos;
+        while (count <= totalCells && isGameNotFinished) {
+            displayBoard(board);
+            if (count % 2 == 1) {
+                System.out.println("Player's 1 turn now");
+                System.out.println("Enter column you want to drop the counter in");
+                rowColumn = scanner.nextLine();
+                row = 6;
+                col = Integer.parseInt(rowColumn) - 1;
+
+                if (col > 6){
+                    System.out.println("Invalid Column!!");
+                    continue;
+
+                }
+
+                pos = board[row][col];
+
+                while (pos != 0){
+                    row = row - 1;
+                    if (row == -1){
+                        break;
+                    }
+                    pos = board[row][col];
+                }
+
+                if (row == -1){
+                    System.out.println("Column is full, Try Again!");
+                    continue;
+                }
+
+                board[row][col] = 1;
+                isGameNotFinished = !checkEachCell(board, row, col, size);
+                count++;
+            }
+            else
+            {
+                System.out.println("Player's 2 turn now");
+                System.out.println("Enter column you want to drop the counter in");
+                rowColumn = scanner.nextLine();
+                row = 6;
+                col = Integer.parseInt(rowColumn) - 1;
+
+                if (col > 6){
+                    System.out.println("Invalid Column!!");
+                    continue;
+                }
+
+                pos = board[row][col];
+
+                while (pos != 0){
+                    row = row - 1;
+                    if (row == -1){
+                        break;
+                    }
+                    pos = board[row][col];
+                }
+
+                if (row == -1){
+                    System.out.println("Column is full Try Again!");
+                    continue;
+                }
+
+                board[row][col] = 2;
+                isGameNotFinished = !checkEachCell(board, row, col, size);
+                count++;
+            }
+
+        }
+
+        displayBoard(board);
+        count--;
+        if (count % 2 == 1) {
+            System.out.println("Player 1 won the game");
+        } else {
+            System.out.println("Player 2 won the game");
+        }
+        scanner.close();
+    }
+
+    static boolean checkEachCell(int board[][], int row, int col, int size)
+    {
+        int lastRowOrColumn = sizeOfBoard - 1;
+        for (int i = 0; i <= lastRowOrColumn; i++) {
+            for (int j = 0; j <= lastRowOrColumn; j++) {
+                row = i;
+                col = j;
+                if (board[row][col] == 0)
+                    continue;
+                if (checkHorizontally(board, row, col, size) || checkVertically(board, row, col, size)
+                || checkPositiveDiagonally(board, row, col, size)
+                || checkNegativeDiagonally(board, row, col, size))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    static boolean checkHorizontally(int board[][], int row, int col, int size)
+    {
+        int lastRowOrColumn = sizeOfBoard - 1;
+        int colEnd = col + size - 1;
+        int count = 1;
+        for (int colN = col + 1; colN <= colEnd && colN <= lastRowOrColumn; colN++) {
+            if ((board[row][colN] != board[row][colN - 1]) || (board[row][colN] == 0))
+                return false;
+            else
+                count++;
+        }
+        if (count == size)
+            return true;
+        else
+            return false;
+    }
+
+    static boolean checkVertically(int board[][], int row, int col, int size)
+    {
+        int lastRowOrColumn = sizeOfBoard - 1;
+        int rowEnd = row + size - 1;
+        int count = 1;
+        for (int rowN = row + 1; rowN <= rowEnd && rowN <= lastRowOrColumn; rowN++) {
+            if ((board[rowN][col] != board[rowN - 1][col]) || (board[rowN][col] == 0))
+                return false;
+            else
+                count++;
+        }
+        if (count == size)
+            return true;
+        else
+            return false;
+    }
+
+    static boolean checkPositiveDiagonally(int board[][], int row, int col, int size) {
+        int lastRowOrColumn = sizeOfBoard - 1;
+        int rowEnd = row + size - 1;
+        int count = 1;
+        for (int rowN = row + 1, colN = col + 1; rowN <= rowEnd && rowN <= lastRowOrColumn
+        && colN <= lastRowOrColumn; rowN++, colN++) {
+            if ((board[rowN][colN] != board[rowN - 1][colN - 1]) || (board[rowN][colN] == 0))
+                return false;
+            else
+                count++;
+        }
+        if (count == size)
+            return true;
+    } else{
+        return false;
+    }
+    
+
+    static boolean checkNegativeDiagonally(int board[][], int row, int col, int size)
+    {
+        int lastRowOrColumn = sizeOfBoard - 1;
+        int rowEnd = row + size - 1;
+        int count = 1;
+        for (int rowN = row + 1, colN = col - 1; rowN <= rowEnd && rowN <= size - 1 && colN >= 0; rowN++, colN--) {
+            if ((board[rowN][colN] != board[rowN - 1][colN + 1]) || (board[rowN][colN] == 0)) {
+                return false;
+            } else {
+                count++;
+            }
+        }
+        if (count == size)
+            return true;
+        else
+            return false;
+    }
+
+    static void displayBoard(int board[][])
+    {
+        int lastRowOrColumn = sizeOfBoard - 1;
+        for (int i = 0; i <= lastRowOrColumn; i++) {
+            for (int j = 0; j <= lastRowOrColumn; j++) {
+                System.out.print(board[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+}

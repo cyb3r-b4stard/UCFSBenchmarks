@@ -1,0 +1,95 @@
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+/**
+ * ###### ### ## ##### ### #### ## ######### 
+ * ########## ###### ####### # ########
+ * @###### (######### ########) 
+ * @####### (######## ## ### ### ##/##)
+ */
+public class PacMan
+{
+    
+    public static void main(String[] args)throws InterruptedException
+    {
+      /**
+       *panel donde vamos a pintar el pacman 
+       */
+
+      JPanel canvas = new JPanel (true)
+      {
+                      /**
+                       * variables para controlar angulo actual
+                       * y si estamos abriendo o cerrando
+                       */
+                       int angulo = 0;
+                       boolean abre = true;
+                       @Override
+                        protected void paintComponent( Graphics g)
+          {
+                        /**
+                         * fondo basico
+                         */
+                         super.paintComponent (g);
+                        /**
+                         * activamos antialiasing
+                         */
+                         ((Graphics2D)g).setRenderingHint(
+                         RenderingHint.KEY_ANTIALIASING,
+                         RenderingHint.VALUE_ANTIALIAS_ON);
+                      
+                         /**
+                         * pintamos dos veces el arco.la primera vez para ofrecer un borde
+                         */
+                         g.setColor(Color.BLACK);
+                         g.fillArc(99, 99, 82, 82, angulo-2, 360-2*angulo+4);
+                      
+                         /**
+                          * la segunda para el relleno amarillo
+                         */
+                         g.setColor(Color.YELLOW);
+                         gfillArc(99, 99, 82, 82, angulo, 360-2*angulo);
+                      
+                         /**
+                         * movemos el angulo a la siguiente posicion
+                         */
+                         if
+                          (abre)
+                          if
+                           (angulo >= 45)
+                            abre = false;
+                           else 
+                               angulo += 4;
+                               else if 
+                              (angulo <= 0)
+                              abre = true;
+                             else 
+                              angulo -= 4;
+                        }
+                    }
+        
+                    /**
+                     * creamos una ventana con el panel 
+                     */
+                    JFrame frame = new JFrame ( "PacMan");
+                    frame.setContentPane ( canvas);
+                    frame.setSize ( 300, 300);
+                    frame.setVisible ( true);
+                    
+                    for (;;)
+                    {
+                        /**
+                         * cada 40 milisegundos solicitamos 
+                         * se vuelva a pintar el canvas.
+                         * eso hace que se llame de nuevo a paintCompnent
+                         */
+                      canvas.repaint();
+                      Thread.sleep(40);
+                    }
+                }
+            }

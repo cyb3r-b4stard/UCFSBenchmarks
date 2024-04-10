@@ -1,0 +1,94 @@
+ import fundamentos.*;
+
+/**
+ * ########## ### ###### ###### ## ##########.
+ * 
+ * @###### ####### ## ############ (##) # ##### ######-##### #####
+ * @####### ###-####
+ */
+public class Aeropuerto {
+	private int numPistas;
+	private Pista[] p;
+	/**
+	 * Construye un aeropuerto con el numero de pistas indicadas.
+	 * @param numPistas numero de pistas del aeropuerto.
+	 */
+	public Aeropuerto(int numPistas) {
+		this.numPistas=numPistas;
+		p=new Pista[numPistas];
+		for(int i=0;i<numPistas;i++){
+			p[i]=new Pista(i);
+		}
+	}
+	
+	/**
+	 * Asigna el vuelo a la pista con menos vuelos pendientes para aterrizar
+	 * 
+	 * @param vuelo vuelo que solicita pista para aterrizar.
+	 * @return identificador de la pista a la que ha sido asignado
+	 * el vuelo.
+	 */
+	public Pista vueloSolicitaPista(Vuelo vuelo) {
+		
+		for(int j=0;j<p.length;j++){
+			for(int k=0;k<p[j].v().size();k++){
+				if(p[j]!=null && vuelo.idVuelo().equals(p[j].v().get(k).idVuelo())){
+					return null;
+				}
+			}
+		}
+		int a=p[0].v().size();
+		Pista b=p[0];
+		for(int i=0;i<numPistas;i++){
+			if(p[i].v().size()<a) {
+				a=p[i].v().size();
+				b=p[i];
+			}
+		}
+		b.listaPendientes(vuelo);
+		return b;
+	}
+	
+	/**
+	 * Registra que ha aterrizado el vuelo que lleva mas tiempo esperando
+	 * para aterrizar en la pista indicada.
+	 * 
+	 * @param idPista identificador de la pista en la que ha aterrizado
+	 * el vuelo.
+	 * @return verdadero si habia al menos un vuelo pendiente de aterrizar
+	 * en la pista indicada y falso en caso contrario.
+	 */
+	public boolean aterrizaVuelo(int idPista) {
+		if(p[idPista].v().size()>0){
+			p[idPista].v().remove(0);
+			return true;
+			
+		}
+		return false;
+	}
+	
+	public void registros(){
+		ArrayList <int> v= new ArrayList <int> ();
+		System.out.println(v.size());
+	    int numMaxVuelos=p[0].v().size();
+		for(int k=0;k<numPistas;k++){
+			if(p[k].v().size()>numMaxVuelos) {
+				numMaxVuelos=p[k].v().size();
+			}
+		}
+		int contador=0;
+		for(int i=0;i<numMaxVuelos;i++){
+		    for(int j=0;j<=p.length;j++){
+			    if(j<=p[j].v().size()){
+			        contador++;
+		    	    System.out.println("Vuelo "+contador+":");
+		           	System.out.println("ID Vuelo: "+p[j].v().get(i).idVuelo());
+					System.out.println("Aeropuerto: "+p[j].v().get(i).aeropuertoOrigen());
+					System.out.println();
+				}
+				
+			}
+		}
+	}
+
+}

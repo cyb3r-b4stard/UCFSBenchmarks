@@ -1,0 +1,95 @@
+import java.io.*; import java.util.*; 
+/**
+
+* ##### # ########### ## ##### #### ####.
+* @###### (####### #### ) 
+* @####### (##/##/####)
+*/
+
+public class Shop 
+{
+    private ArrayList<Item> items = new ArrayList<Item>(); 
+    private  BufferedWriter writer;
+    public boolean addItem(Item newItem) 
+    {
+        if(findItem(newItem.getName()))
+        {
+            System.out.println("Error -Item  "+newItem.getName()+" is already in the stock list");
+            return false;
+        }
+        else
+        {
+            items.add(newItem);
+            return true;
+        }
+   }
+
+    public boolean findItem(String searchName) 
+    {
+        for (Item nextItem: items)
+        {
+            if(searchName.equals(nextItem.getName()))
+            {
+                return true;
+            }
+        }
+        return false;      
+    }
+
+    public void listItems() 
+    {
+        System.out.println("****The Shop contains the following items: ***");
+        for(Item nextItem : items)
+       {
+           System.out.println(nextItem);
+       }
+    }
+
+    public void listLowStockToFile(int threshhold) 
+    {
+        try
+        { 
+            writer = new  BufferedWriter(new FileWriter(c:"LowStockToFile.txt"));
+            writer.write("Low Stock(less than "+ threshhold +")  Report for Sukhyun Choi");
+            for( Item nextItem : items)
+            { 
+                if(nextItem.getNumInStock() <  threshhold)
+                {   
+                    writer.write("###Item : ");
+                    writer.write(nextItem.getName());
+                }
+            }
+           writer.close();     
+        }
+        catch(Exception ex)
+        {
+            System.out.println(ex.getMessage());
+        }
+   
+    }
+
+    public void calcTotalSales() 
+    {
+        double total = 0;
+       for (Item nextItem: items)
+       {
+           total += nextItem.getPrice() * nextItem.getNumSold();
+       }
+       System.out.println("The total sales for  Item sold in the shop is:  " + total);
+    }
+   
+   public void listGamesbyPlatform(String inPlatform)
+   {
+      
+        for (Item gameItem : items)
+       { 
+           if (gameItem instanceof ElectronicGame)
+           if (((ElectronicGame)gameItem).getPlatform().equals(inPlatform))
+           {   
+               System.out.println(gameItem);
+           }
+       }
+   }
+       
+}
+       

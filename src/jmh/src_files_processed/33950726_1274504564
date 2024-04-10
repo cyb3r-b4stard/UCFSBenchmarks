@@ -1,0 +1,395 @@
+
+
+import static org.junit.Assert.*;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.io.StringReader;
+import java.util.ArrayList;
+
+/**
+ * ### #### ##### ###############.
+ *
+ * @######  (#### ####)
+ * @####### (# ####### ###### ## # ####)
+ */
+public class BeWellPointTest
+{
+    /**
+     * Default constructor for test class BeWellPointTest
+     */
+    public BeWellPointTest()
+    {
+    }
+
+    /**
+     * Sets up the test fixture.
+     *
+     * Called before every test case method.
+     */
+    @Before
+    public void setUp()
+    {
+    }
+
+    /**
+     * Tears down the test fixture.
+     *
+     * Called after every test case method.
+     */
+    @After
+    public void tearDown()
+    {
+    }
+
+    /**
+     * Method test1: Check if you can create PatientCheckups, where age is a positive value.
+     **/
+   
+     @Test
+    public void test1()
+    {
+        PatientCheckup patient1 = new PatientCheckup("Jeroen", 32);
+        assertEquals("Jeroen", patient1.getName());
+        assertEquals(32, patient1.getAge());
+        PatientCheckup patient2 = new PatientCheckup("Peter", -35);
+        assertEquals(35, patient2.getAge());
+        PatientCheckup patient3 = new PatientCheckup("Lukas", 16);
+        patient3.setWeight(48.7);
+        patient3.setLength(1.68);
+        assertEquals(16, patient3.getAge());
+        assertEquals(48.7, patient3.getWeight(),0.1);
+        assertEquals("Lukas", patient3.getName());
+    }
+
+    /**
+     * Method test2: Check if the BeWellPoint can be created
+     **/
+   
+    @Test
+    public void test2()
+    {
+        BeWellPoint beWell = new BeWellPoint("Kuch & Co");
+        assertEquals(0, beWell.getUsage());
+    }
+  
+    /**
+     * Method test3: Check if only adult persons can be added to the system
+     **/
+     
+    @Test
+    public void test3()
+    {
+        PatientCheckup patient1 = new PatientCheckup("Jeroen", 32);
+        PatientCheckup patient2 = new PatientCheckup("Peter", 35);
+        PatientCheckup patient3 = new PatientCheckup("Lukas", 16);		
+        BeWellPoint beWell = new BeWellPoint("Kuch & Co");
+        beWell.addCheckup(patient1);
+        beWell.addCheckup(patient2);
+        assertEquals(2, beWell.getUsage());
+        beWell.addCheckup(patient3);
+        assertEquals(2, beWell.getUsage());
+    }
+
+    /**
+     * Method test4: Check if displayOverview generates the correct information
+     **/
+  
+    @Test
+    public void test4()
+    {
+        PatientCheckup patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(72.8);
+        PatientCheckup patient2 = new PatientCheckup("Peter", 35);
+        patient2.setLength(1.83);
+        patient2.setWeight(95.3);
+        BeWellPoint beWell = new BeWellPoint("Kuch & Co");
+        beWell.addCheckup(patient1);
+        beWell.addCheckup(patient2);
+        assertEquals(true, patient1.toString().contains("J***"));
+
+        PrintStream defaultSO = System.out;  
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(baos));
+        try
+        {
+            beWell.displayOverview();
+            BufferedReader br = new BufferedReader(new StringReader(baos.toString()));
+            int amountOfLines = 0;
+            while (br.readLine() != null) amountOfLines++;
+            assertEquals(2,amountOfLines);
+        } 
+        catch(Exception e)
+        {
+            System.setOut(defaultSO);
+            System.out.println("Error while redirection System.out");
+        }
+        System.setOut(defaultSO);
+    }
+
+    /**
+     * Method test5: Check if the calculation of BMI is correctly implemented
+     **/
+     
+    @Test
+    public void test5()
+    {
+        PatientCheckup patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(72.8);
+        PatientCheckup patient2 = new PatientCheckup("Peter", 35);
+        patient2.setLength(1.83);
+        patient2.setWeight(95.3);
+        assertEquals(21.2, patient1.getBMI(),0.1);
+        assertEquals(28.4, patient2.getBMI(),0.1);      
+    }
+
+    /**
+     * Method test6: Check if you can find the oldest person that used the BeWellPoint
+     **/
+    
+    @Test
+    public void test6()
+    {
+        PatientCheckup patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(72.8);
+        PatientCheckup patient2 = new PatientCheckup("Peter", 35);
+        patient2.setLength(1.83);
+        patient2.setWeight(95.3);
+        BeWellPoint beWell = new BeWellPoint("Kuch & Co");
+        assertEquals(-1, beWell.getOldest());		
+        beWell.addCheckup(patient1);
+        beWell.addCheckup(patient2);
+        assertEquals(35, beWell.getOldest());
+    }
+
+    /**
+     * Method test7: Check for the maximum weight change for a certain person over time
+    * */
+    @Test
+    public void test7()
+    {
+        PatientCheckup patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(72.8);
+        PatientCheckup patient2 = new PatientCheckup("Peter", 35);
+        patient2.setLength(1.83);
+        patient2.setWeight(95.3);
+        BeWellPoint beWell = new BeWellPoint("Kuch & Co");
+        beWell.addCheckup(patient1);
+        beWell.addCheckup(patient2);
+        patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(74.3);
+        beWell.addCheckup(patient1);
+        assertEquals(1.5, beWell.getMaxWeightChange("Jeroen"),0.1);
+        patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(71.2);
+        beWell.addCheckup(patient1);
+        assertEquals(3.1, beWell.getMaxWeightChange("Jeroen"),0.1);
+    }
+
+    /**
+     * 
+      *Method test7: Check for the maximum weight change for a certain person over time when the person is not foun
+  */
+      @Test
+    public void test8()
+    {
+        PatientCheckup patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(72.8);
+        PatientCheckup patient2 = new PatientCheckup("Peter", 35);
+        patient2.setLength(1.83);
+        patient2.setWeight(95.3);
+        BeWellPoint beWell = new BeWellPoint("Kuch & Co");
+        beWell.addCheckup(patient1);
+        beWell.addCheckup(patient2);
+        patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(74.3);
+        beWell.addCheckup(patient1);
+        patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(71.2);
+        beWell.addCheckup(patient1);
+        assertEquals(-1, beWell.getMaxWeightChange("Lukas"),0.1);
+    }
+
+    /**
+     *    Method test9: Check if it possible to remove all checkups for a certain person
+     */
+    @Test
+    public void test9()
+    {
+        PatientCheckup patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(72.8);
+        PatientCheckup patient2 = new PatientCheckup("Peter", 35);
+        patient2.setLength(1.83);
+        patient2.setWeight(95.3);
+        BeWellPoint beWell = new BeWellPoint("Kuch & Co");
+        beWell.addCheckup(patient1);
+        beWell.addCheckup(patient2);
+        patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(74.3);
+        beWell.addCheckup(patient1);
+        patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(71.2);
+        beWell.addCheckup(patient1);
+        beWell.deletePatient("Jeroen");
+        assertEquals(1, beWell.getUsage());
+        assertEquals(-1, beWell.getMaxWeightChange("Jeroen"),0.1);		
+    }
+
+   /**
+     * Method test10: Check if risk patients can be found
+     **/
+     
+    @Test
+    public void test10()
+    {
+        PatientCheckup patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(72.8);
+        PatientCheckup patient2 = new PatientCheckup("Peter", 35);
+        patient2.setLength(1.83);
+        patient2.setWeight(95.3);
+        BeWellPoint beWell = new BeWellPoint("Kuch & Co");
+        beWell.addCheckup(patient1);
+        beWell.addCheckup(patient2);
+        patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(74.3);
+        beWell.addCheckup(patient1);
+        patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(71.2);
+        beWell.addCheckup(patient1);
+        beWell.deletePatient("Jeroen");
+        assertEquals(28.4, patient2.getBMI(),0.1);  
+        ArrayList<String> res = beWell.getRiskPatients(27.0);
+        assertEquals(1, res.size());    
+    }
+
+    /**
+     * Method test11: Check if BMI category can be added to the patients overview
+     **/
+   
+    @Test
+    public void test11()
+    {
+        PatientCheckup patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(72.8);
+        PatientCheckup patient2 = new PatientCheckup("Peter", 35);
+        patient2.setLength(1.83);
+        patient2.setWeight(95.3);
+        BeWellPoint beWell = new BeWellPoint("Kuch & Co");
+        beWell.addCheckup(patient1);
+        beWell.addCheckup(patient2);
+        patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(74.3);
+        beWell.addCheckup(patient1);
+        patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(71.2);
+        beWell.addCheckup(patient1);
+        assertEquals(true, patient2.toString().contains("Overweight"));
+
+        PrintStream defaultSO = System.out;  
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(baos));
+        try
+        {
+            beWell.displayOverview();
+            BufferedReader br = new BufferedReader(new StringReader(baos.toString()));
+            int amountOfLines = 0;
+            while (br.readLine() != null) amountOfLines++;
+            assertEquals(4,amountOfLines);
+        } 
+        catch(Exception e)
+        {
+            System.setOut(defaultSO);
+            System.out.println("Error while redirection System.out");
+        }
+        System.setOut(defaultSO);
+    }
+    
+    /**
+     * Method test12: Add a timestamp to the PatientCheckup (the moment the PatientCheckup is created)
+     **/
+     
+    @Test
+    public void test12()
+    {
+        PatientCheckup patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(72.8);
+        PatientCheckup patient2 = new PatientCheckup("Peter", 35);
+        patient2.setLength(1.83);
+        patient2.setWeight(95.3);
+        BeWellPoint beWell = new BeWellPoint("Kuch & Co");
+        beWell.addCheckup(patient1);
+        beWell.addCheckup(patient2);
+        patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(74.3);
+        beWell.addCheckup(patient1);
+        patient1 = new PatientCheckup("Jeroen", 32);
+        patient1.setLength(1.85);
+        patient1.setWeight(71.2);
+        beWell.addCheckup(patient1);
+        beWell.displayOverview();
+        assertEquals(true, patient2.toString().contains("2016-05-01"));
+    }
+
+    /**
+     * Method test13: Get the BMI trend for a certain person (Avg BMI change on a period of 30 days)
+     **/
+    
+    @Test
+    public void test13()
+    {
+        try
+        {
+            PatientCheckup patient1 = new PatientCheckup("Jeroen", 32);
+            patient1.setLength(1.85);
+            patient1.setWeight(71.2);
+            Thread.sleep(1000);
+            PatientCheckup patient2 = new PatientCheckup("Peter", 35);
+            patient2.setLength(1.83);
+            patient2.setWeight(95.3);
+            Thread.sleep(1000);
+            BeWellPoint beWell = new BeWellPoint("Kuch & Co");
+            beWell.addCheckup(patient1);
+            beWell.addCheckup(patient2);
+            Thread.sleep(1000);
+            patient1 = new PatientCheckup("Jeroen", 32);
+            patient1.setLength(1.85);
+            patient1.setWeight(71.2);
+            beWell.addCheckup(patient1);
+            Thread.sleep(1000);
+            patient1 = new PatientCheckup("Jeroen", 32);
+            patient1.setLength(1.85);
+            patient1.setWeight(71.200001);
+            beWell.addCheckup(patient1);
+            beWell.displayOverview();
+            assertEquals(true, patient2.toString().contains("2016-05-01"));
+            assertEquals(0.18,beWell.getAvgBMITrend("Jeroen"),0.01);
+        }
+      catch (InterruptedException e) {}
+  
+}
+     

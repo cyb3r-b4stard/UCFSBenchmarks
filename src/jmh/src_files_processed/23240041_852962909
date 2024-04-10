@@ -1,0 +1,369 @@
+import java.io.Serializable;
+import java.util.*;
+import java.io.*;
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Controller 
+{
+    private ArrayList<Section> sectionDataBase;
+    private ArrayList<Order> orderDataBase; 
+    private ArrayList<User>userList;
+    private Order newOrder;
+    private Section newSection;
+    public static final int STORAG_CAPACITY =500;
+    /**
+     * Constructor for objects of class Controller
+     */
+    public Controller()
+    {
+        sectionDataBase = new ArrayList<>();
+        orderDataBase = new ArrayList<>();
+        userList = new ArrayList<User>();
+        uploadUser();
+        loadSectionList();
+        loadOrderList();
+       
+    }
+
+  
+    public void Display()
+    {
+        for( Section section : sectionDataBase)
+        {
+            System.out.println(section);
+        }
+   }
+   
+   public String logIn(String userName , String userPassword)
+   {
+        for (int index =0 ; index<userList.size(); index++)
+        {
+           if(  userList.get(index).getUserName().equals(userName) && userList.get(index).getUserPassword().equals(userPassword) )
+               {
+                    return  userList.get(index).getUserRole();
+               }
+        }
+            return "False";
+    }
+   
+   public boolean createSection(String sectionId, int sectionCapcity) {
+      if (avaialbeSpace() >= sectionCapcity)
+           {
+            Section newSection = new Section (sectionId, sectionCapcity);
+            sectionDataBase.add(newSection);
+            return true;
+          }
+      else 
+          {
+              return false;
+          }
+    
+    }
+   
+   public void createOrder(int  numberOfItems, String arrivalDate) {
+         newOrder = new Order (arrivalDate,numberOfItems);
+        orderDataBase.add(newOrder);
+    }
+    
+   public void allocateOrder(String orderId)
+    {
+        
+        double numberofItems=0;
+        int newCapacity=0;
+        for (int index=0;index < orderDataBase.size();index++)
+        {
+            if ( orderDataBase.get(index).getOrderId().equals(orderId))
+            {
+                numberofItems=orderDataBase.get(index).getNumberOfitems();
+                newOrder = orderDataBase.get(index);
+                System.out.println("number of Items  = "+numberofItems);
+            }
+        }
+        
+        
+        for(int index= 0; index < sectionDataBase.size() ; index++) 
+        {
+            
+
+            
+            
+            if(sectionDataBase.get(index).getusedPallet() >= numberOfPallet(numberofItems))
+            {
+                
+                 
+                System.out.println("numberOfPallet(numberofItems) is "+numberOfPallet(numberofItems));
+                     newOrder.setOrderStatus("alaocated");
+                     sectionDataBase.get(index).addOrder(newOrder);
+                    
+                    System.out.println("order is added");
+                   break;
+                }
+                
+                  else
+                     System.out.println("order is not added");
+
+            }
+    
+        }
+  
+    
+    public void display()
+    {
+      for( Section section : sectionDataBase)
+        System.out.println(section.toWritableString() );
+    
+    }
+    
+      public double numberOfPallet(  double numberOfItem) 
+     {
+         double numberOfPallet = (numberOfItem /75);
+         System.out.println("numberOfPallet fP"+numberOfPallet);
+         return numberOfPallet;
+     }
+    
+    public void editSection(String sectionId , int newSectionCapacity)
+     {
+         
+         for (int index= 0;index < sectionDataBase.size();index++)
+        {
+            if(sectionDataBase.get(index).getSectionId().equals(sectionId))
+            {
+                if(newSectionCapacity <= avaialbeSpace())
+                {
+                    if(newSectionCapacity <= sectionDataBase.get(index).getusedPallet())
+                    {
+                        sectionDataBase.get(index).setSectionCapacity(newSectionCapacity);    
+                    }
+                     else
+                     {
+                     relocateOrder(sectionDataBase.get(index).getOrdersCollection().get(index).getOrderId());
+                     sectionDataBase.get(index).setSectionCapacity(newSectionCapacity); 
+                     }
+                }
+                else
+                System.out.println("invalid capcity");
+            }
+            
+        }
+         
+        }
+    
+    public double avaialbeSpace()
+    {
+        
+         int sum=0;
+            int availbleSpace=0;
+            for (Section index : sectionDataBase)
+            {
+                
+                sum+=index.getSectionCapacity();
+              
+            }
+            
+             availbleSpace = STORAG_CAPACITY - sum;
+           
+            System.out.println("availbleSpace "+availbleSpace);
+            return availbleSpace;
+    }
+        
+        
+        
+    
+   /*public String avaliableSection(int palletRequired)
+    {
+        for ( int index = 0 ; index < sectionDataBase.size() ; index++)
+            {
+                if(sectionDataBase.get(index).getSectionCapacity() >= palletRequired)
+                {
+                    String section = sectionDataBase.get(index).getSectionId();
+                    System.out.println("  section "+section+" is available ");
+                    return section;
+                }
+           }
+      
+            System.out.println(" no section  is available ");
+            return "0";
+    }*/
+    
+
+     public void relocateOrder(String orderId)
+     {
+         int numberofItems = 0;
+         for (int index= 0;index < sectionDataBase.size();index++)
+        {
+            System.out.println("order id "+sectionDataBase.get(index).getOrdersCollection().get(index).getOrderId());
+            if ( sectionDataBase.get(index).getOrdersCollection().get(index).getOrderId().equals(orderId))
+            {
+                
+                 newSection = sectionDataBase.get(index);
+                 numberofItems = sectionDataBase.get(index).getOrdersCollection().get(index).getNumberOfitems(); 
+                 System.out.println("new Section  = "+newSection);
+                break;
+            }
+        }
+        
+         
+         
+        for (int index=0;index < sectionDataBase.size();index++)
+        {
+            if(sectionDataBase.get(index).getusedPallet() >= numberOfPallet(numberofItems) && sectionDataBase.get(index).getSectionId() != newSection.getSectionId() )
+            {
+                
+                 
+                     newSection.deleteOrder(newOrder);
+                     newOrder.setOrderStatus("alaocated");
+                     sectionDataBase.get(index).addOrder(newOrder);
+                    
+                    System.out.println("order is added");
+                }
+                
+                  else
+                     System.out.println("order is not added");
+
+          
+                    }
+        }
+        
+        public void removeSection(String sectionId)
+        {
+             Section deletedSection =new Section();
+            for (int index= 0;index < sectionDataBase.size();index++)
+              {
+                 if (sectionDataBase.get(index).getSectionId().equals(sectionId))
+                 {
+                     deletedSection=sectionDataBase.get(index);
+                     
+                  }
+                }
+                sectionDataBase.remove(deletedSection);
+            /*
+          for (int index= 0;index < sectionDataBase.size();index++)
+                {
+                    if(sectionDataBase.get(index).getSectionId().equals(sectionId))
+                    {
+                        int newSectionCapacity =sectionDataBase.get(index).getOrdersCollectionSize();
+                        if(newSectionCapacity == 0)
+                            { 
+                                sectionDataBase.remove(sectionDataBase.get(index).getSectionId());
+                                return true;
+                            }
+                        else
+                            {
+                                while (newSectionCapacity != 0)
+                                {
+                                    String orderId = sectionDataBase.get(index).getOrdersCollection().get(index).getOrderId();
+                                   relocateOrder(orderId); 
+                                }
+                                
+                                sectionDataBase.remove(sectionDataBase.get(index).getSectionId());
+                                return true;
+                            }
+                    }
+                    
+            }  
+            return false;
+            */
+        }
+    }
+     private void uploadUser()
+     {
+        String filename = ("user.txt");
+        String readsectionInformation;
+        try
+           {
+             FileReader inputFile = new FileReader(filename);
+             Scanner parser = new Scanner(inputFile);
+             while (parser.hasNext())
+             {
+               readsectionInformation = parser.nextLine();
+               String userName =readsectionInformation.split(",")[0];
+               String userPass = readsectionInformation.split(",")[1];
+               String usertRole = readsectionInformation.split(",")[2];
+               System.out.println("user= "+userName+" usertRole "+usertRole);
+               userList.add( new User (userName ,userPass,usertRole));
+            }
+            inputFile.close();
+            
+            }catch(FileNotFoundException exception)
+           {
+             System.out.println(filename + "not found");
+           }
+          catch(IOException exception)
+           {
+            System.out.println("Unexpected I/O error occured");
+           }
+     }
+   
+     public void loadSectionList(){
+        try
+        {
+            FileInputStream fis = new FileInputStream("sectionList.ser");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+             sectionDataBase= (ArrayList<Section>) ois.readObject();
+            ois.close();
+            fis.close();
+        }
+        catch(IOException ioe){
+            ioe.printStackTrace();
+            return;
+        }
+        catch(ClassNotFoundException c){
+             System.out.println("Class not found");
+             c.printStackTrace();
+             return;
+        }
+    } 
+     
+    public void saveSectionList(){
+       try{
+            FileOutputStream fos= new FileOutputStream("sectionList.ser");
+            ObjectOutputStream oos= new ObjectOutputStream(fos);
+            oos.writeObject(sectionDataBase);
+            oos.close();
+            fos.close();
+       }
+       catch(IOException ioe){
+            ioe.printStackTrace();
+       }
+    }
+    
+      public void saveOrderList(){
+       try{
+            FileOutputStream fos= new FileOutputStream("orderList.ser");
+            ObjectOutputStream oos= new ObjectOutputStream(fos);
+            oos.writeObject(orderDataBase);
+            oos.close();
+            fos.close();
+       }
+       catch(IOException ioe){
+            ioe.printStackTrace();
+       }
+    }
+    
+    public void loadOrderList(){
+        try
+        {
+            FileInputStream fis = new FileInputStream("orderList.ser");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            orderDataBase = (ArrayList<Order>) ois.readObject();
+            ois.close();
+            fis.close();
+        }
+        catch(IOException ioe){
+            ioe.printStackTrace();
+            return;
+        }
+        catch(ClassNotFoundException c){
+             System.out.println("Class not found");
+             c.printStackTrace();
+             return;
+        }
+    }
+     
+     
+                 
+}

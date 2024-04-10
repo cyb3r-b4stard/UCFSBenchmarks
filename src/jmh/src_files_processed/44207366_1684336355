@@ -1,0 +1,254 @@
+
+/**
+ * ########## ##### ######### ## #####.
+ * 
+ * @###### (#######) 
+ * @####### (######.#)
+ */
+
+import java.util.Random;
+
+public abstract class Character implements ICharacter
+{
+    
+    /**
+     * Der Name des Charakters.
+     */
+    private String name;
+    
+    /**
+     * Die Anzahl der Lebenspunkte des Charakters.
+     */
+    private int health;
+    
+    /**
+     * Inventar des Charakters.
+     */
+    private Inventory inventory;
+    
+    /**
+     * Objekt zur Erstellung von zufäligen Zahlen.
+     */
+    private Random randomizer;
+    
+    /**
+     * Kontrolliert den einkommenden String {@code pName} auf Leerheit bzw., ob auf null zeigt.
+     * Kontrolliert, ob der einkommende int {@code pHealth} größer als -1 ist.
+     * 
+     * Kann IllegalArgumentException werfen.
+     * 
+     * @param pName Übergebener String, der {@code name} zugeweisen werden soll.
+     * @param pHealth Übergebener int, der {@code health} zugewiesen werden soll.
+     */
+    public Character(final String pName, final int pHealth, final int inventorySize)
+    {
+        if(pName == null || pName.trim().isEmpty())
+            throw new IllegalArgumentException("You don't wanna be a nobody!");
+        else
+            name = pName;
+            
+        if(pHealth < 0)
+            throw new IllegalArgumentException("You can't be that low!");
+        else
+            health = pHealth;
+            
+            
+        randomizer = new Random();
+        inventory = new Inventory(inventorySize);
+    }
+    
+    /**
+     * Gibt den Namen des Charakters zurück.
+     * 
+     * @return Der Name des Charakters.
+     */
+    public String getName()
+    {
+        return name;
+    }
+    
+    /**
+     * Gibt das Inventar des Charakters zurück.
+     * 
+     * @return Inventar des Charakters.
+     */
+    public Inventory getInventory()
+    {
+        return inventory;
+    }
+    
+    /**
+     * Gbit den Gesundheitszustand dieses Charakters zurück.
+     * 
+     * @return Der Gesundheitszustand dieses Charakters.
+     */
+    public int getHealth()
+    {
+        return health;
+    }
+    
+    /**
+     * Gibt den randomizer zurück.
+     * 
+     * @return Der randomizer.
+     */
+    public Random getRandomizer()
+    {
+        return randomizer;
+    }
+    
+    /**
+     * Gibt zurück, ob dieser Charakter noch bei Bewusstsein ist. Ein Charakter ist bei
+     * Bewusstsein, wenn sein Gesundheitszustand größer als 0 ist.
+     *
+     * @return {@code true}, falls dieser Charakter noch bei Bewusstsein ist, ansonsten
+     *         {@code false}.
+     */
+    public boolean isConscious()
+    {
+        if(health > 0)
+            return true;
+        return false;
+    }
+    
+    /**
+     * Lässt einen Charakter den gegebenen Gegenstand aufheben, indem der Gegenstand mit
+     * Ausgabe einer entsprechenden Meldung auf der Konsole ins Inventar des Charakters
+     * übertragen wird.
+     *
+     * Sollte der gegebene Gegenstand den Wert {@code null} oder das Inventar keinen freien
+     * Platz mehr haben, wird lediglich eine entsprechende Meldung auf der Konsole ausgegeben.
+     *
+     * @param item Der aufzuhebenden Gegenstand.
+     */
+    public void take(final Item item)
+    {
+        if(item == null)
+        {
+            System.out.println("You can't pick up nothing!");
+            return;
+        }
+        
+        if(inventory.isFull())
+        {
+            System.out.println("Your Inventory is full!");
+            return;
+        }
+        
+        if(inventory. contains(item))
+        {
+            System.out.println("You already own that Item!");
+            return;
+        }
+        
+        inventory.addItem(item);
+    }
+    
+    /**
+     * Entfernt einen Gegenstand aus dem Inventar des Charakters mit Ausgabe einer
+     * entsprechenden Meldung auf der Konsole.
+     *
+     * Falls der gegebene Gegenstand sich nicht im Inventar befindet oder den Wert {@code null}
+     * hat, wird lediglich eine entsprechende Meldung auf der Konsole ausgegeben.
+     *
+     * Wenn der Gegenstand, der Fallengelassen werden soll grade als Waffe angelegt ist, kann der
+     * Vorgang nicht durchgeführt werden. Eine entsprechende Meldung wird auf der Konsole ausgegeben.
+     *
+     * @param item Der Gegenstand, der fallengelassen werden soll.
+     */
+    public void drop(final Item item)
+    {
+        if(item == null)
+        {
+            System.out.println("You can't throw away nothing!");
+            return;
+        }
+        
+        if(inventory.!contains(item))
+        {
+            System.out.println("You don't own that Item.");
+            return;
+        }
+        else
+        {
+            if(item == ((Fighter) this).getEquippedWeapon())
+            {
+                System.out.printf("You can't drop %s because you got it equipped as a Weapon atm.%n", item.getName());
+                return;
+            }
+            removeItem(item);
+            System.out.println("You dropped " + item.getName() + ".");
+        }
+    }
+    
+    /**
+     * Gibt den Inhalt des Inventars auf der Konsole aus.
+     */
+    public void printInventory()
+    {
+        showAll();
+    }
+    
+    /**
+     * Prüft, ob sich der gegebene Gegenstand im Inventar des Charakters befindet. Wenn das so
+     * ist, wird {@code true} zurückgegeben, ansonsten {@code false}.
+     *
+     * Der Gegenstand {@code null} ist niemals im Inventar enthalten.
+     *
+     * @param item Der zu prüfende Gegenstand.
+     *
+     * @return {@code true} falls der gegebene Gegenstand sich im Inventar dieses Charakters
+     *         befindet, ansonsten {@code false}.
+     */
+    public boolean ownsItem(final Item item)
+    {
+        if(item == null || !contains(item))
+            return false;
+        
+        return true;
+    }
+    
+    /**
+     * Reduziert den Gesundheitszustand dieses Charakters um die gegebene Anzahl von Punkten.
+     * Sollten die Punkte negativ sein, passiert nichts.
+     *
+     * Der Gesundheitszustand des betroffenen Charakters kann dabei nicht negativ werden.
+     *
+     * @param damage Die Anzahl an Punkten, um die der Gesundheitszustand reduziert wird.
+     */
+    public void reduceHealth(final int damage)
+    {
+        if(damage < 0)
+            return;
+            
+        if((health - damage) < 0)
+            health = 0;
+        else
+            health -= damage;
+    }
+    
+    /**
+     * Simuliert einen Wurf mit allen Würfeln, die für eine Waffe gebraucht werden.
+     * 
+     * @param d Die Anzahl der Würfel, mit denen gewürfelt wird.
+     * @param f Die Anzahl der Seiten, die jeder der Würfel hat, mit denen gewürfelt wird.
+     * @param result Speichert die Augenzahl bei jedem Würfelvorgang.
+     * 
+     * @return Gibt die Anzahl der insgesamt ausgewürfelten Augen zurück oder 0, falls unsinnige
+     * Werte übergeben wurden.
+     */
+    public int roll(int d, int f)
+    {
+        if(d < 0 || f < 0)
+            return 0;
+        
+        int result = 0;
+        
+        for(int i = 0; i < d; i++)
+        {
+            result += randomizer.nextInt(f) +1;    
+        }                                          
+        
+        return result;
+    }
+}

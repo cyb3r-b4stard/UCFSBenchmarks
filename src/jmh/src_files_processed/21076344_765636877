@@ -1,0 +1,119 @@
+
+/* #### ### #######, ########## #
+ * ####: ###### #########   
+ * ########: ########## 
+ * ##: #########
+ */
+
+import ecs100.*;
+import java.awt.Color;
+import java.util.*;
+import java.io.*;
+
+/** 
+ *  ############### ###### ### ### ##### ## # #### ####### # ##########.
+ *  ## ###### ### (### ### ####) ### #### ## ### #### #### ## ### ## ### ##########.
+ *  ### ####### ### ## #### ###### - ## ## ## ## #### #### # #### ######
+ *  #### ######## ### ### ####, ### ### ### ### ######## ####### ## ### ####.
+ *  
+ *  ### ### ########### ## #### ### ########## ###### ## #### #### ###
+ *  ########## #### #### # ###.
+ *  ### #### ## ### ######## #### ## ### ## ### ########## ## ########## 
+ *  ## ## ## ######## ####### ### ###### ## ####### ###.
+ *
+ *  ### ####### ###### ####### ### ##### ### ### ##### #### ##### ## ####
+ *  ### ### ##### #### ### ##########.
+ *  ## ###### #### ###### ### ##### ### ### ##### #### ##### ## ##### ### ### #####.
+ *
+ *  #### #### ### ##### ## ### ########## ### ### #### ## ##### ### ####### 
+ *  ## ## ### #########, #### ### ########### #######.
+ */
+
+public class SpellingChecker{
+
+
+    /*# YOUR CODE HERE */
+    private Set <String> words;
+
+    public SpellingChecker(){
+        UI.initialise();
+        words = new HashSet <String> ();
+        UI.addButton("Spell Check", this::doCompare);
+        doDictionary();
+
+    }
+
+    private void doDictionary(){
+
+        try{
+            /**
+             * This section that scans the words in the dictionary into a HashSet (and the HashSet library) and prints out how 
+             * long it took.
+             */
+
+            Scanner sc = new Scanner(new File("dictionary1.txt"));
+            double timeStart = System.currentTimeMillis();
+            while (sc.hasNext()){
+                String word = sc.next();
+                words.add(word);
+
+            }
+
+            double timeEnd = System.currentTimeMillis();
+            double timeTaken = (timeEnd - timeStart)/1000;
+            UI.println("Time taken to scan file into HashSet: " + timeTaken +" seconds");
+            UI.println("-----------------------------");
+        }
+
+    }
+
+    private void doDictionary(){
+        /**
+         * This section that scans the words in the dictionary into the ArraySet (and uses methods from the ArraySet class). Prints out 
+         * how long it took as well.
+         */
+        try{
+
+            Scanner sc = new Scanner(new File("dictionary1.txt"));
+            double timeStart2 = System.currentTimeMillis();
+            while (sc.hasNext()){
+                String word = sc.next();
+                ArraySet.info1.add(word);
+
+            }
+
+        }
+        catch (IOException e) {
+            UI.println("Fail" + e);
+
+        }
+
+    }
+
+    private void doCompare(){
+        try {
+            Scanner sc = new Scanner(new File(UIFileChooser.open()));
+            double timeStart = System.currentTimeMillis();
+
+            while (sc.hasNext()){
+                String word = sc.next();
+                if (!words.contains(word)){
+                    UI.println(word);
+                    System.currentTimeMillis();
+
+                }
+
+            }
+            double timeEnd = System.currentTimeMillis();
+            double timeTaken = (timeEnd - timeStart)/1000;
+            UI.println("Words in the chosen file that are not in the dictionary: ");
+            UI.println("Time Taken " + timeTaken +" seconds");
+            UI.println("-----------------------------");
+
+        }
+        catch (IOException e) {
+            UI.println("Fail" + e);
+
+        }
+    }
+}

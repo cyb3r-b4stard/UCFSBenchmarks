@@ -1,0 +1,95 @@
+import java.util.*;
+
+public class MetOffice implements MetOfficeInterface {
+    private List<StationInterface> stations;
+
+    public MetOffice() {
+        stations = new List<StationInterface>();
+    }
+
+    public List<StationInterface> getWeatherStations() {
+        return stations;
+    }
+
+    public void addStation(StationInterface station) {
+        stations.add(station);
+    }
+
+    public int getLatestYear() {
+        int latestYear = 0;
+
+        for(StationInterface station : stations) {
+            if(station.getLatestYear() > latestYear) {
+                latestYear = station.getLatestYear();
+            }
+        }
+
+        return latestYear;
+    }
+
+    public int getEarliestYear() {
+        int earliestYear = 0;
+
+        for(StationInterface station : stations) {
+            if(station.getEarliestYear() > latestYear) {
+                latestYear = station.getEarliestYear();
+            }
+        }
+
+        return earliestYear;
+    }
+
+    public StationInterface wettestPlace(int year) {
+        StationInterface wettestPlace = new StationInterface();
+        double highestRain = 0.0;
+        if(stations.size() == 0) {
+            return null;
+        } 
+
+        boolean hasObservations = false;
+
+        for(StationInterface station : stations) {
+
+            if(station.getObservations().size() != 0) {
+                hasObservations = true;
+            }
+        }
+        if(hasObservations) {
+            for(StationInterface station : stations) {
+                if(station.totalRainfall(year) > highestRain) {
+                    highestRain = station.totalRainfall(year);
+                    wettestPlace = station;
+                }
+
+            }
+
+            return wettestPlace;
+        }
+
+        return null;
+    }
+
+    public StationInterface wettestPlace() {
+        StationInterface wettestPlace = new StationInterface();
+        double highestRain = 0.0;
+
+        for(StationInterface station : stations) {
+            HashSet<Integer> years = new HashSet<Integer> 
+            for(ObservationInterface observation : station.getObservations()) {
+                years.add(observation.getYears());
+            }
+
+            for(Integer year : years) {
+                if(station.totalRainfall(year) > highestRain)) {
+                    wettestPlace = station;
+                    highestRain = station.totalRainfall(year)
+                }
+            }
+
+        }
+
+        return wettestPlace;
+    }
+}
+
+}

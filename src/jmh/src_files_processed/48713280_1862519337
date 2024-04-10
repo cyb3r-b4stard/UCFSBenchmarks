@@ -1,0 +1,112 @@
+package algorithms;
+import static utils.algorithms.Misc.generateRandomSolution;
+import static utils.algorithms.Misc.toro;
+import static utils.MatLab.max;
+import static utils.MatLab.min;
+
+import java.util.Vector;
+
+import utils.random.RandUtils;
+import interfaces.Algorithm;
+import interfaces.Problem;
+import utils.RunAndStore.FTrend;
+
+public class S2  
+{
+    public static void main(String[] args) {
+        double Alfa = 0.4;
+        int problemDimension = 2; 
+        double[][] bounds = {{-100,100},{-100,100}};
+
+        double[] Xbest = new double[problemDimension];
+        double[] Xs = new double[problemDimension];
+        double[] del= new double[problemDimension];
+        double fXs; 
+        int i = 0;
+        int[] flag=new int[problemDimension];
+
+        Xbest= generateRandomSolution(bounds, problemDimension);
+        fXs= f(Xbest);
+        i++;
+        for (int j = 0; j < problemDimension ; j++)
+        {
+            flag[j]=0;
+            Xs[j]=Xbest[j];
+            del[j]=Alfa*(bounds[j][1]-bounds[j][0]);
+        }
+
+        double oldfXs = fXs;
+        double[] toroc= new double[1];
+        int k1=0;
+        int k2=0;
+
+        while (i < 100)
+        {
+            for (int j = 0; j < problemDimension && i < 100; j++)
+            {
+                System.out.println("\ni:  "+i+"  j:  "+j+ "\n");
+                if(k1==0){
+                    Xs[j]=(Xbest[j]-del[j]); 
+                    if(Xs[j]>bounds[j][1] || Xs[j]<bounds[j][0])
+                    {
+                        del[j]=del[j]/2;
+                        Xs[j]=(Xbest[j]-del[j]);
+                    }
+                    System.out.println("Xs:  "+Xs[j]+"  Xb:  "+Xbest[j]+"  del0:  "+del[0]+"  del1:  "+del[1]);
+                    oldfXs = fXs;
+                    fXs = f(Xs);
+                    System.out.println("old f:  "+oldfXs+"  New f  :  "+fXs+"  X new:  "+Xs[j]+"  X old:  "+Xbest[j]+"\n");
+                    i++;
+                    if(fXs<=oldfXs){
+                        Xbest[j]=Xs[j];
+                        System.out.println("operated if # 1:  "+Xbest[j]);
+
+                    }
+                    else{
+                        k=1;
+                    }
+                }             
+
+                if(k==1)
+                {
+                    Xs[j]=Xbest[j]+(del[j]/2);
+                    if(Xs[j]>bounds[j][1] || Xs[j]<bounds[j][0])
+                    {
+                        del[j]=del[j]/2;
+                        Xs[j]=Xbest[j]+(del[j]/2);
+                    }
+                    oldfXs = fXs;
+                    fXs = f(Xs);
+                    i++;
+                    System.out.println("old f:  "+oldfXs+"  New f  :  "+fXs+"  X new:  "+Xs[j]+"  X old:  "+Xbest[j]+"\n");
+                    if(fXs<=oldfXs){
+                        Xbest[j]=Xs[j];
+                        System.out.println("operated if # 2:  "+Xbest[j]);
+
+                    }
+                    else
+                    {
+                        Xs[j]=Xbest[j];
+                        del[j]=del[j]/2;
+                        k=0;
+                    }
+                }
+
+            }
+
+        }
+    }
+
+}
+
+public static double f(double[] x)
+{
+final int n = x.length;
+double y = 0;
+
+for (int i = 0; i < n-1; i++)
+y += Math.pow((1-x[i]),2) + 100*Math.pow((x[i+1]-Math.pow(x[i],2)),2);
+
+return y;
+}
+}

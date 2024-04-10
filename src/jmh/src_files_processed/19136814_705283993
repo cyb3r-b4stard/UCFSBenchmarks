@@ -1,0 +1,134 @@
+/**
+ * @###### (##### #######) 
+ * @####### (#########)
+ */
+public class Ex13
+{
+    /**
+     * @param num - get some natural number.
+     * @param digit - get number between 0-9.
+     * The method get every digit of the number with mod 10 
+     * and calculate the weight of the digit.
+     **/ 
+    public static int weight (int num, int digit)
+    {
+        int weight = 1;
+        while(num>0)
+        {
+            if(num%10 == digit)
+            {
+                return weight;
+            }
+            num = num/10;
+            weight = weight*10;
+        }
+        return 0;
+    }
+
+    /**
+     * The function works the same way like the 'weight' method.
+     * Every time we call the function with num/10 in order 
+     * to get the next digit, and multiply the return value by 10.
+     **/
+    public static int weightRec (int num, int digit)
+    {
+        if(num%10==digit)
+        {
+            return 1;
+        }
+        if(num==0)
+        {
+            return 0;
+        }
+        return 10 * weightRec(num/10, digit);
+    }
+
+    /**
+     * Iterating over every digit (divide it by 10 in every iteration).
+     * in order to reverse it, we add every digit from the original number, 
+     * and multiply the sum that got so far by 10.
+     * */
+    public static int reverse(int num)
+    {
+        int result = 0;
+        while(num != 0)
+        {
+            result = result * 10 + num % 10;
+            num/= 10;
+        }
+        return result;
+    }
+
+    public static int reverseRec(int num)
+    {
+        int i;
+        if(num>0)
+            i= num%10;
+        return reverse(num/10)+(num%10)*i;
+    }
+}
+/**
+public static int reverseRec(int num, int mult, int sum)
+{
+if(num == 0)
+{
+return sum;
+}
+int temp = (num/10)*10;
+temp =( num-temp)*mult;
+return reverseRec(num/10, mult/10, sum+temp);  
+}
+
+ **/
+/********************************************************************************************/
+/**
+ * @param n - amount of floors in the building
+ * @return the amount of different ways spiderman can climbe
+ */
+public static int spiderman(int n)
+{
+if (n == 0)
+{
+return 0;
+}
+return spiderman(n, 0);
+}
+
+private static int spiderman(int n, int currentLevel)
+{    
+if (n == currentLevel)
+{
+return 1;
+}
+else if (currentLevel > n)
+{
+return 0;
+}
+return spiderman(n, currentLevel + 1) + spiderman(n, currentLevel + 2);
+}
+
+private static final int PHONE_LEVEL = 20;
+/**
+ * @param n - amount of floors in the building
+ * @return the amount of different ways spiderman can climbe + elevator
+ **/
+public static int spidermanPhoneBooth20(int n)
+{
+if(n > PHONE_LEVEL)
+return spidermanCount(n)+ spiderman(PHONE_LEVEL);
+if(n <= PHONE_LEVEL)
+return spiderman(n);
+return spidermanCount(n);
+}
+
+private static int spidermanCount(int n)
+{
+if(n <= PHONE_LEVEL)
+return spiderman(n);
+if(n == (PHONE_LEVEL+1))
+return spiderman(PHONE_LEVEL-1);
+if(n == (PHONE_LEVEL+2))
+return spidermanCount(PHONE_LEVEL+1);
+return spidermanCount(n-1) + spidermanCount(n-2);
+}
+}

@@ -1,0 +1,231 @@
+
+/**
+ * ## ##### ########## # ### ##### ## 
+ * ####### #######
+ * 
+ */
+
+public class ListaNumeros
+{  
+    private int[] lista;  
+    private int pos;  
+    /**
+     * Constructor de la clase ListaNumeros
+     * @param n el tamaño máximo de la lista
+     */
+    public ListaNumeros(int n)
+    {
+        pos = 0;    
+        lista = new int[n];
+    }
+
+    /**
+     * @param  numero valor que se añade al final
+     * de la lista. No se hace nada si la lista está completa
+     * @return true si se ha podido añadir, false en otro caso
+     */
+    public boolean addElemento(int numero)
+    {
+        if(estaCompleta())
+            return false;
+        else
+        {
+            if(estaVacia())
+            {
+                lista[pos] = numero;
+                pos++;
+            }
+            else
+            {
+                pos++;
+                lista[pos] = numero;
+            }
+            return true;    
+        }
+    }
+
+    /**
+     * devuelve true si la lista está completa, false en otro caso
+     * Hazlo sin if
+     */
+    public boolean estaCompleta()
+    {
+        return pos == lista.length;
+    }
+
+    /**
+     * devuelve true si la lista está vacía, false en otro caso
+     * Hazlo sin if
+     */
+    public boolean estaVacia()
+    {
+        return pos == 0;    
+    }
+
+    /**
+     * @return  devuelve el nº de elementos
+     * realmente guardados en la lista 
+     */
+    public int getTotalNumeros()
+    {
+        return pos; 
+    }
+
+    /**
+     * Representación textual de la lista de la forma
+     * Si lista = {175, 826, 89, 9, 41, 13, 72, 11, 23, 107} devuelve
+     * |  175 | 826 | 89 | 9 | 41 | 13 | 72 | 11 | 23 |  107 |
+     * 
+     * Si la lista está vacía devuelve ""
+     */
+    public String toString()
+    {
+        String cadena = ""; 
+        if(estaVacia())
+            return "";
+        else
+        {
+            for(int i=0;i<lista.length;i++)
+            {
+                cadena = "| " + cadena + lista[i] + " |";
+            }
+        }
+        return cadena;
+    }
+
+    /**
+     *  Vacía la lista
+     */
+    public void vaciarLista()
+    {
+        this.pos = 0;
+    }
+
+    /**
+     *  
+     * @return   el segundo mínimo de la lista
+     * Asumimos que la lista tiene al menos un elemento
+     * 
+     * 
+     * Si lista = {12,  12,  12,  4,  4,  55, 789} el 2º mínimo es 12
+     * Si lista = {4, 4, 3, 3, 3, 7, 7, 8} el 2º mínimo es 4
+     * Si lista = {4, 4} el 2º mínimo es 4
+     * Si lista = {4, 3, 2, -7, -5} el 2º mínimo es -5
+     */
+    public int segundoMinimo()
+    {
+        int segundoMinimo = 0;
+        ordenar();
+        for(int i=0;i<lista.length;i++)
+        {
+            if(lista[i]>lista[0])
+            {
+                segundoMinimo = lista[i];   
+                return segundoMinimo;
+            }
+            else
+                segundoMinimo = lista[0];
+        }
+        return segundoMinimo;
+
+    }
+
+    /**
+     *  Borra todos los segundos mínimos de la lista y devuelve el total de
+     *    borrados. Sin utilizar arrays adicionales
+     *  
+     */
+    public int borrarSegundosMinimos()
+    {
+
+        int totalBorrados = 0;  
+        int segundoMinimo = segundoMinimo();
+        for(int i=0;i<lista.length;i++)
+        {
+            if(lista[i]== segundoMinimo)
+                totalBorrados ++;   
+        }
+        for (int i = pos - 1; i >= 0; i--)
+        {
+            if (lista[i]==segundoMinimo)
+                borrar(i);
+        }
+        return totalBorrados;
+    }
+
+    private void borrar(int p)
+    {
+        if (p >= 0 && p < pos) 
+        { 
+            for (int i = p + 1; i < pos; i++)
+                lista[i - 1] = lista[i];
+            pos--;
+        }
+    }
+
+    /**
+     *  Calcula y devuelve un nuevo objeto ListaNumeros  
+     *  Este objeto contiene también un array con tantos elementos como hay en el array lista
+     *  pero en cada posición queda el dígito mayor de cada uno de 
+     *  los elementos de lista
+     *  
+     *  Si lista contiene {175, 826, 89, 9, 41, 13, 72, 11, 23, 107}  devuelve
+     *  {7, 8, 9, 9, 4, 3, 7, 1, 3, 7}
+     *  
+     *  Hay que utilizar el método recursivo digitoMasGrande()
+     */
+    public  ListaNumeros digitosMasGrandes()
+    {
+        
+    }
+
+    /**
+     *  Método estático recursivo que devuelve el dígito mayor de n (siempre se
+     *  devuelve dígito positivo)
+     *  Si n = 3263 devuelve 6, si n = 9878 devuelve 9, si n = 5 devuelve 5
+     *  Si n = -3263 devuelve 6
+     */
+    private static int digitoMasGrande(int n)
+    {
+        n = Math.abs(n); 
+        int x = 0;
+        int[]numero = new int;
+        do
+        {
+            
+            x++;
+        }while(n!=0)
+        
+        
+    }
+
+    /**
+     *  Devuelve una copia del array lista ordenada
+     *  Usa solo métodos de la clase  Arrays
+     *   
+     *
+     */
+    public int[] ordenar()
+    {
+        
+        for(int i=0;i<(lista.length-1);i++){
+            for(int j=i+1;j<lista.length;j++){
+                if(lista[i]>lista[j]){
+                    int variableauxiliar=lista[i];
+                    lista[i]=lista[j];
+                    lista[j]=variableauxiliar;
+                }
+            }
+        }
+        return lista;
+    }
+
+    /**
+     * Mostrar en pantalla la lista
+     */
+    public void escribirLista()
+    {
+        System.out.println(this.toString());
+    } 
+
+}

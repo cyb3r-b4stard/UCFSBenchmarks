@@ -1,0 +1,332 @@
+import java.io.*;  
+public class Quiz
+{
+     int no_of_players=0;
+     int score1=0,score2=0,score3=0;
+     int choices []=new int[6];
+     String temp_age;
+     int a=0;
+     int count=0;
+     int choice=0;
+     int total[];
+     int score;
+     String tiebreaker[]=new String[10];
+     int ans=0;
+     int points[][];
+     int temp_total=0;
+     String name[][];
+     String temp_name;
+     int temp_foo,temp_cri,temp_bas;
+     String .charAt;
+     
+     InputStreamReader isr=new InputStreamReader(System.in);
+     BufferedReader br=new BufferedReader(isr);
+     public void rules()
+     {
+         System.out.println("         ********         **    **      *********    *********    ");
+         System.out.println("        **     **         **    **         **              **     ");
+         System.out.println("        **     **         **    **         **             **      ");
+         System.out.println("        **     **         **    **         **            **       ");
+         System.out.println("        **     **         **    **         **           **        ");
+         System.out.println("        **     **         **    **         **          **         ");
+         System.out.println("        ** **  **         **    **         **          **          ");
+         System.out.println("        **  ** **         **    **         **         **           ");
+         System.out.println("        **   ****         **    **         **        **            ");
+         System.out.println("         ******** **      ********      *********   ***********   ");
+         System.out.println("                    Welcome To Quiz World!!! ");
+         System.out.println("\nRULES;\n 1) Each player has three rounds to play.\n2) He/She can choose amongst the categories 'Football', 'Cricket', or 'Basketball' as to which he wants to play first.");
+         System.out.println("3) Note that he/she can select only one category at a time.\n4) Every player must score atleast 3 points in each round to proceed to the next round.");
+         System.out.println("6) At the end if two players have the same high score then they have to attempt three tie breaker questions.\n7) One who gives maximum coreect answers is the winner.\n");
+         System.out.println("          All The Best!!!");
+        }
+        
+        public void start()throws IOException
+       {
+           try                
+        {
+             System.out.println(" Enter the number of players");
+             no_of_players=Integer.parseInt(br.readLine ());
+        }
+        catch(NumberFormatException ne)
+        {
+            System.out.println("Enter correct number of players. Try again");
+            start() ;
+        }
+        if(no_of_players==0)
+        {
+            System.out.println("Not enough players");
+            start();
+        }
+        points=new int[no_of_players][3];     
+        total=new int[no_of_players];
+        name=new String[no_of_players][2];
+        System.out.println();
+        for(int i=0;i<no_of_players;i++)      
+        {
+          for(int j=0;j<3;j++)
+          {
+              total[i]=0;
+              points[i][j]=0;
+           }
+        }                                      
+        for(int i=0; i<no_of_players;i++)      
+        {
+            String nm=null;
+            boolean flag=false;
+            System.out.println("Player"+(i+1)+" enter your name");
+            nm=br.readLine();
+            while(flag=false)
+            {
+             char nm_char[]=new char[nm.length()];  
+             for(int x=0; x<nm.length();x++)
+             {
+                 nm_char[x]=nm.charAT(x);
+              }
+              for(int m=0;m<nm.length(); m++)
+              {
+                  if(nm_char[m]<'a'||nm_char[m]>'z'||nm_char[m]<'A'||nm_char[m]>'Z')
+                  {
+                      flag=false;
+                      System.out.println("Name not accepted. Re-enter. ");
+                      nm=br.readLine();
+                      break;
+                    }
+                    else
+                      flag=true;
+                    }
+                }
+                if(flag==true)
+                   name[i][0]=nm;
+                int age;
+                String age1;
+                try
+                {
+                    System.out.println("Player"+(i+1)+"Enter your age");
+                    age1=br.readLine();
+                    age=Integer.parseInt(age1);
+                    if(age<0 || age>120)
+                    {
+                        while(age<0 || age>82)           
+                        {
+                            System.out.println("Age is invalid. Please Re-enter");
+                            age1=br.readLine();
+                            age=Integer.parseInt(age1);
+                        }
+                    }
+                    name[i][1]=age1;
+                }
+                catch(NumberFormatException ne)
+                {
+                    System.out.println("The age you typed is invalid. Re-enter");
+                    age1="0";
+                    age=0;
+                } 
+             
+                     name[i][1]=age1;
+                    choices[0]=0;
+                    choices[1]=0;
+                    choices[2]=0;
+                    a=0;
+                    for (int j=0; j<3; j++)
+                    {
+                        try
+                        {
+                            System.out.println("\t\t\tPlayer "+(i+1)+" round " +(j+1)+" Begins");
+                            System.out.println();
+                            System.out.println("1.Football");
+                            System.out.println("2.Cricket");
+                            System.out.println("3.Basketball");
+                            System.out.println("Select the category you want to attempt:");
+                            choice=Integer.parseInt(br.readLine());
+                        }
+                        catch(NumberFormatException e)
+                        {
+                            System.out.println("Invalid Choice. 'Football' category chosen\n");
+                            choice=1;
+                        }
+                        if((choices[0]==choice)||(choices[2]==choice))
+                        {
+                            System.out.println("Category already chosen");
+                            System.out.println();
+                            j-=1;
+                            continue;
+                        }
+                        else
+                        {
+                            choices[a]=choice;
+                            a++;
+                        }
+                        
+                        
+                        switch(choice)  
+                        {
+                            case 1:
+                                 score= football();
+                                 System.out.println();
+                                 System.out.println("your score at the end of Round " +(j+1) + "is" +score);
+                                 break;
+                            case 2:
+                                 score=cricket();
+                                 System.out.println();
+                                 System.out.println("Your Score at the end of Round " +(j+1) + "is" +score);
+                                 break;
+                            case 3:
+                                 score= basketball();
+                                 System.out.println();
+                                 System.out.println("your score at the end of Round " +(j+1) + "is" +score);
+                                 break;
+                            default:
+                                 System.out.println("\nSelect a valid Category");
+                                 j--;
+                                 continue;
+                                }
+                                points [i][j]=score;
+                                if((score<3)&&(j<2))
+                                {
+                                    System.out.println("\nSorry you did not score enough to proceeed to the next round");
+                                    System.out.println();
+                                    if(j==0)
+                                    {
+                                        points[i][1]=0;
+                                        points[i][2]=0;
+                                    }
+                                    if(j==1)
+                                    {
+                                        points[i][2]=0;
+                                    }
+                                    break;
+                                }
+                    }
+                    for (int j=0;j<3;j++)
+                    {
+                        total[i]=total[i]+points [i][j];
+       
+                    }
+                    System.out.println("Your total is :"+total[i]);
+                    System.out.println();
+        }
+        sortScore();
+}
+       public int football()throws IOException   
+       {
+           System.out.println("\t\t\t\t\t ---------------------    ");
+           System.out.println("\t\t\t\t\t |     FOOTBALL      |    ");        
+           System.out.println("\t\t\t\t\t ---------------------    ");                   
+           score1=0;
+           int flag=0;
+           try
+           {
+               System.out.println("Q1)Who holds the record for most goals scored in a single World Cup? ");
+               System.out.println(" 1)The German Gerd Muller\t\t2)The French Just Fontaine\t\t3)The Brazilian Pele\t\t4)The Hungarian Sandor Kocsis ");
+               ans=Integer.parseInt(br.readLine());
+               if(ans>4)
+               flag=1;
+               while(flag==1)
+               {
+                  System.out.println("Wrong choice entered. Enter again");
+                  ans=Integer.parseInt(br.readLine());
+                  if(ans<=4)
+                    flag=0;
+                }
+                flag=0;
+                if(ans==2)
+                  score1++;
+                System.out.println("\nQ2) How many countries participated in the first World Cup in 1930? ");
+                System.out.println("1)6 countries\t\t2) 10 countries\t\t3) 13 countries\t\t4) 15 countries ");
+                ans=Integer.parseInt(br.readLine());
+               if(ans>4)
+               flag=1;
+               while(flag==1)
+               {
+                  System.out.println("Wrong choice entered. Enter again");
+                  ans=Integer.parseInt(br.readLine());
+                  if(ans<=4)
+                    flag=0;
+                }
+                flag=0;
+                if(ans==3)
+                  score1++;
+                  System.out.println("\nQ3)Which was the first Asian country to appear in a World Cup?");
+                  System.out.printlm("1)Japan\t\t2)South Korea\t\t3)China\t\t4)Dutch East Indies");
+                  ans=Integer.parseInt(br.readLine());
+               if(ans>4)
+               flag=1;
+               while(flag==1)
+               {
+                  System.out.println("Wrong choice entered. Enter again");
+                  ans=Integer.parseInt(br.readLine());
+                  if(ans<=4)
+                    flag=0;
+                }
+                flag=0;
+                if(ans==4)
+                  score1++;
+                  System.out.println("Q4)Who is the oldest player to have appeared in a World Cup match?");
+                  System.out.println("1)Italy’s goalkeeper Dino Zoff\t\t2)Cameroon's forward Roger Milla\t\t3)USA’s defender Fernando Clavijo\t\t4)England’s goalkeeper Peter Shilton");
+                  ans=Integer.parseInt(br.readLine());
+               if(ans>4)
+               flag=1;
+               while(flag==1)
+               {
+                  System.out.println("Wrong choice entered. Enter again");
+                  ans=Integer.parseInt(br.readLine());
+                  if(ans<=4)
+                    flag=0;
+                }
+                flag=0;
+                if(ans==2)
+                  score1++;
+                  System.out.println("Q5)During what World Cup the number of teams was expanded to 32?");
+                  System.out.println("1)Italy 1990\t\t2)USA 1994\t\t3)France 1998\t\t4)South Korea and Japan1992");
+                  ans=Integer.parseInt(br.readLine());
+               if(ans>4)
+               flag=1;
+               while(flag==1)
+               {
+                  System.out.println("Wrong choice entered. Enter again");
+                  ans=Integer.parseInt(br.readLine());
+                  if(ans<=4)
+                    flag=0;
+                }
+                flag=0;
+                if(ans==3)
+                  score1++;
+                  System.out.println("Q6)Which Brazilian is the only player who has played in three World Cup final matches?");
+                  System.out.println("1)Ronaldo\t\t2)Pele\t\t3)Cafu\t\t4)Mario Zagallo");
+                  ans=Integer.parseInt(br.readLine());
+               if(ans>4)
+               flag=1;
+               while(flag==1)
+               {
+                  System.out.println("Wrong choice entered. Enter again");
+                  ans=Integer.parseInt(br.readLine());
+                  if(ans<=4)
+                    flag=0;
+                }
+                flag=0;
+                if(ans==3)
+                  score1++;
+                  System.out.println("Q7)Who is the only goalkeeper who received the Golden Ball (Best player of the World Cup)?");
+                  System.out.println("1)The English Gordon Banks in 1966\t\t2)The Italian Dino Zoff in 1982\t\t3)The German Oliver Kahn in 2002\t\t4)The Italian Gianluigi Buffon in 2006");
+                  ans=Integer.parseInt(br.readLine());
+               if(ans>4)
+               flag=1;
+               while(flag==1)
+               {
+                  System.out.println("Wrong choice entered. Enter again");
+                  ans=Integer.parseInt(br.readLine());
+                  if(ans<=4)
+                    flag=0;
+                }
+                flag=0;
+                if(ans==3)
+                  score1++;
+                }
+                catch(NumberFormatException ne)
+                {
+                    System.out.printlm("\nSorry, Wrong choice. Play again");
+                    football();
+                }
+                return score1;
+            }
+        }

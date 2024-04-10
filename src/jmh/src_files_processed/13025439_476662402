@@ -1,0 +1,132 @@
+/* ###### ## ###### # ######## ###-#.
+ * ######## ########: ###### ######### ### #### ######## ###.
+ */
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+
+
+
+/*******************************************************************************
+ * ######## ##### {@#### ########} ########### ...
+ *
+ * @######  ##### ######
+ * @####### #.##.#### — ####-##-##
+ */
+public class Seznamka
+{
+    static final SpravcePlatna SP = SpravcePlatna.getInstance();
+    private static final int DEF_RYCHLOST = 5;
+    private static final Pozice DEF_SRAZ_MUZI = new Pozice(10, 10);
+    private static final Pozice DEF_SRAZ_ZENY;
+    private static final Pozice DEF_SETKANI;
+    
+    static {
+        int sirkaPlatna = SP.getBsirka();
+        int vyskaPlatna = SP.getBVyska();
+        DEF_SRAZ_ZENY = new Pozice(sirkaPlatna - 100, vyskaPlatna - 100);
+        DEF_SETKANI = new Pozice(sirkaPlatna / 3, vyskaPlatna / 3);
+    }
+
+    private static final Seznamka INSTANCE = new Seznamka();
+    private List<Osoba> seznamMuzu;
+    private List<Osoba> seznamZen;
+    private Pozice srazMuzu;
+    private Pozice srazZen;
+    private Pozice mistoSchuzky;
+    private static Presouvac presouvac;
+    
+    private Seznamka() {
+        this.seznamMuzu = new ArrayList<Osoba>();
+        this.seznamZen = new ArrayList<Osoba>();
+        
+        this.setPresouvac(DEF_RYCHLOST);
+        this.setSrazMuzu(DEF_SRAZ_MUZI);
+        this.setSrazZen(DEF_SRAZ_ZENY);
+        this.setMistoSchuzky(DEF_SETKANI);
+    }
+    
+    /**
+     * Změní pozici srazu mužů
+     * pokud již v seznamu mužů nějací jsou, změní všem souřadnice
+     *
+     * @param pozice nová pozice srazu
+     */
+    public void setSrazMuzu(Pozice pozice) {
+        for(Osoba muz: this.seznamMuzu) {
+            muz.setPozice(pozice);
+        }
+        this.srazMuzu = pozice;
+    }
+        
+    /**
+     * Změní pozici srazu žen
+     * pokud již v seznamu žen nějaké jsou, změní všem souřadnice
+     *
+     * @param pozice nová pozice srazu
+     */
+    public void setSrazZen(Pozice pozice) {
+        for(Osoba zena: this.seznamZen) {
+            zena.setPozice(pozice);
+        }
+        this.srazZen = pozice;
+    }
+    
+    /**
+     * Změní místo schůzky
+     *
+     * @param pozice nová pozice schůzky
+     */
+    public void setMistoSchuzky(Pozice pozice) {
+        this.mistoSchuzky = pozice;
+    }
+    
+    /**
+     * Vytvoří nový přesouvač
+     *
+     * @param rychlost rychlost přesouvání
+     */
+    public void setPresouvac(int rychlost) {
+        this.presouvac = new Presouvac(rychlost);
+    }
+    
+    public static Seznamka getSeznamka() {
+        return INSTANCE;
+    }
+    
+    /**
+     * Přidá muže do seznamu
+     * přidávanému muži nastaví pozici srazu mužů
+     *
+     * @param muz přidávaný muž
+     */
+    public void pridejMuze(Osoba muz) {
+        this.seznamMuzu.add(muz);
+        muz.setPozice(this.srazMuzu);
+    }
+    
+    /**
+     * Přidá ženu do seznamu
+     * přidávané ženě nastaví pozici srazu žen
+     *
+     * @param zena přidávaná žena
+     */
+    public void pridejZenu(Osoba zena) {
+        this.seznamZen.add(zena);
+        zena.setPozice(this.srazZen);
+    }
+    
+    /**
+     * postupně zařizuje schůzky všem kombinacím párů z obou seznamů
+     * pokud se sejde instance Superman a Superwoman, jsou považovány za ideální pár,
+     * který společně odejde na určené místo
+     *
+     * @param spolecnyOdchod cílová pozice společného odchodu vybraného páru
+     * @param dobaCekani v milisec mezi jednotlivými schůzkami
+     * @return počet uskutečněných setkání
+     */
+    public int realizujSchuzky(Pozice spolecnyOdchod, int dobaCekani) {
+        for(Iterator<Osoba> iZeny = this.seznamZen.iterator(); iZeny.hasNext()) {
+        }
+    }

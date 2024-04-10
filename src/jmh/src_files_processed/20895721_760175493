@@ -1,0 +1,270 @@
+
+/* #### ### #### ###, ########## #
+ * ####:
+ * ########:
+ * ##:
+ */
+
+import ecs100.*;
+import java.awt.Color;
+import java.util.*;
+import java.io.*;
+
+/** #### ####### ##### ### #### ##### ### ######## #### ###### ### ### ######## ## #### ####.
+ *  ## ####, #### #######, ########## #### ##### ### ##### #### #### ##### ## ### ## ###
+ *  #########. ## ######## ### ######### ##### ## # "#### #####" ## # ######## ####,
+ *  ## ##### ### #### ## ####### ########### ####### ### #### ##### ##
+ *  ### ### #########.
+ */ 
+public class WordCloud {
+
+    private int numWordsToRetain = 100; 
+
+    private Map <String,Double> counts1, counts2;
+
+    /** Constructs a WordCloud object.
+     *  Set up the graphical user interface, reads in file contents, and displays the word cloud.
+     */ 
+    public WordCloud() {
+        UI.addButton("Remove standard common words", this::removeStandard);
+        UI.addButton("Remove infrequent words", this::removeInfrequent);
+        UI.addButton("Remove un-shared words",  this::removeUnshared);
+
+        String fname1 = UIFileChooser.open("First filename to read text from");
+        counts1 = countWords(fname1);
+        UI.println("Text read from " + fname1);
+
+        String fname2 = UIFileChooser.open("Second filename to read text from");
+        counts2 = countWords(fname2);
+        UI.println("Text read from " + fname2);
+
+        displayWords();
+    }
+
+    /** Reads the contents of a file, counting how often each word occurs.
+     *  @returns: The counts (as Doubles) into a Map.
+     *  [CORE]
+     */
+    public Map <String, Double> countWords(String filename) {
+        if (filename == null) 
+            return null;
+
+        Map <String,Double> wordcounts = new HashMap <String,Double> ();; 
+
+        try {
+            Scanner scan = new Scanner(new File(filename));
+
+            scan.useDelimiter("[^-a-zA-Z']"); 
+
+            /*# YOUR CODE HERE */
+            while (scan.hasNext()) {
+                String word = scan.next();
+
+                if (wordcounts.containsKey(word)) {
+                    wordcounts.put(word, wordcounts.get(word)+1);
+                }
+                else {wordcounts.put(word,1.0);}
+            }
+
+            scan.close(); 
+
+            return wordcounts;
+        }
+        catch(IOException ex) {
+            UI.println("Could not read the file " + ex.getMessage());
+            return null;
+        }
+    }
+
+    /** Constructs and returns a Set of all the words that occur in 
+     *  EITHER document.
+     *  [CORE]
+     */
+    public Set <String> allWords(String filename) {
+
+        /*# YOUR CODE HERE */
+        Set <String> allWords = new HashSet<String>();
+
+        try {
+            Scanner scan = new Scanner (new File(filename));
+            while (scan.hasNext()) {
+                allWords.add(scan.next());
+            }
+            return allWords;
+        }
+
+        catch(IOException ex) {
+            UI.println("Could not read the file " + ex.getMessage());
+            return null;
+        }
+    }
+
+    /** Displays words that exist in both documents.
+     *  
+     *  The y-position is essentially random (it just depends on the order in
+     *  which an iterator goes through a Set).
+     *  
+     *  However the x-position reflects how much the word is used in the 1st
+     *  document versus the 2nd. That is, a word that is common in the 1st and
+     *  uncommon in the second should appear at the left.
+     *  
+     *  The display SIZE of the word reflects how common the word is
+     *  overall, including its count over BOTH documents.
+     *  
+     *  N.B. There is UI.setFontSize method that may come in useful!
+     *  
+     *  [CORE]
+     */
+    public void displayWords() {
+        UI.clearGraphics();
+
+        if ((counts1 == null) || (counts2 == null)) 
+            return;
+
+        normaliseCounts(counts1);
+        normaliseCounts(counts2);
+
+        /*# YOUR CODE HERE */
+        Map <String,Double> displayWordCount;
+        displayWordCount = new HashMap <String,Double> ();
+        for (Map.Entry <String, Double> entry : counts1.entrySet()) {
+            String word1 = entry.getKey();
+            double count1 = entry.getValue();
+            for (Map.Entry <String, Double> entry2 : counts2.entrySet()) {
+                String word2 = entry2.getKey();
+                double count2 = entry.getValue();
+                if (word1 == word2) {
+                    displayWordCount.put(word1, count1 + count2);
+                    UI.setFontSize((int)(50 * (count1 + count2)));
+                    double x = 300 * (count2/(count1+count2));
+                    UI.drawString (word1, x, (300 * (count1 + count2)));
+                    counts1.remove(word1);
+                    counts2.remove(word2);
+                }
+                UI.drawString (word2, 300, (300 * Math.Random()));
+                
+            }
+        }
+        
+
+    }
+    /** Takes a word count Map, and a Set of words. 
+     *  Removes the words in the Set from the Map.
+     *  [COMPLETION]
+     */
+    public void removeWords(Map<String,Double> counts, Set<String> words) {
+        /*# YOUR CODE HERE */
+
+    }
+
+    /** 
+     * Takes a Map from words to counts, and an integer, limitNumWords. 
+     * Modifies Map to contain only the limitNumWords most common words.
+     * [COMPLETION]
+     */
+    public void removeInfrequentWords (Map<String,Double> counts, int limitNumWords) 
+    {
+        /*# YOUR CODE HERE */
+
+    }
+
+    /** Takes a Map from words to counts, and "normalises" the counts,
+     *  so that they are fractions of the total. The fractions should sum to one.
+     */
+    public void normaliseCounts(Map <String, Double> counts) {
+        if (counts == null) 
+            return;
+
+        double total = 0.0;
+
+        for (String wd : counts.keySet()) 
+            total += counts.get(wd);
+
+        for (String wd : counts.keySet()) {
+            double count = counts.get(wd)/total; 
+            counts.put(wd, count);                      
+        }
+    }
+
+    /** Prints the words and their counts to standard out.
+     *  Not necessary for the program, but might be useful for debugging
+     */
+    public void printcounts(Map <String,Double> counts ) {
+        if (counts == null) {
+            UI.println("The Map is empty");
+            return;
+        }
+
+        for (String s : counts.keySet()) 
+            UI.printf("%15s \t : \t %.3f \n", s, counts.get(s));
+
+        UI.println("----------------------------------");
+    }
+
+    /** Removes standard words from both documents. */
+    private void removeStandard () {
+        String fname = "some-common-words.txt"; 
+
+        if (fname == null) 
+            return;
+
+        UI.println("Getting ignorable words from " + fname);
+
+        try {
+            Set <String> toRemove = new HashSet <String> ();
+            Scanner scan = new Scanner(new File(fname));
+
+            while (scan.hasNext()) {
+                String str = scan.next().toLowerCase().trim();  
+                toRemove.add(str); 
+            }
+
+            scan.close();
+
+            removeWords(counts1, toRemove);
+            removeWords(counts2, toRemove);
+        }
+        catch(IOException ex) {   
+            UI.println("Could not read the file " + ex.getMessage());
+        }
+
+
+        displayWords();
+    }
+
+    private void removeInfrequent() {
+        UI.println("Keeping only the most common " + numWordsToRetain + " words");
+
+        removeInfrequentWords(counts1,numWordsToRetain);
+        removeInfrequentWords(counts2,numWordsToRetain);
+
+        numWordsToRetain /= 2; 
+
+
+        displayWords();
+    }
+
+    private void removeUnshared () {
+        UI.println("Keeping only words that occur in BOTH docs.");
+
+        Set <String> wordsToBeRemoved = new HashSet <String> ();
+
+        for (String wd : counts1.keySet()) 
+            if (!counts2.keySet().contains(wd)) 
+                wordsToBeRemoved.add(wd);
+
+        for (String wd : counts2.keySet()) 
+            if (!counts1.keySet().contains(wd)) 
+                wordsToBeRemoved.add(wd);
+
+        removeWords(counts1, wordsToBeRemoved);
+        removeWords(counts2, wordsToBeRemoved);
+
+
+        displayWords();
+    }
+
+    public static void main(String[] args) {
+        new WordCloud();
+    }
+}

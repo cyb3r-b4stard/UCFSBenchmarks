@@ -1,0 +1,236 @@
+import java.util.*;
+import java.io.*;
+
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### #### ###### 
+ * @####### ##/##/####
+ */
+public class Controller
+{
+    /**
+     * A Method to load in the large dataset from flickr
+     *
+    
+    public void loadFlickr(){
+        photos = this.readPolygon("
+    }
+    */
+    
+    /**
+     * This code 
+     * 
+     */
+    public void testAll(){
+        Polygon poly = this.readPolygon("polygon_testData.csv");
+        PointGroup pg = this.readPointGroup("flickr_10000_uk_adm.csv");
+
+        
+        long start = System.currentTimeMillis();
+        PointGroup simple = this.pointsInPolygon(poly, pg);
+        long simpleTime = System.currentTimeMillis() - start;
+        System.out.println("Time to test all points using brute force:" + simpleTime);
+
+        start = System.currentTimeMillis();
+        PointGroupGrid pgg = new PointGroupGrid(pg);
+        long indexTime = System.currentTimeMillis() - start;
+        System.out.println("Time to build spatial index:" + indexTime);
+        
+        start = System.currentTimeMillis();
+        PointGroup index = pgg.pointsInPolygon(poly);
+        long indexInTime = System.currentTimeMillis() - start;
+        System.out.println("Time to test all points using index:" + indexInTime);
+        
+        
+    }
+    
+    /**
+     * A test method which returns all the Points in a given Polygon
+     * This method uses a spatial index - in this case our simple grid structure
+     * It should return identical results to the method testPointGroup which does everything one step at a time,
+     * but deliver a performance improvement
+     * 
+     * @return A PointGroup representing all the Points found in the test polygon
+     */
+    public PointGroup pointsInPolygon(Polygon poly, PointGroup pg){
+        
+        PointGroup in = new PointGroup();
+        for (Point p: pg.getPoints()){
+            if (poly.pointIn(p))
+                in.add(p);
+        }
+        return in;
+    }
+
+    
+    public void testBigPointGroup(){
+        PointGroup pg = this.readPointGroup("flickr_10000_uk_adm.csv");
+        Polygon convex = pg.grahamScan();
+        convex.status();
+    }
+
+    
+    public Polygon readPolygon(String filePath){
+        PointGroup pg = new PointGroup();
+        try {
+            Scanner fileScanner = new Scanner(new File(filePath));
+            if (fileScanner.hasNext()){
+                String header = fileScanner.nextLine();
+            }
+
+            while (fileScanner.hasNext()){
+                Scanner lineScanner = new Scanner(fileScanner.nextLine());
+                lineScanner.useDelimiter(",");
+                while (lineScanner.hasNext()){
+                    String uid = lineScanner.next();
+                    double x = lineScanner.nextDouble();
+                    double y = lineScanner.nextDouble();
+                                        
+                    Point p = new Point(x,y);
+                    pg.add(p);
+                }
+
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            System.err.println("There was a problem opening the file or parsing the data");
+        }
+        Polygon testPolygon = new Polygon(pg);
+
+        return testPolygon;
+    }
+    
+    public PointGroup readPointGroup(String filePath){
+        PointGroup pg = new PointGroup();
+        try {
+            Scanner fileScanner = new Scanner(new File(filePath));
+            if (fileScanner.hasNext()){
+                String header = fileScanner.nextLine();
+            }
+
+            while (fileScanner.hasNext()){
+                Scanner lineScanner = new Scanner(fileScanner.nextLine());
+                lineScanner.useDelimiter(",");
+                while (lineScanner.hasNext()){
+                    long uid = lineScanner.nextLong();
+                    double longitude = lineScanner.nextDouble();
+                    double latitude = lineScanner.nextDouble();
+                    double x = lineScanner.nextDouble();
+                    double y = lineScanner.nextDouble();
+                    String adminCode = lineScanner.next(); 
+                    String name = lineScanner.next(); 
+                    String region = lineScanner.next(); 
+
+                    Point p = new Point(x,y,true);
+
+                    pg.add(p);
+                }
+
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            System.err.println("There was a problem opening the file or parsing the data");
+        }
+        return pg;
+    }
+    
+    /**
+    * method to read in Photos from a CSV -> rough brute force (keine chance, da heap space zu klein!)
+    */
+    public PhotoGroup readPhotosCSV(String FilePath){ 
+        PhotoGroup pg = new PhotoGroup();
+        long start = System.currentTimeMillis(); 
+        try {
+            Scanner fileScanner = new Scanner(new File(FilePath));
+            int count=0;
+
+            while (fileScanner.hasNext()){
+                Scanner lineScanner = new Scanner(fileScanner.nextLine());
+                lineScanner.useDelimiter(",");
+                while (lineScanner.hasNext()){
+                    long photo_id = lineScanner.nextLong();
+                    String photographer_id = lineScanner.next();
+                    double longitude = lineScanner.nextDouble();
+                    double latitude = lineScanner.nextDouble();
+                    double x = lineScanner.nextDouble();
+                    double y = lineScanner.nextDouble();
+                    
+
+                    Photo p = new Photo(x,y,photographer_id);
+                    pg.add(p);
+                    count+=1;
+                    long simpleTime = System.currentTimeMillis() - start; 
+                    System.out.println("count: " + count + "Millis" + simpleTime);
+                }
+
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            System.err.println("There was a problem opening the file or parsing the data");
+        }
+        
+        long simpleTime = System.currentTimeMillis() - start; 
+        System.out.println("Time to load all points using brute force:" + simpleTime);
+        
+        return pg;
+    }
+    
+    /**
+    * method to find min/max
+    */
+    public void TestCalculations(){
+        PhotoGroup pg = new PhotoGroup();
+        FilePath = "../Data_raw/test_geograph_uk.csv";
+        long start = System.currentTimeMillis(); 
+        try {
+            Scanner fileScanner = new Scanner(new File(FilePath));
+            int count = 0;
+            double minX=380929, maxX=380929, minY=201361, maxY=201361; 
+
+            while (fileScanner.hasNext()){
+                Scanner lineScanner = new Scanner(fileScanner.nextLine());
+                lineScanner.useDelimiter(",");
+                while (lineScanner.hasNext()){
+                    long photo_id = lineScanner.nextLong();
+                    String photographer_id = lineScanner.next();
+                    double longitude = lineScanner.nextDouble();
+                    double latitude = lineScanner.nextDouble();
+                    double x = lineScanner.nextDouble();
+                    double y = lineScanner.nextDouble();
+                    
+                    
+                    if (x<minX){minX=x}
+                    else if (x>maxX){maxX=x}
+                    if (y<minY){minY=y}
+                    else if (y>maxY){maxY=y}
+                    
+                    count+=1;
+                    long simpleTime = System.currentTimeMillis() - start; 
+                    System.out.println("count: " + count + ", Millis" + simpleTime);
+                }
+
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            System.err.println("There was a problem opening the file or parsing the data");
+        }
+        
+        long simpleTime = System.currentTimeMillis() - start; 
+        System.out.println("Time to load all points using brute force:" + simpleTime);
+        System.out.println("minX=" + minX + ", maxX=" + maxX + ", minY=" + minY + ", maxY=" + maxY);
+    }
+    
+    /**
+    * method to load specific Photos
+    */
+    public PhotoGroup TJTest(){
+        return readPhotosCSV("../Data_raw/flickr_uk.csv");
+
+    }
+    
+}

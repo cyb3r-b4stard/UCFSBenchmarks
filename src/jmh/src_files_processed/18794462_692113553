@@ -1,0 +1,175 @@
+
+/* #### ### ####### ########## 
+ * ####:
+ * ########:
+ * ##:
+ */
+
+import ecs100.*;
+import java.util.*;
+import java.io.*;
+import java.awt.Color;
+
+/** ########
+ * ### #### ##### ##### #### #### ### ##### # ##### #### ####
+ * ### ###### ### ### ####### ## ####### # #### #### ###### ## ### #### (#### #)
+ * ### ### ## ### ## ### ##### #### ## ### #### (#### #) ####### ##### ###.
+ * ## ### #### #### ## ### ##### ####, ### ###### #### # #####, ### # ### ####.
+ * ## # ### #### ### ####, ## #### #####, ### ### ###### ##### # ####.
+ * ### #### ## #### #### ### ###### ### ## ##### ####.
+ */
+public class FrogGame {
+
+    public static final double START_LINE = 400; 
+    public static final double FROG_X = 200;     
+
+    public static final double ROAD_LEFT = 0;    
+    public static final double ROAD_RIGHT = 500; 
+    public static final double LANE_WIDTH = 50;
+
+    private Frog frog;          
+    private int lives;
+    private int score;
+
+    /** Construct a new FrogGame object:
+     * - draw the lanes
+     * - create the first frog
+     * - set up the GUI (the buttons)
+     *     "Hop" should make the frog hop forward,
+     *     "Back" should make the frog hop backwards.
+     * - call the runGame method to make the cars run along the road
+     *   and check for collisions with the frog.
+     */
+    public FrogGame(){
+        this.drawLanes();
+        this.frog = new Frog();
+
+        UI.addButton("Hop",  this::doHop );
+        UI.addButton("Back", this::doHopBack );
+        UI.addButton("Quit", UI::quit);
+        this.runGame();
+    }
+
+    /** Make the current frog hop forward */
+    public void doHop(String args){
+        frog.hop();
+
+    }
+
+    /** Make the current frog hop backward */
+    public void doHopBack(String args){
+        frog.hopBack();
+
+    }
+
+    /**
+     * Draw the lanes.
+     * Use the constants defined above.
+     */
+    public void drawLanes(){
+
+        UI.drawLine(ROAD_LEFT,395,ROAD_RIGHT,395);
+        UI.drawLine(ROAD_LEFT,345,ROAD_RIGHT,345);
+        UI.drawLine(ROAD_LEFT,295,ROAD_RIGHT,295);
+        UI.drawLine(ROAD_LEFT,245,ROAD_RIGHT,245);
+
+    }
+
+    /**
+     * Initialise variables for the score and the remaining lives
+     * Make three cars, and make them run along their lanes
+     * until the player has run out of lives.
+     * In the loop,
+     *  - make each car move, 
+     *  - If the frog has got to lane 4, then
+     *     add 1 to the score,
+     *     tell the player what the score is.
+     *     and make a new frog
+     *  - check each car to see if it is hitting the frog.
+     *    ( call the hitFrog(..) method to check each car )
+     *    If so, make the frog splat, decrease the number of lives left.
+     *  - If the player still has any lives left, make a new frog.
+     *    and make a new frog.
+     *  - then sleep for short time.
+     */
+    public void runGame(){
+        lives = 5;
+        score = 0;
+        int livesCheck = 5;
+
+        Car car1 = new Car("left",3,ROAD_RIGHT);
+        Car car2 = new Car("right",2,ROAD_LEFT);
+        Car car3 = new Car("left",1,ROAD_RIGHT);
+
+        while ( lives > 0){
+
+            int printedLives = lives;
+            car1.move();
+            car2.move();
+            car3.move();
+            if(hitFrog(car1) == true || hitFrog(car2) == true || hitFrog(car3) == true){
+                frog.splat();
+                lives -= 1;
+                UI.sleep(1000);
+                frog.erase();
+                frog = new Frog();
+            }
+
+            if(frog.getLane() >= 4){
+                score += 10;
+                UI.sleep(1000);
+                frog.erase();
+                frog = new Frog();
+            }
+
+            if(car1.getX() <= ROAD_LEFT){
+                car1.erase(car1.getX());
+                car1 = new Car("left",3,ROAD_RIGHT);
+
+            }
+
+            if(car2.getX() >= ROAD_RIGHT){
+                car2.erase(car2.getX());
+                car2 = new Car("right",2,ROAD_LEFT);
+
+            }
+
+            if(car3.getX() <= ROAD_LEFT){
+                car3.erase(car3.getX());
+                car3 = new Car("left",1,ROAD_RIGHT);
+
+            }
+
+            UI.setFontSize(20);
+            UI.setColor(Color.black);
+            UI.eraseRect(0,0,200,100);
+            UI.drawString("Your score is " + score, 0, 50);
+            UI.drawString("Lives left " + lives , 0, 100);
+
+        }
+        UI.setFontSize(30);
+        UI.drawString("GAME OVER: Your score was " + score , 100, 200);
+    }
+
+    /**
+     * Returns true if the car is hitting the frog:
+     * the lane of the car must be the same as the current lane of the frog
+     * and the x position of the car must be such that it is hitting the frog.
+     * If the car is not hitting the frog, then it should return false.
+     */
+    public boolean hitFrog(Car car){
+
+        boolean hitFrog = false;
+
+        boolean equalLane = car.getLane() == frog.getLane();
+        boolean leftBoundary = car.getX() > FrogGame.FROG_X - FrogGame.LANE_WIDTH;
+        boolean rightBoundary = car.getX() < FrogGame.FROG_X + FrogGame.LANE_WIDTH;
+
+        return equalLane && leftBoundary && rightBoundary;      
+    }
+    public static void main(String[] arguments){
+        new FrogGame();
+
+    }   
+
+}

@@ -1,0 +1,299 @@
+
+/**
+ * ##### # ########### ## ##### ################_#### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import java.util.Scanner;
+
+public class SudokuPuzzle
+{
+    private int [][] board;
+    private boolean [][] start;
+    
+    /**
+     * constructor. Create an empty Sudoku game
+     */
+    public SudokuPuzzle()
+    {
+       
+    }
+    
+    /**
+     * constructor. Create an initialized game
+     */
+    public SudokuPuzzle(int [][] initialSet) 
+    {
+        initialSet=board;
+    }
+    
+    /**
+     * toString return a string representation of the puzzle that can be printed
+     * @return a string representation of the puzzle
+     */
+    public String toString()
+    {
+        String result = "\n";
+        for(int i = 0; i < 9; i++)
+        {
+            for(int j = 0; j < 9; j++)
+            {
+                if(board[i][j] == 0)
+                    result += "  ";
+                else 
+                    result += board[i][j]+" ";
+                if(j%3 == 2)
+                    result += '\u2759' + " ";
+            }
+            result += "\n";
+            if(i%3 == 2)
+            {
+                
+                for(int k = 0; k < 14; k++)
+                    result += "\u2015";
+                result += "\n";
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * set the given square to the given value as an initial value that cannot be changed
+     * @param row The given row where the given value will be placed
+     * @param col The given column where the given value will be placed
+     * @param value The given value that will be place at (row, col) location
+     */
+    public void addInitial(int row, int col, int value)
+    {
+        board[row][col]=value;
+        start[row][col]=true;
+       
+    }
+    
+    /**
+     * set the given square to the given value; the value can be changed by another call
+     * to addGuess
+     * @param row The given row where the given value will be placed
+     * @param col The given column where the given value will be placed
+     * @param value The given value that will be place at (row, col) location
+     */
+    public void addGuess(int row, int col, int value)
+    {
+        if(start[row][col]==false)
+            board[row][col]=value;
+    }
+    
+    /**
+     * check if the values in the puzzle violate the restrictions
+     * @return true if no violation; false otherwise
+     */
+    public boolean checkPuzzle()
+    {
+       int x, y, z;
+       boolean check[];
+       for(x=1; x<=9; x++)
+            for(y=1; y<=9; y++)
+            {
+                getAllowedValues(x, y)=check;
+                if(check[board[x][y]+1]==false)
+                    return(false);
+            }
+       
+        return true;
+    }
+    
+    /**
+     * get the value in the given square. If the square is empty, 0 will be returned
+     * @param row The row number of the given sqaure
+     * @param col The column number of the given square
+     * @return The value at location (row, col)
+     */
+    public int getValueIn(int row, int col)
+    {
+        int value;
+        
+        value = board[row][col];
+        if(value!=null)
+            return(value);
+            
+            
+        return 0;
+    }
+    
+    /**
+     * return a one-dimensional array of nine booleans, each of which corresponds
+     * to a digit and is true if the disgit can be placed in the given square without 
+     * violating the restrictions
+     * @param row The row number of the given of square
+     * @param col The column number of the given square
+     * @return a one-dimensional array of nine booleans
+     */
+    public boolean [] getAllowedValues(int row, int col)
+    {
+        boolean values []= {true, true, true, true, true, true, true, true, true}; 
+        int x;
+        
+        for(x=1; x<=9; x++)
+        {
+            if(col!=x&&board[row][x]!=null)
+                values[x]=false;
+            
+            if(row!=x&&board[row][x]!=null)
+                 values[x]=false;
+        }
+        
+        return values;
+    }
+    
+    /**
+     * check if all square in the puzzle are filled up
+     * @return true if every sqaure of the puzzle has value; false otherwise
+     */
+    public boolean isFull()
+    {
+        boolean flag=false;
+        int x, y;
+        
+        for(x=1; x<=9; x++)
+            for(y=1; y<=9; y++)
+            {
+               if( board[x][y]==null;
+                return false;
+            }
+        
+        return true;
+    }
+    
+    /**
+     * change all the nonpermanent squares back to blanks
+     */
+    public void reset()
+    {
+        int x, y;
+        
+        for(x==1; x<=9; x++)
+            for(y==1; y<=9; y++)
+            {
+                if(start[x][y]==true)
+                    board[x][y]=null;
+            }
+        
+    }
+    
+    
+    public static void main(String [] args)
+    {
+        Scanner input = new Scanner(System.in);
+        int choice, row, col, value;
+        SudokuPuzzle game = null;
+        
+        do{
+            menu();
+            System.out.print("Enter your choice: ");
+            choice = input.nextInt();
+            switch(choice)
+            {
+                case 1:
+                    game = new SudokuPuzzle(Games.getGame());
+                    System.out.println("Game generated as: ");
+                    System.out.println(game.toString()); 
+                    break;
+                case 2:
+                    game.reset(); 
+                    System.out.println("Puzzle reset");
+                    System.out.println(game.toString());
+                    break;
+                 
+                case 3: 
+                    System.out.println(game.toString());
+                    System.out.println("\n\nEnter your guess (row, column and digit): ");
+            
+                    row = input.nextInt();
+                    col = input.nextInt();
+                    value = input.nextInt();
+                    game.addGuess(row, col, value);
+                    
+                    if(game.isFull() && game.checkPuzzle())
+                    {
+                        System.out.println("Congratulations, you solve it!");
+                        System.out.println(game.toString());
+                    }
+                    System.out.println("Value " + value + " has been added to location" 
+                                        + "(" + row + ", " + col + ")");
+                    System.out.println(game.toString());
+                    break;
+                    
+                case 4: 
+                    System.out.println(game);
+                    System.out.println("\n\nEnter the row and column: ");
+                    row = input.nextInt();
+                    col = input.nextInt();
+                    
+                    boolean [] hint = game.getAllowedValues(row, col);
+                    System.out.println("The following values can be put at location (" 
+                                        + row + ", " + col + ")");
+                    for(int i = 0; i < 9; i++)
+                        if(hint[i]) 
+                            System.out.print((i+1) + ", ");
+                     
+                    break;
+                
+                case 5:
+                    System.out.println("Thank you for playing Sudoku!");
+            }
+          
+        }while(choice != 5);
+       
+        
+    }
+    
+    public static void menu()
+    {
+        System.out.println("********************************");
+        System.out.println("* 1. New Game                   *");
+        System.out.println("* 2. Reset                      *");
+        System.out.println("* 3. Add a Guess                *");
+        System.out.println("* 4. Get a Hint                 *");
+        System.out.println("* 5. Quit                       *");
+        System.out.println("*********************************");
+    }
+}
+
+class Games
+{
+    public static final int [][][] GAMES = {
+        {{0, 0, 6, 9, 0, 4, 0, 0, 0},
+         {9, 3, 0, 0, 0, 0, 0, 4, 0},
+         {0, 0, 0, 0, 1, 0, 0, 0, 3},
+         {0, 0, 0, 0, 4, 0, 7, 1, 5},
+         {0, 0, 9, 0, 0, 0, 2, 0, 0},
+         {6, 1, 4, 0, 2, 0, 0, 0, 0},
+         {3, 0, 0, 0, 6, 0, 0, 0, 0},
+         {0, 4, 0, 0, 0, 0, 0, 5, 1},
+         {0, 0, 0, 5, 0, 2, 4, 0, 0}}, 
+        {{8, 0, 3, 0, 1, 2, 0, 5, 0},
+         {4, 0, 1, 5, 0, 6, 7, 2, 8},
+         {0, 0, 0, 0, 0, 8, 1, 0, 9},
+         {0, 0, 2, 7, 0, 9, 5, 8, 0},
+         {7, 0, 4, 0, 0, 0, 9, 0, 2},
+         {0, 8, 9, 1, 0, 3, 6, 0, 0},
+         {3, 0, 5, 2, 0, 0, 0, 0, 0},
+         {9, 6, 8, 3, 0, 1, 2, 0, 4},
+         {0, 2, 0, 8, 6, 0, 3, 0, 5}}, 
+        {{0, 0, 0, 0, 0, 0, 1, 0, 5},
+         {0, 9, 0, 0, 0, 3, 4, 0, 0},
+         {0, 1, 0, 0, 8, 0, 0, 7, 0},
+         {0, 0, 0, 0, 0, 5, 0, 0, 4},
+         {4, 0, 6, 0, 0, 0, 9, 0, 3},
+         {2, 0, 0, 4, 0, 0, 0, 0, 0},
+         {0, 8, 0, 0, 2, 0, 0, 5, 0},
+         {0, 0, 9, 1, 0, 0, 0, 4, 0},
+         {0, 0, 7, 0, 0, 0, 0, 0, 0}}}; 
+    public static int[][] getGame()
+    {
+        int index = (int) (Math.random()*3);
+        return GAMES[index];
+    }
+}
+        

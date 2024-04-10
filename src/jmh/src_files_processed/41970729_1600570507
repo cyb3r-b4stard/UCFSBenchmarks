@@ -1,0 +1,137 @@
+
+/**
+ * ###### ####_#.
+ * 
+ * @###### (### ####)
+ * @####### (#### ############## #### ### #####)
+ */
+
+import java.io.*;
+
+public class Aufg_B
+{
+    public static void main( String args[] ) {
+        JConsole fenster = new JConsole("Aufg_14");
+
+        while (true) {
+            String datei;
+            do {
+                datei = fenster.readFilename("Bitte F3 drücken, um lgs1.txt Datei einzulesen ");
+            }
+            while (datei == null);
+            double m[][]; 
+            try {
+                m = fenster.readArray(datei);
+            }
+            catch (IOException fehler) {
+                fenster.println(fehler);
+                continue; 
+            }
+            if (m == null) {
+                fenster.println("FEHLER: Array ist leer.");
+                continue;
+            }
+
+            int z = m.length; 
+            int s = m[0].length; 
+
+            fenster.println("Zeilenanzahl : " + z);
+            fenster.println("Spaltenanzahl: " + s);
+
+            fenster.println("Ausgabe der Matrix m " );
+            Werkzeuge.matr_ausg(m,fenster); 
+            if ( z/4 == s-1) { 
+                fenster.println("Es wurde eine quadratische Matrix gefunden und ein Spaltenvektor");
+                fenster.println("Anzahl der Zeilen = " + z +
+                    "  Anzahl der Spalten = " + s);
+                /**
+                 * Zuerst wird untersucht ob die Matrix orthogonal ist oder nicht?
+                 * Siehe Aufgabe 12 (Tutorium) 
+                 */ 
+                int n = s-1; 
+                double A[][] = new double [n][n];
+                double B[][] = new double [n][n];
+                double C[][] = new double [n][n];
+                double D[][] = new double [n][n];
+                double y[] = new double [n];
+                
+                for(int i = 0; i<n; i++){
+                    for (int j=0; j<n; j++){
+                        A[i][j] = m[i][j];
+                        B[i][j] = m[i+n][j];
+                        C[i][j] = m[i+2*n][j];
+                        D[i][j] = m[i+3*n][j];
+                        y[i] = m[2*n + i][n];
+                    }
+                }
+
+                fenster.println("Ausgabe der Matrix m " );
+                Werkzeuge.matr_ausg(m,fenster);
+
+                fenster.println("Ausgabe der Matrix A " );
+                Werkzeuge.matr_ausg(A,fenster);
+                fenster.println("Ausgabe der Matrix B " );
+                Werkzeuge.matr_ausg(B,fenster);
+                fenster.println("Ausgabe der Matrix C " );
+                Werkzeuge.matr_ausg(C,fenster);
+                fenster.println("Ausgabe der Matrix D " );
+                Werkzeuge.matr_ausg(D,fenster);
+
+                fenster.println("Ausgabe des Vektors y " );
+                Werkzeuge.vekt_ausg(y,fenster);
+                
+                
+                
+                BAT = Werkzeuge.matr_mult (B, Werkzeuge.matr_transp(A);
+                
+                
+                
+                
+                boolean orthogonal = Werkzeuge.pruef_ortho(m);
+                double x [] = new double [n];
+                if (orthogonal) {
+                    /**
+                     * Wenn A orthogonal, dann ist A*x = y einfach lösbar:
+                     * x = At * y, wobei At transponierte Matrix von M ist 
+                     * 
+                     * Wenn A nicht orthogonal, dann Cramersche Regel 
+                     */
+                    fenster.println("Ausgabe der Matrix m " );
+                    Werkzeuge.matr_ausg(m,fenster);
+                    double mt[][] = new double [n][n]; 
+                    mt = Werkzeuge.matr_transp(A);
+                    fenster.println("Ausgabe der Matrix mt " );
+                    Werkzeuge.matr_ausg(mt,fenster);
+                    x = Werkzeuge.matr_mal_vekt(mt,y);
+                    fenster.println("Ausgabe des Vektors x " );
+                    Werkzeuge.vekt_ausg(x,fenster);
+
+                }
+                else {
+                    /**
+                     * Wenn die Matrix nicht orthogonal war, dann wird die Cramersche-Regel
+                     * angewandt, um die inverse Matrix zu berechnen, wenn |detA| > 0
+                     */
+                    if (Math.abs(Gauss.det(A)) < 1e-5) {
+                        fenster.println("det(a) = 0, d.h. es gibt keine eind. Lösung");
+                        break;
+                    }
+                    else { 
+                        for (int i=0; i<n; i++){
+                            x[i] = Werkzeuge.cramer(A,y,i);
+                        }
+                        fenster.println("Matrix war nicht orthogonal. Ausgabe des Vektors x " );
+                        Werkzeuge.vekt_ausg(x,fenster);
+                    }
+
+                }
+            }
+            else{ 
+                fenster.println("Fehler: für diese Aufgabe sind lgs1.txt Dateien als Input notwendig");
+                fenster.println("Anzahl der Zeilen = " + z +
+                    "  Anzahl der Spalten = " + s);
+            }
+
+        } 
+    } 
+}

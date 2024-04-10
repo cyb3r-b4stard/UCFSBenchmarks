@@ -1,0 +1,114 @@
+
+import java.util. *;
+public class Hangman
+{Scanner input= new Scanner(System.in);
+    ArrayList <String> phrase = new ArrayList <String> ();
+    public String Phrase;
+    ArrayList <String> guessedLetters = new ArrayList <String> ();
+    ArrayList <String> board = new ArrayList <String> ();
+    ArrayList <String> copyOfPhrase = new ArrayList <String> ();
+    copyOfPhrase.addAll(phrase);
+    public void enterPhrase()
+    {
+        System.out.print("Player 1, enter your phrase");
+        Phrase=input.nextLine();
+        for(int x=0; x<Phrase.length();x++)
+        { String y= ""+ Phrase.charAt(x);
+            phrase.add(x,y);
+
+        }
+
+    }
+
+    public ArrayList getList()
+    { return phrase;
+
+    }
+
+    public boolean guessLetter(String Guess)
+    {boolean hit=false;
+        for(int x=0;x<phrase.size();x++)
+        {if(Guess.equals(phrase.get(x))
+            {hit=true;
+                System.out.println("You guessed right!"); 
+            }
+        }
+        return hit;
+    }
+
+    public boolean guessPhrase(String guess)
+    { boolean win=false;
+        if(Phrase.equals(guess))
+        { win=true;
+            System.out.print("Congrats! you guessed correctly!" + "\n"+ "You won!");
+
+        }
+        return win;
+    }
+
+    public void board(String guess)
+    {
+        int count=0; 
+        for(int x=0;x<phrase.size();x++)
+        {if(guess.equals(phrase.get(x))
+            {count++; 
+            }
+        }
+
+        while(count>0)
+        {
+            board.set(phrase.indexOf(guess),guess);
+           
+            count--;
+
+        }
+
+    }
+    
+    public ArrayList addGuessedLetter (String letter)
+    {
+        guessedLetters.add(letter);
+        return guessedLetters;
+    }
+
+    public boolean checkValidGuess(String letter)
+    {
+        boolean valid=true;
+        int y= guessedLetters.size();
+        for(int x=0;x<y;x++)
+        {
+            if(letter.equals(guessedLetters.get(x)))
+            {
+                valid=false;
+            }
+
+        }
+        return valid;
+    }
+
+    public boolean checkAgain()
+    {boolean play=true;
+        System.out.println("Play again?");
+        String answer=input.nextLine();
+        if(answer.equals("no"));
+        {play=false;
+        }
+
+        return play;
+
+    }
+
+    public void setBoard()
+    {for(int x=0;x<phrase.size();x++)
+        {board.set(x,"-");
+
+        }
+
+    }
+
+    public void displayBoard()
+    {      
+        System.out.println(board);
+    }
+
+}

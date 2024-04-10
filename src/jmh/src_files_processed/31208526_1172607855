@@ -1,0 +1,189 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Random;
+/**
+ * ##### # ########### ## ##### ############## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class LotteryMachine
+{
+    private int b1;
+    private int b2;
+    private int b3;
+    private int b4;
+    private int b5;
+    private int megaBall;
+    ArrayList<LotteryTicket> tickets;
+    ArrayList<Integer> picks = new ArrayList<Integer>();
+    Scanner scan = new Scanner(System.in);
+
+    public LotteryMachine() {
+        b1 = 0;
+        b2 = 0;
+        b3 = 0;
+        b4 = 0;
+        b5 = 0;
+        megaBall = 0;
+        tickets = new ArrayList<LotteryTicket>();
+    }
+
+    public int countTickets() {
+        return tickets.size();
+    }
+
+    public void addTicket(LotteryTicket t) {
+        tickets.add(t);
+    }
+
+    public void drawTicket() {
+        pickRandomNumbers();
+        makePayouts();
+    }
+
+    public void drawTicket(int b1, int b2, int b3, int b4, int b5, int m) {
+        this.b1 = b1;
+        this.b2 = b2;
+        this.b3 = b3;
+        this.b4 = b4;
+        this.b5 = b5;
+        megaBall = m;
+        makePayouts();
+    }
+
+    public void readTickets(String filename) {
+        Scanner inFS = null; 
+        FileInputStream fileByteStream = null;
+
+        try{
+            fileByteStream = new FileInputStream("TicketInfo.txt");
+            inFS = new Scanner(fileByteStream);
+            inFS.useDelimiter(",|/");
+
+            while(inFS.hasNext()) {
+
+                String info = inFS.next();
+
+                LotteryTicket l = new LotteryTicket(info);
+                tickets.add(l);
+            }
+            fileByteStream.close();
+
+        }catch(IOException error1) {
+            System.out.println("Oops! Error related to: " + filename);
+        } 
+    }
+
+    public String createReport() {
+        return null;
+    }
+
+    public String createReport(String st) {
+        return null;
+    }
+
+    public LotteryTicket getOldestPlayer() {
+        LotteryTicket oldest = tickets.get(0);
+        for(LotteryTicket t: tickets) {
+            if(oldest.getYear() == t.getYear()) {
+                if(oldest.getMonth() == t.getMonth()) {
+                    if(oldest.getDay() < t.getDay()) {
+                        oldest = t;
+                    }
+                }
+                else if(oldest.getMonth() < t.getMonth()) {
+                    oldest = t;
+                }
+            }
+            else if(oldest.getYear() < t.getYear()) {
+                oldest = t;
+            }
+        }
+        return oldest;
+    }
+
+    public LotteryTicket getBiggestWinner() {
+        LotteryTicket biggest = tickets.get(0);
+        for(LotteryTicket t: tickets){
+            if(biggest.getPrize() < t.getPrize()){
+                biggest = t;
+
+            }
+        }
+        return biggest;
+    }
+
+    public ArrayList<LotteryTicket> getMajorWinners(double amount) {
+        ArrayList<LotteryTicket> majorWinners = new ArrayList<LotteryTicket>();
+        for(LotteryTicket t: tickets) {
+            if(t.getPrize() <= amount) {
+                majorWinners.add(t);
+            }
+        }
+        return majorWinners;
+    }
+
+    private void pickRandomNumbers() {
+        Random rand = new Random();
+
+        b1 = rand.nextInt(75) + 1;
+        b2 = rand.nextInt(75) + 1;
+        b3 = rand.nextInt(75) + 1;
+        b4 = rand.nextInt(75) + 1;
+        b5 = rand.nextInt(75) + 1;
+        picks.add(0, b1);
+        picks.add(1, b2);
+        picks.add(2, b3);
+        picks.add(3, b4);
+        picks.add(4, b5);
+        
+        for(Integer s: picks) {
+            if(b2 == b1) {
+                picks.remove(1);
+                b2 = rand.nextInt(75) + 1;
+                picks.add(1, b2);
+            }
+            if(b3 == b1 || b3 == b2) {
+                picks.remove(2);
+                b3 = rand.nextInt(75) + 1;
+                picks.add(2, b3);
+            }
+            if(b4 == b1 || b4 == b2 || b4 == b3) {
+                picks.remove(3);
+                b4 = rand.nextInt(75) + 1;
+                picks.add(3, b4);
+            }
+            if(b5 == b1 || b5 == b2 || b5 == b3 || b5 == b4) {
+                picks.remove(4);
+                b5 = rand.nextInt(75) + 1;
+                picks.add(4, b5);
+            } 
+        } 
+        
+        megaBall = rand.nextInt(15) + 1;
+        picks.add(5, megaBall);
+    }
+    
+    private int countMatches(LotteryTicket t) {
+        return 0;
+    }
+    
+    private void makePayouts() {
+        for(LotteryTicket r: tickets) {
+            if(r.hasBall(b1) == true) {
+                LotteryTicket.setPrize(2)
+            }
+        }
+    }
+
+    private String formatNumbers() {
+        return "Selected Numbers: " + b1 + " " + b2 +" " + b3 + " " + b4 + " " + b5 + "    " + megaBall;
+    }
+
+    public String multipleGames() {
+        return null;
+    }
+}

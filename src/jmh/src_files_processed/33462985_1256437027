@@ -1,0 +1,93 @@
+import java.io.*;
+/**
+ * ##### # ########### ## ##### ############## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class CompresorRLE
+{
+    private File fichero;
+   
+    /**
+     * Constructor con nombre de fichero a comprimir
+     * @param nomb nombre de fichero a comprimir
+     */
+    public CompresorRLE(String nomb)
+    {
+        this.fichero = new File(nomb);
+    }
+    
+    /**
+     * Retorna el fichero a comprimir
+     * @return fichero a comprimir
+     */
+    public File getFichero()
+    {
+        return this.fichero;
+    }
+    
+    /**
+     * Modifica el fichero a comprimir
+     * @param nom nombre del fichero a comprimir
+     */
+    public void setFichero(String nom)
+    {
+        this.fichero = new File(nom);
+    }
+    
+    /**
+     * Comprime el fichero en otro de nombre dado
+     * @param nom nombre del fichero donde se comprime
+     */
+    public void comprimirEn(String nom) 
+    {
+        try
+        {
+            FileInputStream in = new FileInputStream(this.fichero);
+            FileOutputStream out = new FileOutputStream(nom);
+            
+            int leido;
+            int leidob;
+            int nveces = 0;
+            
+            if ((leidob = in.read()) != -1)
+            {
+                nveces++;
+                while((leido = in.read()) != -1)
+                {
+                    if(leidob == leido)
+                    {
+                        nveces++;
+                    }
+                    else
+                    {
+                        out.write(leidob);
+                        out.write(nveces);
+                        leidob = leido;
+                        nveces = 1;
+                    }
+                }
+                out.write(leidob);
+                out.write(nveces);
+            }
+            
+            in.close();
+            out.close();
+        }
+        catch(FileNotFoundException e)
+        {
+            System.out.println("El fichero no existe");
+        }
+        catch(IOException e)
+        {
+            System.out.println("Error de E/S");
+        }
+    }
+    
+    public static void main(String[] args) 
+    {
+        CompresorRLE c = new CompresorRLE ("original.bmp");
+        c.comprimirEN
+    } 
+}

@@ -1,0 +1,157 @@
+import info.gridworld.actor.*;
+import info.gridworld.grid.Grid;
+import info.gridworld.grid.Location;
+import java.awt.Color;
+
+public class PlayPieceGridWorld extends Bug
+{
+    private Color color;
+    public PlayPieceGridWorld(String c)
+    {
+        if(c.equalsIgnoreCase("Red"))
+        {
+            setColor(Color.RED);
+            color = Color.RED;
+        }
+        else
+            setColor(Color.BLACK);
+    }
+    
+    public Color getColor()
+    {
+        return thi
+    }
+    
+    public void moveWay(int m)
+    {
+        if(m == 1)
+        {
+            if(canMoveLeft())
+                moveLeft();
+            else if(canAttackLeft())
+                attackLeft();
+        }
+        else
+        {
+            if(canMoveRight())
+                moveRight();
+            else if(canAttackRight())
+                attackRight();
+        }
+    }
+    
+    public void moveLeft()
+    {
+        Grid<Actor> gr = getGrid();
+        if(gr == null)
+            return;
+        Location loc = getLocation();
+        Location next = loc.getAdjacentLocation(315);
+        if(gr.isValid(next))
+            moveTo(next);
+        else
+            return;
+    }
+    
+    public boolean canMoveLeft()
+    {
+        Grid<Actor> gr = getGrid();
+        if(gr == null)
+            return false;
+        Location loc = getLocation();
+        Location next = loc.getAdjacentLocation(315);
+        if(!gr.isValid(next))
+            return false;
+        Actor neighbor = gr.get(next);
+        return(neighbor == null);
+    }
+    
+    public void moveRight()
+    {
+        Grid<Actor> gr = getGrid();
+        if(gr == null)
+            return;
+        Location loc = getLocation();
+        Location next = loc.getAdjacentLocation(45);
+        if(gr.isValid(next))
+            moveTo(next);
+        else
+            return;        
+    }
+    
+    public boolean canMoveRight()
+    {
+        Grid<Actor> gr = getGrid();
+        if(gr == null)
+            return false;
+        Location loc = getLocation();
+        Location next = loc.getAdjacentLocation(315);
+        if(!gr.isValid(next))
+            return false;
+        Actor neighbor = gr.get(next);
+        return(neighbor == null);
+    }
+    
+    public void attackRight()
+    {
+        Grid<Actor> gr = getGrid();
+        if(gr == null)
+            return;
+        Location loc = getLocation();
+        Location check = loc.getAdjacentLocation(315);
+        Location move = check.getAdjacentLocation(315);
+        Actor neighbor = gr.get(check);
+        if(neighbor instanceof PlayPieceGridWorld)
+            moveTo(move);
+        else
+            return;
+    }
+    
+    public boolean canAttackRight()
+    {
+        Grid<Actor> gr = getGrid();
+        if(gr == null)
+            return false;
+        Location loc = getLocation();
+        Location check = loc.getAdjacentLocation(315);
+        Actor neighbor = gr.get(check);
+        if(neighbor instanceof PlayPieceGridWorld)
+            return true;
+        else
+            return false;
+    }
+    
+    public boolean canAttackLeft()
+    {
+        Grid<Actor> gr = getGrid();
+        if(gr == null)
+            return false;
+        Location loc = getLocation();
+        Location check = loc.getAdjacentLocation(45);
+        Actor neighbor = gr.get(check);
+        if(neighbor instanceof PlayPieceGridWorld)
+            return true;
+        else
+            return false;
+    }
+    
+    public void attackLeft()
+    {
+        Grid<Actor> gr = getGrid();
+        if(gr == null)
+            return;
+        Location loc = getLocation();
+        Location check = loc.getAdjacentLocation(45);
+        Location move = check.getAdjacentLocation(45);
+        Actor neighbor = gr.get(check);
+        if(neighbor instanceof PlayPieceGridWorld)
+            moveTo(move);
+        else
+            return;
+    }
+    
+    public String toString()
+    {
+        String str = "Piece: " + 
+    }
+}

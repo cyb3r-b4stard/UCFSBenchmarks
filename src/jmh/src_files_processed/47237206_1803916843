@@ -1,0 +1,97 @@
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+/**
+ * ######### ### #######
+ * @###### ###### #####
+ * @###### ######### #######
+ * @###### #### ########
+ * @####### #.#
+ */
+public class GUI {
+        private static int screenWidth;
+        private static int screenHeight;
+        private static ArrayList<String> messages;
+        private static JLabel messageLabel;
+        private static JFrame frame;
+        private static Color currentColor;
+        
+        /**
+         * Constructor for GUI
+         */
+        public GUI()
+        {
+            messages = new ArrayList<String>();
+            currentColor = Color.BLACK;
+            frame = new JFrame("Traffic Simulator Project v1.0");
+            screenWidth = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+            screenHeight = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+            frame.setSize(screenWidth,screenHeight);
+            makeFrame();
+
+            
+        }
+        
+        public void makeFrame()
+        {
+            Panel mainPanel = new Panel();
+            mainPanel.setLayout(new BorderLayout());
+            
+            Canvas roadCanvas = new Canvas();
+            roadCanvas.setPreferredSize(new Dimension(screenWidth/2, screenHeight/2));
+            makeCanvas(roadCanvas, roadCanvas.getGraphics());
+            
+            Panel leftPanel = new Panel();
+            leftPanel.setLayout(new BorderLayout());
+            
+            Panel topLeftPanel = new Panel();
+            topLeftPanel.setLayout(new GridLayout(5,1));
+            Box b = new Box();
+            
+            JButton start = new JButton("   Start   ");
+            start.addActionListener(e -> System.out.println("temp"));
+            topLeftPanel.add(start);
+            topLeftPanel.add(Box.createHorizontalStrut(10));
+            
+            JButton pause = new JButton("Pause");
+            topLeftPanel.createHorizontalStrut(10);
+            pause.addActionListener(e -> System.out.println("temp"));
+            topLeftPanel.add(pause);
+            topLeftPanel.add(Box.createHorizontalStrut(10));
+            
+            JButton stop = new JButton("Stop");
+            stop.addActionListener(e -> System.out.println("temp"));
+            topLeftPanel.add(stop);
+            
+            Panel bottomLeftPanel = new Panel();
+            bottomLeftPanel.setLayout(new BoxLayout(bottomLeftPanel, BoxLayout.Y_AXIS));
+            
+            JLabel messageLabel = new JLabel(System.currentTimeMillis() + ": Program started");
+            bottomLeftPanel.add(messageLabel);
+            
+            leftPanel.add(bottomLeftPanel, BorderLayout.SOUTH);
+            leftPanel.add(topLeftPanel, BorderLayout.NORTH);
+            mainPanel.add(leftPanel, BorderLayout.WEST);
+            mainPanel.add(roadCanvas, BorderLayout.CENTER);
+            frame.add(mainPanel);
+            frame.pack();
+            frame.setVisible(true);
+        }
+        
+        /**
+         * Draws canvas
+         */
+        private void makeCanvas(Canvas roadCanvas, Graphics g)
+        {
+        }
+        
+        /**
+         * Messages received from stat
+         * @param message The message being received
+         */
+        public void receiveMessage(String message)
+        {
+            messages.add(message);
+            messageLabel.setText(messageLabel + "\nmessage");
+        }
+    }

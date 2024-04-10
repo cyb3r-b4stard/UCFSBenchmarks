@@ -1,0 +1,195 @@
+import java.util.Random;
+
+/**
+ * ##### ##### ######## ### ##### # #### #####.
+ * @###### ####### ####### ### ##### ####### 
+ * @####### ####
+ */
+public final class Board{
+    private int [][] values;
+    private final int SIZE = 4;
+
+    /**
+     * Constructs a 4x4 2048 board and fills the board with 2 values.
+     */
+    public Board ()
+    {
+        values = new int[SIZE][SIZE];
+        fillBoard();
+        fillBoard();
+    }
+
+    /**
+     * Given an x,y coordinate, returns the value at that coordinate.
+     * @param x the x-coordinate of the board
+     * @param y the y-coordinate of the board
+     * @return the value at the (x,y) coordinate of the board
+     */
+    public int getValue(int x, int y)
+    {
+        return values[x][y];
+    }
+
+    /**
+     * Returns the size of the board.
+     * @return the size of the board
+     */
+    public int getSize()
+    {
+        return SIZE;
+    }
+
+    /**
+     * Starts the game over by zeroing out all the elements
+     * and filling the board with 2 initial values.
+     */
+    public void startOver()
+    {
+        for(int r = 0; r < values.length; r++)
+        {
+            for(int c = 0; c < values.length; c++) 
+                values[r][c] = 0; 
+        }
+
+        fillBoard(); 
+        fillBoard(); 
+    }
+
+    /**
+     * Fills the board with 1 random value which may be 2 or 4.
+     */
+    public void fillBoard()
+    {
+        Random r = new Random();
+
+        int x = r.nextInt(SIZE);
+        int y = r.nextInt(SIZE);
+
+        while (values[x][y] != 0)   
+        {
+            x = r.nextInt(SIZE);
+            y = r.nextInt(SIZE);
+        }  
+
+        values[x][y] = r.nextInt(2)*2 + 2;   
+    }
+
+    /**
+     * Prints the board to the terminal window.
+     * Used for debugging purposes.
+     */
+    public void printBoard()
+    {
+        String result = ""; 
+
+        for (int r = 0; r < values.length; r++)
+        {
+            for(int c = 0; c < values[r].length; c++)
+                result += values[r][c] + "\t";
+            result += "\n"; 
+        }
+
+        System.out.print(result);
+
+    }
+
+    /**
+     * Moves every column up.
+     */
+    public void moveUp()
+    {
+    }
+
+    /**
+     * Moves every column down.
+     */
+    public void moveDown()
+    {
+    }
+
+    /**
+     * Moves every row left.
+     */
+    public void moveLeft()
+    {
+        for(int r = 0; r < values.length; r++)
+        {
+            for(int c = 0; c < values[r].length-1; c++)
+                if(values[r][c] == 0)
+                {
+                    for (int s = 1; s < values[r].length-1; s++)
+                    {
+                        if()
+                        {
+                            values[r][c] = values[r][s];
+                            values[r][c+1] = 0;
+                        }
+                    }
+            }
+        }
+
+        /*
+        for(int r= 0; r < values.length; r++)
+        {
+        for(int c = 0; c < values[r].length-1; c++)
+        if(values[r][c] == values[r][c + 1] && values[r][c] > 0 )
+        {
+        values[r][c] = values[r][c+1] + values[r][c];
+        values[r][c+1] = 0; 
+
+        }
+        }*/
+
+        printBoard(); 
+    }
+
+    /**
+     * Moves every row right.
+     */
+    public void moveRight()
+    {
+        for (int r = values.length-1; r > 0; r--)
+        {
+            for(int c = values[r].length-1; c > 0; c--)
+            {
+                values[r][c] = values[r][c-1]; 
+            }
+        } 
+        for(int r = values.length-1; r > 0; r--) 
+        {
+            for(int c = values[r].length-1; c > 0; c--)
+
+            {
+                if(values[r][c] == values[r][c-1])
+                {
+                    values[r][c] = values[r][c] + values[r][c-1]; 
+                    values[r][c-1] = 0; 
+                }
+            }
+        } 
+
+        printBoard();
+    }
+
+    /**
+     * Checks if the user has lost; the game is lost when no more moves can be made:
+     * there are no 0 values on the board and there are no adjacent values that are the same.
+     * @return true if the game is over, false otherwise
+     */
+    public boolean gameLost()
+    {
+        
+
+        boolean result = values[r][c] != 0 && values != values[r][c+1] ? true : false;
+        return result;  
+    }   
+
+    /**
+     * Checks if the user has won; the game is won when there is at least one 2048 on the board.
+     * @return true if the game is won, false otherwise
+     */
+    public boolean gameWon()
+    {
+        return false;   
+    }
+}

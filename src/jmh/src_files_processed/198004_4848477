@@ -1,0 +1,152 @@
+
+
+/* #### ### ####### ##########
+ * ####: ##### ####
+ * ########: #########
+ * ##: #########
+ */
+
+import comp102.*;
+import java.util.*;
+
+/** ### ######## #### ######## ######### ### ######## ######, ### ### ######
+ *  ### ### ## ####### ### ###### ## ########## ### ##### ########## ## #### #####.
+ *  ### #### ## ### #### ## ## #### ## #### ##### ## ######## ######
+ *  ### ###### #### ### ### ###### ### ######### ### ## ###### ## #### ##.
+ *
+ *  ### #### ######## ### ###### #### # # ##### ## ###### ## # #### #### ######.
+ *  ### ###### ### ## ######## ### ######## ###### ## ###### ### ####### ##### ##
+ *  ### ##### ## ### #### ## ### #####.  
+ *  #### ### ##### ## #####, ### ###### ### ####### ### #####, ##### ####
+ *  #### ## ### ### #####, ### #### ### ### ##### ## ### ##### ## ### #######.
+ *  ######## ### ###### #### ## #### ## ### ##### #### #####'# ###### ## ###
+ *  #####, ### ##### ## ### #### ## ########## #### ### #######.
+ *  ### ###### ### ######## ## ########## ###### ##### ### ######## ######.
+ *  #### ### #### ## #######, ### ###### ### ######### #############.
+ */
+public class FastFood implements UIButtonListener{
+
+    private Queue<Order> orders;
+    private double balance;
+
+    private double fishPrice   = 2.5;
+    private double chipsPrice  = 1.5;
+    private double burgerPrice = 5;
+    public static final Map<String, double> = new HashMap<String, Double>();
+
+    public FastFood() {
+    orders = new ArrayDeque<Order>();
+
+
+    UI.addButton("Practice Order", this);
+    UI.addButton("Add Fish", this);
+    UI.addButton("Add Chips", this);
+    UI.addButton("Add Burger", this);
+    UI.addButton("Deliver Order", this);
+    UI.addButton("Start Game", this);
+
+    drawOrders();
+    }
+    /** Respond to the buttons */
+    public void buttonPerformed(String name) {
+    if ("Practice Order".equals(name))  {generateOrder();}
+    else if ("Add Fish".equals(name))   {addItem("Fish");}
+    else if ("Add Chips".equals(name))  {addItem("Chips");}
+    else if ("Add Burger".equals(name)) {addItem("Burger");}
+    else if ("Deliver Order".equals(name)) {deliverOrder();}
+    else if ("Start Game".equals(name)) {startGame();
+    }
+    drawOrders();
+    }
+
+    /** Create a new order and put it on the queue to be processed */
+    public void generateOrder() {
+        orders.add(new Order());
+    }
+
+    /** As long as there is an order in the queue, adds the specified
+     *  item to the order at the head of the queue,
+     *  If adding the item fails (ie, it isn't one of the items
+     *  that are wanted by the order) then the price
+     *  of the item is deducted from the current balance.
+     */
+    public void addItem(String item) {
+        if (orders.peek() != null) {
+            if (!orders.peek().addItemToOrder(item)) {
+                if      (item == "fish")   balance -= fishPrice;
+                else if (item == "chips")  balance -= chipsPrice;
+                else if (item == "burger") balance -= burgerPrice;
+            }
+        }
+    }
+
+    /** As long as there is an order at the front of the queue and it is ready,
+     *  take the first order off the queue, compute the price of the order,
+     *  and update the total balance by adding the order price.
+     *  If there is not a ready order on the queue, it prints a warning message
+     */
+    public void deliverOrder() {
+        if (orders.peek().isReady())
+            balance += orders.poll().getPrice();
+        else
+            UI.println("Order not ready!");
+    }
+
+
+    /** Draw the queue of orders on the Graphics pane.
+     *  Also draws the current balance in the top left corner
+     */
+    public void drawOrders() {
+    UI.clearGraphics();
+    
+        int y = 10;
+        for (Order order: orders) {
+            order.draw(y);
+            y += 50;
+        }
+    }
+
+
+    private boolean gameRunning = false;
+    private long timeBetweenOrders = 5000;
+
+    private void startGame(){
+    UI.clearGraphics();
+    UI.clearText();
+    orders.clear();
+    balance = 0;
+    timeBetweenOrders = 5000;
+    gameRunning = true;
+    }
+
+    public void run() {
+    long timeBetweenSpeedups = 2000;
+    long timeNextOrder = 0;
+    long timeNextSpeedup = 0;
+    while (true) {
+        UI.sleep(100); 
+        long now = System.currentTimeMillis();
+        if (!gameRunning) continue;  
+        if (now >= timeNextOrder) {
+        timeNextOrder = now + timeBetweenOrders;
+        generateOrder();
+        drawOrders();
+        }
+        if (now >= timeNextSpeedup) {   
+        if (timeBetweenOrders> 200) timeBetweenOrders -= 100; 
+        timeNextSpeedup = now + timeBetweenSpeedups;
+        }
+        if (orders.size() > 20) {
+        UI.println("Oh no! You have too many orders waiting! Game over...");
+        orders.clear();
+        gameRunning = false;
+        break;
+        }
+    }
+    }
+
+    public static void main(String args[]) {
+    FastFood ff = new FastFood();
+    ff.run();
+    }
+}

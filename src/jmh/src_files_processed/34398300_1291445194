@@ -1,0 +1,296 @@
+import java.util.*;
+import java.io.*;
+import java.lang.*;
+/**
+ * ####### #### ##### ########## ## ####### ### ##### ## #######
+ * 
+ * @###### ########
+ * @####### #####
+ */
+public class Grid
+{
+    private HashMap<String, Cell> cells = new HashMap<String, Cell>();
+    private short cellSize = 5000;
+    private String polyFileName;
+    private String pointFileName;
+    
+    /**
+     * Constructor for objects of class Grid
+     */
+    public Grid(String polyFileName, String pointFileName)
+    {
+        this.polyFileName = polyFileName;
+        this.pointFileName = pointFileName;
+        this.populatePolygons();
+    }
+    
+    private void putEmptyCell (String index) {
+        if(!this.cells.containsKey(index)){
+            Cell cell = new Cell();
+            this.cells.put(index,cell);
+        }
+    }
+    private String xyToIndStr(int x, int y){
+        short xInd = (short) Math.floor(x/this.cellSize);
+        short yInd = (short) Math.floor(y/this.cellSize);
+        return xInd+"_"+yInd;
+    }
+    private void insertPoint(int x, int y){
+        String index = xyToIndStr(x,y);
+        putEmptyCell(index);
+        String p = x+"_"+y;
+        this.cells.get(index).insertPoint(p);
+    }
+    private void insertMiniPoly(short polyid, String index, PointGroup pg){
+        Segment s1 = new Segment(pg.get(0),pg.get(1));
+        Segment s2 = new Segment(pg.get(pg.size()-2),pg.get(pg.size()-1));
+        PointGroup toConsider = pointsToConsider(index,s1,s2);
+        pg.addAll(toConsider);
+        this.cells.get(index).insertMiniPoly(polyid, pg);
+    }
+    private short[] indToXYSh (String index){
+        String indices[] = index.split("_");
+        short indX = Short.parseShort(indices[0]);
+        short indY = Short.parseShort(indices[1]);
+        short [] result = {indX,indY};
+        return result;
+    }
+    private int[] minmaxXY (String index){
+        short[] indices = indToXYSh(index);
+        short cellSize = this.cellSize;
+        int minX = indices[0]*cellSize; 
+        int maxX = (indices[0]+1)*cellSize;
+        int minY = indices[1]*cellSize;
+        int maxY = (indices[1]+1)*cellSize;
+        int [] result = {minX,maxX,minY,maxY};
+        return result;
+    }
+    /*private PointGroup corners (String index){
+        short[] indices = indToXYSh(index);
+        short cellSize = this.cellSize;
+        int minX = indices[0]*cellSize; 
+        int maxX = indices[0]*cellSize;
+        int minY = (indices[1]+1)*cellSize;
+        int maxY = (indices[1]+1)*cellSize;
+        PointGroup result = new PointGroup();
+        result.add(new Point(maxX,maxY));
+        result.add(new Point(minX,maxY));
+        result.add(new Point(minX,minY));
+        result.add(new Point(maxX,minY));
+        return result;
+    }*/
+    private PointGroup pointsToConsider (String index, Segment s1, Segment s2){
+        PointGroup result = new PointGroup();
+        int[] minmaxXY = minmaxXY(index);
+        Point ll = new Point(minmaxXY[0],minmaxXY[2]);
+        Point lr = new Point(minmaxXY[1],minmaxXY[2]);
+        Point ul = new Point(minmaxXY[0],minmaxXY[3]);
+        Point ur = new Point(minmaxXY[1],minmaxXY[3]);
+        Segment upper = new Segment(ul,ur);
+        Segment left = new Segment(ul,ll);
+        Segment lower = new Segment(ll,lr);
+        Segment right = new Segment(ur,lr);
+        
+        String inters1 ="";
+        String inters2 ="";
+        if     (upper.intersects(s1)){inters1="upper";}
+        else if(right.intersects(s1)){inters1="right";}
+        else if(left.intersects(s1)){inters1="left";}
+        else if(lower.intersects(s1)){inters1="lower";}
+        else {System.out.println("Fehler! - Segment1 schneidet Kante nicht :(");s1.status();}
+        if     (upper.intersects(s2)){inters2="upper";}
+        else if(right.intersects(s2)){inters2="right";}
+        else if(left.intersects(s2)){inters2="left";}
+        else if(lower.intersects(s2)){inters2="lower";}
+        else {System.out.println("Fehler! - Segment2 schneidet Kante nicht :(");s2.status();}
+        if     (inters1.equals(inters2)){}
+        else if((inters1.equals("right")&inters2.equals("upper"))){result.add(ur);}
+        else if(inters1.equals("upper")&inters2.equals("left")){result.add(ul);}
+        else if(inters1.equals("lower")&inters2.equals("right")){result.add(lr);}
+        else if(inters1.equals("left")&inters2.equals("lower")){result.add(ll);}
+        else if(inters1.equals("upper")&inters2.equals("lower")){result.add(ll);result.add(ul);}
+        else if(inters1.equals("lower")&inters2.equals("upper")){result.add(ur);result.add(lr);}
+        else if(inters1.equals("right")&inters2.equals("left")){result.add(ul);result.add(ur);}
+        else if(inters1.equals("left")&inters2.equals("right")){result.add(lr);result.add(ul);}
+        
+        else if(inters1.equals("upper")&inters2.equals("right")){result.add(lr);result.add(ll);result.add(ul);}
+        else if(inters1.equals("left")&inters2.equals("upper")){result.add(ur);result.add(lr);result.add(ll);}
+        else if(inters1.equals("right")&inters2.equals("lower")){result.add(ll);result.add(ul);result.add(ur);}
+        else if(inters1.equals("lower")&inters2.equals("left")){result.add(ul);result.add(ur);result.add(lr);}
+        return result;
+    }
+    
+    /**
+     * Scan through all the Points to put them into the Grid
+     * 
+     * @param  void
+     * @return void
+     */
+    private void populatePoints()
+    {
+        try {
+            Scanner fileScanner = new Scanner(new File(this.pointFileName));
+            while (fileScanner.hasNext()){
+                Scanner lineScanner = new Scanner(fileScanner.nextLine());
+                lineScanner.useDelimiter(",");
+                String index = "initialize";
+                while (lineScanner.hasNext()){
+                    lineScanner.next();
+                    lineScanner.next();
+                    lineScanner.next();
+                    lineScanner.next();
+                    int x = (int) lineScanner.nextDouble();
+                    int y = (int) lineScanner.nextDouble();
+                    index = this.xyToIndStr(x,y);
+                    this.insertPoint(x,y);
+                }
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            System.err.println("There was a problem scanning the Pointdata: "+this.pointFileName);
+        }
+    }
+    
+    /**
+     * Scan through all the Polygons to put them into the Grid
+     * 
+     * @param  void
+     * @return void
+     */
+    private void populatePolygons(){
+        try {
+            Scanner fileScanner = new Scanner(new File(this.polyFileName));
+            short oldPolyId = 0;
+            short polyid = 0;
+            double x,y;
+            String index="";
+            String oldIndex="initialize";
+            String spaghettiIndex = "spaghettIndex";
+            PointGroup runningPG = new PointGroup("goAsFastAsYouCan");
+            PointGroup startSpaghetti = new PointGroup("kewlName");
+            String STATUS = "startSpaghetti";
+            Point p = new Point(0,0);
+            Point oldP = new Point(0,0);
+
+            if (fileScanner.hasNext()){
+                String header = fileScanner.nextLine();
+                String firstLine = fileScanner.nextLine();
+                String[] parts = firstLine.split(";");
+                polyid = Short.parseShort(parts[3]);
+                x = Double.parseDouble(parts[4]);
+                y = Double.parseDouble(parts[5]);
+                p = new Point(x,y);
+                index = xyToIndStr((int) x, (int) y);
+                startSpaghetti.add(p);
+            }
+            
+            while (fileScanner.hasNext()){
+                Scanner lineScanner = new Scanner(fileScanner.nextLine());
+                lineScanner.useDelimiter(";");
+                while (lineScanner.hasNext()){
+                    lineScanner.next();
+                    String name = lineScanner.next();
+                    lineScanner.next();
+                    polyid = lineScanner.nextShort();
+                    x = lineScanner.nextDouble();
+                    y = lineScanner.nextDouble();
+                    
+                    oldIndex = index;
+                    oldPolyId = polyid;
+                    oldP = p;
+                    
+                    p = new Point(x,y);
+                    index = xyToIndStr((int)x,(int)y);
+                    this.putEmptyCell(index);
+                    
+                    
+                    
+                    if (STATUS.equals("startSpaghetti")){
+                        if (!(polyid == oldPolyId)){System.out.println("spez-Fall gfunde...");}
+                        else if(index.equals(oldIndex)){startSpaghetti.add(p);}
+                        else{
+                            spaghettiIndex = oldIndex;
+                            startSpaghetti.add(p);
+                            runningPG.add(oldP);
+                            runningPG.add(p);
+                            STATUS="normalPoly";
+                        }
+                    }
+                    else if (STATUS.equals("normalPoly")){
+                        if(index.equals(oldIndex) && polyid == oldPolyId){runningPG.add(p);}
+                        else if(polyid == oldPolyId){ 
+                            runningPG.add(p);
+                            /*int[] miXmaX = minmaxXY(index);
+                            System.out.println("***dive into Grid.insertMiniPoly("+polyid+", "+oldIndex+", PG(size):"+runningPG.size()+")***");
+                            System.out.println("with x:"+x+", y:"+y+", oldX:"+oldP.getX()+", oldY:"+oldP.getY());
+                            System.out.println("and actP - minX:"+miXmaX[0]+", maxX:"+miXmaX[1]+", minY:"+miXmaX[2]+", maxY:"+miXmaX[3]);
+                            */
+                            this.insertMiniPoly(polyid,oldIndex,runningPG);
+                            runningPG = new PointGroup();
+                            runningPG.add(oldP);
+                            runningPG.add(p);
+                            
+                            short[] XYShA = indToXYSh(index);
+                            short[] XYShB = indToXYSh(oldIndex);
+                            if((XYShA[0] != XYShB[0])&&(XYShA[1] != XYShB[1])){
+                                System.out.println("**************got here**************");
+                                String ind1 = XYShA[0]+"_"+XYShB[1];
+                                String ind2 = XYShB[1]+"_"+XYShB[0];
+                                int[] minmaxXY1 = minmaxXY(ind1);
+                                int[] minmaxXY2 = minmaxXY(ind2);
+                                Point ll1 = new Point(minmaxXY1[0],minmaxXY1[0]);
+                                Point lr1 = new Point(minmaxXY1[1],minmaxXY1[0]);
+                                Point ul1 = new Point(minmaxXY1[0],minmaxXY1[1]);
+                                Point ur1 = new Point(minmaxXY1[1],minmaxXY1[1]);
+                                Point ll2 = new Point(minmaxXY2[0],minmaxXY2[0]);
+                                Point lr2 = new Point(minmaxXY2[1],minmaxXY2[0]);
+                                Point ul2 = new Point(minmaxXY2[0],minmaxXY2[1]);
+                                Point ur2 = new Point(minmaxXY2[1],minmaxXY2[1]);
+                                Segment upper1 = new Segment(ul1,ur1);
+                                Segment lower1 = new Segment(ll1,lr1);
+                                Segment upper2 = new Segment(ul2,ur2);
+                                Segment lower2 = new Segment(ll2,lr2);
+                                Segment PoldP = new Segment(p,oldP);
+                                if(PoldP.intersects(upper1)||PoldP.intersects(lower1)){
+                                    this.insertMiniPoly(polyid,ind1,runningPG);
+                                }
+                                else if (PoldP.intersects(upper2)||PoldP.intersects(lower2)){
+                                    this.insertMiniPoly(polyid,ind2,runningPG);
+                                }else{System.out.println("call: 'Houston, we've got a Problem!'");}
+                                System.out.println("comin' out of special case! - did I perform well?"
+                            }
+                        }
+                        else{
+                            runningPG.addAll(startSpaghetti);
+                            this.insertMiniPoly(polyid,oldIndex,runningPG);
+                            runningPG = new PointGroup();
+                            startSpaghetti = new PointGroup();
+                            startSpaghetti.add(p);
+                            STATUS="startSpaghetti";
+                        }
+                    }
+                    else {System.out.println("Attention, unknown STATUS: "+STATUS);}
+                }
+            }
+            int[] miXmaX = minmaxXY(spaghettiIndex);
+            
+            runningPG.addAll(startSpaghetti);
+            this.insertMiniPoly(polyid,spaghettiIndex,runningPG);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            System.err.println("There was a problem opening the file or parsing the polygon data");
+        }
+    }
+    
+    public static Grid testGrid (){
+        System.out.println("Hallo Welt");
+        Grid g = new Grid("../Data_raw/political_units_Cathair.txt", "../Data_raw/test_flickr_uk.csv");
+        
+        /*for (String key : g.cells.keySet()) {
+            g.cells.get(key).status();
+        }*/
+        return g;
+    }
+}

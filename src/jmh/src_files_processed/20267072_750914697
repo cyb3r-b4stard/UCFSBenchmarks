@@ -1,0 +1,286 @@
+/*
+ * ######### (#) #### ### ###### <####@##############.##>
+ * ### ###### ########.
+ *
+ * ############## ### ### ## ###### ### ###### #####, #### ## #######
+ * ############, ### ######### ######## #### ### ######### ##########
+ * ### ###:
+ * #. ############### ## ###### #### #### ###### ### ##### #########
+ *    ######, #### #### ## ########## ### ### ######### ##########.
+ * #. ############### ## ###### #### #### ######### ### ##### #########
+ *    ######, #### #### ## ########## ### ### ######### ########## ## ###
+ *    ############# ###/## ##### ######### ######## #### ### ############.
+ * #. ### #### ## ### ###### ### ### ## #### ## ####### ## ####### ########
+ *    ####### #### #### ######## ####### ######## ##### ####### ##########.
+ *
+ * #### ######## ## ######## ## ### ###### ``## ##'' ### ### ####### ##
+ * ####### ##########, #########, ### ### ####### ##, ### ####### ##########
+ * ## ############### ### ####### ### # ########## ####### ### ##########.
+ * ## ## ##### ##### ### ###### ## ###### ### ### ######, ########,
+ * ##########, #######, #########, ## ############# ####### (#########, ###
+ * ### ####### ##, ########### ## ########## ##### ## ########; #### ## ###,
+ * ####, ## #######; ## ######## ############) ####### ###### ### ## ###
+ * ###### ## #########, ####### ## ########, ###### #########, ## ####
+ * (######### ########## ## #########) ####### ## ### ### ### ## ### ### ##
+ * #### ########, #### ## ####### ## ### ########### ## #### ######.
+ */
+
+import java.awt.*;
+import javax.swing.*;
+import java.awt.event.*;
+import javax.swing.border.*;
+import java.text.*;
+import javax.swing.text.*;
+
+public class AttackOut extends JDialog
+{    
+    public AttackOut(GAME gamex,String gnamex)
+    {
+        super(gamex,ModalityType.APPLICATION_MODAL);
+        game = gamex;
+        gnamet = gnamex;
+        initComponents();
+        setVisible(true);
+    }
+
+    private void attackActionPerformed(ActionEvent e)
+    {
+        fightcalc = new Fight_Calc(game,this);
+        setVisible(false);
+    }
+
+    private void cancelActionPerformed(ActionEvent e)
+    {
+        setVisible(false);
+    }
+
+    private void initComponents() {
+        formattedTextField1 = new NumberFieldLimit(5);
+        label1 = new JLabel();
+        label2 = new JLabel();
+        button1 = new JButton();
+        button2 = new JButton();
+        label7 = new JLabel();
+        button5 = new JButton();
+        formattedTextField2 = new NumberFieldLimit(5);
+        label3 = new JLabel();
+        button6 = new JButton();
+        formattedTextField3 = new NumberFieldLimit(5);
+        label4 = new JLabel();
+        button7 = new JButton();
+        formattedTextField4 = new NumberFieldLimit(5);
+        label5 = new JLabel();
+        button8 = new JButton();
+        formattedTextField5 = new NumberFieldLimit(5);
+        label6 = new JLabel();
+        button9 = new JButton();
+
+        max = new String[9];
+        for(int i=0;i<9;i++)
+        {
+            max[i] = game.mysql.truppenData(game.name)[i];
+        }
+
+        setTitle("Spieler Angreifen");
+        setModal(true);
+        setResizable(false);
+        setBackground(Color.black);
+        setContentPane(new BackGroundPane("Daten/Backgrounds/Menu3.png",0));
+        setAlwaysOnTop(true);
+        Container contentPane = getContentPane();
+        contentPane.setLayout(null);
+        contentPane.add(formattedTextField1);
+        formattedTextField1.setBounds(235, 110, 90, 25);
+        formattedTextField1.setBorder(LineBorder.createGrayLineBorder());
+        setDefaultCloseOperation(1);
+        setLocationRelativeTo(game);
+        pl=max[6];
+        bl=max[7];
+        bel=max[8];
+
+        label1.setText("<html>Spieler Infos:<br>"+gnamet.split(" ")[0]+" "+gnamet.split(" ")[1]+"<br>"+gnamet.split(" ")[2]+" "+gnamet.split(" ")[3]+" "+gnamet.split(" ")[4]+" "+gnamet.split(" ")[5]+"</html>");
+        gname = gnamet.split(" ")[1];
+        label1.setFont(new Font("Trajan Pro", Font.BOLD, 15));
+        contentPane.add(label1);
+        label1.setBounds(100, 5, 170, 55);
+
+        label2.setText("Bürger("+bl+")");
+        if(bl.equals("1") || bl.equals("0")) label2.setIcon(iconChange("Daten/Einheiten/Klein/bürger1.png"));
+        else label2.setIcon(iconChange("Daten/Einheiten/Klein/bürger2.png"));
+        label2.setIconTextGap(0);
+        contentPane.add(label2);
+        label2.setBounds(240, 85, 75, 19);
+
+        button1.setText("Angreifen");
+        button1.setBorder(UIManager.getBorder("ToggleButton.border"));
+        button1.addActionListener(e -> attackActionPerformed(e));
+        button1.setFont(new Font("Trajan Pro", Font.BOLD, 12));
+        button1.setFocusPainted(false);
+        button1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        contentPane.add(button1);
+        button1.setForeground(Color.black);
+        button1.setBounds(305, 15, 115, 40);
+
+        button2.setText("Abbrechen");
+        button2.setBorder(UIManager.getBorder("ToggleButton.border"));
+        button2.addActionListener(e -> cancelActionPerformed(e));
+        button2.setFont(new Font("Trajan Pro", Font.BOLD, 12));
+        button2.setFocusPainted(false);
+        button2.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        contentPane.add(button2);
+        button2.setForeground(Color.black);
+        button2.setBounds(425, 15, 115, 40);
+
+        label7.setIcon(new ImageIcon("Daten/Icons/Game/MSG/o_attacks.png"));
+        contentPane.add(label7);
+        label7.setBounds(5, 5, 75, 65);
+
+        button5.setText("("+max[3]+")");
+        button5.addActionListener (new ActionListener () {public void actionPerformed(ActionEvent e) {formattedTextField1.setText(max[3]);}});
+        button5.setFont(new Font("Trajan Pro", Font.BOLD, 11));
+        button5.setFocusPainted(false);
+        button5.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        contentPane.add(button5);
+        button5.setBounds(240, 140, 75, 25);
+        contentPane.add(formattedTextField2);
+        formattedTextField2.setBorder(LineBorder.createGrayLineBorder());
+        formattedTextField2.setBounds(135, 110, 85, 25);
+
+        label3.setText("Schwert("+pl+")");
+        if(pl.equals("0")) label3.setIcon(iconChange("Daten/Einheiten/Klein/schwert1.png"));
+        else label3.setIcon(iconChange("Daten/Einheiten/Klein/schwert2.png"));
+        label3.setIconTextGap(0);
+        contentPane.add(label3);
+        label3.setBounds(135, 85, 85, 19);
+
+        button6.setText("("+max[2]+")");
+        button6.addActionListener (new ActionListener () {public void actionPerformed(ActionEvent e) {formattedTextField2.setText(max[2]);}});
+        button6.setFont(new Font("Trajan Pro", Font.BOLD, 11));
+        button6.setFocusPainted(false);
+        button6.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        contentPane.add(button6);
+        button6.setBounds(140, 140, 75, 25);
+        contentPane.add(formattedTextField3);
+        formattedTextField3.setBorder(LineBorder.createGrayLineBorder());
+        formattedTextField3.setBounds(35, 110, 85, 25);
+
+        label4.setText("Speer("+pl+")");
+        if(pl.equals("0")) label4.setIcon(iconChange("Daten/Einheiten/Klein/speer1.png"));
+        else label4.setIcon(iconChange("Daten/Einheiten/Klein/speer2.png"));
+        label4.setIconTextGap(0);
+        contentPane.add(label4);
+        label4.setBounds(40, 85, 75, 19);
+
+        button7.setText("("+max[1]+")");
+        button7.addActionListener (new ActionListener () {public void actionPerformed(ActionEvent e) {formattedTextField3.setText(max[1]);}});
+        button7.setFont(new Font("Trajan Pro", Font.BOLD, 11));
+        button7.setFocusPainted(false);
+        button7.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        contentPane.add(button7);
+        button7.setBounds(40, 140, 75, 25);
+        contentPane.add(formattedTextField4);
+        formattedTextField4.setBorder(LineBorder.createGrayLineBorder());
+        formattedTextField4.setBounds(335, 110, 85, 25);
+
+        label5.setText("Bogen("+pl+")");
+        if(pl.equals("0")) label5.setIcon(iconChange("Daten/Einheiten/Klein/bogen1.png"));
+        else label5.setIcon(iconChange("Daten/Einheiten/Klein/bogen2.png"));
+        label5.setIconTextGap(0);
+        contentPane.add(label5);
+        label5.setBounds(340, 85, 75, 19);
+
+        button8.setText("("+max[4]+")");
+        button8.addActionListener (new ActionListener () {public void actionPerformed(ActionEvent e) {formattedTextField4.setText(max[4]);}});
+        button8.setFont(new Font("Trajan Pro", Font.BOLD, 11));
+        button8.setFocusPainted(false);
+        button8.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        contentPane.add(button8);
+        button8.setBounds(340, 140, 75, 25);
+        contentPane.add(formattedTextField5);
+        formattedTextField5.setBorder(LineBorder.createGrayLineBorder());
+        formattedTextField5.setBounds(435, 110, 85, 25);
+
+        label6.setText("Belagerung("+bel+")");
+        if(bel.equals("1") || bel.equals("0")) label6.setIcon(iconChange("Daten/Einheiten/Klein/belagerung1.png"));
+        else label6.setIcon(iconChange("Daten/Einheiten/Klein/belagerung1.png"));
+        label6.setIconTextGap(0);
+        contentPane.add(label6);
+        label6.setBounds(425, 85, 105, 19);
+
+        button9.setText("("+max[5]+")");
+        button9.addActionListener (new ActionListener () {public void actionPerformed(ActionEvent e) {formattedTextField5.setText(max[5]);}});
+        button9.setFont(new Font("Trajan Pro", Font.BOLD, 11));
+        button9.setFocusPainted(false);
+        button9.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        contentPane.add(button9);
+        button9.setBounds(440, 140, 75, 25);
+
+        contentPane.setPreferredSize(new Dimension(550, 175));
+        pack();
+        setLocationRelativeTo(getOwner());
+    }
+
+    public ImageIcon iconChange(String imgl)
+    {
+        ImageIcon imageIcon = new ImageIcon(imgl);
+        Image image = imageIcon.getImage();
+        Image newimg = image.getScaledInstance(20, 20,  java.awt.Image.SCALE_SMOOTH);
+        imageIcon = new ImageIcon(newimg);
+        return imageIcon;
+    }
+
+    public NumberFieldLimit formattedTextField1;
+    private JLabel label1;
+    private JLabel label2;
+    private JButton button1;
+    private JButton button2;
+    private JLabel label7;
+    private JButton button5;
+    public NumberFieldLimit formattedTextField2;
+    private JLabel label3;
+    private JButton button6;
+    public NumberFieldLimit formattedTextField3;
+    private JLabel label4;
+    private JButton button7;
+    public NumberFieldLimit formattedTextField4;
+    private JLabel label5;
+    private JButton button8;
+    public NumberFieldLimit formattedTextField5;
+    private JLabel label6;
+    private JButton button9;
+    private GAME game;
+    private Fight_Calc fightcalc;
+    private String pl;
+    private String bl;
+    private String bel;
+    private String[] max;
+    public String gnamet;
+    public String gname;
+
+    public class NumberFieldLimit extends JTextField {
+        private int limit;
+
+        public NumberFieldLimit(int limit) {
+            super();
+            this.limit = limit;
+        }
+
+        @Override
+        protected Document createDefaultModel() {
+            return new NumberLimitDocument();
+        }
+
+        public class NumberLimitDocument extends PlainDocument {
+            @Override
+            public void insertString( int offset, String  str, AttributeSet attr ) throws BadLocationException {
+                if (str == null) return;
+                str = str.replaceAll("[^" + allowedString + "]", "");
+                if ((getLength() + str.length()) <= limit) {
+                    super.insertString(offset, str, attr);
+                }
+            }       
+        }
+
+        private final String allowedString = "0123456789";
+    }
+}

@@ -1,0 +1,201 @@
+/**
+ *#### ######### ## ###### ### ######### ### #####
+ */
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.filechooser.*;
+import java.io.*;
+import java.nio.*;
+import java.util.Arrays;
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import javax.swing.border.Border;
+import javax.swing.*;
+
+public class GUI_project extends JFrame {
+    public static int getThkArraySize(double [] rawArray)
+    {
+        int thkPoints = (int)(1 + rawArray[6]);
+        System.out.println("thkPoints  = " + thkPoints);
+        int innerRingNo = (int)(rawArray[4]);
+        System.out.println("Inner No = " + innerRingNo);
+        int i = 1;
+        int j = 6;
+
+        while (i < innerRingNo ) {
+            if (rawArray[j] == 1111111) {
+                thkPoints = thkPoints + (int)(rawArray[j + 2]);
+                System.out.print("count = " + j + ", ");
+                System.out.println("Hit = " + rawArray[j + 2]);
+                i++;
+            }
+            j++;
+        }
+
+        while (rawArray[j] != 1111111) {
+            j++;
+        }
+        j++;
+        thkPoints = thkPoints + (int)rawArray[j] * 400;
+
+        System.out.println("outer No = " + rawArray[j]);
+        System.out.println("i cont = " + i);
+        System.out.println("thkPoints = " + thkPoints);
+        return thkPoints;
+    }
+
+    public static float vax2ieee(int s)
+    {
+        int b0 = (s >>  0) & 0xff;      
+        int b1 = (s >>  8) & 0xff;      
+        int b2 = (s >> 16) & 0xff;      
+        int b3 = (s >> 24) & 0xff;    
+        b1--;
+        int ss = b2 <<  0 | b3 <<  8 | b0 << 16 | b1 << 24 ;
+        float f = Float.intBitsToFloat (ss);
+        return f;
+    }
+
+    public static double [] getRawData(double rawArray[], String fName) throws Exception
+    {
+        File fn = new File(fName);
+        FileInputStream fis = new FileInputStream(fn);
+        BufferedInputStream bis = new BufferedInputStream(fis);
+
+        byte[] b = new byte[4];
+        int r;
+        int p = 0;
+        String f = "";        
+        try { f = offTheFileExtension(fName); 
+        } catch (Exception e) { }
+        System.out.println("Name= " + f);
+        PrintWriter fout = new PrintWriter(new BufferedWriter
+                (new FileWriter(f+".txt")));
+
+        while ((r = bis.read(b, 0, 4)) >= 0) 
+        {
+            if (r == 0)
+                continue;
+            ByteBuffer bb = ByteBuffer.wrap(b, 0, 4);
+            bb.order(ByteOrder.LITTLE_ENDIAN);
+            int s = bb.getInt();
+            rawArray[p] = vax2ieee(s);
+            if (rawArray[p] >= 100000.00 & rawArray[p] <= 200000.00) {
+                rawArray[p] = Float.NaN;
+            }
+            fout.printf("%6d %14.6f%n", p, rawArray[p]);
+            p++;
+        }
+        fout.close();
+        return rawArray;
+    }
+
+    public static int getDataArraySize(String f)
+    {
+        File ff = new File(f);
+        System.out.println("File Name = "+f);
+        int s = (int) ff.length()/4;
+        System.out.println("File Length = "+ff.length());
+        System.out.println("Array Size = "+s);
+        return s;
+    }
+
+    public static String offTheFileExtension(String s) 
+    throws Exception {
+        byte xx [] = s.getBytes("UTF-8");
+        int l = s.length();
+        byte fn [] = Arrays.copyOfRange(xx, 0, l-4);
+        String r = new String(fn, "UTF-8");
+        return r;
+    }
+
+    private JMenuBar menuBar;
+    private JButton button1;
+    private JPanel panel1;
+
+    public GUI_project(){
+
+        setTitle("GUI_project");
+        setSize(500,400);
+        generateMenu();
+        setJMenuBar(menuBar);
+
+        JPanel contentPane = new JPanel(null);
+        contentPane.setPreferredSize(new Dimension(500,400));
+        contentPane.setBackground(new Color(192,192,192));
+
+        button1 = new JButton();
+        button1.setBounds(5,5,90,35);
+        button1.setBackground(new Color(214,217,223));
+        button1.setForeground(new Color(0,0,0));
+        button1.setEnabled(true);
+        button1.setFont(new Font("sansserif",0,12));
+        button1.setText("File Select");
+        button1.setVisible(true);
+        button1.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    file(evt);
+                }
+            });
+
+        panel1 = new JPanel(null);
+        panel1.setBorder(BorderFactory.createEtchedBorder(1));
+        panel1.setBounds(5,5,494,395);
+        panel1.setBackground(new Color(214,217,223));
+        panel1.setForeground(new Color(0,0,0));
+        panel1.setEnabled(true);
+        panel1.setFont(new Font("sansserif",0,12));
+        panel1.setVisible(true);
+
+        panel1.add(button1);
+        contentPane.add(panel1);
+
+        getContentPane().add(contentPane);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        pack();
+        setVisible(true);
+    }
+
+    private void file (ActionEvent evt) {
+        String fName = "";
+        String ofn = "";
+        JFileChooser fc = new JFileChooser();
+        fc.setCurrentDirectory(new fileSelectionMode[FILES_AND_DIRECTORIES]));
+        fc.setFileFilter(new FileNameExtensionFilter("THK", "thk", "*"));
+        if(fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) 
+        {  
+            fName = fc.getSelectedFile().getName();
+        }
+        int dSize = getDataArraySize(fName);            
+        double [] rawArray = new double[dSize];        
+        try { String Name = offTheFileExtension(fName); 
+        } catch (Exception e) { }
+        try { rawArray = getRawData(rawArray, fName);
+        } catch (Exception e) { }
+        int thkSize = getThkArraySize(rawArray);
+    }
+
+    public void generateMenu(){
+        menuBar = new JMenuBar();
+
+    }
+
+
+    public static void main(String[] args){
+        System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    new GUI_project();
+                }
+            });
+    }
+
+}

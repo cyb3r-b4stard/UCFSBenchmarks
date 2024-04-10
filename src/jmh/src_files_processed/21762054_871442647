@@ -1,0 +1,156 @@
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.lang.*;
+import java.lang.String.*;
+
+/**
+ * ### ###### #### # ###### ## ########
+ * 
+ * @###### ###### ####### 
+ * @####### #.# #########
+ * 
+ * ####: ###### ### ######## ( #### ## ### ###### ## ####### 
+ *  ## ###### ####### #### # ##### ## ##### #### # ####### ####.
+ */
+public class Clinic
+{
+    private ArrayList<Patient> patients;
+
+    /**
+     * Constructor for objects of class Clinic
+     */
+    public Clinic()
+    {
+       patients = new ArrayList<Patient>(); 
+    }
+
+    /**
+     * create and populate a Clinic from List of String data. 
+     */
+    public Clinic(ArrayList<String> data) throws ClinicException
+    {
+        patients = new ArrayList<Patient>();
+        for (String s : data){
+            if (s.startsWith("P")) {
+                patients.add(new Patient(s) );
+            }
+            else {
+                if ((patients.size() > 0)) {
+                    patients.get(patients.size()-1).createChild(s);
+                }
+            }
+        }
+                
+    }
+ 
+    /**
+     * Add a patient to the clinics list of patients. 
+     *
+     * @param  a patient to be added to the list
+     */
+    public void addPatient(Patient aPatient)
+    {
+        patients.add(aPatient);   
+    }
+
+    /**
+     * Get a pointer to a patient from the clinics list of patients.
+     *
+     * @param  index the index number of the patient you wnat.
+     * @return a pointer to the patient.
+     */
+    public Patient getPatient(int index)
+    {
+        if (index >= 0 && index < patients.size()) {
+            return patients.get(index);
+        } 
+        else {
+            return null;
+        }
+    }
+
+    /**
+     * Get the number of patients the clinc has
+     *
+     * @return the number of patients.
+     */
+    public int getNumberOfPatients()
+    {
+         return patients.size();
+    }
+
+    /**
+     * Remove the patient given from the clinic.
+     *
+     * @param  index the index number of the patient to be deleted.
+     */
+    public void removePatient(Patient aPatient)
+    {
+       patients.remove(aPatient);
+    }
+    
+        
+    /**
+     * get the pointer to the full list of patients
+     *
+     * @return an array of patients the clinic has
+     */
+    public ArrayList<Patient> getAllPatients()
+    {
+        return patients;
+    }
+
+    /**
+     * Find a Patient with a medicare number or return null;
+     *
+     * @param  aMedNumber Medicare number of patient to find.
+     * @return the patient found or null.
+     */
+    public Patient findPatient(String medNumber)
+    {
+        Patient result = null;  
+        for (Patient p : patients) {
+            if (p.getMedicareNumber().equals(medNumber) ) {
+                return p;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Save the Clinic attributes as array of string objects.
+     * @param data inmemory string array of clinic data (i.e. patients)
+     */
+    public void saveClinic(ArrayList<String> data)
+    {  
+        if (patients != null) {
+            for (Patient p : patients) {
+               p.savePatient(data);
+            }
+        }
+    }
+    
+     /**
+     *  Removes all patients who have not had a visit in the last 12 months. 
+     *  (You must use an iterator) 
+     */
+    public void removeOldPatients()
+    {
+        boolean found; 
+        Iterator<Patient> it = myClinic.getAllPatients().iterator();
+        while(it.hasNext()) {
+            Patient p = it.next();
+            found = false; 
+            for (Visit v : p.getAllVisits()) {
+                
+                if (DAYS.between(LocalDate.now(), v.get
+                LocalDate.now() - v.getDate();
+            }
+        }
+        
+    }    
+    
+    
+    
+    
+} 

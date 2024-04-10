@@ -1,0 +1,196 @@
+package eit;
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.border.*;
+
+import java.util.ArrayList;
+
+import java.io.*;
+
+/**
+ * ## ## ######## #######
+ * 
+ * @###### ##### ###### #########
+ * @####### #.#
+ */
+public class GUI implements ActionListener
+{
+    private JFrame frame;
+    private JButton exit;
+    private JButton addExpence;
+    private JComboBox companiesBox;
+    private JComboBox projectsBox;
+    private JTextArea companyInfo;
+    private JTextArea projectInfo;
+     
+    /**
+     * Constructor for objects of class GUI
+     */
+    public GUI()
+    {                
+        makeFrame();
+    }   
+    
+    private String getCompanyInfo(Company company)
+    {
+        return company.getInfo();
+    }
+    
+    private String getProjectInfo(Project project)
+    {
+        return project.getInfo();
+    }
+    
+    private void refresh()
+    {
+        System.exit(0);
+        makeFrame();
+    }
+    
+    private void makeExpenseWindow()
+    {
+        ExpenseWindow expense = new ExpenseWindow();
+    }   
+    
+    private void makeProjectRegisterWindow()
+    {
+        ProjectWindow project = new ProjectWindow();
+    }
+    
+    private void makeCompanyRegisterWindow()    
+    {
+        CompanyWindow company = new CompanyWindow();
+    }
+    
+    private void quit()
+    {
+        System.exit(0);
+    }
+    
+    public void actionPerformed(ActionEvent evt)
+    {
+        
+    }
+    
+    private void setListOrdering(String ordering)
+    {
+        
+    }
+    
+    private void makeFrame()
+    {
+        frame = new JFrame("Administración");
+        JPanel contentPane = (JPanel)frame.getContentPane();
+        
+        makeMenuBar(frame);
+        
+        contentPane.setLayout(new BorderLayout(6,6));
+        
+        JPanel westPanel = new JPanel();
+        {
+            westPanel.setLayout(new FlowLayout());            
+            
+            JPanel filtersPanel = new JPanel();
+            filtersPanel.setLayout(new GridLayout(2,1));
+            westPanel.add(filtersPanel);
+            
+            companiesBox = new JComboBox();
+            filtersPanel.add(companiesBox);
+            
+            projectsBox = new JComboBox();
+            filtersPanel.add(projectsBox);
+        }
+        contentPane.add(westPanel, BorderLayout.WEST);
+        
+        
+        JPanel south = new JPanel();
+        {
+            south.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        
+            exit = new JButton("Salir");
+            exit.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e) {quit();}
+                });
+            south.add(exit);
+        }
+        contentPane.add(south, BorderLayout.SOUTH);
+        
+       
+        JPanel displaysPanel = new JPanel();
+        {
+            displaysPanel.setLayout(new BorderLayout(6,6));
+        
+            JPanel companyPanel = new JPanel();
+            companyPanel.setLayout(new FlowLayout());
+        
+            companyInfo = new JTextArea("compañía", 10, 50);
+            companyInfo.setEditable(false);
+            companyPanel.add(companyInfo);
+            displaysPanel.add(companyPanel, BorderLayout.NORTH);   
+        
+            JPanel projectPanel = new JPanel();
+            projectPanel.setLayout(new FlowLayout());
+        
+            projectInfo = new JTextArea("proyecto", 20, 50);
+            projectInfo.setEditable(false);
+            projectPanel.add(projectInfo);
+            displaysPanel.add(projectPanel, BorderLayout.CENTER);
+        
+            JPanel toolsPanel = new JPanel();
+            toolsPanel.setLayout(new FlowLayout());
+            displaysPanel.add(toolsPanel, BorderLayout.SOUTH);        
+        
+            addExpence = new JButton("+ Gasto");
+            addExpence.addActionListener(new ActionListener(){
+                    public void actionPerfomed(ActionEvent e) {makeExpenseWindow()}
+                });
+                
+            toolsPanel.add(addExpence);
+        }            
+        contentPane.add(displaysPanel, BorderLayout.CENTER);
+        
+        
+        frame.pack();
+        
+  
+        frame.setVisible(true);
+    }
+    
+        private void makeMenuBar(JFrame frame)
+    {
+        JMenuBar menubar = new JMenuBar();
+        frame.setJMenuBar(menubar);
+        
+        JMenu project = new JMenu("Proyecto");
+        menubar.add(project);
+        
+        JMenuItem newProject = new JMenuItem("Proyecto nuevo");
+        newProject.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent e) {makeProjectRegisterWindow();}
+            });
+        project.add(newProject);
+        
+        JMenu company = new JMenu("Empresa");
+        menubar.add(company);
+        
+        JMenuItem newCompany = new JMenuItem("Empresa nueva");
+        newCompany.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent e) {makeCompanyRegisterWindow();}
+            });
+        company.add(newCompany);   
+        
+        JMenu expense = new JMenu("Gastos");
+        menubar.add(expense);
+        
+        JMenuItem newExpense = new JMenuItem("Gasto nuevo");
+        newExpense.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent e) {makeExpenseWindow();}
+            });
+        expense.add(newExpense);
+        
+    }
+    
+}

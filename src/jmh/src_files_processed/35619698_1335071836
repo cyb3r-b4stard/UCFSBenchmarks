@@ -1,0 +1,417 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+public class MainDriver
+{
+    private static Town t1;
+    private static Town t2;
+    private static Town t3;
+    
+    private static Person p1;
+    private static Person p2;
+    
+    private static ArrayList<House> houses;
+   
+    public static void main(String[] args)
+    {
+        t1 = new Town("Krugersdorp", 1739);
+        t2 = new Town("Sandton", 1653);
+        t3 = new Town("Germiston", 1283);
+        
+        p1 = new Person("Ephraim", "0726215140");
+        p2 = new Person("Deon", "0749540584");
+        
+        House h1 = new House("Wolkberg", t1, p1);
+        House h2 = new House("Turner", t2, p2);
+        House h3 = new House("Burger", t3, p1);
+        House h4 = new House("Amajuba", t1, p2);
+        House h5 = new House("Gregor", t2, p1);
+        House h6 = new House("Venter", t3, p2);
+        
+        houses = new ArrayList<House>();
+        houses.add(h1);
+        houses.add(h2);
+        houses.add(h3);
+        
+        
+        boolean process = true;
+        while (process)
+        {
+            System.out.println("--------------------------------------------------");
+            System.out.println("Select an option below by typing the option number: ");
+            System.out.println("1. Create House");
+            System.out.println("2. Create Lease");
+            System.out.println("3. Process Rent");
+            System.out.println("4. Report on Property");
+            System.out.println("To leave type: 'exit'");
+            Scanner scan = new Scanner(System.in);
+            String input = scan.nextLine();
+            input = input.toLowerCase();
+            
+            if (input.length() != 0)
+            {
+                switch (input)
+                {
+                    case "1":       createHouse();
+                                    break;
+                    case "2":       createLease();
+                                    break;
+                    case "3":       if (processRent())
+                                     System.out.println("Payment was successful");
+                                    break;
+                    case "4":       reportOnProperty();
+                                    break;
+                    case "exit":    process = false;
+                                    System.out.println("\n" + "exiting...");
+                                    System.exit(0);
+                                    break;
+                    default:        process = true;
+                }
+            }
+            else
+                System.out.println("Pick an option from above!");
+        }
+    }
+    
+    public static void createHouse()
+    {
+        boolean process = true;
+        Scanner scan = new Scanner(System.in);
+        Person owner = null;
+        Town town = null;
+        String street = "";
+        
+        while (process)
+        {
+            System.out.println("--------------------------------------------------");
+            System.out.println("Pick a landlord below by selecting their number: ");
+            System.out.println("1. " + p1.getName());
+            System.out.println("2. " + p2.getName());
+            String input = scan.nextLine();
+            
+            if (input.length() != 0)
+            {
+                switch (input)
+                {
+                    case "1": owner = p1;
+                              process = false;
+                              break;
+                    case "2": owner = p2;
+                              process = false;
+                              break;
+                    default:  System.out.println("Pick an option from above!");
+                }
+            }
+            else
+                System.out.println("Pick an option from above!");
+        }
+        
+        process = true;
+        while (process)
+        {
+            System.out.println("--------------------------------------------------");
+            System.out.println("Pick a Town below by selecting its number: ");
+            System.out.println("1. " + t1.getName());
+            System.out.println("2. " + t2.getName());
+            System.out.println("3. " + t3.getName());
+            String input = scan.nextLine();
+            
+            switch (input)
+            {
+                case "1":   town = t1;
+                            process = false;
+                            break;
+                case "2":   town = t2;
+                            process = false;
+                            break;
+                case "3":   town = t3;
+                            process = false;
+                            break;
+                default:    System.out.println("Pick an option from above!");
+            }
+        }
+        
+        process = true;
+        while (process)
+        {
+            System.out.println("--------------------------------------------------");
+            System.out.println("Enter a custom street name below: ");
+            String input = scan.nextLine();
+            
+            if (input.length() > 0)
+            {
+                street = input;
+                process = false;
+            }
+            else 
+                System.out.println("Please enter a street name");
+        }
+        
+        if (owner != null && town != null && street.length() != 0)
+        {
+            System.out.println("--------------------------------------------------");
+            House house = new House(street, town, owner);
+            System.out.println("House successfully created");
+            System.out.println("--------------------------------------------------");
+            System.out.println("Created house details: ");
+            String output = "";
+            output += "The street address of the house is: " + house.getStreet() + " street\n";
+            output += house + "\n";
+            output += "The name of the owner of the house is: " + house.getOwner().getName() + "\n";
+            output += "The property Code of the house is: " + house.getPropertyCode() + "\n";
+            if (house.leaseMade && house.copyP.getNumberOfWeeksForRent() > 0)
+            {
+                output += "The name of the tenant of the house is: " + house.getTenant().getName() + "\n";
+                output += "The rent per week for the tenant is: R" + house.copyP.getWeeklyRent() + "\n";
+                output += "Remaining weeks until lease expires is: " + house.copyP.getNumberOfWeeksForRent() + " week(s)" + "\n";
+            }
+            System.out.println(output);
+            houses.add(house);
+        }
+        else 
+            System.out.println("House creation failed");
+    }
+    
+    public static void createLease()
+    {
+        boolean process = true;
+        Scanner scan = new Scanner(System.in);
+        House propertyOfChoice = null;
+        Person tenant = null;
+        String name = "";
+        String phoneNumber = "";
+        int rent = 0;
+        int weeks = 0;
+       
+        while (process)
+        {
+           System.out.println("--------------------------------------------------");
+           System.out.println("Select the house below that you would like to be leased: ");
+           System.out.println("To select a house type the house number \n e.g If '1' type '1'");
+           for(int i = 0; i < houses.size(); i++)
+           {
+               String output = "";
+               output += i + ". ";
+               output += "House at " + houses.get(i).getStreet() + " street " + "\n";
+               
+               System.out.println(output);
+           }
+           String input = scan.nextLine();
+           if (input.length() != 0)
+           {
+               Integer i = Integer.parseInt(input);            
+               if (i < houses.size())
+               {
+                   propertyOfChoice = houses.get(i);
+                   process = false;
+               }
+               else
+                    System.out.println("Pick an option from above please");
+           }
+           else
+               System.out.println("Pick an option from above!");
+        }
+        
+        process = true;
+        while (process)
+        {
+            System.out.println("--------------------------------------------------");
+            System.out.println("Please enter tenant details below: ");
+            
+            do
+            {
+                System.out.println("Tenant name?");
+                name = scan.nextLine();
+                if (name.length() == 0)
+                {
+                    name = "";
+                    System.out.println("Please enter a name");
+                }
+            } while (name.length() == 0);
+            
+            do
+            {
+                System.out.println("Tenant phone number?");
+                phoneNumber = scan.nextLine();
+                if (phoneNumber.length() != 10)
+                {
+                    phoneNumber = "";
+                    System.out.println("Please enter a proper length number");
+                }
+            } while (phoneNumber.length() != 10);
+            
+            do
+            {
+                System.out.println("How much rent will the tenant pay per week in rands?");
+                System.out.print("R");
+                rent = scan.nextInt();
+                if (rent <= 0)
+                    System.out.println("Please enter an amount above 0");
+            } while (rent <= 0);
+            
+            do
+            {
+                System.out.println("How many weeks is the lease for?");
+                weeks = scan.nextInt();
+                if (weeks <= 0)
+                    System.out.println("Please enter a number of weeks above 0");
+            } while (weeks <= 0);
+            
+            if (name.length() != 0 && phoneNumber.length() != 0)
+            {
+                tenant = new Person(name, phoneNumber);
+                System.out.println("Tenant successfully made");
+            }
+            else 
+                System.out.println("Tenant creation failed");
+            
+            if (tenant != null && rent > 0 && weeks > 0)
+            {
+                propertyOfChoice.establishLease(tenant, rent, weeks);
+                System.out.println("Tentant details: " + propertyOfChoice.getTenant());
+                process = false;
+            }
+            else
+                System.out.println("Lease establishment failed");
+        }
+    }
+    
+    public static boolean processRent()
+    {
+        boolean process = true;
+        String answer = "";
+        boolean success = true;
+        Scanner scan = new Scanner(System.in);
+        String chosenProperty = "";
+        int noLease = 0;
+        
+        for (House h: houses)
+        {
+            if (h.leaseMade != true)
+            {
+                noLease++
+            }
+        }
+        if (noLease == houses.size())
+        {
+            process = false;
+            System.out.println("No house has a lease, first create a lease");
+            success = false;
+        }
+        
+        while (process)
+        {
+                System.out.println("--------------------------------------------------");
+                System.out.println("Which house would you like to pay the lease for?");
+                System.out.println("To select a house type the house number \n e.g If '1' type '1'");
+                
+                if (h1.leaseMade)
+                    System.out.println("1. House at " + h1.getStreet() + " street " + h1.getTown()); 
+
+                if (h2.leaseMade)
+                    System.out.println("2. House at " + h1.getStreet() + " street " + h2.getTown()); 
+
+                if (h3.leaseMade)
+                    System.out.println("3. House at " + h1.getStreet() + " street " + h3.getTown()); 
+                
+                chosenProperty = scan.nextLine();
+                
+                if (chosenProperty.equals("1"))
+                {
+                    if (h1.payRent())
+                        process = false;
+                    else
+                        success = false;
+                }
+                else if (chosenProperty.equals("2"))
+                {
+                    if (h2.payRent())
+                        process = false;
+                    else
+                        success = false;
+                }
+                else if (chosenProperty.equals("3"))
+                {
+                    if (h3.payRent())
+                        process = false;
+                    else
+                        success = false;
+                }
+                else
+                    System.out.println("Please pick an above option");
+        }
+        if (!success)
+        {
+            System.out.println("Payment was unsuccessful or rent due is already paid");
+            process = false;
+        }
+        return success;
+    }
+    
+    public static void reportOnProperty()
+    {
+        boolean process = true;
+        while (process)
+        {
+            System.out.println("--------------------------------------------------");
+            System.out.println("Which house would you like a report on?");
+            System.out.println("To select a house type the house number \n e.g If '1' type '1'");
+            System.out.println("1. House at " + h1.getStreet() + " street " + h1.getTown()); 
+            System.out.println("2. House at " + h2.getStreet() + " street " + h2.getTown());
+            System.out.println("3. House at " + h3.getStreet() + " street " + h3.getTown());
+            Scanner scan = new Scanner(System.in);
+            String chosen = scan.nextLine();
+            String output = "";
+            
+            if (chosen.equals("1"))
+            {
+                output += "--------------------------------------------------\n";
+                output += "The street address of the house is: " + h1.getStreet() + " street\n";
+                output += h1.getTown() + "\n";
+                output += "The name of the owner of the house is: " + h1.getOwner().getName() + "\n";
+                output += "The property Code of the house is: " + h1.getPropertyCode() + "\n";
+                if (h1.leaseMade && h3.copyP.getNumberOfWeeksForRent() > 0)
+                {
+                    output += "The name of the tenant of the house is: " + h1.getTenant().getName() + "\n";
+                    output += "The rent per week for the tenant is: R" + h1.copyP.getWeeklyRent() + "\n";
+                    output += "Remaining weeks until lease expires is: " + h1.copyP.getNumberOfWeeksForRent() + " week(s)" + "\n";
+                }
+                System.out.println(output);
+                process = false;
+            }
+            else if (chosen.equals("2"))
+            {
+                output += "--------------------------------------------------\n";
+                output += "The street address of the house is: " + h2.getStreet() + " street\n";
+                output += h2.getTown() + "\n";
+                output += "The name of the owner of the house is: " + h2.getOwner().getName() + "\n";
+                output += "The property Code of the house is: " + h2.getPropertyCode() + "\n";
+                if (h2.leaseMade && h2.copyP.getNumberOfWeeksForRent() > 0)
+                {
+                    output += "The name of the tenant of the house is: " + h2.getTenant().getName() + "\n";
+                    output += "The rent per week for the tenant is: R" + h2.copyP.getWeeklyRent() + "\n";
+                    output += "Remaining weeks until lease expires is: " + h2.copyP.getNumberOfWeeksForRent() + " week(s)" + "\n";
+                }
+                System.out.println(output);
+                process = false;
+            }
+            else if (chosen.equals("3"))
+            {
+                output += "--------------------------------------------------\n";
+                output += "The street address of the house is: " + h3.getStreet() + " street\n";
+                output += h3.getTown() + "\n";
+                output += "The name of the owner of the house is: " + h3.getOwner().getName() + "\n";
+                output += "The property Code of the house is: " + h3.getPropertyCode() + "\n";
+                if (h3.leaseMade && h3.copyP.getNumberOfWeeksForRent() > 0)
+                {
+                    output += "The name of the tenant of the house is: " + h3.getTenant().getName() + "\n";
+                    output += "The rent per week for the tenant is: R" + h3.copyP.getWeeklyRent() + "\n";
+                    output += "Remaining weeks until lease expires is: " + h3.copyP.getNumberOfWeeksForRent() + " week(s)" + "\n";
+                }
+                System.out.println(output);
+                process = false;
+            }
+            else
+                System.out.println("Please pick one of the above!");   
+        }
+    }
+}

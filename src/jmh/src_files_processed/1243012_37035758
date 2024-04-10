@@ -1,0 +1,151 @@
+import java.util.ArrayList;
+import java.text.*;
+
+public class StockHoldingsP1
+{
+    private ArrayList<Stock> stocks;
+    private ArrayList<Agent> agents;
+
+    /**
+     * Set up the StockHoldings recording and selling system.  This means set up the ArrayList for stocks. 
+     */
+    public StockHoldingsP1() 
+    {
+        stocks = new ArrayList<Stock>();
+        readStockData();
+        agents = new ArrayList<Agent>();
+        readAgentData();
+    }
+
+    /**
+     * Read Stock info from file, put into ArrayList.
+     */
+    private void readStockData() 
+    {
+        ReadFile reader;
+
+        reader = new ReadFile("StockData.txt");
+        reader.readInputLine();
+        reader.setSeparator(",");
+        while(! reader.eof())   
+        {
+            int stockID = reader.getIntField(1);
+            String company = reader.getStringField(2);
+            Double price = reader.getDoubleField(3);
+            int numberOfSharesOwned = reader.getIntField(4);
+            Double latestDividend = reader.getDoubleField(5);
+            int agent = reader.getIntField(6);
+            Stock thisStock = new Stock(stockID, company, price, numberOfSharesOwned, latestDividend, agent);
+            stocks.add(thisStock);
+
+            reader.readInputLine();
+        }
+
+    }
+
+    /**
+     * Read Stock info from file, put into ArrayList.
+     */
+    private void readAgentData() 
+    {
+        ReadFile reader2;
+
+        reader2 = new ReadFile("AgentData.txt");
+        reader2.readInputLine();
+        reader2.setSeparator(",");
+        while(! reader2.eof())   
+        {
+            int agentID = reader2.getIntField(1);
+            String name = reader2.getStringField(2);
+            String phone = reader2.getStringField(3);
+            int numberOfAccounts = reader2.getIntField(4);
+
+            Agent thisAgent = new Agent(agentID, name, phone, numberOfAccounts);
+            agents.add(thisAgent);
+
+            reader2.readInputLine();
+        }
+
+    }
+
+    /**
+     * List all stocks in the system with a while loop
+     */
+
+    public void listAllStocksWithSharesOwned()
+    {
+        System.out.println("Listing Stocks with while()");
+        System.out.println();
+        System.out.println("    StockID         Company          Price   #SharesOwned   LatestDividend  Agent");
+        int index = 0;
+        while(index < stocks.size())
+        {
+            Stock thisStock = stocks.get(index);
+
+            System.out.println("      " + thisStock.getStockID() + "       " + 
+                thisStock.getCompany() + "  " + thisStock.getPrice() + "    \t"  + 
+                thisStock.getNumberOfSharesOwned() + "        \t" + 
+                thisStock.getLatestDividend() + "   \t      " + 
+                thisStock.getAgent());
+
+            index ++;
+        }
+        System.out.println();
+    }
+
+    public void listAllAgentInfo()
+    {
+        System.out.println("Listing of Agent Information()");
+        System.out.println();
+        System.out.println("    AgentID         Name          Number of Acounts Handled");
+        int index = 0;
+        while(index < agents.size())
+        {
+            Agent thisAgent = agents.get(index);
+
+            System.out.println("      " + thisAgent.getAgentID() + "       " + 
+                thisAgent.getName() + "  " + thisAgent.getNumberOfAccounts());
+
+            index ++;
+        }
+        System.out.println();
+    }
+
+    public void sellStock(int pStockID, int pNumberOfShares)
+    {
+        int index = 0;
+        Stock targetStock = null;
+
+        while(index < stocks.size())
+        {
+            Stock thisStock = stocks.get(index);
+            if(thisStock.getStockID() == pStockID)
+            {
+                targetStock = thisStock;
+
+            }
+            index++;
+        }
+        if(targetStock = null;)
+        {
+            System.out.println("Stock not in arraylist" + pStockID);
+            return;
+        }
+        if(targetStock.getNumberOfSharesOwned() > pNumberOfShares)
+        {
+            targetStock.updateNumberOfSharesOwned(targetStock.getNumberOfSharesOwned() - pNumberOfShares);
+            System.out.println("Number of shares owned of: " + targetStock.getCompany()+ " is: " + targetStock.getNumberOfSharesOwned());
+
+        }
+        else
+        {
+            System.out.println("Not enough shares to sell: " + pNumberOfShares + "amount");
+        }
+    }
+
+    
+    
+    
+    
+    
+}

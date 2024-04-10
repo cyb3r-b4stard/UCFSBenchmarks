@@ -1,0 +1,314 @@
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.*;
+import javax.swing.*;
+import javax.swing.event.*;
+public class StopTheBus_LOGIK
+{
+    public StopTheBus_GUI gui = new StopTheBus_GUI("StopTheBus");
+    public String status = "pause";
+    private Karte[] stapel, hand1, hand2, hand3, hand4, ablageStack, behalten;
+    public int zugVonSpieler = 0, runde = 0;;
+
+    public StopTheBus_LOGIK()
+    {
+        stapel = new Karte[53];
+        hand1 = new Karte[4];
+        hand2 = new Karte[4];
+        hand3 = new Karte[4];
+        hand4 = new Karte[4];
+        behalten = new Karte[3];
+        ablageStack = new Karte[52];
+        gui.jButton_bus1.setEnabled(false);
+        kartenEinfuegen();
+        spielen();
+    }
+
+    public void spielen(){
+        kartenMischen();
+        while(!gui.isStart()){
+
+        }
+        kartenAusteilen();
+        waehlenWerBeginnt();
+
+    }
+
+    public void kartenEinfuegen(){
+        stapel[0] = new Karte("Herz","A",  11, "pictures/herzass.jpg");
+        stapel[1] = new Karte("Herz", "2", 2, "pictures/herz2.jpg");
+        stapel[2] = new Karte("Herz", "3", 3, "pictures/herz3.jpg");
+        stapel[3] = new Karte("Herz", "4", 4, "pictures/herz4.jpg");
+        stapel[4] = new Karte("Herz", "5", 5, "pictures/herz5.jpg");
+        stapel[5] = new Karte("Herz", "6", 6, "pictures/herz6.jpg");
+        stapel[6] = new Karte("Herz", "7", 7, "pictures/herz7.jpg");
+        stapel[7] = new Karte("Herz", "8", 8, "pictures/herz8.jpg");
+        stapel[8] = new Karte("Herz", "9", 9, "pictures/herz9.jpg");
+        stapel[9] = new Karte("Herz", "10", 10, "pictures/herz10.jpg");
+        stapel[10] = new Karte("Herz", "B", 11, "pictures/herzbube.jpg");
+        stapel[11] = new Karte("Herz", "D", 11, "pictures/herzdame.jpg");
+        stapel[12] = new Karte("Herz", "K", 11, "pictures/herzkoenig.jpg");
+
+        stapel[13] = new Karte("Karo", "A", 11, "pictures/karoass.jpg");
+        stapel[14] = new Karte("Karo", "2", 2, "pictures/karo2.jpg");
+        stapel[15] = new Karte("Karo", "3", 3, "pictures/karo3.jpg");
+        stapel[16] = new Karte("Karo", "4", 4, "pictures/karo4.jpg");
+        stapel[17] = new Karte("Karo", "5", 5, "pictures/karo5.jpg");
+        stapel[18] = new Karte("Karo", "6", 6, "pictures/karo6.jpg");
+        stapel[19] = new Karte("Karo", "7", 7, "pictures/karo7.jpg");
+        stapel[20] = new Karte("Karo", "8", 8, "pictures/karo8.jpg");
+        stapel[21] = new Karte("Karo", "9", 9, "pictures/karo9.jpg");
+        stapel[22] = new Karte("Karo", "10", 10, "pictures/karo10.jpg");
+        stapel[23] = new Karte("Karo", "B", 11, "pictures/karobube.jpg");
+        stapel[24] = new Karte("Karo", "D", 11, "pictures/karodame.jpg");
+        stapel[25] = new Karte("Karo", "K", 11, "pictures/karokoenig.jpg");
+
+        stapel[26] = new Karte("Pik", "A", 11, "pictures/pikass.jpg");
+        stapel[27] = new Karte("Pik", "2", 2, "pictures/pik2.jpg");
+        stapel[28] = new Karte("Pik", "3", 3, "pictures/pik3.jpg");
+        stapel[29] = new Karte("Pik", "4", 4, "pictures/pik4.jpg");
+        stapel[30] = new Karte("Pik", "5", 5, "pictures/pik5.jpg");
+        stapel[31] = new Karte("Pik", "6", 6, "pictures/pik6.jpg");
+        stapel[32] = new Karte("Pik", "7", 7, "pictures/pik7.jpg");
+        stapel[33] = new Karte("Pik", "8", 8, "pictures/pik8.jpg");
+        stapel[34] = new Karte("Pik", "9", 9, "pictures/pik9.jpg");
+        stapel[35] = new Karte("Pik", "10", 10, "pictures/pik10.jpg");
+        stapel[36] = new Karte("Pik", "B", 11, "pictures/pikbube.jpg");
+        stapel[37] = new Karte("Pik", "D", 11, "pictures/pikdame.jpg");
+        stapel[38] = new Karte("Pik", "K", 11, "pictures/pikkoenig.jpg");
+
+        stapel[39] = new Karte("Kreuz", "A", 11, "pictures/kreuzass.jpg");    
+        stapel[40] = new Karte("Kreuz", "2", 2, "pictures/kreuz2.jpg");
+        stapel[41] = new Karte("Kreuz", "3", 3, "pictures/kreuz3.jpg");
+        stapel[42] = new Karte("Kreuz", "4", 4, "pictures/kreuz4.jpg");
+        stapel[43] = new Karte("Kreuz", "5", 5, "pictures/kreuz5.jpg");
+        stapel[44] = new Karte("Kreuz", "6", 6, "pictures/kreuz6.jpg");
+        stapel[45] = new Karte("Kreuz", "7", 7, "pictures/kreuz7.jpg");
+        stapel[46] = new Karte("Kreuz", "8", 8, "pictures/kreuz8.jpg");
+        stapel[47] = new Karte("Kreuz", "9", 9, "pictures/kreuz9.jpg");
+        stapel[48] = new Karte("Kreuz", "10", 10, "pictures/kreuz10.jpg");
+        stapel[49] = new Karte("Kreuz", "B", 11, "pictures/kreuzbube.jpg");
+        stapel[50] = new Karte("Kreuz", "D", 11, "pictures/kreuzdame.jpg");
+        stapel[51] = new Karte("Kreuz", "K", 11, "pictures/kreuzkoenig.jpg");
+    }
+
+    public void kartenMischen(){
+        for(int i = 0; i < 1010;i++){
+            int z1 = (int)(Math.random() * 51);
+            int z2 = (int)(Math.random() * 51);
+            stapel[52] = stapel[z1];
+            stapel[z1] = stapel[z2];
+            stapel[z2] = stapel[52];
+        }
+        /*for(int k = 0; k < 52; k++){
+        System.out.println(stapel[k].getFarbe() + " " + stapel[k].getName());
+        }*/
+    }
+
+    public void kartenAusteilen(){
+        hand1[0] = karteziehen();
+        gui.jButton_spieler1_Karte1.setIcon(scaleImageIcon(new ImageIcon(hand1[0].getBildpfad()), 129, 180));
+        hand1[1] = karteziehen();
+        gui.jButton_spieler1_Karte2.setIcon(scaleImageIcon(new ImageIcon(hand1[1].getBildpfad()), 129, 180));
+        hand1[2] = karteziehen();
+        gui.jButton_spieler1_Karte3.setIcon(scaleImageIcon(new ImageIcon(hand1[2].getBildpfad()), 129, 180));
+
+        hand2[0] = karteziehen();
+        hand2[1] = karteziehen();
+        hand2[2] = karteziehen();
+
+        hand3[0] = karteziehen();
+        hand3[1] = karteziehen();
+        hand3[2] = karteziehen();
+
+        hand4[0] = karteziehen();
+        hand4[1] = karteziehen();
+        hand4[2] = karteziehen();
+    }
+
+    private static ImageIcon scaleImageIcon(ImageIcon icon, int width, int height) {
+        BufferedImage bi = new BufferedImage(width, height,
+                BufferedImage.TYPE_INT_ARGB);
+        Graphics g = bi.getGraphics();
+        ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+            RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+        g.drawImage(icon.getImage(), 0, 0, width, height, null);
+        g.dispose();
+
+        ImageIcon symbol = new ImageIcon();
+        symbol.setImage(bi);
+        return symbol;
+    }
+
+    private void waehlenWerBeginnt(){
+        int z1 = (int)((Math.random() * 3)+1);
+        switch(z1){
+            case 1: gui.jButton_bus1.setIcon(scaleImageIcon(new ImageIcon("pictures/bus.jpg"), 120, 60));
+            gui.jTextArea_gameAnzeige.setText("Du beginnst!");
+            zugVonSpieler = 1;
+            zug(1);
+            break;
+            case 2: gui.jLabel_bus2.setIcon(scaleImageIcon(new ImageIcon("pictures/bus.jpg"), 120, 60));
+            gui.jTextArea_gameAnzeige.setText("Spieler2 beginnt!");
+            zugVonSpieler = 2;
+            zug(2);
+            break;
+            case 3: gui.jLabel_bus3.setIcon(scaleImageIcon(new ImageIcon("pictures/bus.jpg"), 120, 60));
+            gui.jTextArea_gameAnzeige.setText("Spieler3 beginnt!");
+            zugVonSpieler =  3;
+            zug(3);
+            break;
+            case 4: gui.jLabel_bus4.setIcon(scaleImageIcon(new ImageIcon("pictures/bus.jpg"), 120, 60));
+            gui.jTextArea_gameAnzeige.setText("Spieler4 beginnt!");
+            zugVonSpieler = 4;
+            zug(4);
+            break;
+            default: gui.jTextArea_gameAnzeige.setText("ERROR 001.1: Player not found.");break; 
+        }
+    }
+
+    public void zug(int spieler){
+        runde++;
+        switch(spieler){
+            case 1: 
+            if(runde > 1){
+                gui.jButton_bus1.setEnabled(true);
+            }
+            int l = 0;
+
+            while(l == 0){
+                if(gui.isGezogenZ()){
+                    gui.jButton_Vorschau.setIcon(scaleImageIcon((new ImageIcon(karteziehen().getBildpfad())), 129, 180));
+                    l++;
+                }
+                else if(ablageStack[0] != null){
+                    if(gui.isGezogenA()){
+                        gui.jButton_Vorschau.setIcon(scaleImageIcon((new ImageIcon(karteziehenAblage().getBildpfad())), 129, 180));
+                        l++;
+                    }
+                }
+                else{
+
+                }
+            }
+            gui.jButton_bus1.setIcon(null);
+            break;
+            case 2: zugSpieler2();
+
+
+            gui.jLabel_bus2.setIcon(null);
+            break;
+            case 3:
+            gui.jLabel_bus3.setIcon(null);
+            break;
+            case 4:
+            gui.jLabel_bus4.setIcon(null);
+            break;
+            default:gui.jTextArea_gameAnzeige.setText("ERROR 001.2: Player not found.");
+            break;
+        }
+    }
+
+    public Karte karteziehen(){
+        Karte gezogen = null;
+        if(stapel[0] != null){
+            gezogen = stapel[0];
+        }
+        else{
+        }
+        for(int i = 0; i < 50; i++){
+            stapel[i] = stapel[i+1];
+        }
+        return gezogen;
+    }
+
+    public Karte karteziehenAblage(){
+        Karte gezogen = null;
+        if(ablageStack[0] != null){
+            gezogen = ablageStack[0];
+        }
+        else{
+            gui.jTextArea_gameAnzeige.setText("ERROR 002: Cards not found.");
+        }
+        for(int i = 0; i < 50; i++){
+            ablageStack[i] = ablageStack[i+1];
+        }
+        return gezogen;
+    }
+
+    private void resetBehalten(){
+        for(int i = 0; i < 4; i++){
+            behalten[i] = null;
+        }
+    }
+
+    private void zugSpieler2(){
+        if(ablageStack[0] != null){
+            boolean g = false;
+            for(int m = 0; m < 3; m++){
+                if(ablageStack[0].getFarbe() == hand2[m].getFarbe()){
+                    if(hand2[m].getWert() > ablageStack[0].getWert()){
+                        hand2[3] = karteziehenAblage();
+                        g = true;
+                    }
+                }
+            }
+            if(g != true){
+                hand2[3] = karteziehen(); 
+            }
+        }
+        int groessteKombi = 0;
+        for(int i = 0; i < 4; i++){
+            if(hand2[i].getWert() > groessteKombi){
+                groessteKombi = hand2[i].getWert();
+                resetBehalten();
+                behalten[i] = hand2[i];
+            }
+            for(int j = i + 1; i < 4; j++){
+                if(hand2[i].getFarbe() == hand2[j].getFarbe()){
+                    if((hand2[i].getWert() + hand2[j].getWert()) > groessteKombi){
+                        groessteKombi = hand2[i].getWert() + hand2[j].getWert();
+                        resetBehalten();
+                        behalten[i] = hand2[i];
+                        behalten[j] = hand2[j];
+                    }
+                }
+                for(int k = j + 1; j < 4;  k++){
+                    if(hand2[i].getFarbe() == hand2[j].getFarbe()){
+                        if(hand2[j].getFarbe() == hand2[k].getFarbe()){
+                            if((hand2[i].getWert() + hand2[j].getWert() + hand2[k].getWert()) > groessteKombi){
+                                groessteKombi = hand2[i].getWert() + hand2[j].getWert() + hand2[k].getWert();
+                                resetBehalten();
+                                behalten[i] = hand2[i];
+                                behalten[j] = hand2[j];
+                                behalten[k] = hand2[k];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for(int n = 0; n < 4; n++){
+            if(behalten[n] == null){
+                inAblageStack(hand2[n]);
+                gui.jButton_ablagestapel.setIcon(scaleImageIcon((new ImageIcon(hand2[n].getBildpfad())), 129, 180))
+            }
+        }
+    }
+    
+    public void inAblageStack(Karte k){
+        int i = 0;
+        while(ablageStack[i] != null){
+           i++; 
+        }
+        for(int j = i; j > 0; j--){
+            ablageStack[j] = ablageStack[j-1];
+        }
+        ablageStack[0] = k;
+    }
+
+    public static void main(String[] args) {
+        new StopTheBus_LOGIK();
+    }
+}

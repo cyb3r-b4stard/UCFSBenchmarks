@@ -1,0 +1,221 @@
+import shed.mbed.*;
+import java.util.*;
+
+/**
+ * # ######## ####### ### ##### ### #### ###
+ * ## ######## #### ### ####/####
+ * 
+ * @###### ###
+ * @####### ####.##.##
+ */
+public class Program
+{
+    private MBed mbed;
+
+    private String currentAlarm;
+
+    /**
+     * Open a connection to the MBED.
+     */
+    public Program()
+    {
+        mbed = new MBed();
+        currentAlarm = "Off";
+    }
+
+    /**
+     * The starting point for the interactions.
+     */
+    public void showTime()
+    {
+        int x = 70, y = 5;
+
+        Button sw2 = mbed.getButton(ButtonID.SW2);
+        Button sw3 = mbed.getButton(ButtonID.SW3);
+        Calendar date = Calendar.getInstance();
+
+        while(sw2.isPressed() == false && sw3.isPressed() == false && !(Integer.toString(date.get(Calendar.HOUR_OF_DAY)) + ":" + Integer.toString(date.get(Calendar.MINUTE))).equals(currentAlarm)){
+            date = Calendar.getInstance();
+            mbed.printLCDText(x, y, date.getTime().toString());
+        }
+        
+        if((Integer.toString(date.get(Calendar.HOUR_OF_DAY)) + ":" + Integer.toString(date.get(Calendar.MINUTE))).equals(currentAlarm)){
+            mbed.clearLCD();
+            boolean timeLimitReached = false;
+            int counter = 0;
+            while(timeLimitReached == false && sw3.isPressed() == true){
+                mbed.printLCDText(x, y, "ALARM ALARM ALARM");
+                
+                alarmNoise();
+                
+                counter++;
+                sleep(1000);
+                if(counter > 300){
+                    timeLimitReached = true;
+                }
+                
+                else if(sw3.isPressed() == true){
+                    timeLimitReached = true;
+                }
+            }
+            showTime();
+        }
+
+        if(sw2.isPressed() == true){
+            mbed.clearLCD();
+            mbed.printLCDText(0, 0, "Alarm setup");
+            mbed.setBoardLED(true, false, false);
+            sleep(500);
+            mbed.setBoardLED(false, true, false);
+            sleep(500);
+            mbed.setBoardLED(false, false, true);
+            sleep(500);
+            mbed.setBoardLED(false, false, false);
+            alarmTime();
+            mbed.clearLCD();
+            alarmRequest();
+        }
+
+        if(sw3.isPressed() == true){
+            mbed.clearLCD();
+            mbed.printLCDText(0, 0, "button pressed");
+        }
+    }
+    
+    /**
+     * Makes the noise for the alarm
+     */
+    public void alarmNoise()
+    {
+        setPiezo(double 0.5, double 0.5);
+        piezoOff();
+    }
+
+    /**
+     * For getting the current alarm time on the system
+     */
+    public void alarmTime()
+    {
+        mbed.printLCDText(0, 0, "The current alarm is set to: " + currentAlarm);
+        sleep(2000);
+    }
+
+    /**
+     * For turning the alarm on/off
+     */
+    public void alarmRequest()
+    {
+        Button leftButton = mbed.getButton(ButtonID.LEFT);
+        Button rightButton = mbed.getButton(ButtonID.RIGHT);
+
+        if(currentAlarm.equals("Off")){
+            while(leftButton.isPressed() == false && rightButton.isPressed() == false){
+                mbed.printLCDText(0, 0, "Turn alarm on?");
+                mbed.printLCDText(20, 20, "<-Yes");
+                mbed.printLCDText(90, 20, "No->");
+            }
+            if(leftButton.isPressed()){
+                currentAlarm = "00:00";
+                alarmSetup();
+            }
+        }
+        else{
+            while(leftButton.isPressed() == false && rightButton.isPressed() == false){
+                mbed.printLCDText(0, 0, "Turn alarm off?");
+                mbed.printLCDText(20, 20, "<-Yes");
+                mbed.printLCDText(90, 20, "No->");
+            }
+            if(leftButton.isPressed()){
+                currentAlarm = "Off";
+            }
+            else{
+                currentAlarm = "00:00";
+                alarmSetup();
+            }
+        }
+        mbed.clearLCD();
+        showTime();
+    }
+
+    /**
+     * For setting an alarm time
+     */
+    public void alarmSetup()
+    {
+        boolean confirmed = false;
+        Button fireButton = mbed.getButton(ButtonID.FIRE);
+        Potentiometer p1 = mbed.getPotentiometer(1);
+        Potentiometer p2 = mbed.getPotentiometer(2);
+
+        while(confirmed == false){
+            mbed.clearLCD();
+            mbed.printLCDText(0, 0, "Use the dials");
+            mbed.printLCDText(0, 20, "Press joystick to confirm");
+            while(confirmed == false){
+                mbed.printLCDText(0, 10, "Alarm time: " + currentAlarm + "      ");
+                sleep(50);
+
+                double p1Value = p1.getValue();
+                double p2Value = p2.getValue();
+
+                double hours = (double)Math.round(p1Value * 24);
+                double minutes = (double)Math.round(p2Value * 60);
+
+                String hoursString = "";
+                String minutesString = "";
+
+                if(hours == (long) hours){
+                    hoursString = String.format("%d",(long)hours);
+                }
+                else{
+                    hoursString = String.format("%s",hours);
+                }
+
+                if(minutes == (long) minutes){
+                    minutesString = String.format("%d",(long)minutes);
+                }
+                else{
+                    minutesString = String.format("%s",minutes);
+                }
+                
+                if(hoursString.equals("24")){
+                    hoursString = "23";
+                }
+                
+                if(minutesString.equals("60")){
+                    minutesString = "59";
+                }
+
+                currentAlarm = hoursString + ":" + minutesString;
+
+                if(fireButton.isPressed() == true){
+                    mbed.clearLCD();
+                    mbed.printLCDText(0, 0, "Is " + currentAlarm + " the time you want?");
+                    confirmed = true;
+                }
+            }
+        }
+    }
+
+    /**
+     * Close the connection to the MBED.
+     */
+    public void finish()
+    {
+        mbed.close();
+    }
+
+    /**
+     * A simple support method for sleeping the program.
+     * @param millis The number of milliseconds to sleep for.
+     */
+    private void sleep(long millis)
+    {
+        try {
+            Thread.sleep(millis);
+        } 
+        catch (InterruptedException ex) {
+        }
+    }
+
+}

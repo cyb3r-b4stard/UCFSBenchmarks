@@ -1,0 +1,92 @@
+
+/* #### ### ####### - ######
+ * ####:
+ * ########:
+ * ##:
+ */
+
+import ecs100.*;
+import java.util.*;
+import java.io.*;
+import java.awt.Color;
+
+/** ####### ##### ### ###### #### ### ######## #####
+ *  ### ###### ### ### ######## ######## ###### ##### ######.
+ */
+
+public class ImageRenderer{
+    public static final int TOP = 20;   
+    public static final int LEFT = 20;  
+    public static final int PIXEL_SIZE = 2;  
+
+    public ImageRenderer() {
+        UI.initialise();
+        UI.addButton("Clear", UI::clearGraphics );
+        UI.addButton("Render (core)", this::doRenderImageCore );
+        UI.addButton("Render (compl)", this::doRenderAnimatedImage );
+        UI.addButton("Quit", UI::quit );
+        UI.setWindowSize(850, 700);
+        UI.setDivider(0.0);
+    }
+
+    /** Core:
+     * Renders a ppm image file.
+     * Asks for the name of the file, then calls renderImageHelper.
+     */
+    public void doRenderImageCore(){
+        /*# YOUR CODE HERE */
+        String image = UIFileChooser.open();
+        this.renderImageHelper(image);
+    }
+
+    /** Core:
+     * Renders a ppm image file.
+     * Renders the image at position (LEFT, TOP).
+     * Each pixel of the image  is rendered by a square of size PIXEL_SIZE
+     * Assumes that
+     * - the colour depth is 255,
+     * - there is just one image in the file (not "animated"), and
+     * - there are no comments in the file.
+     * The first four tokens are "P3", number of columns, number of rows, 255
+     * The remaining tokens are the pixel values (red, green, blue for each pixel)
+     */
+    public void renderImageHelper(Scanner sc){
+        /*# YOUR CODE HERE */
+
+        try {
+            Scanner sc = new Scanner(new File(UIFileChooser.open("Choose a File")));
+
+            String magic = sc.next();
+            int width = sc.nextInt();
+            int height = sc.nextInt();
+            int max = sc.nextInt();
+
+            int x = LEFT;
+            int y = TOP;
+            for (int row = 0 ; row<height; row++){
+                for(int col= 0; col<width; col++){
+                    UI.setColor(new Color(sc.nextInt(),sc.nextInt(),sc.nextInt()));
+                    UI.fillRect(x,y,PIXEL_SIZE,PIXEL_SIZE);
+
+                    x += PIXEL_SIZE;
+                }
+
+                y += PIXEL_SIZE;
+            }
+            UI.repaintGraphics();
+        }catch (IOException e) { UI.println("File failure: " + e); }
+    }
+
+    /** Completion
+     * Renders a ppm image file which may be animated (multiple images in the file)
+     * Asks for the name of the file, then renders the image at position (LEFT, TOP).
+     * Each pixel of the image  is rendered by a square of size PIXEL_SIZE
+     * Renders each image in the file in turn with 200 mSec delay.
+     * Repeats the sequence 3 times.
+     */
+    public void doRenderAnimatedImage(){
+        /*# YOUR CODE HERE */
+
+    }
+
+}

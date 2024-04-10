@@ -1,0 +1,276 @@
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+
+public class medappl
+{
+    public static void main(String args[])
+    {
+        detent();
+        
+        /*for(;;)
+        {
+            System.out.println("Menu\n");
+            System.out.println("1.Display\n");
+            System.out.println("2.Search\n");
+            System.out.println("3.Update\n");
+            System.out.println("Default: exit\n");
+            System.out.println("Enter choice\n");
+            int ch = s.nextInt();
+            
+            l1: switch(ch)
+            {
+                case 1: m[0].display(m);
+                        break;
+                case 2: for(;;)
+                        {
+                        System.out.println(" Search Menu\n");
+                        System.out.println("1.Search by ID\n");
+                        System.out.println("2.Search by name\n");   
+                        System.out.println("Default: return\n");
+                        System.out.println("Enter choice\n");
+                        int chs = s.nextInt();
+                        switch(chs)
+                        {
+                            case 1: m[0].search(1, m); 
+                                    break;
+                            case 2: m[0].search(m, 1); 
+                                    break;
+                            default: break l1;
+                        }
+                    }
+                case 3: for(;;)
+                        {
+                        System.out.println(" Update Menu\n");
+                        System.out.println("1.Update by ID\n");
+                        System.out.println("2.Update by name\n");   
+                        System.out.println("Default: return\n");
+                        System.out.println("Enter choice\n");
+                        int chu = s.nextInt();
+                        switch(chu)
+                        {
+                            case 1: m[0].update(1, m); 
+                                    break;
+                            case 2: m[0].update(m, 1); 
+                                    break;
+                            default: break l1;
+                        }
+                    }
+                default: System.exit(0);
+            }
+        }*/
+                       
+            
+    }
+    
+    void detent()
+    {
+         Scanner s  = new Scanner(System.in);
+        System.out.println("Enter number of medicines: ");
+        int nom = s.nextInt();
+        medicine m[] = new medicine[nom];
+        System.out.println("Enter Data for medicine : \n\n");
+        
+        
+        try
+      {
+         FileOutputStream fileOut =
+         new FileOutputStream("medicine.ser");
+         ObjectOutputStream out = new ObjectOutputStream(fileOut);
+         for(int i=0; i<nom;i++)
+         {
+            m[i] = new medicine();
+            out.writeObject(m[i]);
+        }
+        out.close();
+        fileOut.close();
+        System.out.printf("Serialized data is saved in /tmp/employee.ser\n\n");
+    }
+    catch(IOException i)
+      {
+          i.printStackTrace();
+      }
+    
+}
+   
+interface services
+{
+    void display(medicine m[]);
+    void search(medicine m[], int ch); 
+    void search(int ch, medicine m[]); 
+    void update(medicine m[], int ch); 
+    void update(int ch, medicine m[]); 
+}     
+        
+class medicine implements services
+{
+    String name;
+    float cost;
+    int stock, batch;
+    final int reorder = 10;
+    
+    medicine()
+    {
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter Name: ");
+        name = s.next();
+        System.out.println("Enter cost: ");
+        cost = s.nextFloat();
+        System.out.println("Enter Stock: ");
+        stock = s.nextInt();
+        System.out.println("Enter Batch: ");
+        batch = s.nextInt();
+    }
+        
+    
+    public void display(medicine m[])
+    {
+        System.out.println("Name   Cost   Stock    Batch Number \n\n");
+        for(int i=0; i<m.length; i++)
+        {
+            System.out.println(m[i].name + "  " + m[i].cost + "  " + m[i].stock + "  " + m[i].batch + "  \n");
+        }
+        
+    }
+    
+    public void search(int ch, medicine m[]) 
+    {
+        System.out.println("Search by id \n Enter id (batch number): ");
+        Scanner s = new Scanner(System.in);
+        int bat=s.nextInt();
+        for(int i=0; i<m.length; i++)
+        {
+            if(m[i].batch==bat)
+            {
+                System.out.println("Name   Cost   Stock    Batch Number \n\n");
+                System.out.println(m[i].name + "  " + m[i].cost + "  " + m[i].stock + "  " + m[i].batch + "  \n");
+                return;
+            }
+        }
+        System.out.println("Unsuccesful");
+    }
+    
+    public void search(medicine m[], int ch) 
+    {
+        System.out.println("Search by name \n Enter name: ");
+        Scanner s = new Scanner(System.in);
+        String medname=s.next();
+        for(int i=0; i<m.length; i++)
+        {
+            if(medname.equals(m[i].name))
+            {
+                System.out.println("Name   Cost   Stock    Batch Number \n\n");
+                System.out.println(m[i].name + "  " + m[i].cost + "  " + m[i].stock + "  " + m[i].batch + "  \n");
+                return;
+            }
+        }
+        System.out.println("Unsuccesful");
+    }
+    
+    public void update(medicine m[], int ch) 
+    {
+        System.out.println("Update by name \n Enter name: ");
+        Scanner s = new Scanner(System.in);
+        String medname=s.next();
+        for(int i=0; i<m.length; i++)
+        {
+            if(medname.equals(m[i].name))
+            {
+                System.out.println("Enter cost: ");
+                m[i].cost = s.nextFloat();
+                System.out.println("Enter stock: ");
+                m[i].stock = s.nextInt();
+                System.out.println("after update\n\n");
+                System.out.println("Name   Cost   Stock    Batch Number \n\n");
+                System.out.println(m[i].name + "  " + m[i].cost + "  " + m[i].stock + "  " + m[i].batch + "  \n");
+                return;
+            }
+        }
+        System.out.println("Unsuccesful");
+    
+    }
+    
+    public void update(int ch, medicine m[]) 
+    {
+        System.out.println("Update by id \n Enter id (batch number): ");
+        Scanner s = new Scanner(System.in);
+        int bat=s.nextInt();
+        for(int i=0; i<m.length; i++)
+        {
+            if(m[i].batch==bat)
+            {
+                System.out.println("Enter cost: ");
+                m[i].cost = s.nextFloat();
+                System.out.println("Enter stock: ");
+                m[i].stock = s.nextInt();
+                System.out.println("after update\n\n");
+                System.out.println("Name   Cost   Stock    Batch Number \n\n");
+                System.out.println(m[i].name + "  " + m[i].cost + "  " + m[i].stock + "  " + m[i].batch + "  \n");
+                return;
+            }
+        }
+        System.out.println("Unsuccesful");
+    
+    }
+}
+
+
+/*
+ * 
+ * boolean cond = true;
+int i =0;
+while (cond){
+    cadena = read.nextLine();
+    if(cadena.isEmpty())
+        cond = false;
+ */
+
+
+/*public class filecheck
+{
+   public static void main(String [] args)
+   {
+      Employee e = new Employee();
+      e.name = "Reyan Ali";
+      e.address = "Phokka Kuan, Ambehta Peer";
+      e.SSN = 11122333;
+      e.number = 101;
+      
+      try
+      {
+         FileOutputStream fileOut =
+         new FileOutputStream("employee.ser");
+         ObjectOutputStream out = new ObjectOutputStream(fileOut);
+         out.writeObject(e);
+         out.close();
+         fileOut.close();
+         System.out.printf("Serialized data is saved in /tmp/employee.ser\n\n");
+         
+         FileInputStream fileIn =
+         new FileInputStream("employee.ser");
+         ObjectInputStream in = new ObjectInputStream(fileIn);
+         Employee m = (Employee)in.readObject();
+         System.out.print(m.name+"  "+m.address+"   "+m.SSN+"  "+m.number+"  \n");
+         in.close();
+         fileIn.close();
+      }catch(IOException i)
+      {
+          i.printStackTrace();
+      }
+   }
+}
+
+class Employee implements java.io.Serializable
+{
+   public String name;
+   public String address;
+   public transient int SSN;
+   public int number;
+   
+   public void mailCheck()
+   {
+      System.out.println("Mailing a check to " + name + " " + address);
+   }
+}*/
+
+                

@@ -1,0 +1,145 @@
+
+/**
+ * ### ####### ############ ############# ### ####### ##### ##########.
+ * ### ####### ##### ####### ### #######. ### ############## ###### ###
+ * ##:## (###########) ### ##:## (#### ###### ### ###########).
+ *
+ * #### ############ ###### ######### "###########" (#### ### #########
+ * "###############") ########, ##### ### ### ####### ############# 
+ * ####. #### #########, ### ### ## ### ##### ### ########: ### 
+ * ####### ####### ####, #### ### ############ ##### ###### ########
+ * ###.
+ * 
+ * @###### ####### ####### ### ##### #. ######
+ * @####### ##.##.####
+ */
+public class Uhrenanzeige
+{
+    private Nummernanzeige stunden;
+    private Nummernanzeige minuten;
+    private String zeitanzeige;    
+    
+    /**
+     * Konstruktor für ein Exemplar von Uhrenanzeige.
+     * Mit diesem Konstruktor wird die Anzeige auf 00:00 initialisiert.
+     */
+    public Uhrenanzeige()
+    {
+        stunden = new Nummernanzeige(24);
+        minuten = new Nummernanzeige(60);
+        anzeigeAktualisieren();
+    }
+
+    /**
+     * Konstruktor für ein Exemplar von Uhrenanzeige.
+     * Mit diesem Konstruktor wird die Anzeige auf den Wert
+     * initialisiert, der durch 'stunde' und 'minute' 
+     * definiert ist.
+     */
+    public Uhrenanzeige(int stunde, int minute)
+    {
+        stunden = new Nummernanzeige(24);
+        minuten = new Nummernanzeige(60);
+        setzeUhrzeit(stunde, minute);
+    }
+
+    /**
+     * Diese Operation sollte einmal pro Minute aufgerufen werden -
+     * sie sorgt dafür, dass diese Uhrenanzeige um eine Minute
+     * weiter gestellt wird.
+     */
+    public void taktsignalGeben()
+    {
+        minuten.erhoehen();
+        if(minuten.gibWert() == 0) {  
+            stunden.erhoehen();
+        }
+        anzeigeAktualisieren();
+    }
+
+    /**
+     * Setze die Uhrzeit dieser Anzeige auf die gegebene 'stunde' und
+     * 'minute'.
+     */
+    public void setzeUhrzeit(int stunde, int minute)
+    {
+        stunden.setzeWert(stunde);
+        minuten.setzeWert(minute);
+        anzeigeAktualisieren();
+    }
+
+    /**
+     * Liefere die aktuelle Uhrzeit dieser Uhrenanzeige im Format SS:MM.
+     */
+    public String gibUhrzeit()
+    {
+        return zeitanzeige;
+    }
+    
+    /**
+     * Aktualisiere die interne Zeichenkette, die die Zeitanzeige hält.
+     */
+    private void anzeigeAktualisieren()
+    {
+        zeitanzeige = stunden.gibAnzeigewert() + ":"
+                      + minuten.gibAnzeigewert();
+                      
+                      
+    }
+    private void updateDisplayUS()
+    { 
+        String stundeAnzeigewert;
+        
+
+        {
+            stundeAnzeigewert = stunden.gibAnzeigewert() + ":" + minuten.gibAnzeigewert()+ " am";
+        }
+        else if(stunden.gibAnzeigewert()> 12 && stunden.gibAnzeigewert()<24)
+        {
+            stundeAnzeigewert = Integer.toString(stunden.gibAnzeigewert() -12) +":" + minuten.gibAnzeigewert()+ " pm";
+        
+        }
+        else if(stunden.gibAnzeigewert()==0)
+        {
+            stunden.setzeWert(12);
+            stundeAnzeigewert = stunden.gibAnzeigewert()+ ":" + minuten.gibAnzeigewert()+ " am";
+        }
+        else
+        {
+            stunden.setzeWert(12);
+            stundeAnzeigewert= stunden.gibAnzeigewert() +":" + minuten.gibAnzeigewert()+ " pm";
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

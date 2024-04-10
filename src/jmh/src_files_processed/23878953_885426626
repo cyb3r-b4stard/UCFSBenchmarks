@@ -1,0 +1,103 @@
+public class LISTE
+{
+    private KNOTEN erster;
+
+    public LISTE()
+    {
+        this.erster = null;
+    }
+
+    public void ersterSetzen (KNOTEN k)
+    {
+        this.erster = k;
+    }
+
+    public DATENELEMENT vorneEntnehmen()
+    {
+        KNOTEN bisherigerErster = this.erster;
+
+        this.erster = bisherigerErster.nachfolgerGeben();
+
+        bisherigerErster.nachfolgerSetzen (null);
+
+        return bisherigerErster.datenelementGeben();
+    }
+
+    public int anzahlGeben()
+    {
+
+        int anzahl = 0;
+
+        KNOTEN aktuellesObjekt = erster;
+
+        while ( aktuellesObjekt != null )
+        {
+            anzahl++;
+            aktuellesObjekt = aktuellesObjekt.nachfolgerGeben();
+        }
+
+        return anzahl;
+    }
+
+    public void namenAusgeben()
+    {
+
+        KNOTEN aktuellesObjekt = erster;
+
+        while ( aktuellesObjekt != null )
+        {
+            System.out.print (aktuellesObjekt.datenelementGeben().nameGeben() + " | ");
+            aktuellesObjekt = aktuellesObjekt.nachfolgerGeben();
+        }
+
+        System.out.println();
+    }
+
+    public double summeDerWarenwerteAllerKundenGeben()
+    {
+        double summe = 0;
+
+        KNOTEN aktuellesObjekt = erster;
+
+        while ( aktuellesObjekt != null )
+        {
+            summe = summe + aktuellesObjekt.datenelementGeben().warenwertGeben();
+            aktuellesObjekt = aktuellesObjekt.nachfolgerGeben();
+        }
+
+        return summe;
+    }
+
+    public KNOTEN gibKnoten(int position) 
+    {
+        int i = 1;
+        KNOTEN aktuellerKnoten = erster;
+        while (i != position && aktuellerKnoten != null)
+        {
+            i++;
+            aktuellerKnoten = aktuellerKnoten.nachfolgerGeben();
+
+        }
+        return aktuellerKnoten;
+    }
+
+    public DATENELEMENT suche(String datenwert)
+    {
+        KNOTEN aktuellerKnoten = erster;
+
+        while ( aktuellerKnoten != null) 
+        {
+            if ( aktuellerKnoten.datenelementGeben().nameGeben().compareTo(datenwert) == 0)
+            {
+                return aktuellerKnoten.datenelementGeben();
+            }
+            aktuellerKnoten = aktuellerKnoten.nachfolgerGeben();
+        }
+        return null;
+    }
+    
+    public void hintenEinfuegen (DATENELEMENT e) 
+    {
+        KNOTEN k = new KNOTEN;
+    }
+}

@@ -1,0 +1,390 @@
+import java.util.*;
+/**
+ * #### ## ### ############# ##### ### ### ## ######## ###### ######
+ * ### ##### #### #### ######### ####### ####### ### #### ## 
+ * ####### ### ####### ######### ## ### ####### ######
+ * #### ####### ###### ###### #### ## ### ### ########,###### ########,
+ * ###### ######## ## ####, ####, ## ###### ## #### ### ### ### ######### ## 
+ * #### ### ### ######### ###### ## ###### 
+ * 
+ * @###### ####### ##### 
+ * @####### ##.###.####
+ */
+public class BookingSystem 
+{   
+    private ArrayList<Customer> customerList;
+    private ArrayList<Flight> flightList;
+    private Database database;
+    /**
+     * Constructor for objects of class BookingSystem
+     * Initialize the variables 
+     */
+    public BookingSystem()
+    {
+        this.database = new Database("customers.txt");
+        this.customerList = database.getCustomerList();
+        this.flightList = database.getFlightList();
+    }
+    
+    /**
+     * This method is used to get user input and add the customer based on user input the customer name, 
+     * customer number and the flight name), validations of name, telephone number and flight are implemented in this method.
+     */
+    private void addCustomer()
+    {
+        String name = "";
+        String telephone = "";
+        String strFlightIndex = "";
+        do
+        {
+            System.out.print("Please enter customer name: ");
+            Scanner scanner = new Scanner(System.in);
+            name = scanner.nextLine();
+        } while (isInvalidName(name));
+        do
+        {
+            System.out.print("Please enter telephone number:");
+            Scanner scanner  = new Scanner(System.in);
+            telephone = scanner.nextLine();
+        } while (isInvalidPhoneNumber(telephone));
+        do
+        {
+            int flightLength = flightList.size();
+            for(int i = 0; i < flightLength; i++)
+            {
+                System.out.println((i + 1) + ". " + flightList.get(i).getName());
+            }
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Please select the flight: ");
+            strFlightIndex = scanner.nextLine();
+        } while (isInValidFlightIndex(strFlightIndex));
+        int flightIndex = Integer.parseInt(strFlightIndex) - 1;
+        customerList.add(new Customer(name,telephone,flightList.get(flightIndex)));
+        System.out.println("Customer added successfully");
+    }
+    
+    /**
+     * This method is used to delete the customer from the booking list based on customer name
+     */
+     private void deleteCustomer()
+    {
+        if (isEmptyList())
+            System.out.println("No customer in the booking list.");
+        else
+        {
+            System.out.print("Please enter customer name: ");
+            int customerIndex = -1;
+            String name = "";
+            do
+            {
+                Scanner scanner = new Scanner(System.in);
+                name = scanner.nextLine().trim();
+            } while (isEmptyString(name));
+            int length = customerList.size();
+            for (int i = 0; i < length; i++)
+            {
+                Customer customer = customerList.get(i);
+                if (customer.getName().toUpperCase().equals(name.toUpperCase()))
+                { 
+                    customerIndex = i;
+                }
+            }
+            if (customerIndex >= 0)
+            {
+                customerList.remove(customerIndex);
+                System.out.println("Customer deleted");
+            }
+            else
+            {
+                System.out.println("Customer not found");
+            }
+        }
+    }
+    
+    /**
+     * This method is used to exit the Booking System and 
+     * write the information in the current list of customer to the customer list  
+     */
+    private void exit()
+    {
+        database.saveCustomerList(customerList);
+    }
+    
+    /**
+     * This method is used to 
+  get the selected option from the user
+     * @return String option
+     */
+    private String getOption()
+    {
+        printMenu();
+        System.out.print("Please enter your option:");
+        Scanner scanner = new Scanner(System.in);
+        String option = scanner.nextLine();
+        return option.trim();
+    }
+    
+    /**
+     * This method is used to check whether there is any customer stored in the customer list
+     * @return boolean, true means customer list is empty, false means customer list is not empty 
+     */
+    private boolean isEmptyList()
+    {  
+        return customerList.size() < 1;
+    }
+
+    /**
+     * This method is used to validate the user input is empty or not
+     * @param String str 
+     * @return boolean true means it is empty string 
+     * @return boolean false means it is not empty string 
+     */
+    private boolean isEmptyString(String str)
+    {
+        if (str.trim().length() < 1)
+        {
+            System.out.println("Error: Input cannot be empty or all space");
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * This method is used to validate whether the user input can be converted to integer.
+     * If it can be converted to integer,  validate whether it is within the valid range which is from 1 to flightlist size
+     * @param str
+     * @return boolean true means flight index is invalid 
+     * @return boolean false means flight index is valid 
+     */
+    private boolean isInValidFlightIndex(String str)
+    {
+        try
+        {
+            int flightIndex = Integer.parseInt(str);
+            if(flightIndex < 1 || flightIndex > flightList.size())
+            {
+                System.out.println("Please enter 1 to " + flightList.size());
+                return true;
+            }
+            return false;
+        }
+        catch(Exception e)
+        {
+            System.out.println("Please enter a valid number from 1 to " + flightList.size());
+            return true;
+        }
+    }
+    
+    /**
+     * This method is used to validate the telephone number 
+     * @param String telephone 
+     * @return boolean true means phone number is invalid 
+     * @return boolean false means phone number is valid 
+     */
+    private boolean isInvalidPhoneNumber(String telephone)
+    {
+        if (telephone.trim().length() == 9 && telephone.charAt(0) == '4' && isNumeric(telephone))
+        
+            return false;
+       
+        else
+        {
+            System.out.println("Telephone number length should be 9 and start with 4");
+            return true;
+        }
+    }
+    
+    /**
+     * This method is used to validate if a string is consist of whole digit character
+     * @param String str
+     * @return boolean true means the string is numeric 
+     * @return boolean false means the string contains character 
+     */
+    private  boolean isNumeric(String str)
+    {
+        for (!Character.isDigit(c))
+        {
+            char[] infos = str.toCharArray();
+            return false;
+        }
+        return true;
+    }
+
+    for (!Character.isDigit(c) char c : str.toCharArray())
+        {
+            char[] infos = str.toCharArray();
+            if (!Character.isDigit(c)) return false;
+        }
+    
+    /**
+     * This method is used to validate user input name and find the repeat name in customer list when add customer
+     * @param String name 
+     * @return boolean true means name is invalid, name is empty or there is a customer already in the list with the same name 
+     * @return boolean false means name is valid, name is not empty and the name is unique 
+     */
+    private boolean isInvalidName(String name)
+    {
+        if (isEmptyString(name))
+            return true;
+        else
+        {
+            if (isEmptyList())
+                return false;
+            else
+            {
+                for (int i = 0; i < customerList.size(); i++)
+                {
+                    Customer customer = customerList.get(i);
+                    if (customer.getName().toUpperCase().equals(name.toUpperCase()))
+                    { 
+                        System.out.println("Customer is alreay in the booking list");
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+    }
+    
+    /**
+     * This method is uesd to list out all the customers after checking the whether 
+     * the list is empty or not 
+     */
+     private void listAllCustomer()
+    {
+        if (isEmptyList()) 
+            System.out.println("No Customer in booking list ");
+        else
+        {
+            int length = customerList.size(); 
+            for (int i = 0; i < length; i++)
+            {
+                Customer customer = customerList.get(i);
+                System.out.println(customer.getName() + ", " + customer.getTelephone() + ", "
+                    + customer.getFlight().getName());
+            }
+        }
+    }
+    
+    /**
+     * This method is used to display the user menu to the user 
+     */
+    private void printMenu()
+    {
+        System.out.println("================================");
+        System.out.println("(1) Add a new Customer");
+        System.out.println("(2) Delete a Customer");
+        System.out.println("(3) Find Customer by Name");
+        System.out.println("(4) List Customers by Flight");
+        System.out.println("(5) List All Customers");
+        System.out.println("(6) Exit System");
+        System.out.println("================================");
+    }
+    
+    /**
+     *  The main methods of the booking system, invoke the methods so as to use the booking system
+     *  According to the options from users, run the different methods
+     */
+    public void run()
+    {
+        boolean over = false;
+        while (!over)
+        {
+            String option = getOption();
+            switch (option)
+            {
+                case "1":
+                    addCustomer();break;
+                case "2":
+                    deleteCustomer();break;
+                case "3":
+                    searchCustomerByName();break;
+                case "4":
+                    searchCustomerByFlight();break;
+                case "5":
+                    listAllCustomer();break;
+                case "6":
+                    exit();
+                    over = true;break;
+                default:
+                    System.out.println("Invalid option, option should be 1 to 6");break;
+            }
+        }
+    }
+
+    /**
+     * This method is used to search the customers based on their names.
+     */
+    private void searchCustomerByName()
+    {
+        if (isEmptyList())
+            System.out.println("No customer in the booking list.");
+        else
+        {
+            String name = "";
+            do
+            {
+                System.out.print("Please enter customer name: ");
+                Scanner scanner = new Scanner(System.in);
+                name = scanner.nextLine().trim();
+            } while (isEmptyString(name));
+            int length = customerList.size();
+            for (int i = 0; i < length; i++)
+            {
+                Customer customer = customerList.get(i);
+                if (customer.getName().toUpperCase().equals(name.toUpperCase()))
+                { 
+                    System.out.println(customer.getName() + ", " + customer.getTelephone() + ", "
+                        + customer.getFlight().getName());
+                }
+            }
+            System.out.println("Customer not found");
+        }
+    }
+
+    /**
+     * This method is used to search the customer based on the selected flight 
+     */
+    private void searchCustomerByFlight()
+    {
+        if (isEmptyList())
+            System.out.println("No customer in the booking list.");
+        else
+        {
+            String option = "";
+            do
+            {
+                int flightLength = flightList.size();
+                for (int i = 0; i < flightLength; i++)
+                {
+                    System.out.println((i+1) + ". " + flightList.get(i).getName());
+                }
+                System.out.print("Please select the flight: ");
+                Scanner scanner = new Scanner(System.in);
+                option = scanner.nextLine();
+            } while (isInValidFlightIndex(option));
+            String flightName = flightList.get(Integer.parseInt(option) - 1).getName();
+            ArrayList<Customer> resultList = new ArrayList<Customer>();
+            for (int i = 0; i < customerList.size(); i++)
+            {
+                Customer customer = customerList.get(i);
+                if (customer.getFlight().getName().equals(flightName))
+                {
+                    resultList.add(customer);
+                }
+
+            }
+            if(resultList.size() < 1)
+                System.out.println("There is no customer booked " + flightName);
+            else
+            {
+                for(int i = 0; i < resultList.size();i++)
+                {
+                    Customer customer = resultList.get(i);
+                    System.out.println(customer.getName() + ", " + customer.getTelephone() + ", "
+                        + customer.getFlight().getName());
+                }
+            }
+        }
+    }
+}

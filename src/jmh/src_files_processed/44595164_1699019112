@@ -1,0 +1,80 @@
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+/**
+ * ## #####
+ * 
+ * @###### #### ######### 
+ * @####### #.#
+ */
+public class A2
+{    
+    public static ArrayList<String> stopWords = new ArrayList<String>(Arrays.asList("a", "about", "all", "am", "an", "and", 
+                "any", "are", "as", "at", "be", "been", "but", "by", "can", "cannot", "could", "did", "do", "does", 
+                "else", "for", "from", "get", "got", "had", "has", "have", "he", "her", "hers", "him", "his", "how", 
+                "i", "if", "in", "into", "is", "it", "its", "like", "more", "me", "my", "no", "now", "not", "of", 
+                "on", "one", "or", "our", "out", "said", "say", "says", "she", "so", "some", "than", "that", "the", 
+                "their", "them", "then", "there", "these", "they", "this", "to", "too", "us", "upon", "was", "we", 
+                "were", "what", "with", "when", "where", "which", "while", "who", "whom", "why", "will", "you", "your"));
+    public static SLL prevNode = null;
+    public static SLL head = null;
+    public static SLL tail = null;
+
+    
+    public static void main(String [] args){
+        A2 a2 = new A2();
+        a2.read(args[0]);
+    }
+
+    public void read(String fileName){
+        System.out.println("");
+        try{
+            FileInputStream file = new FileInputStream(fileName);
+            Scanner inp = new Scanner(file, "Cp1252");
+            System.out.println("prewhile");
+            while(inp.hasNext()){
+                System.out.println("inwhile");
+                String word = inp.next().replaceAll("[^a-zA-Z]", "").toLowerCase();
+                if(!stopWords.contains(word) && !word.equals("")){
+                    System.out.println("inif");
+                    wordProcessor(word, findSllWord(word, head));
+                }
+                System.out.println("postif");
+            }
+            System.out.println("postwhile");
+        }catch(Exception e){System.out.println("Error");}
+    }    
+
+    public void wordProcessor(String word, SLL existingNode){
+        if(existingNode == null){
+            System.out.println("inifwordproc");
+            System.out.println(word + " ");
+            SLL node = new SLL(word);
+            node.setPrevious(prevNode);
+            if(prevNode!=null)prevNode.setNext(node);
+            else head = node;
+            prevNode = node;
+            tail = node;
+        }
+        else{
+            System.out.println("inelsewordproc");
+            System.out.println(existingNode.getword() + " = " + existingNode.getCount());
+            existingNode.incrementCount();
+        }
+    }
+
+    public SLL findSllWord(String word, SLL head){
+        SLL check = head;
+        boolean wordFound = false;
+        System.out.println("prewhilefind");
+        while(check.getNext() != null && !wordFound){
+            System.out.println("inwhilefind");
+            if(check.getword().equals(word)){ wordFound = true; System.out.println("iniffind");}
+            else {check = check.getNext(); System.out.println("inelsefind");
+            }
+            System.out.println("postwhilefind");
+            if(!wordFound){check = null;}
+            return check;
+        }
+    }
+

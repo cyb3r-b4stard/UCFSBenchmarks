@@ -1,0 +1,198 @@
+
+/* #### ### #######, ########## #
+ * ####: 
+ * ########: 
+ * ##: 
+ */
+
+import ecs100.*;
+import java.awt.Color;
+import java.util.*;
+import java.io.*;
+
+/** ####### ## ###### # ######## ## ### ######## #### #### ######### ########
+ *  ############.
+ *  # ######## ######## ## # ########## ## #####.
+ *  #### #### ### # #### (##, ######, ## ########, ## ######, ..),
+ *  ### # ##### ########### ######## ## ### ######## (#, #, #).
+ *
+ *  #### ######## ## ######### ## # #### ## # #### ## ##### ### ##### #########.
+ *  ### ######## ## ######## ## ####### # ####### ###### ### #### ####.
+ *  ### #### ### ##### ## #### #### ## ########## ## ### #### ## ### ####.
+ * 
+ *  ## #### #### #### ### ####### ##### ###### ## ##### ## ### ######## #####,
+ *  ### ##### #### ## ######## ## ##### #### ### ######## #### ## ### #######.
+ *  #### ####### ########### ####### # ######### ######## ## ### #####.
+ *
+ *  ### ########### ## ### #### ### ##### ### ######### ### ######### ##### ##
+ *  ##### ## ###### ## ### #### "#######-#####.###" ##### ###### ## #### ###
+ *  ###### ## # ###.  #### ## #### ## ########, ### #### ###### ## ###### ## ##
+ *  ### ### ## #### ### #### ### ##### ## #### ## ### ####'# ######() ######
+ * 
+ *  # ######## ### ## ######## #### ######### ############, ### ### #######
+ *  ######## #### ####### ## ####### ### ########### ## ### #########:
+ *   "#####" ####### ### ######## #### ### ##### (########### = # #######)
+ *   "####" ####### ### ######## #### ### #### (########### = ### #######)
+ *   "####" ####### ### ######## #### ### #### (########### = -## #######)
+ *   "#####" ####### ### ######## #### ### ##### (########### = ## #######)
+ *   "#######" ######### ### ########### ## ### ######### ## # #######,
+ *   "########" ######### ### ########### ## ### ######### ## # #######,
+ */
+
+public class MoleculeRenderer implements UIButtonListener {
+
+    private Map<String,Element> elementTable; 
+
+    private List<Atom> molecule;  
+
+    private double currentAngle = 0.0;    
+
+    private double panStep = 5.0;
+
+    /** Set up the Graphical User Interface and read the file of element data of
+     *  each possible type of atom into a Map: where the type is the key
+     *  and an ElementInfo object is the value (containing size and color).
+     */
+    public MoleculeRenderer() {
+        UI.addButton("Read", this);
+        UI.addButton("From Front", this);
+        /*# YOUR CODE HERE */
+        UI.addButton("From Back",this);
+        UI.addButton("From Right",this);
+        UI.addButton("From Left",this);
+        readElementTable();
+    }
+
+    /** Respond to button presses.
+     *  Most of the presses will set the currentAngle and sort the list of molecules
+     *  using the appropriate comparator
+     */
+    public void buttonPerformed(String button) {
+        if (button.equals("Read")) {
+            currentAngle = 0;
+            String filename = UIFileChooser.open();
+            readMoleculeFile(filename);
+            Collections.sort(molecule, new BackToFrontComparator());
+        }
+        else if (button.equals("From Front")) {  
+            currentAngle = 0;
+            Collections.sort(molecule, new BackToFrontComparator());
+        }
+        /*# YOUR CODE HERE */
+        else if (button.equals("From Back")) {  
+            currentAngle = 180;
+            /**Collections.sort(molecule, new BackToFrontComparator());*/
+        }
+        else if (button.equals("From Right")) {  
+            currentAngle = 90;
+            /**Collections.sort(molecule, new BackToFrontComparator());*/
+        }
+        else if (button.equals("From Left")) {  
+            currentAngle = -90;
+            /**Collections.sort(molecule, new BackToFrontComparator());*/
+        }
+        render();
+    }
+
+    /** Reads the molecule data from a file containing one line for each atom in
+     *  the molecule.
+     *  Each line contains an atom type and the 3D coordinates of the atom.
+     *  For each atom, it constructs an Atom object,
+     *   and adds it to the List of Atoms in the molecule.
+     *  To get the color and the size of each atom, it has to look up the type
+     *   of the atom in the Map of elements.
+     */
+    public void readMoleculeFile(String fname) {
+        try {
+            /*# YOUR CODE HERE */
+            File file = new File(fname);
+            Scanner sc = new Scanner(file);
+            File elements = new File("element-table.txt");
+            Scanner scan = new Scanner(elements);
+            boolean matched = false;
+            Color col = null;
+            int rad = 0;
+            while(sc.hasNext()){
+                String type = sc.next();
+                double xpos = sc.nextInt();
+                double ypos = sc.nextInt();
+                double zpos = sc.nextInt();
+                while(scan.hasNext() && !matched){
+                    String trueType = scan.next();
+                    if(trueType.equals(type)){
+                        rad = scan.nextInt();
+                        int r = scan.nextInt();
+                        int g = scan.nextInt();
+                        int b = scan.nextInt();
+                        col = new Color(r,g,b);
+                        matched = true;
+                    }
+                }
+                Atom a = new Atom(xpos,ypos,zpos,col,rad);
+                molecule.add(a);
+                matched = false;
+            }
+        }
+
+        catch(IOException ex) {
+            UI.println("Reading molecule file " + fname + " failed");
+        }
+    }
+
+    /** (Completion) Reads a file containing radius and color information about each type of
+     *  atom and stores the info in a Map, using the atom type as a key
+     */
+    private void readElementTable() {
+        UI.println("Reading the element table file ...");
+        try {
+            /*# YOUR CODE HERE */
+            File file = new File("element-table.txt");
+            Scanner sc = new Scanner(file);
+        }
+        catch (IOException ex) {
+            UI.println("Reading element table file FAILED");
+        }
+    }
+
+    /** Render the molecule, according the the current ordering of Atoms in the List.
+     *  The Atom's render() method needs the current perspective angle 
+     */
+    public void render() {
+        UI.clearGraphics();
+        for(Atom atom : molecule) {
+            atom.render(currentAngle);
+        }
+        UI.repaintGraphics();
+    }
+
+
+    /** Comparator that will order atoms from back to front */
+    private class BackToFrontComparator implements Comparator<Atom> {
+        /**
+         * Uses the z coordinates of the two atoms
+         * larger z means towards the back,
+         * smaller z means towards the front
+         * Returns
+         *  negative if atom1 is more to the back than atom2, (
+         *  0 if they are in the same plane,
+         *  positive if atom1 is more to the front than atom2.
+         */
+        /*# YOUR CODE HERE */
+        public int compare(Atom a1, Atom a2){
+            for(int i=0; i<; i++){
+                for(;;){
+                    
+                }
+            }
+            return 0;
+        }
+
+        public boolean equals(Atom a){
+            return false;
+        }
+    }
+
+    public static void main(String args[]) {
+        new MoleculeRenderer();
+    }
+}

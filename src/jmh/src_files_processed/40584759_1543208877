@@ -1,0 +1,62 @@
+import java.lang.Math;
+class ODE
+{
+    /**
+     * Computes an approximation for a solution to a 2nd order differential equation
+     * Uses a tridiagonal matric M and a vector v to do this
+     * 
+     * @param a in floating point format
+     * @param n is an integer assumed to be greater than 0
+     * @return f in a floating point format
+     */
+
+    static float solve ( float a, int n)
+    {
+        float h=1/(n+1);
+        float [] x= new float [n];
+        for (int g=1;g<=n;g++)
+        {
+            x[g-1]=g*h;
+        }
+        float [][]M=new float[3][n];
+        M[0]= new float [n-1];
+        M[1]=new float [n];
+        M[2]=new float [n-1];
+        float [] v=new float [n];
+        for (int i=2;i<=n;i++)
+        {
+            M[0][i-2]=-1;
+            M[1][0]=2+(h*h*Math.sin(x[0]));
+            M[1][i-1]= 2+(h*h*Math.sin(x[i-1]));
+            M[2][i-2]=-1;
+            v[0]=a*(x[0]*x[0]);
+            v[i-1]=a*(x[i-1]*x[i-1]);
+        }
+        float [] w= new float [n];
+        for (int j=0;j<n;j++)
+        {
+            float [] y=new float [n];
+            y[j]=-h*h*v[j];
+            w=Tridiagonals.linearSolve(M, y);
+        }
+        float low;
+        float high;
+        for (int l=0;l<n;l++)
+        {
+            while (x[l]<=0.5)
+            { 
+                low=x[l];
+            }
+        }
+        for (int m=n-1;m>=0;m--)
+        {
+            while (x[m]>=0.5)
+            {
+                high =x[m];
+            }
+        }
+        int o= java.lang.float.intValue((low+high)/2);
+        return w[o];
+
+    }
+}

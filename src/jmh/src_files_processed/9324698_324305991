@@ -1,0 +1,155 @@
+import sum.werkzeuge.*;        
+import sum.kern.*;
+public class Paint
+{
+    Bildschirm screen;      
+    Buntstift pen;          
+    Uhr clock;              
+    Rechner math;           
+    Tastatur taste;         
+    Maus mouse;
+    int i;
+    int vFarbe;
+    int Pinsel;
+    int GlowRed;
+    public Paint()
+    {
+        screen = new Bildschirm (500,750);     
+        pen = new Buntstift();                  
+        math = new Rechner();
+        clock = new Uhr();
+        taste = new Tastatur();
+        mouse = new Maus();                        
+        vFarbe=1;
+        Hintergrund();
+        Stift();
+    }
+    public void Hintergrund()
+    {
+        pen.hoch();                     
+        pen.bewegeBis(0,0);
+        pen.setzeFuellmuster(1);
+        pen.zeichneRechteck(500,45);
+        pen.zeichneRechteck(45,500);
+        pen.bewegeBis(445,0);
+        pen.zeichneRechteck(55,500);
+        pen.bewegeBis(0,455);
+        pen.zeichneRechteck(500,45);
+        
+        pen.bewegeBis(0,500);           
+        pen.setzeFarbe(Farbe.rgb(209,242,242));
+        pen.setzeFuellmuster(1);
+        pen.zeichneRechteck(500,250);
+        
+        pen.bewegeBis(50,550);
+        pen.setzeFarbe(Farbe.SCHWARZ);
+        pen.zeichneKreis(20);
+        pen.setzeFarbe(Farbe.ROT);
+        pen.zeichneKreis(15);
+        
+        pen.setzeFarbe(vFarbe);
+    }
+    public void Stift()                      
+    {
+            char aktivTaste;
+            boolean running = true;
+            char zeichen;
+            boolean test = true;
+            clock.warte(50);
+                if (mouse.istGedrueckt()) 
+                {
+                    do
+                    {
+                        if (mouse.vPosition()>500)    
+                        {
+                    
+                        }
+                        if (mouse.hPosition()>50) 
+                        {
+                            if (mouse.hPosition()<435)
+                            {
+                                {
+                                    if (mouse.vPosition()>55)
+                                    {
+                                        if (mouse.vPosition()<440)
+                                        {
+                                            pen.bewegeBis(mouse.hPosition(),mouse.vPosition());
+                                            pen.runter();
+                                        }  
+                                    }
+                                }
+                            }
+                        }
+            
+                    } while (mouse.istGedrueckt());
+                    pen.hoch();
+                }
+                if (taste.wurdeGedrueckt())         
+                {
+                    aktivTaste=taste.zeichen();
+                    taste.weiter();
+                    if (aktivTaste == Zeichen.PFEILRECHTS) 
+                        { 
+                            vFarbe++;
+                        }
+                    if (aktivTaste == Zeichen.PFEILLINKS) 
+                        { 
+                            vFarbe--;
+                        }
+                }
+                Skipper();
+                    }
+    public void Skipper()
+    {
+        if (mouse.hPosition()>35) 
+        {
+           if (mouse.hPosition()<65) 
+           {
+              if (mouse.vPosition()>535)
+              {
+                  if (mouse.vPosition()<565)
+                 {
+                    pen.bewegeBis(50,550);
+                    pen.setzeFarbe(Farbe.GELB);
+                    pen.zeichneKreis(20);
+                    pen.setzeFarbe(Farbe.ROT);
+                    pen.zeichneKreis(15);
+                    GlowRed==true;
+                 }
+              }
+           }
+        }
+        Stift();               
+    }
+                
+                
+    public void Gewonnen()                              
+    {   
+        pen.bewegeBis(0,0);                             
+        pen.setzeFarbe(Farbe.rgb(200,250,200)); 
+        pen.zeichneRechteck(1000,750);
+        pen.bewegeBis(300,350);
+        pen.setzeFarbe(Farbe.GRUEN); 
+        pen.setzeSchriftGroesse(50);
+        pen.schreibeText("GEWONNEN");                   
+        
+        clock.warte(5000);
+        
+        Gewonnen();                                     
+    }
+    public void Verloren()                              
+    {   
+        pen.bewegeBis(0,0);
+        pen.setzeFarbe(Farbe.rgb(250,200,200));
+        pen.zeichneRechteck(1000,750);
+        pen.bewegeBis(300,350);
+        pen.setzeFarbe(Farbe.ROT);
+        pen.setzeSchriftGroesse(50);
+        pen.schreibeText("VERLOREN");                    
+        
+        clock.warte(5000);
+        
+        Verloren();                                      
+    }
+        }
+    

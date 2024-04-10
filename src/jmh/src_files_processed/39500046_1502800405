@@ -1,0 +1,379 @@
+
+/**
+ * ##### # ########### ## ##### ### ####.
+ * 
+ * @###### ######-### #######, ############
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Tp2 {
+    
+    final String FIN = "Fin normale du programme.";
+    
+    /**
+     * Cette methode sert a voir le menu et a choisir entre 5 options. 
+     * Si l'option choisi n'est pas compris dans les 5 options, il affiche un message d'erreur et demande de recommencer.
+     */   
+    public static int menu (){
+        
+        final String MENU_ERR = "Erreur, entrez une valeur entre 1 et 5... Recommencez.";
+        
+        int choix;
+        
+        System.out.printf("%-4S", "----\n");
+        System.out.printf("%-4S", "menu\n");
+        System.out.printf("%-4S", "----\n");
+        System.out.printf("%-10S", "1. ajouter un cours a l'horaire\n");
+        System.out.printf("%-10S", "2. supprimer un cours a l'horaire\n");
+        System.out.printf("%-10S", "3. visualiser l'horaire\n");
+        System.out.printf("%-10S", "4. effacer tous les cours a l'horaire\n");
+        System.out.printf("%-10S", "5. quitter le programme\n\n");
+
+        System.out.print("Entrez votre choix: ");
+        choix = Clavier.lireInt();
+
+        while (choix < 1 && choix > 5) {
+            System.out.println(MENU_ERR);
+            System.out.printf("%-4S", "----\n");
+            System.out.printf("%-4S", "menu\n");
+            System.out.printf("%-4S", "----\n");
+            System.out.printf("%-10S", "1. ajouter un cours a l'horaire\n");
+            System.out.printf("%-10S", "2. supprimer un cours a l'horaire\n");
+            System.out.printf("%-10S", "3. visualiser l'horaire\n");
+            System.out.printf("%-10S", "4. effacer tous les cours a l'horaire\n");
+            System.out.printf("%-10S", "5. quitter le programme\n\n");
+
+            System.out.print("Entrez votre choix: ");
+            choix = Clavier.lireInt();
+        }
+        
+        
+    }
+    
+    /**
+     * Cette methode sert a voir l'horaire des cours choisis.
+     */
+    public static void horaireCours () {
+
+        final String ENTREE = "Appuyez sur \"ENTREE\" pour continuer...";        
+
+        System.out.printf("%7S", "*******\n");
+        System.out.printf("%7S", "horaire\n");
+        System.out.printf("%7S", "*******\n\n");
+
+        System.out.printf("%79S", "===============================================================================\n");
+        System.out.printf("%1S%11S%1S%-21S%1S%-21S%1S%-21S%1S", "|", "", "|", " matin", "|", " apres-midi", "|", " soiree", "|\n");
+        System.out.printf("%79S", "===============================================================================\n");
+        System.out.printf("%1S%-11S%1S%-21S%1S%-21S%1S%-21S%1S", "|", " lundi", "|", "", "|", "", "|", "", "|\n");
+        System.out.printf("%79S", "-------------------------------------------------------------------------------\n");
+        System.out.printf("%1S%-11S%1S%-21S%1S%-21S%1S%-21S%1S", "|", " mardi", "|", "", "|", "", "|", "", "|\n");
+        System.out.printf("%79S", "-------------------------------------------------------------------------------\n");
+        System.out.printf("%1S%-11S%1S%-21S%1S%-21S%1S%-21S%1S", "|", " mercredi", "|", "", "|", "", "|", "", "|\n");
+        System.out.printf("%79S", "-------------------------------------------------------------------------------\n");
+        System.out.printf("%1S%-11S%1S%-21S%1S%-21S%1S%-21S%1S", "|", " jeudi", "|", "", "|", "", "|", "", "|\n");
+        System.out.printf("%79S", "-------------------------------------------------------------------------------\n");
+        System.out.printf("%1S%-11S%1S%-21S%1S%-21S%1S%-21S%1S", "|", " vendredi", "|", "", "|", "", "|", "", "|\n");
+        System.out.printf("%79S", "===============================================================================\n\n\n");
+
+        System.out.println(ENTREE);
+        Clavier.lireFinLigne();
+
+    }
+    
+    /**
+     * Cette methode sert a ajouter des cours a l'horaire.
+     * Si le sigle du cours ne comprend pas 3 lettre et 4 chiffres, il affiche un message d'erreur et demande de recommencer.
+     * Si le jour du cours n'est pas compris dans les jours de la semaine, il affiche un message d'erreur et demande de recommencer.
+     * Si le moment du cours n'est pas AM, PM ou soir, il affiche un message d'erreur et demande de recommencer.
+     */    
+    public static void ajoutCours () {
+        final String SIGLE = "Sigle du cours : ";
+        final String SIGLE_ERR = "\nErreur, le sigle du cours doit etre compose de 3 lettres suivies de 4 chiffres...";
+        final String JOUR = "Jour du cours : ";
+        final String JOUR_ERR = "\nErreur, le jour doit etre : lundi, mardi, mercredi, jeudi ou vendredi...";
+        final String MOMENT = "Moment du jour de ce cours : ";
+        final String MOMENT_ERR = "\nErreur, le moment du jour doit etre : am, pm, ou soir...";
+        final String GROUPE = "Groupe du cours : ";
+        final String GROUPE_ERR = "\nErreur, le groupe du cours est invalide...";
+        final String LABO = "Ce cours comprend-il une periode de laboratoire (oui ou non) ?";
+        final String LABO_ERR = "Repondez par OUI ou par NON...";
+        final String JOUR_LABO = "Jour du laboratoire : ";
+        final String MOMENT_LABO = "Moment du jour de ce laboratoire : ";
+        final String COURS_ERR = "OPERATION ANNULEE.\n Il existe deja un cours (ou laboratoire) dans la plage horaire :";
+        final String ENTREE = "\nAppuyez sur \"ENTREE\" pour continuer...";
+
+        String sigle = "";
+        String jour = "";
+        String moment = "";
+        String groupe = "";
+        String labo = "";
+        String jourLabo = "";
+        String momentLabo = "";
+        String horaire = "";
+
+        System.out.printf("%-28S", "****************************\n");
+        System.out.printf("%-28S", "ajouter un cours a l'horaire\n");
+        System.out.printf("%-28S", "****************************\n\n");
+
+        System.out.print(SIGLE);
+        sigle = Clavier.lireString();
+
+        while (sigle.length() != 7) {
+
+            System.out.println(SIGLE_ERR);
+            System.out.printf(SIGLE);
+            sigle = Clavier.lireString();
+
+        }
+
+        System.out.print(JOUR);
+        jour = Clavier.lireString();
+
+        while (!jour.equalsIgnoreCase("lundi") && !jour.equalsIgnoreCase("mardi") && !jour.equalsIgnoreCase("mercredi") 
+        && !jour.equalsIgnoreCase("jeudi") && !jour.equalsIgnoreCase("vendredi")) {
+
+            System.out.println(JOUR_ERR);
+            System.out.print(JOUR);
+            jour = Clavier.lireString();
+
+        }
+
+        System.out.print(MOMENT);
+        moment = Clavier.lireString();
+
+        while (!moment.equalsIgnoreCase("am") && !moment.equalsIgnoreCase("pm") && !moment.equalsIgnoreCase("soir")) {
+
+            System.out.println(MOMENT_ERR);
+            System.out.print(MOMENT);
+            moment = Clavier.lireString();
+
+        }
+
+        System.out.print(GROUPE);
+        groupe = Clavier.lireString();
+
+        if (jour.equalsIgnoreCase("lundi")) {
+
+            while (groupe.charAt(0) != 1) {
+
+                System.out.println(GROUPE_ERR);
+                System.out.print(GROUPE);
+                groupe = Clavier.lireString();
+
+            }
+
+        } else if (jour.equalsIgnoreCase("mardi")) {
+
+            while (groupe.charAt(0) != 2) {
+
+                System.out.println(GROUPE_ERR);
+                System.out.print(GROUPE);
+                groupe = Clavier.lireString();
+
+            }
+
+        } else if (jour.equalsIgnoreCase("mercredi")) {
+
+            while (groupe.charAt(0) != 3) {
+
+                System.out.println(GROUPE_ERR);
+                System.out.print(GROUPE);
+                groupe = Clavier.lireString();
+
+            }
+
+        } else if (jour.equalsIgnoreCase("jeudi")) {
+
+            while (groupe.charAt(0) != 4) {
+
+                System.out.println(GROUPE_ERR);
+                System.out.print(GROUPE);
+                groupe = Clavier.lireString();
+
+            }
+
+        } else if (jour.equalsIgnoreCase("vendredi")) {
+
+            while (groupe.charAt(0) != 5) {
+
+                System.out.println(GROUPE_ERR);
+                System.out.print(GROUPE);
+                groupe = Clavier.lireString();
+
+            }
+
+        }
+
+        
+        System.out.printf("%28S", "****************************\n");
+        System.out.printf("%28S", "ajouter un cours a l'horaire\n");
+        System.out.printf("%28S", "****************************\n\n");
+        
+        System.out.println(SIGLE + sigle);
+        System.out.println(JOUR + jour);
+        System.out.println(MOMENT + moment);
+        System.out.println(GROUPE + groupe + "\n");
+        
+        System.out.print(COURS_ERR + jour.toUpperCase() + moment.toUpperCase());
+        System.out.println(ENTREE);
+        Clavier.lireFinLigne();
+                
+        System.out.print(LABO);
+        labo = Clavier.lireString();
+
+        while (!labo.equalsIgnoreCase("oui") || !labo.equalsIgnoreCase("non")) {
+
+            System.out.println(LABO_ERR);
+            System.out.print(LABO);
+            labo = Clavier.lireString();
+
+        }
+
+        if (labo.equalsIgnoreCase("oui")) {
+
+            System.out.print(JOUR_LABO);
+            jourLabo = Clavier.lireString();
+
+            while (!jour.equalsIgnoreCase("lundi") && !jour.equalsIgnoreCase("mardi") && !jour.equalsIgnoreCase("mercredi") 
+            && !jour.equalsIgnoreCase("jeudi") && !jour.equalsIgnoreCase("vendredi")) {
+
+                System.out.println(JOUR_ERR);
+                System.out.print(JOUR_LABO);
+                jourLabo = Clavier.lireString();
+
+            }
+
+            System.out.print(MOMENT_LABO);
+            momentLabo = Clavier.lireString();
+
+            while (!moment.equalsIgnoreCase("am") && !moment.equalsIgnoreCase("pm") && !moment.equalsIgnoreCase("soir")) {
+
+                System.out.println(MOMENT_ERR);
+                System.out.print(MOMENT_LABO);
+                momentLabo = Clavier.lireString();
+
+            }
+            
+        
+            System.out.printf("%28S", "****************************\n");
+            System.out.printf("%28S", "ajouter un cours a l'horaire\n");
+            System.out.printf("%28S", "****************************\n\n");
+            
+            System.out.println(SIGLE + sigle);
+            System.out.println(JOUR + jour);
+            System.out.println(MOMENT + moment);
+            System.out.println(GROUPE + groupe);
+            System.out.println(LABO + labo);
+            System.out.println(JOUR_LABO + jourLabo);
+            System.out.println(MOMENT_LABO + momentLabo);
+            
+            System.out.print(COURS_ERR + jour.toUpperCase() + moment.toUpperCase());
+            System.out.println(ENTREE);
+            Clavier.lireFinLigne();
+            
+        }
+               
+    }
+    
+    public static void supprimerCours (String horaire) {
+        
+        if (horaire.equalsIgnoreCase("")) {
+            final String ENTREE = "\nAppuyez sur \"ENTREE\" pour continuer...";            
+            
+            System.out.printf("%30S", "******************************");
+            System.out.printf("%30S", "supprimer un cours a l'horaire");
+            System.out.printf("%30S", "******************************\n\n");
+            
+            System.out.println("L'horaire ne contient aucun cours.\n" + ENTREE);
+            Clavier.lireFinLigne();
+                        
+            
+        } else {
+           /* 
+           if () {
+           
+           } else {
+               
+               System.out.printf("%30S", "******************************");
+               System.out.printf("%30S", "supprimer un cours a l'horaire");
+               System.out.printf("%30S", "******************************\n\n");
+               
+               System.out.println("Sigle du cours : " + sigle "\n\n" + ENTREE);
+               
+           }
+           */
+        }
+        
+    }
+    
+    public static void supprimerTousCours (String horaire) {
+        
+        final String SUPP_COURS = "";
+        final String SUPP_COURS_ERR = "Repondez par OUI ou par NON...";
+        
+        String reponse = "";
+        
+        if (horaire.equalsIgnoreCase("")) {
+            final String ENTREE = "\nAppuyez sur \"ENTREE\" pour continuer...";            
+            
+            System.out.printf("%30S", "**********************************\n");
+            System.out.printf("%30S", "effacer tous les cours a l'horaire\n");
+            System.out.printf("%30S", "**********************************\n\n");
+            
+            System.out.println("L'horaire ne contient aucun cours.\n" + ENTREE);
+            Clavier.lireFinLigne();
+                       
+        } else {
+            
+            System.out.printf("%30S", "**********************************\n");
+            System.out.printf("%30S", "effacer tous les cours a l'horaire\n");
+            System.out.printf("%30S", "**********************************\n\n");
+            
+            System.out.print("Voulez-vous vraiment supprimer tous les cours de cet horaire (OUI ou NON) ?");
+            reponse = Clavier.lireString();
+            
+            while (!reponse.equalsIgnoreCase("oui") || !reponse.equalsIgnoreCase("non")) {
+                
+                System.out.println(SUPP_COURS_ERR);
+                System.out.print("Voulez-vous vraiment supprimer tous les cours de cet horaire (OUI ou NON) ?");
+                reponse = Clavier.lireString();
+                
+            }
+            
+            if (reponse.equalsIgnoreCase("non")) {
+                
+                System.out.println("OPERATION ANNULEE. \n Appuyez sur \"ENTREE\" pour continuer...");
+                
+            }
+        }
+        
+    }
+    
+        public static void main (String [] args) {
+            
+        int choix = menu();
+        String horaire = "";
+        /*
+        while (choix >= 1 || choix <=4) {
+            if (choix == 1) {
+              
+                ajoutCours();
+                
+            } else if (choix == 2) {
+                
+                supprimerCours();
+                
+            } else if (choix == 3) {
+                
+                horaire();
+                
+            } else if (choix == 4) {
+                
+                supprimerTousCours();
+                
+            }
+           */         
+        }
+        
+        System.out.print("FIN NORMALE DU PROGRAMME.");
+    }
+}

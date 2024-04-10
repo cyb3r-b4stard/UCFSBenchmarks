@@ -1,0 +1,63 @@
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Scanner;
+/**
+ * #### ####### #### ####### #.
+ * 
+ * @###### #####
+ * @####### ####.##.##
+ */
+public class CountryAnalyzer
+{
+    public static void main(String[] args) extends FileNotFoundException{
+        ArrayList<Country> countryArray = new ArrayList<Country>();
+        String countryName;
+        double surfaceArea;
+        double totalPopulation;
+        double birthRate;
+        double deathRate;
+        double fertilityRate;
+        double ruralPopulation;
+        double telephoneLines;
+        double mobilePhoneSubscriptions;
+        try {
+
+            File file = new File("globalDevelopment2013.csv");
+            Scanner scan = new Scanner(file);
+            while (scan.hasNextLine()) {
+                Scanner scanner = new Scanner(scan.nextLine());
+                scanner.useDelimiter(",|\n|\r\n");
+                countryName = scanner.next();
+                surfaceArea = scanner.nextDouble();
+                birthRate = scanner.nextDouble();
+                deathRate = scanner.nextDouble();
+                fertilityRate = scanner.nextDouble();
+                totalPopulation = scanner.nextDouble();
+                ruralPopulation = scanner.nextDouble();
+                telephoneLines = scanner.nextDouble();
+                mobilePhoneSubscriptions = scanner.nextDouble();
+
+                Country c = new Country(countryName, surfaceArea, birthRate, deathRate, 
+                        fertilityRate, totalPopulation, ruralPopulation, telephoneLines, 
+                        mobilePhoneSubscriptions);
+
+                countryArray.add(c);
+            }
+
+        }
+
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        for(Country c : countryArray){
+            System.out.println(c.toString());
+            if (c.getPopulationChange() < 0)
+            {
+                System.out.println("\tPOPULATION DECLINE");
+            }
+
+        }
+    }
+
+}

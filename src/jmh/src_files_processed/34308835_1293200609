@@ -1,0 +1,226 @@
+import java.util.List;
+import java.util.ListIterator;
+import java.util.ArrayList;
+import javax.swing.SortOrder;
+import java.util.HashSet;
+
+/**
+ * ##### # ########### ## ##### ######### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class RowSorter<M> extends javax.swing.RowSorter<M>
+{
+
+    private List<SortKey> sortKeys = new ArrayList<SortKey>();
+    private List<Integer> viewRowToModel = new ArrayList<Integer>();
+    private  M model;
+    private int maxSortKeys = 1;
+    private  List<Integer> fltrdRows  = new ArrayList<Integer>();
+    private boolean filter = false;
+    private String filterText;
+    
+    public RowSorter(M model){
+        this.model=model;
+        
+        makeViewRowToModel();
+        sortKeys.add(new SortKey(1, SortOrder.ASCENDING));
+        sort(1);
+        fltrdRows = new  ArrayList<Integer>();
+    }
+
+    private void makeViewRowToModel(){
+        for (int i = 0; i < getModelRowCount(); i++) {
+            viewRowToModel.add(i);
+        }
+    }
+
+    @Override
+    public void allRowsChanged() {
+        fireRowSorterChanged(null);
+
+    }
+
+    @Override
+    public int convertRowIndexToModel(int index) {
+        if(filter)
+            return  fltrdRows.get(index);
+        return viewRowToModel.get(index);
+    }
+
+    @Override
+    public int convertRowIndexToView(int index) {
+          if (fltrdRows == null) {
+             if (index < 0 || index >= getModelRowCount()) {
+                throw new IndexOutOfBoundsException ("Invalid index");
+           }
+            return index;
+     }
+         return fltrdRows.get(index);
+    }
+
+    @Override
+    public M getModel() {
+        return model;
+    }
+
+    @Override
+    public int getModelRowCount() {
+        return ((studentsModel)model).getRowCount();
+    }
+
+    @Override
+    public List<? extends javax.swing.RowSorter.SortKey> getSortKeys() {
+        return sortKeys;
+    }
+
+    @Override
+    public int getViewRowCount() {
+        if(filter){
+            return fltrdRows.size();
+        }
+        return viewRowToModel.size();
+    }
+
+    @Override
+    public void setSortKeys(List<? extends javax.swing.RowSorter.SortKey> keys) {
+        this.sortKeys.clear();
+        this.sortKeys.addAll(keys);
+        fireSortOrderChanged();
+
+    }
+
+    @Override
+    public void toggleSortOrder(int column) {
+        List <SortKey> keys = new ArrayList<SortKey>(getSortKeys());
+        SortKey sortKey;
+        int sortIndex;
+
+        for (sortIndex = keys.size() - 1; sortIndex >= 0; sortIndex--) {
+            if (keys.get(sortIndex).getColumn() == column) {
+                break;
+            }
+        }
+
+        if (sortIndex == -1) {
+            sortKey = new SortKey(column, SortOrder.ASCENDING);
+            keys.add(0, sortKey);
+        }
+        else if (sortIndex == 0) {
+            keys.set(0, toggle(keys.get(0)));
+        }
+        else {
+            keys.remove(sortIndex);
+            keys.add(0, new SortKey(column, SortOrder.ASCENDING));
+        }
+
+        if (keys.size() > 1) {
+            keys = keys.subList(0, 1);
+        }
+
+        setSortKeys(keys);
+
+        sort(column);
+        fireSortOrderChanged();
+
+    }
+
+    private SortKey toggle(SortKey key) {
+        if (key.getSortOrder() == SortOrder.ASCENDING) {
+            return new SortKey(key.getColumn(), SortOrder.DESCENDING);
+        }
+        return new SortKey(key.getColumn(), SortOrder.ASCENDING);
+    }
+
+    public void sort(int column){
+        SortOrder sortOrder = SortOrder.UNSORTED;
+        int keyColumn = -1;
+
+        if(!sortKeys.isEmpty()){
+            for (SortKey key : sortKeys) {
+                keyColumn = key.getColumn();
+                if(column==keyColumn){
+                    sortOrder = key.getSortOrder();
+                    final boolean reverse;
+                }
+            }
+
+            StudentAndIndex[] tmpArr = new StudentAndIndex[getModelRowCount()];
+            ArrayList cmprList  = new ArrayList<String>();
+
+            for(int i = 0; i < getModelRowCount(); i++){
+                int index = viewRowToModel.get(i);
+                tmpArr[i] = new StudentAndIndex( ((String)((studentsModel)model).getValueAt(index,keyColumn))   ,index);
+            }
+
+            if(sortOrder == SortOrder.ASCENDING){
+                Algorithms.mergeSort(tmpArr, (i,j)  ->  i.compareTo(j) );
+            }else if(sortOrder == SortOrder.DESCENDING){
+                Algorithms.mergeSort(tmpArr, (i,j)  ->  j.compareTo(i) );
+            }
+
+            viewRowToModel.clear();
+
+            for(int i=0; i<getModelRowCount();i++){
+                viewRowToModel.add(tmpArr[i].getIndex());
+
+            }
+        }
+        fireSortOrderChanged();
+        if(sortKeys!=null&&sortKeys.size()>0)
+        fireRowSorterChanged(null);
+    }
+
+    public void filter(String s){
+      if(s.equals("")){
+          filter = false;
+          fireRowSorterChanged(null);
+          return;
+        }else{
+            filter = true;
+        }
+      
+      filterText = s;
+      fltrdRows.clear();
+      int keyColumn = sortKeys.get(0).getColumn();
+      
+      String[] arr = new String[getModelRowCount()];
+      
+      for(int i = 0; i<getModelRowCount(); i++){
+        arr[i] = ((studentsModel)model).getValueAt(i, keyColumn);
+        }
+
+      
+      
+      
+      
+    }
+    
+
+    @Override
+    public void modelStructureChanged() {
+
+    }
+
+    @Override
+    public void rowsDeleted(int arg0, int arg1) {
+
+    }
+
+    @Override
+    public void rowsInserted(int arg0, int arg1) {
+
+    }
+
+    @Override
+    public void rowsUpdated(int arg0, int arg1) {
+
+    }
+
+    @Override
+    public void rowsUpdated(int arg0, int arg1, int arg2) {
+
+    }
+
+}

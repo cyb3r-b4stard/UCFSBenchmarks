@@ -1,0 +1,406 @@
+import java.util.*;
+import java.io.*;
+import java.text.NumberFormat;
+
+/**
+ * ####### # - ##############
+ * 
+ * @###### #### ######## 
+ * @####### ##### ##, ####
+ */
+
+public class LotteryMachine
+{
+    ArrayList <LotteryTicket> tickets;
+    
+    int num1;
+    int num2;
+    int num3;
+    int num4;
+    int num5;
+    
+    int megaBall;
+    
+    public LotteryMachine()
+    {
+        tickets = new ArrayList <LotteryTicket>();
+    }
+    
+    public void addTicket (LotteryTicket t)  
+    {
+        tickets.add(t);
+    }
+    
+    public int countTickets( )
+    {
+       return tickets.size();
+    }
+    
+    private void pickNumbers() 
+    {     
+        Random r = new Random();
+        ArrayList<Integer> nums_75 = new ArrayList<Integer>();
+        ArrayList<Integer> nums_15 = new ArrayList<Integer>();
+        
+        for(int i = 1; i <= 75; i++)
+        {
+            nums_75.add(i);
+        }
+        
+        for(int j = 1; j < 15; j++)
+        {
+            nums_15.add(j);
+        }
+       
+        int loc = r.nextInt(nums_75.size());
+        num1 = nums_75.remove(loc);
+        
+        loc = r.nextInt(nums_75.size());
+        num2 = nums_75.remove(loc);
+        
+        loc = r.nextInt(nums_75.size());
+        num3 = nums_75.remove(loc);
+        
+        loc = r.nextInt(nums_75.size());
+        num4 = nums_75.remove(loc);
+        
+        loc = r.nextInt(nums_75.size());
+        num5 = nums_75.remove(loc);
+        
+        loc = r.nextInt(nums_15.size());
+        megaBall = nums_15.remove(loc);
+    }
+    
+    private int countMatches(LotteryTicket t)
+    {
+        int matches = 0;
+        
+        if(t.hasBall(num1))
+        {
+            matches++;
+        }
+        
+        if(t.hasBall(num2))
+        {
+            matches++;
+        }
+        
+        if(t.hasBall(num3))
+        {
+            matches++;
+        }
+        
+        if(t.hasBall(num4))
+        {
+            matches++;
+        }
+        
+        if(t.hasBall(num5))
+        {
+            matches++;
+        }
+        
+        return matches;
+    }
+    
+    private void makePayouts() 
+    {
+        for(LotteryTicket t : tickets)
+        {
+            int matches = countMatches(t);
+                
+            if((matches == 5) &&  t.hasMegaBall(megaBall))
+            {
+                t.setPrize(5000000.00);
+            }
+            
+            else if((matches == 5) && !t.hasMegaBall(megaBall))
+            {
+                t.setPrize(1000000.00);
+            }
+            
+            else if((matches == 4) && t.hasMegaBall(megaBall))
+            {
+                t.setPrize(5000.00);
+            }
+            
+            else if((matches == 4) && !t.hasMegaBall(megaBall))
+            {
+                t.setPrize(500.00);
+            }
+            
+            else if((matches == 3) && t.hasMegaBall(megaBall))
+            {
+                t.setPrize(50.00);
+            }
+            
+            else if((matches == 3) && !t.hasMegaBall(megaBall))
+            {
+                t.setPrize(5.00);
+            }
+            
+            else if((matches == 2) && t.hasMegaBall(megaBall))
+            {
+                t.setPrize(5.00);
+            }
+            
+            else if((matches == 1) && t.hasMegaBall(megaBall))
+            {
+                t.setPrize(2.00);
+            }
+            
+            else if((matches == 0) && t.hasMegaBall(megaBall))
+            {
+                t.setPrize(1.00);
+            }
+            
+            else
+            {
+                t.setPrize(0.00);
+            }
+        }
+    }
+    
+    public String formatNumbers()    
+    {
+        return (num1+" "+num2+" "+num3+" "+num4+" "+num5+"\t"+megaBall+"\n");
+    }
+    
+    
+    public void drawTicket( )
+    {
+        pickNumbers();
+        makePayouts();
+    }
+    
+    public void drawTicket(int b1, int b2, int b3, int b4, int b5, int m ) 
+    {
+        num1 = b1;
+        num2 = b2;
+        num3 = b3;
+        num4 = b4;
+        num5 = b5;
+        
+        megaBall = m;
+        
+        makePayouts();
+    }
+    
+    public void readTickets(String filename)
+   {
+      ArrayList <LotteryTicket> readTickets;
+      readTickets = new ArrayList <LotteryTicket> ();
+      
+      LotteryMachine m = new LotteryMachine();
+      
+      
+      try{
+          File f = new File(filename);
+          Scanner sc = new Scanner(f);
+          String info;
+          
+          while(sc.hasNext()){
+              info = sc.nextLine();
+              
+              
+              LotteryTicket t = new LotteryTicket(info);
+              tickets.add(t);
+            }
+            
+            sc.close();
+        }
+        catch(IOException e) {
+            System.out.println("Failed to read the data file: " +
+                                filename);
+                            }
+                            
+                            
+     makePayouts();
+    }
+    
+    public String createReport( ) 
+    {        
+        String report = "";
+        LotteryTicket biggest_Winner;
+        
+        double total_prize = 0.00;
+        int num_tickets = 0;
+        double avg_prize = 0.00;
+        
+        biggest_Winner = tickets.get(0);  
+        
+        NumberFormat fmt1 = NumberFormat.getCurrencyInstance();
+        
+        for(LotteryTicket t : tickets)
+        {
+            num_tickets++;
+            total_prize += t.getPrize();
+            
+                if(t.getPrize() > biggest_Winner.getPrize())
+                {
+                    biggest_Winner = t;
+                }
+        }
+        
+            report = report + (formatNumbers());
+            
+            report = report + num_tickets + "\n";
+            
+            avg_prize = (total_prize / num_tickets);
+          
+            report += fmt1.format(avg_prize) +"\n";   
+           
+            report += biggest_Winner;
+            
+            System.out.println(report);
+            
+            return report;
+    }
+    
+    public String createReport(String st)
+    {
+        String report = "";
+        int num_sold = 0;
+        double total_prize = 0.00;
+        double avg_prize = 0.00;
+        
+        double max_prize = 0.00;
+        
+        LotteryTicket biggest_Winner = tickets.get(0);
+        
+        NumberFormat fmt1 = NumberFormat.getCurrencyInstance();
+        
+        makePayouts();
+        
+        for(LotteryTicket t : tickets)
+        {
+            if(t.getState().equalsIgnoreCase(st))
+                {        
+                num_sold++;
+                total_prize = total_prize + t.getPrize();
+                
+                if(t.getPrize() > max_prize)
+                {
+                    biggest_Winner = t;
+                    
+                    max_prize = biggest_Winner.getPrize();
+                }      
+        } 
+           }
+         
+           if(num_sold == 0)
+           {
+               return("No Tickets $0.00");
+            }
+    
+    
+            avg_prize = (total_prize / num_sold);
+          
+            report += fmt1.format(avg_prize) +"\n";   
+           
+            report += biggest_Winner;
+        
+            System.out.println(report);
+                      
+            return report;
+}   
+ 
+    public LotteryTicket getOldestPlayer ( ) 
+    {
+        LotteryTicket oldestPlayer = tickets.get(0);
+        
+        for(LotteryTicket t : tickets)
+        {
+        if(t.getYear() < oldestPlayer.getYear())
+          {
+           oldestPlayer = t;   
+          }
+              
+        if(t.getYear() == oldestPlayer.getYear())
+        {
+            if(t.getMonth() < oldestPlayer.getMonth())
+            {
+                oldestPlayer = t;
+            }
+        }
+        
+        if(t.getYear() == oldestPlayer.getYear())
+        {
+            if(t.getMonth() == oldestPlayer.getMonth())
+            {
+                if(t.getDay() < oldestPlayer.getDay())
+                {
+                    oldestPlayer = t;
+                }
+            }
+        }
+    }
+        
+        return oldestPlayer;
+    }
+    
+    public LotteryTicket getBiggestWinner()
+   {
+       LotteryTicket biggest_Winner;
+
+       double max_prize = 0;
+       
+       biggest_Winner = tickets.get(0);
+       
+       for(LotteryTicket t : tickets)
+       {
+           if(t.getPrize() > max_prize)
+           {   
+               biggest_Winner = t;
+               
+               max_prize = t.getPrize();
+           }
+        }
+       
+       return biggest_Winner;  
+    }
+    
+    public ArrayList <LotteryTicket> getMajorWinners(double amount) 
+    {
+        ArrayList <LotteryTicket> major_Winners;
+        major_Winners = new ArrayList <LotteryTicket> ();
+        
+         for(LotteryTicket t : tickets)
+         {
+             if(t.getPrize() >= amount)
+             {
+                 major_Winners.add(t);
+             }
+        }
+        
+        System.out.println(major_Winners);
+        
+        return major_Winners;
+    }
+    
+    public String multipleGames ( ) 
+    {
+        int jackpot = 0;
+        String str = "";
+        int games = 0;
+        boolean winner = false;
+        
+        while(winner == false)
+        { 
+        drawTicket();
+        games++;
+        
+        for(LotteryTicket t: tickets)
+       {
+            
+            if(countMatches(t) == 5 && t.hasMegaBall(megaBall))
+            {
+                str = "Winner! Games Played:" + games + "\n" + t + "\n" + jackpot;
+            }
+    }
+}
+        jackpot += 1500000;
+}
+
+        return str;
+}

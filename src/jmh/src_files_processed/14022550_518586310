@@ -1,0 +1,325 @@
+
+/**
+ * ##### # ########### ## ##### ######## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class RGBImage
+{
+    private RGBColor[][] _pixels;
+    private int _cols = 0;
+    private int _rows = 0;
+    final RGBColor _black = new RGBColor();
+        
+
+    /**
+     * Constructor for objects of class RGBImage
+     */
+    public RGBImage(int rows, int cols)
+    {
+      _cols = cols;                                 
+      _rows = rows;
+      _pixels = new RGBColor[rows][cols];
+      
+        for (int i=0; i<_rows;i++)
+            for (int j=0; j<_cols;j++)    
+                _pixels[i][j] = new RGBColor(_black);
+    }
+    
+    /**
+     * Constructor for objects of class RGBImage
+     */
+    public RGBImage(RGBColor[][] pixels)
+    {
+        this._pixels = pixels;
+        
+        for (int i=0; i<_pixels.length;i++)
+            for (int j=0; j<_pixels[0].length;j++){   
+                _cols = j;
+                _rows = i;
+            }
+    }
+    
+        /**
+     * Copy Constructor for objects of class RGBImage
+     */
+    public RGBImage(RGBImage other)
+    {
+       this._pixels = other._pixels;
+       this._cols = other._cols;
+       this._rows = other._rows;
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public int getHeight()
+    {
+        return this._rows;
+        
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public int getWidth()
+    {
+        return this._cols;
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public RGBColor getPixel(int row, int col)
+    {
+        if (row>this._rows ||col>this._cols)
+         return _black;
+        else {
+         return _pixels[row][col];}
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public void setPixel(int row, int col, RGBColor pixel)
+    {  RGBColor temp = new RGBColor(_pixels[row][col]);
+       if (row>this._rows ||col>this._cols)
+        this._pixels[row][col] = temp;
+       else{
+        this._pixels[row][col] = pixel;}
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public boolean equals(RGBImage other)
+    { boolean eq = true;
+       if (this._cols = other._cols && this._rows = other._rows){
+            while (eq = true){
+                for (int i=0; i<_rows;i++)
+                    for (int j=0; j<_cols;j++){   
+                        if (this._pixels[i][j].equals(other._pixels[i][j]))
+                         eq = true;
+                         else 
+                         eq = false;
+                    }
+        }}
+        else {
+            eq = false;
+        }
+        return eq;
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public void flipHorizontal()
+    {
+      
+                
+      flipVertical();
+      flipVertical();
+      
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public void flipVertical()
+    {
+       rotateClockwise();
+       rotateClockwise();
+       
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public void invertColors()
+    {
+       for (int i=0; i<_rows;i++)
+            for (int j=0; j<_cols;j++)    
+                _pixels[i][j].invert();
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public void rotateClockwise()
+    {
+      RGBColor[][] clockwise = new RGBColor[_cols][_rows];
+      
+              for (int i=_pixels.length; i<_rows;i--)
+                 for (int j=_pixels[0].length; j<_cols;j--)  
+                   clockwise[j][i] = this._pixels[i][j];
+                
+                int temp = _cols;
+                this._cols = _rows;
+                this._rows = temp;
+                this._pixels = clockwise;
+    }
+    
+        /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public void rotateCounterClockwise()
+    {
+       rotateClockwise();
+       rotateClockwise();
+       rotateClockwise();
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public void shiftCol (int offset)
+    {
+       int colOffset = offset;
+       
+                if (colOffset < 0){
+                RGBColor[][] shiftCol = new RGBColor[_rows][colOffset+_cols];
+                  for (int i=0; i<_rows;i++)
+                    for (int j=(_cols+colOffset); j<_cols;j++)    
+                        shiftCol[i][j-(_cols+colOffset)] = this._pixels[i][j];}
+                        else{
+                if (colOffset > _cols)
+                _pixels = _pixels;
+                if (colOffset == _cols)
+                  for (int i=0; i<_rows;i++)
+                    for (int j=0; j<_cols;j++)    
+                        _pixels[i][j] = new RGBColor(_black);
+                else{
+                    RGBColor[][] shiftCol = new RGBColor[_rows][colOffset+_cols];
+                for (int i=0; i<_rows;i++)
+                    for (int j=0; j<colOffset;j++)    
+                        shiftCol[i][j] = new RGBColor(_black);
+                 for (int i=0; i<_rows;i++){
+                     for (int j=colOffset; j<(_cols+colOffset);j++)    
+                        shiftCol[i][j] = this._pixels[i][j];      
+                        _pixels = shiftCol;
+                        this._cols =+ colOffset;}
+                    }
+                }
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public void shiftRow (int offset)
+    {
+       int rowOffset = offset;
+       
+       RGBColor[][] shiftRow = new RGBColor[_rows+rowOffset][_cols];
+                if (rowOffset < 0)
+                   for (int i=(_rows+rowOffset); i<_rows+rowOffset;i++)
+                    for (int j=0; j<_cols;j++)    
+                        shiftRow[i-(_rows+rowOffset)][j] = this._pixels[i][j];
+                        else {
+                if (rowOffset > _rows)
+                _pixels = _pixels;
+                else{
+                if (rowOffset == _rows)
+                  for (int i=0; i<_rows;i++)
+                    for (int j=0; j<_cols;j++)    
+                        _pixels[i][j] = new RGBColor(_black);
+                else{
+                for (int i=0; i<rowOffset;i++)
+                    for (int j=0; j<_cols;j++)    
+                        shiftRow[i][j] = new RGBColor(_black);
+                 for (int i=rowOffset; i<(_rows+rowOffset);i++)
+                    for (int j=0; j<(_cols);j++)    
+                        shiftRow[i][j] = this._pixels[i][j];      
+                        _pixels = shiftRow;
+                        this._rows =+ rowOffset;}
+                    } 
+                   }
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public double[][] toGrayscaleArray()
+    {
+        double[][] grayScale = new double[_rows][_cols];
+        for (int i=0; i<_rows;i++)
+            for (int j=0; j<_cols;j++)    
+                grayScale[i][j] =_pixels[i][j].convertToGrayscale();
+                
+                return grayScale;
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public String toString()
+    {
+       String s = "";
+       for (int i=0; i<_rows;i++)
+            for (int j=0; j<_cols;j++){ 
+               _pixels[i][j].toString();
+                System.out.print("\t");
+                System.out.println();  }
+                
+                return s;
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public RGBColor[][] toRGBColorArray()
+    {
+        RGBColor[][] copy;
+       
+        copy = _pixels;
+        
+        return copy;
+    }
+    
+
+}

@@ -1,0 +1,347 @@
+import java.awt.*;
+import javax.swing.*;
+import java.awt.event.*;  
+import javax.swing.event.*;  
+import java.util.Scanner;
+
+class LifeSimulationGUIDemo extends JFrame
+{
+    static Colony colony = new Colony (0.5);
+    static Timer t;
+
+
+    public LifeSimulationGUIDemo ()
+    {
+        BtnListener btnListener = new BtnListener (); 
+
+        JButton simulateBtn = new JButton ("Simulate");
+        simulateBtn.addActionListener (btnListener);
+        JButton populateBtn = new JButton ("Populate");
+        populateBtn.addActionListener (btnListener);
+        JButton eradicateBtn = new JButton ("Eradicate");
+        eradicateBtn.addActionListener (btnListener);
+        
+
+        JPanel content = new JPanel ();        
+        content.setLayout (new BorderLayout ()); 
+        JPanel north = new JPanel ();
+        north.setLayout (new FlowLayout ()); 
+
+        DrawArea board = new DrawArea (500, 500);
+
+
+        north.add (simulateBtn);
+        north.add (populateBtn);
+        north.add (eradicateBtn);
+
+        content.add (north, "North"); 
+        content.add (board, "South"); 
+
+        setContentPane (content);
+        pack ();
+        setTitle ("Life Simulation");
+        setSize (510, 570);
+        setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo (null);           
+             
+    }
+    
+
+    class BtnListener implements ActionListener 
+    {
+        private boolean pressAgain = false;
+        public void actionPerformed (ActionEvent e)
+        {
+            if (e.getActionCommand ().equals ("Simulate") && pressAgain == false)
+            {
+                Movement moveColony = new Movement (); 
+                t = new Timer (50, moveColony);
+                t.start (); 
+                
+                pressAgain = true;
+                    if (e.getActionCommand ().equals ("Populate"))
+                {
+                    colony.populate(0,100);
+                }
+            }
+            if (e.getActionCommand ().equals ("Populate"))
+            {
+                colony.populate(0,100);
+            }
+            if (e.getActionCommand ().equals ("Eradicate"))
+            {
+                colony.eradicate(0,100);
+            }
+            repaint ();            
+        }
+    }
+
+
+    class DrawArea extends JPanel
+    {
+        public DrawArea (int width, int height)
+        {
+            this.setPreferredSize (new Dimension (width, height)); 
+        }
+
+
+        public void paintComponent (Graphics g)
+        {
+            colony.show (g); 
+        }
+    }
+
+
+    class Movement implements ActionListener
+    {
+        public void actionPerformed (ActionEvent event)
+        {
+            colony.advance (); 
+            repaint (); 
+        }
+    }
+
+
+    public static void main (String[] args)
+    {
+        LifeSimulationGUIDemo window = new LifeSimulationGUIDemo ();
+        window.setVisible (true);
+
+    }
+}
+
+class populateFrame extends JFrame
+{
+    static Colony colony = new Colony (0.5);
+    private JSlider xPos = new JSlider (JSlider.HORIZONTAL, 0, 500, 0);
+    private JSlider yPos = new JSlider (JSlider.VERTICAL, 0, 500, 500);
+    private JSlider width = new JSlider (JSlider.HORIZONTAL, 0, 500, 250);
+    private JSlider height = new JSlider (JSlider.VERTICAL, 0, 500, 250);
+       public populateFrame()
+    {
+        
+        
+        JFrame frame = new JFrame("");
+       JPanel content = new JPanel ();
+       content.setLayout(new BorderLayout());
+       JPanel north = new JPanel ();
+       north.setLayout (new FlowLayout ()); 
+       JPanel east = new JPanel ();
+       east.setLayout (new FlowLayout ()); 
+       JPanel south = new JPanel ();
+       south.setLayout (new FlowLayout ()); 
+       JPanel west= new JPanel ();
+       west.setLayout (new FlowLayout ()); 
+       
+       JLabel xLabel= new JLabel ("X Position");
+       JLabel yLabel= new JLabel ("Y Position");
+       JLabel widthLabel= new JLabel ("Width");
+       JLabel heightLabel= new JLabel ("Height");
+        
+       xPos.addChangeListener(new SliderListener());
+       yPos.addChangeListener(new SliderListener());
+       width.addChangeListener(new SliderListener());
+       height.addChangeListener(new SliderListener());
+       
+       
+       DrawArea populateBoard = new DrawArea (500, 500);
+       
+       content.add (north, "North"); 
+       content.add (east, "East"); 
+       content.add (south, "South"); 
+       content.add (west, "West"); 
+       north.add(xLabel);
+       north.add(xPos);
+       south.add(widthLabel);
+       south.add(width);
+       west.add(yLabel);
+       west.add(yPos);
+       east.add(heightLabel);
+       east.add(height);
+       content.add (populateBoard, "Center"); 
+       
+       
+       setContentPane (content);
+        pack ();
+        setTitle ("Life Simulation");
+        setSize (680, 570);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo (null);
+    }
+    
+    class SliderListener implements ChangeListener 
+    {
+        public void stateChanged(ChangeEvent e) 
+        {
+         JSlider source = (JSlider)e.getSource();
+         if (source.getValueIsAdjusting()) 
+         {
+            System.out.println(source.getValue());    
+         }
+         repaint();
+        }
+     }
+    
+     class DrawArea extends JPanel
+    {
+        public DrawArea (int width, int height)
+        {
+            this.setPreferredSize (new Dimension (width, height)); 
+        }
+        
+        public void paintComponent (Graphics g)
+        {
+            colony.show(g); YOU LEFT IT HERE
+            colony.advance();   
+            colony.selection(g,xPos.getValue(), yPos.getValue(), width.getValue(), height.getValue());            
+        }
+    }
+}
+
+class Colony
+{
+    private boolean grid[] [];
+
+    public Colony (double density)
+    {
+        grid = new boolean [100] [100];
+       
+        for (int row = 0 ; row < grid.length ; row++)
+            for (int col = 0 ; col < grid [0].length ; col++)
+                grid [row] [col] = Math.random () < density;
+           
+          /* for (int row = 0; row < grid.length; row++)
+            {
+                for (int col = 0; col <grid[row].length; col++)
+                {
+                    if (row % 2 == 0)
+                    grid[row][col] = 0 < density;
+                }
+            }*/
+                
+        
+                
+    }
+
+
+    public void show (Graphics g)
+    {
+        for (int row = 0 ; row < grid.length ; row++)
+            for (int col = 0 ; col < grid [0].length ; col++)
+            {
+                if (grid [row] [col]) 
+                    g.setColor (Color.black);
+                else
+                    g.setColor (Color.white);
+                g.fillRect (col * 5 + 2, row * 5 + 2, 5, 5); 
+            }
+    }
+
+
+    public void advance ()
+    {
+        boolean temp [][] = new boolean [grid.length][grid[1].length];
+        
+        for (int x = 0; x < grid.length; x++)
+        {
+            for(int y = 0; y < grid[x].length; y++)
+            {
+                temp[x][y] = live(grid,x,y);
+            }
+        }
+        
+        for (int x = 0; x < temp.length; x++)
+        {
+            for(int y = 0; y < temp[x].length; y++)
+            {
+                grid[x][y] = temp[x][y];
+            }
+        }
+        
+    }
+    
+    public boolean live (boolean[][] grid, int x, int y)
+    {
+        int neighbours=0;
+        
+        /*
+         In the top row - don't look for a neighbour above 
+         In the leftmost column - don't look for a neighbour to the left 
+         In the bottom row - don't look for a neighbour underneath 
+         In the rightmost column - don't look for a neighbour to the right. 
+         */
+       /* if(grid[x][y] == true)
+        System.out.println("T" + x +" " +y +" ");
+        else
+        System.out.println("F" + x +" " +y +" ");*/
+        
+             
+             if (x != grid.length-1 && grid[x+1][y] == true)
+             neighbours++;
+             if (x != 0 && grid[x-1][y] == true)
+             neighbours++;
+             if (y != grid[x].length-1 && grid[x][y+1] == true)
+             neighbours++;
+             if (y != 0 && grid[x][y-1] == true)
+             neighbours++;
+             if (x != grid.length-1 && y != grid[x].length-1 && grid[x+1][y+1] == true)
+             neighbours++;
+             if (x != 0 && y != 0 && grid[x-1][y-1] == true)
+             neighbours++;
+             if (x != grid.length-1 && y != 0 && grid[x+1][y-1] == true)
+             neighbours++;
+             if (x != 0 && y != grid[x].length-1 && grid[x-1][y+1] == true)
+             neighbours++;
+             
+             
+             
+             if (grid[x][y] == true && neighbours < 2 || neighbours > 3)
+             return  false;  
+             if (grid[x][y] == false && neighbours == 3)
+             return  true;
+             if (grid[x][y] == true && neighbours == 2 ||neighbours == 3)
+             return true;
+             else
+             return  false;
+             
+    }
+    
+    public void blank (Graphics g)
+    {
+          /*for (int row = 0 ; row < grid.length ; row++)
+            for (int col = 0 ; col < grid [0].length ; col++)
+            {
+                    g.setColor (Color.white);
+            }*/
+            for (int row = 0 ; row < grid.length ; row++)
+            for (int col = 0 ; col < grid [0].length ; col++)
+            {
+                if (grid [row] [col]) 
+                    g.setColor (Color.black);
+                else
+                    g.setColor (Color.white);
+                g.fillRect (col * 5 + 2, row * 5 + 2, 5, 5); 
+            }
+    }
+    
+    public void populate (int num1, int num2)
+    {
+     
+        
+        populateFrame window = new populateFrame ();
+        window.setVisible (true) ;
+     }
+    
+    public void eradicate (int num1, int num2)
+    {
+       System.out.print("Eradicate"); 
+    }
+    
+    public void selection (Graphics g,int xPos, int yPos, int width, int height)
+    {
+        
+        g.setColor (Color.black);
+        g.fillRect (xPos, ((250-yPos)*2)+yPos, width, ((250-height)*2)+height); 
+           
+    }
+}

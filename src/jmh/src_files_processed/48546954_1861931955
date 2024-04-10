@@ -1,0 +1,50 @@
+import java.awt.Polygon;
+import java.awt.Rectangle;
+
+public class Ship extends BaseVectorShape {
+    private int[] shipx = { -6, -3, 0, 3, 6, 0 };
+    private int[] shipy = { 6, 7, 7, 7, 6, -7 };
+    public boolean isTL = false, isTR = false, isAccel = false;
+    public double rotVel;
+    public int[] rotAcc = {200,200};
+    x = 100;
+    y = 100;
+    public Rectangle getBounds() {
+        Rectangle r;
+        r = new Rectangle((int)x - 6, (int) y - 6, 12,12);
+        return r;
+    }
+
+    Ship() {
+        shape = new Polygon(shipx, shipy, shipx.length);
+        
+        alive = true;
+    }
+    public void update()
+    {
+        warpScreen();
+        x+= velX;
+        y+=velY;
+        faceAngle += rotVel;
+        rotVel = Math.min(Math.max(rotVel/1.05,-Math.PI/20),Math.PI/20);
+        velX = Math.min(Math.max(velX,-5),5);
+        velY = Math.min(Math.max(velY,-5),5);
+        if(isTL)
+        {
+            rotVel -= Math.PI/rotAcc[0];
+            rotAcc[0] = Math.max(100,rotAcc[0]-10);
+        }
+        if(isTR)
+        {
+            rotVel += Math.PI/rotAcc[1];
+            rotAcc[1] = Math.max(100,rotAcc[1]-10);
+        }
+        if (isAccel)
+        {
+            velX += Math.cos(faceAngle - Math.PI/2)/20;
+            velY += Math.sin(faceAngle - Math.PI/2)/20;
+        }
+        
+    }
+    
+}

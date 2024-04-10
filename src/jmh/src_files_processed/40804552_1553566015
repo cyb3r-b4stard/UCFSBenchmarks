@@ -1,0 +1,365 @@
+import java.awt.*;
+import javax.swing.*;
+import java.util.*;
+
+public class Schildpad {
+  private String kleur;
+  private boolean isZichtbaar;
+
+  private final double RAD = Math.PI / 180.0;
+  private double xEcht, yEcht,   
+    richting;                         
+
+  private static SchildpadVenster v = null;
+ 
+  /**
+   * Constructor voor een schildpad;
+   * maakt een schildpad op positie (100, 100) die naar boven kijkt
+   */
+  public Schildpad() {
+    xEcht = 100;
+    yEcht = 100;
+    richting = 90;
+    isZichtbaar = false;
+  }
+  public Schildpad(double positiex, double positiey, double richtingr){
+    xEcht = positiex ;
+    yEcht = positiey;
+    richting= richtingr;
+   
+    }
+  
+  
+    public void loopL(double x) {  
+       vooruit(x);
+       slaap();
+       draaiRechts(90);
+       slaap();
+       vooruit (x);
+    }
+    
+    public void loopLKortR(double x) {  
+       vooruit(x);
+       slaap();
+       draaiRechts(90);
+       slaap();
+    }
+    
+    public void loopLKortL(double x) {  
+       vooruit(x);
+       slaap();
+       draaiLinks(90);
+       slaap();
+    }
+    
+    public void loopL2(double x) {  
+       vooruit(x);
+       slaap();
+       draaiRechts(90);
+       slaap();
+       vooruit (x);
+       slaap();
+       draaiRechts(90);
+       slaap();
+    }
+    
+    public void loopVierkant(double x) {
+        loopL2(x); 
+        loopL2(x);
+    }
+   
+    public void loopL(){
+        loopL(50);
+    }
+    
+    public void loopL2() {
+        loopL2(50);
+    }
+    
+    public void loopVierkant() {
+        loopL2(50);
+        loopL2(50);
+    }
+   
+    public void loopEenZigZag(){
+        loopLKortR(360);
+        loopLKortR(40);
+        loopLKortL(360);
+        loopLKortL(40);
+    }
+    
+    public void loopZigZag () {
+        int n = 0;
+        while (n<4){
+            loopEenZigZag();
+            n=n+1;
+        }
+    
+    }
+    
+    public void terugNaarOorsprongSprong() {
+        xEcht=20;
+        yEcht=20;
+        richting = 0;
+        teken();
+    }
+    
+    public void loopZigZagcontinu(){
+        maakZichtbaar();
+        terugNaarOorsprongSprong();
+        int n = 0;
+        while (n<5){
+            loopZigZag();
+            n=n+1;
+        }
+    }
+    
+    public void TerugNaarOorsprong () {
+        getX();
+        getY();
+        richting= ();
+        vooruit(-X);
+    }
+    
+  /* Laat de schildpad een stukje x achteruit lopen
+   */
+  public void achteruit( double x ) {
+    vooruit( -x );
+  }
+
+  /* Laat de schildpad een stukje x vooruit lopen
+   */
+  public void vooruit( double x ) {
+    xEcht += x * Math.cos ( richting * RAD );
+    yEcht -= x * Math.sin ( richting * RAD );
+    teken();
+  }
+
+  /* De schildpad draait naar links over de opgegeven hoek
+   */
+  public void draaiLinks( int hoek ) {
+    richting += hoek;
+    while( richting > 360.0 )
+      richting -= 360.0;
+    while( richting < 0.0 )
+      richting += 360.0;
+    teken();
+  }
+
+  /* De schildpad draait naar rechts over de opgegeven hoek
+   */
+  public void draaiRechts( int hoek ) {
+    draaiLinks( -hoek );
+  }
+
+
+  /* Levert de x-coordinaat van de positie van de schildpad
+   */
+  public int getX() {
+    return round( xEcht );
+  }
+  
+  /* Levert de y-coordinaat van de positie van de schildpad
+   */
+  public int getY() {
+    return round( yEcht );
+  }
+  
+  /* Levert de richting waarin de schildpad kijkt in graden,
+   * Een paar voorbeelden:
+   * 0 graden is naar rechts
+   * 90 graden is naar boven
+   * 180 graden is naar links
+   * 270 graden is naar beneden
+   */
+   public int getRichting() {
+    return round( richting );
+  }
+
+  public void maakZichtbaar() {
+    isZichtbaar = true;
+    teken();
+  }
+
+  public void maakOnzichtbaar() {
+    if( isZichtbaar ) {
+      if( v != null ) 
+        v.verwijder( this );
+    }
+    isZichtbaar = false;
+  }
+
+  /* Levert de waarde van het attribuut kleur van de schildpad
+   */
+   public String getKleur() {
+    return kleur;
+  }
+  
+  public void reset(){
+    xEcht = 100;
+    yEcht = 100;
+    richting = 90;
+    teken();    
+  }
+  
+  /** Verandert de kleur van de schildpad
+   * Toegestane invoer: "blauw", "geel", "groen", "roze"
+   * "rood" of "zwart"
+   * Bij een niet geldige kleur wordt de schildpad in zwart getekend
+   */
+  public void setKleur( String kleur ) {
+    this.kleur = kleur;
+    teken();
+  }
+
+  private void teken() {
+    if( isZichtbaar ) {
+      if( v == null )
+        v = new SchildpadVenster( "Venster voor schildpadden" );
+      v.teken( this );
+    }
+  }
+  
+  private int round( double x ) {
+    return (int) Math.round( x );
+  }
+  
+  /** Laat de schildpad 1 seconde 'slapen'
+   */
+  private void slaap() {
+    try { Thread.sleep( 1000 ); }
+    catch( InterruptedException e ) { }
+  }
+  
+  
+  
+    private class SchildpadVenster {
+    private final double RAD = Math.PI / 180.0;  
+    private JFrame frame;
+    private TekenPaneel paneel;
+    private Graphics gB;
+    private Image buffer;
+    
+    private HashSet<Schildpad> database;
+    private HashMap<String,Color> kleurMap;
+   
+    public SchildpadVenster( String titel ) {
+      frame = new JFrame( titel );
+      paneel = new TekenPaneel();
+      frame.setContentPane( paneel );
+      paneel.setPreferredSize( new Dimension( 400, 400 ) );
+      frame.pack();
+      database = new HashSet<Schildpad>();
+      kleurMap = new HashMap<String,Color>();
+      kleurMap.put( "blauw", Color.blue   );
+      kleurMap.put( "geel",  Color.yellow );
+      kleurMap.put( "groen", Color.green  );
+      kleurMap.put( "rood",  Color.red    );
+      kleurMap.put( "zwart", Color.black  );
+      kleurMap.put( "roze",  Color.pink   );
+      maakZichtbaar( true );
+    }  
+    
+    
+    public void maakZichtbaar( boolean zichtbaar ) {
+      if( gB == null ) {
+        Dimension dim = paneel.getSize();
+        buffer = frame.createImage( dim.width, dim.height );
+        gB = buffer.getGraphics();
+      }
+      frame.setVisible( zichtbaar );
+    }
+    
+    public void teken( Schildpad s ) {
+      database.add( s );
+      herschilder();
+    }
+      
+    public void verwijder( Schildpad s ) {
+      database.remove( s );
+      herschilder();
+    }
+  
+    
+    private void herschilder() {
+      maakBufferSchoon();
+      Iterator<Schildpad> iter = database.iterator();
+      while( iter.hasNext() ) {
+        tekenSchildpad( iter.next() );
+      }
+      paneel.repaint();
+    }
+    
+    
+    private void maakBufferSchoon() {
+      gB.setColor( Color.white );
+      Dimension dim = paneel.getSize();
+      gB.fillRect( 0, 0, dim.width, dim.height );
+    }
+    
+    private void tekenSchildpad( Schildpad sp ) {
+      String kleur = sp.getKleur();
+      Color color = kleurMap.get( kleur );
+      if( color != null ) 
+        gB.setColor( color );
+      else
+        gB.setColor( Color.black );
+
+      double x = sp.getX();
+      double y = sp.getY();
+      double richting = sp.getRichting();
+      
+      tekenCirkel( x, y, 6 );
+      
+      int dx =  -18;
+      x += dx * Math.cos ( richting * RAD );
+      y -= dx * Math.sin ( richting * RAD );
+      tekenCirkel( x, y, 12 );
+      
+  
+      dx = 10;
+      x += dx * Math.cos ( richting * RAD );
+      y -= dx * Math.sin ( richting * RAD );
+      richting += 90;
+      dx = 10;
+      x += dx * Math.cos ( richting * RAD );
+      y -= dx * Math.sin ( richting * RAD );
+      tekenCirkel( x, y, 4 );
+  
+      
+      dx = -20;
+      x += dx * Math.cos ( richting * RAD );
+      y -= dx * Math.sin ( richting * RAD );
+      tekenCirkel( x, y, 4 );
+      
+      richting += 90;
+      dx = 20;
+      x += dx * Math.cos ( richting * RAD );
+      y -= dx * Math.sin ( richting * RAD );
+      richting += 90;
+      dx = 2;
+      x += dx * Math.cos ( richting * RAD );
+      y -= dx * Math.sin ( richting * RAD );
+      tekenCirkel( x, y, 4 );
+  
+      dx = -24;
+      x += dx * Math.cos ( richting * RAD );
+      y -= dx * Math.sin ( richting * RAD );
+      tekenCirkel( x, y, 4 );
+    }
+    
+    private void tekenCirkel( double xMpt, double yMpt, int r ) {
+      gB.fillOval( round( xMpt - r ), round( yMpt - r ), r+r, r+r );
+    }
+  
+    private int round( double x ) {
+      return (int) Math.round( x );
+    }
+     
+    private class TekenPaneel extends JPanel {
+      public void paint( Graphics g ) {
+        g.drawImage( buffer, 0, 0, null );
+      }
+    }
+  }
+}

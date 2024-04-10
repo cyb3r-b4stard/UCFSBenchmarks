@@ -1,0 +1,323 @@
+/*
+####: ######### ######
+####: ######## ##, ####
+#####: ##########@#####.###
+#########: 
+#######: #
+##### ###########: #### ####### ########## ### ####### ######, ## ######### #### ## ############ ## ############ ########.
+*/
+
+import java.io.*;
+import java.lang.*;
+
+
+public class simplexFinal {
+  public static void main(String args[]) throws IOException {  
+    
+   int i, j, k = 0, y = 0; 
+    
+   int numberOfRows, numberOfColumns = 0;  
+    
+   double temp, temp1 = 0, temp2, temp4 = 0, inverseTemp; 
+   
+   int temp3 = 0, temp5 = 0; 
+   
+   double  pivotPoint = 0; 
+    
+   int pivotColumn = 0, pivotRow = 0; 
+   
+   int maxMin; 
+   
+    
+   boolean userInputChecker = true, negNumberChecker = false;  
+    
+    
+    InputStreamReader isr = new InputStreamReader(System.in); 
+    BufferedReader br = new BufferedReader(isr); 
+    String inData, rowInput, columnInput, maxOrMin, truncateTempString, inputTableChecker;
+
+    
+    while (userInputChecker == true) {
+        
+    userInputChecker = false;
+        
+    System.out.println ("Is this a maximization problem or a minimization problem? Please enter 1 for maximization and 0 for minimization: ");
+    
+    maxOrMin = br.readLine();
+    maxMin = Integer.parseInt (maxOrMin);
+    
+    if (maxMin == 1 || maxMin == 0) {  
+        
+        System.out.println();
+    }
+    else  {  
+            userInputChecker = true;
+            System.out.println("That is not a valid selection option. Please enter either a 1 or a 0.");
+            System.out.println();
+            
+            continue; 
+    }  
+    
+        
+    System.out.println("Please enter number of rows in Simplex tableau");
+    
+    rowInput = br.readLine();
+    numberOfRows = Integer.parseInt (rowInput);
+    
+    if (numberOfRows <= 1) {  /*There needs to be at least two rows to do the simplex method. If a number less than that is entered,
+                                the user is prompted to enter the value again */
+        userInputChecker = true;
+        System.out.println("That is not a valid selection option. Please enter a number greater than 1.");
+        System.out.println();
+        
+        continue;
+        
+    }
+    
+    System.out.println("Please enter number of columns in Simplex tableau");
+    
+    columnInput = br.readLine();
+    numberOfColumns = Integer.parseInt (columnInput);
+    
+    if (numberOfColumns <= 1) { /*There needs to be at least two rows to do the simplex method. If a number less than that is entered,
+                                the user is prompted to enter the value again */
+        
+       userInputChecker = true;
+       
+        System.out.println("That is not a valid selection option. Please enter a number greater than 1.");
+        System.out.println();
+        
+        continue;
+        
+    }
+    
+   int answer[] = new int[numberOfRows-1];     
+    
+   double m[ ][ ] = new double [ numberOfRows ] [ numberOfColumns ] ;
+   
+   System.out.println(); 
+    
+   System.out.println("Please enter the coefficients of the Simplex Tableau. Remember that the objective function should be at the bottom");
+   
+   System.out.println();
+    
+    for(i=0; i< numberOfRows; i++) {             
+      for(j=0; j < numberOfColumns; j++) {
+
+        
+        System.out.print("Plese enter value at list position " + (i+1) + "," + (j+ 1) + " :   "); 
+        inData = br.readLine();                                                                   
+        temp = Double.parseDouble(inData); 
+        
+        m[ i ] [ j ] = temp;
+             
+    }
+  }
+
+  System.out.println();
+  
+   System.out.println("This is the input table: ");
+   
+   System.out.println ();
+  
+   for(i=0; i< numberOfRows; i++) {         
+      for(j=0; j< numberOfColumns; j++) {
+      
+          
+         System.out.print(m [i][j] + " ");
+}
+           System.out.println();
+}
+
+    System.out.println();
+    System.out.println("Is this input table correct? If so, please enter 1. If not, enter 0:  ");
+    System.out.println();
+    
+    inputTableChecker = br.readLine(); 
+    temp5 = Integer.parseInt (inputTableChecker);
+    
+    if (temp5 != 1) {
+        userInputChecker = true;
+        continue;
+    }
+    
+       
+while (negNumberChecker != true) {    /*This checks to see if there are any negative numbers left in the bottom row. When there are not, it will stop running, as the
+                                        solution has been found. If negNumberChecker stays true, it means no more operations need to be done */
+      
+       negNumberChecker = true; 
+       temp1 = 0;
+       
+       
+        if    (maxMin == 1) {                 
+            
+            for (k=0; k < numberOfColumns; k++) {
+                
+                if ( m[numberOfRows-1][k] < 0 && k == 0) {
+                    temp1 = m[numberOfRows-1] [k];
+                    pivotColumn = k;
+                    negNumberChecker = false;
+                }
+                else if ( m[numberOfRows-1] [k] < temp1  && k > 0 ) {
+                    temp1 = m[numberOfRows-1] [k];
+                    pivotColumn = k;
+                    negNumberChecker = false;    
+                }
+            }
+            
+        }       
+        else if (maxMin == 0) {             
+           
+             for (k=0; k < numberOfColumns; k++) {
+                 if ( m[numberOfRows-1][k] > 0 && k == 0) {
+  
+                     temp1 = m[numberOfRows-1] [k];
+                     pivotColumn = k;
+                     negNumberChecker = false;
+                    }
+                 else if ( m[numberOfRows-1] [k] > temp1  && k > 0 ) {
+                     temp1 = m[numberOfRows-1] [k];
+                     pivotColumn = k;
+                     negNumberChecker = false;    
+                }
+            }
+        }
+       
+        
+        for (k=0; k < numberOfRows - 1; k++) {    
+              
+           temp2 = m [k][numberOfColumns-1];
+              
+           if (k == 0) {
+              pivotPoint = temp2 / (m[k][pivotColumn]);       
+              pivotRow = k;                            
+            }
+            
+           else if (pivotPoint > (temp2 / m[k][pivotColumn]) && k > 0) {
+                if (y > numberOfColumns/2) {              
+                pivotPoint = temp2/(m[k][pivotColumn]);   
+                pivotRow = k;                             
+                break;                                    
+                }
+                else {
+                 pivotPoint = temp2 / (m[k][pivotColumn]); 
+                 pivotRow = k;
+                }
+            }
+        }     
+    
+        answer [pivotRow] = pivotColumn; 
+        
+        inverseTemp =  m [ pivotRow ] [ pivotColumn ]; /*This is a temporary variable used to store the pivot point so that the necessary row operations
+                                                         can be derived*/
+       
+        if (inverseTemp < 0) {                         
+            inverseTemp = - (1/inverseTemp);
+         
+        }
+        else if (inverseTemp > 0) {
+            inverseTemp = (1/inverseTemp);
+        }
+         
+        
+    
+        for (k=0; k < numberOfColumns; k++) {                          
+            m[ pivotRow ] [ k] =  (m[ pivotRow ] [ k]) * inverseTemp;  
+            
+       }
+       
+       
+       for (k=0; k < numberOfRows; k++) {
+        
+           if (k != pivotRow) {               /*This is so that this operation is not performed on the row with the pivot point. It is only
+                                                supposed to apply to all the other rows */
+                                                
+            inverseTemp = (m [pivotRow ] [ pivotColumn ]) * - ( m[k] [pivotColumn]);
+            
+                for (i=0; i < numberOfColumns; i++) {
+                
+                m [k] [i] = m [k] [i] + (inverseTemp * m [pivotRow] [i]);
+                
+           }
+
+        }
+        }
+        
+       y = y + 1;
+       
+}    
+
+System.out.println();
+
+System.out.println("This is the output table: ");
+
+System.out.println();
+
+
+for(i=0; i< numberOfRows; i++) {               
+      for(j=0; j< numberOfColumns; j++) {
+          
+         truncateTempString = String.valueOf(m [i][j]);          
+         for (k=0; k < truncateTempString.length(); k++) {       
+             if (truncateTempString.charAt(k) == 46) {           
+                 
+                 temp3 = k + 1;
+                 
+                }
+             
+         } 
+         
+         if (truncateTempString.charAt(temp3) > 48 && truncateTempString.charAt(temp3) < 57) { /* If the value after the decimal point is not a 0 or a 9, 
+                                                                                                the number is multiplied by 10, rounded, and then divided by 10
+                                                                                                to keep the tenths place*/
+             temp4 = Double.parseDouble (truncateTempString); 
+             temp4 = temp4 * 10;
+             temp4 = Math.round(temp4);
+             temp4 = temp4 / 10; 
+            
+             m [i][j] = temp4; 
+            }
+         else {   
+            
+              m [i] [j] = Math.round(m[i][j]); 
+            }   
+         System.out.print(m [i][j] + " ");
+}
+         System.out.println();
+}
+ System.out.println();
+ System.out.println();
+ 
+ System.out.println ("The answers are as follows:");
+ System.out.println();
+ 
+ 
+ for(i=0; i< numberOfRows-1; i++) {               
+            for(j=0; j< numberOfVariables; j++) {
+                if (m [i] [j] == 1) {
+                   
+                    
+                    System.out.prinln("This ran"); 
+                  
+                  
+                   
+                  
+                }
+            }
+            }
+            
+        }
+        
+     
+         
+if  (maxMin == 1) {         
+    System.out.println ("This results in a maximization of:   " + m [numberOfRows-1] [numberOfColumns-1]); 
+    }
+    
+if  (maxMin == 0) {                      
+    System.out.println ("This results in a minimization of:   " + m [numberOfRows-1] [numberOfColumns-1]); 
+    }    
+}
+
+}
+}

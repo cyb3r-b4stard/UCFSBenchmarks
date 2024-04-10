@@ -1,0 +1,80 @@
+
+/**
+ * ##### # ########### ## ##### ############# ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Rikiki
+{
+    public String[] kaartensoort = {"Harten","Koeken","Klaveren","Schoppen"};
+    public char[] kaartennaam = {'2','3','4','5','6','7','8','9','T','V','D','H','1'};
+    public int kaarten[];
+    public int hand[][];
+    public Rikiki(int spelers, int beurt)
+    {
+        neemPak;
+        deelKaarten(spelers, beurt);
+    }
+    
+    private void neemPak()
+    {
+        kaarten = new int[52];
+        for(int i=0;i<52;i++)
+        {
+            kaarten[i] = i;
+        }
+    }
+    
+    public void deelKaarten(int spelers, int beurt)
+    {
+        for(int j=0;j<52;j++)
+        {
+            int randomint = (int )(Math.random() * 51);
+            int temp;
+            temp = kaarten[j];
+            kaarten[j] = kaarten[randomint];
+            kaarten[randomint] = temp;
+        }
+        hand = new int[spelers][(int)Math.floor(52/spelers)];
+        int k=0;
+        int n=0;
+        int p=0;
+        while(k<beurt)
+        {
+            while(p<spelers)
+            {
+                hand[p][k]= kaarten[n];
+                n++;
+                p++;
+            }
+            k++;
+            p=0;
+        }
+
+        k=0;
+        p=0;
+        n=1;
+        int naam;
+        int soort;
+        while(p<spelers)
+        {
+            System.out.println();
+            System.out.println("Speler "+n+": ");
+            while(k<beurt)
+            {
+                naam = hand[p][k];
+                while(naam>12)
+                {
+                    naam=naam-12;
+                }
+                soort = (int)Math.floor(hand[p][k]/13);
+                System.out.print("\t"+kaartensoort[soort]+" "+kaartennaam[naam]);
+                k++;
+            }
+            p++;
+            n++;
+            k=0;
+        }
+
+    }

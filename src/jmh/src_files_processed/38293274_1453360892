@@ -1,0 +1,135 @@
+import java.util.Random;
+/**
+ * ####### # #### #### ## ####### #####. ######## #####, ##### #####, ####### ###### ## ##### ####, 
+ * ### ######## ### ####.
+ * 
+ * @###### ##### ##### 
+ * @####### ##.##.####
+ */
+public class DeckOfCards implements DeckOfCardsInterface
+{
+    protected LLNode next;
+    protected LLNode cardDeck; 
+    protected int numCard = 52;
+
+    /**
+     * Constructor for objects of class DeckOfCards
+     */
+    public DeckOfCards() 
+    {
+        int j = 1;
+        while(j <= 52) {
+            while(j <= 13) {
+                for(int i=1; i <= 13; i++) {
+                    LLNode newNode = new LLNode (i, 1);
+                    newNode.setLink(cardDeck);
+                    cardDeck = newNode;
+                    j++;
+                }
+            }
+            while(j > 13 && j <=26) {
+                for(int i=1; i <= 13; i++) {
+                    LLNode newNode = new LLNode (i, 2);
+                    newNode.setLink(cardDeck);
+                    cardDeck = newNode;
+                    j++;
+                }
+            }
+            while(j > 26 && j <= 39) {
+                for(int i=1; i <= 13; i++) {
+                    LLNode newNode = new LLNode (i, 3);
+                    newNode.setLink(cardDeck);
+                    cardDeck = newNode;
+                    j++;
+                }
+            }
+            while(j > 39 && j <=52) {
+                for(int i=1; i <= 13; i++) {
+                    LLNode newNode = new LLNode (i, 4);
+                    newNode.setLink(cardDeck);
+                    cardDeck = newNode;
+                    j++;
+                }
+            }
+        }
+        next = cardDeck;
+    }
+
+    /**
+     * Shuffles the deck of cards and resets deal
+     * to beginning of the deck
+     */
+    public void shuffle()
+    {
+        Random gen = new Random();
+        LLNode node;
+        LLNode nextNode;
+        node = cardDeck;
+        nextNode = cardDeck;
+
+        for(int i=1; i <= 52; i++) {
+            int randomCard = gen.nextInt(50) + 1;
+            nextNode = cardDeck;
+            for(int j=1; j <= randomCard; j++) {
+                nextNode = nextNode.getLink(); 
+            }            
+            int rank = node.getRank();
+            int suit = node.getSuit();
+            node.setInfo(nextNode.getRank(), nextNode.getSuit());
+            nextNode.setInfo(rank, suit);
+            node = node.getLink();
+        }
+        numCard = 52;
+    }
+
+    /**
+     * Returns the number of undealt cards.
+     * @return     int number of undealt cards
+     */
+    public int cardsLeft()
+    {
+        return numCard;
+    }
+
+    /**
+     * Deal's one card at a time. If all cards are dealt, card's are automatically shuffled. 
+     * @return     LLNode dealt card
+     */
+    public LLNode dealCard()
+    {
+        LLNode node;
+        node = next;
+
+        if(node == null) {  
+            try {
+                shuffle();
+                next = cardDeck;
+            }
+            catch(RunTimeException EmptyDeckException) {
+            }
+            else {
+                node = node.getLink();
+                next = node;
+                numCard--;
+                return node;
+            }
+        }
+
+        /**
+         * Returns a string representing the entire deck of cards
+         * @return     String representation of each card in the deck
+         */
+        public String toString()
+        {
+            String cardString = "Deck: ";
+            LLNode node;
+            node = cardDeck;
+            while(node != null)
+            {
+                node.getLink();
+                cardString = cardString + "\n" + node.toString();
+                node = node.getLink();
+            }
+            return cardString;
+        }
+    }

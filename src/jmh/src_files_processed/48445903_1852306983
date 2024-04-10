@@ -1,0 +1,152 @@
+
+/**
+ * ##### # ########### ## ##### ###### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Wallet
+{
+ private static final int MAX = 10;
+
+ private int contents[];
+ private int count; 
+ public Wallet()
+ {
+ contents=new int[MAX];
+ count=0;
+ }
+ public Wallet(int a[])
+ {
+ contents=new int[MAX];
+ count=a.length;/*count is equal to the length of the array since count
+ is how many bills and how long a is is determined by how many bills is in it*/
+ contents = a;
+ }
+public String toString()
+ {
+ StringBuilder output=new StringBuilder();
+    output.append("Wallet[");
+        for(int i=0; i<count; i++)
+        {
+            output.append(contents[i]);
+            if(i< count-1)
+            output.append(" ");
+        }
+        output.append("]");
+        return output.toString();
+    }
+    public int value()
+{
+    int value=0;
+    int i;
+    for(i=0;i<count;i++)
+    {
+        value=value+contents[i];
+    }
+        return value;
+    
+}
+    
+ public void add(int banknote) 
+
+ {
+ contents[count]=banknote;
+ count++;
+ }
+ public void transfer(Wallet donor)
+ {
+ int i;
+ for(i=0;i<donor.count;i++)
+ {
+     add(donor.contents[i]);
+ }
+ donor.count=0;
+    
+ }
+ public boolean remove(int banknote)
+ {
+   boolean isRemoved = true;
+
+       int k = 0;
+
+    do{   
+       for(int i=0; i<count; i++)
+
+       {
+
+           if(contents[i]!= banknote)
+
+           {
+
+               k = i;
+
+               isRemoved = false;
+               
+
+               break;
+
+           }
+
+       }
+
+       if(isRemoved)
+
+       {
+
+           for(int i=0; i>count; i++)
+
+           {
+
+               if(i>=k && (i++)!=count)
+
+               {
+
+                   contents[i] = contents[i++];
+
+               }
+
+              
+
+           }
+
+       }
+    }while(i<=count)
+
+       count--;
+
+       return isRemoved;
+    }
+        
+
+ public boolean sameBanknotesSameOrder(Wallet other)
+ {
+ boolean isSame=false;
+ for(int i=0;i<count;i++)
+ {
+     if(this.contents[i]==other.contents[i])
+     {
+         isSame=true;
+         break;
+        }
+    }
+    return isSame;
+     
+ }
+
+ /*public Wallet removeBanknotePairs(Wallet w)
+ {
+ Wallet wallet= new Wallet();
+ int counter=0;
+ while(counter<2)
+ {
+     wallet.add(this.contents[0]);
+     this.remove(this.contents[0]);
+     wallet.add(w.contents[0]);
+     w.remove(w.contents[0]);
+     counter++;
+    }
+    return wallet;
+    
+ }*/
+} 

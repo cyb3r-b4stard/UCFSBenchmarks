@@ -1,0 +1,87 @@
+public class RedBlackTree<T extends Comparable<T>>
+{
+    private Node<T> root;
+    String result = "";
+    
+    public Node<T> getRoot()
+    {
+        return root;
+    }
+
+    public void insert(final T key)
+    {
+        final Node<T> node = insert(key, root);
+        root = new Node<T>(Color.BLACK, node.getKey(), node.getLeft(), node.getRight());
+    }
+
+    private Node<T> insert(final T key, final Node<T> node)
+    {
+        if (node == null) {
+            return new Node<T>(Color.RED, key, null, null);
+        }
+        else if (key.compareTo(node.getKey()) < 0) {
+            return balance(node.getColor(), node.getKey(), insert(key, node.getLeft()), node.getRight());
+        }
+        else {
+            return balance(node.getColor(), node.getKey(), node.getLeft(), insert(key, node.getRight()));
+        }
+    }
+
+    private Node<T> balance(final Color color, final T key, final Node<T> left, final Node<T> right)
+    {
+        if (color == Color.BLACK) {
+            if (right != null && right.getColor() == Color.RED) { 
+                if (right.getRight() != null && right.getRight().getColor() == Color.RED) {
+                    return new Node<T>(Color.RED, right.getKey(), 
+                        new Node<T>(Color.BLACK, key, left, right.getLeft()), 
+                        new Node<T>(Color.BLACK, right.getRight().getKey(), right.getRight().getLeft(), right.getRight().getRight()));
+                }
+                else if (right.getLeft() != null && right.getLeft().getColor() == Color.RED) {
+                    return new Node<T>(Color.RED, right.getLeft().getKey(), 
+                        new Node<T>(Color.BLACK, key, left, right.getLeft().getLeft()), 
+                        new Node<T>(Color.BLACK, right.getKey(), right.getLeft().getRight(), right.getRight()));
+                }
+            }  
+            if (left != null && left.getColor() == Color.RED) {
+                if (left.getRight() != null && left.getRight().getColor() == Color.RED) {
+                    return new Node<T>(Color.RED, left.getRight().getKey(), 
+                        new Node<T>(Color.BLACK, left.getKey(), left.getLeft(), left.getRight().getLeft()), 
+                        new Node<T>(Color.BLACK, key, left.getRight().getRight(), right));
+                }
+                else if (left.getLeft() != null && left.getLeft().getColor() == Color.RED) {
+                    return new Node<T>(Color.RED, left.getKey(), 
+                        new Node<T>(Color.BLACK, left.getLeft().getKey(), left.getLeft().getLeft(), left.getLeft().getRight()), 
+                        new Node<T>(Color.BLACK, key, left.getRight(), right));
+                }
+            }
+        }
+        return new Node<T>(color, key, left, right); 
+    }
+
+    public void toString(Node<T> root) throws Exception {  
+        if(root !=  null) {
+            result += "(";
+            toString(root.getLeft());  
+            result += root.getKey();
+            
+            Color color = root.getColor();
+            if(color == Color.BLACK) {
+                result += ":B";
+            }
+            else if(color == Color.RED){
+                result += ":R";
+            }
+            else {
+                throw new Exception;
+            }
+            
+            toString(root.getRight());
+            result += ")";
+        }
+        else {
+            result += "[]";
+        }
+        System.out.print(result);
+        result = "";
+    }  
+}

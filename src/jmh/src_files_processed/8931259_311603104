@@ -1,0 +1,70 @@
+package Ejemplo3Capas.Datos;
+
+
+import Ejemplo3Capas.Entidad.Usuario;
+import Ejemplo3Capas.Entidad.TipoUsuario;
+import java.sql.Statement;
+import java.sql.ResultSet;
+
+/**
+ * #### ##### ############ ### ############### ### ########## ###### ######## ## ## #### ## #####
+ * # ###### ##### ## ####### ##### ####.
+ * 
+ * #### ##### ## ###### ## ########## ## ## #######, #### ## ######## ## #############.#######.#######
+ * 
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class DatosUsuario extends DatosBase 
+{
+   
+    public Usuario ObtenerUsuarioPorId(int Id)
+    {
+        Usuario usuarioObtenido=new Usuario();
+         String sql ="select * from usuario where Id=" +Id;
+         try {
+            Statement stmt =  this.ConectorBd().createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            if(rs.next()){
+                usuarioObtenido.setIdUsuario(rs.getInt("IdUsuario"));
+                usuarioObtenido.setNombre(rs.getString("Nombre"));
+                usuarioObtenido.setClave(rs.getString("Clave"));
+                int idTipoUsuario=(rs.getInt("IdTipoUsuario"));
+                TipoUsuario tipoUsuario=new TipoUsuario();
+                tipoUsusario=new DatosTipoUsuario().ObtenerUsuarioPorId(idTipoUsuario);
+                usuarioObtenido.setTipo(tipoUsuario);
+                
+            }
+            return usuarioObtenido;
+            
+        } catch (Exception e) {
+            return null;
+        }
+        
+
+
+    }
+    public Usuario ObtenerUsuario(String Nombre, String Clave)
+    {
+        Usuario usuarioObtenido=new Usuario();
+         String sql ="select * from usuario where Nombre=" +Nombre" and Clave="+Clave;
+         try {
+            Statement stmt =  this.ConectorBd().createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            if(rs.next()){
+                usuarioObtenido.setId(rs.getInt("IdUsuario"));
+                usuarioObtenido.setNombre(rs.getInt("Nombre"));
+                usuarioObtenido.setClave(rs.getString("Clave"));
+                usuarioObtenido.setIdTipoUsuario(rs.getString("IdTipoUsuario"));
+            }
+            return usuarioObtenido;
+            
+        } catch (Exception e) {
+            return null;
+        }
+        
+
+
+    }
+}

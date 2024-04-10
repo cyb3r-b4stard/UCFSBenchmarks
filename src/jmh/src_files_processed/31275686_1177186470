@@ -1,0 +1,310 @@
+
+/**
+ * ##### # ########### ## ##### ######## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Personas
+{
+    private static int total_personas = 0;
+    private static Personas primeraPersona = null;
+
+    private int id;
+    private String nombre;
+    private String apellidos;
+    private int nacimiento;
+    private int facellimiento;
+    private String area;
+    private Personas siguientePersona;
+
+    /**
+     * Constructor for objects of class Personas
+     */
+    public Personas(String nombreEntrada, String apellidosEntrada, int nacimientoEntrada)
+    {
+        total_personas ++;
+        id = total_personas;
+        nombre = nombreEntrada;
+        apellidos = apellidosEntrada;
+        nacimiento = nacimientoEntrada;
+        facellimiento = 0;
+        area = null;
+
+        if (primeraPersona == null)
+            primeraPersona = this;
+        else {
+            Personas personaAux = primeraPersona;
+            while (personaAux.siguientePersona != null)
+                personaAux = personaAux.siguientePersona;
+            personaAux.siguientePersona = this;
+        }
+
+    }
+
+
+    public int obtenerID()
+    {
+        return this.id;
+    }
+
+    public String obtenerNombre()
+    {
+        return this.nombre;
+    }
+
+    public String obtenerApellidos()
+    {
+        return this.apellidos;
+    }
+
+    public int obtenerNacimiento()
+    {
+        return this.nacimiento;
+    }
+
+    public int obtenerFacellimiento()
+    {
+        return this.facellimiento;
+    }
+
+    public boolean personaViva()
+    {
+        if (this.facellimiento == 0){
+            return true;}
+        else {
+            return false;}
+    }
+
+    public String imprimirFacellimiento()
+    {
+        if (this.facellimiento == 0){
+            return "Persona viva";}
+        else {
+            int entero = this.facellimiento;
+            String trampa = entero + "";
+            return (trampa);}
+    }
+
+    public String ObtenerArea()
+    {
+        return this.area;
+    }
+
+    public String imprimirArea()
+    {
+        if (this.area == null){
+            return "Sin área asignada";
+        }
+        else {
+            return this.area;
+        }
+    }
+
+    public String ObtenerNombreCompleto()
+    {
+        return this.obtenerNombre() + " " + this.obtenerApellidos();
+    }
+
+
+    private void ponerApellidos(String apellidosEntrada)
+    {
+        this.apellidos = apellidosEntrada;
+    }
+
+    private void ponerFacellimiento(int entrada)
+    {
+        this.facellimiento = entrada;
+    }
+
+    private void ponerArea(String entrada)
+    {
+        this.area = entrada;
+    }
+
+    public static Personas buscarPersona(String nombreBusqueda) {
+        Personas personaAux = primeraPersona;
+
+        while (personaAux != null) {
+            if (personaAux.nombre.equals(nombreBusqueda)){
+                System.out.println("Pesrona encontrada: " + personaAux.nombre + ".");
+                return personaAux;}
+            personaAux = personaAux.siguientePersona;
+        }
+        return null;
+    }
+
+    public static Personas buscarPersona(int idBusqueda) {
+        if (total_personas < 1) {
+            System.out.println("Error. Todavía no se ha creado ninguna persona en el sistema.");
+            return null;
+        }    
+
+        Personas personaAux = primeraPersona;
+
+        while (personaAux != null) {
+            if (personaAux.id == idBusqueda){
+                System.out.println("Pesrona encontrada: " + personaAux.nombre + ".");
+                return personaAux;}
+            personaAux = personaAux.siguientePersona;
+        }
+        System.out.println("Error. No se ha encontrado ninguna persona con ese ID.");
+        return null;
+    }
+
+    public static void borrarPersona(int idBusqueda) {
+
+        if (idBusqueda == primeraPersona.id) {
+            System.out.println("Persona borrada: " + primeraPersona.nombre + ".");
+            primeraPersona = primeraPersona.siguientePersona;
+        } else {
+            Personas personaAux = primeraPersona;
+            while (personaAux != null) {
+                if (personaAux.siguientePersona.id == idBusqueda) {
+                    System.out.println("Persona borrada: " + personaAux.siguientePersona.nombre + ".");
+                    personaAux.siguientePersona = personaAux.siguientePersona.siguientePersona;
+                    break;
+                }
+                personaAux = personaAux.siguientePersona;
+            }
+        }
+    }
+
+    /** Modificacion de toString para la       *
+     * impresión del contenido de    *
+     * de un objeto de tipo Personas */
+    public String toString() {      
+        String imprime = "\tNombre y apellidos:\t" + ObtenerNombreCompleto()
+            + "\n\tID:\t\t\t" + id + "\n\tFecha de nacimiento:\t" + nacimiento + "\n\tFecha de defunción:\t" + imprimirFacellimiento() + "\n\tÁrea de conocimiento:\t" + imprimirArea() + "\n";
+        return imprime;
+    }
+
+    public static void listarPersonas() {
+        Personas personaAux = primeraPersona;
+
+        while (personaAux != null) {
+            System.out.println(personaAux);
+            personaAux = personaAux.siguientePersona;
+        }
+    }
+
+    public static void listarPersonas(String areaBusqueda) {
+        System.out.println("\tFiltrado por área de conocimiento " + areaBusqueda);
+        Personas personaAux = primeraPersona;
+
+        while (personaAux != null) {
+            if (areaBusqueda.equals(personaAux.area)) {
+                System.out.println(personaAux);
+            }
+            personaAux = personaAux.siguientePersona;
+        }
+    }
+
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public static void asignarArea(int idBusqueda, String areaEntrada)
+    {
+
+        if (idBusqueda == primeraPersona.id) {
+            primeraPersona.ponerArea(areaEntrada); 
+            System.out.println("Se ha asignado " + areaEntrada + "a " + primeraPersona.nombre + ".");
+            Areas registroArea = new Areas(areaEntrada);
+        } else {
+            Personas personaAux = primeraPersona;
+            while (personaAux != null) {
+                if (personaAux.siguientePersona.id == idBusqueda) {
+                    personaAux.siguientePersona.ponerArea(areaEntrada); 
+                    System.out.println("Se ha asignado " + areaEntrada + "a " + personaAux.siguientePersona.nombre + ".");
+                    Areas registroArea = new Areas(areaEntrada);
+
+                    personaAux.siguientePersona = personaAux.siguientePersona.siguientePersona;
+                    break;
+                }
+                personaAux = personaAux.siguientePersona;
+            }
+        }
+    }
+
+    public static void asignarFallecimiento(int idBusqueda, int fechaFallecimiento)
+    {
+
+        if (idBusqueda == primeraPersona.id) {
+
+            if (primeraPersona.nacimiento > fechaFallecimiento) {
+                System.out.println("Error. La fecha de fallecimiento no puede ser anterior a la de nacimiento");
+            }
+            else {
+                primeraPersona.ponerFacellimiento(fechaFallecimiento); 
+                System.out.println("Se ha asignado " + fechaFallecimiento + "a " + primeraPersona.nombre + ".");}
+        } else {
+            Personas personaAux = primeraPersona;
+            while (personaAux != null) {
+                if (personaAux.siguientePersona.id == idBusqueda) {
+
+                    if (primeraPersona.nacimiento > fechaFallecimiento) {
+                        System.out.println("Error. La fecha de fallecimiento no puede ser anterior a la de nacimiento");
+                    }
+                    else {
+                        personaAux.siguientePersona.ponerFacellimiento(fechaFallecimiento); 
+                        System.out.println("Se ha asignado " + fechaFallecimiento + "a " + personaAux.siguientePersona.nombre + ".");
+
+                        personaAux.siguientePersona = personaAux.siguientePersona.siguientePersona;
+                        break;}
+                }
+                personaAux = personaAux.siguientePersona;
+            }
+        }
+    
+    }
+
+    public static int comprobarCoetaneos(int idBusqueda){
+        String coetaneos = "";
+        if (idBusqueda == primeraPersona.id) {
+            Personas personaAux = primeraPersona.siguientePersona;
+            while (personaAux != null) {
+
+            if (primeraPersona.nacimiento > personaAux.facellimiento) {
+                coetaneos = coetaneos + personaAux.nombre;
+            }
+           }
+           personaAux = personaAux.siguientePersona;
+        } /*else {
+            Personas personaAux = primeraPersona;
+            while (personaAux != null) {
+                if (personaAux.siguientePersona.id == idBusqueda) {
+
+                    if (primeraPersona.nacimiento > fechaFallecimiento) {
+                        System.out.println("Error. La fecha de fallecimiento no puede ser anterior a la de nacimiento");
+                    }
+                    else {
+                        personaAux.siguientePersona.ponerFacellimiento(fechaFallecimiento); 
+                        System.out.println("Se ha asignado " + fechaFallecimiento + "a " + personaAux.siguientePersona.nombre + ".");
+
+                        personaAux.siguientePersona = personaAux.siguientePersona.siguientePersona;
+                        break;}
+                }
+                personaAux = personaAux.siguientePersona;
+            }*/
+        }
+
+       /* Numero numeroAux = primerNumero;
+        Numero tempModa = primerNumero;
+        int moda = tempModa.valor;
+
+        while (numeroAux != null) {
+            if (numeroAux.contador > tempModa.contador){
+                tempModa = numeroAux;
+                moda = numeroAux.valor;
+            }
+            numeroAux = numeroAux.siguienteNumero;
+
+        }
+        return moda;*/
+        return 0;
+    } 
+    
+}

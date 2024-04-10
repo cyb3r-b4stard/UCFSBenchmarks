@@ -1,0 +1,167 @@
+import javax.swing.*;
+public class Game
+{
+    private char[][] gesetzt; 
+    private boolean xIstAnDerReihe = true;
+    private boolean spielIstZuEnde = false; private int[] pos;
+
+    private GUI oberflaeche;
+
+    
+    /**
+     * Erzeugt die grafische Oberfäche für das Spiel und ruft dann ... 
+     */
+    public Game()
+    { 
+        gesetzt = new char[4][10];          
+        pos=new int[2];
+        oberflaeche = new GUI("Tic Tac Toe", gesetzt, this);
+        gesetzt [3][1]='O';
+        oberflaeche.aktualisiereAnzeige();
+    }
+
+    /** Setzt ein bestimmtes Zeichen in ein Spielfeld.     *
+     *  ACHTUNG: diese Beispiel-Methode enthält NOCH KEINEERLEI Fehlerüberprüfungen!
+     *  
+     * @param zeile zulässige Werte sind 0 bis Anzahl der Zeilen - 1
+     * @param spalte zulässige Werte sind 0 bis Anzahl der Spalten - 1
+     * @param zeichen das neue Zeichen, das an der angeg. Position dargestellt werden soll.
+     *                Möglich sind grundsätzlich alle Buchstaben (auch Leerzeichen).
+
+     */
+    public void setze(int zeile, int spalte, char zeichen)
+    {
+        gesetzt[zeile][spalte] = zeichen; 
+        oberflaeche.aktualisiereAnzeige();
+    }
+
+    /** zu erstellende Methode:     
+     * 
+     */
+    public void neuesSpiel()
+    {
+    }
+
+    /** zu erstellende Methode:     
+     * 
+     */
+    public void setzeX(int zeile, int spalte)
+    {
+        /* Soll für Spieler "X" ein Kreuzchen setzen. Das soll natürlich nur an Stellen
+         * möglich sein, wo noch kein "X" oder "O" gesetzt wurde.
+         * 
+         * Weiters darf die Methode nur einmal aufgerufen werden, dann muß ein Aufruf von 
+         * "setzeO()" erfolgen und erst danach darf diese Methode wieder einen Spielzug
+         * erlauben.
+         * 
+         * Wird sie 2x unmittelbar hintereinander aufgerufen, dann soll der 2. Aufruf eine 
+         * Fehlermeldung in der Art "Der andere Spieler ist am Zug!" ausgeben.
+         * 
+         * Abschließend ist die Methode "pruefeSpielstand() aufzurufen.
+         */
+    }
+
+    /** Setzt ein 'O' in die angegebene Zeile / Spalte
+     *  @param zeile Wert zwischen 1 und 3
+     *  @param spalte Wert zwischen 1 und 3
+     */    
+    public void setzeO(int zeile, int spalte)
+    {
+        /* Verhalten analog zu Methode "setzeX()" 
+        Man könnte beide Methoden auch zu einer zusammenfassen 
+        und das zu setzende Zeichen als zusätzlichen Parameter übergeben
+         */
+    }
+
+    public void jump(){
+        int column=getPos()[0]; int row=getPos()[1];
+        gesetzt[row][column]=' '; oberflaeche.aktualisiereAnzeige();
+        gesetzt[row-1][column]='O'; oberflaeche.aktualisiereAnzeige();
+        
+        Runnable r=new Runnable(){
+            public void run(){
+                try{Thread.sleep(delay);}
+                catch{InterruptedExceptin iex}
+                
+            }
+        };
+        new Thread(r).start();
+        
+        
+
+    }
+
+    public void feldAktuallisieren(){
+        java.util.Random r=new java.util.Random();
+        for(int x=0; x<10; x++){
+        }
+    }
+
+    /** zu erstellende Methode:     
+     * 
+     */
+    public void /* char */ pruefeSpielstand()
+    {
+        /* Diese Methode soll überprüfen ob von den 'X' oder den 'O' 3 horizontal, 
+         * vertikal oder diagonal in einer Reihe sind.
+         * Ist dies der Fall, dann soll der Gewinnerbuchstabe zurückgegeben werden 
+         * oder direkt ausgegeben werden (z.B.: "Spieler X hat gewonnen").
+         * Danach soll kein weiterer Zug mehr möglich sein, d.h. Aufrufe von 
+         * "setzeX()" oder "setzeO()" sollen in diesem Zustand wirkungslos bleiben.
+         * Erst nach einem Neustart des Spiels soll das wieder möglich sein.
+         * 
+         * Anmerkung: zu Testzwecken ist es sinnvoll diese Methode "public" zu deklarieren,
+         * sobald sie funktioniert, wird sie aber nur mehr von den setze...()-Methoden 
+         * aufgerufen und kann dann auch auf "private" geändert werden.
+         */
+
+    }
+    
+    /**
+     * 1. Column 2. Row
+     */
+    public int[] getPos(){
+        for(int x=0; x<gesetzt.length; x++){
+            for(int y=0; y<gesetzt[x].length; y++){
+                if(gesetzt[x][y]=='O'){
+                    pos[0]=y;
+                    pos[1]=x;
+                    return pos;
+                }
+            }
+        }
+        return pos;
+    }
+
+    /** Diese Methode wird von der graphischen Oberfläche aufgerufen, sobald eine Taste
+     * gedrückt wurde. Als Information wird mitgeliefert in welcher Zeile und Spalte, 
+     * welche Maustaste gedrückt wurde (1=links, 2=mittle, 3=rechts). 
+     *
+     * Diese Methode kann verwendet werden um den Spielfeldinhalt entsprechend der eigenen
+     * Spielelogik zu veränden ;-)
+     */
+    public void mausKlick(int zeile, int spalte, int maustaste)
+    {  
+        /*
+        System.out.println("Taste gedrückt:");
+        System.out.println("  Position: Zeile=" + zeile + ", Spalte=" + spalte);
+        System.out.println("  Maustaste: " + maustaste);
+         */
+
+        oberflaeche.popup("KLICK: ", 
+            "Taste " + maustaste + " gedrückt, Spalte: " +spalte + ", Zeile: " + zeile, 
+            false);
+    }
+
+    /** main-Methode: zum Start des Spiels ohne in BlueJ ein Objekt manuell zu erzeugen */
+    public static void main(String[] args)
+    {
+        new Game();
+    }
+
+    public void nachruecken(){
+        for(int x=0; x<gesetzt.length; x++){
+
+        }
+    }
+}

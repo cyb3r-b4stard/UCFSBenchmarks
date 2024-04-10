@@ -1,0 +1,111 @@
+import java.util.Scanner;
+
+public class SearchingMethods
+{
+    private int[] unsorted;
+    private int[] sorted;
+    private static int RANDMAX = 1000000;      
+    private long sortRuntime;
+
+    public SearchingMethods(){
+        Scanner kb = new Scanner(System.in);
+        QuickSort quick;
+        int size;
+        long startTime, endTime;
+
+        System.out.print("What size of array do you want? ");
+        size = kb.nextInt();
+        unsorted = new int[size];
+
+        for(int i = 0; i < size; i++){
+            unsorted[i] = (int)(Math.random()*RANDMAX + 1);
+        }
+
+        quick = new QuickSort(unsorted);
+        startTime = System.nanoTime();
+        quick.quickSort(0,size-1);
+        endTime = System.nanoTime();
+        sorted = quick.getArr();
+        sortRuntime = endTime - startTime;     
+    }
+
+    public static void main(String[] args){
+
+        SearchingMethods search = new SearchingMethods();
+        search.runTest();
+
+    }
+
+    public void runTest(){
+        long startTime, endTime;
+        double aveTime;
+        int target;
+
+        startTime = System.nanoTime();
+        for(int n = 0; n < 1000; n++){
+            target = (int)(Math.random()*RANDMAX + 1);
+            sequentialSearch(unsorted, target);
+        }
+        endTime = System.nanoTime();
+        aveTime = ((endTime-startTime)/1000) / 1000;    
+        System.out.println("Sequential Search (unsorted) averaged: " + aveTime + " micro seconds.");
+
+        startTime = System.nanoTime();
+        for(int n = 0; n < 1000; n++){
+            target = (int)(Math.random()*RANDMAX + 1);
+            sequentialSearch(sorted, target);
+        }
+        endTime = System.nanoTime();
+        aveTime = ((endTime-startTime + sortRuntime)/1000 / 1000);    
+        System.out.println("Sequential Search (sorted) averaged: " + aveTime + " micro seconds.");
+
+        startTime = System.nanoTime();
+        for(int n = 0; n < 1000; n++){
+            target = (int)(Math.random()*RANDMAX + 1);
+            binarySearchRecurse(0, sorted.length-1, target);
+        }
+        endTime = System.nanoTime() + sortRuntime;
+        aveTime = ((endTime-startTime + sortRuntime)/1000) / 1000;    
+        System.out.println("Binary Search (recursive) averaged: " + aveTime + " micro seconds.");
+
+        startTime = System.nanoTime();
+        for(int n = 0; n < 1000; n++){
+            target = (int)(Math.random()*RANDMAX + 1);
+            binarySearchLoop(target);
+        }
+        endTime = System.nanoTime() + sortRuntime;
+        aveTime = ((endTime-startTime + sortRuntime)/1000) / 1000;    
+        System.out.println("Binary Search (loop) averaged: " + aveTime + " micro seconds.");
+    }
+
+    public boolean sequentialSearch(int[] arr, int targetValue){
+
+        return false; 
+    }
+
+    public boolean binarySearchRecurse(int low, int high, int targetValue){
+        int pivot = high/2;
+        if(pivot = targetValue){
+            return true;
+        }
+        else
+        if(pivot > targetValue){
+            pivot = pivot/2;
+            binarySearchRecurse(int low, int pivot, int targetValue);
+            
+        }
+        else
+        if(pivot < targetValue){
+            pivot = (pivot + high)/2;
+            binarySearchRecurse(int pivot, int high, int targetValue);
+            
+        }
+        else
+        return false; 
+    }
+
+    public boolean binarySearchLoop(int targetValue){
+
+        return false; 
+    }
+}

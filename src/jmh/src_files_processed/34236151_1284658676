@@ -1,0 +1,68 @@
+/**
+ * ########.####
+ * ##### ##### ## ########
+ * 
+ * @######  
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Mountain
+{
+    
+    
+    private int yi,y1,y2;
+    private double m;
+    private double a,b,c;
+    private int xi,x;
+    private double [] curve = new double[15];
+    private int [] curvePosition=new int[500];
+    private boolean alternator=true;
+    private boolean makeSense=true;
+    public Mountain(int yi, double m){
+        this.yi=yi;
+        this.m=m;
+        
+        for(int i=0;i<500;i++){
+            while(makeSense){
+                
+                m=2*a*x+b;
+                if(i%50==0){
+                    
+                    xi=(int)(Math.random()*50-25);
+                    
+                    
+                    if(alternator){
+                        a=Math.random()*.03;
+                        alternator=!alternator;
+                    }else{
+                        a=Math.random()*(-a-.0075);
+                        alternator=!alternator;
+                    }
+                    
+                    
+                    b=m-2*a*xi;
+                    c=yi-a*xi*xi-b*xi;
+                    
+                    x=xi;
+                }
+                
+                if(a*x*x+b*x+c<y2){
+                    makeSense=false;
+                    yi=y2
+                }
+            }
+            
+            curvePosition[i]=(int)(a*x*x+b*x+c);
+            x++;
+            yi=curvePosition[i];
+            
+        }
+        
+        
+    }
+    
+    public int[] getSlope(){
+        
+        
+        return curvePosition;
+    }
+}

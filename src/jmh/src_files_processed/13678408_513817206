@@ -1,0 +1,88 @@
+/**
+ * ##### ### ####
+ * 
+ * @###### ###. ##### 
+ * @####### #-##.##.##
+ */
+import java.util.Scanner;
+
+public class GameTester {
+    private static final String TAB = "            ";
+    private static final String NAME = "Name: ";
+    private static final String HP = "| HP: ";
+    private static Scanner in = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        System.out.println("Enter the first character name: ");
+        Character Johnson = new Soldier(in.next());
+        System.out.println("Enter the second character name: ");
+        Character Max = new Rogue(in.next());
+        printCharacterStats(Johnson, Max);
+        int counter = 0;
+
+        while (Max.getHP() > 0 && Johnson.getHP() > 0) {
+            String foo = in.next();
+            if (counter % 2 == 0) {
+                attack(Johnson, Max);
+            }
+            else {
+                attack(Max, Johnson);
+            }
+            counter ++;
+        }
+
+        Character Survivor = new Blank();
+        Character Loser = new Blank();
+
+        if (Max.getHP() > 0) {
+            Survivor = Max;
+            Loser = Johnson;
+        }
+        else {
+            Survivor = Johnson;
+            Loser = Max;
+        }
+
+        System.out.println(Loser.getName() + " has fainted!\n");
+
+        Character Elise = new Blank();
+        
+        if (Survivor.getType().equals("Rogue")) {
+            Elise = new Rogue("Elise");
+        }
+        else if (Survivor.getType().equals("Soldier")) {
+            Elise = new Soldier("Elise");
+        }
+
+        System.out.println(Elise.getType() + " " + Elise.getName() + " enters the battlefield!\n");
+
+        while (Survivor.getHP() > 0 && Elise.getHP() > 0) {
+            printCharacterStats(Survivor, Elise);
+            attack(Survivor, Elise);
+            printCharacterStats(Survivor, Elise);
+            attack(Elise, Survivor);
+        }
+    }
+
+    private static void printCharacterStats(Character c1, Character c2) {
+        if (c1.getName().toLowerCase().compareTo(c2.getName().toLowerCase()) > 0) {
+            Character temp = c2;
+            c2 = c1;
+            c1 = temp;
+        }
+        
+        System.out.println("/f" NAME + String.format("%-8s", c1.getName())
+            + TAB + HP + String.format("%3d", (int) c1.getHP()) + "\n"
+            + NAME + String.format("%-8s", c2.getName()) + TAB
+            + HP + String.format("%3d", (int) c2.getHP()) + "\n");
+    }
+
+    private static void attack(Character c1, Character c2) {
+        for (int attackNumber = 0; attackNumber < c1.getAttacks(); attackNumber ++) {
+            System.out.println(c1.getName() + " attacks " + c2.getName() + "!");
+            c2.damage(c1.attack());
+            System.out.println(c1.getName() + " dealt " + (int) c1.attack() + " damage" + "!\n");
+            printCharacterStats(c1, c2);
+        }
+    }
+}

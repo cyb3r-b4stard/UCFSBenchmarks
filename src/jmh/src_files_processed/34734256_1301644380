@@ -1,0 +1,336 @@
+/**
+*#### ######### ## ###### ### ######### ### #####
+*/
+import javax.swing.UIManager.LookAndFeelInfo;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import javax.swing.border.Border;
+import javax.swing.*;
+
+
+public class GUI_project extends JFrame {
+
+    private JMenuBar menuBar;
+    private JButton btnEinsatzsetzen1;
+    private JButton btnHoelzchensetzen;
+    private JButton btnHoelzchenziehen1;
+    private JButton btnEinsatzsetzen2;
+    private JButton btnHoelzchenziehen2;
+    private JLabel label1;
+    private JLabel label2;
+    private JLabel label4;
+    private JLabel label5;
+    private JLabel label6;
+    private JTextArea textarea1;
+    private JTextField tfHölzchenAnzahl;
+    private JTextField tfZügeAnzahl;
+    private JTextField tfEinsatzsetzen1;
+    private JTextField tfHoelzchensetzen1;
+    private JTextField tfHoelzchenziehen1;
+    private JTextField tfEinsatzsetzen2;
+    private JTextField tfHoelzchenziehen2;
+    
+    
+    private Spieler spieler1;
+    private Spieler spieler2;
+    private Topf topf;
+    private Schachtel schachtel;
+
+    public GUI_project(Spieler pSpieler1, Spieler pSpieler2, Topf pTopf, Schachtel pSchachtel){
+        this.spieler1 = pSpieler1;
+        this.spieler2 = pSpieler2;
+        this.topf = pTopf;
+        this.schachtel = pSchachtel;
+        
+        this.setTitle("GUI_project");
+        this.setSize(699,712);
+        generateMenu();
+        this.setJMenuBar(menuBar);
+
+        JPanel contentPane = new JPanel(null);
+        contentPane.setPreferredSize(new Dimension(699,712));
+        contentPane.setBackground(new Color(192,192,192));
+
+
+        btnEinsatzsetzen1 = new JButton();
+        btnEinsatzsetzen1.setBounds(15,237,125,35);
+        btnEinsatzsetzen1.setBackground(new Color(214,217,223));
+        btnEinsatzsetzen1.setForeground(new Color(0,0,0));
+        btnEinsatzsetzen1.setEnabled(true);
+        btnEinsatzsetzen1.setFont(new Font("sansserif",0,12));
+        btnEinsatzsetzen1.setText("Einsatz setzen");
+        btnEinsatzsetzen1.setVisible(true);
+        
+        btnEinsatzsetzen1.addActionListener(new ActionListener()
+        {public void actionPerformed(ActionEvent evt)
+            {   
+                spieler1.einsatzSetzen();
+                tfEinsatzsetzen1.setText(""+spieler1.vermoegen);
+            }
+        });
+        
+        
+        btnHoelzchensetzen = new JButton();
+        btnHoelzchensetzen.setBounds(16,287,125,35);
+        btnHoelzchensetzen.setBackground(new Color(214,217,223));
+        btnHoelzchensetzen.setForeground(new Color(0,0,0));
+        btnHoelzchensetzen.setEnabled(true);
+        btnHoelzchensetzen.setFont(new Font("sansserif",0,12));
+        btnHoelzchensetzen.setText("Hölzchen setzen");
+        btnHoelzchensetzen.setVisible(true);
+        
+        btnHoelzchensetzen.addActionListener(new ActionListener()
+        {public void actionPerformed(ActionEvent evt)
+            {   
+                
+                
+            }
+        });
+        
+
+        btnHoelzchenziehen1 = new JButton();
+        btnHoelzchenziehen1.setBounds(15,338,125,35);
+        btnHoelzchenziehen1.setBackground(new Color(214,217,223));
+        btnHoelzchenziehen1.setForeground(new Color(0,0,0));
+        btnHoelzchenziehen1.setEnabled(true);
+        btnHoelzchenziehen1.setFont(new Font("sansserif",0,12));
+        btnHoelzchenziehen1.setText("Hölzchen ziehen");
+        btnHoelzchenziehen1.setVisible(true);
+        
+        btnHoelzchenziehen1.addActionListener(new ActionListener()
+        {public void actionPerformed(ActionEvent evt)
+            {   
+              spieler1.hoelzchenZiehen(pAnzahl);
+              
+            }
+        });
+        
+        
+        
+
+        btnEinsatzsetzen2 = new JButton();
+        btnEinsatzsetzen2.setBounds(368,240,125,35);
+        btnEinsatzsetzen2.setBackground(new Color(214,217,223));
+        btnEinsatzsetzen2.setForeground(new Color(0,0,0));
+        btnEinsatzsetzen2.setEnabled(true);
+        btnEinsatzsetzen2.setFont(new Font("sansserif",0,12));
+        btnEinsatzsetzen2.setText("Einsatz setzen");
+        btnEinsatzsetzen2.setVisible(true);
+        
+        btnEinsatzsetzen2.addActionListener(new ActionListener()
+        {public void actionPerformed(ActionEvent evt)
+            {   
+                spieler2.einsatzSetzen();
+                tfEinsatzsetzen2.setText(""+spieler2.vermoegen);
+            }
+        });
+
+        btnHoelzchenziehen2 = new JButton();
+        btnHoelzchenziehen2.setBounds(368,285,125,35);
+        btnHoelzchenziehen2.setBackground(new Color(214,217,223));
+        btnHoelzchenziehen2.setForeground(new Color(0,0,0));
+        btnHoelzchenziehen2.setEnabled(true);
+        btnHoelzchenziehen2.setFont(new Font("sansserif",0,12));
+        btnHoelzchenziehen2.setText("Hölzchen ziehen");
+        btnHoelzchenziehen2.setVisible(true);
+        
+        btnHoelzchenziehen2.addActionListener(new ActionListener()
+        {public void actionPerformed(ActionEvent evt)
+            {   
+              spieler2.hoelzchenZiehen();
+              tfHoelzchenziehen2
+            }
+        });
+        
+        
+        
+
+        label1 = new JLabel();
+        label1.setBounds(275,9,150,35);
+        label1.setBackground(new Color(214,217,223));
+        label1.setForeground(new Color(0,0,0));
+        label1.setEnabled(true);
+        label1.setFont(new Font("SansSerif",0,30));
+        label1.setText("Nim-Spiel");
+        label1.setVisible(true);
+
+        label2 = new JLabel();
+        label2.setBounds(23,84,125,35);
+        label2.setBackground(new Color(214,217,223));
+        label2.setForeground(new Color(0,0,0));
+        label2.setEnabled(true);
+        label2.setFont(new Font("SansSerif",0,20));
+        label2.setText("Hölzchen:");
+        label2.setVisible(true);
+
+        label4 = new JLabel();
+        label4.setBounds(371,87,125,35);
+        label4.setBackground(new Color(214,217,223));
+        label4.setForeground(new Color(0,0,0));
+        label4.setEnabled(true);
+        label4.setFont(new Font("SansSerif",0,20));
+        label4.setText("Züge:");
+        label4.setVisible(true);
+
+        label5 = new JLabel();
+        label5.setBounds(19,191,90,35);
+        label5.setBackground(new Color(214,217,223));
+        label5.setForeground(new Color(0,0,0));
+        label5.setEnabled(true);
+        label5.setFont(new Font("SansSerif",0,20));
+        label5.setText("Spieler 1:");
+        label5.setVisible(true);
+
+        label6 = new JLabel();
+        label6.setBounds(384,196,90,35);
+        label6.setBackground(new Color(214,217,223));
+        label6.setForeground(new Color(0,0,0));
+        label6.setEnabled(true);
+        label6.setFont(new Font("SansSerif",0,20));
+        label6.setText("Spieler 2:");
+        label6.setVisible(true);
+
+        textarea1 = new JTextArea();
+        textarea1.setBounds(69,468,548,228);
+        textarea1.setBackground(new Color(255,255,255));
+        textarea1.setForeground(new Color(0,0,0));
+        textarea1.setEnabled(true);
+        textarea1.setFont(new Font("SansSerif",0,20));
+        textarea1.setText("");
+        textarea1.setBorder(BorderFactory.createBevelBorder(1));
+        textarea1.setVisible(true);
+
+        tfHölzchenAnzahl = new JTextField();
+        tfHölzchenAnzahl.setBounds(115,88,50,30);
+        tfHölzchenAnzahl.setBackground(new Color(255,255,255));
+        tfHölzchenAnzahl.setForeground(new Color(0,0,0));
+        tfHölzchenAnzahl.setEnabled(true);
+        tfHölzchenAnzahl.setFont(new Font("sansserif",0,12));
+        tfHölzchenAnzahl.setText("");
+        tfHölzchenAnzahl.setVisible(true);
+
+        tfZügeAnzahl = new JTextField();
+        tfZügeAnzahl.setBounds(428,92,50,30);
+        tfZügeAnzahl.setBackground(new Color(255,255,255));
+        tfZügeAnzahl.setForeground(new Color(0,0,0));
+        tfZügeAnzahl.setEnabled(true);
+        tfZügeAnzahl.setFont(new Font("sansserif",0,12));
+        tfZügeAnzahl.setText("");
+        tfZügeAnzahl.setVisible(true);
+
+        tfEinsatzsetzen1 = new JTextField();
+        tfEinsatzsetzen1.setBounds(151,240,50,30);
+        tfEinsatzsetzen1.setBackground(new Color(255,255,255));
+        tfEinsatzsetzen1.setForeground(new Color(0,0,0));
+        tfEinsatzsetzen1.setEnabled(true);
+        tfEinsatzsetzen1.setFont(new Font("sansserif",0,12));
+        tfEinsatzsetzen1.setText(""+spieler1.vermoegen);
+        tfEinsatzsetzen1.setVisible(true);
+
+        tfHoelzchensetzen1 = new JTextField();
+        tfHoelzchensetzen1.setBounds(153,289,50,30);
+        tfHoelzchensetzen1.setBackground(new Color(255,255,255));
+        tfHoelzchensetzen1.setForeground(new Color(0,0,0));
+        tfHoelzchensetzen1.setEnabled(true);
+        tfHoelzchensetzen1.setFont(new Font("sansserif",0,12));
+        tfHoelzchensetzen1.setText("");
+        tfHoelzchensetzen1.setVisible(true);
+
+        tfHoelzchenziehen1 = new JTextField();
+        tfHoelzchenziehen1.setBounds(153,341,50,30);
+        tfHoelzchenziehen1.setBackground(new Color(255,255,255));
+        tfHoelzchenziehen1.setForeground(new Color(0,0,0));
+        tfHoelzchenziehen1.setEnabled(true);
+        tfHoelzchenziehen1.setFont(new Font("sansserif",0,12));
+        tfHoelzchenziehen1.setText("");
+        tfHoelzchenziehen1.setVisible(true);
+
+        tfEinsatzsetzen2 = new JTextField();
+        tfEinsatzsetzen2.setBounds(507,244,50,30);
+        tfEinsatzsetzen2.setBackground(new Color(255,255,255));
+        tfEinsatzsetzen2.setForeground(new Color(0,0,0));
+        tfEinsatzsetzen2.setEnabled(true);
+        tfEinsatzsetzen2.setFont(new Font("sansserif",0,12));
+        tfEinsatzsetzen2.setText(""+spieler2.vermoegen);
+        tfEinsatzsetzen2.setVisible(true);
+
+        tfHoelzchenziehen2 = new JTextField();
+        tfHoelzchenziehen2.setBounds(509,287,50,30);
+        tfHoelzchenziehen2.setBackground(new Color(255,255,255));
+        tfHoelzchenziehen2.setForeground(new Color(0,0,0));
+        tfHoelzchenziehen2.setEnabled(true);
+        tfHoelzchenziehen2.setFont(new Font("sansserif",0,12));
+        tfHoelzchenziehen2.setText("");
+        tfHoelzchenziehen2.setVisible(true);
+
+        contentPane.add(btnEinsatzsetzen1);
+        contentPane.add(btnHoelzchensetzen);
+        contentPane.add(btnHoelzchenziehen1);
+        contentPane.add(btnEinsatzsetzen2);
+        contentPane.add(btnHoelzchenziehen2);
+        contentPane.add(label1);
+        contentPane.add(label2);
+        contentPane.add(label4);
+        contentPane.add(label5);
+        contentPane.add(label6);
+        contentPane.add(textarea1);
+        contentPane.add(tfHölzchenAnzahl);
+        contentPane.add(tfZügeAnzahl);
+        contentPane.add(tfEinsatzsetzen1);
+        contentPane.add(tfHoelzchensetzen1);
+        contentPane.add(tfHoelzchenziehen1);
+        contentPane.add(tfEinsatzsetzen2);
+        contentPane.add(tfHoelzchenziehen2);
+
+        this.add(contentPane);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setLocationRelativeTo(null);
+        this.pack();
+        this.setVisible(true);
+    }
+
+    public void generateMenu(){
+        menuBar = new JMenuBar();
+
+        JMenu file = new JMenu("File");
+        JMenu tools = new JMenu("Tools");
+        JMenu help = new JMenu("Help");
+
+        JMenuItem open = new JMenuItem("Open   ");
+        JMenuItem save = new JMenuItem("Save   ");
+        JMenuItem exit = new JMenuItem("Exit   ");
+        JMenuItem preferences = new JMenuItem("Preferences   ");
+        JMenuItem about = new JMenuItem("About   ");
+
+
+        file.add(open);
+        file.add(save);
+        file.addSeparator();
+        file.add(exit);
+        tools.add(preferences);
+        help.add(about);
+
+        menuBar.add(file);
+        menuBar.add(tools);
+        menuBar.add(help);
+    }
+
+
+
+     public static void main(String[] args){
+        System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+
+            }
+        });
+    }
+
+}

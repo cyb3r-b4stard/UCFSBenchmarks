@@ -1,0 +1,218 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.border.*;
+/**
+ * # #### ###### ### (######### #### #########) ### ### ##### #######.
+ * ## #### ##############, #### #### ## ##### # ####### ### ######, ## ####
+ * ####### ### ####### ## # ###### #######.
+ * 
+ * @###### ####### ####### ### ##### #. ######
+ * @####### ####.##.##
+ */
+public class Clock
+{
+    private JFrame frame;
+    private JLabel label;
+    private ClockDisplay clock;
+    private boolean clockRunning = false;
+    private TimerThread timerThread;
+    private String alarmTime;
+    private boolean alarmActivated = true;
+    
+    /**
+     * Constructor for objects of class Clock
+     */
+    public Clock()
+    {
+        makeFrame();
+        clock = new ClockDisplay();
+        clockRunning = true;
+        timerThread = new TimerThread();
+        timerThread.start();
+    }
+           
+    private void start()
+    {
+        if ( clockRunning == false ){
+        clockRunning = true;
+        timerThread = new TimerThread();
+        timerThread.start();
+       }
+    }
+   
+    /**
+     * 
+     */
+    private void stop()
+    {
+        clockRunning = false;
+    }
+    
+    /**
+     * 
+     */
+    private void step()
+    {
+        clock.timeTick();
+        label.setText(clock.getTime());
+    }
+    
+    /**
+     * 
+     */
+    private void alarm()
+    {
+      if( alarmTime.equals( clock.getAlarm() ) ){
+        System.out.print("Hello "); 
+        alarmActivated = true;
+      }
+    }
+    
+    /**
+     * 
+     */
+     public void setAlarm( int hour, int min )
+    {
+       String hours = "0";
+       String mins = "0";
+       
+       alarmActivated = false;
+       
+       if(hour < 10) 
+        hours = "0" + hour;
+        
+       if(min < 10) 
+        mins = "0" + min;
+        
+       alarmTime = hours + ":" + mins;        
+    }
+    
+    /**
+     * 'About' function: show the 'about' box.
+     */
+    private void showAbout()
+    {
+        JOptionPane.showMessageDialog (frame, 
+                    "Clock Version 1.0\n" +
+                    "A simple interface for the 'Objects First' clock display project",
+                    "About Clock", 
+                    JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    /**
+     * Quit function: quit the application.
+     */
+    private void quit()
+    {
+        System.exit(0);
+    }
+    
+    /**
+     * Create the Swing frame and its content.
+     */
+    private void makeFrame()
+    {
+        frame = new JFrame("Clock");
+        JPanel contentPane = (JPanel)frame.getContentPane();
+        contentPane.setBorder(new EmptyBorder(1, 60, 1, 60));
+
+        makeMenuBar(frame);
+        
+        contentPane.setLayout(new BorderLayout(12, 12));
+        
+        label = new JLabel("00:00:00", SwingConstants.CENTER);
+        Font displayFont = label.getFont().deriveFont(96.0f);
+        label.setFont(displayFont);
+        contentPane.add(label, BorderLayout.CENTER);
+
+        JPanel toolbar = new JPanel();
+        toolbar.setLayout(new GridLayout(1, 0));
+        
+        JButton startButton = new JButton("Start");
+        startButton.addActionListener(new ActionListener() {
+                               public void actionPerformed(ActionEvent e) { start(); }
+                           });
+        toolbar.add(startButton);
+       
+        JButton stopButton = new JButton("Stop");
+        stopButton.addActionListener(new ActionListener() {
+                               public void actionPerformed(ActionEvent e) { stop(); }
+                           });
+        toolbar.add(stopButton);
+
+        JButton alarmButton = new JButton("Set Alarm");
+        stepButton.addActionListener(new ActionListener() {
+                               public void actionPerformed(ActionEvent e) { setAlarm( int hour, int min ); }
+                           });
+        toolbar.add(alarmButton);
+
+        JPanel flow = new JPanel();
+        flow.add(toolbar);
+        
+        contentPane.add(flow, BorderLayout.SOUTH);
+        
+        frame.pack();
+        
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        frame.setLocation(d.width/2 - frame.getWidth()/2, d.height/2 - frame.getHeight()/2);
+        frame.setVisible(true);
+    }
+    
+    /**
+     * Create the main frame's menu bar.
+     * 
+     * @param frame   The frame that the menu bar should be added to.
+     */
+    private void makeMenuBar(JFrame frame)
+    {
+        final int SHORTCUT_MASK =
+            Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+
+        JMenuBar menubar = new JMenuBar();
+        frame.setJMenuBar(menubar);
+        
+        JMenu menu;
+        JMenuItem item;
+        
+        menu = new JMenu("File");
+        menubar.add(menu);
+        
+        item = new JMenuItem("About Clock...");
+            item.addActionListener(new ActionListener() {
+                               public void actionPerformed(ActionEvent e) { showAbout(); }
+                           });
+        menu.add(item);
+
+        menu.addSeparator();
+        
+        item = new JMenuItem("Quit");
+            item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, SHORTCUT_MASK));
+            item.addActionListener(new ActionListener() {
+                               public void actionPerformed(ActionEvent e) { quit(); }
+                           });
+        menu.add(item);
+    }
+    
+    class TimerThread extends Thread
+    {
+        public void run()
+        {
+            while (clockRunning) {
+                step();
+                pause();
+                if ( alarmActivated  == false )
+                 alarm();
+            }
+        }
+        
+        private void pause()
+        {
+            try {
+                Thread.sleep(300);   
+            }
+            catch (InterruptedException exc) {
+            }
+        }
+    }
+}

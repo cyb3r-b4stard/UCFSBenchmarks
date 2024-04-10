@@ -1,0 +1,498 @@
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+375
+            userName = userName.substring(0, 14);
+376
+        }
+377
+        if(userName.length() == 0)
+378
+        {
+379
+            userName = "Mr. X";
+380
+        }
+381
+        panel2.setVisible(false);
+382
+        sendHighscore();
+383
+    }
+384
+ 
+385
+    public void sendHighscore()
+386
+    {
+387
+        if(highscore == 1)
+388
+        {
+389
+            try
+390
+            {
+391
+                String s = getDocumentBase().toString();
+392
+                String s1 = "www.libero.it";
+393
+                int i = (hits * 3 + 3) * 2 + (id + 5);
+394
+                int j = userName.length() + s.length();
+395
+                s1 = s1 + "?n=" + userName + "&s=" + hits + "&i=" + id + "&c=" + i + "&c2=" + j + "&u=" + s;
+396
+                TMP = s1;
+397
+                URL url = new URL(s1);
+398
+                getAppletContext().showDocument(url, "_blank");
+399
+            }
+400
+            catch(Exception exception) { }
+401
+        }
+402
+    }
+403
+ 
+404
+}import java.applet.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.net.URL;
+import java.util.EventObject;
+
+public final class pingpong extends Applet
+    implements Runnable, MouseListener, MouseMotionListener
+{
+    class SymAction
+        implements ActionListener
+    {
+
+        public void actionPerformed(ActionEvent actionevent)
+        {
+            Object obj = actionevent.getSource();
+            if(obj == button1)
+            {
+                button1_ActionPerformed(actionevent);
+            }
+        }
+
+        SymAction()
+        {
+        }
+    }
+
+
+    String TMP;
+    String userName;
+    int id;
+    int highscore;
+    Thread wizax;
+    static AudioClip click;
+    AudioClip loose;
+    final int SKAERMFARVE = 255;
+    final int SCREENX = 400;
+    final int SCREENY = 350;
+    final int OBJEKTSFARVE = 255;
+    final int BATLAENGDE = 36;
+    Bold bold;
+    Button startGame;
+    Panel inputPanel;
+    int m1X;
+    int m1Y;
+    int batY;
+    int win;
+    int hits;
+    Image workspace;
+    Graphics offscreen;
+    boolean displayCredits;
+    Font inputF;
+    Font inputF2;
+    Font adress;
+    long nextTime;
+    Panel panel2;
+    Label label1;
+    TextField textField1;
+    Button button1;
+
+    public pingpong()
+    {
+        userName = "";
+        id = 0;
+        highscore = 1;
+        bold = new Bold(400, 350);
+        startGame = new Button();
+        inputPanel = new Panel();
+        batY = 60;
+        win = 0;
+        hits = 0;
+        displayCredits = true;
+        inputF = new Font("Helvetica", 0, 11);
+        inputF2 = new Font("Helvetica", 1, 18);
+        adress = new Font("Helvetica", 1, 14);
+        panel2 = new Panel();
+        label1 = new Label();
+        textField1 = new TextField();
+        button1 = new Button();
+    }
+
+    public void init()
+    {
+        String s = getParameter("highScoreID");
+        if(s != null)
+        {
+            id = Integer.parseInt(s);
+        }
+        if(id > 99 || id < 0)
+        {
+            id = 0;
+        }
+        s = getParameter("highScore");
+        if(s != null)
+        {
+            highscore = Integer.parseInt(s);
+        }
+        click = getAudioClip(getCodeBase(), "click.au");
+        loose = getAudioClip(getCodeBase(), "loose.au");
+        click.play();
+        setLayout(null);
+        add(inputPanel, null);
+        inputPanel.setBounds(137, 20, 150, 20);
+        inputPanel.setLayout(null);
+        inputPanel.setBackground(Color.black);
+        inputPanel.add(startGame);
+        startGame.setBounds(2, 0, 126, 20);
+        startGame.setLabel("Start Game");
+        startGame.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent actionevent)
+            {
+                startGame_actionPerformed(actionevent);
+            }
+
+        });
+        workspace = createImage(400, 350);
+        offscreen = workspace.getGraphics();
+        addMouseListener(this);
+        addMouseMotionListener(this);
+        setLayout(null);
+        setSize(426, 129);
+        panel2.setLayout(null);
+        add(panel2);
+        panel2.setBackground(Color.lightGray);
+        panel2.setBounds(100, 100, 200, 100);
+        label1.setText("Name/handle (for the highscore)");
+        panel2.add(label1);
+        label1.setBounds(20, 10, 160, 24);
+        panel2.add(textField1);
+        textField1.setBounds(20, 40, 160, 20);
+        button1.setLabel("Done");
+        panel2.add(button1);
+        button1.setBackground(Color.lightGray);
+        button1.setBounds(37, 70, 125, 24);
+        panel2.setVisible(false);
+        SymAction symaction = new SymAction();
+        button1.addActionListener(symaction);
+    }
+
+    private void startGame_actionPerformed(ActionEvent actionevent)
+    {
+        bold.setSpeed(2);
+        win = 0;
+        hits = 0;
+        displayCredits = false;
+        startGame.setEnabled(false);
+    }
+
+    public void paint(Graphics g)
+    {
+        offscreen.setColor(Color.black);
+        offscreen.fillRect(0, 0, 400, 350);
+        offscreen.setColor(Color.lightGray);
+        offscreen.drawLine(0, 50, 400, 50);
+        offscreen.drawLine(0, 51, 400, 51);
+        offscreen.drawLine(0, 345, 400, 345);
+        offscreen.drawLine(0, 344, 400, 344);
+        offscreen.drawLine(200, 50, 200, 345);
+        offscreen.drawLine(388, batY, 388, batY + 36);
+        offscreen.drawLine(387, batY, 387, batY + 36);
+        offscreen.drawLine(386, batY, 386, batY + 36);
+        offscreen.drawLine(12, getBatY(), 12, getBatY() + 36);
+        offscreen.drawLine(13, getBatY(), 13, getBatY() + 36);
+        offscreen.drawLine(14, getBatY(), 14, getBatY() + 36);
+        offscreen.fillRect(bold.getX(), bold.getY(), 5, 5);
+        offscreen.drawRect(365, 32, 30, 14);
+        offscreen.drawString("" + hits, 370, 44);
+        offscreen.drawString("Score", 366, 29);
+        if(displayCredits)
+        {
+            offscreen.setFont(inputF);
+            offscreen.setFont(inputF2);
+            offscreen.drawString("PingPong", 60, 90);
+            offscreen.setFont(inputF);
+            offscreen.drawString("Coded by:", 76, 110);
+            offscreen.drawString("Karsten Mandrup Nielsen", 45, 123);
+            offscreen.drawString("Hello to:", 82, 154);
+            offscreen.drawString("The rest of G5", 64, 166);
+            offscreen.setFont(adress);
+            offscreen.drawString("www.G5.dk", 255, 330);
+            offscreen.setFont(inputF);
+        }
+        offscreen.drawString("" + userName, 8, 45);
+        g.drawImage(workspace, 0, 0, this);
+    }
+
+    public void start()
+    {
+        if(wizax == null)
+        {
+            wizax = new Thread(this);
+            wizax.start();
+        }
+    }
+
+    public void run()
+    {
+        do
+        {
+            do
+            {
+                vent(10);
+            } while(displayCredits);
+            if(bold.getX() > 400)
+            {
+                win = 1;
+                loose.play();
+                startGame.setEnabled(true);
+                displayCredits = true;
+                if(highscore == 1 && hits > 5)
+                {
+                    if(userName.length() == 0)
+                    {
+                        indtastNavn();
+                    } else
+                    {
+                        sendHighscore();
+                    }
+                }
+                bold.setX(198);
+                bold.setY(200);
+                bold.setSpeed(0);
+                bold.setHeading(1);
+                bold.beregnNext();
+                startGame.setEnabled(true);
+            } else
+            if(bold.getX() < 15)
+            {
+                bold.headingSkiftX1();
+            }
+            if(win == 0)
+            {
+                if(bold.getX() + 5 >= 386 && bold.getX() + 5 <= 392)
+                {
+                    if(bold.getY() + 3 >= batY && bold.getY() <= batY + 36)
+                    {
+                        if(bold.getY() >= batY + 6 && bold.getY() <= (batY + 36) - 6)
+                        {
+                            bold.headingSkiftX1();
+                        } else
+                        {
+                            bold.headingSkiftX2();
+                        }
+                        hits++;
+                    }
+                    if(hits % 5 == 0)
+                    {
+                        bold.setSpeed(bold.getSpeed() + 1);
+                    }
+                }
+                bold.move();
+            }
+            repaint();
+        } while(true);
+    }
+
+    final void kontrol()
+    {
+        if(m1Y < 51)
+        {
+            batY = 51;
+        } else
+        if(m1Y > 308)
+        {
+            batY = 308;
+        } else
+        {
+            batY = m1Y;
+        }
+    }
+
+    final int getBatY()
+    {
+        if(bold.getY() - 15 < 52)
+        {
+            return 52;
+        }
+        if(bold.getY() - 15 > 307)
+        {
+            return 307;
+        } else
+        {
+            return bold.getY() - 15;
+        }
+    }
+
+    public void update(Graphics g)
+    {
+        paint(g);
+    }
+
+    void vent(int i)
+    {
+        try
+        {
+            Thread.sleep(Math.max(3L, nextTime - System.currentTimeMillis()));
+        }
+        catch(InterruptedException interruptedexception) { }
+        nextTime = System.currentTimeMillis() + (long)i;
+    }
+
+    public void mouseClicked(MouseEvent mouseevent)
+    {
+    }
+
+    public void mousePressed(MouseEvent mouseevent)
+    {
+    }
+
+    public void mouseReleased(MouseEvent mouseevent)
+    {
+    }
+
+    public void mouseEntered(MouseEvent mouseevent)
+    {
+        showStatus("PingPong - www.G5.dk");
+    }
+
+    public void mouseExited(MouseEvent mouseevent)
+    {
+    }
+
+    public void mouseDragged(MouseEvent mouseevent)
+    {
+        m1Y = mouseevent.getY();
+        if(m1Y < 52)
+        {
+            batY = 52;
+        } else
+        if(m1Y > 307)
+        {
+            batY = 307;
+        } else
+        {
+            batY = m1Y;
+        }
+    }
+
+    public void mouseMoved(MouseEvent mouseevent)
+    {
+        m1Y = mouseevent.getY();
+        if(m1Y < 52)
+        {
+            batY = 52;
+        } else
+        if(m1Y > 307)
+        {
+            batY = 307;
+        } else
+        {
+            batY = m1Y;
+        }
+    }
+
+    public static void playSound()
+    {
+        click.play();
+    }
+
+    public void indtastNavn()
+    {
+        textField1.setColumns(15);
+        startGame.setEnabled(false);
+        panel2.setVisible(true);
+        paint(offscreen);
+        textField1.requestFocus();
+    }
+
+    void button1_ActionPerformed(ActionEvent actionevent)
+    {
+        userName = textField1.getText();
+        if(userName.length() > 14)
+        {
+            userName = userName.substring(0, 14);
+        }
+        if(userName.length() == 0)
+        {
+            userName = "Mr. X";
+        }
+        panel2.setVisible(false);
+        sendHighscore();
+    }
+
+    public void sendHighscore()
+    {
+        if(highscore == 1)
+        {
+            try
+            {
+                String s = getDocumentBase().toString();
+                String s1 = "www.libero.it";
+                int i = (hits * 3 + 3) * 2 + (id + 5);
+                int j = userName.length() + s.length();
+                s1 = s1 + "?n=" + userName + "&s=" + hits + "&i=" + id + "&c=" + i + "&c2=" + j + "&u=" + s;
+                TMP = s1;
+                URL url = new URL(s1);
+                getAppletContext().showDocument(url, "_blank");
+            }
+            catch(Exception exception) { }
+        }
+    }
+
+}

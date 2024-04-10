@@ -1,0 +1,940 @@
+import java.util.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.awt.Rectangle;
+
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.io.File;
+
+
+
+/**
+* @###### ##### ######
+*
+*/
+@SuppressWarnings("serial")
+
+public class Game extends GameCore implements MouseListener{ 
+    static int screenWidth = 1024;
+    static int screenHeight = 512; 
+
+    private boolean up = false;
+    private boolean down = false;
+    private boolean startMenu = true;
+    private boolean game_Over = false;
+    private boolean pause = false;
+    private boolean LEFT = true;
+    private boolean fired = false;
+    private boolean submarineSpawn = false;
+    private boolean fishCollision = false;
+    private boolean initialisedGameBackground = false; 
+    private boolean gameRunning = false;
+    private boolean started = false;
+    private boolean dying = false;
+    private boolean level = false;
+    private boolean onYourMarks = false;
+    
+   
+    
+    private Image tappySharkLogo;
+    private Image newHighScore;
+    private Image instructions;
+    private Image getReady;
+    private Image score;
+    private Image gameOver;
+
+    private Image header;
+    private Image background;
+    private Image midground;
+    private Image foreground;
+    
+    
+
+    
+    ArrayList<Sprite> fish = new ArrayList<Sprite>();
+    ArrayList<Sprite> barrels = new ArrayList<Sprite>();    
+    ArrayList<Sprite> bubbleList = new ArrayList<Sprite>(); 
+    ArrayList<Sprite> mineList = new ArrayList<Sprite>();
+
+    TileMap tmap = new TileMap();   
+    ParallaxScrolling scrolling; 
+
+    Animation shark;
+    Animation deadSharkAnim;
+    Animation TappyLogo;
+    Animation enemySubmarine;
+    Animation enemyTorpedo;
+    Animation greenFishFood;
+    Animation yellowFishFood;
+    Animation starFishFood;
+    Animation enemyBarrel;
+    Animation bubbles;
+    Animation mines;
+    Animation explosion;
+
+    Sprite s;
+    Sprite TappySharkLogo;
+    Sprite player = null;
+    Sprite deadShark = null;
+    Sprite sumbmarnine = null;
+    Sprite torpedo = null;
+    Sprite greenFish = null;
+    Sprite yellowFish = null;
+    Sprite starFish = null;
+    Sprite blackBarrel = null;
+    Sprite bubble = null;
+
+    private int current_level;
+    private int numberOfFish = 6;
+    float   lift = 0.3f;
+    float   gravity = 0.0005f;
+    long    total;  
+    int playerScore;
+    private int counter;
+    private int timer = 0;
+    private int levelMarker = 1;
+
+
+    /**
+     * The obligatory main method that creates
+     * an instance of our class and starts it running
+     * 
+     * @param args  The list of parameters this program might use (ignored)
+     */
+    public static void main(String[] args) {
+        Game game = new Game();
+        game.initialise();
+        game.run(false,screenWidth,screenHeight); 
+    }
+
+    /** 
+     * Initialise the class, e.g. set up variables, load images,
+     * create animations, register event handlers
+     */
+    public void initialise(){               
+        int a = 0;
+        int b = 1;
+        int c = 2;        
+        Sprite s;       
+        current_level = 3;        
+        addMouseListener(this);
+
+        this.tappySharkLogo = loadImage("images/TappySharkLogo.png");
+        this.instructions = loadImage("images/StartScreenInstruction.png");
+        this.getReady = loadImage("images/GetReady.png");
+        this.score = loadImage("images/Score.png");
+        this.gameOver = loadImage("images/GameOver.png");
+        this.newHighScore = loadImage("images/newHighScore.png");
+
+
+        shark = new Animation();
+        deadSharkAnim = new Animation();        
+        enemySubmarine = new Animation();
+        enemyTorpedo = new Animation();
+        enemyBarrel = new Animation();
+        greenFishFood = new Animation();
+        yellowFishFood = new Animation();
+        starFishFood = new Animation();
+        bubbles = new Animation();
+        mines = new Animation();
+        explosion = new Animation();
+       
+        shark.loadAnimationFromSheet("images/shark.png" ,8, 1, 60);   
+        deadSharkAnim.loadAnimationFromSheet("images/dead_shark.png" ,1, 1, 60);
+        enemySubmarine.loadAnimationFromSheet("textures/Submarine.png" ,1, 1, 60); 
+        enemyTorpedo.loadAnimationFromSheet("textures/Torpedo.png" ,1, 1, 60);
+        greenFishFood.loadAnimationFromSheet("images/SmallFishGreen.png" ,1, 1, 60);
+        yellowFishFood.loadAnimationFromSheet("images/SmallFishYellow.png" ,1, 1, 60);
+        starFishFood.loadAnimationFromSheet("images/StarfishRed.png" ,1, 1, 60);
+        enemyBarrel.loadAnimationFromSheet("textures/BlackBarrel.png" ,1, 1, 60);
+        bubbles.loadAnimationFromSheet("textures/Bubble.png" ,1, 1, 60);
+        mines.loadAnimationFromSheet("maps/BlackSeaMine.png", 1, 1, 60);
+        explosion.loadAnimationFromSheet("images/Explosion.png", 7, 1, 60);
+        
+        player = new Sprite(shark); 
+        sumbmarnine = new Sprite(enemySubmarine);
+        torpedo = new Sprite(enemyTorpedo);
+        blackBarrel = new Sprite(enemyBarrel);
+        greenFish  = new Sprite(greenFishFood);
+        yellowFish  = new Sprite(yellowFishFood);
+        starFish = new Sprite(starFishFood);
+        bubble = new Sprite(bubbles);
+
+        for (int f = 0; f < numberOfFish; f++){
+            s = new Sprite(greenFishFood);
+            if(a == f){
+                s = new Sprite(greenFishFood);
+                s.setVelocityX((float)(Math.random() * 7) / (- 100));                
+                System.out.println("green");                            
+            }
+            if(b == f){
+                s = new Sprite(yellowFishFood);
+                s.setVelocityX((float)(Math.random() * 10) / - 100); 
+                System.out.println("yellow");                              
+            }
+            if(c == f){
+                s = new Sprite(starFishFood);
+                s.setVelocityX((float)(Math.random() * 10) / - 100);
+                System.out.println("red");
+                a += 3;
+                b += 3;
+                c += 3;               
+            }            
+            s.setX((int)((float)Math.random() * 884  + 200));
+            s.setY((int)((float)Math.random() * 222 + 50));            
+            s.show();
+            fish.add(s);
+        }
+
+        for (int d = 0; d < 3; d++)
+        {
+            s = new Sprite(enemyBarrel);
+            s.setX(512);
+            s.setY(30 + (int)(Math.random()*150.0f));
+            s.setVelocityX(-0.09f);
+            s.setVelocityY(0.08f);
+            s.show();
+            barrels.add(s);
+        }
+
+        for (int e = 0; e < 4 ; e++)
+        {
+            s = new Sprite(bubbles);
+            s.setX(screenWidth / 2);
+            s.setY(screenHeight / 2);
+            s.setVelocityX(-0.09f);
+            s.show();
+            bubbleList.add(s);
+            s.setVelocityX((float) -0.1f); 
+            s.setVelocityY((float) -0.1f); 
+        }               
+        initialiseGame();  
+    }
+
+    /**
+     * You will probably want to put code to restart a game in
+     * a separate method so that you can call it to restart
+     * the game.
+     */
+    public void initialiseGame()
+    {
+        total = 0;
+        scrolling = new ParallaxScrolling(0,screenWidth,0.2f,0.16f,0.14f,0.12f, 0.1f);
+        
+        header = loadImage("textures/Headers/Header_" + current_level + ".png");
+        background = loadImage("textures/Backgrounds/Background_" + current_level + ".png");
+        midground = loadImage("textures/Midgrounds/Midground_" + current_level + ".png");
+        foreground = loadImage("textures/Foregrounds/Foreground_" + current_level + ".png");
+        
+        player.setX(64);
+        player.setY(280);
+        player.setVelocityX(0);
+        player.setVelocityY(0);
+        player.show();
+
+        sumbmarnine.setX((float)Math.random() * 750 + 275); 
+        sumbmarnine.setY(0 - sumbmarnine.getHeight());
+        sumbmarnine.setVelocityX(-0.05f);
+        sumbmarnine.setVelocityY(0.05f); 
+        sumbmarnine.show();
+
+        blackBarrel.show();
+
+        torpedo.setVelocityX(0);      
+        torpedo.show();
+        
+        if(current_level == 1){
+            tmap.loadMap("maps", "levelOne.txt"); 
+        }        
+        else if(current_level == 2){
+            tmap.loadMap("maps", "levelThree.txt"); 
+        }
+        else if(current_level == 3){
+            tmap.loadMap("maps", "levelThree.txt"); 
+        }        
+    }
+
+    /**
+     * Draw the current state of the game
+     */
+    public void draw(Graphics2D g){   
+        g.drawImage(background,(int)scrolling.getBackgroundCopyX(), 0, null);  
+        g.drawImage(background,(int)scrolling.getBackgroundX(), 0, null);             
+        g.drawImage(midground,(int)scrolling.getMidgroundCopyX(), 0, null); 
+        g.drawImage(midground,(int)scrolling.getMidgroundX(), 0, null);  
+        g.drawImage(foreground,(int)scrolling.getForegroundCopyX(), 0, null);      
+        g.drawImage(foreground,(int)scrolling.getForegroundX(), 0, null);
+        
+        if(level){
+            g.drawImage(newHighScore,250, 150, null); 
+            g.setFont(new Font("Cooper Black", Font.BOLD, 50)); 
+            String msg = String.format("Press Enter To Proceed");
+            String msg2 = String.format("To The Next Level");
+            g.setColor(Color.yellow);
+            g.drawString(msg, 180, 300);
+            g.drawString(msg2,250, 360);
+        }
+        if(pause){ 
+            g.drawImage(tappySharkLogo, 200 ,200, null);               
+        }
+        else if(startMenu){ 
+            g.drawImage(tappySharkLogo, 200 ,50,  null); 
+            g.drawImage(instructions,   320   ,150, null); 
+        }
+        else if(gameRunning){           
+            player.draw(g);
+            if(counter < 3000){
+                g.drawImage(getReady, 300 ,200, null); 
+            }
+            if(dying){
+            }
+            try{
+                tmap.draw(g,(int)scrolling.getTileMapX(),0);
+            }catch(Exception e){} 
+            drawObstacle(g, mineList);
+            drawObstacle(g, fish);
+            drawObstacle(g, bubbleList);            
+            if (current_level == 2 || current_level == 3){
+                if (current_level == 3) { 
+                    torpedo.draw(g); 
+                    sumbmarnine.draw(g); 
+                }
+                drawObstacle(g, barrels);
+            }
+            g.drawImage(score,10, 30, 119, 36, null);
+            g.setFont(new Font("Cooper Black", Font.BOLD, 50)); 
+            String msg = String.format("%d", total);                
+            g.setColor(Color.cyan);
+            g.drawString(msg, 40, 110);
+        }   
+        g.drawOval((int)torpedo.getX(), (int)torpedo.getY(), torpedo.getWidth()/3 , torpedo.getHeight()/3 );
+        g.setColor(Color.yellow);
+        g.drawRect((int)torpedo.getX(),(int)torpedo.getY(),torpedo.getImage().getWidth(null),torpedo.getImage().getHeight(null));
+
+        g.drawOval((int)player.getX() + ((int)player.getWidth()  / 3 + 15), (int)player.getY() + ((int)player.getHeight() / 3), player.getWidth()/2 - 15 , player.getHeight()/2 );
+        g.drawOval((int)player.getX() + ((int)player.getWidth()  / 3)     , (int)player.getY() + ((int)player.getHeight() / 3 - 20)    , player.getImage().getWidth(null) - 75, player.getImage().getHeight(null) - 45);
+    }
+
+    public void drawObstacle(Graphics2D g, ArrayList<Sprite> s){
+        for (Sprite o : s){
+            o.draw(g);
+        }
+    }
+    
+    /**
+     * Update any sprites and check for collisions
+     * 
+     * @param elapsed The elapsed time between this call and the previous call of elapsed
+     */    
+    public void update(long elapsed)
+    {  
+        if(started){
+            initialiseGame();
+            startMenu = false;
+            started = false;
+            gameRunning = true;
+        }
+        else if(gameRunning){
+            isRunning(elapsed);
+            if(dying && current_level == 1){
+            }
+            else if(pause){
+            }
+            else{
+                if(total > levelMarker){
+                    level = true;
+                    gameRunning = false;
+                    counter = 0;
+                    levelMarker = levelMarker * 2;
+                }               
+                else{
+                }
+            }
+        }
+        else if(level){            
+            if (counter != 0) {
+                current_level++;
+                level = false;
+                started = true;
+                counter = 0;               
+            }
+        }   
+    }
+
+    public void isRunning(long elapsed){ 
+        counter += elapsed;
+        System.out.println(getFPS());
+        sumbmarnine.update(elapsed);
+        torpedo.update(elapsed);
+        greenFish.update(elapsed);
+        yellowFish.update(elapsed);
+        blackBarrel.update(elapsed);       
+        bubble.update(elapsed);
+        resetBubbles(elapsed);
+        populateMapWithSprites();
+        scrolling.scrollGame(1024, elapsed); 
+        resetSubmarine();
+        resetTorpedo();
+        resetPlayer(elapsed);
+        player.update(elapsed);
+        resetBarrels(elapsed);
+        resetFish(elapsed);
+
+        boundingBoxCollision(player, torpedo);
+
+        handleTileMapCollisions(player,elapsed); 
+    }
+    
+    /**
+     * Checks and handles collisions with the tile map for the
+     * given sprite 's'. Initial functionality is limited...
+     * 
+     * @param s         The Sprite to check collisions for
+     * @param elapsed   How time has gone by
+     */
+    public void handleTileMapCollisions(Sprite s, long elapsed)
+    {               
+        float player_x = (scrolling.getTileMapX() *(-1) + player.getX()) / tmap.getTileWidth();
+        float player_y = player.getY() / tmap.getTileHeight() - 1;
+        for(int i = 3; i > 0; i--){
+            for(int j = 3; j > 0; j--){              
+                if(tmap.getTileChar((int)player_x + i, ((int) player_y + j)) != '.' && tmap.getTileChar((int)player_x + i, ((int) player_y + j)) != '?'){ 
+                    Rectangle currentSolid = new Rectangle((int)(player_x + i) * 32, ((int)(player_y + j)) * 32 ,32, 32);
+                    Rectangle playerBounds = new Rectangle((int)scrolling.getTileMapX() * (-1) + (int)player.getX(), (int)player.getY(), player.getWidth(), player.getHeight());
+                    if(playerBounds.intersects(currentSolid) ){
+                        player.stop();
+                        System.out.println("Refactored If Works");
+                    }                                                   
+                }    
+            }        
+        }  
+        /*
+         * if (player.getY() + player.getHeight() > tmap.getPixelHeight())
+        {
+            player.setY(tmap.getPixelHeight() - player.getHeight());
+            
+            player.setVelocityY(-player.getVelocityY() * (0.03f * elapsed));
+        }
+         */
+    }
+    
+    public void boundingBoxCollision(Sprite player, Sprite s2){
+       if (player.getSpriteBoundry().intersects(s2.getSpriteBoundry())){
+           boundingCircleCollision(player, s2);
+       }     
+    }
+    
+     public void barrelBoundingBoxCollision(){
+        for (Sprite s: barrels){
+            if(player.getSpriteBoundry().intersects(s.getSpriteBoundry())){
+                System.out.println("New barrels Collision WOrking");
+                player.stop();
+                s.stop();
+            }
+        }
+    }
+
+    public void fishBoundingBoxCollision(){
+        for (Sprite s: fish){
+            if(player.getSpriteBoundry().intersects(s.getSpriteBoundry())){
+                if(s.getAnimation() == greenFishFood){                    
+                    total += 1; 
+                }
+                else if(s.getAnimation() == yellowFishFood){
+                    total += 2;
+                }
+                else{
+                    total += 5;
+                }                                                                
+                System.out.println("New Fish Collision WOrking");
+                s.setX((int)((float)Math.random() * 884  + screenWidth));
+                s.setY((int)((float)Math.random() * 222 + 50));
+                System.out.println("enters if");
+            }    
+        }               
+    }
+    
+    public void boundingCircleCollision(Sprite player, Sprite s2){
+       float x1 = player.getX() + (player.getWidth()  / 3 + 15);
+       float y1 = player.getY() + (player.getHeight() / 3);
+       float r1 = player.getWidth() / 2 - 15;
+
+       float x2 = s2.getX() + (s2.getWidth()  / 2);
+       float y2 = s2.getY() + (s2.getHeight() / 2);
+       float r2 = s2.getWidth() / 2;
+       double distanceX = x2 - x1;
+       double distanceY = y2 - y1;
+
+       double distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+       System.out.println(" R1 + R2" + "        " + r1 + r2);
+       System.out.println("The Distance" + "     " + distance);
+       if(distance - r1 + r2 < 0){
+            player.setAnimation(deadSharkAnim);
+            torpedo.setAnimation(explosion);
+            torpedo.setX((float)(player.getX() + 0.5 * player.getWidth()));
+            torpedo.setY((float) (player.getY() + 0.5 * player.getHeight()));
+            torpedo.setVelocityX(0);
+       } 
+    }
+    
+    
+    
+    public void populateMapWithSprites(){
+       mineList.clear(); 
+       Sprite mine; 
+       Tile temp;
+       for (int i = 0; i < tmap.getMapWidth(); i++){
+           for(int j = 0; j < tmap.getMapHeight(); j++){
+               temp = tmap.getTile(i, j); 
+               if (temp.getCharacter() == 't'){
+                   mine = new Sprite(mines);                
+                   mine.setX(temp.getXC() + screenWidth); 
+                   mine.setY(temp.getYC());
+                  
+                   mineList.add(mine);
+                   mine.show();
+               }
+           }
+       }
+    }
+    
+    public void checkMap(){
+        for(Sprite s: mineList){
+            if(!s.isVisible()){
+                if(s.getX() < screenWidth - scrolling.getTileMapX() && s.getX() > 0){
+                    s.setVelocityX(0.1f);
+                    s.show(;
+                    s.play();
+                }
+            }
+        }
+        
+    
+    
+    }
+
+    public void resetPlayer(long elapsed){
+        player.setAnimationSpeed(1.0f);
+        if (up) {
+            if (player.getVelocityY() > 0){
+               player.setVelocityY(0);
+               player.setAnimationSpeed(1.8f);
+               player.setVelocityY(player.getVelocityY() - lift); 
+            }
+            if(player.getVelocityY() < -0.5f){
+                player.setVelocityY(-0.5f);
+            }
+        }
+        else{
+           if(player.getVelocityY() < 0){
+              player.setVelocityY(0);
+              player.setVelocityY(player.getVelocityY()+(gravity*elapsed));      
+            }
+           if(player.getVelocityY() > 0.4f){
+                player.setVelocityY(0.4f);
+           }
+        }
+        if(player.getY() < 1){
+            player.setY(33); 
+            player.setVelocityY(-player.getVelocityY());
+        }
+        else if(player.getY() > 400){
+            player.setY(300); 
+            player.setVelocityY(-player.getVelocityY());
+        }        
+    }
+
+    public void resetSubmarine(){        
+        double randomizeSubmarineSpawn = Math.random();
+        if(randomizeSubmarineSpawn < 0.4){
+            submarineSpawn = true;
+        }
+        else{
+            submarineSpawn = false;
+        }        
+        if(submarineSpawn == true){ 
+            if (sumbmarnine.getX() <= 0){
+                sumbmarnine.setX((float)Math.random() * 750 + 275); 
+                sumbmarnine.setY(0 - sumbmarnine.getHeight());
+            }
+        }        
+        if(submarineSpawn == false){
+            if(sumbmarnine.getX() <= 0){
+                sumbmarnine.setX((float)Math.random() * 750 + 275);
+                sumbmarnine.setY(screenHeight + sumbmarnine.getHeight());
+                sumbmarnine.setVelocityX(-0.05f);
+                sumbmarnine.setVelocityY(-0.05f); 
+            }
+        }
+    }
+
+    public void resetBubbles(long elapsed){
+        for (Sprite s: bubbleList){
+            if(s.getY()< screenHeight){
+                s.setX((float)Math.random() * 512 + 250);
+                s.setY(0 - blackBarrel.getHeight());
+            }
+            s.update(elapsed);
+        }    
+    }
+
+    public void resetTorpedo(){
+        if((int)sumbmarnine.getY() + sumbmarnine.getHeight() <= (int)player.getY() + player.getHeight() && (int)sumbmarnine.getY() + sumbmarnine.getHeight() >= (int)player.getY()+ (player.getHeight()/2)){ 
+            if(fired == false){
+                fired = true; 
+                torpedo.setX(sumbmarnine.getX()  + 5);
+                torpedo.setY(sumbmarnine.getY() + sumbmarnine.getHeight() -10);
+                torpedo.setVelocityX(-0.5f);
+                           
+            }
+        }
+    }
+
+    public void resetBarrels(long elapsed){
+        for (Sprite s: barrels){
+            if(s.getY()> screenHeight){
+                s.setX((float)Math.random() * 512 + 250);
+                s.setY(0 - blackBarrel.getHeight());
+            }
+            s.update(elapsed);
+        }
+    }
+
+    public void resetFish(long elapsed){
+        for (Sprite s: fish){ 
+            if(s.getWidth() + s.getX() < 0){
+                s.setX((int)((float)Math.random() * 884  + screenWidth));
+                s.setY((int)((float)Math.random() * 222 + 50));
+                fishCollision = false;
+            }
+            s.update(elapsed);
+        }
+    }
+
+    /**
+     * Override of the keyPressed event defined in GameCore to catch our
+     * own events
+     * 
+     *  @param e The event that has been generated
+     */
+    public void keyPressed(KeyEvent e) 
+    { 
+        int key = e.getKeyCode();
+
+        if (key == KeyEvent.VK_ESCAPE){
+            stop();
+        }        
+        if (key == KeyEvent.VK_UP){
+            up = true;
+        }
+        if(key == KeyEvent.VK_SPACE){
+            pause = !pause;
+
+            System.out.println("paused");
+        }
+        if (key == KeyEvent.VK_S)
+        {
+            Sound s = new Sound("sounds/caw.wav");
+            s.start();
+        }
+        if (key == KeyEvent.VK_ENTER){
+            if (startMenu)started = true;
+            if (level)counter++;
+        }
+    }
+
+    public void keyReleased(KeyEvent e) { 
+        int key = e.getKeyCode();
+        switch (key)
+        {
+            case KeyEvent.VK_ESCAPE : stop(); break;
+            case KeyEvent.VK_UP     : up = false; break;            
+            default :  break;
+        }
+    }
+
+    public void drawBoundryLines(Graphics2D g){
+        g.setColor(Color.yellow);
+        g.drawRect((int)torpedo.getX(),(int)torpedo.getY(),torpedo.getImage().getWidth(null),torpedo.getImage().getHeight(null));
+
+        g.drawRect((int)player.getX() + 5, (int)player.getY() + 25, player.getImage().getWidth(null)-85 , player.getImage().getHeight(null) - 35);
+        g.drawRect((int)player.getX(), (int)player.getY(), player.getImage().getWidth(null),player.getImage().getHeight(null));
+        g.drawOval((int)player.getX() + ((int)player.getWidth()  / 3 + 15), (int)player.getY() + ((int)player.getHeight() / 3), player.getWidth()/2 - 15 , player.getHeight()/2 );
+        g.drawOval((int)player.getX() + ((int)player.getWidth()  / 3)     , (int)player.getY() + ((int)player.getHeight() / 3 - 20)    , player.getImage().getWidth(null) - 75, player.getImage().getHeight(null) - 45);
+
+        g.drawOval((int)torpedo.getX() + (torpedo.getWidth()  / 2), (int)torpedo.getY() + (torpedo.getHeight() / 2), torpedo.getWidth()/2 , torpedo.getHeight()/2 );
+        for (Sprite s: fish) {
+            g.drawRect((int)s.getX(), (int)s.getY(), s.getImage().getWidth(null),s.getImage().getHeight(null));
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1){
+            if(startMenu || level){ started = true; counter++;}
+        }
+    }
+
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
+
+    /* public void mousePressed(MouseEvent e) {
+
+    if(MouseEvent){}
+
+    saySomething("Mouse pressed; # of clicks: "
+    + e.getClickCount(), e);
+    }
+
+    }
+    public void mouseReleased(MouseEvent e) {
+    saySomething("Mouse released; # of clicks: "
+    + e.getClickCount(), e);
+    }
+
+    /*
+    public HashSet<String> getMask(BufferedImage character){
+    HashSet <String> mask = new HashSet<String>();
+    int pixel;
+    int alpha;
+
+    for(int i = 0; i < character.getWidth(); i++){
+    for(int j = 0; j < character.getHeight(); j++){   
+    pixel = character.getRGB(i,j); 
+    alpha = (pixel >> 24) & 0xff;   
+
+    if(alpha != 0){
+    mask.add((character.getX() + i) + "," + (character.getY() - j));
+    }
+    }
+    }
+    return mask;
+    }
+
+    public boolean checkCollision(Sprite a, Sprite b){     
+    int spriteOneCurrentTopLeftCorner = a.getX();
+    int spriteOneCurentBottomLeftCorner = a.getY();
+    int spriteOneCurrntTopRightCorner = ax1 + a.getWidth();
+    int spriteOneCurrentBottomRightCorner = ay1 + a.getHeight();
+
+    int spriteTwoCurrentTopLeftCorner = b.getX();
+    int spriteTwoCurentBottomLeftCorner = b.getY();
+    int spriteTwoCurrntTopRightCorner = bx1 + b.getWidth();
+    int spriteTwoCurrentBottomRightCorner = by1 + b.getHeight();
+
+    if(spriteTwoCurrentBottomRightCorner < spriteOneCurentBottomLeftCorner || spriteOneCurrentBottomRightCorner < spriteTwoCurentBottomLeftCorner || spriteTwoCurrntTopRightCorner < spriteOneCurrentTopLeftCorner || spriteOneCurrntTopRightCorner < spriteTwoCurrentTopLeftCorner){
+    return false; 
+    }
+    else {
+    HashSet<String> maskPlayer1 = getMask(shark);
+    HashSet<String> maskPlayer2 = getMask(torpedo);
+
+    maskPlayer1.retainAll(maskPlayer2);  
+
+    if(maskPlayer1.size() > 0){  
+    System.out.println("Collision" + count);
+    count++;
+    return true;
+
+    }
+
+    }
+    return false;   
+    }*/
+
+}
+/*
+ *  return (
+(s1.getX() + s1.getImage().getWidth(null) > s2.getX())  
+&&
+(s1.getX() < (s2.getX() + s2.getImage().getWidth(null))) 
+&&
+((s1.getY() + s1.getImage().getHeight(null) > s2.getY()) 
+&&
+(s1.getY() < s2.getY() + s2.getImage().getHeight(null))) 
+); 
+
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
+
+/**
+ * Code below was to draw yellow boxes around sprite
+ * 
+ * 
+ * 
+ * 
+ * 
+g.setColor(Color.yellow);
+g.drawRect((int)torpedo.getX(),
+(int)torpedo.getY(),
+torpedo.getImage().getWidth(null),
+torpedo.getImage().getHeight(null));
+
+g.drawOval((int)player.getX() + 25, (int)player.getY() + 25, player.getImage().getWidth(null) -30, player.getImage().getHeight(null) - 40);
+
+g.drawRect((int)player.getX()+ 5, (int)player.getY() + 25, player.getImage().getWidth(null)-85 , player.getImage().getHeight(null) - 35);
+
+g.drawRect((int)player.getX(), (int)player.getY(), player.getImage().getWidth(null),player.getImage().getHeight(null));
+ */
+
+
+/*public boolean boundingBoxCollision(Sprite player, Sprite s2)
+{        
+float spriteOneCurrentTopLeftCorner_X    = player.getX();
+float spriteOneCurrentTopLeftCorner_Y    = player.getY();
+float spriteOneCurentBottomLeftCorner    = player.getY() + player.getImage().getHeight(null);
+float spriteOneCurrntTopRightCorner      = spriteOneCurrentTopLeftCorner_X + player.getImage().getWidth(null);
+float spriteOneCurrentBottomRightCorner  = spriteOneCurrntTopRightCorner + player.getImage().getHeight(null);
+if(player == player && s2 == torpedo){
+float spriteTwoCurrentTopLeftCorner_X    = s2.getX();
+float spriteTwoCurentTopLeftCorner_Y     = s2.getY();
+float spriteTwoCurentBottomLeftCorner    = s2.getY() + s2.getImage().getHeight(null);
+float spriteTwoCurrntTopRightCorner      = spriteTwoCurrentTopLeftCorner_X + s2.getImage().getWidth(null);
+float spriteTwoCurrentBottomRightCorner  = spriteTwoCurrntTopRightCorner + s2.getImage().getHeight(null);
+
+if(spriteOneCurrentTopLeftCorner_X > spriteTwoCurrentTopLeftCorner_X && spriteOneCurrentTopLeftCorner_X < spriteTwoCurrntTopRightCorner && spriteOneCurentBottomLeftCorner > spriteTwoCurentTopLeftCorner_Y  && spriteOneCurrentTopLeftCorner_Y < spriteTwoCurentBottomLeftCorner ){
+boundingCircleCollision(player,s2);   
+}
+else{
+return false; 
+}         
+}
+if(player == player && s2 == s){
+System.out.println("Barrel Collision Entered 1");
+float spriteTwoCurrentTopLeftCorner_X    = s2.getX();
+float spriteTwoCurentTopLeftCorner_Y     = s2.getY();
+float spriteTwoCurentBottomLeftCorner    = s2.getY() + s2.getImage().getHeight(null);
+float spriteTwoCurrntTopRightCorner      = spriteTwoCurrentTopLeftCorner_X + s2.getImage().getWidth(null);
+float spriteTwoCurrentBottomRightCorner  = spriteTwoCurrntTopRightCorner + s2.getImage().getHeight(null);
+
+if(spriteOneCurrentTopLeftCorner_X > spriteTwoCurrentTopLeftCorner_X 
+&& spriteOneCurrentTopLeftCorner_X < spriteTwoCurrntTopRightCorner 
+&& spriteOneCurentBottomLeftCorner > spriteTwoCurentTopLeftCorner_Y  
+&& spriteOneCurrentTopLeftCorner_Y < spriteTwoCurentBottomLeftCorner )
+{
+System.out.println("Barrel Collision Entered 2");
+player.stop();
+
+boundingCircleCollision(player,s2);                                          
+}
+else{
+return false; 
+}  
+}
+return false; 
+}   
+
+public void barrelCollision(Sprite player, Sprite barrel){
+float spriteOneCurrentTopLeftCorner_X    = player.getX();
+float spriteOneCurrentTopLeftCorner_Y    = player.getY();
+float spriteOneCurentBottomLeftCorner    = player.getY() + player.getImage().getHeight(null);
+float spriteOneCurrntTopRightCorner      = spriteOneCurrentTopLeftCorner_X + player.getImage().getWidth(null);
+float spriteOneCurrentBottomRightCorner  = spriteOneCurrntTopRightCorner + player.getImage().getHeight(null);
+
+float spriteTwoCurrentTopLeftCorner_X    = barrel.getX();
+float spriteTwoCurentTopLeftCorner_Y     = barrel.getY();
+float spriteTwoCurentBottomLeftCorner    = barrel.getY() + barrel.getImage().getHeight(null);
+float spriteTwoCurrntTopRightCorner      = spriteTwoCurrentTopLeftCorner_X + barrel.getImage().getWidth(null);
+float spriteTwoCurrentBottomRightCorner  = spriteTwoCurrntTopRightCorner + barrel.getImage().getHeight(null);
+
+if(spriteOneCurrentTopLeftCorner_X > spriteTwoCurrentTopLeftCorner_X 
+&& spriteOneCurrentTopLeftCorner_X < spriteTwoCurrntTopRightCorner 
+&& spriteOneCurentBottomLeftCorner > spriteTwoCurentTopLeftCorner_Y  
+&& spriteOneCurrentTopLeftCorner_Y < spriteTwoCurentBottomLeftCorner )
+{
+System.out.println("Barrel Collision Entered 2");
+player.stop();
+
+}
+else{
+
+System.out.println("NOOO Barrel Collision");
+}  
+}
+
+public boolean littleFishCollision(Sprite player, Sprite food){
+float spriteOneCurrentTopLeftCorner_X    = player.getX();
+float spriteOneCurrentTopLeftCorner_Y    = player.getY();
+float spriteOneCurentBottomLeftCorner    = player.getY() + player.getImage().getHeight(null);
+float spriteOneCurrntTopRightCorner      = spriteOneCurrentTopLeftCorner_X + player.getImage().getWidth(null) + 1000;
+float spriteOneCurrentBottomRightCorner  = spriteOneCurrntTopRightCorner + player.getImage().getHeight(null) + 1000;
+
+float spriteTwoCurrentTopLeftCorner_X    = food.getX();
+float spriteTwoCurentTopLeftCorner_Y     = food.getY();
+float spriteTwoCurentBottomLeftCorner    = food.getY() + food.getImage().getHeight(null);
+float spriteTwoCurrntTopRightCorner      = spriteTwoCurrentTopLeftCorner_X + food.getImage().getWidth(null);
+float spriteTwoCurrentBottomRightCorner  = spriteTwoCurrntTopRightCorner + food.getImage().getHeight(null);
+
+if(spriteOneCurrentTopLeftCorner_X > spriteTwoCurrentTopLeftCorner_X 
+&& spriteOneCurrentTopLeftCorner_X < spriteTwoCurrntTopRightCorner 
+&& spriteOneCurentBottomLeftCorner > spriteTwoCurentTopLeftCorner_Y  
+&& spriteOneCurrentTopLeftCorner_Y < spriteTwoCurentBottomLeftCorner )
+{
+System.out.println("Fish Collision Entered 2");                    
+fishCollision = true;
+player.stop(); 
+return true;
+}
+else{
+System.out.println("NOOO Fish Collision"); return false;
+}  
+
+}
+ * 
+ */
+
+
+
+
+
+
+
+
+/*
+ * 
+/*
+for(int i = 0; i < 3; i++){
+char tile = tmap.getTile(players_x, players_y + i).getCharacter();
+if(!tile == '.'){                +
+handleCollisions(tile);
+}                     
+} */      
+
+/*
+if (player.getY() + player.getHeight() > tmap.getPixelHeight())
+{
+player.setY(tmap.getPixelHeight() - player.getHeight());
+
+}
+ */
+
+       
+/*if(!initialisedGameBackground){
+System.out.println("level Two initialised GameBackground entered ");
+initialisedGameBackground = true;
+}*/

@@ -1,0 +1,202 @@
+import java.util.*;
+public class SearchSort
+{
+    private static int[] nums;
+
+    public static  void main (String []args)
+    {
+        SearchSort(5);
+        System.out.println(Arrays.toString(nums));
+        swap(0, 3);
+        System.out.println(Arrays.toString(nums));
+        System.out.println(linearSearch(5));
+        System.out.println(binarySearch(5));
+    }
+
+    public static void SearchSort(int size)
+    {
+        nums = new int[size];
+        initArray();
+    }
+
+    public static void initArray()
+    {
+        nums = new int {1, 2, 3, 4, 5};
+        Random r = new Random();
+        for (int i = 0; i < nums.length; i++)
+        {
+            int x = r.nextInt(11);
+            nums[i] = x;
+        }
+    }
+
+    private static  void swap(int i, int j)
+    {
+        int hold = nums[i];
+        nums[i] = nums[j];
+        nums[j] = hold;
+    }
+
+    public static  int linearSearch(int key)
+    {
+        for (int i = 0; i < nums.length; i++)
+        {
+            if (nums[i] == key)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static  int binarySearch(int key)
+    {
+        Arrays.sort(nums);
+        if (nums[nums.length/2] == key)
+        {
+            return nums[nums.length/2];
+        }
+        if (nums[nums.length/2] > key)
+        {
+            for (int i = nums.length/2; i < nums.length; i++)
+            {
+                if (nums[i] == key)
+                {
+                    return i;
+                }
+            }
+        }
+        if (nums[nums.length/2] < key)
+        {
+            for (int i = nums.length/2; i > 0; i++)
+            {
+                if (nums[i] == key)
+                {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    public static  int binarySearchRecursive(int key)
+    {
+        Arrays.sort(nums);
+        int first = nums[0];
+        int last = nums[nums.length];
+        if (first < last)
+        {
+            int cen = first + (last - first) / 2;
+            if (key < nums[cen])
+            {
+                return binaySearchRecursive(key);
+            }
+            else if (key > nums[cen])
+            {
+                return binaySearchRecursive(key);
+            }
+            else
+            {
+                return cen;
+            }
+        }
+        return -1;
+    }
+
+    public static  void bubbleSort(boolean print)
+    {
+        int temp = 0;
+        for (int i = 0; i < nums.length; i++)
+        {
+            for (int a = 1; a < nums.length-i; a++)
+            {
+                if (nums[a-1] > nums[a])
+                {
+                    temp = nums[a-1];
+                    nums[a-1] = nums[a];
+                    nums[a] = temp;
+                    System.out.println(print);
+                }
+            }
+        }
+    }
+
+    public static   void selectionSort(boolean print)
+    {
+        int min = 0;
+        for (int i = 0; i < nums.length; i++)
+        {
+            min = i;
+            for (int a = i+1; a < nums.length; a++)
+            {
+                int temp = nums[i];
+                nums[i] = nums[a];
+                nums[a] = temp;
+            }
+        }
+    }
+
+    public static  void insertionSort(boolean print)
+    {
+        for (int i = 0; i < nums.length; i++)
+        {
+            for (int a = i; a > 0; a--)
+            {
+                if (nums[a] < nums[a-1])
+                {
+                    int hold = nums[a];
+                    nums[a] = nums[a-1];
+                    nums[a-1] = hold;
+                    System.out.println(print);
+                }
+            }
+        }
+    }
+
+    public static  void mergeSort(boolean print)
+    {
+        if (nums.length > 1)
+        {
+            int[] left = leftSort();
+            int[] right = rightSort();
+            mergeSort(print);
+            merge(left, right);
+        }
+    }
+
+    public static  int[] leftSort()
+    {
+        int[] left = new int[nums.length/2];
+        for (int i = 0; i < left.length; i++)
+        {
+            left[i] = nums[i];
+        }
+        Arrays.sort(left);
+        return left;
+    }
+
+    public static  int[] rightSort()
+    {
+        int[] right = new int[nums.length/2];
+        for (int i = 0; i < right.length; i++)
+        {
+            right[i] = nums[i + nums.length/2];
+        }
+        Arrays.sort(right);
+        return right;
+    }
+
+    public static  int[] merge(int[] left, int[] right)
+    {
+        int[] nums2 = new int[nums.length];
+        for (int i = 0; i < left.length; i++)
+        {
+            nums2[i] = left[i];
+        }
+        for (int i = 0; i < right.length; i++)
+        {
+            nums2[i] = right[i];
+        }
+        return nums2;
+    }
+}

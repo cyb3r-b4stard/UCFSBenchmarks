@@ -1,0 +1,104 @@
+import java.awt.*;
+
+/**
+ * #### ##### ######## ####### ### #### ##### ### ### ######### ####.
+ *
+ * ####### #####
+ *
+ * @####### !!! ### ### #### #### !!!
+ */
+
+public class CentipedeHelper
+{
+    public static final int SEG_DIAM = 25;
+
+    public static final int WINDOW_SIZE = 500;
+
+    public static final int DELAY = 500;
+
+    public static final int RIGHT_SIDE = WINDOW_SIZE/SEG_DIAM*SEG_DIAM;
+    /**
+     * drawCentipede
+     *
+     * draws a centipede on the screen.  See the assignment for more details. 
+     *
+     * @param  canvas    the Graphics object for this game
+     * @param  x,y       coordinates of the last centipede segment
+     * @param  numSegs   the total number of segments in the centipede
+     *                   (counting the head).  Must be a number between 1
+     *                   and 15.  Each segment's diameter is set by SEG_DIAM
+     * @param  left      'true' if the back of the centipede
+     *                   is marching left (or 'false' for right)
+     */
+    public void drawCentipede(Graphics canvas, int x, int y,
+    int numSegs, boolean left)
+    {
+        canvas.setColor(Color.green);
+        int numSegsR = 0;
+        if(left == false) {
+            for(int i = numSegs; i > 0; i--)
+            {
+                x += SEG_DIAM;
+                if(x>=RIGHT_SIDE) {
+                    canvas.fillOval((RIGHT_SIDE-SEG_DIAM)-numSegsR*SEG_DIAM,y + SEG_DIAM,SEG_DIAM,SEG_DIAM);
+                    numSegsR++;   
+                }
+
+                else{
+                    canvas.fillOval(x,y,SEG_DIAM,SEG_DIAM); 
+                }
+                if(i==1 && x>=RIGHT_SIDE){
+                    canvas.setColor(Color.yellow);
+                    canvas.fillOval((RIGHT_SIDE-SEG_DIAM)-numSegsR*SEG_DIAM,y + SEG_DIAM,SEG_DIAM,SEG_DIAM);
+                    numSegsR++;
+                    canvas.setColor(Color.red);
+                    canvas.fillArc((RIGHT_SIDE-SEG_DIAM)-numSegsR*SEG_DIAM,y + SEG_DIAM,SEG_DIAM,SEG_DIAM);
+                    numSegsR++;
+            }
+            else if (i==1 && x<RIGHT+SIDE){
+                
+            }
+        }
+        int numSegsL=0;
+        if(left ==true) {
+            for(int i = numSegs; i > 0; i--)
+            {
+                x -= SEG_DIAM;
+                if(x<0) {
+                    canvas.fillOval(0+numSegsL*SEG_DIAM,y + SEG_DIAM,SEG_DIAM,SEG_DIAM);
+                    numSegsL++;
+                }
+
+                else
+                    canvas.fillOval(x,y,SEG_DIAM,SEG_DIAM);           
+            }         
+        }
+
+    }
+
+
+    /**
+     * hitsCentipede
+     *
+     * determines whether a laser shot will hit the centipede
+     *
+     *
+     * @param  laserX    x-coordinate of the laser
+     * @param  centX     x-coordinate of the last centipede segment
+     * @param  numSegs   the total number of segments in the centipede
+     *                   (counting the head).  Must be a number between 1
+     *                   and 15.  
+     * @param  left      'true' if the back half of the centipede
+     *                   is marching left (or 'false' for right)
+     *
+     * @return true if the laser will hit one of the centipede's segments and
+     *         false otherwise
+     */
+    public boolean hitsCentipede(int laserX, int centX, int numSegs, boolean left)
+    {
+        return false;
+
+    }
+
+    
+}

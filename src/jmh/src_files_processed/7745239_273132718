@@ -1,0 +1,104 @@
+public class Vector
+{
+    public static final Vector LEFT = new Vector(-1, 0);
+    public static final Vector RIGHT = new Vector(1, 0);
+    public static final Vector UP = new Vector(0, -1);
+    public static final Vector DOWN = new Vector(0, 1);
+    private Vector d;
+    private Vector lastDir;
+    private int x;
+    private int y;
+
+    public Vector(int x, int y)
+    {
+        this.x = x;
+        this.y = y;
+    }
+
+    public int getX()
+    {
+        return x;
+    }
+
+    public int getY()
+    {
+        return y;
+    }
+
+    public Vector opposite()
+    {
+        return new Vector(-x, -y);
+    }
+
+    public boolean equals(Vector other)
+    {
+        return this.x == other.x && this.y == other.y;
+    }
+
+    public void checkPlayer(Vector direction,Box[] boxs){
+        if(direction==null){
+            direction=d;
+        }
+
+        if(!notBoxs(direction,boxs))
+        {
+            direction=d;           
+        }
+
+        if(!notBoxs(direction,boxs))
+        {
+            direction=lastDir;           
+        }
+        if(notBoxs(direction,boxs)){
+            add(direction);
+        }
+        d=direction;
+        lastDir=direction;
+    }
+
+    public void checkEnemy(Player player,Vector direction,Box[] boxs){                        
+        int px= player.getPosition().getX();
+        int py= player.getPosition().getY();
+        if(Math.abs(px-x)>=Math.abs(py-y){
+            
+        }
+        
+        if(notBoxs(direction,boxs)){
+            add(direction);
+        }
+    }
+
+    private boolean notBoxs(Vector direction,Box[] boxs){
+        Vector v=clone();        
+        v.add(direction);       
+        for(int i=0;i<boxs.length;i++){
+            if(boxs[i].getPosition().equals(v)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void add(Vector other)
+    {
+        x+=other.x;
+        y += other.y;
+
+    }
+
+    public void sub(Vector other)
+    {
+        x -= other.x;
+        y -= other.y;
+    }
+
+    public Vector clone()
+    {
+        return new Vector(x, y);
+    }
+
+    public String toString()
+    {
+        return "(" + x + "," + y + ")";
+    }
+}

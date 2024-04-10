@@ -1,0 +1,169 @@
+import javax.swing.*;
+import javax.swing.event.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+public class Pong extends JFrame implements Runnable,KeyListener,MouseMotionListener
+{
+    int ballX, ballY, ballDx=1, ballDy=1,bw = 20, bh = 20, paddleY, paddleX,pw=100,ph=10,rBound=1000,lBound=0,bounceCount = 0;
+    boolean upPressed = false, downPressed = false,mEnabled; 
+    Color  Rcol = new Color((int)(Math.random()*255),(int)(Math.random()*255),(int)(Math.random()*255));
+    Object[] paddles = new Object[4];
+    JPanel borderPanel;
+    JButton restart, done;
+    JLabel mainText;
+    String name;
+           static boolean sb = false;
+    public Pong(Boolean mE)
+    {
+
+        super("Pong");
+        name = "LMAO";
+        this.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
+        this.mEnabled = mE;
+        this.setSize(800,800);
+        ballX = this.getWidth()/2;
+        ballY = this.getHeight()/4;
+        paddleX = this.getWidth()/2-pw/2;
+        paddleY = this.getHeight()-ph*2-this.getInsets().bottom;
+        new Thread(this).start();
+        this.addKeyListener(this);
+        addMouseMotionListener(this);
+
+        borderPanel = new JPanel(new BorderLayout());
+        mainText = new JLabel("Testing",JLabel.CENTER);
+        borderPanel.add(mainText,BorderLayout.CENTER);
+
+        this.setContentPane (borderPanel);
+        this.setVisible (true);
+        getFocus(this);
+        if(mEnabled == true){
+            BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+            Cursor blankCursor=Toolkit.getDefaultToolkit().createCustomCursor(cursorImg,new Point(0,0), "nocursor");
+            this.getContentPane().setCursor(blankCursor);
+        }
+    }
+
+    public void mouseMoved(MouseEvent e){
+        if(mEnabled){
+            if(e.getX()> paddleX+pw/2){
+                upPressed = true;
+                rBound = e.getX();
+            }
+            else{
+                upPressed = false;
+            }
+            if(e.getX()<paddleX+pw/2){
+                downPressed = true;
+                lBound = e.getX();
+            }
+            else{
+                downPressed = false;
+            }
+        }
+    }
+
+    public void mouseDragged(MouseEvent e){}
+
+    public void run()
+    {
+        while(true){
+            if(ballX + bw > getWidth() || ballX<0){
+                ballDx = -ballDx;
+            }
+            if( ballY <0+this.getInsets().top){
+                ballDy = -ballDy;
+
+            }
+            if(paddleX+pw >= ballX +bw && paddleX<=ballX && ballY+bh>=paddleY){
+                ballDy = -ballDy;
+                bounceCount ++;
+                Rcol = new Color((int)(Math.random()*255),(int)(Math.random()*255),(int)(Math.random()*255));
+            }
+            ballX += ballDx;
+            ballY += ballDy;
+
+            if(ballY + bh > this.getHeight()+3-ph*2){
+                new Menu();
+                if(sb==false){
+                 Score scoreBoard = new Score();
+                                     scoreBoard.addScore(bounceCount,name);          
+                 sb = true;
+                else{
+                    scoreBoard.addScore(bounceCount,name);
+                }
+
+            }
+                this.dispose();
+                break;
+            }
+            if(upPressed&&this.getWidth()-this.getInsets().right>paddleX+pw&&paddleX+pw/2<rBound){
+                paddleX+=3;
+
+            }
+            if(downPressed&&0+this.getInsets().left<paddleX&&paddleX+pw/2>lBound){
+                paddleX-=3;
+
+            }
+
+            repaint();
+
+            try{
+
+                Thread.sleep(3);    
+            }
+            catch(InterruptedException e){}
+        }
+
+    }
+
+    public void paint(Graphics g)
+    {
+        Image backbuffer = createImage(this.getWidth(), this.getHeight());
+        Graphics bg = backbuffer.getGraphics();
+        super.paint(bg);
+        bg.setColor(Rcol);
+        bg.fillOval(ballX, ballY, bw, bh);
+        bg.fillRect(paddleX,paddleY,pw,ph);
+        bg.setColor(Color.BLACK);
+        bg.fillOval(ballX, ballY, 5, 5);
+        bg.fillOval(paddleX, paddleY, 5, 5);
+        String Count = Integer.toString(bounceCount);
+        bg.drawString(Count,this.getWidth()/2,this.getHeight()/2);
+        g.drawImage(backbuffer,0,0,this);
+    }
+
+    public void keyPressed(KeyEvent k){
+        if(k.getKeyCode() == KeyEvent.VK_UP){
+            upPressed = true;
+        }
+        else if(k.getKeyCode() == KeyEvent.VK_DOWN){
+            downPressed = true;
+
+        }
+    }
+
+    public void keyReleased(KeyEvent k){
+        if(k.getKeyCode() == KeyEvent.VK_UP){
+            upPressed = false;
+        }
+        else if(k.getKeyCode() == KeyEvent.VK_DOWN){
+            downPressed = false;
+
+        }
+    };
+
+    public void keyTyped(KeyEvent k){
+
+    };
+
+    public void getFocus(final JFrame frame)
+    {
+        EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    frame.requestFocus();
+                }
+            });	
+    }
+
+}

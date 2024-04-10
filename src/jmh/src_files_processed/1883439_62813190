@@ -1,0 +1,83 @@
+public class Triangle;
+02	{
+03	 
+04	    
+05	    private int point1x = 0, point1y = 0;
+06	    private int point2x = 0, point2y = 0;
+07	    private int point3x = 0, point3y = 0;
+08	 
+09	    
+10	    private double side1 = 0.0;
+11	    private double side2 = 0.0;
+12	    private double side3 = 0.0;
+13	 
+14	    
+15	    private double angle1 = 0.0;
+16	    private double angle2 = 0.0;
+17	    private double angle3 = 0.0;
+18	 
+19	    
+20	    public Triangle(int x1, int y1, int x2, int y2, int x3, int y3) {
+21	        this.point1x = x1;
+22	        this.point1y = y1;
+23	        this.point2x = x2;
+24	        this.point2y = y2;
+25	        this.point3x = x3;
+26	        this.point3y = y3;
+27	 
+28	        computeSides();
+29	        computeAngles();
+30	    }
+31	 
+32	    
+33	    
+34	 
+35	    private void computeSides()
+36	    {
+37	        side1 = computeDistance(point1x, point1y, point2x, point2y);
+38	        side2 = computeDistance(point2x, point2y, point3x, point3y);
+39	        side3 = computeDistance(point3x, point3y, point1x, point1y);
+40	    }
+41	 
+42	    
+43	    private double computeDistance(int x1, int y1, int x2, int y2) {
+44	        return Math.pow((Math.pow((x2 - x1),2) + Math.pow((y2 - y1),2)), .5);
+45	    }
+46	     
+47	 
+48	    
+49	    private void computeAngles() {
+50	        angle1 = radianToDegrees(computeAngle(side1, side2, side3));
+51	        angle2 = radianToDegrees(computeAngle(side2, side3, side1));
+52	        angle3 = radianToDegrees(computeAngle(side3, side1, side2));
+53	    }
+54	 
+55	    
+56	    public double computeAngle (double side1, double side2, double sideOpposite)
+57	    {
+58	        return Math.acos(((side2 * side2) + (sideOpposite * sideOpposite) - (side1 * side1)) / (2 * side2 * sideOpposite));
+59	    }
+60	     
+61	 
+62	    
+63	    public double radianToDegrees (double radians)
+64	    {
+65	        return 180 * radians / Math.PI;
+66	    }
+67	     
+68	 
+69	    
+70	    public double computeArea ()
+71	    {
+72	        double s = 0.5*(side1+side2+side3);
+73	        return Math.sqrt(s*(s - side1)*(s - side2)*(s - side3));
+74	    }
+75	     
+76	 
+77	    
+78	    public void triangleOutput () {
+79	        System.out.printf("Triangles angles are: %.3f, %.3f, %.3f\n", angle1, angle2, angle3);
+80	        System.out.printf("Distances for the three sides are: %.3f, %.3f, %.3f\n",side1, side2, side3);
+81	        System.out.println("Area is: " + computeArea());
+82	    }
+83	}

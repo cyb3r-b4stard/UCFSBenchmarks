@@ -1,0 +1,111 @@
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Random;
+import java.util.*;
+import.java.Console;
+
+/**
+ * ### ######### ##### ########## # ######## ######### ######.
+ * ## ## #### ## ######## ## ######### ########, ##### ## ######### #####.
+ * ##### ## ######### ## ### ######### ## # ### ## #####, ### ##### ## #####
+ * ##### ### ######### #### ######## # ###### #### ########## ### ########.
+ *
+ * ##########, ### ######## #### # ####### ## ######### ##### #### ########
+ * ####### ### # #### ## ####### #########. ## ### ## ### ##### ##### ## #####
+ * ## ### #######, ### ############# ######## ## ########. ## #### ## ### #####
+ * ##### ## ##########, ### ## ### ####### ######### ## ######## ######.
+ * 
+ * @#######    #.#
+ * @######     ####### ####### ### ##### #. ######
+ */
+
+
+
+
+public class Responder
+{
+    private HashMap<String, String> responseMap;
+    private ArrayList<String> defaultResponses;
+    private Random randomGenerator;
+    private FileHelper helper;
+
+    /**
+     * Construct a Responder
+     */
+    public Responder()
+    {
+         helper = new FileHelper();
+        responseMap = new HashMap<String, String>();
+        fillResponseMap();
+        defaultResponses = new ArrayList<String>();
+        fillDefaultResponses();
+        randomGenerator = new Random();
+       
+    }
+
+    /**
+     * Generate a response from a given set of input words.
+     * 
+     * @param words  A set of words entered by the user
+     * @return       A string that should be displayed as the response
+     */
+    public String generateResponse(HashSet<String> words)
+    {
+        Iterator<String> it = words.iterator();
+        while(it.hasNext()) {
+            String word = it.next();
+            String response = responseMap.get(word);
+            if(response != null) {
+                return response;
+            }
+        }
+        return pickDefaultResponse();
+    }
+
+    /**
+     * Enter all the known keywords and their associated responses
+     * into our response map.
+     */
+    private void fillResponseMap()
+    {
+        HashMap<String, String> x= helper.readAMap("responses.txt");
+        for (String key: x.keySet())
+        {
+            responseMap.put(key, x.get(key));
+        }
+        
+        
+    }
+    
+    /**
+     * Build up a list of default responses from which we can pick one
+     * if we don't know what else to say.
+     */
+    private void fillDefaultResponses()
+    {
+        ArrayList<String> ss= helper.readAList("defaultResponses.txt");
+        
+        for(String strings:ss)
+        {
+            defaultResponses.add(strings);
+        }
+    }
+
+    /**
+     * Randomly select and return one of the default responses.
+     * @return     A random default response
+     */
+    private String pickDefaultResponse()
+    {
+        Console in= new Console(System.in);
+        String s= in.readLine();
+        ArrayList<String> previous= helper.readAList("collect.txt");
+        previous.add("\n" + s);
+        helper.writeAList(previous, "collect.txt"); 
+        
+        int index = randomGenerator.nextInt(defaultResponses.size());
+        return defaultResponses.get(index);
+    }
+}

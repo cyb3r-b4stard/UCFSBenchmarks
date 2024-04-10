@@ -1,0 +1,357 @@
+import java.io.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.filechooser.*;
+
+public class Crawler
+{
+    boolean debugOn = true; 
+
+    Room levelStart = prepareLevel();
+    Character avatar = new Character(levelStart);
+    Scanner keyboard = new Scanner(System.in);
+    BattleArena duel = new BattleArena();
+    ArrayList<Enemy> enemies;
+
+    public static void crawl()
+    {
+        Crawler thisCrawler = new Crawler();
+        thisCrawler.crawlAround();
+    }
+
+    private void crawlAround()
+    {
+        boolean gameOver = false;
+
+        while (!gameOver)
+        {
+            System.out.print("? ");
+            String choice = keyboard.next();
+            debugMessage("crawlAround - received input "+choice);
+
+            try
+            {
+                gameOver = doUserAction(choice);
+            }
+            catch (Exception e)
+            {
+                System.out.println("mumble mumble...I cana hear ya");
+                keyboard.nextLine();
+                gameOver = false;
+            }
+        }
+        deathMessage();
+    }
+
+    /**
+     * Method doUserAction
+     *
+     * @param choice String which is the user's input
+     * @return true if the game is over or false to continue
+     * @author Bill Paterson
+     */
+    private boolean doUserAction(String choice) throws Exception
+    {
+        debugMessage("doUserAction -- entering");          
+        boolean gameOver = false;
+        choice = choice.toLowerCase() ;
+        if (choice.equals("quit"))
+        {
+            gameOver = true;
+        }
+        else if (choice.equals("look"))
+        {
+            System.out.println( avatar.getLocation().getDetailedDescription() );
+        }
+        else if (choice.equals("take"))
+        {
+            debugMessage("doUserAction -- looking for door");
+            keyboard.next("door");
+            debugMessage("doUserAction -- looking for number");          
+            avatar.takeDoor( keyboard.nextInt() );
+        }
+        else if (choice.equals("help"))
+        {
+            giveUserHelp();
+        }
+        else if (choice.equals("pick-up"))
+        {
+            debugMessage("doUserAction -- pick up item");
+            keyboard.next("item");
+            avatar.addItem2Inventory (keyboard.nextInt());
+        }
+        else if (choice.equals("drop"))
+        {
+            debugMessage("doUserAction -- drop item");
+            avatar.dropItem (keyboard.nextInt());
+        }
+        else if (choice.equals("inventory"))
+        {
+            debugMessage ("doUserAction -- view inventory");
+            avatar.getInventory ();
+        }
+        else if (choice.equals("add"))
+        {
+            debugMessage ("doUserAction -- add weapon");
+            keyboard.next("weapon");
+            avatar.addWeapon2Armory (keyboard.nextInt());
+        }
+        else if (choice.equals("armory"))
+        {
+            debugMessage("doUserAction -- view armory");
+            avatar.viewArmory();
+        }
+        else if (choice.equals("fight"))
+        {
+            debugMessage("doUserAction -- fight enemy");
+            keyboard.next("enemy");
+            gameOver = duel.battleArena(keyboard, keyboard.nextInt(), avatar);
+        }
+        else
+        {
+            System.out.println("You feel your sanity slipping away...");
+            keyboard.nextLine();
+        }
+
+        debugMessage("doUserAction -- leaving");          
+        return gameOver;
+    }
+
+    private void deathMessage ()
+    {
+        System.out.println("Your vision fades to black, and the darkness takes you...");
+        System.out.println("all is lost ...... good-bye...");
+    }
+
+    /**
+     * Method giveUserHelp
+     *@author Bill Paterson
+     */
+    private void giveUserHelp()
+    {
+        debugMessage("giveUserHelp - entering method");
+        System.out.println("*** Welcome to the Crawler ***");
+        System.out.println("You have the following options");
+        System.out.println("\t (text in parenthesis is what it means)");
+
+        System.out.println("Look");
+        System.out.println("\t (The crawler will describe the room you are in)");
+        System.out.println("\t (Amoung other things there will be a list of doors)");
+
+        System.out.println("Take door nn");
+        System.out.println("\t (You will go through door number nn )");
+        System.out.println("\t (use a look command to see where you ended up)");
+
+        System.out.println("Pick-up item nn");
+        System.out.println("\t (You will add item number nn to your inventory )");
+        System.out.println("\t (use an inventory command to see what you are holding)");
+
+        System.out.println("Inventory");
+        System.out.println("\t (You will see what exists in your inventory )");
+
+        System.out.println("Add weapon nn");
+        System.out.println("\t (You will add weapon number nn to your armor )");
+        System.out.println("\t (use an armory command to see what your weapons)");
+
+        System.out.println("Armory");
+        System.out.println("\t (You will see what exists in your armory )");
+
+        System.out.println("Fight enemy nn");
+        System.out.println("Sends you to the Battle Arena to fight for gold coins");
+
+        System.out.println("Quit");
+        System.out.println("\t (The game ends)");
+
+        debugMessage("giveUserHelp - leaving method");
+    }
+
+    private  Room prepareLevel()
+    {
+        Room levelStart = null;
+        String levelFileName = selectLevelFile();
+
+        try
+        {
+            Scanner levelScanner = new Scanner( new FileInputStream(levelFileName) );
+            levelStart = createLevel(levelScanner);
+        }
+        catch (Exception e)
+        {
+            System.err.println("Couldn't build level from selected file.");
+            System.exit(-1);
+        }
+
+        return levelStart;
+    }
+
+    private  String selectLevelFile()
+    {
+        JFileChooser fileChooser = new JFileChooser(".\\levels");
+
+        fileChooser.setDialogTitle("Double-click to select the level to play:");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
+        fileChooser.setControlButtonsAreShown(false);
+        fileChooser.showOpenDialog(null);
+
+        return fileChooser.getSelectedFile().getPath();
+    }
+
+    private  Room createLevel(Scanner scanner)
+    {
+        ArrayList<Room> rooms = createRooms(scanner);
+
+        createDoors(rooms, scanner);
+        createItems(rooms, scanner);
+        createEnemies(rooms, scanner);
+        createWeapons(rooms, scanner);
+
+        return rooms.get(0);
+    }
+
+    private  ArrayList<Room> createRooms(Scanner scanner)
+    {
+        ArrayList<Room> rooms = new ArrayList<Room>();
+        int expectedRoomNumber = 1;
+
+        scanner.next("-----ROOMS-----");
+        while (scanner.hasNext("room"))
+        {
+            scanner.next("room");
+            scanner.next(Integer.toString(expectedRoomNumber));
+            scanner.next(":");
+            String name = restOfLine(scanner);
+            String description = nextParagraph(scanner);
+
+            rooms.add( new Room(name, description) );
+
+            expectedRoomNumber++;
+        }
+        return rooms;
+    }
+
+    private  void createDoors(ArrayList<Room> rooms, Scanner scanner)
+    {
+        scanner.next("-----DOORS-----");
+
+        while (scanner.hasNextInt())
+        {
+            Room from = rooms.get(scanner.nextInt() - 1);
+            scanner.next("->");
+            Room to = rooms.get(scanner.nextInt() - 1);
+            scanner.next(":");
+            String description = restOfLine(scanner);
+
+            from.addDoorTo(to, description);
+        }
+    }
+
+    private  void createItems(ArrayList<Room> rooms, Scanner scanner)
+    {
+        scanner.next("-----ITEMS-----");
+
+        while (scanner.hasNext("in"))
+        {
+            scanner.next();
+            scanner.next();
+
+            Room in = rooms.get(scanner.nextInt() - 1);
+            scanner.next("worth");
+            int value = scanner.nextInt ();
+            scanner.next(":");
+            String description = restOfLine(scanner);
+
+            in.addItem(value, description);
+        } 
+    } 
+
+    private  void createEnemies(ArrayList<Room> rooms, Scanner scanner)
+    {
+        scanner.next("-----ENEMIES-----");
+
+        while (scanner.hasNext("in"))
+        {
+            scanner.next();
+            scanner.next();
+
+            Room in = rooms.get(scanner.nextInt() - 1);
+
+            double autospawn;
+
+            if (scanner.hasNext("autospawn"))
+            {
+                autospawn = scanner.nextDouble();
+                autospawn = 10*autospawn;
+            }
+            else
+                autospawn = 1;
+
+            Random numGen = new Random ();
+            int createEnemy = numGen.nextDouble(10);
+
+            if (createEnemy <= autospawn)
+            {
+
+                scanner.next("HP");
+                int health = scanner.nextInt ();
+                scanner.next("gold");
+                int reward = scanner.nextInt();
+                scanner.next(":");
+                String description = restOfLine(scanner);
+
+                in.addEnemy(health, reward, description);
+                System.out.println("added enemy in " + in + " worth " + reward + " gold (HP " + health + ") (" + description + ")");
+            }
+            else
+            {
+                System.out.println("did not add enemy");
+            } 
+        } 
+
+        private  void createWeapons(ArrayList<Room> rooms, Scanner scanner)
+        {
+            scanner.next("-----WEAPONS-----");
+
+            while (scanner.hasNext("in"))
+            {
+                scanner.next();
+                scanner.next();
+
+                Room in = rooms.get(scanner.nextInt() - 1);
+                scanner.next("damage");
+                int damage = scanner.nextInt ();
+                scanner.next(":");
+                String description = restOfLine(scanner);
+
+                in.addWeapon(damage, description);
+            } 
+        } 
+
+        private  String restOfLine(Scanner scanner)
+        {
+            scanner.useDelimiter("\\S");     
+            scanner.next();
+            scanner.reset();
+
+            return scanner.nextLine();
+        }
+
+        private  String nextParagraph(Scanner scanner)
+        {
+            final String END_OF_LINE = "\\r\\n";
+
+            scanner.useDelimiter("(" + END_OF_LINE + "){2,}");     
+            String paragraph = scanner.next();
+            scanner.reset();
+
+            return paragraph;
+        }
+
+        public void debugMessage(String theMessage)
+        {
+            if(debugOn)
+            {
+                theMessage = "\t\t\t***** "+theMessage;
+                System.out.println(theMessage);
+            }
+        }
+    }

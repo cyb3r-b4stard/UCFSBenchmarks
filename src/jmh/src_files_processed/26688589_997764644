@@ -1,0 +1,152 @@
+
+/**
+ * ##### # ########### ## ##### ####### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class BusStop
+{
+    private int noOfBuses;
+    private BusArrival [] _buses;
+    private final int MAXSIZE=1000; 
+    
+    /**
+     * Constructor for objects of class BusStop
+     */
+    public BusStop()
+    {
+         _buses= new BusArrival[MAXSIZE];
+         noOfBuses=0; 
+    }
+
+    
+    public BusStop(int size )
+    {
+         _buses= new BusArrival[size];
+         noOfBuses=0;
+    }
+    
+    public int getNoOfBuses()
+    {
+        return noOfBuses;
+    }
+    
+     public BusArrival[] getBuses()
+    {
+       BusArrival [] _buss2= new BusArrival [MAXSIZE];
+       for(int i=0;i<_buses.length;i++)
+        {
+            _buss2[i]= _buses[i];
+        }
+         
+        return _buss2;
+    }
+    
+    public boolean add(int line, int pass, Time1 t)
+    {
+        for(int i=0;i<_buses.length;i++)
+           if(_buses[i] != null)
+                {
+                    _buses[i]= new BusArrival(line,pass,t);
+                    retrun true;
+                }
+        return false;
+
+    }
+    
+    public void removeAllLine(int line)
+    {
+        for(int i=0;i<_buses.length;i++)
+        {
+            if(_buses[i].getLineNum() == line)
+               _buses[i]=null; 
+        }
+    }
+    
+    public int getPopularLine()
+    {
+        int numOfShow=0;
+        int maxNumOfShow=0;
+        int mostPop=0;
+        BusArrival [] _busesTemp= getBuses();
+         for(int i=0;i<_buses.length;i++)
+         {
+            for(int j=0;j<_buses.length;j++)
+            {
+            if(_buses[i].getLineNum() == _busesTemp[j].getLineNum())
+               numOfShow++;     
+            }
+            if (numOfShow>maxNumOfShow)
+            {
+                maxNumOfShow=numOfShow;
+                mostPop=_buses[i].getLineNum();
+            }
+        } 
+        return mostPop;
+    }
+    
+    public long getAverageTime()
+    {
+     
+    long max=0 ;
+    long min= _buses[0].getArrivalTime().secFromMidnight();
+    int dif,maxi=0, mini=0;
+    for(int i=0;i<_buses.length;i++)
+        {
+        if(_buses[i].getArrivalTime().secFromMidnight()>max)
+            {
+            max= _buses[i].getArrivalTime().secFromMidnight();
+            maxi= i;
+            }
+        if(_buses[i].getArrivalTime().secFromMidnight()<min)
+            {
+            min= _buses[i].getArrivalTime().secFromMidnight();
+            mini= i;
+            }
+        }
+        return (long)_buses[maxi].elapsedTime(_buses[mini])*60;
+        
+        
+    }
+    
+    public int totalPassengers()
+    {
+         int totalPass=0;
+         for(int i=0;i<_buses.length;i++)
+           totalPass+=_buses[i].getNoOfPass(); 
+         return totalPass;
+    }
+    
+    public BusArrival maxPassengers()
+    {
+        int maxPass=0;
+        int maxBuss=0;
+        for(int i=0;i<_buses.length;i++)
+           if(_buses[i].getNoOfPass() > maxPass)
+           {
+               maxPass=  _buses[i].getNoOfPass();
+               maxBuss=i;
+            }
+        return _buses[maxBuss];
+    }
+    
+    public String toString()
+    {
+       String temp="";
+        for(int i=0;i<_buses.length;i++)
+        temp= temp + _buses[i].toString() + "\n";
+       return temp;         
+            
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    {
+        
+    }
+}

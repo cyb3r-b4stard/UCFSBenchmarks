@@ -1,0 +1,241 @@
+/**
+ * ##### ##### ######## #
+ *  ###################
+ *  ####### ##
+ */
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Queue;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.NoSuchElementException;        
+
+public class BSTDictionary<K extends Comparable<K>,V> implements Iterable<K>
+{
+    private static class BSTDEntry<K,V>
+    {
+        private Object value;
+        private K key;
+        private BSTDEntry<K,V> left, right;
+
+        private BSTDEntry(K key,V value, BSTDEntry<K,V> left, BSTDEntry<K,V> right)
+        {
+            this.key = key;
+            this.value = value;
+            this.left = left;
+            this.right = right;
+        }
+    }
+    private BSTDEntry<K,V> root = null;
+    
+    public void add(K key, V value)
+    {
+        if (this.root == null)   
+            this.root = new BSTDEntry<K,V>(key, value, null, null);
+        else
+            add(key, value, root);
+    }
+
+    private void add(K key, V value, BSTDEntry<K,V> where)
+    {
+        int compare = key.compareTo(where.key);
+
+        if (compare == 0)           
+            return;
+        else if (compare < 0 && where.left == null)     
+            where.left = new BSTDEntry<K,V>(key, value, null, null);
+        else if (compare > 0 && where.right == null)    
+            where.right = new BSTDEntry<K,V>(key, value, null, null);
+        else if (compare < 0)
+            add(key, value, where.left);                  
+        else
+            add(key, value, where.right);                 
+    }
+      public boolean contains(K key)
+    {
+        return contains(key, root);
+    }
+
+    private boolean contains(K key, BSTDEntry<K,V> where)
+    {
+        if (where == null) {    
+            return false;
+        } else {
+            int compare = key.compareTo(where.key);
+
+            if (compare == 0)       
+                return true;
+            else if (compare < 0)   
+                return contains(key, where.left);
+            else                    
+                return contains(key, where.right);
+        }
+    }
+    public BSTDictionary<Integer ,Double> createDictWordLengths(String s)
+    {
+        Integer[] lengths = new Integer[35]; 
+        BSTDictionary<Integer ,Double> wordLengths = new BSTDictionary<Integer,Double>();
+        int counter = 0;
+        try (BufferedReader br = new BufferedReader(new FileReader(s)))
+        {
+            String sCurrentLine;
+            
+            while ((sCurrentLine = br.readLine()) != null) {
+                if(lengths[sCurrentLine.length()] != null){
+                    lengths[sCurrentLine.length()] += 1;
+                    counter++;
+                }else{
+                    lengths[sCurrentLine.length()] = 1;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } 
+        Double freak;
+        for( Integer i = 0; i < lengths.length ;i++){
+            if(lengths[i] != null){
+                freak = (lengths[i] / (double)counter);
+                wordLengths.add(i,freak);
+            }
+        }
+        System.out.print(wordLengths.toString());
+
+        return wordLengths;
+        
+    }
+    
+    public BSTDictionary<String ,BSTDictionary<String ,Double>> createDictLetterFrequencies(String s,int n )
+    {
+         
+        BSTDictionary<String ,BSTDictionary<String ,Double> > letFreak = new BSTDictionary<String ,BSTDictionary<String ,Double>>();
+        int counter = 0;
+        String sCurrentLine;
+            String sub="";
+            String nextLet;
+            BSTDictionary<String ,Double> temp;
+            int place = 0;
+        try (BufferedReader br = new BufferedReader(new FileReader(s)))
+        {
+            
+            while ((sCurrentLine = br.readLine()) != null) {
+                place = 0;
+              
+                while(sCurrentLine.length() >= place + n +1)  {
+                    sub = sCurrentLine.substring(place, (place + n));
+                    nextLet = sCurrentLine.substring((place + n), (place + n+1));
+                    Double currentTotal = 0.0;
+                    System.out.println(sub + " - " + nextLet + " - " + place + " - " + sCurrentLine.length() );   
+                       
+                    if( letFreak.contains( sub )){
+                             temp = letFreak.getValue( sub );
+                             System.out.println(temp.contains( sub ) );
+                            if( letFreak.getValue( sub ).contains( nextLet ) ){
+                                System.out.println(nextLet );
+                                System.out.println(letFreak.getValue( sub ).getValue( nextLet ).toString() );   
+                                currentTotal = letFreak.getValue( sub ).getValue( nextLet );
+                                    letFreak.getValue( sub ).add( nextLet , currentTotal + 1);                                
+                                }else{
+                                    letFreak.getValue( sub ).add( nextLet, 1.);
+                                    
+                                }
+                            
+                     }else{
+                            temp = new BSTDictionary<String ,Double>();
+                            temp.add( nextLet, 1.);
+                            letFreak.add( sub , temp);
+                        }    
+                     System.out.println(sub + " - " + nextLet + " - " + place + " - " + sCurrentLine.length() );    
+                    place++;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } 
+        
+        
+        return letFreak;
+        
+    }
+
+    public V getValue(K key)
+    {
+        return getValue(key, root);
+    }
+    private V getValue(K key, BSTDEntry<K,V> where)
+    {
+        if (where == null) {    
+            return null;
+        } else {System.out.println( key + " -:- " where.key);
+            int compare = key.compareTo(where.key);
+
+            if (compare == 0)       
+                return getValue(where.key);
+            else if (compare < 0)   
+                return getValue(key, where.left);
+            else                    
+                return getValue(key, where.right);
+        }
+    }
+  
+    public Iterator<K> iterator()
+    {
+        return new InOrderIterator();
+    }
+
+
+    private class InOrderIterator implements Iterator<K>
+    {
+        private LinkedList<BSTDEntry<K,V>> stack = new LinkedList<BSTDEntry<K,V>>();
+        private BSTDEntry<K,V> current = root;
+
+        public boolean hasNext()
+        {
+            return current != null || !stack.isEmpty();
+        }
+
+        public K next()
+        {
+            if (hasNext()) {    
+                while (current != null) {   
+                    stack.push(current);
+                    current = current.left;
+                }
+
+                BSTDEntry<K,V> temp = stack.pop();
+                current = temp.right;
+                return temp.key;
+            } else
+                throw new NoSuchElementException();
+        }
+
+        public void remove()
+        {
+            throw new UnsupportedOperationException();
+        }
+    }
+    public String toString()
+    {
+        return toString(root, "");
+    }
+
+    private String toString(BSTDEntry<K,V> where, String indent)
+    {
+        if (where == null)
+            return indent + "null";
+        else
+            return indent + where.key + " -:- " + where.value + "\n" + toString(where.left, indent + " ") + "\n" + toString(where.right, indent + " ");
+    }
+
+
+    public static void main(String[] args)
+    {
+        Integer[] stuff = {4, 0, 10, -5, 3, 6, 12, 1, 7, 15};
+        BSTDictionary<Integer, String> bst = new BSTDictionary<Integer, String>(); 
+        
+        BSTDictionary<String ,BSTDictionary<String ,Double>> lf = new BSTDictionary<String ,BSTDictionary<String ,Double>>(); 
+        lf = lf.createDictLetterFrequencies("Project1_english.txt", 14);
+        lf.toString();
+        
+    }
+}

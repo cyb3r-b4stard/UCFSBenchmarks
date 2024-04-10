@@ -1,0 +1,99 @@
+/*
+ * ##### ########## #.
+ * ## ## #####, ##### ######, #### ########### ########## ## ## ### ####.
+ * ####### ######:
+ *
+ * # ####### ## ## ###### #### ########## ### # #####-##### #######.
+ *
+ *  ####: ##### ######
+ *  ##### #######: #######@######.###
+ *  #####: ######
+ *  ####### # ##### ##: #####
+ *  ###### ####: ####### #######
+ *  ###### ## #### #### #### ## #### ##########:
+ */
+
+import java.util.*;
+import java.io.*;
+public class WordProcessor
+{
+    public static void main(String[] args)
+    throws FileNotFoundException{
+        Scanner keyboard = new Scanner(System.in);
+        File inFile = new File(getInFile(keyboard));
+        Scanner fileReader = new Scanner(inFile);
+        PrintStream outFile = new PrintStream(new File(inFile +"_OUT.txt"));
+        int columns = getColumnWidth(fileReader);
+        printOutputHeader(columns, outFile);
+        printOutputBody(columns, fileReader, outFile);
+    }
+    
+    public static String getInFile(Scanner key)
+    {
+       System.out.print("Enter name of file to be processed, including the .txt extension: ");
+       return key.nextLine();
+    }
+    
+    public static int getColumnWidth(Scanner inFile)
+    {
+        int columns = inFile.nextInt();
+        if (columns >= 5 && columns <= 80)
+        {
+            System.out.println("The maximum output file line length is CORRECT.");
+        } else {
+            System.out.println("The maxmimum output file line length is INCORRECT!!!");
+        }
+        
+        return columns;
+    }
+    
+    public static void printOutputHeader(int columns, PrintStream outFile)
+    {
+        
+        for(int i = 1; i <= columns; i++)
+        {
+            outFile.print(i/10);
+        }
+        outFile.println();
+        for (int j = 1; j <= columns; j++)
+        {
+            outFile.print(j%10);
+        }
+        outFile.println();
+        for (int k = 1; k <= columns; k++)
+        {
+            outFile.print("-");
+        }
+        outFile.println();
+    }
+    
+    public static void printOutputBody(int columns, Scanner inFile, PrintStream outFile)
+    {
+        String current = "";
+        String previous = " ";
+        String newWord = "";
+        int count = 0;
+        while (inFile.hasNextLine())
+        {
+            while (count <= columns && inFile.hasNext())
+            {
+                current = inFile.next();
+                for (int i = 0; i < current.length(); i++)
+                {
+                    if (previous.substring(previous.length() - 1, previous.length().equals(".") && i == 0){
+                        newWord = newWord + current.substring(0,1).toUpperCase();
+                    } else {
+                        newWord = newWord + current.substring(i, i+1);
+                    }
+                    count+= 1;
+                }
+                outFile.print(newWord);
+                outFile.print(" ");
+                previous = current;
+            }
+            count = 0;
+            outFile.println();
+        }
+    }
+      
+}

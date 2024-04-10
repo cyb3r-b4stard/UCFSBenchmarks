@@ -1,0 +1,83 @@
+import java.util.*;
+import java.io.*;
+import ou.*;
+/**
+ * ############# ######## #### ##### ######### ### ######## ###### #######.
+ * 
+ * @###### ##### #####
+ * @####### #.#
+ */
+public class MarathonAdmin
+{
+    private List<Runner> runners;
+    /**
+     * Constructor for objects of class MarathonAdmin.
+     */
+    public MarathonAdmin()
+    {
+        this.runners = new ArrayList<Runner>();
+    }
+
+    public void readInRunners()
+    {
+        String aPathname = OUFileChooser.getFilename();
+        File theFile = new File(aPathname);
+        BufferedReader bFileRdr = null;
+
+        try
+        {
+            Scanner lineScanner;
+            bFileRdr = new BufferedReader(new FileReader(theFile));
+            String currentLine = bFileRdr.readLine();
+            while (currentLine != null)
+            {
+                lineScanner = new Scanner(currentLine);
+                lineScanner.useDelimiter(",");
+                Runner aRunner = new Runner();
+                aRunner.setName(lineScanner.next());
+                aRunner.setAgeGroup(MarathonAdmin.findAgeGroup(lineScanner.nextInt()));
+                System.out.println(lineScanner.nextInt());
+                this.runners.add(aRunner);
+                currentLine = bFileRdr.readLine();
+            }
+        }
+        catch (Exception anException)
+        {
+            System.out.println("Error reading from file: " + anException);
+        }
+        finally
+        {
+            try
+            {
+                bFileRdr.close();
+            }
+            catch (Exception anException)
+            {
+                System.out.println("Error closing BufferedReader: " + anException);
+            }
+        }
+    }
+    /**
+     * Generates random marathon time values for Runner objects in receivers runners Collection.
+     */
+    public void runMarathon
+    {
+        for (Runner aRunner : runners)
+        {
+            Random gen = new Random();
+            aRunner.setTime(gen.nextInt(91) + 90);
+        }
+
+    private static String findAgeGroup(int theAge)
+    {
+        if (theAge < 18)
+        {
+            return "junior";
+        }
+        else if (theAge >= 55)
+        {
+            return "senior";
+        }
+        return "standard";
+    }
+}

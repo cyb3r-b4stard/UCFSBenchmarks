@@ -1,0 +1,46 @@
+
+/**
+ * ##### # ########### ## ##### ###### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+
+import ecs100.*;    
+    
+public class Slider implements UIMouseListener, UISliderListener {
+    private double pressedX;
+    private double pressedY;
+    public Slider(){
+        UI.addButton("Change Color", s -> this.changeColor());
+        UI.addButton("Clear Secreen", s -> this.clearScreen());
+        UI.setMouseListener(this);
+        UI.setMouseMotionListener(this);
+        UI.setLineWidth(5);
+    }
+    
+    public void changeColor(){
+        Color c = JColorChooser.showDialog(null, "choose color", Color.BLACK);
+        UI.setColor(c);
+    }
+    
+     public void mousePerformed(String action, double x, double y){
+         if (action.equals("pressed")){
+             pressedX = x;
+             pressedY = y;
+            }
+         if (action.equals("dragged")){
+             UI.drawLine(pressedX, pressedY, x, y);
+             pressedX = x;
+             pressedY = y;
+            }
+    }
+
+    public void sliderPerformed(String name, double value){
+    
+    }
+    
+    public void clearScreen(){
+        UI.clearGraphics();
+    }
+}

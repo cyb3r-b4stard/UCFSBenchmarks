@@ -1,0 +1,117 @@
+import java.util.Scanner;
+public class Game
+{
+    private Player player1;
+    private Player player2; 
+    private Dice dice1;
+    private Dice dice2;
+    private int maxScore;
+
+    public Game ()
+    {
+        player1 = null;
+        player2 = null;
+        dice1 = null;
+        dice2 = null;
+        maxScore = 200;
+    }
+
+    public void display ()
+    {
+        System.out.println ( " Welcome to My Dice-and-Roll Game! " );
+        System.out.println ( " ============================ " );
+        System.out.println ( " (1) Start a New Game" );
+        System.out.println ( " (2) Play One Round " );
+        System.out.println ( " (3) Who Is Leading Now? " );
+        System.out.println ( " (4) Display Game Help " );
+        System.out.println ( " (5) Exit Game " );
+
+    }
+
+    public void play ()
+    {
+        Scanner input = new Scanner(System.in);
+        String newName;
+        int point1;
+        int point2; 
+        int total;
+        boolean input5 = true;
+        while( input5 )
+        {
+            display();
+            switch( input.nextInt() )
+            {
+                case 1:
+                dice1 = new Dice(6,1);
+                dice2 = new Dice(6,1);
+                input.nextLine();
+                System.out.println ( "Enter First Player's Name：" );
+                newName = input.nextLine();
+                player1  = new Player(newName);
+                System.out.println ( "Enter Second Player's Name：" );
+                newName = input.nextLine();
+                player2 = new Player(newName);
+                break;
+                case 2:
+                point1 = dice1.roll();
+                point2 = dice2.roll();
+                if ( point1 == point2 )
+                {
+                    total = ( point1 + point2 )*2;
+                    System.out.println( " " + total + " " + "Bouns" );
+                }
+                else 
+                {   total = point1 + point2;
+                    System.out.println( " " + total );
+                }
+                player1.setScore( total );
+                point1 = dice1.roll();
+                point2 = dice2.roll();
+                if ( point1 == point2 )
+                {   total = ( point1 + point2 )*2;
+                    System.out.println( " " + total + " " + "Bouns" );
+                }
+                else 
+                {   total = point1 + point2;
+                    System.out.println(" " +  total );
+                }
+                player2.setScore( total );
+                if(player1.getScore() > maxScore)
+                    {
+                        System.out.println( player1.getName() + "wins" );
+                        input5 = false;
+                    }
+                    else
+                    {
+                        player2.getScore() > maxScore;
+                        System.out.println( player2.getName() + "wins" );
+                        input5 = false;
+                    }
+                    else
+                    {
+                        player1.getScore() > maxScore && player2.getScore > maxScore;
+                        System.out.println( "Draw" );
+                        input5 = false;
+                    }
+                break;
+                case 3:
+                if ( player1.getScore()> player2.getScore())
+                    System.out.println ( player1.getName()  + "is leading " );
+                else if (player1.getScore() == player2.getScore())
+                    System.out.println ( "Draw" );
+                else
+                    System.out.println ( player2.getName() + " is leading" );
+                break;
+                case 4:
+                System.out.println ("Display Game Help");
+                break;
+                case 5:
+                input5 = false;
+                System.out.println( "Exit Game" );
+                break;
+            }
+
+        }
+    }
+
+}

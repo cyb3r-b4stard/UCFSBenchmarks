@@ -1,0 +1,91 @@
+public class Nia
+{
+    private NumNode _head,_tail;
+    private int _length;
+    public Nia (NumNode head)
+    {
+        _head = head;
+        if (head == null)
+        {
+            _tail = null;
+            _length = 0;
+            System.out.println("Error: Constructor problom");
+        }
+
+        else
+        {
+            NumNode current = head;
+            _length = 1;
+            while (current.getNext()!=null)
+            {
+                current=current.getNext();
+                _length++;
+            }
+            _tail=current;
+        }
+    }
+    public Nia (Nia o)
+    {
+        if (o==null||o._head==null)
+        {
+            _head=null;
+            System.out.println("Error: Copy Constructor problom");
+        }
+        else
+        {
+            _head = new NumNode (o._head.getNum());
+            NumNode current1 = _head, current2=o._head;
+            while (current2.getNext()!=null)
+            {
+                current2=current2.getNext();
+                current1.setNext(new NumNode (current2.getNum()));
+                current1=current1.getNext();
+            }
+        }
+    }
+    public NumNode getHead ()
+    {
+        return _head;
+    }
+    public NumNode getTail ()
+    {
+        return _tail;
+    }
+    public int length ()
+    {
+        return _length;
+    }
+    public void scalar (int scalar)
+    {
+        if (_head!=null&&scalar!=0)
+        {
+            NumNode current=_head;
+            current.setNum(current.getNum()*scalar);
+            while (current.getNext()!=null)
+            {
+                current=current.getNext();
+                current.setNum(current.getNum()*scalar);
+            }
+        }
+        else
+            System.out.println("Error: Scalar multiplication problom");
+    }
+    public void linear (int scalar, Nia o)
+    {
+        if (_head!=null&&scalar!=0&&o!=null&&o._head!=null)
+        {
+            Nia n = new Nia (o);
+            n.scalar(scalar);
+            _head.setNum(_head.getNum()+n._head.getNum())
+            NumNode current1 = _head, current2=n._head;
+            while (current1.getNext()!=null)
+            {
+                current1=current1.getNext();
+                current2=current2.getNext();
+                current1.setNum(current1.getNum()+current2.getNum())
+            }
+        }
+        else
+            System.out.println("Error: Linear combination problom");
+    }
+}

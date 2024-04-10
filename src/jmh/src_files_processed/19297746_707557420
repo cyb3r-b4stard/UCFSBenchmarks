@@ -1,0 +1,337 @@
+import java.util.Random;
+import java.util.*;
+import java.util.regex.Matcher;
+/**
+ * ##### # ########### ## ##### ###### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Spielmanager
+{
+    private Ausgabenverzeichnis ausgabe; 
+    private Befehlseingabeleser leser;
+    private Brett spielbrett;
+    private Zug zug; 
+    private Spieler spieler1, spieler2;
+    private Spielerfarbe farbeSpieler1, farbeSpieler2;
+    private boolean isRunning; 
+    private boolean einspielermodus, zweispielermodus; 
+    private BrettGUI gui;
+    
+    /**
+     * 
+     */
+    public Spielmanager()
+    {
+        ausgabe = new Ausgabenverzeichnis();
+        leser = new Befehlseingabeleser(); 
+        spielbrett = new Brett();
+        zug = new Zug(); 
+        
+        isRunning = true; 
+        einspielermodus = false; 
+        zweispielermodus = false; 
+        
+        ausgabe.begruessen();
+        spielregeln();
+        spielStarten();
+    }
+    
+    public void spielStarten()
+    {
+        spielmodus();
+        namensgebung(); 
+        spielfeld(); 
+        gui = new BrettGUI(spielbrett); 
+        gui.agiere();
+        bestimmeSpielerfarben();
+        spielen();
+        neuesSpiel(); 
+    }
+    
+    public void spielregeln() 
+    {
+        ausgabe.fragRegeln();
+        String eingabe = leser.gibEingabe();
+        if(eingabe.contains("1")) {
+            ausgabe.druckeRegeln();
+        }
+        else if(eingabe.contains("2")) {
+        }
+        else {
+            ausgabe.druckeUngueltigeEingabe(); 
+            spielregeln(); 
+        }
+    }
+    
+    public void spielmodus()
+    {
+        ausgabe.fragSpielmodus();
+        String eingabe = leser.gibEingabe();
+        if(eingabe.contains("1")) {
+           spieler1 = new MenschlicherSpieler();
+           spieler2 = new Computerspieler(); 
+           einspielermodus = true;
+        }
+        else if(eingabe.contains("2")) {
+            spieler1 = new MenschlicherSpieler();
+            spieler2 = new MenschlicherSpieler(); 
+            zweispielermodus = true; 
+        }
+        else {
+            ausgabe.druckeUngueltigeEingabe(); 
+            spielmodus(); 
+        }
+    }
+     
+    public void namensgebung() 
+    {
+        if(einspielermodus){
+            ausgabe.fragName(false,""); 
+            spieler1.setzeName(leser.gibEingabe());
+        }
+        else if(zweispielermodus){
+            ausgabe.fragName(true,"Spieler 1");
+            spieler1.setzeName(leser.gibEingabe());
+            ausgabe.fragName(true,"Spieler 2");
+            spieler2.setzeName(leser.gibEingabe()); 
+        }
+    }
+    
+    public void spielfeld() 
+    {
+        if(einspielermodus){
+            String brett = waehleBrettd(spieler1);
+            setzeBrett(brett); 
+        }
+        else if(zweispielermodus){
+            String brett1 = waehleBrettd(spieler1); 
+            String brett2 = waehleBrettd(spieler2);
+            if(brett1.equals(brett2)){
+                ausgabe.druckeBrett(brett1);
+                setzeBrett(brett1);
+            }
+            else {
+                ausgabe.druckeEinigungBrett(); 
+                spielfeld(); 
+            }
+        }
+    }
+    
+    public String waehleBrett(Spieler spieler)
+    {
+        ausgabe.fragSpielfeld(spieler.gibName()); 
+        String brett = leser.gibEingabe(); 
+        String dateipfad = "";
+        if(eingabe.contains("1"){
+            dateipfad = spielbrett.gibClassic();
+        }
+        else if(eingabe.contains("2")) {
+            dateipfad = spielbrett.gibDoubleCross();
+        }
+        else if(eingabe.contains("3")) {
+            dateipfad = spielbrett.gibTestDatei(); 
+        }
+        
+        
+        if(!(brett.contains("1") || brett.contains("2") || brett.contains("3"))){
+            ausgabe.druckeUngueltigeEingabe();
+            waehleBrett(spieler);
+        }
+        return brett;
+    }
+    
+    public void setzeBrett(String datei)
+    {
+        spielbrett.setzeBrett(datei); 
+        spielbrett.druckeBrett(); 
+    }
+  
+    
+    
+    /**
+     * erstmal nur zur Hilfe!! muss nachher anders realisiert werden......
+     */
+    public String hilfsUebergabeUmwandler(String eingabe)
+    {
+        String dateipfad = "";
+        if(eingabe.contains("1")) {
+            dateipfad = spielbrett.gibClassic();
+        }
+        else if(eingabe.contains("2")){
+            dateipfad = spielbrett.gibDoubleCross();
+        }
+        else if(eingabe.contains("3")) {
+            dateipfad = spielbrett.gibTestDatei(); 
+        }
+        return dateipfad;
+    }
+    
+    public void bestimmeSpielerfarben()
+    {
+        Random rand = new Random();
+        int zufallszahl = rand.nextInt(2);
+        if(zufallszahl == 0) {
+            farbeSpieler1 = Spielerfarbe.SCHWARZ;
+            farbeSpieler2 = Spielerfarbe.WEISS; 
+            ausgabe.druckeFarbenzuordnung(gibSpieler(farbeSpieler1).gibName(), gibSpieler(farbeSpieler2).gibName(), farbeSpieler1, farbeSpieler2); 
+        }
+        else {
+            farbeSpieler1 = Spielerfarbe.WEISS;
+            farbeSpieler2 = Spielerfarbe.SCHWARZ; 
+            ausgabe.druckeFarbenzuordnung(gibSpieler(farbeSpieler1).gibName(), gibSpieler(farbeSpieler2).gibName(), farbeSpieler1, farbeSpieler2); 
+        }
+    }
+    
+    public Spieler gibSpieler(Spielerfarbe farbe)
+    {
+        Spieler spieler = null; 
+        if(farbe == farbeSpieler1){
+            spieler = spieler1; 
+        }
+        else if(farbe == farbeSpieler2){
+            spieler = spieler2; 
+        }
+        return spieler; 
+    }
+    
+    public void spielen()
+    {
+        if(farbeSpieler1 == Spielerfarbe.SCHWARZ){ 
+            spielZug(farbeSpieler1); 
+        }
+        else if(farbeSpieler2 == Spielerfarbe.SCHWARZ){
+            spielZug(farbeSpieler2); 
+        }
+    }
+    
+    public void spielZug(Spielerfarbe farbe)
+    {
+         while(isRunning){
+             if(zug.zugMoeglich(spielbrett, farbe) || zug.zugMoeglich(spielbrett, zug.gibGegnerstein(farbe))){
+                 if(zug.zugMoeglich(spielbrett, farbe)) {
+                    zug(farbe);
+                }
+                if(zug.zugMoeglich(spielbrett, zug.gibGegnerstein(farbe))) {
+                    zug(zug.gibGegnerstein(farbe)); 
+                }
+            }
+            else {
+                isRunning = false; 
+            }
+         }
+         ausgabe.druckePartieende(); 
+         ergebnis(); 
+    }
+    
+    public void zug(Spielerfarbe farbe) 
+    {
+        ausgabe.druckeZug(gibSpieler(farbe).gibName()); 
+        Spielfeldposition gesetztePosition = gibSpieler(farbe).gibZug(spielbrett, farbe);
+        Position pos = new Position(gesetztePosition.gibZeilenposition(), gesetztePosition.gibSpaltenposition());
+        boolean moeglich = zug.setzen(spielbrett, pos, farbe);
+        if(!moeglich) {
+            System.out.println("Ungültiger Zug"); 
+            zug(farbe); 
+        }else {
+            spielbrett.druckeBrett();
+            gui.agiere();
+        }
+    }
+    
+    public void ergebnis()
+    {
+        int punkteSpieler1 = spielbrett.spielerfarbePositionen(farbeSpieler1).size(); 
+        int punkteSpieler2 = spielbrett.spielerfarbePositionen(farbeSpieler2).size(); 
+        ausgabe.druckeSpielstand(punkteSpieler1, spieler1.gibName(), punkteSpieler2, spieler2.gibName());
+        if(punkteSpieler1 > punkteSpieler2){
+            ausgabe.druckeSieger(spieler1.gibName());
+        }
+        else if(punkteSpieler1 < punkteSpieler2){
+            ausgabe.druckeSieger(spieler2.gibName()); 
+        }
+        else if(punkteSpieler1 == punkteSpieler2) {
+            ausgabe.druckeUnentschieden(); 
+        }
+    }
+    
+    public void neuesSpiel()
+    {
+        if(einspielermodus){
+            ausgabe.druckeNeuesSpiel(spieler1.gibName());
+            String eingabe = leser.gibEingabe(); 
+            if(eingabe.contains("1")){
+                spielStarten();
+                isRunning = true; 
+                einspielermodus = false; 
+                zweispielermodus = false; 
+            }
+            else if(eingabe.contains("2")){
+                ausgabe.druckeEnde(); 
+            }
+        }
+        if(zweispielermodus){
+            ausgabe.druckeNeuesSpiel(spieler1.gibName());
+            String eingabe = leser.gibEingabe(); 
+            if(eingabe.contains("1")){
+                ausgabe.druckeNeuesSpiel(spieler2.gibName());
+                String eingabe1 = leser.gibEingabe(); 
+                if(eingabe1.contains("1")) {
+                    isRunning = true; 
+                    einspielermodus = false; 
+                    zweispielermodus = false; 
+                    spielStarten();
+                }
+                else if(eingabe1.contains("2")) {
+                    isRunning = true; 
+                    einspielermodus = false; 
+                    zweispielermodus = false; 
+                    spielStarten(); 
+                }
+            }
+            else if(eingabe.contains("2")){
+                ausgabe.druckeNeuesSpiel(spieler2.gibName()); 
+                String eingabe3 = leser.gibEingabe(); 
+                if(eingabe3.contains("1")) {
+                    isRunning = true; 
+                    einspielermodus = false; 
+                    zweispielermodus = false; 
+                    spielStarten(); 
+                }
+                else if(eingabe3.contains("2")) {
+                    ausgabe.druckeEnde(); 
+                }
+            }
+        }
+    }
+    
+     /**
+     * "exit" wurde eingegeben. 
+     * @return 'true', wenn der Befehl das Spiel beendet.
+     */
+    private void beenden() 
+    {
+        ausgabe.druckeEnde();
+    }
+    
+     /**
+     * Verarbeite einen gegebenen Befehl (führe ihn aus).
+     * @param befehl Der zu verarbeitende Befehl.
+     */
+    private void verarbeiteBefehl()
+    {
+        ausgabe.druckeBefehle();
+       
+        String eingabe =leser.gibEingabe();
+        if(eingabe.contains("?")) {
+            System.out.println("Ihre Aussage ist unklar...");
+        }
+        else if(eingabe.contains("regeln")) {
+            spielregeln();
+        }
+        else if(eingabe.contains("exit")) {
+            beenden();
+        }
+    }
+}

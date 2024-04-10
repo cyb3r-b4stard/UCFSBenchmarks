@@ -1,0 +1,75 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.util.*;
+public class NimPanel extends JPanel
+{
+    private JLabel titleName,instructionsLabel,inputLabel, outputLabel, resultLabel;
+    private JTextField rocks;
+    Random generator = new Random();
+    int pile = generator.nextInt(100) + 10;
+    private int input;
+    
+
+    public NimPanel()
+    {
+        titleName = new JLabel("The Game of Nim");
+        instructionsLabel = new JLabel("");
+        inputLabel = new JLabel("The number of rocks in the pile is " + pile);
+        
+        outputLabel = new JLabel("");
+        resultLabel = new JLabel("---");
+
+        rocks = new JTextField(5);
+        rocks.addActionListener(new TempListener());
+       
+       
+        add(titleName);
+        add(instructionsLabel);
+        add(inputLabel);
+        add(rocks);
+        add(outputLabel);
+        add(resultLabel);
+        
+        setPreferredSize(new Dimension(300, 300));
+        setBackground(Color.cyan);
+    }
+    
+    private class TempListener implements ActionListener
+    {
+        public void actionPerformed(ActionEvent event)
+        {
+            (boolean turn() = true)
+            {
+                playerinputLabel.setText("It is Player One's turn. Please enter the number of rocks you'd like to take, Player One.");
+                instructionsLabel = new JLabel("The number of rocks in the pile is " + pile);
+            }
+            else
+            {
+                playerinputLabel.setText("It is Player Two's turn. Please enter the number of rocks you'd like to take , Player Two.");
+                instructionsLabel = new JLabel("The number of rocks in the pile is " + pile);
+            }
+        
+            String text = rocks.getText();
+            int input = Integer.parseInt(text);
+           
+            if(input <= pile/2 && input >= 0)
+            {
+                pile -= input;
+                resultLabel.setText("Number of rocks left: " + pile);
+                outputLabel.setText("Next player, input another number");
+                if(pile == 1)
+                {
+                    outputLabel.setText("Number of rocks left: 0");
+                    resultLabel.setText("You lose!");
+                }
+            }
+            else
+            {
+                resultLabel.setText("That number is out of bounds!");
+                outputLabel.setText("Next player, input another number");
+            }
+            
+        }
+    }
+    }

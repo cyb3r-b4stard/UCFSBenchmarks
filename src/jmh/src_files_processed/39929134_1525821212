@@ -1,0 +1,127 @@
+
+/**
+ * ####: ##### ###### (######)
+ * ######: ####-### - ######## ####### #
+ * #######: ###
+ * ########## #
+ * 
+ * #######/##### ###########: ### ###### (#####) ####### ## ###### ### ##### #-########### ###### 
+ * ## ##\######### ## ######### ##### ########.
+ * 
+ * ##### ####: ####.
+ */
+
+import java.util.*;
+
+public class Blocks
+{
+    private static int dimension = 0;    
+    public final static char C = '*';
+
+    public static void main (String [] args) {
+        dimension = getDimension();
+        char[][] block = new char [dimension][dimension];
+
+        block = verticalInside(block);
+        printArray(block);
+        clearArray(block);
+
+        block = horizontalInside(block);
+        printArray(block);
+        clearArray(block);
+
+        block =innerBox(block);
+        printArray(block);
+        clearArray(block);
+
+    }
+
+    public static int getDimension() {
+        Scanner input = new Scanner(System.in);
+        int odd;
+        do {
+            System.out.print("Enter grid dimension (odd number): ");
+            odd = input.nextInt();
+            if (odd < 5 || odd > 11 || odd%2 == 0) 
+                System.out.println("Error: number must be odd.");
+        } while (odd < 5 || odd > 11 || odd%2 == 0);
+        return odd;        
+    }
+
+    public static void printArray(char [][] array) {
+        for (int x = 0; x < (array.length * 2 + 1); x++) {
+            System.out.print("-");
+        }
+        System.out.println();
+        for (int i = 0; i < array[0].length; i ++) { 
+            for (int y = 0; y < array.length; y ++) { 
+                if (y == 0)
+                    System.out.printf(" %1c ", array[i][y]);
+                else if (y == array.length - 1){
+                    System.out.printf("%1c ", array[i][y]);
+                    System.out.println();
+                }
+                else 
+                    System.out.printf("%1c ", array[i][y]);
+            }
+        }        
+        for (int x = 0; x < (array.length * 2 + 1); x++) {
+            System.out.print("-");
+        }
+        System.out.println();
+    }
+
+    public static void clearArray(char [][] array) {
+        for (int i = 0; i < array[0].length; i ++)
+            for (int y = 0; y < array.length; y ++)
+                array[i][y]= ' ';
+    }
+
+    public static char [][] verticalInside (char [][] inside) {
+        System.out.println("Running verticalInside()");
+        for (int i = 0; i < inside[0].length; i ++) {
+            for (int y = 0; y < inside.length; y ++) {
+                if ((i >= 1 && i <= (inside[0].length - 2)) && (y == 1 || y == inside.length - 2)) 
+                    inside[i][y] = '*';
+                else
+                    inside[i][y] = ' ';
+            }            
+        }
+        return inside;
+    }
+
+    public static char [][] horizontalInside (char [][] inside) {
+        System.out.println("Running horizontalInside()");
+        for (int i = 0; i < inside.length; i ++) {
+            for (int y = 0; y < inside[0].length; y ++) {
+                if ((i >= 1 && i <= (inside.length - 2)) && (y == 1 || y == inside[0].length - 2)) 
+                    inside[y][i] = '*';
+                else
+                    inside[y][i] = ' ';
+            }            
+        }
+        return inside;
+    }
+
+    public static char [][] innerBox (char [][] box) {
+        System.out.println("Running innerBox()");
+        for (int i = 0; i < box[0].length; i ++) {
+            for (int y = 0; y < box.length; y ++) {
+                if ((i >= 1 && i <= (box[0].length - 2)) && (y == 1 || y == box.length - 2)) 
+                    box[i][y] = '*';
+                else
+                    box[i][y] = ' '; 
+            }
+        }
+        for (int i = 0; i < inside.length; i ++) {
+            for (int y = 0; y < inside[0].length; y ++) {
+                if (inside [y][i] == '*') {                   
+                }
+                else if ((i >= 1 && i <= (inside.length - 2)) && (y == 1 || y == inside[0].length - 2)) 
+                    inside[y][i] = '*';
+                else
+                    inside[y][i] = ' ';
+            }            
+            return box;
+        }
+    }

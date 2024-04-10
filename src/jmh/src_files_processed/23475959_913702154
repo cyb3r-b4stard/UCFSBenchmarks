@@ -1,0 +1,309 @@
+/**
+ * ###### #######: ####### ############ ###########, ### ### ################# ###### ######
+ * 
+ * @###### (## ##) 
+ * @####### (#.#)
+ */
+public class GrundOP
+{
+    private final int MAX = 15;    
+    private int[] feld = new int[MAX];
+    private int[] feld2 = new int[MAX];
+    private int anz;
+    private int anz2;
+
+
+
+    /**
+     * Konstruktor für Objekte der Klasse WueExpMitFeld
+     */
+    public GrundOP()
+    {
+        init(); 
+    }
+
+    /**
+     * Methode: init: initialisiert die Feldelemente mit Null
+     */
+    public void init()
+    {
+        for(int stelle = 0; stelle < feld.length; stelle = stelle + 1)
+        {
+            feld[stelle] = 0;
+          
+        };        
+    }
+    
+    /**
+     * Methode: init: initialisiert die Feldelemente mit Null
+     */
+    public void init2()
+    {
+        for(int stelle = 0; stelle < feld2.length; stelle = stelle + 1)
+        {
+            feld2[stelle] = 0;
+          
+        };        
+    }
+
+    /**
+     * Methode initAufsteigend: initialisiert das Feld mit einer Anzahl von aufsteigend 
+     * sortierten natürlichen Zahlen
+     */
+    public void initAufsteigend(int neueAnzahl)
+    {
+        if((neueAnzahl > 0) && (neueAnzahl <= MAX))
+        {
+            anz = neueAnzahl;
+            init();
+            for(int stelle = 0; stelle < anz; stelle = stelle + 1)
+            {
+                feld[stelle] = stelle + 1;
+            };
+        }
+    }
+    
+    /**
+     * Methode initGerade: initialisiert das Feld mit einer Anzahl von geraden 
+     * sortierten natürlichen Zahlen
+     */
+    public void initGerade(int neueAnzahl)
+    {
+        if((neueAnzahl > 0) && (neueAnzahl <= MAX))
+        {
+            anz = neueAnzahl;
+            init();
+            for(int stelle = 0; stelle < anz; stelle = stelle + 1)
+            {
+                feld[stelle] = 2 * stelle;
+            };
+        }
+    }
+    
+    /**
+     * Methode initAbsteigend: initialisiert das Feld mit einer Anzahl von absteigend 
+     * sortierten natürlichen Zahlen
+     */
+    public void initAbsteigend(int neueAnzahl)
+    {
+        if((neueAnzahl > 0) && (neueAnzahl <= MAX))
+        {
+            anz = neueAnzahl;
+            init();
+            for(int stelle = 0; stelle < anz; stelle = stelle + 1)
+            {
+                feld[stelle] = neueAnzahl - stelle;
+            };
+        }
+    }
+    
+    /**
+     * Methode initZuf: initialisiert das Feld mit einer Anzahl von  
+     * unsortierten natürlichen Zahlen
+     */
+    public void initZuf(int neueAnzahl)
+    {
+        if((neueAnzahl > 0) && (neueAnzahl <= MAX))
+        {
+            anz = neueAnzahl;
+            init();
+            for(int stelle = 0; stelle < anz; stelle = stelle + 1)
+            {
+                feld[stelle] = (int) (Math.random() * MAX);
+            };
+        }
+    }
+    
+    /**
+     * Methode gibAus
+     */
+    public void gibAus(int anzAus)
+    {
+        if((anzAus >= 0) && (anzAus <= MAX))
+        {
+            for(int stelle = 0; stelle < anzAus; stelle = stelle + 1)
+            {
+                System.out.println(stelle + ": " + feld[stelle]);
+            };
+        };
+        System.out.println("Anzahl der Feldelemente: " +  anz);
+        System.out.println();
+    }   
+    
+    /**
+     * Methode findeMaxStelle: ermittelt die Stelle mit dem groessten Feldelement
+     */
+    public int findeMaxStelle()
+    {
+        int maxStelle = 0;
+        int max = feld[maxStelle];
+        for(int stelle = 1; stelle <= feld.length-1; stelle = stelle + 1)
+        {
+            if(max < feld[stelle])
+            {
+                max = feld[stelle];
+                maxStelle = stelle;
+            };
+        };
+        return maxStelle;
+    }
+    
+    /**
+     * Methode findeMax: ermittelt den groessten Wert aller Feldelemente
+     */
+    public int findeMax()
+    {
+        int maxStelle = findeMaxStelle();
+        int max = feld[maxStelle];
+        return max;
+    }
+
+    /**
+     * Methode findeMinStelle: ermittelt die Stelle mit dem kleinsten Feldelement
+     */
+    public int findeMinStelle()
+    {
+        int minStelle = 0;
+        int min = feld[minStelle];
+        for(int stelle = 1; stelle <= feld.length-1; stelle = stelle + 1)
+        {
+            if(min > feld[stelle])
+            {
+                min = feld[stelle];
+                minStelle = stelle;
+            };
+        };
+        return minStelle;
+    }
+    
+    /**
+     * Methode findeMin: ermittelt den kleinsten Wert aller Feldelemente
+     */
+    public int findeMin()
+    {
+        int minStelle = findeMinStelle();
+        int min = feld[minStelle];
+        return min;
+    }
+
+    /**
+     * Methode enthalten: prüft der Reihung ein weteres Element als neues
+     * letztes Element hinzu
+     * @ param: Vor wert: die in die Methode den anzuhangenden Wert übernimmt
+     */
+    public void hangeAn(int wert)
+    {
+        if(anz < MAX)
+        {
+            feld[anz] = wert;
+            anz = anz + 1;
+        };
+        
+        
+    }
+    
+    /**
+     * Methode kopiere : stellt eine identische Kopie  (feld2) des Ausgansfeldes (feld1)
+     * her
+     */
+    public void kopiere()
+    {
+        init2();
+        for(int stelle = 0; stelle <= anz-1; stelle = stelle +1)
+        {
+            feld2[stelle] = feld[stelle];
+        
+    }
+  }
+    
+    public boolean enthalten(int wert)
+    {
+        boolean antwort = false;
+        
+        for(int stelle = 0; stelle <= anz-1; stelle = stelle +1)
+        {
+            if(feld[stelle] == wert)
+            {
+                antwort = true;
+            };
+        }
+        return antwort;
+    }
+    
+    
+  /**
+     * Methode teste
+     */
+    public void teste()
+  {
+        
+        
+        
+        anz = 9;
+        initZuf(anz);
+        gibAus(anz);
+        if(enthalten(7) == true)
+        {
+            System.out.println("Die 7 ist drin!");
+        }
+        else
+        {
+            System.out.println("Die 7 ist NICHT drin!");
+        }
+        hangeAn(22);
+        gibAus(anz);
+          hangeAn(44);
+        gibAus(anz);
+          hangeAn(65);
+        gibAus(anz);
+        
+    }
+
+
+
+ /**
+ * Methode fugeEin
+ */
+public void fugeEin(int wert)
+{
+    
+    
+    if(anz < MAX)
+    
+    {
+        stelle = anz -1;
+        while(stelle >= 0) && (wert < feld[stelle])
+        {
+            feld[stelle + 1] = feld[stelle];
+            stelle = stelle + 1;
+        }
+        feld[stelle + 1] = wert;
+        anz = anz + 1;
+    };
+    
+    
+    
+}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

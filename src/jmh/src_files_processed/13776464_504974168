@@ -1,0 +1,265 @@
+public class CharacterSearchTree
+{
+
+
+    private HuffmanTriple content;
+    private CharacterSearchTree leftChild, rightChild;
+
+    public CharacterSearchTree() 
+    {
+        content = null;
+        leftChild = null;
+        rightChild = null;
+    }
+
+    public CharacterSearchTree(char[] chars)
+    {
+        for(int i =0; i<chars.length;i++)
+        {
+            add(chars[i], 1, "");
+        }
+    }
+    
+    public void add(char chars, int q , String code)
+    {
+        if(isEmpty() )
+        {
+            content = new HuffmanTriple(chars,q);
+            content.setCode(code);
+            leftChild = new CharacterSearchTree();
+            rightChild = new CharacterSearchTree();
+            
+        }
+        else
+        {
+            if(content.getToken()> chars)
+            {
+                leftChild.add(chars, q, code );
+            }
+            else if (content.getToken()<chars)
+            {
+                rightChild.add(chars, q, code );
+            }
+            else
+            {
+                content = new HuffmanTriple(chars,q);
+                content.setCode(code);
+                leftChild = new CharacterSearchTree();
+                rightChild = new CharacterSearchTree();
+            }
+        }
+        
+    }
+    
+    public int height()
+    {
+        if(!isEmpty() )
+        {
+            int left = leftChild.height();
+            int right = rightChild.height();
+            if(left>right)
+            {
+                return 1+left;
+            }
+            else
+            {
+                return 1+right;
+            }
+            
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    
+    public int countCharacter()
+    {
+        if(!isEmpty() )
+        {
+            return content.getQuantity() + leftChild.countCharacter() + rightChild.countCharacter();
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    
+    public int longestCode()
+    {
+        if(!isEmpty() )
+        {
+            int left = leftChild.longestCode();
+            int right = rightChild.longestCode();
+            int max = 0;
+            if(left>right)
+            {
+                max = left;
+            }
+            else
+            {
+                max = right;
+            }
+            if(content.getCode().length()>max)
+            {
+                return content.getCode().length();
+            }
+            else
+            {
+                return max;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    
+    public HuffmanTriple minimum()
+    {
+        if(!isEmpty() )
+        {
+            CharacterSearchTree curr = this;
+            while(!curr.leftChild.isEmpty() )
+            {
+                curr = curr.leftChild;
+            }
+            return curr.getContent();
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
+    public boolean hasOnlyCompleteNodes()
+    {
+        if(isEmpty() || isLeaf() )
+        {
+            return true;
+        }
+        else
+        {
+            if(!(leftChild.isEmpty() || rightChild.isEmpty() ))
+            {
+                return leftChild.hasOnlyCompleteNodes() && rightChild.hasOnlyCompleteNodes();
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+    
+    public boolean containsCharacter(char chars)
+    {
+        if(!isEmpty() )
+        {
+            if(content.getToken()>chars
+            {
+                return leftChild.containsCharacter(chars);
+            }
+            else if (content.getToken()<chars
+            {
+                return rightChild.containsCharacter(chars);
+            }
+            else
+            {
+                return true;
+            }
+            
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    public boolean equalStructure(CharacterSearchTree cst)
+    {
+        if(isEmpty() )
+        {
+            return cst.isEmpty();
+        }
+        else if(cst.isEmpty())
+        {
+            return false;
+        }
+        else 
+        {
+            return leftChild.equalStructure(cst.leftChild) && rightChild.equalStrukture(cst.rightChild);
+        }
+    }
+    
+    public HuffmanTriple getContent()
+    {
+        if ( !isEmpty() )
+        {
+            return content;
+        } else {
+            throw new RuntimeException();
+        }
+    }
+
+    public boolean isEmpty() 
+    {
+        return content == null;
+    }
+
+    public boolean isLeaf() 
+    {
+        return !isEmpty() && leftChild.isEmpty() && rightChild.isEmpty();
+    }
+
+    public void iterativeAdd( char t )
+    {
+        CharacterSearchTree current = this;
+        while ( !current.isEmpty() && current.content.getToken() != t )
+        {
+            if ( current.content.getToken() > t )
+            {
+                current = current.leftChild;
+            }
+            else
+            {
+                current = current.rightChild;
+            }
+        }
+        if ( current.isEmpty() ) 
+        {
+            current.content = new HuffmanTriple( t );
+            current.leftChild = new CharacterSearchTree();
+            current.rightChild = new CharacterSearchTree();
+        }
+        else
+        {
+            current.content.incrementQuantity();
+        }
+    }
+
+    public void show()
+    {
+        if ( !isEmpty() ) 
+        {
+            leftChild.show();
+            System.out.println( content.toString() );
+            rightChild.show();
+        }
+    }
+    
+    public void showPreOrder()
+    {
+        if(!isEmpty())
+        {
+            if(isLeaf())
+            {
+                 System.out.println("*");
+            }
+        
+            System.out.println(content.toString() );
+            leftChild.showPreOrder();
+            rightChild.showPreOrder();
+        }
+    }
+
+}

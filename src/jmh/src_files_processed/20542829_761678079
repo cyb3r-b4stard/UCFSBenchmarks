@@ -1,0 +1,33 @@
+
+import java.util.ArrayList;
+import java.util.List;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Field;
+/**
+ * ##### # ########### ## ##### #### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Test
+{
+    static List stringList = new ArrayList<String>();
+
+    public static void test()
+    {
+        System.out.println("Start");
+        try {
+            Test.<String>test2();
+        }catch(Exception e){
+            System.out.println(e);
+        }
+    }
+
+    public static <T> void test2() throws Exception{
+        stringList = new ArrayList<T extends String>();
+        Field stringListField = Test.class.getDeclaredField("stringList");
+        ParameterizedType stringListType = (ParameterizedType) stringListField.getGenericType();
+        Class<?> stringListClass = (Class<?>) stringListType.getActualTypeArguments()[0];
+        System.out.println(stringListClass); 
+    }
+}

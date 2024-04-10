@@ -1,0 +1,171 @@
+
+import acm.graphics.*;
+import acm.program.*;
+import acm.gui.*; 
+import acm.util.*; 
+import acm.io.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.applet.*;
+
+/** #### ###### ####### # <# ####="####:
+ * ########## ### #### #### #####</#> #### # #### ######
+ * <# ####="####:
+ * <#>
+ * #### ###### # ## ####### ## ## "###############": ## ######## ###
+ * ### ###### ## #### # ######## ######## ######## ########. 
+ * <#>
+ * #### ######## #### # ##### ### ###### ## 
+ * <# ####="####:
+ * ###### ######## ## ########## # ######</#> ##
+ * ######### ########### ## ####, ### #### ##### ######, 
+ * ## ####/##/##. 
+ * #### # # ###### ## ####/##/##.
+ * <##>
+ * @###### (# ### ####) 
+ * @####### (###### ## ###### ## ####) 
+ */
+
+public class Game extends GraphicsProgram 
+{
+    public static final int APPLICATION_HEIGHT = 768;
+    public static final int APPLICATION_WIDTH = 1366;
+    private double dx;
+    private Background back;
+    private Character character; 
+    private Enemy[] en; 
+    HighScoreTable table;
+    private int seconds;
+
+    /** É aqui que os objectos da classe Game 
+     *  começam realmente a fazer coisas. 
+     *  Coloque o seu código entre as chavetas após o run().
+     */    
+    public void run()
+    {
+        this.playGame();
+    }
+
+    public void init()
+    {
+        GCanvas canvas = this.getGCanvas(); 
+        canvas.addMouseListener(this);
+        canvas.addKeyListener(this);
+        seconds = 0; 
+    }
+
+    private void printScores(HighScoreTable table)
+    {
+        for(PlayerScore ps : table.getScores())
+        {
+            int score = (ps != null) ? ps.getScore() : 0;
+            this.print(score + " ");
+        }
+        this.println();
+    }
+
+    public void playGame()
+    {
+        this.background();
+        this.addCharacter();
+        this.enemy(); 
+        this.moveGame();
+    }
+
+    public void moveGame()
+    {
+        this.waitForClick();
+        while(true)
+        {
+            seconds++;
+            en.move(dx, 5);
+            this.pause(20);
+            removeCollidedObject();
+            if(seconds % 100 == 0)
+            {
+                seconds = 0; 
+                this.enemy();
+            }
+        }
+    }
+
+    public void background()
+    {
+        back = new Background(this.getWidth() + 4 , this.getHeight() + 4);
+        this.add(back, -2, -2);
+    }
+
+    public void addCharacter()
+    {
+        character = new Character();
+        this.add(character, (this.getWidth() / 2) - (character.getWidth()), (this.getHeight() - character.getHeight()) - 40);
+    }
+
+    public void angle()
+    {
+        RandomGenerator gen = new RandomGenerator();
+        this.dx = gen.nextInt(1, 3);
+        if (gen.nextBoolean(0.5)) 
+        {
+            this.dx = - this.dx;
+        }
+
+    }
+
+    public void enemy()
+    {
+        for(int i = 0; i++; i<49)
+        {
+            RandomGenerator gen = new RandomGenerator();
+            en[i] = new Enemy(50, 50, Color.RED, 30);
+            this.add(en, gen.nextDouble(0, this.getWidth()), gen.nextDouble(0, this.getHeight()/2));
+        }
+    }
+
+    public void keyPressed(KeyEvent e)
+    {
+        if(e.getKeyChar() == 'a')
+        {
+            character.move(-20, 0);
+        }
+        else if(e.getKeyChar() == 'd')
+        {
+            character.move(20, 0);
+        }
+    }
+
+    public GObject getCollidedObject()
+    {
+        if((getElementAt(character.getX(), character.getY())) != null) 
+        {
+            return getElementAt(character.getX(), character.getY());
+        }
+        else if (getElementAt( (character.getX() + character.getWidth()), character.getY()) != null )
+        {
+            return getElementAt(character.getX() + character.getWidth(), character.getY());
+        }
+        else if(getElementAt(character.getX(), (character.getY() + character.getWidth())) != null )
+        {
+            return getElementAt(character.getX(), character.getY() + character.getWidth());
+        }
+        else if(getElementAt((character.getX() + character.getWidth()), (character.getY() + character.getWidth())) != null )
+        {
+            return getElementAt(character.getX() + character.getWidth(), character.getY() + character.getWidth());
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public void removeCollidedObject()
+    {
+        GObject collided = getCollidedObject();
+
+        if((collided != back))
+        {
+            this.remove(collided);
+        }
+    }
+} 

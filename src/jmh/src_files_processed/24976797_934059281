@@ -1,0 +1,94 @@
+
+/**
+ * ########### ### #### ### ###### ####.
+ * 
+ * @###### (### ####) 
+ * @####### (#### ############## #### ### #####)
+ */
+import basis.*;
+
+public class Taschenrechner {
+    private Fenster fenster;
+    private Knopf kende,Krechne;
+    private WahlBox Wp,Wm,WM,Wg;
+    private WahlBoxGruppe wbg;
+    private BeschriftungsFeld T,T2,T3;
+    private ZahlenFeld Zf1 , Zf2 ,Zfe;
+    public Taschenrechner() {
+        /* Bereitstellen, Initialisierungsteil */
+        fenster = new Fenster(300,500);
+        kende = new Knopf("Ende",10,400,70,50);
+        Krechne = new Knopf("Rechnen",200,400,90,50);
+        wbg = new WahlBoxGruppe();
+        Wp = new WahlBox ("plus",120,275,60,40);
+        Wm = new WahlBox ("Minus",120,325,60,40);
+        WM = new WahlBox ("Mal",120,375,60,40);
+        Wg = new WahlBox ("Teilen",120,425,60,40);
+        T = new BeschriftungsFeld("Taschenrechner",80,20,120,50);
+        Zf1 = new ZahlenFeld(80,100,40,60);
+        Zf2 = new ZahlenFeld(160,100,40,60 );
+        Zfe = new ZahlenFeld(120,200,40,60  );
+        T2 = new BeschriftungsFeld("+",135,100,40,60);
+        T3 = new BeschriftungsFeld("=",135,150,40,60);
+        wbg.fuegeEin(Wp);
+        wbg.fuegeEin(Wm);
+        wbg.fuegeEin(WM);
+        wbg.fuegeEin(Wg);
+
+    }
+
+    public void fuehreAus() {
+        /*Arbeiten, Aktionsteil */
+        T.setzeSchriftGroesse(15);
+
+        fenster.breite();
+        fenster.hoehe();
+
+        while(! kende.wurdeGedrueckt () ){  
+
+            Hilfe.kurzePause();
+            if (Krechne.wurdeGedrueckt ()){
+                Zfe.setzeZahl(Zf1.zahl()+Zf2.zahl());
+                if (wbg.ausgewaehlteBox() == Wm ){
+                    Zfe.setzeZahl(Zf1.zahl()-Zf2.zahl());
+            
+            
+            }
+            
+            
+            if (wbg.wurdeGeaendert()){
+                if (wbg.ausgewaehlteBox() == Wm ){
+                    T2.setzeText("-");
+
+                }
+
+            }
+
+            if (wbg.ausgewaehlteBox() == Wp ){
+                T2.setzeText("+");
+
+            }
+
+   
+            if (wbg.ausgewaehlteBox() == WM){
+                T2.setzeText("*");
+
+            }
+
+       
+            if (wbg.ausgewaehlteBox() == Wg){
+                T2.setzeText("/");
+
+            }
+
+
+        
+        }
+        this.gibFrei();
+    }
+
+    public void gibFrei(){   
+        fenster.gibFrei();
+    }
+
+}

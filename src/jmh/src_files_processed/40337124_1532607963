@@ -1,0 +1,77 @@
+import java.util.Arrays;
+import java.util.Random;
+
+/**
+ * #### ##### ########## # ####### ########### ######## ### ### ###### #######
+ * @###### ##### ######
+ *
+ */
+public class Skiing {
+    private static final int MAX_HEIGHT = 77;
+    private static final int MIN_HEIGHT = 61;
+
+    private static final int NUM_SKIS = 5;
+    private static final int NUM_SKIERS = 3;
+
+    private static int[] skiHeights;
+    private static int[] skierHeights;
+
+    /**
+     * Randomly populates the skier and ski arrays with realistic
+     * human heights and ski lengths
+     */
+    private static void populateArrays(){
+        Random rng = new Random();       
+        for(int i = 0; i < skierHeights.length; i++){
+            skierHeights[i] = rng.nextInt(MAX_HEIGHT-MIN_HEIGHT + 1) + MIN_HEIGHT; 
+        }
+        for(int i = 0; i < skiHeights.length; i++){
+            skiHeights[i] = rng.nextInt(MAX_HEIGHT-MIN_HEIGHT + 1) + MIN_HEIGHT;
+        }
+    }
+
+    /**
+     * Returns an optimal solution to an instance of the Skiing Problem. 
+     * @param assignments An array whose length is the number of skiers. The ith entry
+     * in the array is the ski assignment for person i.  
+     */
+    public static void computeSolution(int[] assignments){
+        System.out.println("Original skiers: " + Arrays.toString(skierHeights));
+        System.out.println("Original skis: " + Arrays.toString(skiHeights));
+        
+        for(int i = 0; i<skierHeights.length; i++){
+            for(int j = 0; j<skiHeights.length; j++){
+                if(skierHeights[i] == skiHeights[j]){
+                    assignments[i] = j+1;
+                }
+            }
+        }
+        
+        for(int i = 0; i<skierHeights.length; i++){
+            if(skierHeights[i] == 0){
+                
+        }
+        
+        System.out.println("This is assignments: " + Arrays.toString(assignments));
+        
+        
+        
+        
+    }
+    
+    
+    /**
+     * Once you're done, you can run this main method to test your code.
+     */
+    public static void main(String[] args){         
+        skiHeights = new int[NUM_SKIS];
+        skierHeights = new int[NUM_SKIERS];     
+        populateArrays();
+        Arrays.sort(skiHeights);
+        Arrays.sort(skierHeights);      
+        int[] assignments = new int[NUM_SKIERS];
+        computeSolution(assignments);
+        System.out.println("The optimal ski assignment is: ");
+        System.out.println(Arrays.toString(assignments));
+    }
+}

@@ -1,0 +1,220 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class SingerGUI extends JFrame 
+{
+     JTextField name; 
+     JTextField age;
+     JLabel singerName;
+     JLabel singerAge;
+     JLabel gender;
+     JRadioButton male;
+     JRadioButton female;
+     JCheckBox voice;
+     JCheckBox originality;
+     JCheckBox personality;
+     JLabel svoice;
+     JLabel soriginality;
+     JLabel spersonality;
+     JList displayMale;
+     JButton add;
+     JButton save;
+     JButton display;
+     JList displayFemale;
+     
+
+     private int points = 0;
+     private JTextField textFieldTotal = new JTextField(10);
+     
+   public SingerGUI()
+   {
+     getContentPane().setLayout(null);
+     setupGUI();
+     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+   }
+   void setupGUI()
+   {
+    name = new JTextField();
+    name.setLocation(137,18);
+    name.setSize(200,30);
+    name.setText("");
+    name.setColumns(10);
+    getContentPane().add(name);
+
+    age = new JTextField();
+    age.setLocation(137,54);
+    age.setSize(200,30);
+    age.setText("");
+    age.setColumns(10);
+    getContentPane().add(age);
+
+    singerName = new JLabel();
+    singerName.setLocation(10,18);
+    singerName.setSize(100,30);
+    singerName.setText("Singer Name");
+    getContentPane().add(singerName);
+
+    singerAge = new JLabel();
+    singerAge.setLocation(10,54);
+    singerAge.setSize(100,30);
+    singerAge.setText("Singer Age");
+    getContentPane().add(singerAge);
+
+    gender = new JLabel();
+    gender.setLocation(10,111);
+    gender.setSize(100,30);
+    gender.setText("Gender");
+    getContentPane().add(gender);
+
+    male = new JRadioButton();
+    male.setLocation(137,110);
+    male.setSize(70,30);
+    male.setText("Male");
+    male.setSelected(false);
+    getContentPane().add(male);
+
+    female = new JRadioButton();
+    female.setLocation(210,110);
+    female.setSize(70,30);
+    female.setText("Female");
+    female.setSelected(true);
+    getContentPane().add(female);
+    
+    ButtonGroup bg=new ButtonGroup();  
+    bg.add(male);bg.add(female);
+
+    voice = new JCheckBox();
+    voice.setLocation(10,179);
+    voice.setSize(20,20);
+    voice.setText("");
+    voice.setSelected(true);
+    getContentPane().add(voice);
+    voice.addItemListener(this);
+    
+    originality = new JCheckBox();
+    originality.setLocation(128,179);
+    originality.setSize(20,20);
+    originality.setText("");
+    originality.setSelected(false);
+    getContentPane().add(originality);
+    originality.addItemListener(this);
+    
+    personality = new JCheckBox();
+    personality.setLocation(250,179);
+    personality.setSize(20,20);
+    personality.setText("");
+    personality.setSelected(false);
+    getContentPane().add(personality);
+    personality.addItemListener(this);
+
+    svoice = new JLabel();
+    svoice.setLocation(10,157);
+    svoice.setSize(100,20);
+    svoice.setText("Singer Voice");
+    getContentPane().add(svoice);
+
+    soriginality = new JLabel();
+    soriginality.setLocation(128,157);
+    soriginality.setSize(100,20);
+    soriginality.setText("Singer Originality");
+    getContentPane().add(soriginality);
+
+    spersonality = new JLabel();
+    spersonality.setLocation(250,156);
+    spersonality.setSize(110,20);
+    spersonality.setText("Singer Personality");
+    getContentPane().add(spersonality);
+    
+    JTextField textFieldTotal = new JTextField(10);
+    textFieldTotal.setEditable(false);
+    add(textFieldTotal);
+    
+    ActionListener actionListener = new ActionHandler();
+    voice.addActionListener(actionListener);
+    originality.addActionListener(actionListener);
+    personality.addActionListener(actionListener);
+
+
+    add = new JButton();
+    add.setLocation(10,220);
+    add.setSize(100,30);
+    add.setText("Add New");
+    getContentPane().add(add);
+
+    save = new JButton();
+    save.setLocation(130,220);
+    save.setSize(100,30);
+    save.setText("Save");
+    getContentPane().add(save);
+
+    display = new JButton();
+    display.setLocation(249,220);
+    display.setSize(100,30);
+    display.setText("Display");
+    getContentPane().add(display);
+    
+    
+    
+    displayMale = new JList();
+    displayMale.setLocation(202,278);
+    displayMale.setSize(170,150);
+    getContentPane().add(displayMale);
+
+    displayFemale = new JList();
+    displayFemale.setLocation(10,278);
+    displayFemale.setSize(170,150);
+    getContentPane().add(displayFemale);
+ 
+
+    setTitle("Singers");
+    setSize(400,506);
+    setVisible(true);
+    setResizable(true);
+    
+ 
+   public void actionPerformed(ActionEvent e){  
+       if(male.isSelected()){  
+    JOptionPane.showMessageDialog(this,"Gender: Male");  
+    }  
+    if(female.isSelected()){  
+        JOptionPane.showMessageDialog(this,"Gender: Female");  
+    }  
+   }  
+      
+  
+   
+   class ActionHandler implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent event) {
+			JCheckBox checkbox = (JCheckBox) event.getSource();
+			if (checkbox.isSelected()) {
+				if (checkbox == voice) {
+					points += 10;
+				} else if (checkbox == originality) {
+					points += 10;
+				} else if (checkbox == personality) {
+					points += 10;
+				}
+			} else {
+				if (checkbox == voice) {
+					points -= 10;
+				} else if (checkbox == originality) {
+					points -= 10;
+				} else if (checkbox == personality) {
+					points -= 10;
+				}
+			}
+			textFieldTotal.setText(String.valueOf(points));
+		}
+	   }
+  
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				new SingerGUI().setVisible(true);
+			}
+		});
+	}
+}  

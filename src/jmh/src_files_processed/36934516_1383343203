@@ -1,0 +1,94 @@
+
+import cha.*;
+import cha.action.*;
+import java.awt.*;
+import javax.swing.*;
+import java.util.*;
+import static java.awt.Color.*;
+
+public class Room
+extends CHApplet {
+
+    CHOval darkGlobe;
+    CHRectangle pedistal;
+    CHClip lightSwitch;
+    CHClip cricket;
+    LightBulb lightbulb;
+    
+    private class OffAction
+    extends CHAction {
+        public void step() {
+            
+            setBackground(darkGray);
+            darkGlobe.setVisible(true);
+            lightSwitch .play();
+            cricket .loop();
+            lightbulb .turnOff();
+
+        }
+    }
+    
+    public void init() {
+        
+        lightSwitch = new CHClip();
+        add(lightSwitch);
+        lightSwitch .setFile("light-switch.wav");
+        
+        cricket = new CHClip();
+        add(cricket);
+        cricket. setFile("cricket.au");
+        
+        lightbulb = new LightBulb;
+        add(lightbulb);
+        lightbulb.setBounds(5, 400, 5, 400);
+    
+        
+        darkGlobe = new CHOval();
+        add(darkGlobe);
+        darkGlobe.setBounds(200, 235, 100, 100);
+        
+        Color darkerGray;
+        darkerGray = new Color(51, 51, 51);
+        darkGlobe.setBackground(darkerGray);        
+        darkGlobe.setVisible(false);
+        
+        Color brown;
+        brown = new Color(160,30,10);
+        
+        Color black;
+        black = new Color(0, 0, 0, 0); 
+      
+        
+        
+        CHImage globe;
+        globe = new CHImage();
+        add(globe);
+        globe.setFile("globe.png");
+        globe.setBounds(201, 236, 98, 98);
+        
+        pedistal = new CHRectangle();
+        add(pedistal);
+        pedistal.setBounds(215, 305,70, 70); 
+        pedistal.setBackground(brown);
+        
+        OffAction off;
+        off = new OffAction();
+        add(off);
+        off.setText("Off");
+        
+        CHButton offButton;
+        offButton = new CHButton();
+        add(offButton);
+        offButton.setAction(off);
+        
+        CHLabel label;
+        label = new CHLabel();  
+        add(label);
+        label.setText("Light Switch by Chris Bordiuk");
+        label.setBounds(400, 400, 440, 440);
+        label.setForeground(black);
+       
+        
+        
+    }
+}

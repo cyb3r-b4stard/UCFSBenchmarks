@@ -1,0 +1,401 @@
+package noorog;
+import javax.swing.UIManager.LookAndFeelInfo;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import javax.swing.border.Border;
+import javax.swing.*;
+import java.awt.event.*;
+import java.io.*;
+
+public class Main extends JFrame {
+
+    private JMenuBar menuBar;
+    private JButton button1;
+    private JButton button10;
+    private JButton button11;
+    private JButton button12;
+    private JButton button13;
+    private JButton button8;
+    private JButton button9;
+    private JLabel label11;
+    private JLabel label3;
+    private JLabel label4;
+    private JLabel label5;
+    private JLabel label6;
+    private JLabel label7;
+    private JLabel label8;
+    private JLabel label9;
+    private JPanel panel1;
+    private JPanel panel4;
+    private JPanel panel7;
+    private JPanel panel8;
+    private JTextField search;
+    private JTextField bus_number;
+    private JTextField out_number;
+    private JTextField driver_name;
+    private JTextField out_time;
+    private JTextField in_time;
+    private JOptionPane frame;
+    /private JFrame fr;
+    
+    public Main(){
+
+        this.setTitle("GUI_project");
+        this.setSize(715,524);
+        this.setJMenuBar(menuBar);
+        JPanel contentPane = new JPanel(null);
+        
+        contentPane.setPreferredSize(new Dimension(715,524));
+        contentPane.setBackground(new Color(153,255,153));
+        ImageIcon favicon = new ImageIcon("C:\\Users\\STUDENT\\Desktop\\background.jpg");
+        aboutPanel.setIconImage(favicon.getImage());
+        /*setLayout(new BorderLayout());
+	    setContentPane(new JLabel(new ImageIcon("C:\\Users\\STUDENT\\Desktop\\background.jpg")));
+	    setLayout(new FlowLayout());
+	    setSize(1000,1000);*/
+
+
+        button1 = new JButton();
+        button1.setBounds(371,88,90,30);
+        button1.setBackground(new Color(0,204,204));
+        button1.setForeground(new Color(0,0,0));
+        button1.setEnabled(true);
+        button1.setFont(new Font("SansSerif",3,12));
+        button1.setText("Хайх");
+        button1.setVisible(true);
+        button1.addActionListener(new ActionListener(){
+        public void actionPerformed(ActionEvent evt) {
+            StringBuilder builder;
+            String  word = search.getText();
+            builder = new StringBuilder();
+            String str;
+            String arg;
+            int i = word.length();
+            BufferedReader br = null;
+        try{
+           br = new BufferedReader(new InputStreamReader(new FileInputStream("C:/Users/STUDENT/Desktop/daalgavar/noorog/File.txt")));
+            while((str = br.readLine() )!= null){
+                arg = str.toString().substring(0, i);
+                if(word.equalsIgnoreCase(arg)){ 
+                    search.setText(str.toString());
+                    break;
+                }
+            }
+            }catch(IOException e){
+             e.printStackTrace();
+            }finally{
+            try{
+             if(br != null) br.close();
+            }catch(IOException f){
+             f.printStackTrace();
+           }
+        }
+        }
+    });
+
+        button11 = new JButton();
+        button11.setBounds(10,34,90,35);
+        button11.setBackground(new Color(0,255,204));
+        button11.setForeground(new Color(0,0,0));
+        button11.setEnabled(true);
+        button11.setFont(new Font("SansSerif",3,12));
+        button11.setText("Харах");
+        button11.setVisible(true);
+
+        button12 = new JButton();
+        button12.setBounds(10,124,90,35);
+        button12.setBackground(new Color(0,255,204));
+        button12.setForeground(new Color(0,0,0));
+        button12.setEnabled(true);
+        button12.setFont(new Font("SansSerif",3,12));
+        button12.setText("Устгах");
+        button12.setVisible(true);
+
+        button13 = new JButton();
+        button13.setBounds(11,224,90,35);
+        button13.setBackground(new Color(0,204,204));
+        button13.setForeground(new Color(0,0,0));
+        button13.setEnabled(true);
+        button13.setFont(new Font("SansSerif",3,12));
+        button13.setText("Гарах");
+        button13.setVisible(true);
+        
+        button8 = new JButton();
+        button8.setBounds(173,261,108,33);
+        button8.setBackground(new Color(0,255,204));
+        button8.setForeground(new Color(0,0,0));
+        button8.setEnabled(true);
+        button8.setFont(new Font("SansSerif",3,12));
+        button8.setText("Хадгалах");
+        button8.setVisible(true);
+        button8.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent evt){
+                if(bus_number.getText().length() != 0 && out_number.getText().length() != 0 && driver_name.getText().length() != 0 && out_time.getText().length() != 0 && in_time.getText().length() != 0){
+                    try{
+                        File file = new File("C:/Users/STUDENT/Desktop/daalgavar/noorog/File.txt");
+                        FileWriter fw = new FileWriter(file,true);
+                        BufferedWriter bw = new BufferedWriter(fw);
+                        bw.write("BUS_NUMBER:"+bus_number.getText()+":"+"OUT_NUMBER:"+out_number.getText()+":"+"DRIVER_NAME:"+driver_name.getText()+":"+"OUT_TIME:"+out_time.getText()+":"+"IN_TIME:"+in_time.getText());
+                        bw.newLine();
+                        bw.close();
+                    }catch(Exception e){
+                        System.out.println(e.toString());
+                    }
+                }
+                JOptionPane.showMessageDialog(frame,"Амжилттай хадгаллаа.");
+            }
+            });
+        
+        button9 = new JButton();
+        button9.setBounds(10,264,101,31);
+        button9.setBackground(new Color(0,255,204));
+        button9.setForeground(new Color(0,0,0));
+        button9.setEnabled(true);
+        button9.setFont(new Font("SansSerif",3,12));
+        button9.setText("Дахиж эхлэх");
+        button9.setVisible(true);
+
+        label11 = new JLabel();
+        label11.setBounds(11,-1,86,38);
+        label11.setBackground(new Color(214,217,223));
+        label11.setForeground(new Color(0,51,51));
+        label11.setEnabled(true);
+        label11.setFont(new Font("SansSerif",3,15));
+        label11.setText("Цэс");
+        label11.setVisible(true);
+
+        label3 = new JLabel();
+        label3.setBounds(66,24,615,67);
+        label3.setBackground(new Color(214,217,223));
+        label3.setForeground(new Color(0,0,204));
+        label3.setEnabled(true);
+        label3.setFont(new Font("SansSerif",3,40));
+        label3.setText("Автобус бүртгэлийн систем");
+        label3.setVisible(true);
+
+        label4 = new JLabel();
+        label4.setBounds(5,16,118,29);
+        label4.setBackground(new Color(255,0,0));
+        label4.setForeground(new Color(255,0,0));
+        label4.setEnabled(true);
+        label4.setFont(new Font("SansSerif",3,12));
+        label4.setText("Автобусны дугаар");
+        label4.setVisible(true);
+
+        label5 = new JLabel();
+        label5.setBounds(10,61,110,32);
+        label5.setBackground(new Color(204,204,255));
+        label5.setForeground(new Color(204,0,0));
+        label5.setEnabled(true);
+        label5.setFont(new Font("SansSerif",3,12));
+        label5.setText("Гаралтын номер");
+        label5.setVisible(true);
+
+        label6 = new JLabel();
+        label6.setBounds(17,114,90,35);
+        label6.setBackground(new Color(214,217,223));
+        label6.setForeground(new Color(204,0,0));
+        label6.setEnabled(true);
+        label6.setFont(new Font("SansSerif",3,12));
+        label6.setText("Жолоочын нэр");
+        label6.setVisible(true);
+
+        label7 = new JLabel();
+        label7.setBounds(16,164,90,35);
+        label7.setBackground(new Color(214,217,223));
+        label7.setForeground(new Color(204,0,0));
+        label7.setEnabled(true);
+        label7.setFont(new Font("SansSerif",3,12));
+        label7.setText("Гарсан цаг");
+        label7.setVisible(true);
+
+        label8 = new JLabel();
+        label8.setBounds(18,212,90,35);
+        label8.setBackground(new Color(214,217,223));
+        label8.setForeground(new Color(255,0,0));
+        label8.setEnabled(true);
+        label8.setFont(new Font("SansSerif",3,12));
+        label8.setText("Ирсэн цаг");
+        label8.setVisible(true);
+
+        label9 = new JLabel();
+        label9.setBounds(5,5,219,27);
+        label9.setBackground(new Color(214,217,223));
+        label9.setForeground(new Color(0,51,51));
+        label9.setEnabled(true);
+        label9.setFont(new Font("SansSerif",3,15));
+        label9.setText("Автобусны цаг бүртгэх");
+        label9.setVisible(true);
+
+        panel1 = new JPanel(null);
+        panel1.setBorder(BorderFactory.createEtchedBorder(1));
+        panel1.setBounds(38,166,298,310);
+        panel1.setBackground(new Color(204,204,255));
+        panel1.setForeground(new Color(0,0,0));
+        panel1.setEnabled(true);
+        panel1.setFont(new Font("sansserif",0,12));
+        panel1.setVisible(true);
+
+        panel4 = new JPanel(null);
+        panel4.setBorder(BorderFactory.createEtchedBorder(1));
+        panel4.setBounds(38,124,299,41);
+        panel1.setBackground(new Color(204,204,255));
+        panel1.setForeground(new Color(0,0,0));
+        panel4.setEnabled(true);
+        panel4.setFont(new Font("sansserif",0,12));
+        panel4.setVisible(true);
+
+        panel7 = new JPanel(null);
+        panel7.setBorder(BorderFactory.createEtchedBorder(1));
+        panel7.setBounds(465,167,113,312);
+        panel7.setBackground(new Color(204,204,255));
+        panel7.setForeground(new Color(0,0,0));
+        panel7.setEnabled(true);
+        panel7.setFont(new Font("sansserif",0,12));
+        panel7.setVisible(true);
+
+        panel8 = new JPanel(null);
+        panel8.setBorder(BorderFactory.createEtchedBorder(1));
+        panel8.setBounds(465,123,113,42);
+        panel8.setBackground(new Color(204,204,255));
+        panel8.setForeground(new Color(0,0,0));
+        panel8.setEnabled(true);
+        panel8.setFont(new Font("sansserif",0,12));
+        panel8.setVisible(true);
+
+        search = new JTextField();
+        search.setBounds(174,90,195,26);
+        search.setBackground(new Color(255,204,204));
+        search.setForeground(new Color(0,0,0));
+        search.setEnabled(true);
+        search.setFont(new Font("sansserif",0,12));
+        search.setText("");
+        search.setBorder(BorderFactory.createBevelBorder(1));
+        search.setVisible(true);
+
+        bus_number = new JTextField();
+        bus_number.setBounds(133,14,150,30);
+        bus_number.setBackground(new Color(255,204,204));
+        bus_number.setForeground(new Color(0,0,0));
+        bus_number.setEnabled(true);
+        bus_number.setFont(new Font("sansserif",0,12));
+        bus_number.setText("");
+        bus_number.setBorder(BorderFactory.createBevelBorder(1));
+        bus_number.setVisible(true);
+
+        out_number = new JTextField();
+        out_number.setBounds(133,61,150,30);
+        out_number.setBackground(new Color(255,204,204));
+        out_number.setForeground(new Color(0,0,0));
+        out_number.setEnabled(true);
+        out_number.setFont(new Font("sansserif",0,12));
+        out_number.setText("");
+        out_number.setBorder(BorderFactory.createBevelBorder(1));
+        out_number.setVisible(true);
+
+        driver_name = new JTextField();
+        driver_name.setBounds(132,116,150,30);
+        driver_name.setBackground(new Color(255,204,204));
+        driver_name.setForeground(new Color(0,0,0));
+        driver_name.setEnabled(true);
+        driver_name.setFont(new Font("sansserif",0,12));
+        driver_name.setText("");
+        driver_name.setBorder(BorderFactory.createBevelBorder(1));
+        driver_name.setVisible(true);
+
+        out_time = new JTextField();
+        out_time.setBounds(132,167,150,30);
+        out_time.setBackground(new Color(255,204,204));
+        out_time.setForeground(new Color(0,0,0));
+        out_time.setEnabled(true);
+        out_time.setFont(new Font("sansserif",0,12));
+        out_time.setText("");
+        out_time.setBorder(BorderFactory.createBevelBorder(1));
+        out_time.setVisible(true);
+
+        in_time = new JTextField();
+        in_time.setBounds(130,214,150,30);
+        in_time.setBackground(new Color(255,204,204));
+        in_time.setForeground(new Color(0,0,0));
+        in_time.setEnabled(true);
+        in_time.setFont(new Font("sansserif",0,12));
+        in_time.setText("");
+        in_time.setBorder(BorderFactory.createBevelBorder(1));
+        in_time.setVisible(true);
+
+        contentPane.add(button1);
+        panel7.add(button11);
+        panel7.add(button12);
+        panel7.add(button13);
+        panel1.add(button8);
+        panel1.add(button9);
+        panel8.add(label11);
+      
+        contentPane.add(label3);
+        panel1.add(label4);
+        panel1.add(label5);
+        panel1.add(label6);
+        panel1.add(label7);
+        panel1.add(label8);
+        panel4.add(label9);
+       
+        contentPane.add(panel1);
+        contentPane.add(panel4);
+        contentPane.add(panel7);
+        contentPane.add(panel8);
+        contentPane.add(search);
+       
+        panel1.add(bus_number);
+        panel1.add(out_number);
+        panel1.add(driver_name);
+        panel1.add(out_time);
+        panel1.add(in_time);
+
+        this.add(contentPane);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setLocationRelativeTo(null);
+        this.pack();
+        this.setVisible(true);
+    }
+
+    public void generateMenu(){
+        menuBar = new JMenuBar();
+
+        JMenu file = new JMenu("File");
+        JMenu tools = new JMenu("Tools");
+        JMenu help = new JMenu("Help");
+
+        JMenuItem open = new JMenuItem("Open   ");
+        JMenuItem save = new JMenuItem("Save   ");
+        JMenuItem exit = new JMenuItem("Exit   ");
+        JMenuItem preferences = new JMenuItem("Preferences   ");
+        JMenuItem about = new JMenuItem("About   ");
+
+
+        file.add(open);
+        file.add(save);
+        file.addSeparator();
+        file.add(exit);
+        tools.add(preferences);
+        help.add(about);
+
+        menuBar.add(file);
+        menuBar.add(tools);
+        menuBar.add(help);
+    }
+     public static void main(String[] args){
+        System.setProperty("swing.defaultlaf", "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new Main();
+            }
+        });
+}
+}

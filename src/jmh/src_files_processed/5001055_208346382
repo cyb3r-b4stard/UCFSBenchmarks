@@ -1,0 +1,347 @@
+/**
+ * #### ##### ## ### #### ##### ## ### "###### ## #####" ###########.
+ * "###### ## #####" ## # #### ######, #### ##### ######### ####. ##### ### ####
+ * ###### #### #######. ####'# ###. ## ###### ###### ## ######## ## #### ## ####
+ * ###########!
+ * 
+ * #### #### ##### ####### ### ########### ### ### ######: ## ####### ###
+ * #####, ####### ### ###### ### ###### ### ####. ## #### ######### ###
+ * ######## ### ######## #### ### ###### #######.
+ * 
+ * @###### ##### ####
+ * @###### ##### ######
+ * @####### ####.##.##
+ */
+
+public class Game {
+    /** Max possible score*/
+    private static final int MAX_SCORE = 250;
+    /** Time in the game. */
+    private int time;
+    /** Current Score of Player */
+    private int score;
+    /** The parser for getting input from */
+    private Parser parser;
+    /** The world where the game takes place */
+    private World world;
+    /** Where the player is at the current time */
+    private Room currentRoom;
+    /** Where the player just was.*/
+    private Room previousRoom;
+
+    /**
+     * Create the game and initialize its internal map.
+     */
+    public Game() {
+        parser = new Parser();
+        world = new World();
+        setCurrentRoom(world.getRoom("street"));
+        previousRoom = null;
+
+        time = 0;
+        score = 0;
+    }
+
+    /**
+     * Main play routine. Loops until end of play.
+     */
+    public void play() {
+        printWelcome();
+
+
+        boolean finished = false;
+        while (!finished) {
+            Command command = parser.getCommand();
+            time++;
+            finished = processCommand(command);
+        }
+        System.out.println("Thank you for playing.  Good bye.");
+    }
+
+    /**
+     * Print out the opening message for the player.
+     */
+    private void printWelcome() {
+        System.out.println();
+        System.out.println("Welcome to the Campus of Kings!");
+        System.out.println("Campus of Kings is a new, incredibly boring adventure game.");
+        System.out.println("Type 'help' if you need help.");
+        System.out.println();
+        printLocationInformation();
+    }
+
+    /**
+     * Given a command, process (that is: execute) the command.
+     * 
+     * @param command
+     *            The command to be processed.
+     * @return true If the command ends the game, false otherwise.
+     */
+    private boolean processCommand(Command command) {
+        boolean wantToQuit = false;
+
+        if (command.isUnknown()) {
+            System.out.println("I don't know what you mean...");
+            return false;
+        }
+
+        CommandEnum commandWord = command.getCommandWord();
+        switch(commandWord){
+            case HELP: 
+                printHelp();
+                break;
+            case GO: 
+                goRoom(command);
+                break;
+            case QUIT: 
+                wantToQuit = quit(command);
+                break;
+            case LOOK: 
+                look();
+                break;
+            case BACK:
+                back();
+                break;
+            case TIME:
+                printTime();
+                break;
+            case SCORE:
+                printCurrentScore();
+                break;
+            case STATUS:
+                status();
+                break;
+            case UNLOCK:
+                unlock(command);
+                break;
+            case EXAMINE:
+                examine(command);
+                break;
+            case UNPACK:
+                unpack(command);
+                break;
+            case PACK:
+                pack(command);
+                break;
+            default:
+                break;
+        }
+
+        return wantToQuit;
+    }
+
+
+    /**
+     * Print out some help information. Here we print some stupid, cryptic
+     * message and a list of the command words.
+     */
+    private void printHelp() {
+        System.out.println("You are lost. You are alone. You wander");
+        System.out.println("around at the university.");
+        System.out.println();
+        System.out.println(parser.getCommandString());
+    }
+
+    /**
+     * Print out the information of where the player is at the current time.
+     */
+    private void printLocationInformation(){
+
+        System.out.println("You are " + currentRoom.getDescription());
+        System.out.println(currentRoom.getExitString());
+        System.out.println();
+        
+        System.out.println(currentRoom.getItemString());
+        System.out.println();
+    }
+
+    /**
+     * Try to go to one direction. If there is an exit, enter the new room,
+     * otherwise print an error message.
+     * 
+     * @param command The go command.
+     */
+    private void goRoom(Command command) {
+        if (!command.hasSecondWord()) {
+            System.out.println("Go where?");
+            return;
+        }
+
+        String direction = command.getRestOfLine();
+
+        Door doorway = currentRoom.getExit(direction);
+
+        if (doorway == null) {
+            System.out.println("There is no door!");
+        } else {
+            if(doorway.isLocked()){
+                System.out.println("The door is locked!");
+            }
+            else{
+
+                setCurrentRoom(doorway.getDestination());
+            }
+        }
+    }
+
+    /**
+     * Print out the description of the room and exits.
+     */
+    private void look(){
+        printLocationInformation();
+    }
+
+    /**
+     * "Quit" was entered. Check the rest of the command to see whether we
+     * really quit the game.
+     * 
+     * @param command The quit command.     * 
+     * @return true, if this command quits the game, false otherwise.
+     */
+    private boolean quit(Command command) {
+        if (command.hasSecondWord()) {
+            System.out.println("Quit what?");
+            return false;
+        } else {
+            return true; 
+        }
+    }
+
+    /**
+     * "Back" was entered, sending the player back into the previous room.
+     */
+    private void back(){
+
+        if(previousRoom == null){
+            System.out.println("There's no where to go back to!");
+        }
+        else{
+            setCurrentRoom(previousRoom);
+
+        }
+
+    }
+
+    /**
+     * Prints the time of the current session.
+     */
+    private void printTime(){
+        System.out.printf("You have used %d turns\n",time);
+    }
+
+    /**
+     * Prints the current score.
+     */
+    private void printCurrentScore(){
+        System.out.printf("You have %d points out of %d total possible points\n",score,MAX_SCORE);
+    }
+
+    /**
+     * Prints the status of the player at this current point
+     */
+    private void status(){
+        printLocationInformation();
+        printCurrentScore();
+        printTime();
+    }
+
+    /**
+     * Sets the room the player is currently in.
+     * @param here The room the player is moving too.
+     */
+    private void setCurrentRoom(Room here){
+        previousRoom = currentRoom;
+        currentRoom = here;
+        printLocationInformation();
+    }
+
+    /**
+     * Unlocks door in given direction.
+     * @param command the unlock commaand.
+     */
+    public void unlock(Command command){
+        if (!command.hasSecondWord()) {
+            System.out.println("Unlock what?");
+            return;
+        }
+
+        String direction = command.getRestOfLine();
+
+        Door doorway = currentRoom.getExit(direction);
+
+        if (doorway == null) {
+            System.out.println("There is no door to unlock!");
+        } else {
+            doorway.setLocked(false);
+            System.out.printf("The door to the %s has been unlocked!\n",direction);
+        }
+    }
+    
+    /**
+     * Prints the description of the item being examined
+     * 
+     * @param command the inputted command.
+     */
+    public void examine(Command command){
+        
+        if(!command.hasSecondWord()){
+            System.out.println("Examine what?");
+        }
+        else{
+            String item = command.getRestOfLine();
+            Item theItem = currentRoom.getItem(item);
+            System.out.println(theItem.getDescription());
+            System.out.println();
+        }
+    }
+    
+    /**
+     * Takes items from the complex items and places them in the room.
+     * 
+     * @param command the inputed command.
+     * 
+     */
+    public void unpack(Command command){
+        
+        if(!command.hasSecondWord()){
+            System.out.println("Unpack what?");
+        }
+        else{
+            String theItem = command.getRestOfLine();
+            ComplexItem complexItem = (ComplexItem)currentRoom.getItem(theItem);
+            String[] items=complexItem.getItemNames();
+            for(int index=0;index<items.length;index++){
+                currentRoom.addItem(complexItem.getItem(items[index]));
+                complexItem.removeItem(items[index]);
+            }
+            System.out.printf("%s has been unpacked!\n",theItem);
+        }
+    }
+    
+    /**
+     * Places the item in a complex item.
+     * 
+     * @param command The imputed command.
+     * 
+     */
+    public void pack(Command command){
+        if(!command.hasSecondWord()){
+            System.out.println("Pack what");
+        }
+        else{
+            String[] line = command.getRestOfLine().split(" ");
+            String theItem = line[0];
+            String theComplexItem=line[2];
+            for(int index=3;index<line.length;index++){
+                theComplexItem=theComplexItem.concat(" "+line[index]);
+            }
+            if(currentRoom.getItem(theComplexItem) instanceof ComplexItem){
+                ComplexItem complexItem = (ComplexItem)currentRoom.getItem(theComplexItem);
+                complexItem.addItem(currentRoom.getItem(theItem));
+                System.out.printf("%s has been packed into %s\n",theItem,theComplexItem);
+            }
+            else{
+                System.out.println("You can't put that in there");
+        }
+    }
+}

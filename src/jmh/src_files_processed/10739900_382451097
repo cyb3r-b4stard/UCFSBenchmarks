@@ -1,0 +1,83 @@
+import java.io.*;
+import java.util.Random;
+import java.util.HashSet; 
+
+public class Driver implements Serializable 
+{
+    public static void main(String[] args) throws IOException
+    {
+        CafeManager CafeManager = new CafeManager();
+        SystemMenu menu = new SystemMenu(CafeManager);
+        menu.displayMenu();
+        
+        
+    }  
+    
+    
+    public static void write() {
+       ObjectInputStream ois = null;
+       
+       try {
+            ois = new ObjectInputStream(new FileInputStream("system.dat")); 
+            ois.readObject();
+            System.out.println("zama zama");
+       } catch (IOException e) {
+            System.out.println(e.getMessage());
+       } catch (ClassNotFoundException e) {
+            System.out.println(e.getMessage());
+       } finally {
+            try {
+                 ois.close();
+            } catch (Exception e) {
+                 System.out.println(e.getMessage());
+            }
+       }
+    }   
+    
+    
+    public static void read() {
+        ObjectOutputStream oos = null;
+        
+        try {
+            oos = new ObjectOutputStream(new FileOutputStream("system.dat"));   
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            try {
+                oos.close();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+    
+    public static void load() {
+        
+    }
+    
+    
+    /*Generate the unique Order numbers
+     *continues to generate unique order numbers after the system has been shut down and started
+     *again
+     */
+    public void OrderNumber () {
+        Random number = new Random();
+        int e;
+        int i;
+        int g = 100000;
+        
+        HashSet<Integer> randomNumbers = new HashSet<Integer>();
+        for (i = 0; i < g; i++) {
+            e = number.nextInt(001);
+            randomNumbers.add(e);
+            if (randomNumbers.size() <= 100000) {
+                if (randomNumbers.size() == 100000) {
+                    g = 100000;
+                }
+                g++;
+                randomNumbers.add(e);
+            }
+        }
+        System.out.println()
+    }
+}

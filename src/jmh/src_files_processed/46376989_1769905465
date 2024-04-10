@@ -1,0 +1,275 @@
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.lang.IllegalArgumentException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.io.*;
+public class Leihoa extends JFrame
+{
+    
+    private JPanel p;
+    private JLabel lErrorea;
+    private JTextField jDenbora;
+    private JButton k1;
+    private JButton k2;
+    private JButton k3;
+    private JButton k4;
+    private JButton k5;
+    private JButton k6;
+    private JButton k7;
+    private JButton k8;
+    private JButton k9;
+    private JButton k10;
+    private int aukera;
+    private int time;
+    
+    public Leihoa()
+    {
+       
+        setBounds(250,250,488,450);
+        setTitle("Jukebox");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        lErrorea = new JLabel();
+        jDenbora = new JTextField();
+        
+        jDenbora.setBorder(null);
+        jDenbora.setBackground(java.awt.Color.LIGHT_GRAY);
+
+        
+        k1 = new JButton("Napalm De Libre Mercado - Sons Of Aguirre (2016)");
+        k1.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent arg0)
+            {
+                aukera=1;
+                clickKantaEntzun(aukera);
+            }
+        }
+        );
+        k2 = new JButton("Por Favor - La Raiz (2010)");
+        k2.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent arg0)
+            {
+                aukera=2;
+                clickKantaEntzun(aukera);
+            }
+        }
+        );
+        k3 = new JButton("Divina Ciencia - Morodo (2004)");
+        k3.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent arg0)
+            {
+
+                aukera=3;
+                clickKantaEntzun(aukera);
+            }
+        }
+        );
+        k4 = new JButton("Beldurraren Kultura - Sobieht (2010)");
+        k4.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent arg0)
+            {
+                aukera=4;
+                clickKantaEntzun(aukera);
+            }
+        }
+        );
+        k5 = new JButton("Los Pollos Hermanos - Los chikos del maiz (2016)");
+        k5.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent arg0)
+            {
+                aukera=5;
+                clickKantaEntzun(aukera);
+            }
+        }
+        );
+        k6 = new JButton("T.E.R.R.O.R.I.S.M.O. - Los chikos del maiz feat Habeas Corpus (2012)");
+        k6.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent arg0)
+            {
+                aukera=6;
+                clickKantaEntzun(aukera);
+            }
+        }
+        );
+        k7 = new JButton("Radioactive - Imagine Dragons (2012)");
+        k7.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent arg0)
+            {
+                aukera=7;
+                clickKantaEntzun(aukera);
+            }
+        }
+        );
+        k8 = new JButton("A gritos - Fyahboy ft Mr.Karty (2012)");
+        k8.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent arg0)
+            {
+                aukera=8;
+                clickKantaEntzun(aukera);
+            }
+        }
+        );
+        k9 = new JButton("Querido enemigo - Morodo (2004)");
+        k9.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e)
+            {
+                aukera=9;
+                clickKantaEntzun(aukera);
+            }
+        }
+        );
+        k10 = new JButton("La dictadura de la estupidez - Pablo Hasel (2012)");
+        k10.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent arg0)
+            {
+                aukera=10;
+                clickKantaEntzun(aukera);
+            }
+        }
+        );
+        
+        p = new JPanel();
+        p.add(jDenbora);
+        p.add(lErrorea);
+        p.add(k1);
+        p.add(k2);
+        p.add(k3);
+        p.add(k4);
+        p.add(k5);
+        p.add(k6);
+        p.add(k7);
+        p.add(k8);
+        p.add(k9);
+        p.add(k10);
+        p.setLayout(null);
+        
+        
+        jDenbora.setBounds(10,380,450,25);
+        lErrorea.setBounds(10,350,450,25);
+        k1.setBounds(10,30,450,30);
+        k2.setBounds(10,60,450,30);
+        k3.setBounds(10,90,450,30);
+        k4.setBounds(10,120,450,30);
+        k5.setBounds(10,150,450,30);
+        k6.setBounds(10,180,450,30);
+        k7.setBounds(10,210,450,30);
+        k8.setBounds(10,240,450,30);
+        k9.setBounds(10,270,450,30);
+        k10.setBounds(10,300,450,30);
+
+        getContentPane().add(p).setBackground(java.awt.Color.LIGHT_GRAY);
+        
+        int i=1;
+        boolean bucle=true;
+        
+    }
+    
+    private void clickKantaEntzun(int aukera){
+             try{
+                 ArrayList<Kanta2> kanta = new ArrayList<Kanta2>();
+                 
+                 File f = new File("F:\\DAW\\Programacion\\Java\\Proiektoak\\Kanta_interface\\Kantak_casa.txt");
+                 String izenburua;
+                 String egilea;
+                 String urtea;
+                 int iraupena;
+                 String url;
+                 String lerroa;
+                 FileReader fr = new FileReader(f);
+                 BufferedReader br = new BufferedReader(fr);
+                 lerroa = br.readLine();
+                 
+                 while(lerroa != null)
+                 {
+                     String[] hitzak=lerroa.split("@");
+                     
+                         izenburua=hitzak[0];
+                         egilea=hitzak[1];
+                         urtea=hitzak[2];
+                         iraupena=Integer.parseInt(hitzak[3]);
+                         url=hitzak[4];
+                         
+                     kanta.add(new Kanta2(izenburua,egilea,urtea,iraupena,url));
+                     lerroa = br.readLine();
+                 }
+
+                k1.setEnabled(false);
+                k2.setEnabled(false);
+                k3.setEnabled(false);
+                k4.setEnabled(false);
+                k5.setEnabled(false);
+                k6.setEnabled(false);
+                k7.setEnabled(false);
+                k8.setEnabled(false);
+                k9.setEnabled(false);
+                k10.setEnabled(false);
+
+                int i=aukera-1;
+                time=kanta.get(i).getIraupena();
+                lErrorea.setText("Orain entzuten: "+kanta.get(i).getIzenburua()+" - "+kanta.get(i).getEgilea()+" "+kanta.get(i).getUrtea());
+                
+                
+               
+                    try {
+                        URL url1 = new URL(kanta.get(i).getUrl());
+                        HttpURLConnection conn = (HttpURLConnection) url1.openConnection();
+                        BufferedReader bre = new BufferedReader(
+                        new InputStreamReader(conn.getInputStream()));
+                        String inputLine;
+                        br.close();
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }  
+                
+                  
+                   
+            }catch(IOException e){
+                    System.out.println("Errorea"+e);
+                }   
+           
+                
+            int tiempo =  time;   
+            int minutos = time/60;
+            int segundos = (time%60);
+            
+            jDenbora.setText("Denbora: "+minutos+" minutu eta "+segundos+" segundu");
+            
+            try{
+                while(z<time){
+                    jDenbora.setText("Denbora: "+minutos+" minutu eta "+z+" segundu");
+                    wait(1000);
+                }
+            }
+            
+            
+            
+            System.out.println(minutos+":"+segundos);
+             
+              k1.setEnabled(true);
+              k2.setEnabled(true);
+              k3.setEnabled(true);
+              k4.setEnabled(true);
+              k5.setEnabled(true);
+              k6.setEnabled(true);
+              k7.setEnabled(true);
+              k8.setEnabled(true);
+              k9.setEnabled(true);
+             k10.setEnabled(true);   
+             
+             
+
+      }
+}

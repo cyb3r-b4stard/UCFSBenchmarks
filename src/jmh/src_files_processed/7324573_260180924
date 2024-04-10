@@ -1,0 +1,202 @@
+
+/**
+ * ##### # ########### ## ##### ####### ####.
+ * 
+ * @###### (#### ######) 
+ * @####### (#.#)
+ */
+public class Product
+{
+    private String prodName;             
+    private double demRate;                 
+    private double setupCost;            
+    private double unitCost;             
+    private double inventCost;           
+    private double sellPrice;            
+    private double EOQ, QO;
+    private int loop1 = -1;
+    private int loop2 = 0;
+    private double inventory;
+    private int count = 0;
+    private int setupcount = 0;
+    private int setupcount1 = 0;
+    private double inventorycount = 0;
+
+    /**
+     * Constructor for objects of class Product
+     */
+    public Product()
+    {
+        prodName = "";
+        demRate = 0;
+        setupCost = 0;
+        unitCost = 0;
+        inventCost = 0;
+        sellPrice = 0;
+    }
+    public Product(String newprodName, double newdemRate, double newsetupCost, double newunitCost, double newinventCost, double newsellPrice)
+    {
+        prodName = newprodName;
+        demRate = newdemRate;
+        setupCost = newsetupCost;
+        unitCost = newunitCost;
+        inventCost = newinventCost;
+        sellPrice = newsellPrice;
+    }
+    
+    public void setProductdetails(String newprodName, double newdemRate, double newsetupCost, double newunitCost, double newinventCost, double newsellPrice)
+    {
+        prodName = newprodName;
+        demRate = newdemRate;
+        setupCost = newsetupCost;
+        unitCost = newunitCost;
+        inventCost = newinventCost;
+        sellPrice = newsellPrice;
+    }
+    
+    public String testEqual1(String newprodName, Product product1, Product product2, Product product3)
+    {
+        if (product1.prodName.equals(newprodName) || product2.prodName.equals(newprodName) || product3.prodName.equals(newprodName))
+            return "True";
+        else
+            return "False";
+    }
+    
+    public String testxEqual1(String newprodName, int pcount, Product product1, Product product2, Product product3)
+    {
+        if (pcount == 0)
+        {
+            if (product2.prodName.equals(newprodName) || product3.prodName.equals(newprodName))
+                return "True";
+            else
+                return "False";
+        }
+        else if (pcount == 1)
+        {
+            if (product1.prodName.equals(newprodName) || product3.prodName.equals(newprodName))
+                return "True";
+            else
+                return "False";
+        } 
+        else if (pcount == 2)
+        {
+            if (product1.prodName.equals(newprodName) || product2.prodName.equals(newprodName))
+                return "True";
+            else
+                return "False";
+        } 
+        else
+            return "False";
+    }
+    
+    public String testProd1(String newprodName, Product product1, Product product2, Product product3)
+    {
+        if (product1.prodName.equals(newprodName))
+            return "P1";
+        else if (product2.prodName.equals(newprodName))
+            return "P2";
+        else if (product3.prodName.equals(newprodName))
+            return "P3";
+        else
+            return "Null";
+    }
+    
+    public String getprodData1()
+    {
+        return ("Product: " + prodName + "\n" + "Demand rate: " + demRate + "\n" + "Setup cost: " + setupCost + "\n" + "Unit cost: " + unitCost + "\n" + "Inventory cost: " + inventCost + "\n" + "Selling Price: " + sellPrice);
+    }
+    
+    public String doMath1(int weeks)
+    {
+        EOQ = Math.round(Math.sqrt((2*demRate*setupCost)/inventCost));
+        if (loop1 > -1)
+            loop1 = weeks - (weeks-loop1);
+        else
+            loop1 = weeks;
+        
+        loop2 = weeks;
+        double futinventory = 0;
+        double QO1 = 0;
+        double finQO = 0;
+        double finQOWk = 0;
+        while (loop2 > 0)
+        {
+            if (EOQ - demRate >= 0 && loop2 == weeks)
+            {
+                futinventory = Math.round(EOQ - demRate);
+                QO1 = EOQ;
+            } 
+            if (futinventory - demRate < 0)
+            {
+                QO1 = EOQ;
+                futinventory = QO1 + futinventory - demRate;
+            }
+            else if (loop2 != weeks)
+            {
+                QO1 = 0;
+                futinventory = futinventory - demRate;
+            }
+            if (QO1 > 0)
+            {
+               finQO = QO1;
+               finQOWk = loop2;
+            }
+            loop2--;
+        }
+        
+        while (loop1 > 0)
+        {
+            if (EOQ - demRate >= 0 && loop1 == weeks)
+            {
+                inventory = Math.round(EOQ - demRate);
+                QO = EOQ;
+            } 
+            if (inventory - demRate < 0)
+            {
+                if (finQOWk == loop1)
+                {
+                    QO = EOQ - futinventory;
+                    inventory = QO + inventory - demRate;
+                    setupcount1++;
+                }
+                else
+                {
+                    QO = EOQ;
+                    inventory = QO + inventory - demRate;
+                    setupcount++;
+                }
+            }
+            else if (loop1 != weeks)
+            {
+                if (finQOWk == loop1)
+                {
+                    QO = EOQ - futinventory;
+                    inventory = inventory - demRate;
+                }
+                else
+                {
+                    QO = 0;
+                    inventory = inventory - demRate;
+                }
+            }
+            inventorycount = inventory + inventorycount;
+            loop1--;
+            return "Week " + (count = count+1) + "  Quantity to Order: " + QO + " Demand rate: " + demRate + " Inventory: " + inventory;
+        }
+        double week = weeks;
+        double totalsetupcost = setupCost*(setupcount + setupcount1);
+        double totalordercost = (setupcount * EOQ) + (setupcount1 *(EOQ - futinventory));
+        double totalpurchase = totalordercost + totalsetupcost * unitCost;
+        double totalinventorycost = inventorycount * (week / 10);
+        double profit - demRate*week*sellPrice - totalinventorycost;
+        
+        
+        setupcount = 0;
+        setupcount1 = 0;
+        count = 0;
+        inventory = 0;
+        QO = 0;
+        loop1 = -1;
+        return "Profit is: " + profit;
+    }
+}

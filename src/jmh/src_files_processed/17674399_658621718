@@ -1,0 +1,152 @@
+
+/* #### ### #### ### ########## # 
+ * ####:
+ * ########:
+ * ##:
+ */
+
+import ecs100.*;
+import java.awt.Color;
+
+/** ### ####### ######## ### ####### ### ######### ###### ######## ####### ### ######### ###### #### 
+ *  ### ###### ## # ###.   ##### ### ####### ###### ##### ### ######### ##### ####
+ *  # #### ### ## ########## ##: 
+ *    ### ####### ### ### ####### ######### ##### ## ### ##### ###### ### ###.
+ *    ### ####### ######### ##### ###### ### ###.
+ *    ### ##### #### ### ######### ##### #### #### ### ###### #########.
+ *    ####### ### ######### ##### ### #### ### ###### ######### ### #### #### ##% ## ### ###
+ *    ### ##### #### ### ####### ######### ##### #### ### ######## ##### ##### ####### ##% ## ### ###### #########. 
+ *
+ *  ### ####### ### ### #######.  #### #### #### # ######## ## ###### ####
+ *  ### #### (####### ### ######## ######).
+ *  ### ###### # ###### ##### ### ######; ### ##### ##### # #####.
+ */
+public class PollutionAnalyser{
+
+    public static final int NO2_DANGER_LEVEL = 120;
+
+    /** Constructor: set up user interface */
+    public PollutionAnalyser(){
+        UI.initialise();
+        UI.addButton("Clear", UI::clearPanes );
+        UI.addButton("Analyse Levels", this::analyseLevels );
+        UI.addButton("Plot Levels", this::plotLevels );
+        UI.addButton("Quit", UI::quit );
+    }
+
+    /**
+     * analyseLevels reads a sequence of levels from the user  and prints out
+     *    maximum, minimum, and average level.
+     *    all the values that were over the danger threshold
+     *    
+     *    The number of times that the average pollution level over the previous
+     *      three hours was over 75% of the danger threshold
+     * The sequence is terminated by any word (non-number) such as "close" or "end".
+     * All the levels are integers between 0 and 300. 
+     * The method will need variables to keep track of various quantities, all of which 
+     * need to be initialised to an appropriate value.
+     * It will need a loop to keep reading the levels until there isn't an integer next.
+     * [Core]
+     *   - There is guaranteed to be at least one level,
+     *   - Print each value over the danger threshold (120 ppb)
+     *   - print the maximum, minimum, and average level
+     *   - Hint, keep track of the sum of the levels using a variable of type double
+     * [Completion]
+     *   - Report whether the pollution level was continuously over the danger threshold for
+     *      50% or more of the readings, and if so, for what fraction of the readings. 
+     *   - The method should work even if there were no readings for the day
+     * [Challenge] The method should also
+     *   - compute and print out the standard deviation of the levels
+     *   - Print the number of times that the average pollution level over the previous three readings
+     *     reached 75% of the danger threshold
+     *   - handle data on three different air pollution levels: nitrogen dioxide, carbon dioxide, and
+     *     PM10 (ie, each reading should have three numbers).  Find out reasonable danger levels 
+     *     for carbon dioxide and PM10.
+     */
+    public void analyseLevels() {
+        UI.clearText();
+
+       double sum = 0;
+        UI.print("Enter the some numbers ending with done");
+       int amt = UI.nextInt();
+        int level = 1;
+     int num = UI.nextInt();
+     
+       int average = 0;
+       int counter = 0;
+       int max = Integer.MAX_VALUE;
+  
+    UI.println("----------- Analysis------------");   
+        while (UI.hasNextInt()){
+        sum++;
+        amt = UI.next();
+        UI.println(" Average Level was:"+" " + sum); 
+    }
+            
+           
+         while (UI.hasNextDouble()){  
+         if(num>NO2_DANGER_LEVEL){
+                UI.println(num+" "+ "is dangerous!");
+                counter++;
+        }
+         else if (num>max){
+             UI.println("Maximum Level is"+num);
+             level++;
+            }
+    
+        }
+   
+    UI.println(" Average Level was:"+" " + sum); 
+    UI.println(" Level was dangerous"+" " +counter+" "+"times"); 
+        
+    
+    
+}
+    /**
+     * Reads a sequence of levels (integers) from the user (using Scanner
+     * and the terminal window) and plots a bar graph of them, using narrow 
+     * rectangles whose heights are equal to the level.
+     * The sequence is terminated by any word (non-number) such as "close" or "end".
+     * The method may assume that there are at most 24 numbers.
+     * The method will need a loop to keep reading the levels until there isn't a number next.
+     *  Each time round the loop, it needs to read the next level and work out where
+     *  to draw the rectangle for the bar. 
+     * [Core]
+     *   - assume that all the numbers are between 0 and 380
+     * [Completion]
+     *   - Any level greater than 380 should be plotted 
+     *      as if it were just 380.
+     *   - The graph should also have a horizontal green line at the 
+     *      height of the opening level and a red line at the height of the closing level.
+     * [Challenge:] 
+     *   - The graph should also have labels on the axes, roughly every 50 pixels
+     *   - Make the method ask for a maximum level first, then scale the y-axis and values 
+     *     so that the largest numbers just fit on the graph.
+     *   - The numbers on the y axis should reflect the scaling.
+     */
+    public void plotLevels() {
+      
+        UI.clearText();
+        UI.clearGraphics();
+        UI.print("Enter the some numbers ending with done");
+        int count = 0;
+        double top = 100;
+        double height = 500;
+        while (UI.hasNextInt()){
+            int numbers = UI.nextInt();
+            count ++;
+  
+            if(numbers<=380){
+                UI.drawRect(100+count*50,100,30,numbers);
+            }
+            else if(numbers>380){
+                UI.drawRect(100+count*50,100,30,380);
+            }
+       
+        
+    }
+
+}
+
+
+}

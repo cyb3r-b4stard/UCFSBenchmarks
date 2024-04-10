@@ -1,0 +1,122 @@
+
+/* #### ### #### ### ########## #
+ * ####:
+ * ########:
+ * ##:
+ */
+
+import ecs100.*;
+import java.awt.Color;
+import javax.swing.JColorChooser;
+import javax.swing.JButton;
+
+public class MiniPaint{
+    private String shape;
+    private String fill ="Fill";
+    private double x1,y1;
+    private double x2,y2;
+    private double startx,endx;
+    private double starty,endy;
+    private String imageFile;
+
+    /** Sets up the user interface - mouselistener and buttons */
+    public MiniPaint(){
+        UI.setMouseListener(this::doMouse);
+        UI.addButton("Line",()->{this.shape = "Line";});
+        UI.addButton("Rect",()->{this.shape = "Rect";});
+        UI.addButton("Oval",()->{this.shape = "Oval";});
+        UI.addButton("Image",()->{this.imageFile = "drawImage";});
+        UI.addButton("Color",(this::DoColour));
+        UI.addButton("Fill/No Fill",(this::FillNoFill));
+        UI.addButton("Clear",(this::clearGraphics));
+        UI.addButton("Eraser",(this::erase));
+        UI.addButton("Pen",(this::freeDraw));
+
+        UI.addButton("Quit", UI::quit);
+    }
+
+    /**
+     * Respond to mouse events
+     * When pressed, remember the position.
+     * When released, draw the current shape using the pressed position
+     *  and the released position.
+     * Uses the value in the field to determine which kind of shape to draw.
+     * Although you could do all the drawing in this method,
+     *  it may be better to call some helper methods for the more
+     *  complex actions (and then define the helper methods!)
+     */
+    public void doMouse(String action, double x, double y) {
+        if (action.equals("pressed")){
+            this.x1 = x;
+            this.y1 = y;
+
+        }
+        if (action.equals("released")){
+
+            this.x2 = x;
+            this.y2 = y;
+            if (x1>x2){
+                this.startx = x2;
+                this.endx = x1;
+
+            }
+            else {
+                this.startx = x1;
+                this.endx = x2;
+            }
+            if (y1>y2){
+                this.starty = y2;
+                this.endy = y1;
+
+            }
+            else {
+                this.starty = y1;
+                this.endy = y2;
+            }
+            if(this.shape.equals("Line")){
+
+                UI.drawLine(x1,y1,x2,y2);
+
+            }
+            if (this.shape.equals("Rect")){
+                UI.drawRect(startx,starty,endx-startx,endy-starty);
+
+            }
+            if (this.shape.equals("Oval")){
+                UI.drawOval(startx,starty,endx-startx,endy-starty);
+            }
+        }
+    }
+
+
+        public void FillNoFill (){
+            if (this.fill.equals("Fill")){
+
+                this.fill = "noFill";
+
+            }
+        }
+
+            public void DoColour(){
+                this.color=JColorChooser.showDialog(null, "Choose Color", this.color);
+                UI.setColor(color);
+            }
+            /* Helper methods for drawing the shapes, if you choose to define them 
+            I used the following methods:
+
+            public void drawARectangle(double x, double y)
+
+            public void drawAnOval(double x, double y)
+
+            public void drawAnImage(double x, double y)
+
+             */
+
+            /*# YOUR CODE HERE */
+
+
+            public static void main(String[] arguments){
+            new MiniPaint();
+        }        
+
+    }

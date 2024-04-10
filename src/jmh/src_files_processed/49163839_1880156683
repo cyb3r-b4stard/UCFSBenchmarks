@@ -1,0 +1,231 @@
+import java.text.NumberFormat;
+
+public class Scan
+{
+    public static String remove(String remove, String input)
+    {
+        String ret = input;
+        int space;
+        while(remove.Contains(ret)))
+            ret = remove1(find(remove, ret), ret);
+        return ret;
+    }
+
+    public static String remove1(int rem, String input)
+    {
+        return input.substring(0, rem) + input.substring(rem+1,input.length());    
+    }
+
+    public static int find(String word, String input)
+    {
+        int len = word.length();
+        int turn = 0;
+        int ret = -1;
+        while(input.length()>turn)
+        {
+            if(input.substring(turn,turn+len).equals(word))
+            {
+                ret = turn;
+                turn = input.length();
+            }
+            turn = turn + 1;
+        }
+        return ret;
+    }
+    
+    public static String spell(String input, double en, String choice)
+    {
+        int let = 0;
+        String ret = input;
+        String set = "error";
+        String nSet = "error";
+        if(input.length()>choice.length())
+        {
+            set = choice;
+            nSet = input;
+        }
+        if(input.length()<choice.length())
+        {
+            set = input;
+            nSet = input;
+        }
+        int LR = 0;
+        int For = 0;
+        while(set.length()>let)
+        {
+            if(let>0 & let<set.length()-1)
+            {
+                if((set.substring(let,let+1)).equals(nSet.substring(let+For, let+For+1)))
+                    LR=LR+1;
+                else if(set.substring(let,let+1).equals(nSet.substring(let+For+1,let+For+2)))
+                {
+                    LR=LR+1;
+                    For = For + 1;
+                }
+                else if(((set.substring(let,let+1)).equals(nSet.substring(let+For-1, let+For))))
+                {
+                    LR=LR+1;
+                    For = For - 1;
+                }
+            }
+            else if(let>0)
+            {
+                if((set.substring(let,let+1)).equals(nSet.substring(let+For, let+For+1)))
+                    LR=LR+1;
+                else if(((set.substring(let,let+1)).equals(nSet.substring(let+For-1, let+For))))
+                {
+                    LR=LR+1;
+                    For = For - 1;
+                }
+            }
+            else if(let<set.length()-1)
+            {
+                if((set.substring(let,let+1)).equals(nSet.substring(let+For, let+For+1)))
+                    LR=LR+1;
+                else if(set.substring(let,let+1).equals(nSet.substring(let+For+1,let+For+2)))
+                {
+                    LR=LR+1;
+                    For = For + 1;
+                }
+            }
+            let = let + 1;
+        }
+
+        if(LR>(nSet.length()*en))
+        {
+            ret = choice;
+        }
+        return ret;
+    }
+
+        public static int round(double num)
+    {
+        NumberFormat format = NumberFormat.getNumberInstance();
+        format.setMaximumFractionDigits(0);
+        if(num%1>=.5)
+            return Integer.parseInt(remove(",",format.format(num)))+1;
+        else
+            return Integer.parseInt(remove(",",format.format(num)));
+    }
+    
+    public static double gravCalc (double mass, double distance, String unit, String runit)
+    {
+        unit = unit.toLowerCase();
+        runit = runit.toLowerCase();
+        double out = 0;
+        if (unit.equals("metric"))
+        {
+            if (runit.equals("gs"))
+            {
+                out = gravCalc(mass, distance);
+            }
+            else if (runit.equals("metric"))
+            {
+                double gs = gravCalc(mass, distance);
+                out = gs * 9.80665;
+            }
+            else if (runit.equals("imperial"))
+            {
+                double gs = gravCalc(mass, distance);
+                out = gs * 32.174048556;
+            }
+        }
+        else if (unit.equals("imperial"))
+        {
+            if (runit.equals("gs"))
+            {
+                mass = convertW(mass, "imperial", "metric");
+                distance = convertD(mass, "imperial", "metric");
+                out = gravCalc(mass, distance);
+            }
+            else if (runit.equals("metric"))
+            {
+                mass = convertW(mass, "imperial", "metric");
+                distance = convertD(distance, "imperial", "metric");
+                double gs = gravCalc(mass, distance);
+                out = gs * 9.80665;
+            }
+            else if (runit.equals("imperial"))
+            {
+                double gs = gravCalc(mass, distance);
+                out = gs * 32.174048556;
+            }
+        }
+        return out;
+    }
+
+    public static double gravCalc (double mass, double distance)
+    {
+        final double PARTCONST = 10^-11;
+        final double GRAVCONST = (6.67) * PARTCONST;
+        return (mass * GRAVCONST / distance * distance);
+    }
+
+    public static double convertW (double input, String from, String to)
+    {
+        from = from.toLowerCase();
+        to = to.toLowerCase();
+        double out;
+        if (from.equals("metric"))
+        {
+            if (to.equals("imperial"))
+            {
+                out = input * 2.20462;
+            }
+            else
+            {
+                out = input;
+            }
+        }
+        else if (from.equals("imperial"))
+        {
+            if (to.equals("imperial"))
+            {
+                out = input * 0.453592;
+            }
+            else
+            {
+                out = input;
+            }
+        }
+        else
+        {
+            out = input;
+        }
+        return out;
+    }
+
+    public static double convertD (double input, String from, String to)
+    {
+        from = from.toLowerCase();
+        to = to.toLowerCase();
+        double out;
+        if (from.equals("metric"))
+        {
+            if (to.equals("imperial"))
+            {
+                out = input * 3.28084;
+            }
+            else
+            {
+                out = input;
+            }
+        }
+        else if (from.equals("imperial"))
+        {
+            if (to.equals("metric"))
+            {
+                out = input * 0.3048;
+            }
+            else
+            {
+                out = input;
+            }
+        }
+        else
+        {
+            out = input;
+        }
+        return out;
+    }
+}

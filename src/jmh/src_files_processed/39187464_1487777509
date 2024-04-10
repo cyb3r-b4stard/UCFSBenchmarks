@@ -1,0 +1,173 @@
+import iipUtil.Instante;
+/**
+ *  ##### #######. 
+ *  ######## # - ### - ######-###.
+ *  
+ *  @######
+ *  @####### ##### ####/##
+ */
+public class Entrada {
+    public static final double PRECIO_BASE = 7.60;
+    public static final int SENIOR = 65;
+    public static final double DTO_SENIOR = 0.3;
+    
+    public static final double DTO_DIA_ESPECTADOR = 0.8;
+    
+   public static final double dto_festivo= 1.2;
+    
+    public static final double dto_vis_fest= 1.1 ;
+    
+    public static final double dto_cliente= 0.8;
+    
+    public  double pFin=0;
+    private String titulo;
+    private String cine ;
+    private Instante horaSesion ;
+    
+    /** Crea una Entrada con titulo t, cine c, horas hs,
+     *  y minutos ms de la sesion.
+     */
+    public Entrada(String t, String c, int hs, int ms) {
+       titulo=t;
+       cine=c;
+       Instante horaSesion = new Instante (hs,ms);
+    }
+
+    /** Devuelve el <b>titulo</b> de la pelicula de la Entrada. */
+    public String getTitulo() { return titulo; }
+ 
+    /** Devuelve el <b>cine</b> de la entrada. */
+    public String getCine() { return cine ;}
+
+    /** Devuelve la <b>hora de la sesion</b> de la Entrada. */
+    public Instante getHoraSesion() { return horaSesion; }
+
+    /** Actualiza a <b>t</b> el titulo de la pelicula de la Entrada. */
+    public void setTitulo(String t) { titulo = t; }
+
+    /** Actualiza a <b>c</b> el cine de la Entrada. */
+    public void setCine(String c) { cine=c ;}
+
+    /** Actualiza a <b>hs</b> la hora de la sesion de la Entrada. */
+    public void setHoraSesion(Instante hs) { horaSesion = hs; }
+
+    /** Devuelve un String con los datos de la Entrada.
+     * El formato de la salida sigue el siguente ejemplo: 
+     *   "Anochece en La India", proyectada en Cines Babel, a las 22:30
+     *   Precio base: 7.60 euros
+     */
+    public String toString() {
+        return "\"" + titulo + "\", proyectada en " + cine + ", a las " 
+            + horaSesion + "\nPrecio base: " + PRECIO_BASE + " euros";
+    }
+
+    /** Comprueba si o es una Entrada con los mismos datos 
+     *  que la Entrada actual. */
+    public boolean equals(Object o) {
+         return o instanceof Entrada 
+          && this.titulo.equals (((Entrada)o).titulo)
+          && this.cine.equals (((Entrada)o).cine)
+          && this.horaSesion == (((Entrada)o).horaSesion);
+         
+          
+    }
+  
+    /** 
+     *  Calcula el precio final de la Entrada aplicando al precio base  
+     *  los descuentos segun la edad del espectador, el dia de la sesion 
+     *  (espectador, festivo o vispera) y si tiene tarjeta de cliente o no
+     */
+    public double precioFinal(int edad, boolean diaEspec, boolean festivo, 
+        boolean vispera, boolean tCliente) {
+   
+        if(edad>64) {
+           pFin= PRECIO_BASE * DTO_SENIOR;
+            return pFin;
+        }
+        else 
+        { 
+            if( diaEspec==true)
+               { 
+                   pFin= PRECIO_BASE * DTO_DIA_ESPECTADOR ;
+                   return pFin;
+                }
+            else 
+            {
+                if (festivo==true)
+                {   if(tCliente==true)
+                       { pFin= dto_cliente * PRECIO_BASE;
+                         return pFin;
+                         }
+                    else
+                       { pFin=dto_festivo * PRECIO_BASE;
+                         return pFin;
+                    }
+                 }
+                 else 
+                   { if (vispera==true)
+                            {   if(tCliente==true)
+                                   {  pFin= dto_cliente * PRECIO_BASE;
+                                      return pFin;
+                                    }
+                                else
+                                    { pFin=dto_vis_fest * PRECIO_BASE;
+                                        
+                                      return pFin;
+                                    }
+                                    }
+                    else 
+                       { System.out.println("ERROR") ;           }   
+                            }            
+                     }  
+                              }
+              return precioFinal              
+                }
+            }          
+            
+                        
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            

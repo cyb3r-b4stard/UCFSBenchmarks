@@ -1,0 +1,99 @@
+import java.util.Scanner;
+import java.util.Arrays;
+class Operacje{
+private int z1,z2,takiesame;
+private int zbior1[];
+private int zbior2[];
+private int suma[];
+private int iloczyn[];
+private int roznica[];
+Operacje(int z1,int z2)
+{
+    this.z1=z1;
+    this.z2=z2;
+    zbior1=new int [z1];
+    zbior2=new int[z2];
+    wypelnij(zbior1);
+    wypelnij(zbior2);
+    takiesame=iletakichsamych(zbior1,zbior2);
+    iloczyn=new int[takiesame];
+    suma=new int[zbior1.length+zbior2.length-takiesame];
+}
+public void output(){
+System.out.println("Elementy Zbioru 1:");
+wypisz(zbior1);
+System.out.println("Elementy Zbioru 2:");
+wypisz(zbior2);
+System.out.println("Iloczyn to:");
+wypisz(iloczyn);
+}
+public void licz(){
+
+licziloczyn();
+liczsume();
+}
+public void wypelnij(int tab[]){
+Scanner Scanner=new Scanner(System.in);
+System.out.println("Podaj elementy");
+for(int i=0;i<tab.length;i++)
+{
+ tab[i]=Scanner.nextInt();   
+}
+}
+public void wypisz(int tab[]){
+for(int i=0;i<tab.length;i++)
+{
+System.out.print(+tab[i]+"   ");
+}
+System.out.println("");
+}
+public void licziloczyn(){
+int licznik=0;
+for(int i=0; i< zbior1.length; i++){
+for(int j=0; j< zbior2.length; j++){
+       if(zbior1[i]==zbior2[j])
+       {
+        iloczyn[licznik]=zbior1[i];
+        licznik++;
+        }
+}
+}
+}
+public void liczsume(){
+int rand[]=new int[zbior1.length+zbior2.length];
+for(int i=0;i<zbior1.length;i++)
+{
+    rand[i]=zbior1[i];
+} 
+for(int i=0;i<zbior2.length;i++)
+{
+    rand[i+zbior1.length]=zbior2[i];
+}
+Arrays.sort(rand);
+int licznik=0;
+int up=0;
+for(int i=0;up<rand.length;i++ && up++)
+
+{
+ if(rand[i]!=rand[up])
+ {
+     suma[licznik]=rand[i];
+          licznik++;
+ }
+
+}
+wypisz(suma);
+}
+public int iletakichsamych(int tab1[], int tab2[]){
+int takiesame=0;
+for(int i=0; i< tab1.length; i++){
+for(int j=0; j< tab2.length; j++){
+       if(tab1[i]==tab2[j])
+       {
+        takiesame++;
+        }
+}
+}
+return takiesame;
+}
+}

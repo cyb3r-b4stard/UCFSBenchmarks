@@ -1,0 +1,289 @@
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Collections;
+
+/**
+ * ##### ####### ############# ## ############.
+ * ### ### ## ########## ##### ### #########
+ * ####### ## ###### ## ##.##.####.
+ */
+public class Battleground {
+    private Player player;
+    private Character character;
+    private ArrayList<Monster> monsters;
+    public ArrayList<Potions> potions;
+    public ArrayList<Weapon> weapons; 
+    private Monster currentMonster;
+    private Parser parser;
+    private int numOfMonstersBeaten;
+    public int minDamage;
+    public int maxDamage;
+    private int health;
+    
+
+    /**
+     * Konstruktør for Battleground. Den tar en liste med monstre, en player og inputreader
+     * @param monsters En samling med monstre
+     * @param player En player som skal sloss mot monstre
+     * @param reader En reader som lar brukeren skrive inn kommandoer til programmet
+     */
+    public Battleground(ArrayList<Monster> monsters, Player player, ArrayList<Potions> potionsList) {
+        this.monsters = monsters;
+        this.player = player;
+        this.health = health;
+        potions = potionsList;
+        parser = new Parser(); 
+       
+    }
+
+    /**
+     * Metode for å starte kampene
+     */
+    public void startBattle() {
+        printWelcomeMessage();
+        boolean finished = false;
+
+        this.currentMonster = getRandomMonster();
+        if(this.currentMonster == null) {
+            return;
+        }
+        System.out.println("A random monster is chosen for you. Prepare to meet the mighty " + this.currentMonster.getName());
+        System.out.println("\n-------- Player Stats ---------");
+        System.out.println(this.player);
+        while(monsters.size() > 0) {
+            Command command = parser.getCommand();
+            if(processCommand(command))
+            {
+                break;
+            }
+        }
+    }
+
+    
+    /**
+     * Metode for å printe gyldige kommandoer i spillet
+     */
+    private void printCommands() {
+        System.out.println("run -- \"When you type \"run\", the game ends, the monsters wins and you lose.\"");
+        System.out.println("attack -- \"When you type \"attack\", you attack the monster before the monster attacks you");
+        System.out.println("use + name of item -- \"When you type \"use + name of item\", you will use a item");
+         System.out.println("drink potion + \"When you type \"use + name of item\", you will use a item");
+    }
+
+    
+    /**
+     * Metode for å printe en velkomstmelding til spilleren
+     */
+    private void printWelcomeMessage() {
+        System.out.println("Welcome to the battleground. This is not a pleasant place to be...\nMany soldiers have died here before you...\n\nGood luck...");
+        printCommands();
+    }
+
+    /**
+     * Hjelpemetode for å oppdatere felter dersom spilleren vinner
+     */
+    private void playerWon() {
+        printVictoryMessage();
+        this.player.addGold(this.currentMonster.getGold());
+        this.monsters.remove(this.currentMonster);
+        this.player.printCurrentStats();
+        this.numOfMonstersBeaten++;
+    }
+
+    /**
+     * metode for å printe en melding til spilleren dersom Player vinner mot monster
+     */
+    private void printVictoryMessage() {
+        System.out.println("\n#### Victory ####\nCongratulations, you beat " + this.currentMonster.getName());
+        System.out.println(this.currentMonster.getName() + " had " + this.currentMonster.getGold() + " gold pieces. They are all yours!");
+    }
+
+    /**
+     * Metode for å printe final stats for spillet
+     */
+    private void printFinalStats() {
+        System.out.println("----- Game Stats ------");
+        System.out.println(this.player.getName() + " beat " + this.numOfMonstersBeaten + " monsters");
+        System.out.println(this.player);
+    }
+
+    /**
+     * Metode for å printe en melding dersom brukeren velger å skrive attack etter å ha drept et monster, ergo spilleren vil angripe et nytt monster
+     * @param player Spilleren som vil sloss mot monster
+     * @param monster Det nye monsteret spilleren vil møte
+     */
+    private void printContinueMessage(Player player, Monster monster) {
+        System.out.println("So you want to continue to beat monsters...? We should call you Braveheart!");
+        System.out.println("Stay tuned while a new monster is picked for you...");
+        System.out.println("Oh no... This is not good, your next monster is the powerful " + monster.getName() + " oh no oh no oh no...");
+        System.out.println("Here, take some extra health...\n");
+        System.out.println(player.getName() + " receives " + 50 + " health points");
+        System.out.println("Go ahead, type attack to attack or run if you are too scared");
+
+    }
+
+    /**
+     * Metode for å printe en melding dersom spilleren taper for et monster
+     */
+    private void printLosingMessage() {
+        System.out.println("\n#### BOOOOO ####\nYou lost to " + currentMonster.getName() + ". You should be ashamed of yourself!");
+    }
+
+    /**
+     * Metode for å returnere et tilfeldig monster. Dersom listen over monstre er tom vil metoden returnere null
+     * @return Et tilfeldig monster fra listen over monstre.
+     */
+    public Monster getRandomMonster() {
+        Random random = new Random();
+        if(this.monsters.size() > 0) {
+            int numOfMonsters = this.monsters.size();
+            return this.monsters.get(random.nextInt(numOfMonsters));
+        } else
+            return null;
+    }
+
+      private void printHelp() 
+    {
+        System.out.println("This is a battle");
+        System.out.println("You can either fight, or flee.");
+        System.out.println();
+        System.out.println("Valid commands are");
+        parser.showCommands();
+    }
+    
+     private void runFromGame() 
+    {
+
+       System.out.println("You are a coward and you lose 50 gold pieces...\n");
+       this.player.changeGold(-50);
+       printFinalStats();
+       System.out.println("\nThanks for playing...");
+    }
+
+   private void startGame() {
+       printWelcomeMessage();
+       boolean finished = false;
+       this.currentMonster = getRandomMonster();
+        
+       if(this.currentMonster == null) {
+            return;
+        }       
+        }
+ 
+     private boolean processCommand(Command command) 
+    {
+        boolean wantToQuit = false;
+
+        if(command.isUnknown()) {
+            System.out.println("I don't know what you mean...");
+            return false;
+        }
+
+        String commandWord = command.getCommandWord();
+        if (commandWord.equals("help")) {
+            printHelp();
+        }
+        else if (commandWord.equals("run")) {
+            runFromGame();
+            wantToQuit = true;
+        }
+        else if (commandWord.equals("drink")) {
+            if(command.hasSecondWord())
+            {
+                boolean foundPotion = false;
+                  for (Potions potion : potions) {
+                   if(potion.getName().equals(command.getSecondWord()))
+                   {
+                       player.usePotion(potion);
+                       foundPotion = true;
+                       break;
+                    }
+                }
+                if(!foundPotion)
+                {
+                    System.out.println("Cant find specified potion, try"); 
+                }
+ 
+            }
+        }
+        
+        
+        
+        else if(commandWord.equals("attack"))
+        {
+        
+           if(command.hasSecondWord() && command.getSecondWord().equals("scariest")) {
+            int max = 0;
+            for(int i = 0; i < monsters.size(); i++)
+            {
+                if(max < monsters.get(i).getHealth())
+                {
+                    max = monsters.get(i).getHealth();
+                    currentMonster = monsters.get(i);
+                }
+            }
+            System.out.println("Player is facing the monster: " + this.currentMonster.getName() + ".");
+            System.out.println("This is the scariest monster.");
+           } else if(command.hasSecondWord()) {
+               
+            System.out.println("Didn't understand the second command word");
+           }
+           else
+           {
+            System.out.println("Player is facing the monster: " + this.currentMonster.getName() + ".");
+            }
+            
+           player.attack(currentMonster);
+           
+            if(player.isDead())
+            {
+                        
+                     this.printLosingMessage();
+                     wantToQuit = true;
+            }
+            else if(currentMonster.isDead())
+            {
+                        this.printVictoryMessage();
+                        monsters.remove(currentMonster);
+                        if(monsters.size() > 0)
+                        {
+                            this.currentMonster = getRandomMonster();
+                            this.player.changeHealth(50);
+                            this.printContinueMessage(player, currentMonster);
+                        }
+                        else
+                        {
+                            wantToQuit = true;
+                            System.out.println("\n\n#### Congratulations ####\nYou have beaten every single monster in the game. You are a true champion!");
+                            printFinalStats();
+                        }
+                        
+                    }         
+        }
+        
+        else if (commandWord.equals("equip")) 
+        
+        {
+                boolean foundWeapon = false; 
+                  for (Weapon weapon : weapons) {
+                   if(weapon.getName().equals(command.getSecondWord()))
+                   {
+                       String xa = command.getSecondWord();
+                       Weapon AK47 = (Weapon) player.findItem(xa);
+                       System.out.println("You equipped" + " " + Item.getName)
+                       player.setMaxDamage(player.getMaxDamage() + Weapon.getWeaponDamage());
+                       player.setMinDamage(player.getMinDamage() + Weapon.getWeaponDamage());; 
+                    }
+                }
+                if(!foundWeapon)
+                {
+                    System.out.println("Cant find specified weapon, try again"); 
+                }
+        }
+ 
+        return wantToQuit;
+    }
+
+}

@@ -1,0 +1,117 @@
+
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class TaskSystem
+{
+    private InputReader inputreader1;
+    private TaskManager taskmanager1;
+
+    /**
+     * Constructor for objects of class TaskSystem
+     */
+    public TaskSystem()
+    {
+        inputreader1 = new InputReader();
+        taskmanager1 = new TaskManager();
+    }
+    
+    /**
+     * Constructor 2 for TaskSystem
+     */
+    public TaskSystem(String fileName)
+    {
+        inputreader1 = new InputReader(fileName);
+        taskmanager1 = new TaskManager();
+        
+    }
+
+    public void start () {
+        System.out.println ("Welcome to the Task Management System.");
+        System.out.println ("Commands are:");
+        System.out.println ("’add’ to add a task.");
+        System.out.println ("’all’ to print all tasks.");
+        System.out.println ("’late’ to print all late tasks.");
+        System.out.println ("’todo’ to print all incomplete tasks.");
+        System.out.println ("’done’ to complete a task.");
+        System.out.println ("’delete’ to delete a task.");
+        System.out.println ("’deadline’ to extend the deadline for a task.");
+        System.out.println ("’countall’ to print the number of tasks.");
+        System.out.println ("’count’ to print the number of tasks to complete.");
+        System.out.println ("’time’ to record a number of hours working on a task.");
+        System.out.println ("Please type ’bye’ to exit our system.");
+        String answer = inputreader1.getTextInput ("Enter a command:");
+        
+        if (answer.equals ("add")) {
+            String addDescription = inputreader1.getTextInput ("Please enter the description of the task you would like to add : ");
+            int addLength = inputreader1.getIntegerInput ("Please add the length of the task in hours: ");
+            taskmanager1.addTask(addDescription,addLength);
+            System.out.println ("Congratulations, a task has been added.");
+            String answer1 = inputreader1.getTextInput ("Enter a command:");
+            answer1 = answer;
+            }
+        else if (answer.equals ("done")) {
+            taskmanager1.getSummaryIncomplete();
+            int id = inputreader1.getIntegerInput ("Please enter the ID you would like to pass as completed: ");
+            taskmanager1.setCompleted(id);
+            System.out.println ("Congratulations, the task with the ID: " + id + "has been set to completed.");
+            inputreader1.getTextInput ("Enter a command:");
+        }
+        else if (answer.equals ("delete")) {
+            taskmanager1.getSummaryComplete();
+            int id = inputreader1.getIntegerInput ("Please enter the ID you would like to remove: ");
+            taskmanager1.deleteTask (id);
+            System.out.println ("Congratulations, the task with the ID of: " + id + "has been deleted");
+            inputreader1.getTextInput ("Enter a command:");
+        }
+        else if (answer.equals ("deadline")) {
+            taskmanager1.getSummaryIncomplete();
+            int id = inputreader1.getIntegerInput ("Please enter the ID you would like to change the deadline of: ");
+            System.out.println (id + ": This is the ID you have selected");
+            int hours =inputreader1.getIntegerInput ("please enter the amount of hours extra to be added to the deadline: ");
+            taskmanager1.findById(id).extendEstimate(hours);
+            System.out.println ("Congratulations, the deadline for the ID: " + id + "has been changed.");
+            inputreader1.getTextInput ("Enter a command:");
+        }
+        else if (answer.equals ("all")) {
+            System.out.println ("Here is a list of all tasks including tasks that are done:");
+            taskmanager1.getAllTasks();
+            inputreader1.getTextInput ("Enter a command:");
+        }
+        else if (answer.equals ("late")) {
+            System.out.println ("Here is a list of all late tasks:");
+            taskmanager1.getLateTasks();
+            inputreader1.getTextInput ("Enter a command:");
+        }
+        else if (answer.equals ("todo")) {
+            System.out.println ("Here is a list of all tasks that are not yet completed:");
+            taskmanager1.getSummaryIncomplete();
+            inputreader1.getTextInput ("Enter a command:");
+        }
+        else if (answer.equals ("time")) {
+            taskmanager1.getSummaryIncomplete();
+            int id = inputreader1.getIntegerInput ("Please enter the ID of the task you would like to add hours too: ");
+            System.out.println (id + ": This is the ID you have selected");
+            int hours = inputreader1.getIntegerInput ("Please select an integer number of hours spent working on this task: ");
+            taskmanager1.findById(id).recordHoursWorked(hours);
+            System.out.println ("Congratulations, the id: " + id + " has had " + hours + " hours added to the task.")
+            inputreader1.getTextInput ("Enter a command:");
+        }
+        else if (answer.equals ("countall")) {
+            System.out.println ("Here is a count of tasks within the list:");
+            taskmanager1.getCount();
+            inputreader1.getTextInput ("Enter a command:");
+        }
+        else if (answer.equals ("count")) {
+            System.out.println ("Here is a count of how many not yet completed tasks are in the list:");
+            taskmanager1.getCountTodo();
+            inputreader1.getTextInput ("Enter a command:");
+        }
+        else if (answer.equals ("bye")) {
+            System.out.println ("Thank you for using this Task System, good bye.");
+        }
+    }
+}

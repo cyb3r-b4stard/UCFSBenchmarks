@@ -1,0 +1,188 @@
+/** ##### ################: ##### ######## #### ########### ## ###### ########
+  * ######## ## ########## ## ##########
+  *
+  * @###### ### ######
+  * @####### #### ####-####
+  */
+import java.util.*;
+
+class MedidaOrdenacion {
+
+  static final int MAXTALLA = 100000, INCRTALLA = 10000,
+                   INITALLA = 10000, REPETICIONES = 50;
+
+  static final double NMS = 1e3;
+  
+  static void arrayAleatorio(int [] a) {
+    for (int i = 0; i < a.length; i++) a[i] = (int)(Math.random()*INITALLA);
+  }
+  static void arrayAscendente(int [] a){
+    for (int i = 0; i< a.length; i++) a[i]=i;
+  }
+  static void arrayDescendente(int [] a){
+    for (int i= 0; i<a.length; i++) a[i]=a.length -1 -i;
+  }
+  /* Ademas de los metodos de medida, podeis implementar los metodos *
+   * auxiliares static que considereis necesarios para la medida     *
+   * empirica (p.e., metodos para generar arrays de datos            */
+
+  public static void medidaInsercion() {
+    int [] a, b, c;             
+    int t, r, aux;        
+
+    long ti = 0, tf = 0, tt = 0; 
+    double tMejor = 0, tPeor = 0, tPromed = 0;   
+
+    System.out.println("# Medida Inserción. Tiempos en microsegundos");
+    System.out.printf("# Talla    Mejor     Peor    Promedio\n");
+    System.out.printf("#------------------------------------\n");
+
+    for (t = INITALLA; t <= MAXTALLA; t += INCRTALLA) {
+
+      a = new int[t];
+      arrayAleatorio(a);
+      
+      b = new int[t];
+      arrayAscendente(b);
+      
+      c = new int [t];
+      arrayDescendente(c);
+
+
+      AlgoritmosMedibles.insercion(b);  
+      ti = System.nanoTime();        
+      for (r = 0; r < REPETICIONES; r++)
+        AlgoritmosMedibles.insercion(b);
+      tf = System.nanoTime();        
+      tMejor = (double)(tf - ti) / REPETICIONES;   
+
+
+      tt = 0;                        
+      for (r = 0; r < REPETICIONES; r++) {
+        ti = System.nanoTime();      
+        AlgoritmosMedibles.insercion(c);
+        tf = System.nanoTime();      
+        tt += (tf - ti);             
+      }
+      tPeor = (double)tt / REPETICIONES;         
+
+
+      tt = 0;                        
+      for (r = 0; r < REPETICIONES; r++) {
+        ti = System.nanoTime();      
+        AlgoritmosMedibles.insercion(a);
+        tf = System.nanoTime();      
+        tt += (tf - ti);         
+      }
+      tPromed = (double)tt / REPETICIONES;       
+
+      System.out.printf(Locale.US, "%8d   %4.2f   %8.2f   %8.2f\n",
+                        t, tMejor/NMS, tPeor/NMS, tPromed/NMS);
+
+    }
+  }
+  
+  
+  public static void medidaSeleccion() {
+    int [] a, b, c;             
+    int t, r, aux;        
+
+    long ti = 0, tf = 0, tt = 0; 
+    double tMejor = 0, tPeor = 0, tPromed = 0;   
+
+    System.out.println("# Medida Selección.\n# Tiempos en microsegundos");
+    System.out.printf("# Talla    Promedio\n");
+    System.out.printf("#-------------------\n");
+
+    for (t = INITALLA; t <= MAXTALLA; t += INCRTALLA) {
+
+      a = new int[t];
+      arrayAleatorio(a);
+           
+
+
+      tt = 0;                        
+      for (r = 0; r < REPETICIONES; r++) {
+        ti = System.nanoTime();      
+        AlgoritmosMedibles.seleccion(a);
+        tf = System.nanoTime();      
+        tt += (tf - ti);         
+      }
+      tPromed = (double)tt / REPETICIONES;       
+
+      System.out.printf(Locale.US, "%8d   %4.2f  \n",
+                        t, tPromed/NMS);
+
+    }
+  }
+  
+  
+  public static void medidaMergeSort() {
+    int [] a;             
+    int t, r, aux, b, c;        
+
+    long ti = 0, tf = 0, tt = 0; 
+    double tMejor = 0, tPeor = 0, tPromed = 0;   
+
+    System.out.println("# Medida Inserción.\n# Tiempos en microsegundos");
+    System.out.printf("# Talla    Promedio\n");
+    System.out.printf("#--------------------\n");
+
+    for (t = INITALLA; t <= MAXTALLA; t += INCRTALLA) {
+
+      a = new int[t];
+      arrayAleatorio(a);
+      
+      b = 0;
+      c = a.length -1;
+      
+     
+      tt = 0;                        
+      for (r = 0; r < REPETICIONES; r++) {
+        aux = (int) Math.floor(Math.random() * t);    
+        ti = System.nanoTime();      
+        AlgoritmosMedibles.mergeSort(a, b, c);
+        tf = System.nanoTime();      
+        tt += (tf - ti);         
+      }
+      tPromed = (double)tt / REPETICIONES;       
+
+      System.out.printf(Locale.US, "%8d   %4.2f \n",
+                        t, tPromed/NMS);
+
+    }
+  }
+  public static void uso() {
+    System.out.println("Uso: java MedidaOrdenacion numero_algoritmo");
+    System.out.println("   Donde numero_algoritmo es:");
+    System.out.println("   1 -> Insercion");
+    System.out.println("   2 -> Seleccion");
+    System.out.println("   3 -> MergeSort");
+  }
+
+  public static void main(String args[]) {
+    int a;
+
+    if (args.length != 1) {
+      uso();
+      return;
+    }
+    
+    Scanner t = new Scanner(System.in)(Locale.US);
+    try {
+      a = Integer.parseInt(args[0]);
+    } catch (Exception e) {
+      uso(); return;
+    }
+
+    switch (a) {
+      case 1: medidaInsercion();
+              break;
+      case 2: medidaSeleccion();
+              break;
+      case 3: medidaMergeSort();
+              break;
+      default: uso();
+    }
+  }
+}

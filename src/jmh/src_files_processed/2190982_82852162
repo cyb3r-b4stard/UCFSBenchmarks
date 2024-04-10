@@ -1,0 +1,180 @@
+import java.util.ArrayList;
+import java.util.Random;
+
+/**
+ * ### ########## ##### ###### ## ######## ########## ## ###########.
+ * #### ##### #### ## ######### ## ######## # ########## ## ###########
+ * ###### ## ### ##########.
+ * 
+ * @###### ##### #######
+ * 
+ * @###### (####### ######## ### ######## ####)
+ * @####### (### #, ####)
+ */
+public class Population
+{
+    private Random rnd;
+    
+    
+    private ArrayList<Individual> individualList;
+    
+    
+    
+    /**
+     * Construct a new Population. When constructed the Population
+     * does not contain any Individuals.
+     */
+    public Population() {
+        rnd = new Random();
+        individualList = new ArrayList<Individual>();
+        
+    }
+    
+    /**
+     * Get the currrent size of this Population.
+     * @return the size of this Population.
+     */
+    public int getSize() {
+        return individualList.size();
+    }
+    
+    /**
+     * Get the individual at a specified index in this Population.  
+     * If the index specified is not valid, then this method prints
+     * an error message and returns null.
+     * 
+     * @param index the index of the Individual to get.
+     * @return the specified Individual.
+     */
+    public Individual getIndividual(int index) { 
+         if ( index >= 0 && index < individualList.size()) {
+            Individual inst = individualList.get(index);
+            return inst;
+        }
+        else {
+            System.out.println( "Error: innvaild index at" + index + ".");
+            return null;
+        } 
+        
+    }
+    
+    /**
+     * Add a specified Individual to this Population.
+     * 
+     * @param indiv the Individual to be added.
+     */
+    public void addIndividual(Individual indiv) {
+        individualList.add(indiv);
+    }
+
+    /**
+     * Get the average fitness of this Population. If there are no
+     * Individuals in this Population, this method prints an
+     * error message and returns 0.
+     * 
+     * @return the average fitness.
+     */
+    public int getAverageFitness() {
+        int index = 0;
+        if ( index >= 0 && index < individualList.size()) {
+            int total = 0;
+        
+            for (index = 0; index < individualList.size(); index++) {
+                total = total + individualList.get(index).getFitness();
+            }
+            return total /  individualList.size();
+        }
+            else {
+                System.out.println( "Error");
+                return 0;
+                
+            }
+        
+          
+        
+    }
+    
+    /**
+     * Get the Individual with the higest fitness value. If there are 
+     * two individuals with equivalent fitness values, the one appearing 
+     * at the lower index in the Population should be returned. If there are
+     * no Individuals in this Population, this method prints an error message
+     * and returns null.
+     * 
+     * @return the Individual with the higest fitness value.
+     */
+    public Individual getFittestIndividual() {
+        int maxSoFar = individualList.get(0).getFitness();
+        int index = 0;
+        if ( index >= 0 && index < individualList.size()) {
+        for (index = 0; index < individualList.size(); index++) {
+           
+            if (individualList.get(index).getFitness() > maxSoFar) {
+                maxSoFar = individualList.get(index).getFitness();
+            }
+        
+        
+       }
+       return individualList.get(maxSoFar);
+      }
+        else {
+            System.out.println("Error");
+            return null;
+            
+            
+    
+        
+    
+        }
+       
+            
+        
+    }
+    
+    /**
+     * Pick an Individual from this Population to be a parent for the next
+     * generation. A parent is picked using a tournament. In a tournament,
+     * a specified number of Individuals are chosen from the Population at
+     * random. Of those randomly chosen Individuals, the one with the 
+     * highest fitness is selected to be the Parent. The size of the tournament 
+     * (i.e. the number of randomly chosen Individuals) is indicated by the 
+     * tournamentSize parameter.  You can assume that the specified 
+     * tournamentSize will always be greater than 0.
+     * 
+     * <p>In order to choose Individuals at random, you will need to use
+     * the Random object that was created for you in the constructor. The
+     * Random object has a method named nextInt that accepts a single 
+     * int value as a parameter. A call to the nextInt method returns a random 
+     * integer from 0 up to but not including the value passed as the parameter.  
+     * For example, the call rnd.nextInt(57) will return a random integer between
+     * 0 and 56 inclusive.
+     * 
+     * <p>The suggested technique for implementing this method is to start
+     * by creating a new Population. Then, one by one, choose a random
+     * individual from the Population and add it to the new Population. 
+     * Once you have added the right number of Individuals to the new Population
+     * you can find the fittest Individual in the new Population 
+     * and return it.
+     * 
+     * <p>Because of the randomness used in this method you will not be
+     * able to make any assertions about the Individual that is returned.
+     * Thus, you should include a test method that calls this method and
+     * displays the Individual that is returned. Then check by hand that
+     * the method does not return the same Individual every time.
+     * 
+     * @param tournamentSize the size of the tournament used to pick the parent.
+     * @return the Individual selected as the parent.
+     */
+    public Individual pickParent(int tournamentSize) {
+        
+        ArrayList<Individual> parentList = new ArrayList<Individual>();
+        int size = individualList.size();
+        for ( int index = 0; index < tournamentSize; index ++){
+            
+            
+        parentList.add(IndividualList.get(rnd.nextInt(size)));
+        
+        
+        return null;
+    }    
+}

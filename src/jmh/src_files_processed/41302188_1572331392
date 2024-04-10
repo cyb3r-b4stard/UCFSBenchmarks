@@ -1,0 +1,99 @@
+
+import java.util.*;
+import java.io.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.border.Border;
+
+public class BouncingBall extends JFrame{
+
+    private double ballRadius = 25;
+
+    private double ballX=85;
+    private double ballY=250;
+
+    private double ballVelocityY = 0;
+
+    public BouncingBall()
+    {
+        setSize(700, 900); 
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        MouseListener x = new MouseThingy();
+    }
+
+    public static void main(String[] args)
+    {
+        BouncingBall me = new BouncingBall();
+
+        me.setVisible(true);
+
+        try{
+            while(true)
+            {
+
+                me.updateBall();
+
+                Thread.sleep(50);
+            }
+        }
+        catch(InterruptedException e)
+        {
+            System.out.println(e);
+        }
+    }
+    
+    public class MouseThingy implements MouseListener
+    {
+        @Override
+        public void mouseClicked(MouseEvent me) {
+            x = me.getX()
+            y = me.getY();
+            info.setText(coord);
+        }
+
+        @Override
+        public void mousePressed(MouseEvent me) {
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent me) {
+        }
+        
+         @Override
+        public void mouseEntered(MouseEvent me) {
+            
+        }
+
+        @Override
+        public void mouseExited(MouseEvent me) {
+            
+        }
+    }
+
+    public void updateBall()
+    {
+        int windowMaxY = getContentPane().getHeight();
+
+        ballVelocityY += 9.8/10;
+
+        ballY += ballVelocityY;
+
+        if(ballY + 2*ballRadius > windowMaxY)
+        {
+            ballVelocityY = -Math.abs(ballVelocityY*0.9); 
+        }        
+
+        repaint();
+    }
+
+    @Override
+    public void paint(Graphics g)
+    {
+        super.paint(g);
+
+        g.setColor(Color.red);
+
+        g.fillOval((int)ballX, (int)ballY, 2*(int)ballRadius, 2*(int)ballRadius);
+    }
+}

@@ -1,0 +1,255 @@
+import java.awt.*;
+import java.awt.geom.*;
+
+/**
+ * # #### #### ### ## ########### ### #### ##### ###### ## # ######
+ * 
+ * @###### ##### ##### (# ######## ######## #### ## ### ###### ##### ####### ## ####### ####### ### ##### #. ######)
+ * @####### #.# (#/#/##)
+ */
+public class Line
+{
+    private int x1;
+    private int y1;
+    private int x2;
+    private int y2;
+    private String color;
+    private boolean isVisible;
+
+    /**
+     * Create a new line using default values.
+     */
+    public Line()
+    {
+        x1 = 0;
+        y1 = 0;
+        x2 = 10;
+        y2 = 10;
+        color = "blue";
+        isVisible = false;
+    }
+
+    /**
+     * This is the second constructor.
+     */
+    public Line (int newx1, int newy1, int newx2, int newy2)
+    {
+        x1=newx1;
+        y1=newy1;
+        x2=newx2;
+        y2=newy2;
+        color = "blue";
+        isVisible = false;
+    }    
+    /**
+     * Return the color of the line.
+     */
+    public String color()
+    {
+        return color;
+    }
+    /**
+     * Change the end points of the line.
+     */
+    public void changeEndpoints(int newx1, int newy1, int newx2, int newy2)
+    {
+        x1=newx1;
+        y1=newy1;
+        x2=newx2;
+        y2=newy2;
+    }   
+    /**
+     * Calculate and return the length of the line.
+     */
+      public void getLength()
+    {
+        length= Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
+        return length;
+    }
+    /**
+     * Print the midpoint of the line.
+     */
+    public void printMidpoint()
+    {
+        xmidpoint=(x2+x1)/2;
+        ymidpoint=(y2+y1)/2;
+        System.out.println("The midpoint of the line from ("+x1","+y1") to ("+x2","+y2") is ("+xmidpoint","+ymidpoint").");
+    }
+    /**
+     * Calculate and print the slope of the line.
+     */
+    public void printSlope()
+    {
+        dx=x2-x1;
+        dy=y2-y2;
+        if(dx!=0){
+            System.out.println("The slope is:"+dy"/"+dx".");
+        }
+        else{
+            System.out.println();
+        }
+    }
+    
+    
+    /**
+     * Make this line visible, if already visible do nothing.
+     */
+    public void makeVisible()
+    {
+        if (!isVisible){
+            isVisible = true;
+            draw();
+        }
+    }
+
+    /**
+     * Make this line invisible, if already invisible do nothing.
+     */
+    public void makeInvisible()
+    {
+        if(isVisible){
+            erase();
+            isVisible = false;
+        }
+    }
+
+    /**
+     * Move the line 20 pixels to the right without deformation.
+     */
+    public void moveRight()
+    {
+        moveHorizontal(20);
+    }
+
+    /**
+     * Move the line 20 pixels to the left without deformation.
+     */
+    public void moveLeft()
+    {
+        moveHorizontal(-20);
+    }
+
+    /**
+     * Move the line 20 pixels up without deformation
+     */
+    public void moveUp()
+    {
+        moveVertical(-20);
+    }
+
+    /**
+     * Move the line 20 pixels down without deformation.
+     */
+    public void moveDown()
+    {
+        moveVertical(20);
+    }
+
+    /**
+     * Move the line horizontally by 'distance' pixels without deformation.
+     */
+    public void moveHorizontal(int distance)
+    {
+        erase();
+        x1 += distance;
+        x2 += distance;
+        draw();
+    }
+
+    /**
+     * Move the line vertically by 'distance' pixels without deformation.
+     */
+    public void moveVertical(int distance)
+    {
+        erase();
+        y1 += distance;
+        y2 += distance;
+        draw();
+    }
+
+    /**
+     * Slowly move the line horizontally by 'distance' pixels without deformation.
+     */
+    public void slowMoveHorizontal(int distance)
+    {
+        int delta;
+
+        if(distance < 0) 
+        {
+            delta = -1;
+            distance = -distance;
+        }
+        else 
+        {
+            delta = 1;
+        }
+
+        for(int i = 0; i < distance; i++)
+        {
+            x1 += delta;
+            x2 += delta;
+            draw();
+        }
+    }
+
+    /**
+     * Slowly move the line vertically by 'distance' pixels without deformation.
+     */
+    public void slowMoveVertical(int distance)
+    {
+        int delta;
+
+        if(distance < 0) 
+        {
+            delta = -1;
+            distance = -distance;
+        }
+        else 
+        {
+            delta = 1;
+        }
+
+        for(int i = 0; i < distance; i++)
+        {
+            y1 += delta;
+            y2 += delta;
+            draw();
+        }
+    }
+
+    /**
+     * Change the color. Valid colors are "red", "yellow", "blue", "green",
+     * "magenta" and "black".
+     */
+    public void changeColor(String newColor)
+    {
+        if (newColor.equals("red") || newColor.equals("yellow") || newColor.equals("blue") || 
+        newColor.equals("green") || newColor.equals("magenta") || newColor.equals("black")){
+            color = newColor;
+            draw();
+        }
+    }
+
+    /**
+     * Draw the line.
+     */
+    private void draw()
+    {
+        if(isVisible) {
+            Canvas canvas = Canvas.getCanvas();
+            canvas.draw(this, color, new Line2D.Double(x1, y1, x2, y2));
+            canvas.wait(10);
+        }
+    }
+
+    /*
+     * Erase the line on screen.
+     */
+    private void erase()
+    {
+        if(isVisible) {
+            Canvas canvas = Canvas.getCanvas();
+            canvas.erase(this);
+        }
+    }
+}

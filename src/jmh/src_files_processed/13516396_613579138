@@ -1,0 +1,195 @@
+import java.util.ArrayList;
+import java.util.zip.DataFormatException;
+import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
+
+/**
+ * # ##### ## ######## ########### #######.
+ * 
+ * @###### (#### ###) 
+ * @####### (####### #### ## ##)<##>
+############ ####### <##>
+<##>### #### ### #### ### #######</##>
+</##>
+ */
+public class Repository
+{
+    private static Repository theRepository = null;
+    private static ArrayList<BirdSpecies> theSpecies = null;
+    private Map<Integer, Sighting> allSightings;
+
+    /**
+     * Private constructor, as is typical for a singleton.
+     */
+    private Repository()
+    {
+        theSpecies = new ArrayList<BirdSpecies>();
+    }
+
+    /**
+     * Provide access to the singleton. Typical of a singleton implementation.
+     * @return The singleton
+     */
+    public static synchronized Repository getInstance() {
+        if (theRepository == null)
+            theRepository = new Repository();
+        return theRepository;
+    }
+
+    /**
+     * 
+     */
+    public void initializeCollections() {
+        allSightings = new HashMap<Integer, Sighting>();
+        theSpecies = new ArrayList<BirdSpecies>();
+    }
+
+    /**
+     * Remember a BirdSpecies object.
+     * @param bs the object to be remembered
+     * @throw DuplicateException if the species is 
+     * already in the repository
+     */
+    public void rememberSpecies(final BirdSpecies bs) 
+    throws DataFormatException, DuplicateException {
+        if (bs == null)
+            throw new DataFormatException("BirdSpecies object is null");
+
+        String t1 = bs.getCommonName();
+        for (BirdSpecies t : theSpecies) {
+            if (t.getCommonName().equalsIgnoreCase(t1))
+                throw new DuplicateException("Species exists in the repository");
+        }
+        theSpecies.add(bs);
+    } 
+
+    /**
+     * Given an abbreviation, return the scientific name.
+     * @param abbreviation Abbreviation of bird name
+     * @return the scientific name
+     * @throw DataFormatException if the abbreviation 
+     * is not in the repository, or is empty
+     */
+    public String getScientificName(final String abbreviation) 
+    throws DataFormatException {
+        if (abbreviation == null)
+            throw new DataFormatException("Abbreviation is null");
+        if (abbreviation.isEmpty())
+            throw new DataFormatException("Abbreviation is empty");
+        String result = "";
+        for (BirdSpecies t : theSpecies) {
+            if (abbreviation.equalsIgnoreCase(t.getAbbreviation()))
+                return t.getScientificName();
+        }
+        throw new DataFormatException("Species not found");
+    } 
+
+    /**
+     * How many BirdSpecies objects are in the repository?
+     * @return     the size
+     */
+    public int size()    {
+        return theSpecies.size();
+    }
+
+    /**
+     * An iterator over the species collection.
+     * @return the iterator
+     */
+    public Iterator<BirdSpecies> iterator() {
+        return theSpecies.iterator();
+    }
+
+    /**
+     * Return the number of sightings.
+     * @return How many sightings are in the collection.
+     */
+    public int sizeSighting() {
+        return allSightings.size();
+    }
+
+    /**
+     * Return an iterator over the keys (sighting identifier).
+     * @return the iterator
+     */
+    public Iterator<Integer> iteratorSightingKey() {
+        return (allSightings.keySet()).iterator();
+    }
+
+    /**
+     * Return an iterator over the values (sighting objects).
+     * @return the iterator
+     */
+    public Iterator<Sighting> iteratorSightingValue() {
+        return allSightings.values().iterator();
+    }
+
+    /**
+     * Is the sighting in the repository
+     * @param s The sighting being searched
+     * @return true if so, false if not.
+     */
+    public boolean contains(final Sighting s) {
+        return allSightings.containsValue(s);
+    }
+
+    /**
+     * Add a sighting to the Repository.
+     * @param s The sighting to be added.
+     */
+    public void remember(final Sighting s)
+    throws DataFormatException, DuplicateException {
+        if (s == null)
+            throw new DataFormatException("Sighting is null");
+        if (allSightings.containsValue(s))
+            throw new DuplicateException("Sighting already exists");
+
+        allSightings.containsValue(new Sighting (s));
+    }
+
+    public Sighting getSighting(final int identifier)
+    throws SightingNotFoundException
+    {
+        Sighting result = new Sighting();
+        if (result == null)
+            throw new SightingNotFoundException ("Sighting not found");
+        if (allSightings.containsKey(identifier))
+            result = allSightings.get(identifier);
+        return result; 
+    }
+
+    /**
+     * All sightings, by identifier number.
+     */
+    public String allSightings() {
+        Map<Integer, String> treeMap = 
+            new TreeMap<Integer, String>(new Comparator<Integer>());
+        printMap(treeMap);
+        
+        @Override
+        public int compare(Integer o1, Integer o2) {
+            return 02.compareTo(o1)
+        }
+    
+
+    /**
+     * Print sightings ordered by Identifier number
+     */
+
+    public static void printMap(Map<Integer, String> map) {
+        for (Map.Entry<Integer, String> entry : map.entrySet()){
+            System.out.println("Key : " + entry.getKey()
+                + " Value : " + entry.getValue());
+        }
+    }
+
+
+    /**
+     * Erase everything in the repository.
+     */
+    public void reset() {
+        theRepository = null;
+    }
+}

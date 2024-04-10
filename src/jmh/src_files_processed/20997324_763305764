@@ -1,0 +1,172 @@
+
+public class Carro{
+    
+    private int marchas;
+    private float velocidade;
+    private int marcha_atual;
+    private String cor;
+    private int passageiros;
+    private boolean farol;
+    private float posicao;
+    
+    private Motor motor;
+    private Tanque tank;
+    private Rodas r1, r2, r3, r4;
+    private Porta p1, p2;
+    
+   public Carro(){
+        marchas = 5;
+        velocidade = 0.0f;
+        marcha_atual = 0;
+        cor = "branco";
+        passageiros = 5;
+        farol = false;
+        posicao = 0.0f;
+        
+        motor = new Motor();
+        
+        tank = new Tanque();
+        
+        r1 = new Rodas();
+        r2 = new Rodas();
+        r3 = new Rodas();
+        r4 = new Rodas();
+        
+        p1 = new Porta();
+        p2 = new Porta();
+   }
+    
+   public Carro(int march, String color, int pas){
+        marchas = march;
+        velocidade = 0.0f;
+        cor = color;
+        passageiros = pas;
+        farol = false;    
+        posicao = 0.0f;
+        
+        motor = new Motor();
+        
+        tank = new Tanque();
+        
+        r1 = new Rodas();
+        r2 = new Rodas();
+        r3 = new Rodas();
+        r4 = new Rodas();
+        
+        p1 = new Porta();
+        p2 = new Porta();
+   }
+
+   public void aumenta_vel(){
+       if(motor.state()){
+           if(tank.ret_tank() > 0.0f){
+               if(marcha_atual == 0){
+                   marcha_atual = 1; 
+               }
+            
+               if(velocidade > ((marcha_atual*(10.5) + 10.5)* motor.pot())){
+                   marcha_atual ++;
+               }
+               velocidade += 5.5;
+           }
+           else{
+               diminui_vel();
+           }
+       }
+       else{
+           diminui_vel();
+       }
+   }
+    
+   public void diminui_vel(){
+        if((marcha_atual == 1) && (velocidade <= 5.5)){
+            marcha_atual = 0; 
+        }
+            
+        if(velocidade < marcha_atual*(10.5)){
+                marcha_atual --;
+        }
+        velocidade -= 5.5;
+   }
+    
+   public void liga_farol(){
+        farol = true;
+   }
+    
+   public void desliga_farol(){
+        farol = false;
+   }
+   
+   public void muda_cor(String nova){
+       cor = nova;
+   }
+    
+   public void liga_carro(){
+        if(tank.ret_tank() > 0.0f){
+            motor.liga();
+        }
+   }
+    
+   public void desliga_carro(){
+        motor.desliga();
+   }
+    
+   public void andar(){
+      if(motor.state() == true){
+          if((p1.state() == false) && (p2.state() == false)){
+               if(tank.ret_tank() > 0.0f){ 
+                   if(velocidade == 0 || marcha_atual == 0){
+                       System.out.println("carro parado \n");
+                   }
+                   else{
+                       posicao += velocidade;
+                       tank.gasta();
+                   }
+               }
+               else{
+                   motor.desliga();
+                   diminui_vel();
+               }
+                
+               if((r1.ret_p() > 0) && (r2.ret_p() > 0) && (r3.ret_p() > 0) && r4.ret_p() > 0){
+                   if((posicao % 100 > 50) && (posicao % 100 < 60)){
+                       r1.press();
+                       r2.press();
+                       r3.press();
+                       r4.press();
+                   }
+               }
+        
+               else{
+                    System.out.println("pneu vazio \n");
+               }
+               
+               distancia_atual();
+          }
+          else{
+              System.out.println("porta aberta \n");
+          }
+      }
+      else{
+          System.out.println("motor desligado \n");
+      }
+   }
+   
+   
+   public void distancia_atual(){
+       System.out.println("distancia " + posicao);
+       System.out.println("marcha " + marcha_atual);
+       System.out.println("velocidade " + velocidade );
+       
+       System.out.println("motor " + motor.state());
+       System.out.println("tanque restante " + tank.ret_tank())
+       
+       System.out.println("pneu 1 " + p1.ret_p());
+       System.out.println("pneu 2 " + p2.ret_p());
+       System.out.println("pneu 3 " + p3.ret_p());
+       System.out.println("pneu 4 " + p4.ret_p());
+      
+       
+       
+   }
+}

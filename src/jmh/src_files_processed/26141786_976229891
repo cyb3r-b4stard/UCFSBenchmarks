@@ -1,0 +1,126 @@
+import java.io.*;
+import javax.swing.*;
+import java.util.*;
+public class ArrayListMenuMethods
+{
+
+    Scanner sc = new Scanner(System.in);
+
+    final static String fileName = "TestALdataFile";
+
+    public void fileInitialisation() throws IOException, ClassNotFoundException 
+    {
+        JOptionPane.showMessageDialog(null, "Option 1");
+
+        File file = new File(fileName);
+        FileOutputStream outStream = new FileOutputStream(file);
+        ObjectOutputStream objOut = new ObjectOutputStream (outStream);
+
+        objOut.close();
+
+        JOptionPane.showMessageDialog(null, "File has been created");
+    }
+
+    public void FileAddRec() throws IOException, ClassNotFoundException
+    {
+        /*JOptionPane.showMessageDialog(null, "Add Rec Test Option");
+
+        File file = new File(fileName);
+        FileOutputStream outStream = new FileOutputStream(file);
+        ObjectOutputStream objOut = new ObjectOutputStream (outStream);
+
+        List PersonsList;  
+        PersonsList = new ArrayList(); 
+
+        Person p1;  
+
+        /*
+         * 
+         * int age;
+         * String name;
+         * 
+         * System.out.println("Enter age: ");
+         * age = sc.nextInt();
+         * System.out.println("Enter name: ");
+         * name = sc.next();
+         * 
+         * 
+         * p1.setAge(age);
+         * p1.setName(name);
+         * 
+         *
+        p1 = new Person("Joe" , 27);
+        PersonsList.add(p1); 
+
+        System.out.println("Saving to file...");
+
+        objOut.writeObject(PersonsList);
+        objOut.close();
+         */
+
+        File inFile = new File("PersonDB");
+        FileInputStream inFileStream = new FileInputStream(inFile);
+        ObjectInputStream inObjectStream = new ObjectInputStream(inFileStream);
+
+        List PersonsList;  
+        PersonsList = new ArrayList(); 
+
+        try
+        {
+            PersonsList = (List)inObjectStream.readObject();
+        }
+        catch (Exception z){
+            System.out.println("Error captured.");
+        }
+
+        inObjectStream.close();
+
+        int age = 0;
+        String name = "";
+
+        System.out.println("Please enter age: ");
+        age = sc.nextInt();
+        System.out.println("Please enter name: ");
+        name = sc.next();
+
+        Person p1 = new Person(name, age);
+
+        PersonsList.add(p1);
+
+        File file = new File(fileName);
+        FileOutputStream outStream = new FileOutputStream(file);
+        ObjectOutputStream objOut = new ObjectOutputStream (outStream);
+
+        objOut.writeObject(PersonsList);
+        objOut.close();
+
+        System.out.println("Record saved");
+
+    }
+
+    public void listRecords() throws IOException, ClassNotFoundException
+    {
+
+        File inFile = new File("PersonDB");
+        FileInputStream inFileStream = new FileInputStream(inFile);
+        ObjectInputStream inObjectStream = new ObjectInputStream(inFileStream);
+
+        List PersonsList;  
+        PersonsList = new ArrayList(); 
+        System.out.println("hi");
+        PersonsList = (List)inObjectStream.readObject();
+        if(PersonsList.size() == 0)
+        {
+            System.out.println("The table is empty");
+        }
+        else
+        {
+
+        for(int i = 0; i< PersonsList.size(); i++)
+        {
+           
+
+        }
+
+    }
+}

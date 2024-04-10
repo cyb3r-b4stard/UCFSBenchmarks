@@ -1,0 +1,226 @@
+import java.util.ArrayList;
+import java.util.Iterator; 
+
+/**
+ * .###############.
+ * ########## #####.
+ * 
+ * ####: #### ####
+ * #######: 
+ * 
+ * ### ##. ###### ##########'# #### #### ###### ## ########.
+ * 
+ * @###### ##. ###### ##########
+ * @####### ########
+ * 
+ */
+
+public class AptRentalAgency
+{
+
+    private int currentDate;
+    private int customerID;
+    private String customerName;
+    private double customerBalance; 
+    private int customerAptID; 
+    private int customerCreditRating;
+
+    private int aptID;
+    private String aptName;
+    private String aptAddress;
+    private int aptSize;
+    private double aptRent;
+
+    private int aptCustomerID; 
+    private double aptDeposit; 
+    private int aptMonthsRented; 
+    private int aptRentalDate; 
+
+    private double aptDepositMultiplier;
+    private double aptTotalCost;
+
+    Customer thisCustomer;
+    Apartment thisApt;
+
+    ArrayList<Customer> customers;
+    ArrayList<Apartment> apts;
+
+    private ReadFile aptReader; 
+    private ReadFile customerReader; 
+
+    /**
+     * AptRentalAgency Constructor
+     */
+    public AptRentalAgency()
+    {
+        currentDate = 20160622;
+
+        customers = new ArrayList<Customer>();
+        apts = new ArrayList<Apartment>();
+
+        readApts();
+        readCustomers();
+    }
+
+    /**
+     * .readApts.
+     * Reads in the Apt objects.
+     */
+    private void readApts()
+    {
+        aptReader = new ReadFile("AptData.txt");
+        aptReader.setSeparator(",");
+        for(aptReader.readInputLine(); !aptReader.eof(); aptReader.readInputLine())
+        {
+            aptID = aptReader.getIntField(1);
+            aptName = aptReader.getStringField(2);
+            aptAddress = aptReader.getStringField(3);
+            aptSize = aptReader.getIntField(4);
+            aptRent = aptReader.getDoubleField(5);
+            aptCustomerID = aptReader.getIntField(6);
+            aptDeposit = aptReader.getDoubleField(7);
+            aptMonthsRented = aptReader.getIntField(8);
+            aptRentalDate = aptReader.getIntField(9);
+
+            thisApt = new Apartment(aptID, aptName, aptAddress, aptSize, aptRent, 
+                aptCustomerID, aptDeposit, aptMonthsRented, aptRentalDate);
+
+            apts.add(thisApt);
+        }
+        System.out.println("\nAll apts read from the file and added to the ArrayList.\n");
+    }
+
+    /**
+     * .readCustomers.
+     * Reads in the Customer objects.
+     */
+    private void readCustomers()
+    {
+        customerReader = new ReadFile("CustomerData.txt");
+
+        customerReader.setSeparator(",");
+        for(customerReader.readInputLine(); !customerReader.eof(); customerReader.readInputLine())
+        {
+            customerID = customerReader.getIntField(1);
+            customerName = customerReader.getStringField(2);
+            customerBalance = customerReader.getDoubleField(3);
+            customerAptID = customerReader.getIntField(4);
+            customerCreditRating = customerReader.getIntField(5);
+
+            thisCustomer = new Customer(customerID, customerName, customerBalance, customerAptID, customerCreditRating);
+
+            customers.add(thisCustomer);
+        }
+        System.out.println("\nAll customers read from the file and added to the ArrayList.\n");
+    }
+
+    /**
+     * .printAllCustomers.
+     */
+    public void printAllCustomers()
+    {
+        System.out.println("\nCurrent Customer List on " + currentDate + "\n");
+        System.out.println("CustID  Name                        Balance Apt ID  CreditRating");
+        System.out.println("------  -----------------           ------- ------- ------------");
+        for(Customer theCustomer: customers)
+        {
+            theCustomer.printInfo();
+        }
+        System.out.println("\nEnd of Customer List. \n");
+    }
+
+    /**
+     * .printAllApts.
+     */
+    public void printAllApts()
+    {
+        System.out.println("\nCurrent Apt List on " + currentDate + "\n");
+        System.out.println("AptID   Apt Name                Address                    Size   Rent    RenterID Deposit MonthsRented RentalDate");
+        System.out.println("-----  -------------------      -------------------------- ----   ------- -------- ------- ------------ ----------");
+        for(Apartment theApt: apts)
+        {
+            theApt.printInfo();
+        }
+        System.out.println("\nEnd of Apt List. \n");
+    }
+
+
+    public Apartment findAptObject(int theAptID)
+    {
+        for(int index=0; index<apts.size();index++)
+        {
+            thisApt=apts.get(index);
+            if(thisApt.getAptID() == theAptID)
+            {
+                return thisApt;
+            }
+        }
+        return null;
+    }
+    
+    public Customer findCustomerObject(int theCustomerID)
+    
+    {
+        for(int index=0; index<customers.size();index++)
+        {
+            thisCustomer=customers.get(index);
+            if(thisCustomer.getCustomerID() == theCustomerID)
+            {
+                return thisCustomer;
+            }
+            
+        }
+        return null;
+    }
+    
+    /**
+     * .customerAddMoney.
+     * Part a
+     */
+    public void customerAddMoney(int theCustomerID, double theAmountToAdd)
+    {
+           thisCustomer= findCustomerObject(theCustomerID);
+           
+           if (theAmounToAdd <=0)
+           {
+               System.out.println("Sorry, that is not a valid amount")
+               return;
+           }
+           if(thisCustomer !=null)
+           {
+              
+           }
+        
+
+
+        
+    }
+
+    /**
+     * .checkOutApt.
+     * Parts b and c.
+     */
+    public void rentOutApt(int theAptID, int theCustomerID, int theMonthsToRent)
+    {
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+}

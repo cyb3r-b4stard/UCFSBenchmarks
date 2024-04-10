@@ -1,0 +1,96 @@
+import java.io.*;
+import java.util.Scanner;
+/**
+ * ##### # ########### ## ##### ########### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Laboratorio
+{
+ public static void main ()throws IOException  {
+       Scanner tecla = new Scanner (System.in);
+        String rutaArch = "D:\\proyecto\\ruta_de_datos\\laboratorio.dat";        
+        tecla.useDelimiter ("\n");
+        int codLab = -1;
+        RandomAccessFile arch = new RandomAccessFile (rutaArch, "rw");
+        String opcion = "s";
+        String[] nombre = new String[30];
+        String[] domicilio = new String[30];
+        String[] telefono = new String[30];
+        int comMin = 0;
+        int diaEnt = 0;
+        
+          
+        try{
+            while (opcion.equals ("s")|| opcion.equals("S")) {
+                System.out.println (" ingrese nombre ");
+                nombre[29] = tecla.nextLine();
+                System.out.println (" ingrese domicilio ");
+                domicilio[29] = tecla.nextLine();
+                System.out.println (" ingrese telefono ");
+                telefono[29] = tecla.nextLine();
+                System.out.println (" ingrese dia de entrega ");
+                diaEnt = tecla.nextInt();
+                System.out.println (" ingrese compra minima ");
+                comMin = tecla.nextInt();
+                codLab = codLab + 1;
+                if(arch.length() != -1){
+                    arch.seek(arch.length());
+                    arch.writeInt(codLab);
+                    arch.writeUTF(nombre[29]);
+                    arch.writeUTF(domicilio[29]);
+                    arch.writeUTF(telefono[29]);
+                    arch.writeInt(comMin);
+                    arch.writeInt (diaEnt);                    
+                } else{
+                    
+                    arch.seek(0);
+                    arch.writeInt(codLab);
+                    arch.writeUTF(nombre[29]);
+                    arch.writeUTF(domicilio[29]);
+                    arch.writeUTF(telefono[29]);
+                    arch.writeInt(comMin);
+                    arch.writeInt (diaEnt);
+
+                
+            }
+            tecla.nextLine();
+                System.out.println (" desea ingresar mas datos????");
+                opcion = tecla.nextLine();
+        }
+    }
+        catch(FileNotFoundException fnfe){
+            System.out.println("Archivo no encontrado");
+        }
+        catch (IOException ioe){
+            System.out.println("Error al leer");
+        }             
+            
+       public int diasParaEntrega () {
+            Calendar fechaHoy = new GregorianCalendar();
+            int contador = 0;
+            int resta = 0;
+            
+            if ( fechaHoy.get(Calendar.DATE)< this.getDiaEntrega()){
+                resta = this.getDiaEntrega() - fechaHoy.get(Calendar.DATE);
+                return resta;
+            }
+            else if(fechaHoy.get(Calendar.DATE)> this.getDiaEntrega()){
+                int i = fechaHoy.get(Calendar.DATE);
+                
+                 while( i != this.getDiaEntrega()){
+                     if (i<= 30){
+                         contador+=1;
+                         i+= 1;}
+                     else{
+                          i=1;
+                        }
+                    }
+                    return contador;
+                }
+                else{
+                    return 30;
+                }
+   } 
+            

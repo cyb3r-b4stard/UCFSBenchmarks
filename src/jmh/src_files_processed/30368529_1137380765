@@ -1,0 +1,93 @@
+
+public class Qweens
+{
+    private final int ROW = 8;
+    private final int COL = 8;
+    char[][]chessBoard = new char[ROW][COL];
+    
+    public Qweens()
+    {
+        for(int row = 0; row < ROW; row++)
+        {
+            for(int col = 0; col< COL; col++)
+            {
+                chessBoard[row][col] = '-';
+            }
+        }
+    }
+    
+    public void runner()
+    {
+        placeQueen(0);
+        printBoard();
+    }
+    
+    public void placeQueen(int row)
+    {
+        if(row == ROW)
+        {
+            printBoard();
+        }
+        else
+        {
+                for(int col = 0; col < COL; col++)
+                {
+                    if(goodSpot(row,col))
+                    {
+                        chessBoard[row][col] = 'Q';
+                        placeQueen(row+1);
+                        chessBoard[row][col] = '-';
+                    }
+                }
+        }
+    }
+    
+    public boolean goodSpot(int givenRow, int givenCol) 
+    {
+        if(queenUp(givenRow, givenCol))
+            return false;
+        
+        
+        givenRowPlaceHolder = givenRow;
+        givenColPlaceHolder = givenCol;
+        while(givenRowPlaceHolder < 0 && givenColPlaceHolder < COL)
+        {
+            givenRowPlaceHolder++;
+            givenColPlaceHolder--;
+            if(chessBoard[givenRowPlaceHolder][givenColPlaceHolder] == 'Q')
+                return false;
+        }
+        return true;
+    }
+    
+    public boolean queenUp(int givenRow, int givenCol)
+    {
+        for(int row = givenRow; row >= 0; row--)
+        {
+            if(chessBoard[row][givenCol] == 'Q')
+                return false;
+        }
+    }
+    
+    public boolean queenRight(int givenRow, int givenCol)
+    {
+        while(givenCol < ROW-1 && row >= 0)
+        {
+           givenCol++;
+           givenRow--;
+           if(chessBoard[givenRow][givenCol] == 'Q')
+        }
+    }
+    public void printBoard()
+    {
+        for(int row = 0; row < ROW; row++)
+        {
+            for(int col = 0; col < COL; col++)
+            {
+                System.out.print(chessBoard[row][col]);
+                System.out.print(" ");
+            }
+            System.out.println();
+        }
+    }
+}

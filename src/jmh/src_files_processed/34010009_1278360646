@@ -1,0 +1,128 @@
+public class Ex14
+{
+    private static int sumFactors(int n)
+    {
+        int sum = 1; 
+        for(int i = 2; i * i <= n; i++)   
+            if(n % i == 0) 
+                sum += i + n / i;                    
+        return sum;
+    }
+
+    private static int countFriends(int n)
+    {
+        int count = 0;
+        for(int i = 1; i < n; i++)
+        {
+            int a = sumFactors(i);
+            if(a < n && i < a && sumFactors(a) == i)
+                count++;
+        }     
+        return count;
+    }
+
+    private static int findLowestIndex(int[] a, int x)
+    {
+        int min = 0, max = a.length - 1, mid = 0;
+        if(a[min] == x) return 0;
+        while(min < max-1)
+        {
+            mid = (min + max) / 2;
+            if(a[mid] < x)
+                min = mid;
+            else 
+                max = mid;
+        }
+        if(a[max] != x) return -1;        
+        return max;
+    }       
+        private static int findHighestIndex(int[] a, int x)
+    {        
+        int min = 0, max = a.length - 1, mid = 0;
+        if(a[max] == x) return max;
+        while(min < max - 1)
+        {
+            mid = (min + max) / 2;
+            if(a[mid] > x) 
+                max = mid;
+            else
+                min = mid;            
+        }
+        if(a[min] != x) return -2;
+        return min;
+    }  
+    private static int count(int[] a, int x)
+    {
+        return findHighestIndex(a,x) - findLowestIndex(a,x) + 1;
+    }
+    
+    public static int domino(int n, int m)
+    {
+        if(m == 0 || m == 1)
+            return 1;
+        return domino(n, m - 1) + domino(n, m - 2);        
+    }
+    
+    public static String findPassword(Password p, int length)
+    {
+        String base = findPassword(length);
+        return findPassword(p, base, length - 1);
+    }
+    
+    public static String findPassword(int length)
+    {
+        if(length == 0)
+            return "";
+        return 'a' + findPassword(length-1);
+    }
+    
+    public static String findPassword(Password p, String str, int index)
+    {
+        char indexLetter = str.charAt(index);
+        if(indexLetter > 26)
+            return findPassword(p, str.substring(0,index-1) + (str.charAt(index-1) + 1) + 'a' + str.substring(index+1,str.length()), index);
+        if(p.isPassword(str))
+            return str;
+        return findPassword(p, str.substring(0,index) + (indexLetter + 'a') + str.substring(index+1,str.length()), index);
+    }
+  
+    public static void main (String[] args)
+    {
+        char a = 'a';
+        System.out.println(char(a + '1'));
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

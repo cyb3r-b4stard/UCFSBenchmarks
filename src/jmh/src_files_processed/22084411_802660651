@@ -1,0 +1,119 @@
+import ecs100.*;
+import java.awt.Color;
+import java.util.*;
+
+/**
+ * ##### # ########### ## ##### ######## ####.
+ * 
+ */
+public class Customer
+{
+    private String name;
+    private String username;
+    private String password;
+    private String address;
+    private String membership;
+    private List<Item> borrowedItems;
+
+    /**
+     * Constructor for objects of class Customer
+     */
+    public Customer(String n, String u, String p, String a, String m){
+        this.name = n;
+        this.username = u;
+        this.password = p;
+        this.address = a;
+        this.membership = m; 
+        this.borrowedItems = new ArrayList<Item>();
+    }
+
+    /**
+     * An example of a method - replace this comment with your own
+     * 
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y 
+     */
+    public String getInfo(String info){
+        if(info.equalsIgnoreCase("Name") ){return this.name;}
+        if(info.equalsIgnoreCase("Username") ){return this.username;}
+        if(info.equalsIgnoreCase("Password") ){return this.password;}
+        if(info.equalsIgnoreCase("Address") ){return this.address;}
+        if(info.equalsIgnoreCase("Membership") ){return this.membership;}
+        return null;
+    }
+
+    public List<Item> getBorrowedItems(){
+        return this.borrowedItems;
+    }
+
+    public void setInfo(String info, String desired){
+        if(info.equalsIgnoreCase("Name") ){this.name = desired;}
+        if(info.equalsIgnoreCase("Username") ){this.username = desired;}
+        if(info.equalsIgnoreCase("Password") ){this.password = desired;}
+        if(info.equalsIgnoreCase("Address") ){this.address = desired;}
+        if(info.equalsIgnoreCase("Membership") ){this.membership = desired;}
+    }
+
+    public void addBorrowedItem(Item item){
+        if(this.membership.equalsIgnoreCase("Standard") ){
+            if(item.getInfo("Type").equalsIgnoreCase("Standard") ){
+                if(standardItemsBorrowed() < 2){
+                    this.borrowedItems.add(item);
+                    UI.println("You have successfully borrowed this item.");
+                }
+                else{
+                    UI.println("As a standard member, you may only rent 2 Standard items at once.");
+                }
+            }
+            else if(item.getInfo("Type").equalsIgnoreCase("Premium") ){
+                if(premiumItemsBorrowed() < 1){
+                    this.borrowedItems.add(item);
+                    UI.println("You have successfully rented this item.");
+                }
+                else{
+                    UI.println("As a standard member, you may only rent 1 Premium item at once.");
+                }
+            }
+        }
+        else if(this.membership.equalsIgnoreCase("Premium") ){
+            if(item.getInfo("Type").equalsIgnoreCase("Standard"){
+                if(standardItemsBorrowed() < 5){
+                    this.borrowedItems.add(item);
+                    UI.println("You have successfully borrowed this item.");
+                }
+                else{
+                    UI.println("As a standard member, you may only rent 5 Standard items at once.");
+                }
+            }
+            else if(item.getInfo("Type").equalsIgnoreCase("Premium") ){
+                if(premiumItemsBorrowed() < 3){
+                    this.borrowedItems.add(item);
+                    UI.println("You have successfully rented this item.");
+                }
+                else{
+                    UI.println("As a standard member, you may only rent 3 Premium items at once.");
+                }
+            }
+        }
+    }
+    
+    public int standardItemsBorrowed(){
+        int count = 0;
+        for(Item item : this.borrowedItems){
+            if(item.getInfo("Type").equalsIgnoreCase("Standard"){
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    public int premiumItemsBorrowed(){
+        int count = 0;
+        for(Item item : this.borrowedItems){
+            if(item.getInfo("Type").equalsIgnoreCase("Premium"){
+                count++;
+            }
+        }
+        return count;
+    }
+}

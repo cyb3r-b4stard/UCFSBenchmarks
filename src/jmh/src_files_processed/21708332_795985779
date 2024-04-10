@@ -1,0 +1,361 @@
+
+/* #### ### #### ###, ########## #
+ * ####:
+ * ########:
+ * ##:
+ */
+
+import java.util.*;
+import ecs100.*;
+
+/**
+ * ############## - # ### ##########;
+ *
+ *  ### ############## #### ## ##### ## ##### ### ##### ### 
+ *  # ##### ######## ## #### ##### ## ### ####.
+ *  ### ##### ## ### ### ###### ## ###### ## #########
+ *  #, #,... (#####-#) ## ### #####
+ *  ### ###### ## ### ##### #### ### ### ## ##### ####### ###### ## ##. 
+ *  
+ *  ##### ### #### ## ##### ######### ## # #######- ## # ######## ##########.
+ *  ####, ### ########## ####### #### ### ##### ### ##########.
+ *  
+ *  ###### ###### ## #### ### ######### ### #####.  
+ *  
+ *  ## #### ##### ## ########## ### #######.
+ *  ########## ## ### #### ###### ##### ## #########.
+ *  ###### ## #### ##### ## ####### ####### ###### ###### ###### #####, #######
+ *  ######## ### ###.
+ *  ##### ### ###### ######## ##### ######() (### ##### ==).
+ *  
+ *  #### ### ######## ##### ## ####, # ### ##### ## ###### ### ####### ####
+ *  ## #######, ### ### ### ##### ### ###### #### ## ### ### #####. 
+ */
+
+public class SortedArraySet <E> extends AbstractSet <E> {
+
+    private static int INITIALCAPACITY = 10;
+    private E[] data;
+    private E[] sortedData;
+    private int count = 0;
+    private Random rand;
+
+    private Comparator<E> comp;    
+
+    /** 
+    * Constructor to make a new empty set 
+    * 
+    */
+    @SuppressWarnings("unchecked")  
+    public SortedArraySet() {
+        comp = new ComparableComparator();
+        data = (E[]) new Object[INITIALCAPACITY];
+    }
+
+    /** 
+    * Constructor to make a new empty set, with a given comparator 
+    * 
+    */
+    @SuppressWarnings("unchecked")  
+    public SortedArraySet(Comparator<E> comparator) {
+        comp = comparator;
+        data = (E[]) new Object[INITIALCAPACITY];
+    }
+
+    /** 
+    * Constructor that takes a whole collection and sorts it all at once 
+    *        
+    */
+    @SuppressWarnings("unchecked")  
+    public SortedArraySet(Collection<E> col) {
+        comp = new ComparableComparator();
+
+        /*# YOUR CODE HERE */
+        for(E e : col){
+            ensureCapacity();
+            this.add(e);
+        }
+    }
+
+    /** 
+    * Constructor that takes a whole collection and sorts it all at once 
+    * 
+    */
+    @SuppressWarnings("unchecked")  
+    public SortedArraySet(Collection<E> col, Comparator<E> comparator) {
+        comp = comparator;
+        int count = 0;
+        /*# YOUR CODE HERE */
+        for(E e : col){
+            ensureCapacity();
+            data[count] = e;
+            count++;
+        }
+
+    }
+
+
+    /**
+    * Clears the array of all items
+    */
+    @SuppressWarnings("unchecked")  
+    public void clear()
+    {
+        data = (E[]) new Object[INITIALCAPACITY];
+        count = 0;
+    }
+
+    /**
+     * 
+     */
+    public void callQuickSort()
+    {
+        UI.println("Unsorted:");
+        for(E e: data){
+            UI.println(e);
+        }
+
+        quickSort(data, 0, size()-1);
+
+        UI.println("");
+        UI.println("Sorted");
+        for(E e: data){
+            UI.println(e);
+        }
+    }
+    
+    /**
+     *
+     */
+    public void compareTwo()
+    {
+        E() temp = data[0];
+    }
+
+
+    public E[] quickSort(E[] arr, int low, int high) {
+        if (arr == null || size() == 0)
+            return null;
+
+        if(size() == 1){return arr;}
+        
+        if(size() == 2){compareTwo();}
+
+        if (low >= high)
+            return null;
+
+        int middle = low + (high - low) / 2;
+        E pivot = arr[middle];
+
+        int i = low, j = high;
+        while (i <= j) {
+            while (comp.compare(arr[i], pivot)==-1) {
+                i++;
+            }
+
+            while (comp.compare(arr[j], pivot)==1) {
+                j--;
+            }
+
+            if (i <= j) {
+                E temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+                i++;
+                j--;
+            }
+        }
+
+        if (low < j)
+            quickSort(arr, low, j);
+
+        if (high > i)
+            quickSort(arr, i, high);
+
+        return arr;
+    }
+
+    /** 
+     * @return number of items in collection 
+     */
+    public int size() {
+        return count;
+    }
+
+    /** 
+     *  Adds the specified item to this set 
+     *  (if it is not a duplicate of an item already in the set).
+     *  Will not add a null value (throws an IllegalArgumentException in this case).
+     *  @return true if the collection changed, and false if it did not change.
+     */
+    public boolean add(E item) {
+        /*# YOUR CODE HERE */
+        if(item == null){throw new IllegalArgumentException();}
+        if(contains(item)){return false;}
+
+        ensureCapacity();
+
+        data[count] = item;
+        count++;
+        return true;
+    }
+
+    /** 
+    * @return true if this set contains the specified item.
+    *        
+    */
+    @SuppressWarnings("unchecked")  
+    public boolean contains(Object item) {
+        if(item==null||size()==0){return false;}
+        E itm = (E) item;
+
+        int index = findIndexOf(itm);
+        UI.println("Item should be at: " + index);
+
+        return false;
+
+        /**
+        if(size()==1 && data[0]!=null){
+        if(itm.equals(data[0])){return true;}
+        else{return false;}
+        }
+
+        sortedData = quickSort(data, 0, size());
+
+        int index = findIndexOf(itm);
+        UI.println("Item should be at: " + index);
+        if(index>size()-1){return false;}
+        if(itm.equals(sortedData[index])){return true;}
+        else{return false;}
+         **/
+    }
+
+    /** 
+    * Remove an item matching a given item.
+    *  @return true if the item was present and then removed.
+    *  Make no change to the set and return false if the item is not present.
+    *
+    */
+    @SuppressWarnings("unchecked")  
+    public boolean remove (Object item) {
+        E itm = (E) item;
+        if(size() == 0 || itm == null || !contains(itm)){return false;}
+
+        for(int i = 0; i < data.length; i++){
+            if(data[i].equals(itm)){
+                data[i] = null;
+                for(int j = 0; j < data.length; j++){
+                    data[j] = data[j++];
+                }
+                count--;
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /** 
+     *  Finds the index of where an item is in the dataarray,
+     *  (or where it ought to be, if it's not there).
+     *  Assumes that the item is not null.
+     *  Uses binary search and requires that the items are kept in order.
+     *  Should use the comparator comp to compare values.
+     *         
+     */
+    private int findIndexOf(E item) {
+        /*# YOUR CODE HERE */
+        if(item==null){return -1;}
+
+        sortedData = quickSort(data, 0, size());
+
+        int low = 0; 
+        int high = count-1; 
+        while (low <= high) {
+            int mid = (low + high + 1) / 2; 
+            int compVal;
+            compVal = comp.compare(item, sortedData[mid]);
+            if (compVal == 0) return mid; 
+            if (compVal > 0)
+                low = mid + 1; 
+            else
+                high = mid - 1; 
+        }
+        return low; 
+    }
+
+    /** 
+    * Ensures data array has sufficient length
+    *  to allow for the addition of a new item. 
+    *  
+    */
+    @SuppressWarnings("unchecked")  
+    private void ensureCapacity () {
+
+        if (count < data.length)
+            return;
+
+        E[] newArray = (E[]) (new Object[data.length*2]);
+
+        for (int i = 0; i < count; i++)
+            newArray[i] = data[i];
+
+        data = newArray;
+    }
+
+
+    /** Return an iterator over the items in this set. */
+    public Iterator <E> iterator() {
+        return new SortedArraySetIterator(this);
+    }
+
+    private class SortedArraySetIterator implements Iterator <E> {
+        private SortedArraySet<E> set;
+        private int nextIndex = 0;
+        private boolean canRemove = false;
+
+        private SortedArraySetIterator(SortedArraySet<E> s) {
+            set = s;
+        }
+
+        /** Return true if iterator has at least one more item */
+        public boolean hasNext() {
+            return (nextIndex < set.count);
+        }
+
+        /** Return next item in the set */
+        public E next() {
+            if (nextIndex >= set.count)
+                throw new NoSuchElementException();
+
+            canRemove = true;
+            return set.data[nextIndex++];
+        }
+
+        /** Remove from the set the last item returned by the iterator.
+         *  Can only be called once per call to next.
+         */
+        public void remove() {
+            if (! canRemove)
+                throw new IllegalStateException();
+
+            set.remove(set.data[nextIndex-1]);
+            canRemove = false;
+        }
+    }
+
+    /** 
+     * This is a default comparator that assumes that E's are Comparable:
+     * it casts them to Comparable<E>, and then calls their compareTo method.
+     * It will fail if E's are not Comparable - in this case, the set should
+     * have been constructed with an appropriate custom comparator.
+     */
+    private class ComparableComparator implements Comparator<E> {
+        @SuppressWarnings("unchecked")  
+        public int compare(E item, E other) {
+            Comparable<E> itm = (Comparable<E>) item;
+
+            return itm.compareTo(other);
+        }
+    }
+}

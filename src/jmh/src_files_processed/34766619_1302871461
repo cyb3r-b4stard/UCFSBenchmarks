@@ -1,0 +1,169 @@
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Iterator;
+/**
+ * ##### # ########### ## ##### ###### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+
+public class Country
+{
+    private String name;
+    private ArrayList<Drone> squadron ;
+    private int maxFleet;
+    private int maxSquadron;
+    private Random offset;
+    private ArrayList<Drone> fleet;
+    public Country(String n, int maxFl, int maxSq)
+    {
+        name = n;
+        maxFleet = maxFl;
+        maxSquadron = maxSq;
+        squadron = new ArrayList<Drone>();
+        offset = new Random(10);
+        fleet = new ArrayList<Drone>();
+    }
+
+    public int getMaxFleet()
+    {
+        return maxFleet;
+    }
+
+    public int getMaxSquadron()
+    {
+        return maxSquadron;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public ArrayList<Drone> getSquadron()
+    {
+        return squadron;
+    }
+
+    public void addToFleet(Drone d)
+    {
+        if(fleet.size() < maxFleet)
+        {
+            fleet.add(d);
+        }
+        else
+        {
+            System.out.println("sorry, the fleet is fully occypied");
+        }
+    }
+
+    public ArrayList<Drone> getFleet()
+    {
+        return fleet;
+    }
+
+    public void composeSquadron(int minLon, int maxLon, int minLat, int maxLat)
+    {
+        Iterator<Drone> it = squadron.iterator();
+        while(it.hasNext())
+        {
+            Drone d = it.next();
+            it.remove();
+        }
+        if(squadron.size() < maxSquadron)
+            for(Drone d : fleet)
+            {
+                if(d.getLongitude() >= minLon && d.getLongitude() <= maxLon && d.getLatitude() >= minLat && d.getLatitude() <= maxLat)
+                {
+                    squadron.add(d);
+                }
+            }
+
+    }
+
+    public Drone getLowestBattery()
+    {
+        int Lowest = 1000000;
+        Drone drone = new Drone(0,0,0,0);
+        if(squadron.size() > 0)
+        {
+            for(Drone d : squadron)
+            {
+                if(d.getBatteryLevel() < Lowest)
+                {
+                    Lowest = d.getBatteryLevel();
+                    drone = d;
+                }
+                else
+                {
+                    Lowest = Lowest;
+                }
+            }
+        }
+        else
+        {
+            drone = null;
+        }
+        return drone;
+    }
+
+    public double distance(Drone d1, Drone d2)
+    {
+        double a = (d1.getLatitude() - d2.getLatitude())*(d1.getLatitude() - d2.getLatitude());
+        double b = (d1.getLongitude() - d2.getLongitude())*(d1.getLongitude() - d2.getLongitude());
+        return Math.sqrt(a+b);
+    }
+
+    public boolean distanceAlert(double minDistance)
+    {
+        boolean alert = false;
+        for(Drone d1: fleet)
+        {
+            for(Drone d2: fleet)
+            {
+                if(this.distance(d1,d2) < minDistance)
+                {
+                    return true;
+                }
+
+            }
+        }
+        return false;
+    }
+
+    public ArrayList<Drone> searchByType(String s)
+    {
+        ArrayList<Drone> lijst = new ArrayList<Drone>();
+        for(Drone d : fleet)
+        {
+            if(d.getType() == s)
+            {
+                lijst.add(d);
+            }
+        }
+        return lijst;
+    }
+
+    public void removeFromSquadron(int minLon, int maxLon, int minLat, int maxLat)
+    {
+        Iterator<Drone> it = squadron.iterator();
+        while(it.hasNext())
+        {
+            Drone d = it.next();
+            if(d.getLongitude() <= maxLon && d.getLongitude() >= minLon && d.getLatitude() <= maxLat && d.getLatitude() >= minLat)
+            {
+                it.remove();
+            }
+        }
+    }
+    
+    public void moveSquadronToPoint(int lon, int lat)
+    {
+       lon = 
+       for(Drone d : squadron)
+       {
+           d.flyTo();
+       }
+    }
+}

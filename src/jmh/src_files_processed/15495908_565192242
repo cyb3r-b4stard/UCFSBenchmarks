@@ -1,0 +1,118 @@
+import java.util.Scanner;
+
+/**
+ * #### ##### ## #### ## ### "##### ## ####" ###########. 
+ * "##### ## ####" ## # #### ######, #### ##### ######### ####.  
+ * 
+ * #### ###### ##### #### ##### ### ##### ## ######### ## ## ## "#########"
+ * #######. ##### #### ## ## ###### ## ##### # #### #### ### ######## ###
+ * ##### ## ######### ### #### ## # ###-#### #######. ## ####### ### #######
+ * ## ## ###### ## ##### #######.
+ *
+ * ### ###### ### # ### ## ##### ####### #####. ## ###### #### ##### #######
+ * ### ##### ########, ### ## ### ##### ## ### ### ## ### ##### ########, ##
+ * ####### # ####### ###### #### ## ###### ## ## ####### #######.
+ * 
+ * @######  ####### #######, ##### #. ###### ### #### ######
+ * @####### ##/#/####
+ */
+public class Parser 
+{
+    private Scanner reader;         
+
+    /**
+     * Create a parser to read from the terminal window.
+     */
+    public Parser() 
+    {
+        reader = new Scanner(System.in);
+    }
+
+    /**
+     * @return The next command from the user.
+     */
+    public Command getCommand() 
+    {
+        String inputLine;   
+        String word1 = null;
+        String word2 = null;
+
+        System.out.print("\n> ");     
+
+        inputLine = reader.nextLine();
+
+        Scanner tokenizer = new Scanner(inputLine);
+        if(tokenizer.hasNext()) {
+            word1 = tokenizer.next();      
+            switch (word1) {
+                case "go" : if(tokenizer.hasNext()) {
+                                word2 = tokenizer.next();  
+                                Direction direction = null;
+                                switch(word2){
+                                    case "north" : direction = Direction.NORTH;
+                                        break;
+                                    case "east" : direction = Direction.EAST;
+                                        break;
+                                    case "south" : direction = Direction.SOUTH;
+                                        break;
+                                    case "west" : direction = Direction.WEST;
+                                        break;
+                                    case "up" : direction = Direction.UP;
+                                        break;
+                                    case "down" : direction = Direction.DOWN;
+                                        break;
+                               }
+                               return new Go(direction);
+                            }
+                           break;
+                case "take" : if(tokenizer.hasNext()) {
+                                word2 = tokenizer.next();      
+                                
+                                Item items = null;
+                                switch(word2){
+                                    case "Sword" : items = Item.SWORD;
+                                        break;
+                                    case "Shield" : items = Item.SHIELD;
+                                        break;
+                                    case "Stick" : items = Item.STICK;
+                                        break;
+                               }
+                               
+                              }
+                                return new Go(direction);
+                             }
+                           break;
+                case "help" : return new Help();
+                case "quit" : return new Quit();
+                case "look" : return new Look();
+            }
+            
+        }
+
+        return new Command(); 
+    }
+
+    /**
+     * Returns a list of valid commands.
+     */
+    public String commands()
+    {
+        return "go <direction>, look, quit, help";
+    }
+    
+    /**
+     * Returns name of help command.
+     */
+    public String help()
+    {
+        return "help";
+    }
+    
+    /**
+     * Returns look command.
+     */
+    public String look()
+    {
+        return "look";
+    }
+}

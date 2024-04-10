@@ -1,0 +1,160 @@
+ 
+
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+import GameLogic.TYPE.*
+
+public class GameLogic implements KeyListener{
+
+	private GridManager GM;
+	private char la;
+	private boolean isLocked;
+	private int x_cursor, y_cursor;
+	private boolean p1turn;
+	private int cursor_counter;
+	private boolean gewonnen;
+	
+	public GameLogic(GridManager gm) {
+		this.GM = gm;
+		x_cursor = 1;
+		y_cursor = 1;
+		p1turn = true;
+		isLocked = false;
+		cursor_counter = 0;
+		gewonnen = false;
+	}
+
+	public void update() {
+		if (!isLocked) {
+			if(la == 'a' || la == 'd' || la == 'w' || la == 's') {
+				onMovingCursor();
+				if (la == 'a')
+					if (x_cursor > 0)
+						x_cursor--;
+				if (la == 'd')
+					if (x_cursor < 2)
+						x_cursor++;
+				if (la == 'w')
+					if (y_cursor > 0)
+						y_cursor--;
+				if (la == 's')
+					if (y_cursor < 2)
+						y_cursor++;
+			}
+		}
+		
+		if (la == 'x') {
+			selektiere(x_cursor, y_cursor);
+		}
+		
+		if (la == 'n') {
+			for (int x = 0; x < 3; x++)
+				for (int y = 0; y < 3; y++)
+						GM.giveField(x, y).neueBelegung(TYPE.leer);
+		}
+		
+		la = ' ';
+
+		for (int x = 0; x < 3; x++) {
+			for (int y = 0; y < 3; y++) {
+				if (x == x_cursor && y == y_cursor && cursor_counter < 20) {
+					if (!gewonnen)
+						GM.giveField(x, y).setMarked(true);
+					}
+				else {
+					if (cursor_counter == 40) cursor_counter = 0;
+					GM.giveField(x, y).setMarked(false);
+				}
+			}
+		}
+
+		
+		cursor_counter++;
+		
+	}
+	
+	
+	private void onMovingCursor() {
+		cursor_counter = 0;
+	}
+
+	private void selektiere(int x, int y) {
+		if (!GM.giveField(x, y).belegt()) {
+			if (p1turn) {
+				GM.giveField(x, y).neueBelegung(TYPE.P1);
+				Gewinnkontrolle(TYPE.P1);
+			}
+			else {
+				GM.giveField(x, y).neueBelegung(TYPE.P2);
+				Gewinnkontrolle(TYPE.P2);
+			}
+			p1turn =! p1turn;
+		}
+	}
+	
+	private TYPE feldGeben(int x, int y) {
+		return GM.giveField(x, y).giveType();
+	}
+	
+	private void Gewinnkontrolle(TYPE t) {
+		for (int y = 0; y < 3; y++){
+            boolean b = true;
+            int x = 0;
+            while (b && x < 3){
+                b = (feldGeben(x, y) == t);
+                x++;
+            }
+            if (b) Win();
+        }
+        
+        for (int x = 0; x < 3; x++){
+            boolean b = true;
+            int y = 0;
+            while (b && y < 3){
+                b = (feldGeben(x, y) == t);
+                y++;
+            }
+            if (b) Win();
+        }
+        
+        if (feldGeben(0, 0) == t)
+            if (feldGeben(1, 1) == t)
+                if (feldGeben(2, 2) == t)
+                    Win();
+                    
+       if (feldGeben(2, 0) == t)
+            if (feldGeben(1, 1) == t)
+                if (feldGeben(0, 2) == t)
+                    Win();
+    }
+    
+	private void Win() {
+		gewonnen = true;
+		for (int x = 0; x < 3; x++)
+			for (int y = 0; y < 3; y++)
+					GM.giveField(x, y).setMarked(false);
+	}
+	
+	@Override
+	public void keyPressed(KeyEvent e) {
+		la = e.getKeyChar();
+		isLocked = true;
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		la = e.getKeyChar();
+		isLocked = false;
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+
+	}
+
+	public boolean alreadyfinished() {
+		return gewonnen;
+	}
+
+ }

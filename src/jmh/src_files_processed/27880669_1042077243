@@ -1,0 +1,280 @@
+import java.util.Random;
+/**
+ * ##### ###### ######## ####### ####### ## ###### ###### ## ######. 
+ * ####### #############(), #############(), ##########() ### #########()
+ * #### ### ##### #### ## ###### ## ## ######## ## ####.
+ * 
+ * ##### ###### #### ###  ####### ####### ###############() ### ####() ## 
+ * ########## ### ########### ## ### ####### #######. ##  ######## ### 
+ * ###### ###### #####() ##### ###### ### ###### ######. ## #### ######## # ###### 
+ * ###### ######### ##### ##### ## ##### ### ##### ######## #######.
+ * 
+ * @###### (######## ########) 
+ * @####### (## ##### ####)
+ */
+
+
+public  class Sorter
+{
+    private static Random random=new Random(0);
+    
+    
+    /**
+     * Prints the elements of an array, all at the same line.
+     * 
+     * @param  a   The array of which the ellements are printed.
+     */   
+    public static void printH(double a[])
+    {
+        int len=a.length;
+        System.out.print("{");
+        for( int i=0; i< len-1; i++)
+            System.out.print(a[i] + ", " );
+        System.out.print(a[len-1] +"}");
+    }
+
+
+    /**
+     * Prints the elements of an array, each at a different line.
+     * 
+     * @param  a   The array of which the ellements are printed.
+     */   
+    public static void printV(double a[])
+    {
+        int len=a.length;
+        for( int i=0; i< len; i++)
+            System.out.println(a[i]);
+    }
+
+
+    /**
+     * Creates an exact copy of an array.
+     * 
+     * @param  a    The array to be copied. It cannot be NULL.
+     * @return      An exact copy of the argument array.
+     */
+    public static double[] clone(double original[])
+    {
+        double copy[] = new double[original.length];
+        int len=original.length;
+        for( int i=0; i<len; i++)
+            copy[i]=original[i];
+
+        return copy;
+    }
+
+    /**
+     * Fills a  linear array with radmon data in the range [0..1). The random
+     * numbers have precision of 2 decimal digits. 
+     *
+     * @param  a        The  array to be filled. It cannot be NULL.
+     */
+    public static void fillRandomData(double a[])
+    {
+        int len=a.length;
+
+        for (int i=0; i< len; i++)
+            a[i]= (double) random.nextInt(100)/100;
+    }
+
+    /**
+     * Swaps the elements of the array at the specified positions
+     * 
+     * @param  a    The array of which the elements are swapped.
+     * @param  pos1 Position of the first element.
+     * @param  pos2 Position of the second element.
+     */
+    private static void swap(double a[], int pos1, int pos2)
+    {
+        double temp;
+        temp=a[pos1];
+        a[pos1]=a[pos2];
+        a[pos2]=temp;
+    }
+    
+    
+    /**
+     * Starting from a specified position of an array, it identifies the 
+     * location of the maximum element of the array. The specified position is 
+     * included in the search.
+     * 
+     * @param  a        The array to be searched.
+     * @param  start    The search for the maximum starts from this position.
+     * @return          The index of the maximum element.
+     */
+    private static int maxLocationFrom(double a[], int start)
+    {   
+        int len=a.length;
+        int maxLoc=start;
+
+        for (int i=start; i<len; i++)
+            if (a[maxLoc] <a[i])
+                maxLoc=i;
+        return maxLoc;
+    }
+
+
+    /**
+     * Starting from a specified position of an array, it identifies the 
+     * location of the minimum element of the array. The specified position is 
+     * included in the search.
+     * 
+     * @param  a        The array to be searched.
+     * @param  start    The search for the minimum starts from this position.
+     * @return          The index of the minimum element.
+     */
+    private static int minLocationFrom(double a[], int start)
+    {   
+        int len=a.length;
+        int minLoc=start;
+
+        for (int i=start; i<len; i++)
+            if (a[minLoc] >a[i])
+                minLoc=i;
+        return minLoc;
+    }
+
+
+    /**
+     * Extracts a portion of an array.
+     * 
+     * @param  a        The array to be copied. It cannot be NULL.
+     * @param  start    The index of the first element to be extracted.
+     * @param  end      The index of the last element to be extracted. 
+     *                  It holds that (start <= end).
+     * @return          The extracted array.
+     */
+    public static double[] extract(double original[], int start, int end)
+    {
+        int len=end-start+1;
+        double copy[] = new double[len];
+        for( int i=0; i<len; i++)
+            copy[i]=original[start+i];
+
+        return copy;
+    }
+
+     /**
+      * Sorts an array in O(n^2) time by using the "selection-sort" method. 
+      *
+      * @param  a    The array to be sorted. It cannot be NULL.
+      */
+    public static void sortSelection(double a[])
+     {
+                int minLoc;
+                for (int start=0; start<a.length-1; start++)
+                {
+                    minLoc=minLocationFrom(a,start);
+                    swap(a,start,minLoc);
+                }
+     }
+    
+    
+    /**
+     * Sorts an array in O(n^2) time by using the "insertion-sort" method. 
+     *
+     * @param  a    The array to be sorted. It cannot be NULL.
+     */
+    public static void sortInsertion(double a[])
+    {
+       for (int i=1; i<a.length; i++)
+       {
+          double temp=a[i];
+          int ip=0;
+          while( (a[ip]<=temp) && (ip<i) )
+           ip++;
+           
+          for (int j=i-1; j>=ip; j--)
+            a[j+1]=a[j];
+            
+          a[ip]=temp;           
+       }
+    }
+        
+        
+    
+    /**
+     * Sorts an array in O(n^2) time by using the "Bubble-sort" method. 
+     *
+     * @param  a    The array to be sorted. It cannot be NULL.
+     */    
+    public static void sortBubble(double a[])
+    {
+                int completed;
+                for (completed=0; completed<a.length; completed++)
+                    for (int i=a.length-1; i>completed; i--)
+                         if (a[i]<a[i-1])
+                            swap(a,i,i-1)
+                
+    }
+    
+    
+    /**
+     * Merges two sorted arrays. 
+     *
+     * @param  a1    The first of the two arrays to be merged. It must be sorted and cannot be NULL.
+     * @param  a2    The second of the two arrays to be merged. It must be sorted and cannot be NULL.
+     * @return       The merged array.
+     */
+    public static double[] merge(double a1[], double a2[])
+    {
+        double result[]=new double[a1.length+ a2.length];
+        int pos1=0;
+        int pos2=0;
+        int posResult=0;
+        int len1=a1.length;
+        int len2=a2.length;
+        
+        while( (pos1 < len1) && (pos2 < len2)){
+            if (a1[pos1] < a2[pos2]){
+                result[posResult]=a1[pos1];
+                pos1++;
+            }
+            else {
+                result[posResult]=a2[pos2];
+                pos2++;                
+            }
+            posResult++;
+        }
+        if (pos1==len1)    
+            while(pos2<len2){
+                result[posResult]=a2[pos2];
+                pos2++;
+                posResult++;
+            }
+        else
+            while(pos1<len1){
+                result[posResult]=a1[pos1];
+                pos1++;
+                posResult++;
+            }
+        return result;
+    }
+    
+
+    /**
+     * Sorts an array in O(nlogn) time by using the "merge-sort" method.
+     * This implementation is not in place, that is, it uses extra additional space.
+     *
+     * @param  a    The array to be sorted. It cannot be NULL.
+     */    
+    public static void sortMerge(double a[])
+    {
+                int le=a.length;
+                if (len==1)
+                    return;
+                else{
+                    double aux[]=clone(a);
+                    int len1=len/2;
+                    double ar1[]=extract(aux,0,len1-1);
+                    double ar2[]=extract(aux,len1,len1-1);
+                    
+                 sortMerge(ar1);
+                 sortMerge(ar2);
+                 aux=merge(ar1,ar2);
+                 
+                 for (int i=0; i<len; i++)
+                     a[i]=aux[i];
+   
+    }
+}

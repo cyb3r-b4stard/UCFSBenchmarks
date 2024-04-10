@@ -1,0 +1,107 @@
+
+/**
+ * ##### # ########### ## ##### ###### ####.
+ * 
+ * @###### ###### #. ####
+ * @####### ######### #, ####
+ */
+import java.util.ArrayList;
+public class Rabbit extends Animal {
+    private Direction latest;
+    private boolean foxSeen;
+
+    /**
+     * In order to create a new Rabbit we need to provide a
+     * model og and position. Do not change the signature or
+     * first line of the construction. Appending code after
+     * the first line is allowed.
+     */
+    public Rabbit(Model model, Position position) {
+        super(model, position);
+        latest = Direction.E;
+        foxSeen = false;
+    }
+
+    /**
+     * Decides in which direction the rabbit wants to move.
+     */
+    @Override
+    public Direction decideDirection() {
+        return decideDirection3();
+    }
+
+    /**
+     * This method is used to retrieve who the authors are.
+     */
+    public String getCreator() {
+        return "Unknown";
+    }
+
+    public Direction decideDirection1() {
+        for(Direction d: Direction.allDirections()){
+            if(look(d)==Fox.class){
+                return Direction.turn(d,2);
+            }
+        }
+        return Direction.STAY;
+    }
+
+    public Direction decideDirection2() {
+        for(Direction d: Direction.allDirections()){
+            if(distance(d)==1){
+                return Direction.turn(d,3);
+            }
+        }
+        return Direction.STAY;
+    }
+
+    public Direction decideDirection3() {
+        Direction f = getDirectionToNearestFox();
+
+        latest = Direction.turn(f,3);
+        Direction.avoidCorners;
+        while (!canMove(latest)){
+            latest = Direction.turn(latest, 1);
+        }
+        return latest;
+    }
+
+    public Direction getDirectionToNearestFox(){
+        int n = 100;
+        Direction minFox = null;
+        for(Direction d: Direction.allDirections()){
+            if((look(d)==Fox.class) && (distance(d)<n)){
+                n = distance(d);
+                minFox = d;
+            }
+        }
+        return minFox;
+    }
+
+    public Direction getDirectionToNearestEdge(){
+        int n = 100;
+        Direction minEdge = null;
+        for(Direction d: Direction.allDirections()){
+            if((look(d)==Edge.class) && (distance(d)<n)){
+                n = distance(d);
+                minEdge = d;
+            }
+        }
+        return minEdge;
+    }
+
+    public Direction avoidCorners(){
+        if (distance(latest)==2){
+            if (!canMove(Direction.turn(latest,2))){
+                latest = Direction.turn(latest,7);
+                }
+            if (!canMove(Direction.turn(latest,6))){
+                latest = Direction.turn(latest,1);
+            }
+        }
+        
+        return latest;
+    }
+    
+    
+}

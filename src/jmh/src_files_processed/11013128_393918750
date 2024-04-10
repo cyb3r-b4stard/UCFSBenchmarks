@@ -1,0 +1,84 @@
+import static java.nio.file.Files.readAllBytes;
+import static java.nio.file.Paths.get;
+import java.io.*;
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### ####### #########
+ * @####### #.#
+ */
+public class LineSorter
+{
+    private static String readFile;
+    private static String writeFile;
+    private static String fileText;
+    private static String[] lines;
+    private static String[] sortedLines;
+    private static int numLines;
+    
+    /**
+     * Constructor for objects of class LineSorter
+     */
+    public static void main(String args[]){
+        readFile = "testinput.txt";
+        try {
+            readFile();
+         }catch (Exception ex) {  
+             System.out.println("FILE READ ERROR:\n" + ex);
+             ex.printStackTrace();
+         }
+        seperateLines();
+        sortLines();
+        writeFile();
+    }
+
+    public static void readFile() throws Exception{
+        fileText = new String(readAllBytes(get(readFile)));
+        System.out.println(fileText);
+    }
+    
+    public static void seperateLines() {
+        lines = fileText.split("\\n");
+        numLines = lines.length;
+        System.out.println("Number of Lines: " + numLines);
+    }
+    
+    public static void sortLines() {
+        int numSorted = 0;
+        sortedLines = new String[numLines];
+        for (int i = 0; i < numLines; i++){
+            int lineLength = lines[i].length();
+            System.out.println(i);            
+            for (int j = numSorted; j >=0; j--) {
+                System.out.println(j);
+                if (j == 0) {
+                    sortedLines[0] = lines[i];
+                    numSorted++;
+                    break;
+                }
+                if (lineLength < sortedLines[j - 1].length()) {
+                    sortedLines[j] = sortedLines[j - 1];
+                }
+                if (lineLength >= sortedLines[j - 1].length()) {
+                    sortedLines[j] = lines[i];
+                    numSorted++;
+                    break; 
+                }
+            
+            
+            }
+            
+        }
+        
+        System.out.println(sortedLines[]);
+        
+    }
+    
+    public static void writeFile() {
+        
+        
+        
+        
+        
+    }
+}

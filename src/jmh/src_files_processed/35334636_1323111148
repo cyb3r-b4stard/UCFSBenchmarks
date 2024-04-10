@@ -1,0 +1,397 @@
+
+/**
+ * ##### # ########### ## ##### ######### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import java.io.*;
+public class Compresor
+{
+    private ColaDePrioridad cFinal = new ColaDePrioridad(); 
+    private ColaDePrioridad col = new ColaDePrioridad();
+    private LetraCodigo [] letras = new LetraCodigo [256];
+    private String rutaArchivo = null;
+    private File entrante;
+    private File salida;
+    
+    public ColaDePrioridad leerArchivo(String archivoRuta)
+    {   
+        try {
+           File archivo = new File (archivoRuta);
+           entrante = archivo;
+           
+           if (archivo.exists())
+           {
+               FileReader fr = new FileReader(archivo);
+               BufferedReader br = new BufferedReader(fr);
+               rutaArchivo = archivoRuta;
+               int caract = fr.read();;
+               
+               while ((caract != -1))
+               {
+                   System.out.println((char)caract);
+                   if (col.getInicio() == null)
+                   {
+                       col.insertar(new Letras ((char)caract,1));
+                   }else {
+                       Nodo temporal = col.getInicio();
+                       boolean bande = true;
+                       
+                       while (temporal.getDato().getDato() != caract && bande)
+                       {
+                           if (temporal.getSiguiente() != null)
+                           {
+                               temporal = temporal.getSiguiente();
+                           }else {
+                               bande = false;
+                            }
+                       }
+                       
+                       if (bande)
+                       {
+                           temporal.getDato().setFrecuencia(temporal.getDato().getFrecuencia() + 1);
+                       }else {
+                           col.insertar(new Letras ((char)caract,1));
+                        }
+                    }
+                   caract = fr.read();
+               }
+           }
+        }catch (Exception e ) {
+            System.out.println("archivo no existente o erroneo");
+        }  
+        
+        System.out.println(col);
+        Nodo temp = col.getInicio();
+        while (temp != null)
+        {
+            cFinal.insertar(col.eliminar());
+            temp = temp.getSiguiente();
+        }
+        
+        col = null;
+        
+        return cFinal;
+    }
+    
+    public Arbol crearArbol(ColaDePrioridad col2)
+    {
+        ColaDePrioridad col = col2;
+        Nodo temporal = col.getInicio();
+        Nodo aux;
+        
+       
+        while(col.getTamaño() > 1 ){
+            temporal = col.getInicio();
+            Nodo a = col.eliminarNodo();
+            Nodo b = col.eliminarNodo();
+            
+            aux = new Nodo(new Letras (a.getDato().getFrecuencia() + b.getDato().getFrecuencia()));
+            aux.setIzquierdo(a);
+            aux.setDerecho(b);
+            
+            
+            col.insertarNodos(aux);
+        }
+        
+        Arbol arbolito = new Arbol();
+        arbolito.setRaiz(col.getInicio());
+        return arbolito;
+    }
+    
+    public void NuevoArchivoComprido(Arbol miArbol)
+    {
+        LetraCodigo [] codigoLetras = tablaCodigo(miArbol.getRaiz(),"");
+        String binario=null,indiceCodigoLetras = null;
+        
+        try {
+           File archivo = new File (rutaArchivo);   
+           if (archivo.exists())
+           {
+               FileReader fr = new FileReader(archivo);
+               BufferedReader br = new BufferedReader(fr);
+               int caract = fr.read();;
+               
+               while ((caract != -1))
+               { 
+                   for (LetraCodigo i : codigoLetras )
+                   {
+                       if (i != null)
+                       {
+                           if (caract == (i.getLetra()))
+                           {
+                               if (binario == null)
+                               {
+                                   binario = i.getCodigo();
+                                }else{
+                                    binario += i.getCodigo();
+                                }                      
+                           }
+                       }
+                   }
+                   caract = fr.read();
+               }
+           }
+        }catch (Exception e ) {
+            System.out.println("archivo no existente o erroneo");
+        } 
+        
+        for (LetraCodigo i : codigoLetras )
+        {
+           if (i != null)
+           {
+               if (indiceCodigoLetras == null)
+               {
+                   indiceCodigoLetras = i.getCodigo() + i.getLetra(); 
+                }else {
+                   indiceCodigoLetras += i.getCodigo() + i.getLetra(); 
+                }
+           }
+        }
+        
+        try {
+            File archivo = new File (rutaArchivo + ".txz");
+            BufferedWriter bw;
+            FileWriter fw; 
+            
+            if (!archivo.exists())
+             { 
+               fw = new FileWriter(archivo);                   
+               bw = new BufferedWriter (fw);                   
+               bw.write(indiceCodigoLetras + "\n");
+               bw.write(binario);
+               bw.close();
+               fw.close();
+             }else {
+                 System.out.println("El archivo ya esxiste");
+                }
+        } catch (IOException e ) 
+        {
+            System.out.println("Error");
+        }
+    
+    }
+    
+    
+    public LetraCodigo[] tablaCodigo (Nodo NodoActual, String Codigo)              
+    {
+      if (NodoActual.getDato().getDato() != '*')
+      {      
+         letras [NodoActual.getDato().getDato()] = new LetraCodigo (Codigo, NodoActual.getDato().getDato()); 
+      }
+      if (NodoActual.getIzquierdo() != null)
+      {        
+         tablaCodigo(NodoActual.getIzquierdo(), Codigo += "0");
+      }
+      if (NodoActual.getDerecho() != null)
+      {    
+         Codigo = Codigo.substring(0, Codigo.length()-1);       
+         tablaCodigo(NodoActual.getDerecho(), Codigo += "1");               
+      }
+      
+      return letras;
+    }
+    
+    public void descomprimirArchivo(String ruta)
+    {
+        LetraCodigo [] Cletras = new LetraCodigo [256];
+        String codigo = null;
+        
+        try {
+           File archivo = new File (ruta);
+           String aux = null;
+           
+           if (archivo.exists())
+           {
+               FileReader fr = new FileReader(archivo);
+               BufferedReader br = new BufferedReader(fr);
+               rutaArchivo = ruta;         
+               codigo = br.readLine();
+               
+           }
+           for (int x=0;x<codigo.length();x++)
+               if (codigo.charAt(x) != '1' &&  codigo.charAt(x) != '0'){
+                   Cletras [codigo.charAt(x)] = new LetraCodigo(aux,codigo.charAt(x));
+                   aux = null;
+               }else {
+                   if (aux == null)
+                   {aux = aux.valueOf(codigo.charAt(x));}else{
+                   aux += codigo.charAt(x);}
+                }
+             
+           /*for (LetraCodigo i : Cletras )
+           {
+           if (i != null)
+           {
+               
+                   System.out.println(i.getCodigo() + " - "+ i.getLetra());  
+                
+           }
+          }*/
+        }catch (Exception e ) {
+            System.out.println("archivo no existente o erroneo");
+        }  
+        
+        try {
+           File archivo = new File (ruta);
+           
+           if (archivo.exists())
+           {
+               FileReader fr = new FileReader(archivo);
+               BufferedReader br = new BufferedReader(fr);
+               rutaArchivo = ruta;
+               String linea,lC = "",resultado ="", resu = "";
+               int x=0;
+               
+               while ((linea = br.readLine())!=null)
+               {
+                   if (!linea.equals(codigo))
+                   {
+                        
+                        for (x ;x<linea.length();x++)
+                        {
+                            lC = lC.valueOf((linea.charAt(x)));
+                            
+                            for (LetraCodigo i : Cletras)
+                            {
+                                if (i != null)
+                                {
+                                    
+                                    if (i.getCodigo().equals(resultado))
+                                    {  
+                                       System.out.println(resultado);
+                                       resu = resu + resu.valueOf(i.getLetra());
+                                       lC = lC.valueOf((linea.charAt(x+1)));
+                                       x++;
+                                       resultado = "";
+                                    }
+                                    
+                                    
+                                }
+                            } 
+                            
+                            if (resultado == ""){
+                                        resultado = resultado.valueOf(lC);
+                                        lC = "";
+                                       }else{resultado += lC;
+                                              lC = "";
+                                        }        
+                        }
+                   }                
+                }
+               
+               System.out.println(resu);
+           }
+        }
+       catch (Exception e ) {
+            System.out.println("archivo no existente o erroneo");
+        }  
+    }   
+    
+    public void descomprimirArchivo2(String ruta)
+    {
+        Arbol arbol = new Arbol();
+        arbol.setRaiz(new Nodo (new Letras (1)));
+        Nodo temporal = arbol.getRaiz();
+        Nodo aux;
+        try {
+           File archivo = new File (ruta);
+           
+           if (archivo.exists())
+           {
+               FileReader fr = new FileReader(archivo);
+               BufferedReader br = new BufferedReader(fr);
+               String linea = br.readLine();
+               for (int x=0;x<linea.length();x++)
+               {
+                   if (linea.charAt(x) == '0')
+                   {
+                       if (temporal.getIzquierdo() == null)
+                       {
+                           if (linea.charAt(x+1) != 'O' || linea.charAt(x+1) != '1')
+                           {
+                               aux = new Nodo(new Letras (linea.charAt(x+1),0));
+                               temporal.setIzquierdo(aux);
+                               Nodo tp = temporal;
+                               arbol.setRaiz(tp);
+                               temporal = arbol.getRaiz();
+                           }else {
+                               aux = new Nodo(new Letras (1));
+                               temporal.setIzquierdo(aux);
+                               temporal = temporal.getIzquierdo();     
+                           }                     
+                       }else {
+                           
+                       }
+                  }else if (linea.charAt(x) == '1'){
+                       if (temporal.getDerecho() == null)
+                       {
+                            if (linea.charAt(x+1) != 'O' || linea.charAt(x+1) != '1' )
+                            {
+                                aux = new Nodo(new Letras (linea.charAt(x+1),1));
+                                temporal.setDerecho(aux);
+                                Nodo tp = temporal;
+                                arbol.setRaiz(tp);
+                                temporal = arbol.getRaiz();
+                            }else{
+                                aux = new Nodo(new Letras (1));
+                                temporal.setDerecho(aux);
+                                temporal = temporal.getDerecho();
+                            }
+                       }else {
+                           temporal = temporal.getDerecho();
+                       }               
+                    }
+                }
+           }
+           arbol.preOrden(arbol.getRaiz());
+        }catch (Exception e ) {
+            System.out.println("archivo no existente o erroneo");
+        }   
+    
+    } 
+    
+    
+    public void getDatosFileEntrante()
+    {
+        System.out.println(entrante.getName());
+        System.out.println(entrante.getAbsolutePath());
+        System.out.println(entrante.lastModified());
+        System.out.println(entrante.length());
+    }
+}
+
+
+
+class LetraCodigo{
+   String codigo;
+   char letra;
+   
+   public LetraCodigo(String codigo, char letra)
+   {
+       this.codigo = codigo;
+       this.letra = letra;
+   }
+   
+   public void setCodigo(String codigo)
+   {
+       this.codigo = codigo;
+   }
+   
+   public String getCodigo()
+   {
+       return codigo;
+   }
+   
+   public void setLetra(char letra)
+   {
+       this.letra = letra;
+   }
+   
+   public char getLetra()
+   {
+       return letra;
+   }
+}
+

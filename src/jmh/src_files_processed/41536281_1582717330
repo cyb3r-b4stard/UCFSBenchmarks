@@ -1,0 +1,92 @@
+import java.util.Scanner;
+/**
+ * ##### # ########### ## ##### #### ####.
+ * 
+ * @###### ##### ###### 
+ * @####### ######## #, ####
+ */
+public class Game
+{
+
+    public static void main(String[]args)
+    {
+        System.out.println("*** Welcome to Black Jack! Prepare to Lose! ***");
+        Hand playerHand = new Hand(); 
+        Hand dealerHand = new Hand(); 
+        Scanner keyboard = new Scanner(System.in); 
+
+        String possibleInput = "hit";
+        while(possibleInput.equals("hit")) 
+        {
+
+            System.out.println();
+            System.out.println("AI: <???>, " + dealerHand.getCardAt(1));
+            System.out.println("Player:" + playerHand.toString());
+            System.out.println();
+            System.out.println("What will you do? (enter either 'hold' or 'hit')?");
+            possibleInput = keyboard.nextLine();
+            System.out.println();
+            if(possibleInput.equals("hit"))
+            {
+                playerHand.hit();
+            }
+                  
+            if(possibleInput.equals("hold"))
+            {
+                keyboard.close();
+            }
+           
+        }
+
+        if(playerHand.isBust())
+        {
+            System.out.println("*******************************");
+            System.out.println("***        GAME OVER        ***");
+            System.out.println("***        YOU  LOSE!       ***");
+            System.out.println("*******************************");
+            System.out.println();
+            System.out.println("AI:" + dealerHand.toString());
+            System.out.println("Player:" + playerHand.toString());
+        }  
+        else if(!playerHand.isBust())
+        {
+            
+            while(dealerHand.getValue() < 18 && !dealerHand.isBust())
+            {
+                dealerHand.hit();
+            }
+
+            if(playerHand.defeats(dealerHand) ||)
+            {
+                System.out.println("*******************************");
+                System.out.println("***        GAME OVER        ***");
+                System.out.println("***        YOU  WIN!        ***");
+                System.out.println("*******************************");
+                System.out.println();
+                System.out.println("AI:" + dealerHand.toString());
+                System.out.println("Player:" + playerHand.toString());
+            }
+            else if(playerHand.pushes(dealerHand))
+            {
+                System.out.println("*******************************");
+                System.out.println("***        GAME OVER        ***");
+                System.out.println("***       YOU  PUSHED!      ***");
+                System.out.println("*******************************");
+                System.out.println();
+                System.out.println("AI:" + dealerHand.toString());
+                System.out.println("Player:" + playerHand.toString());
+            }
+            else
+            {
+                System.out.println("*******************************");
+                System.out.println("***        GAME OVER        ***");
+                System.out.println("***        YOU  LOSE!       ***");
+                System.out.println("*******************************");
+                System.out.println();
+                System.out.println("AI:" + dealerHand.toString());
+                System.out.println("Player:" + playerHand.toString());
+            }
+
+        }
+    }
+}

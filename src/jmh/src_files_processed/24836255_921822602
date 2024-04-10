@@ -1,0 +1,190 @@
+/* 
+ * ######### #### #######
+ * ### ### ############ ####### #### #########
+ */ 
+
+import java.util.Random;
+
+/**
+ * ########## ## # ######## ########## ##########.
+ * ### ####:
+ * ########### #######.
+ * 
+ * @###### #### #######
+ * @####### ####-##-##
+ */
+public class Game {
+
+    private int SIZE_X;                         
+    private int SIZE_Y;                         
+    private final boolean T = true;             
+    private final boolean F = false;            
+    private final int MAX_GENERATIONS = 100;    
+
+   /* 
+    * Declare two arrays: 
+    * 'current' represents the current state if the cell matrix
+    * 'next' represents the results of the calculations for deciding
+    * whether a cell lives, dies, or is born.  Once all calculations 
+    * are made, the 'next' array must be copied back to the 'current'
+    * array, and the 'next' must be re-initialized to 'all falses'.
+    */
+    private boolean[][] current;
+    private boolean[][] next;
+
+    /**
+     * Main entry point into application. Requires no arguments at runtime.
+     */
+    public static void main(String[] args)  {
+
+        Game g = new Game();
+        g.setup();
+        g.run();
+    }
+
+    /**
+     * Sets the initial conditions of the game
+     */
+    public void setup()  {
+
+        boolean[][] data = {
+                {F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,F,T,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,T},
+                {F,F,F,T,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,T,T,T,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F},
+                {F,T,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,T,T},
+                {F,T,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,T,F}
+            };
+
+        current = data;
+
+        SIZE_X = current.length;
+        SIZE_Y = current[0].length;
+
+        next = new boolean[SIZE_X][SIZE_Y];
+    }
+
+    /**
+     * Loops through a series of program functions MAX_GENERATIONS number of times.  
+     * Each loop represents one generation of a biological matrix, where individual
+     * cells live, die, or born into the matrix.
+     */
+    public void run()  {
+
+        int numGenerations = 0;
+        while ( numGenerations < MAX_GENERATIONS) {
+            clearScreen();
+            printArray(current);
+            System.out.println("\nGeneration #" + numGenerations);
+            calcNextGen();
+            copyArray();
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+            }
+
+            numGenerations++;
+        }
+    }
+
+    /**
+     * Clear the BlueJ console screen and put the cursor in the top left position
+     */
+    public void clearScreen() {
+        System.out.print('\u000C');
+    }
+    
+    /**
+     * Used by the JUnit Testing code 
+     */
+    public int getSizeX() {
+        return SIZE_X;
+    }
+    
+    /**
+     * Used by the JUnit Testing code 
+     */
+    public int getSizeY() {
+        return SIZE_Y;
+    }
+
+    /**
+     * Print the celular matrix to the console. For every cell in the matrix, if 
+     * the cell is alive, print the number of neighbors that cell has. If the cell
+     * is dead, print an empty space.
+     */
+    public void printArray(boolean[][] a) {
+
+        for (int x = 0; x < SIZE_X; x++) {
+            for (int y = 0; y < SIZE_Y; y++) {         
+                if (a[x][y]) {
+                    System.out.print(" " + calcNumNeighbors(x, y) + " ");
+                } else {
+                    System.out.print(" . ");
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    /**
+     * Given a cell at a particular x and y coordinate, calculate the number of 'live' 
+     * cells directly next to it.  Should return a number between 0 and 8.  
+     * Must not count itself - the cell at position x,y.  Must also be careful
+     * when calculating neighbours around the edges of the matrix.
+     */
+    public int calcNumNeighbors(int x, int y) {
+
+        int numNeighbors = 0;
+        
+        
+        
+
+       
+        
+        return numNeighbors;
+    }
+
+    /** 
+     * For every element in the current array, calculate whether the cell lives on 
+     * into the next generation:
+     * <p> - Any live cell with fewer than two live neighbours dies, as if caused by under-population.
+     * <p> - Any live cell with two or three live neighbours lives on to the next generation.
+     * <p> - Any live cell with more than three live neighbours dies, as if by overcrowding.
+     * <p> - Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+     */
+    public void calcNextGen() {
+        calcNumNeighbors (2,3);
+        
+        for(SIZE X =-1;SIZE Y <3; SIZE_Y++){
+            for(SIZE_Y =- 1; SIZE_X < 3; SIZE_X++){
+                if(cell -> numNeighbors++);
+            }
+      
+
+        
+    }
+
+    /**
+     * Copy the 'next' array to the 'current' array
+     */
+    public void copyArray() {
+    }
+}

@@ -1,0 +1,152 @@
+ import java.util.*;
+ 
+public class Main {    
+    public static void Main(){
+        Scanner sc = new Scanner(System.in);
+        Main main = new Main();       
+        
+        /**
+         * Aquí es declaren totes les variables d'arrays i la matriu que necessitarem.
+         */
+        
+        ArrayList<String> blockingPieces = new ArrayList<>();  
+        ArrayList<Integer> array = new ArrayList<>(); 
+        ArrayList<String> moves = new ArrayList<>(); 
+        int[] movimentX = new int[]{-2,-1,1,2,-2,-1,1,2}; 
+        int[] movimentY = new int[]{1,2,2,1,-1,-2,-2,-1};                
+        String[][] matriu = main.getTablePosition();   
+        
+        /**
+         * Aquí demanem les dades (posició inicial i final, i les posicions de les peces que bloquejen posicions.
+         */
+        
+        System.out.print("The knight starts at:  ");
+        String inici = sc.nextLine();
+        moves.add(inici);
+        System.out.print("The knight finishes at:  ");
+        String fi = sc.nextLine(),  move = "", block = "";       
+        while(!block.equals("xx")){
+            System.out.print("\nEnter blocking piece (xx to quit): ");
+            block = sc.nextLine();
+            if(!block.equals("xx"))  blockingPieces.add(block);            
+        }
+        
+        /**
+         * Aquí agafem les coordenades de la posició inicial i la final, i calculem el nombre de moviments incial que s'hauran de dur a terme.
+         */
+        int x = main.getXNumberPosition(inici);
+        int y = main.getYNumberPosition(inici);
+        int i = main.getXNumberPosition(fi); 
+        int j = main.getYNumberPosition(fi), h = 0;      
+        int numOfMoves = main.numberOfMoves(x,y,i,j); 
+        
+        /**
+         * Aquesta és la tasca principal del problema. Mentres el nombre de movients necessàris per arribar a la posició final no sigui zero es repetirà el cicle.
+         * Cada vegada que es repeteixi, el programa comprova, amb la ajuda dels dos arrays de coordenades, quin dels 8 moviments possibles serà el que necessitarà 
+         * menys moviments per arrivar al final.
+         */
+        
+        while(numOfMoves!=0){
+            for(int w = 0; w<8; w++){
+                int possibleX = x + movimentX[w]; 
+                int possibleY = y + movimentY[w];      
+                numOfMoves = main.numberOfMoves(possibleX, possibleY, i,j);
+                if(possibleX>=1 && possibleY>=1 && possibleX<=8 && possibleY<=8) move = matriu[possibleY-1][possibleX-1];
+                else  move = "";
+                if(!move.equals("") && !moves.contains(move) && !blockingPieces.contains(move)) array.add(numOfMoves);
+                else  array.add(100);
+            }
+            int index = (array.indexOf(Collections.min(array)));
+            x = x + movimentX[index]; 
+            y = y + movimentY[index];
+            numOfMoves = main.numberOfMoves(x,y,i,j);
+            moves.add(matriu[y-1][x-1]);
+            array.clear();
+            h++;
+        }        
+        System.out.println("\nThe knight’s shortest path is:  " + moves); 
+        for(int n = 0; n<(h+1); n++) main.printTable(moves.get(n), matriu, n, blockingPieces);
+        /**
+         * Aquí s'imprimeixen per pantalla els moviments necessàris per arrivar a la posició final
+         */
+    }
+    public String[][] getTablePosition() {
+        /**
+         * Aquest mètode s'encarrega d'omplir i retornar una matriu amb totes les posicions d'un tauler d'escacs.
+         */
+        String[] lletres = new String[]{"a","b","c","d","e","f","g","h"};
+        String[][] tauler = new String[8][8];
+        for (int i = 7; i>=0; i--)for(int z = 0; z<8; z++)tauler[i][z] = "" + lletres[z] + (i+1);
+        return tauler;
+    }    
+    public int numberOfMoves(int a, int b, int c, int d){
+        /**
+         * Aquest mètode junt amb la matriu arr (declarada al final de tot el codi) calcula el nombre de 
+         * moviments possibles que són necessàris per anar d'una posició a una altre.
+         */
+        int j = 0;
+        int x = Math.abs(a-c);
+        int y = Math.abs(b-d);
+        for(int i = 0; i<36; i++) {
+            if(x == arr[i][0] && y == arr[i][1] || x == arr[i][1] && y == arr[i][0]) {
+                j = arr[i][2];
+                break;
+            }
+        }            
+        return j;   
+     }
+    public static void printTable(String move, String[][] tauler, int nombre, ArrayList<String> blockingPieces){
+        /**
+         * Aquest mètode imprimeix per pantalla el tauler d'escacs amb la posició del caball actual i les peces que el bloquejen.
+         */
+        Main main = new Main();          
+        int x = main.getXNumberPosition(move)-1;
+        int y = main.getYNumberPosition(move)-1;
+        System.out.println("\n");
+        for(int i = 7; i>=0; i--){
+            for(int h = 0; h<8; h++){
+                if(h==x && y == i) System.out.print("\u2658");
+                else if (blockingPieces.contains(tauler[i][h])) System.out.print("\u265F");
+                else if((h+1)%2!=0 && (i+1)%2!=0)System.out.print("");
+                else System.out.println("");
+                if(h==7 && i == 3) System.out.print("    corresponding to the " + (nombre+1) + "  movement (" + move + ")\n\n");                
+                else if(h==7) System.out.println("\n");
+            }
+        }        
+        System.out.println("\n");
+    }
+    public int getXNumberPosition(String lletra){
+        String lletres = " abcdefgh";
+        int x = new StringBuffer(lletres).indexOf(String.valueOf(lletra.charAt(0))); 
+        return x;
+    }
+    public int getYNumberPosition(String lletra){
+        int x = Integer.parseInt(String.valueOf(lletra.charAt(1))); 
+        return x;
+    }    
+    public static int[][] arr = new int[][]{
+        { 0, 0, 0} , { 0, 1, 3} ,  {0, 2, 2} ,  {0, 3, 3} , { 0, 4, 2} , {0, 5, 3} , {0, 6, 4} , { 0, 7, 5} , { 1, 1, 2} , { 1, 2, 1} , { 1, 3, 2} ,
+        { 1, 4, 3} , { 1, 5, 4} ,  {1, 6, 3} ,  {1, 7, 4} , { 2, 2, 4} , {2, 3, 3} , {2, 4, 2} , { 2, 5, 3} , { 2, 6, 3} , { 2, 7, 5} , { 3, 3, 2} ,
+        { 3, 4, 3} , { 3, 5, 4} ,  {3, 6, 3} ,  {3, 7, 4} , { 4, 4, 4} , {4, 5, 3},  {4, 6, 4} , { 4, 7, 5} , { 5, 5, 4} , { 5, 6, 5} , { 5, 7, 4} ,
+        { 6, 6, 5} , { 6, 7, 5} ,  {7, 7, 6}};
+    /*public static void printTable(String move, String[][] tauler, int nombre, ArrayList<String> blockingPieces){
+        /**
+         * Aquest mètode imprimeix per pantalla el tauler d'escacs amb la posició del caball actual i les peces que el bloquejen.
+         
+        Main main = new Main();          
+        int x = main.getXNumberPosition(move)-1;
+        int y = main.getYNumberPosition(move)-1;
+        System.out.println("\n");
+        for(int i = 7; i>=0; i--){
+            for(int h = 0; h<8; h++){
+                if(h==x && y == i) System.out.print("   " + "\u2658" + "  ");
+                else if (blockingPieces.contains(tauler[i][h])) System.out.print("   " + "\u265F" + "  ");
+                else System.out.print("  " + tauler[i][h] + "  ");
+                if(h==7 && i == 3) System.out.print("    corresponding to the " + (nombre+1) + "  movement (" + move + ")\n\n");                
+                else if(h==7) System.out.println("\n");
+            }
+        }        
+        System.out.println("\n");
+        */        
+    }
+}

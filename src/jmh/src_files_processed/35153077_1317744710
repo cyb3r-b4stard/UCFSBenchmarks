@@ -1,0 +1,213 @@
+import java.util.*;
+import javax.swing.*;
+/**
+ * ##### # ########### ## ##### ##### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Squad
+{
+    protected Bot[] squad;
+    private int stepSize;
+
+
+    /**
+     * Constructor for objects of class Squad
+     */
+    public Squad()
+    {
+        int bots=5;
+        squad=new Bot[bots];
+        for (int n=0; n<squad.length; n++)
+        {
+            int y=n*60;
+            squad[n]= new Bot (60,60,0,y);
+            stepSize=60/2;
+        }
+    }
+    public Squad(int bots, int height, int width, int x, int y)
+    {
+        squad= new Bot[bots];
+        for (int n=0; n<squad.length; n++)
+        {
+            int z=(n*height)+y;
+            squad[n]= new Bot (height, width, x, z);
+            stepSize=width/2;
+        }
+    }
+
+    public int getStepSize()
+    {
+        return stepSize;
+    }
+    
+    public int getNumBots()
+    {
+        return squad.length;
+    }
+    
+    public Bot getBot(int n)
+    {
+        return squad[n];
+    }
+    
+    public  int getX()
+    {
+        return squad[0].xPosition;
+    }
+    
+    public  int getY()
+    {
+        return squad[0].yPosition;
+    }
+    
+    public int getHeight()
+    {
+        return squad[1].yPosition;
+    }
+    
+    public int getWidth()
+    {
+        return stepSize*2;
+    }
+    
+    public void marchLeft(int steps)
+    {
+        int left= -(steps);
+        for (int n=0; n<squad.length; n++)
+        {
+            squad[n].moveHorizontal(left);
+        }
+        
+    }
+    
+    public void marchRight(int right)
+    {
+        for (int n=0; n<squad.length; n++)
+        {
+             squad[n].moveHorizontal(right);
+        }
+
+    }
+    
+    public void marchUp(int up)
+    {
+        for (int n=0; n<squad.length; n++)
+        {
+          squad[n].moveVertical(up);  
+        }
+    }
+    
+    public void marchDown(int steps)
+    {
+        int down=-(steps);
+        for (int n=0; n<squad.length; n++)
+        {
+            squad[n].moveVertical(down);
+        }
+    }
+    
+    public void invisible()
+    {
+        for (int n=0; n<squad.length; n++)
+        {
+            squad[n].makeInvisible();
+        }
+    }
+    
+    public void visible()
+    {
+        for (int n=0; n<squad.length; n++)
+        {
+            squad[n].makeVisible();
+        }
+    }
+    
+    public void changeSize(int height, int width)
+    {
+        stepSize=width/2;
+        for (int n=0; n<squad.length; n++)
+        {
+            squad[n].changeSize(height,width);
+            int y=n*height;
+            int x=getX();
+            squad[n].changeXY(x,y);
+        }
+    }
+    
+    public void changeImage(String file)
+    {
+        for (int n=0; n<squad.length; n++)
+        {
+            squad[n].changeGifImage(file);
+        }
+    }
+    
+    public  void fallIn()
+    {
+        int xPlace=getX();
+        for(int n=0; n<squad.length; n++)
+        {
+            int size=getHeight();
+            int y=n*size;
+            squad[n].changeXY(xPlace, y);   
+        }
+
+        
+    }
+    
+    public void race(int distance)
+    {
+        int x=distance;
+        int y=squad[0].getY();
+        int width=10;
+        int height=squad[(squad.length)-1].getY();
+        Box line=new Box(height,width,x,y);
+        line.makeVisible();
+        int a;
+        int b=0;
+        boolean keepPlaying=true;
+        Random r=new Random();
+       
+        do{
+        for (int n=0; n<squad.length; n++)
+        {
+            
+            if (keepPlaying)
+            {
+                int raceStep=squad[0].width();
+                int step=r.nextInt(raceStep);
+                squad[n].moveHorizontal(step);
+                a=squad[n].getX();
+                if ( a>=distance)
+                {
+                    keepPlaying=false;
+                    b=n;
+                }
+            }
+            
+        }
+        
+     }while (keepPlaying);
+     
+     JOptionPane.showMessageDialog(null, "Bot"+ b +" wins!");
+    line.makeInvisible();
+    fallIn();
+    
+}
+
+public void fireRight()
+{
+    Circle[] bullet= new Circle[squad.length];
+    for (int n=1; n<squad.length; n++)
+    {
+        int height= getHeight();
+        int y=(n*height)+(3/5*height));
+        int x=getX()+getWidth();
+        bullet[n-1]=new Circle(5,5,x,y);
+        bullet[n-1].changeColor("Black");
+        bullet[n-1].makeVisible();
+    }
+}
+}

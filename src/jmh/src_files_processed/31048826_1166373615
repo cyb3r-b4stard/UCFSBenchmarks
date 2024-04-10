@@ -1,0 +1,195 @@
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
+import javax.swing.*;
+import java.lang.String;
+
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+
+    public class Huskeliste extends JFrame implements ActionListener {
+    private static final long serialVersionUID = 1L;
+	private ArrayList<Avtale> listen;
+	private JButton[] btnknapper;
+	private JTextArea txaTekst;
+    private final String[] tekst = { "Ny avtale", "Vis avtaler", "Vis alle avtaler", "Fjern avtale", 
+                                     "Fjern avtaler", "Fjern alle avtaler", "Avslutt" };
+
+    public Huskeliste() {
+        super("Huskeliste");
+        listen = new ArrayList<Avtale>();
+
+        txaTekst = new JTextArea();
+        txaTekst.setEditable(false);
+        add(txaTekst, BorderLayout.CENTER);
+
+        JPanel pnlKnapper = new JPanel();
+        pnlKnapper.setLayout(new GridLayout(tekst.length, 1));
+        btnknapper = new JButton[tekst.length];
+        for (int i = 0; i < btnknapper.length; i++) {
+            btnknapper[i] = new JButton(tekst[i]);
+            btnknapper[i].addActionListener(this);
+            pnlKnapper.add(btnknapper[i]);
+        }
+        add(pnlKnapper, BorderLayout.SOUTH);
+
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setSize(450, 250);
+        setVisible(true);
+    }
+
+    public void actionPerformed(ActionEvent event) {
+        String teksten = event.getActionCommand();
+        if (teksten.equals(tekst[0])) {
+            String melding = "Avbrutt";
+            Avtale nyAvtale;
+            boolean ok = false;
+            String beskrivelse = JOptionPane.showInputDialog(Huskeliste.this,
+                             "Beskrivelse", "Input", JOptionPane.QUESTION_MESSAGE);
+            if (beskrivelse != null) {
+                String innhold = JOptionPane.showInputDialog(Huskeliste.this,
+                        "Innhold", "Input", JOptionPane.QUESTION_MESSAGE);
+                if (innhold != null) {
+                    String tidspunkt = JOptionPane.showInputDialog(
+                            Huskeliste.this, "Tidspunkt", "Input",
+                            JOptionPane.QUESTION_MESSAGE);
+                    if (tidspunkt != null) {
+                        nyAvtale = new Avtale(beskrivelse, innhold, tidspunkt);
+                        if (!listen.contains(nyAvtale)) {
+                            listen.add(nyAvtale);
+                            ok = true;
+                        }
+                        melding = "Avtalen ";
+                        if (!ok) {
+                            melding += "ikke ";
+                        }
+                        melding += "ble lagt inn";
+                    }
+                }
+            }
+            JOptionPane.showMessageDialog(Huskeliste.this, melding);
+            
+            
+            
+            } else if (teksten.equals(tekst[1])) {
+            String beskrivelse = JOptionPane.showInputDialog(Huskeliste.this,
+                            "Dag", "Input", JOptionPane.QUESTION_MESSAGE);
+            if (beskrivelse != null) {
+                Avtale temp = new Avtale(beskrivelse);
+                int indeks = listen.indexOf(temp);
+                if (indeks >= 0) {
+                    temp = listen.get(indeks);
+                    JOptionPane.showMessageDialog(Huskeliste.this, temp);
+                } else {
+                    JOptionPane.showMessageDialog(Huskeliste.this,
+                            "Ikke funnet!");
+                }
+            } else {
+                JOptionPane.showMessageDialog(Huskeliste.this, "Avbrutt");
+            }
+            
+            
+            } else if (teksten.equals(tekst[2])) {
+              try {
+                listen.clear();
+                txaTekst.setText("");
+                Scanner in = new Scanner(new File("avtaler.txt"));
+                while (in.hasNext()) {
+                    Avtale a = new Avtale(in.nextLine(),
+                              in.nextLine(),
+                              in.nextLine());
+                    listen.add(a);
+                }
+                in.close();
+            } catch (FileNotFoundException exc) {
+                JOptionPane.showMessageDialog(Huskeliste.this, "Ingen data funnet");
+            } 
+            txaTekst.setText("");
+            for (Avtale a : listen) {
+            txaTekst.append(a.getBeskrivelse() + "\n");
+        }
+    
+      
+            
+            } else if (teksten.equals(tekst[3])) {
+            String melding = "Avbrutt";
+            String beskrivelse = JOptionPane.showInputDialog(Huskeliste.this, "Tidspunkt",
+                                "Input", JOptionPane.QUESTION_MESSAGE);
+            if (beskrivelse!= null) {
+                melding = "Avtale ";
+                Avtale temp = new Avtale(beskrivelse);
+                int valg = JOptionPane.showConfirmDialog(Huskeliste.this,
+                        "Er du sikker på at du vil slette denne?");
+                if (valg == JOptionPane.YES_OPTION && listen.contains(temp)) {
+                    listen.remove(temp);
+                } else
+                    melding += "ikke ";
+                melding += "slettet!";
+            }
+            JOptionPane.showMessageDialog(Huskeliste.this, melding);
+            
+            
+            } else if (teksten.equals(tekst[4])) {
+            String beskrivelse = JOptionPane.showInputDialog(Huskeliste.this,
+                            "Dag", "Input", JOptionPane.QUESTION_MESSAGE);
+            if (beskrivelse != null) {
+                Avtale temp = new Avtale(beskrivelse);
+                int indeks = listen.indexOf(temp);
+                if (indeks >= 0) {
+                    temp = listen.get(indeks);
+                    JOptionPane.showMessageDialog(Huskeliste.this, temp);
+                } else {
+                    JOptionPane.showMessageDialog(Huskeliste.this,
+                            "Ikke funnet!");
+                }
+            } else {
+                JOptionPane.showMessageDialog(Huskeliste.this, "Avbrutt");
+            }
+            
+            } else if (teksten.equals(tekst[5])) {
+              try {
+                listen.clear();
+                txaTekst.setText("");
+                Scanner in = new Scanner(new File("avtaler.txt"));
+                while (in.hasNext()) {
+                    Avtale a = new Avtale(in.nextLine(),
+                              in.nextLine(),
+                              in.nextLine());
+                    listen.add(a);
+                }
+                in.close();
+            } catch (FileNotFoundException exc) {
+                JOptionPane.showMessageDialog(Huskeliste.this, "Ingen data funnet");
+            } 
+            txaTekst.setText("");
+            for (Avtale a : listen) {
+            txaTekst.append(a.getBeskrivelse() + "\n");
+        }
+         
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            System.exit(0);
+        }
+        }
+    }
+
+    public static void main(String[] args) {
+        new Huskeliste();
+    }
+}
+
+    
+    
+ 

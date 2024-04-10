@@ -1,0 +1,353 @@
+import java.util.Random;
+
+/*  ####### ########### ### ##########:
+ *
+ *  #####: #####
+ *  ##### #######: #.#########@#####.###
+ *  ###### ####: #########
+ *  ###### ## #### #### # ## #####: #
+ */
+
+/* ##### ########. ### #### ########## ####### ###
+ * ####### ## ######### ####.
+ * 
+ * ########## #
+ *   ##### #### ### ####### ########:: #.#########
+ *   #.############ ####### ## #######
+ *   
+ *   ##### #### ### ######### ########:: #.#########
+ *   #.############ ####### ## #######
+ *   
+ *   ##### #### ### ######### ########:: ##.#########
+ *   #.############ ####### ## #######
+ * 
+ * ########## #
+ *   ##### #### ### ########### ####### ########:: #.#########
+ *   #.################## ####### ## #######
+ *   
+ *   ##### #### ### ########### ####### ########:: ##.#########
+ *   #.########### ####### ## #######
+ *   
+ *   ##### #### ### ########### ####### ########:: ###.#########
+ *   #.########### ####### ## #######
+ *   
+ *   #########:
+ *      #. ##### ## #######
+ *      #. #(#) ####### ######## ### ####/#### ##### # ##### #### ######## ### ### #### ######### ## ##### # ##### #### ####
+ *      #. #,### #######
+ *      #. #^#
+ *      #. #### # ####. ### #########
+ */
+
+/**
+ * # ##### ## ### ##### ## ### ########## #####
+ */
+public class MathMatrixTester {
+
+    /**
+     * main method that runs simple test on the MathMatrix class
+     *
+     * @param args not used
+     */
+    public static void main(String[] args) {
+        int[][] data1 = { {1, 2, 3},
+                {2, 3, 4}};
+        int[][] data2 = { {2, 1, 1},
+                {2, 3, 1}};
+        int[][] e1;
+
+        MathMatrix mat1 = new MathMatrix(2, 3, -1);
+        e1 = new int[][] {{-1, -1, -1}, {-1, -1, -1}};
+        printTestResult( get2DArray(mat1), e1, 1, "Constructor with size and initial val specified.");
+
+        mat1 = new MathMatrix( data1 );
+        data1[0][0] = 2;
+        e1 = new int[][] { {2, 2, 3}, {2, 3, 4} };
+        printTestResult( data1, e1, 2, "constructor with one parameter of type int[][]");
+        e1 = new int[][] { {1, 2, 3}, {2, 3, 4} };
+        printTestResult( get2DArray(mat1), e1, 3, "constructor with one parameter of type int[][]. Testing deep copy made.");
+
+        data1[0][0] = 1;
+        mat1 = new MathMatrix(data1);
+        MathMatrix mat2 = new MathMatrix(data2);
+        MathMatrix mat3 = mat1.add(mat2);
+        e1 = new int[][] { {1, 2, 3}, {2, 3, 4} };
+        printTestResult( get2DArray(mat1), e1, 4, "add method. Testing mat1 unchanged.");
+        e1 = new int[][] { {2, 1, 1}, {2, 3, 1} };
+        printTestResult( get2DArray(mat2), e1, 5, "add method. Testing mat2 unchanged.");
+        e1 = new int[][] { {3, 3, 4}, {4, 6, 5} };
+        printTestResult( get2DArray(mat3), e1, 6, "add method. Testing mat3 correct result.");
+
+        data2 = new int[][] { {1, 2}, {3, 1}, {2, 1} };
+        mat2 = new MathMatrix(data2);
+        mat1 = new MathMatrix(data1);
+        mat3 = mat2.multiply(mat1);
+        e1 = new int[][] { {5, 8, 11}, {5, 9, 13}, {4, 7, 10} };
+        printTestResult( get2DArray(mat3), e1, 7, "multiply method");
+
+        data1 = new int[][] {{10, 100, 101, -1000},
+            {1000, 10, 55, 4},
+            {1, -1, 4, 0}};
+        mat1 = new MathMatrix(data1);
+        String expected = "|    10   100   101 -1000|\n|  1000    10    55     4|\n|     1    -1     4     0|\n";
+        if( mat1.toString().equals( expected ) )
+            System.out.println("passed test 8, toString method.");
+        else
+            System.out.println("failed test 8, toString method.");
+
+        data1 = new int[][] {{1, 2, 3, 0}, {0, 3, 2, 3}, {0, 0, 4, -1}, {0, 0, 0, 12}};
+        mat1 = new MathMatrix(data1);
+        if( mat1.isUpperTriangular())
+            System.out.println("Passed test 9, upperTriangular method.");
+        else
+            System.out.println("Failed test 9, upperTriangular method.");
+
+        data1 = new int[][] {{1, 2, 3, 0}, {0, 3, 2, 3}, {0, 0, 4, -1}, {1, 2, 3, 4}};
+        mat1 = new MathMatrix(data1);
+        if( !mat1.isUpperTriangular())
+            System.out.println("Passed test 10, upperTriangular method.");
+        else
+            System.out.println("Failed test 10, upperTriangular method.");   
+
+        Random randNumGen = new Random(6201919);
+        final int MAGIC_SUM = -1190513360;
+        final int ROWS1 = 1000;
+        final int COLS1 = 500;
+        final int ROWS2 = 500;
+        final int COLS2 = 750;
+        final int LIMIT = 1000;
+        mat1 = createMat(randNumGen, ROWS1, COLS1, LIMIT);
+        mat2 = createMat(randNumGen, ROWS2, COLS2, LIMIT);
+        mat3 = mat1.multiply(mat2);
+
+        if(mat3.numRows() == ROWS1)
+            System.out.println("Passed test 11, multiply stess test numRows.");
+        else
+            System.out.println("Failed test 11, multiply stess test numRows");
+
+        if(mat3.numCols() == COLS2)
+            System.out.println("Passed test 12, multiply stess test numCols.");
+        else
+            System.out.println("Failed test 12, multiply stess test numCols");
+
+        if(sumVals(mat3) == MAGIC_SUM)
+            System.out.println("Passed test 13, stress test, sum of values in result.");
+        else
+            System.out.println("Failed test 13, stress test, sum of values in result.");
+
+        final int MAGIC_STRING_LENGTH = 6753000;
+        if(mat3.toString().length() == MAGIC_STRING_LENGTH)
+            System.out.println("Passed test 14, stress test, length of toString result.");
+        else
+            System.out.println("Failed test 14, stress test, length of toString result.");
+
+
+        System.out.println("\n\n");
+        int[][] dataSet1 = {{9, 8, 7},
+                {6, 5, 4},
+                {3, 2, 1},
+                {0, -1, -2}};
+        int[][] dataSet2 = {{1,2,3,4,5,6,7},
+                {1,2,3,4,5,6,7},
+                {1,2,3,4,5,6,7},
+                {1,2,3,4,5,6,7},
+                {1,2,3,4,5,6,7}};
+        MathMatrix mathm1 = new MathMatrix(dataSet1);
+        MathMatrix mathm2 = new MathMatrix(5, 7, 17);
+        MathMatrix mathm3 = new MathMatrix(7, 5, 4);
+        MathMatrix mathm4 = new MathMatrix(4, 3, 1);
+        MathMatrix mathm5 = new MathMatrix(dataSet2);
+
+        if(mathm1.numRows() == 4){
+            System.out.println("Passed test 1 of numRows(). Expected:: 4, Actual:: " + mathm1.numRows()); 
+        }
+        else{
+            System.out.println("Failed test 1 of numRows(). Expected:: 4, Actual:: " + mathm1.numRows());
+        }
+        if(mathm2.numRows() == 5){
+            System.out.println("Passed test 2 of numRows(). Expected:: 5, Actual:: " + mathm2.numRows()); 
+        }
+        else{
+            System.out.println("Failed test 2 of numRows(). Expected:: 5, Actual:: " + mathm2.numRows());
+        }
+
+        if(mathm1.numCols() == 3){
+            System.out.println("Passed test 1 of numCols(). Expected:: 3, Actual:: " + mathm1.numCols()); 
+        }
+        else{
+            System.out.println("Failed test 1 of numCols(). Expected:: 3, Actual:: " + mathm1.numCols());
+        }
+        if(mathm2.numCols() == 7){
+            System.out.println("Passed test 2 of numCols(). Expected:: 7, Actual:: " + mathm2.numCols()); 
+        }
+        else{
+            System.out.println("Failed test 2 of numCols(). Expected:: 7, Actual:: " + mathm2.numCols());
+        }
+
+        mathm1.changeElement(0,0,1);
+        if(get2DArray(mathm1)[0][0] == 1 && dataSet1[0][0] == 9){
+            System.out.println("Passed test 1 of changeElement at spot (0,0) of mathm1");
+        }
+        else{
+            System.out.println("Failed test 1 of changeElement at spot (0,0) of mathm1");
+        }
+        mathm2.changeElement(3,5,16);
+        if(get2DArray(mathm2)[3][5] == 16){
+            System.out.println("Passed test 2 of changeElement at spot (3,5) of mathm2");
+        }
+        else{
+            System.out.println("Failed test 2 of changeElement at spot (3,5) of mathm2");
+        }
+
+        if(mathm1.getVal(2,1) == 2){
+            System.out.println("Passed test 1 of getVal() at spot (2,1) of mathm1");
+        }
+        else{
+            System.out.println("Failed test 1 of getVal() at spot (2,1) of mathm1");
+        }
+        if(mathm2.getVal(4,6) == 17){
+            System.out.println("Passed test 2 of getVal() at spot (4,6) of mathm2");
+        }
+        else{
+            System.out.println("Failed test 2 of getVal() at spot (4,6) of mathm2");
+        }
+
+        int[][] addTest = {{2,9,8},{7,6,5},{4,3,2},{1,0,-1}};
+        MathMatrix testAdd = mathm1.add(mathm4);
+        printTestResult( get2DArray(testAdd), addTest, 1, "add method.");
+        int[][] addTest2 = {{18,19,20,21,22,23,24},{18,19,20,21,22,23,24},{18,19,20,21,22,23,24},
+                            {18,19,20,21,22,22,24}, {18,19,20,21,22,23,24}};
+        testAdd = mathm2.add(mathm5);
+        System.out.println(testAdd)
+        
+
+
+
+
+
+
+
+        /*int rows = 650;
+        int cols = 650;
+        for(int i = 0; i < 3; i++){
+        MathMatrix exp1 = experimentMatrix(rows, cols);
+        MathMatrix exp2 = experimentMatrix(rows, cols);
+        Stopwatch watch = new Stopwatch();
+        watch.start();
+        for(int times = 0; times < 1000; times++){
+        exp1.add(exp2);
+        }
+        watch.stop();
+        System.out.println("Total time for adding " + rows + "x" + cols + " elements:: " + watch.time());
+        System.out.println(watch.time() / 1000 + " seconds on average\n");
+        rows *= 2;
+        cols *= 2;
+        }
+
+        rows = 200;
+        cols = 200;
+        for(int i = 0; i < 3; i++){
+        MathMatrix exp1 = experimentMatrix(rows, cols);
+        MathMatrix exp2 = experimentMatrix(rows, cols);
+        Stopwatch watch = new Stopwatch();
+        watch.start();
+        for(int times = 0; times < 100; times++){
+        exp1.multiply(exp2);
+        }
+        watch.stop();
+        System.out.println("Total time for multiplying " + rows + "x" + cols + " elements:: " + watch.time());
+        System.out.println(watch.time() / 100 + " seconds on average\n");
+        rows *= 2;
+        cols *= 2;
+        }*/
+    }
+
+    private static int sumVals(MathMatrix mat) {
+        if(mat == null)
+            throw new IllegalArgumentException("mat may not be null");
+
+        int result = 0;
+        final int ROWS =  mat.numRows();
+        final int COLS = mat.numCols();
+        for(int r = 0; r < ROWS; r++)
+            for(int c = 0; c < COLS; c++) 
+                result += mat.getVal(r, c); 
+        return result;
+    }
+
+    private static MathMatrix createMat(Random randNumGen, int rows,
+    int cols, final int LIMIT) {
+
+        if(randNumGen == null)
+            throw new IllegalArgumentException("randomNumGen variable may no be null");
+        else if(rows <= 0 || cols <= 0)
+            throw new IllegalArgumentException("rows and columns must be greater than 0. " +
+                "rows: " + rows + ", cols: " + cols);
+
+        int[][] temp = new int[rows][cols];
+        final int SUB = LIMIT / 4;
+        for(int r = 0; r < rows; r++)
+            for(int c = 0; c < cols; c++)
+                temp[r][c] = randNumGen.nextInt(LIMIT) - SUB;
+
+        return new MathMatrix(temp);
+    }
+
+    private static void printTestResult(int[][] data1, int[][] data2, int testNum, String testingWhat) {
+        System.out.print( "Test number " + testNum + " tests the " + testingWhat +". The test ");
+        String result = equals(data1, data2) ? "passed" : "failed";
+        System.out.println( result );
+    }
+
+    private static int[][] get2DArray(MathMatrix m) {
+        assert ( m != null ) && ( m.numRows() > 0 ) && ( m.numCols()> 0 )
+        : "Violation of precondition: get2DArray";
+
+        int[][] result = new int[m.numRows()][m.numCols()];
+        for(int r = 0; r < result.length; r++)
+        {   for(int c = 0; c < result[0].length; c++)
+            {   result[r][c] = m.getVal(r,c);
+            }
+        }
+        return result;
+    }
+
+    private static boolean equals(int[][] data1, int[][] data2) {
+        if( ( data1 == null ) || ( data1.length == 0 )
+        || ( data1[0].length == 0 ) || !rectangularMatrix(data1)
+        ||  ( data2 == null ) || ( data2.length == 0 )
+        || ( data2[0].length == 0 ) || !rectangularMatrix(data2))
+            throw new IllegalArgumentException( "Violation of precondition: equals check on 2d arrays of ints");
+
+        boolean result = (data1.length == data2.length) && (data1[0].length == data2[0].length);
+        int row = 0;
+        while( result && row < data1.length ) {
+            int col = 0;
+            while( result && col < data1[0].length ) {
+                result = (data1[row][col] == data2[row][col]);
+                col++;
+            }
+            row++;
+        }
+
+        return result;
+    }
+
+    public static MathMatrix experimentMatrix(int rows, int cols){
+        int[][] matEx1 = new int[rows][cols];
+        for(int r = 0; r < matEx1.length; r++){
+            for(int c = 0; c < matEx1[r].length; c++){
+                matEx1[r][c] = (int) (Math.random() * 200 - 100);
+            }
+        }
+        return new MathMatrix(matEx1);
+    }
+
+    private static boolean rectangularMatrix( int[][] mat ) {
+        if(mat == null || mat.length == 0 || mat[0].length == 0)
+            throw new IllegalArgumentException("Violation of precondition: "
+                + " Parameter mat may not be null" 
+                + " and must be at least 1 by 1");
+        return MathMatrix.rectangularMatrix(mat);
+    }
+}

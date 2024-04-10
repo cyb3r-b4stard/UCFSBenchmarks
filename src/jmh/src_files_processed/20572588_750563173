@@ -1,0 +1,186 @@
+/*
+  ####: ##########.####
+
+  ###########: ##### ####### # ##### ## ## ##-##### ###### #### ###### ## ##### ## ###, ###
+               ##### #### #### ## ###### #### ## ##.
+  ####### ####: ####### #############
+
+  ####### ## ###: ######
+
+  ###### ####: ## ###
+
+  ###### ######: 
+
+  #### #######: #/#/##
+
+  #### #### ########: #/#/##
+
+*/
+
+import java.util.*;
+
+public class CreditCard
+{
+    public static void main (String[] args) 
+  { 
+      Scanner sc = new Scanner(System.in);
+      System.out.print("Enter 15 or 16-digit credit card number: ");
+      long cc_num = sc.nextLong();
+      
+      if(is_valid(cc_num)){
+          cc_type(cc_num);
+      } else{
+          System.out.println("Not a 15 or 16-digit number");
+          return;
+        }
+  }  
+  
+  public static int getSize(long cc_num) 
+  {
+            int length = 0;
+            while (cc_num >= 10) {
+                cc_num /= 10;
+                length++;
+        }
+        return length;
+    }
+
+  public static boolean is_valid (long cc_num) 
+  {  
+      if(getSize(cc_num) == 15 || getSize(cc_num) == 16){
+         int sum = 0;
+         int length = getSize(cc_num);
+         if(getSize(cc_num) == 16){
+            int [] arr1 = new int [16];
+            int num = 0;
+            for(int i = 0; i < 16; i++){
+                num = (int)cc_num % 10;
+                arr1[i] = num;
+                cc_num /= 10;
+            }
+            
+            int sumOdd = 0;
+             for(int i = 0; i < 16; i++){
+                 if(arr1[i] % 2 == 1){
+                     sumOdd += arr1[i] *= 2;
+                    }
+                }   
+                
+             for(int i = 0; i < 16; i++){
+                 if(arr1[i] % 2 == 0)
+                    sumOdd += arr1[i];
+             }   
+                
+         } else if (getSize(cc_num) == 15){
+            int [] arr2 = new int [15];
+            int num = 0;
+            for(int i = 0; i < 15; i++){
+                num =(int) cc_num % 10;
+                arr2[i] = num;
+                cc_num /= 10;
+            }
+            
+            int sumOdd = 0;
+             for(int i = 0; i < 15; i++){
+                 if(arr2[i] % 2 == 1){
+                     sumOdd += arr2[i] *= 2;
+                    }
+                }
+             
+             for(int i = 0; i < 15; i++){
+                 if(arr2[i] % 2 == 0)
+                    sumOdd += arr2[i];
+             }
+            }
+            
+            
+         return sumOdd % 10 == 0;
+        } else{
+            return false;
+        }
+  }
+  public static int firstDigit(long cc_num)
+  {
+      int length = getSize(cc_num);
+      int number = 0;
+      if(length == 16){
+          for(int i = 0; i < 16; i++){
+              number = (int) (cc_num % 10);
+              cc_num /= 10;
+            }
+            return number;
+        } else {
+            for(int i = 0; i < 15; i++){
+              number = (int) (cc_num % 10);
+              cc_num /= 10;
+            }
+            return number;
+        }
+    }
+  public static String cc_type (long cc_num) 
+  {
+      if(firstDigit(cc_num) == 3){
+          return "Valid American Express credit card number";
+    } else if(firstDigit(cc_num) == 6){
+        return "Valid Discover credit card number";
+    } else if(firstDigit(cc_num) == 5){
+        return "Valid MasterCard credit card number";
+    }else if(firstDigit(cc_num) == 4){
+        return "Valid Visa credit card number";
+    }else {
+        return "Invalid credit card number";
+    }
+  }
+  
+  public static int finalSum (long cc_num){
+       if(getSize(cc_num) == 15 || getSize(cc_num) == 16){
+         int sum = 0;
+         int length = getSize(cc_num);
+         if(getSize(cc_num) == 16){
+            int [] arr1 = new int [16];
+            int num = 0;
+            for(int i = 0; i < 16; i++){
+                num = (int)cc_num % 10;
+                arr1[i] = num;
+                cc_num /= 10;
+            }
+            
+            int sumOdd = 0;
+             for(int i = 0; i < 16; i++){
+                 if(arr1[i] % 2 == 1){
+                     sumOdd += arr1[i] *= 2;
+                    }
+                }   
+                
+             for(int i = 0; i < 16; i++){
+                 if(arr1[i] % 2 == 0)
+                    sumOdd += arr1[i];
+             }   
+             
+             return sumOdd;
+                
+         } else if (getSize(cc_num) == 15){
+            int [] arr2 = new int [15];
+            int num = 0;
+            for(int i = 0; i < 15; i++){
+                num =(int) cc_num % 10;
+                arr2[i] = num;
+                cc_num /= 10;
+            }
+            
+            int sumOdd = 0;
+             for(int i = 0; i < 15; i++){
+                 if(arr2[i] % 2 == 1){
+                     sumOdd += arr2[i] *= 2;
+                    }
+                }
+             
+             for(int i = 0; i < 15; i++){
+                 if(arr2[i] % 2 == 0)
+                    sumOdd += arr2[i];
+             }
+             
+             return sumOdd;
+            }
+    }
+}

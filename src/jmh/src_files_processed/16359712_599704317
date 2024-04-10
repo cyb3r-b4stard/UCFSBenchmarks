@@ -1,0 +1,143 @@
+import java.util.*;
+import java.io.*;
+
+public class ContactsBookSample {
+    
+    static Scanner stringReader = new Scanner(System.in);
+    static Scanner intReader = new Scanner(System.in);
+    static Scanner charReader = new Scanner(System.in);
+    static Scanner choiceReader = new Scanner(System.in);
+    static int SIZE = 1000;
+    
+    public static void main(String[] args) throws IOException
+    {
+       String number = "";
+       String Lname = "";
+       String Fname = "" ;
+       String age = "";
+       char sex;
+       String email = "";
+       String bday = "";
+       int arrNum[] = new int [SIZE];
+       
+        
+        String name = "";
+        String nameArr[] = new String [5];
+        int choice = 0;
+        boolean validFname = false;
+        boolean validLname = false;
+        boolean validNumber = false;
+        boolean validAge = false;
+        do{
+            System.out.println("Enter choice: ");
+            choice = choiceReader.nextInt();
+            switch(choice){
+               case 1:  do{
+                            System.out.println("Enter 10 Digit Phone Number(Start with 9): ");
+                            System.out.print("+63");
+                            number = stringReader.nextLine();
+                            if( number.length()!=10 ||number.charAt(0)!='9' || !(number.contains("1234567890"))){
+                                         validNumber = true;
+                                System.out.println("Invalid Input. Please follow the rule!");
+                                
+                            }
+                            else{
+                                System.out.println("Valid Input!!");
+                            }
+                         
+                        }while(validNumber == true);
+                        
+                        System.out.println("Enter Last Name:");
+                        Lname = stringReader.nextLine();
+                        
+                        System.out.println("Enter First Name:");
+                        Fname = stringReader.nextLine();
+                        
+                        do{
+                            validAge = false;
+                            System.out.println("Enter Age");
+                            age = stringReader.nextLine();
+                            for(int k=0; k<age.length(); k++){
+                                if(Character.isDigit(age.charAt(k))){
+                                    validAge = true;
+                                    System.out.println("Invalid Input! Age must range 1-100");
+                                }
+                            }
+                        }while(!validAge);
+                        
+                        
+                        System.out.println("Enter Gender:");
+                        sex = charReader.next().charAt(0);
+                        
+                        System.out.println("Enter Email Address:");
+                        email = stringReader.nextLine();
+                        
+                        System.out.println("Enter Birthday:");
+                        bday = stringReader.nextLine();
+                        
+                        create(number, Lname, Fname, age, sex, email, bday);
+                
+                 
+                
+               break;
+            
+               case 2: load();
+               
+               
+               break;
+               
+                case 3: 
+               
+               
+               break;
+               case 0: 
+                       System.exit(0);
+            }
+            
+        }
+        while(choice!=0);
+        
+    }
+    public static void create(String number, String Lname, String Fname, String age, char sex, String email, String bday) throws IOException{
+        String contactBookName = "file.txt";
+        FileWriter fr = new FileWriter(contactBookName,true);
+        BufferedReader fileReader = new BufferedReader(new FileReader(contactBookName));
+        BufferedWriter fileWriter = new BufferedWriter(fr);
+        
+        
+        fileWriter.write("0"+number+",");
+        fileWriter.write(Lname+",");
+        fileWriter.write(Fname+",");
+        fileWriter.write(sex+",");
+        fileWriter.write(email+",");
+        fileWriter.write(bday);
+        fileWriter.newLine();
+        fileWriter.close();
+        
+    }
+    public static void load()throws IOException{
+        
+        String contactBookName = "file.txt";
+        FileWriter fr = new FileWriter(contactBookName,true);
+        BufferedReader fileReader = new BufferedReader(new FileReader(contactBookName));
+        String temp = null;
+        
+        while((temp = fileReader.readLine())!=null){
+            System.out.println("CONTACT:"+ temp);
+        }
+        
+    }
+    public static void delete(long number)throws IOException{
+        
+        String contactBookName = "file.txt";
+        FileWriter fr = new FileWriter(contactBookName,true);
+        BufferedReader fileReader = new BufferedReader(new FileReader(contactBookName));
+        String temp = fileReader.readLine();
+        if(temp==null){
+            System.out.println("Contact Book Empty!!");
+        }
+        while((temp!=null){
+            System.out.println("CONTACT:"+ temp);
+        }
+    }
+} 				

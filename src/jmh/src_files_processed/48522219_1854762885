@@ -1,0 +1,114 @@
+
+import java.util.*;
+public class Raum
+{
+    String name;
+    Raum oben;
+    Raum unten;
+    Raum rechts;
+    Raum links;
+    static Inventar Tasche;
+    public Raum(String n){
+        name = n;
+        if(name.equals("Zelle")){
+            baueWeg("links", new Raum("Flur"));
+        }
+        if(name.equals("Flur")){
+            baueWeg("oben", new Raum("Nebenzimmer1"));
+            baueWeg("unten", new Raum("Nebenzimmer2"));
+            baueWeg("links", new Raum("Wachraum"));
+        }
+        if(name.equals("Wachraum")){
+            baueWeg("links", new Raum("Ausgang"));
+        }
+    }
+    void baueWeg(String richtung, Raum r){
+        if(richtung.equals("oben")){
+            oben = r;
+            r.unten = this;
+        }
+        if(richtung.equals("unten")){
+            unten = r;
+            r.oben = this;
+        }
+        if(richtung.equals("rechts")){
+            rechts = r;
+            r.links = this;
+        }
+        if(richtung.equals("links")){
+            links = r;
+            r.rechts = this;
+        }
+    }
+    Raum getNachbarRaum(String richtung){
+        if(richtung.equals("oben")){
+            return oben;
+        }
+        if(richtung.equals("unten")){
+            return unten;
+        }
+        if(richtung.equals("rechts")){
+            return rechts;
+        }
+        if(richtung.equals("links")){
+            return links;
+        }    
+        else{
+            return null;
+        }
+    }
+    static void beschreibung(String n){
+        if(n.equals("Zelle")){
+            Scanner scanner = new Scanner(System.in);
+            System.out.print ('\f');
+            System.out.println("**************************************** Deine Zelle ***************************************");
+            System.out.println("| Du schaust dich in deiner Zelle um â€¦Vor die siehst du die verriegelte TÃ¼r zum Flur.");
+            System.out.println("| Dir fÃ¤llt direkt beim ertasten deines Bettes etwas UngewÃ¶hnliches auf. Eine eingerostete\n| Schraube hÃ¤ngt aus deinem Bett. Eine MB910.9.");
+            System.out.println("*******************  Schraube  **********************");
+            System.out.println("* (1) Schraube ins Inventar packen                   *");
+            System.out.println("* (2) Nichts tun                                    *");
+            System.out.println("-----------------------------------------------------");
+            System.out.println("Deine Wahl:                                    ");
+            String x = scanner.nextLine();
+            if (x.equals("schraube ins inventar packen")) {
+                Tasche.Schraube==1;
+                System.out.println("| Die Schraube hast du nun eingesteckt (siehe im Inventar nach)");
+                EnterKey();
+            } 
+            else if(x.equals("nichts tun")){
+                beschreibung("Zelle");
+            }
+            else  {
+                System.out.println("Eingabe wurde nicht erkannt versuche es erneut :)");
+                System.out.println("-------------------------------------------------");
+                EnterKey();
+                beschreibung("Zelle");
+            }
+            int a=0;
+            while (a==0) {
+                System.out.println("**************************************** Deine Zelle ***************************************");
+                System.out.println("| Du schaust dich deiner Zelle um â€¦ Vor die siehst du die verschlossene TÃ¼r zum Flur");
+                System.out.println("| Beim Betrachte fÃ¤llt dir ein kleiner Tisch auf vor deinem Stuhl. Du entdeckst eine Botschaft.");
+                System.out.println("*******************  Botschaft  **********************");
+                System.out.println("* (1) Botschaft ansehen                              *");
+                System.out.println("* (2) Inventar Ã¶ffnen                             *");
+                System.out.println("------------------------------------------------------");
+                System.out.println("Deine Wahl:                                    ");
+                String y = scanner.nextLine();
+                if (y.equals("botschaft ansehen")){
+                    System.out.println("\tGUCK NACH UNTEN");
+                    a=1;
+                }
+                    else if (y.equals("inventar Ã¶ffnen")){
+                        Tasche.aufrufen();
+                }
+            }
+        }
+    }
+    
+    static void EnterKey(){
+        System.out.println("\t *Press \"ENTER\" to continue...*");
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine();
+    }
+}

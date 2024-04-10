@@ -1,0 +1,290 @@
+
+/* #### ### ########## #
+ * ####:        ##### ###
+ * ########:    #######
+ * ##:          #########
+ */
+
+import ecs100.*;
+import java.util.*;
+import java.io.*;
+import java.awt.Color;
+
+
+/**
+ *  #### # ###### #### # ###### ######### ######## ####.
+ *  ######## ### ########### ##### #### ### ####### #### # ## # ##
+ *  #### (##### #### ####).
+ *  ### ###### ### # "####" ##### ### ####### ## ## ### ########.
+ *  #### ### ####### ### ######## ## ##### ####, #### ### ##### ########
+ *  #### ##### #### #### ### #####, ### #### ### #### ## #### ######## #### # ###
+ *  ## #### ### #### ## ##### "####".
+ *  ### #### ### ########## ## ### ####### ### ## ### ######## ### #######
+ *  ## #### ######## #####. 
+ *
+ *  ####### ######
+ *  ### ######## ### ########### ## ####### ## ### ###### #####.
+ *  ### ###### ########### #### ######### # ###, ####### ######.
+ *  ####### #### # ####(###### #, ###### #) ###### #### #### #### ###
+ *  ###### ## ### ######## #### ## ### ######### ########.
+ *  
+ *  ### ####### ### ### ### ######:
+ *    ####:  ## ##### ## ## ## # #######. #### ## ##### #### #####.
+ *    #####: ## ######### ## ### ####### #### #### #### ###### ## ### #####.
+ *    
+ *
+ *  ### #### ###### ## ######### #### ### ### ## ### ######## #### #### #
+ *   ########### ###### ### #### ###### ##### ## ### ##### ## ### ####.
+ *  ##### ###### ## ### #### ###### ## ########### ## ##### ### ######### ## #####.
+ *
+ *  ### #### ### ###### # ######## ## ### #### ##### ### #####.
+ *  ### ######## ###### (## ##### #####) ###### ## ########### ####
+ *  # ###### ###### ##.
+ *  
+ *  ### #### ### ### ### "####" ## "#####" ###### ## #### ### ######## ######
+ *  (## ### #####) ## ### #### ## ### #####, ## ##### #### ### ###### ##
+ *  ####### #### ### ######## ## ### ######## ######## ## ### ####.
+ *  ## ### ######## ######## ######## # ######, ### ####
+ *  ### ### ### "#####" ###### ## #### ### ######## ###### ## ### #####.
+ *  
+ *  ## ##### ### ### ##### ######### ## ### ####, ### #### ### ### ###
+ *  "######" ###### ## ### # ### (######) ###### ##### #### ## ##### ##
+ *  ### #### ## ### ######## ##### ########.
+ *
+ *  ### ##### ## ########### ## ## ######### ## #######.
+ *  ## ### ######### ## ### #### ### ##### ###### ## #####.
+ *  ####### ###### ## ##### ## ### ### ## ### #####.
+ *  ### ##### ###### ## ######### ## #### ## ### ### ## ### ######## ####.
+ */
+
+public class DominoGame implements UIMouseListener, UIButtonListener{
+    private Domino[] hand;            
+    private ArrayList<Domino> table;  
+
+    private int selectedPos = 0;      
+
+
+    private static final int HAND_LEFT = 60; 
+    private static final int HAND_TOP = 5;   
+    private static final int HAND_HEIGHT = Domino.HEIGHT+8;
+    private static final int DOMINO_SPACING = Domino.WIDTH+4;
+
+    private static final int TABLE_LEFT = 10;                
+    private static final int TABLE_TOP = HAND_TOP + HAND_HEIGHT + 10;   
+   
+    
+    /**  Constructor:
+     * Initialise the hand and table fields,
+     * set up the GUI (buttons and mouse listener)
+     *  restart the game
+     */
+    public DominoGame(){
+        /*# YOUR CODE HERE */
+        UI.initialise();
+        UI.setMouseListener(this);
+        UI.setMouseMotionListener(this);
+        UI.addButton("Pickup", this);
+        UI.addButton("Place", this);
+        UI.addButton("Flip", this);
+        UI.addButton("Left", this);
+        UI.addButton("Right", this);
+        UI.addButton("Restart", this);
+        UI.addButton("Quit", this);
+        
+        this.hand = new Domino[7];
+        for (int i = 0; i < this.hand.length; i++)
+        {
+            if (this.hand[i] == null)
+            {
+                this.hand[i] = new Domino();
+            }
+		}
+        this.redraw();
+    }
+
+    /** If the mouse is released over the hand, then set the selected position
+        and redraw */
+    public void mousePerformed(String action, double x, double y){
+        if (action.equals("released")){
+            if (y >= HAND_TOP && 
+                y <= HAND_TOP + HAND_HEIGHT && 
+                x >= HAND_LEFT &&
+                x <= HAND_LEFT+this.hand.length*DOMINO_SPACING) {
+                this.selectedPos = (int) ((x-HAND_LEFT)/DOMINO_SPACING);
+                UI.clearText();
+                UI.println("selected "+this.selectedPos);
+                this.redraw();
+            }
+        }
+    }
+    
+    /**
+     * Respond to the buttons by calling methods.
+     * (Must match names of buttons in constructor)
+     */
+    public void buttonPerformed(String button){
+        if (button.equals("Pickup"))     { this.pickupDomino(); }
+        else if (button.equals("Place")) { this.placeDomino(); }
+        else if (button.equals("Flip"))  { this.flipDomino(); }
+        else if (button.equals("Left"))  { this.moveLeft(); }
+        else if (button.equals("Right")) { this.moveRight(); }
+        else if (button.equals("Restart")) { this.restart(); }
+        else if (button.equals("Quit"))  { UI.quit(); }
+        this.redraw();
+    }
+
+
+    /**
+     * Restart the game:
+     *  set the table to be empty,
+     *  set the hand to have no dominos
+     */
+    public void restart(){
+        /*# YOUR CODE HERE */
+        UI.clearText();
+        this.hand = new Domino[7];
+        for (int i = 0; i < this.hand.length; i++)
+        {
+            if (this.hand[i] == null)
+            {
+                this.hand[i] = new Domino();
+            }
+		}
+        redraw();
+    }
+
+
+    /**
+     * If there is at least one empty position on the hand, then
+     * create a new random domino and put it into the first empty position on the hand.
+     */
+    public void pickupDomino(){
+        /*# YOUR CODE HERE */
+        UI.clearText();
+        for (int i = 0; i < this.hand.length; i++)
+        {
+            if (this.hand[i] == null)
+            {
+                this.hand[i] = new Domino();
+                redraw();
+                UI.println("Picked up Domino in position " + i);
+                break;
+            }
+            if ((i == 5) && (this.hand[i] != null))
+            {
+                UI.println("Hand alredy full");
+            }
+        }
+        
+    }
+
+    /**
+     *  Redraw the table and the hand.
+     *  To work with the code above, this needs to use the constants:
+     *   - DOMINO_SPACING, HAND_HEIGHT, HAND_LEFT, HAND_TOP, TABLE_LEFT, TABLE_TOP
+     *   See the descriptions where these fields are defined.
+     *  Needs to clear the graphics pane,
+     *  then draw the hand with all its dominos, 
+     *  then outline the selected position on the hand
+     *  then draw the rows of dominos on the table.
+     */
+    public void redraw(){
+        /*# YOUR CODE HERE */
+        UI.clearGraphics();
+        double x = HAND_LEFT;
+        double y = HAND_TOP;
+        for (int i = 0; i < this.hand.length - 1; i++)
+        {
+            if (this.hand[i] == null)
+            {
+                x = x + DOMINO_SPACING;
+            }
+            else
+            {
+                this.hand[i].draw(x, y);
+                x = x + DOMINO_SPACING;
+            }
+        }
+        UI.repaintGraphics();
+    }
+
+    /**
+     * Move domino from selected position on hand (if there is domino there) to the table
+     */
+    public void placeDomino(){
+        /*# YOUR CODE HERE */
+        
+        ArrayList <Domino> table = new ArrayList<Domino>();
+        Domino temp = new Domino()
+        this.table.add(new Domino());
+        this.hand[this.selectedPos] = null;
+        redraw();
+
+
+    }
+
+    /**
+     * If there is a domino at the selected position in the hand, 
+     * flip it over.
+     */
+    public void flipDomino(){
+        /*# YOUR CODE HERE */
+        
+        this.hand[this.selectedPos].flip();
+    
+    }
+
+    /**
+     * Swap the contents of the selected position on hand with the
+     * position on its left (if there is such a position)
+     * and also decrement the selected position to follow the domino 
+     */
+    public void moveLeft(){
+        /*# YOUR CODE HERE */
+        
+        if ((selectedPos > 0))
+        {
+            this.hand[6] = this.hand[this.selectedPos];
+            this.hand[this.selectedPos] = this.hand[this.selectedPos - 1];
+            this.hand[this.selectedPos - 1] = this.hand[6];
+            redraw();
+        }
+        else
+        {
+            UI.println("Cannot move");
+        }
+
+
+    }
+
+    /**
+     * Swap the contents of the selected position on hand with the
+     *  position on its right (if there is such a position)
+     *  and also increment the selected position to follow the domino 
+     */
+    public void moveRight(){
+        /*# YOUR CODE HERE */
+        
+        if ((selectedPos < 5))
+        {
+            this.hand[6] = this.hand[this.selectedPos];
+            this.hand[this.selectedPos] = this.hand[this.selectedPos + 1];
+            this.hand[this.selectedPos + 1] = this.hand[6];
+            redraw();
+        }
+        else
+        {
+            UI.println("Cannot move");
+        }
+
+
+    }
+
+
+    public static void main(String[] args){
+        UI.setImmediateRepaint(false);
+        DominoGame obj = new DominoGame();
+        
+    }   
+
+}

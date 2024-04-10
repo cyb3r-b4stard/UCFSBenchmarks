@@ -1,0 +1,263 @@
+import java.awt.*;
+import javax.swing.*;
+import java.awt.event.*;
+import java.io.File;
+import java.io.*;
+
+public class Minesweeper extends JFrame  
+{
+    private JFrame frame;
+    
+    private static JFileChooser saveFile = new JFileChooser(System.getProperty("user.home"));
+    private JButton gridButton;
+    private JTextField inputPlayerName;
+    private JLabel scoreLbl;
+    private JButton playButton;
+    private JLabel minesNotFoundLbl;
+    private JLabel gamesCompletedLbl;
+    private boolean gamePlaying;
+    
+    private int row; 
+    private int column; 
+    
+    private JButton buttonGrid[][] ;
+    
+    
+    public Minesweeper()
+    {
+        row = 20;
+        column = 20;
+        buttonGrid = new JButton[row][column];
+        makeFrame();
+        gamePlaying = false;
+        
+    }
+    
+    /**
+     * Create frame and set the frame layout.
+     * Create the minesweeper grid by adding a 20 x 20 grid of buttons.
+     */
+    
+    public void makeFrame()
+    {
+        frame = new JFrame("Minesweeper");
+        
+        Container contentPane = frame.getContentPane();
+        contentPane.setLayout(new BorderLayout());
+        
+        JPanel gamePanel = new JPanel();
+        gamePanel.setLayout(new GridLayout(row,column));
+        contentPane.add(gamePanel, BorderLayout.CENTER);
+        for(int x=0; x < row; x++)
+        {
+            for(int y=0; y < column; y++)
+            {
+                buttonGrid[x][y] = new JButton();
+                buttonGrid[x][y].setSize(row, column);
+                final int buttonX = x;
+                final int buttonY = y;
+                buttonGrid[x][y].addMouseListener(new MouseAdapter() {
+                    public void mouseClicked(MouseEvent e)
+                    {
+                        if(e.getButton() == MouseEvent.BUTTON1){
+                            leftMouseClicked(buttonX, buttonY);
+                        }
+                        else if(e.getButton() == MouseEvent.BUTTON3){
+                            rightMouseClicked(buttonX, buttonY);
+                        }
+                    }
+                });     
+                gamePanel.add(buttonGrid[x][y]);
+            }
+        }
+        
+        
+        JPanel playerInfoPanel = new JPanel();
+        playerInfoPanel.setLayout(new GridLayout(0,1));
+
+        inputPlayerName = new JTextField("Insert Name Here");
+        playerInfoPanel.add(inputPlayerName);
+        
+        scoreLbl = new JLabel("Score: 90");
+        playerInfoPanel.add(scoreLbl);
+        
+        playButton = new JButton("Play");
+            playButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    playGame();
+                }
+            });
+        playerInfoPanel.add(playButton);
+        
+        JPanel componentFlow = new JPanel();
+        componentFlow.add(playerInfoPanel);
+        contentPane.add(componentFlow, BorderLayout.EAST);
+        
+        
+        JPanel statusBarPanel = new JPanel();
+        statusBarPanel.setLayout(new FlowLayout());
+        
+        minesNotFoundLbl = new JLabel("Mines Remaining: ");
+        statusBarPanel.add(minesNotFoundLbl);
+        
+        gamesCompletedLbl = new JLabel("Games Completed: ");
+        statusBarPanel.add(gamesCompletedLbl);
+        
+        JPanel bottomComponentFlow = new JPanel();
+        bottomComponentFlow.add(statusBarPanel);
+        contentPane.add(bottomComponentFlow, BorderLayout.SOUTH);
+        
+        makeMenuBar(frame);
+        
+        frame.pack();
+        frame.setVisible(true);
+        
+    }
+    
+    /**
+     * Make the menu bar and menu items.
+     * @parameter the frame created in the makeFrame() method. 
+       */
+    public void makeMenuBar(JFrame frame)
+    {
+        
+        JMenuBar menubar = new JMenuBar();
+        frame.setJMenuBar(menubar);
+        
+        JMenu fileMenu = new JMenu("File");
+        menubar.add(fileMenu);
+        
+        JMenuItem saveGame = new JMenuItem("Save");
+                    saveGame.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    saveGameAs();
+                }
+            });
+        fileMenu.add(saveGame);
+
+        JMenuItem newGameItem = new JMenuItem("New Game");
+                    newGameItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    openNewGame();
+                }
+            });
+        fileMenu.add(newGameItem);
+        
+        JMenu gameOptionsMenu = new JMenu("Options");
+        menubar.add(gameOptionsMenu);
+        
+        JMenuItem gridSizeItem = new JMenuItem("Change grid size");
+            gridSizeItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    setGridSize();
+                }
+            });
+       gameOptionsMenu.add(gridSizeItem);
+        
+       JMenuItem numberOfMinesItem = new JMenuItem("Number of Mines");
+           numberOfMinesItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    setMines();
+                }
+            });
+       gameOptionsMenu.add(numberOfMinesItem);       
+       
+       
+    }
+    
+    public void playGame()
+    {
+        if(inputPlayerName.getText().equals(" ") || inputPlayerName.getText().equals("Insert Name Here")) {
+             JOptionPane.showMessageDialog(frame, "Please enter a name In the text field above.");
+             System.out.println("Error");
+        }
+        else {
+            gamePlaying = true;
+            System.out.println("No Error");
+        }
+    }
+    
+    public void saveGameAs()
+    {
+        System.out.println("Save Game");
+    }
+
+    
+    /**
+     * Method to open a new game.
+     */
+    public void openNewGame()
+    {
+        if(gamePlaying){
+            int yesOrNo = JOptionPane.showConfirmDialog(null, "New Game?", "Are you sure you want to start a new game?", JOptionPane.YES_NO_OPTION);
+            if(yesOrNo == JOptionPane.YES_OPTION) {
+                frame.dispose();
+                makeFrame();
+            }
+        }
+    }
+    
+    /**
+     * Set the grid size.
+     */
+     public void setGridSize()
+    {
+        System.out.println("Set Grid Size ");
+        
+        String newRows = JOptionPane.showInputDialog(frame, "Number of Rows: ");
+        String newColumns = JOptionPane.showInputDialog(frame, "Number of Columns: ");
+        
+        if(Integer.parseInt(newRows) > 0 && Integer.parseInt(newColumns) > 0) {
+            frame.dispose();
+            row = Integer.parseInt(newRows); 
+            column = Integer.parseInt(newColumns);
+            buttonGrid = new JButton[row][column];
+            makeFrame();
+        }
+        else {
+            JOptionPane.showMessageDialog(frame, "Please enter a value more than 0");
+        }
+        
+    }
+    
+    public void leftMouseClicked(int x, int y)
+    {
+        System.out.println("left mouse clicked");
+        if(gamePlaying){
+            buttonGrid[x][y].setText("Y");
+        }
+        else {
+            JOptionPane.showMessageDialog(frame, "Please enter a name in the text field and then press play.");
+        }
+    }
+    
+    public void rightMouseClicked(int x, int y)
+    {
+        System.out.println("right mouse clicked");
+        Mines m = new Mines();
+        if(gamePlaying){
+            buttonGrid[x][y].setText("X");
+            minesNotFoundLbl.setText("Mines Remaining: " + (m.getNumberOfMines()-1));
+        }
+        else {
+            JOptionPane.showMessageDialog(frame, "Please enter a name in the text field and then press play.");
+        }
+        
+    }
+   
+    /**
+     * Set the number of mines in the grid.
+     */
+     public void setMines()
+    {
+        Mines m = new Mines();
+        String newNumberOfMines = JOptionPane.showInputDialog(frame, "Current Number of Mines: "+ m.getNumberOfMines() +"\nSet Number of Mines: ");
+        int noOfMines = Integer.parseInt(newNumberOfMines)
+        if(noOfMines > 0 && noOfMines != null){
+            m.setNumberOfMines(noOfMines);
+        }
+        else {
+             JOptionPane.showMessageDialog(frame, "Please enter a value that is more than 0");
+            }
+        }
+   }

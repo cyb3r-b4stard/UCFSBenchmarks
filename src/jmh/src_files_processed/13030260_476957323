@@ -1,0 +1,130 @@
+import java.util.*;
+
+public abstract class BoardGame {
+    public static final int ILLEGAL = 0;
+    public static final int ONGOING = 1;
+    public static final int TIE = 2;
+    public static final int X_WON = 3;
+    public static final int O_WON = 4;
+    public static final int NO_MOVE = 5;
+    public static final int GAME_OVER = 6;
+
+    private MoveStrategy strategy= new FirstAvailableMove();
+    private int size;
+    protected int status;
+    protected char[][] grid = new char[size][size;
+    protected char turn;
+    public BoardGame(int size,MoveStrategy strategy) {
+        status = ONGOING;
+        this.strategy= strategy;
+        this.size = size;
+
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid.length; j++) {
+                grid[i][j] = '_';
+            }
+        }
+        turn = 'x';
+    }
+    
+    public BoardGame(BoardGame game)
+    {
+
+        this.size= game.size;
+        this.status = game.status;
+        this.turn = game.turn;
+        
+        for(int i =0; i<this.size; i++)
+        {
+            for(int j=0; j<this.size; j++)
+            {
+                this.grid[i][j]=game.grid[i][j];
+            }
+        }
+    
+    
+    }
+    
+    
+    public void toggleTurn() {
+        if (turn == 'x') turn = 'o';
+        else turn = 'x';
+    }
+    
+    public char getTurn() {return turn;}
+    
+    protected ArrayList<Move> generateMoves() {
+        ArrayList<Move> moves = new ArrayList<Move>();
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                Move m = new Move(i,j);
+                if (canPlay(m)) {
+                    moves.add(m);
+                }
+            }
+        }
+        return moves;
+    }
+    
+    protected void displayStatus(int s) {
+        switch (s) {
+            case X_WON: System.out.println("X won!"); print(); break;
+            case O_WON: System.out.println("O won!"); print(); break;
+            case TIE: System.out.println("It's a tie!"); print(); break;
+            case ILLEGAL: System.out.println("Illegal move!"); break;
+            case ONGOING: break;
+            default: break;
+        }
+    }
+    
+    protected abstract boolean canPlay(Move m);
+    
+    public abstract int play(Move m);
+    
+    protected int machinePlay() {
+        Move move= strategy.selectMove(this);
+        if (move == null) return NO_MOVE; 
+        else return play(move);
+    }
+   
+    public void setMoveStrategy(MoveStrategy str)
+    {
+        this.strategy =str;
+    }
+        
+    
+    
+    protected Move getMove(String input) {
+        int row;
+        int col;
+        String[] smove = input.split("[, ]+");
+        if (smove.length != 2)  return null;
+        try {
+            row = Integer.parseInt(smove[0]);
+            col = Integer.parseInt(smove[1]);
+        }
+        catch (Exception e) {return null;}
+        return new Move(row,col);
+    }
+    
+    public String toString() {
+        String s = "";
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid.length; j++) {
+                s += grid[i][j];
+            }
+            s += "\n";
+        }
+        return s;
+    }
+    
+    protected abstract void determineWinner();
+    
+        
+    public void print() {
+        System.out.println(this);
+    }
+    
+    public abstract int evaluateMove(Move m);
+    
+}

@@ -1,0 +1,281 @@
+/** #### ## ### ####### ####.
+ * ## ### ### #### ### ####### ##### ## ########### #### 
+ * ### ####### ## ### ## ### ####### ### #### ## ### ####
+ * ##### #######. ## ### #### ## ####### ##### #### ###
+ * ###### ####. ## ### #### ### ###### #####.
+ * 
+ * 
+ * @###### #### # ######
+ * @#### ######## #, ####
+ **/
+
+import java.util.Arrays;
+import java.util.Scanner;
+public class Hangman {
+    char[] theWord;
+    char[] guess;
+    char[] lettersSeen;
+    int maxIncorrect = 7;
+    int guessedLetters = 0;
+    boolean won = false;
+    String[] words = new String[12];
+    String guesses = new String();
+  
+    public Hangman(Scanner wordsFile) {
+        int counter = 0;
+        while(wordsFile.hasNext()) {
+            words[counter] = wordsFile.next();
+            counter++;
+        }
+    }
+    
+    public void play() {
+        initialize();
+        while(guessedLetters < maxIncorrect ) {
+            char letterGuessed = getNextGuess();
+            boolean seen = hasUsedBefore(letterGuessed);
+            if(!seen) {
+                boolean guessCorrect = rightGuess(letterGuessed);
+                displayGame();
+            } else {
+                System.out.println("Letter has been used before");
+            }
+
+            if (hasWon()) {
+                displayWin();
+                return;
+            }
+
+        }
+        displayLose();
+    }
+    
+    public void displayGameIntro() {
+        System.out.println("Welcome to the hangperson game ...");
+        System.out.println("To play, guess a letter to try to guess the word.");
+        System.out.println("Every time you choose an incorrect letter another");
+        System.out.println("body part appears on the gallows. If you guess the");
+        System.out.println("word before you're hung, you win :-)");
+        System.out.println("If you get hung you lose :-(");
+        System.out.println();
+        System.out.println("Time to guess ...");
+        System.out.println();
+        System.out.println("|-----|-   ");
+        System.out.println("|          ");
+        System.out.println("|          ");
+        System.out.println("|          "); 
+        System.out.println("|          "); 
+        System.out.println("|__________");
+    }
+
+    public void displayLose() {
+        System.out.println("Too bad, you lose!");
+        System.out.println("The word was ==> " + Arrays.toString(words[]));
+    }
+    
+    public void displayWin() {
+        System.out.println("Congratulations, you win!!!");
+    }
+
+    public void initialize() {
+        String word = words[(int)(Math.random()*words.length)];
+        theWord = new char[word.length()];
+        guess = new char[word.length()];
+
+        for (int i = 0; i < word.length(); i++) {
+            theWord[i] = word.charAt(i);
+            guess[i] = '-';
+        }
+
+        lettersSeen = new char[26];
+        for (int i = 0; i < 26; i++) {
+            lettersSeen[i] = '-';
+        }
+        guessedLetters = 0;
+    }
+
+    public char getNextGuess(){
+        Scanner keyboard = new Scanner(System.in);
+        boolean askAgain = true;
+        System.out.println();
+        System.out.print("Choose a letter => ");
+        String input = keyboard.next();
+        while(noChar(input) ) {
+            System.out.println("Invalid, don't you know your ABCs?");
+            System.out.print("\nChoose a letter => ");
+            input = keyboard.next();
+        }
+        char letterGuessed = input.charAt(0);
+        return letterGuessed;
+    }
+
+    public boolean noChar(String input) {
+        boolean notChar = true;
+        if(Character.isLetter(input.charAt(0))) {
+            notChar = false;
+        }
+        return notChar;
+    }
+
+    public boolean hasUsedBefore(char c) {
+        String alpha = "abcdefghijklmnopqrstuvwxyz";
+        char letter = Character.toLowerCase(c); 
+        int index = alpha.indexOf(letter);
+        boolean seen = lettersSeen[index] != '-';
+        lettersSeen[index] = letter;
+        return seen;
+    }
+
+    public boolean rightGuess(char letter) {
+        boolean guessCorrect = false;
+
+        for (int i = 0; i < theWord.length; i++) {
+
+            if (theWord[i] == letter) {
+                guess[i] = letter;
+                guessCorrect = true;
+            }
+        }
+
+        if (!guessCorrect) {
+            guessedLetters++;
+        }
+        return guessCorrect;
+    }
+
+    public boolean hasWon() {
+        boolean won = true; 
+        for (int i = 0; i < guess.length && won; i++) {
+            if (guess[i] == '-') {
+                won = false;
+            }
+        }
+        return won;
+    }
+
+    public void displayGame() {
+        displayHangman();
+        displayLettersGuessed();
+        displayWrongGuesses();
+        displayWordsAsOfNow();
+    }
+
+    public void displayWrongGuesses() {
+        System.out.println("Number of wrong guesses => " + guessedLetters);
+    }
+
+    public void displayWordsAsOfNow() {
+        String wordSoFar = "";
+        for (int i = 0; i < guess.length; i++) {
+            wordSoFar += guess[i];
+        }
+        System.out.println("The word so far => " + wordSoFar);
+    }
+
+    public void displayLettersGuessed() {
+        String lettersGuessed = "";
+        for (int i = 0; i < lettersSeen.length; i++) {
+
+            if (lettersSeen[i] != '-') {
+                lettersGuessed += lettersSeen[i] + " ";
+            }
+        }
+        System.out.println("Letters guessed already => " + lettersGuessed);
+    }
+
+    public void displayHangman( ){
+        String hangmanStand = "\n";
+
+        if(guessedLetters==1)
+            displayBody1();
+        if(guessedLetters==2)
+            displayBody2();
+        if(guessedLetters==3)
+            displayBody3();
+        if(guessedLetters==4)
+            displayBody4();
+        if(guessedLetters==5)
+            displayBody5();
+        if(guessedLetters==6)
+            displayBody6();
+        if(guessedLetters==7)
+            displayBody7();
+
+        System.out.println(hangmanStand);
+        System.out.println();
+    }
+
+    public void displayGallow()
+    {
+        System.out.println("|-----|-   ");
+        System.out.println("|          ");
+        System.out.println("|          ");
+        System.out.println("|          "); 
+        System.out.println("|          "); 
+        System.out.println("|__________");
+    }
+
+    public void displayBody1() {
+        System.out.println("|-----|-   ");
+        System.out.println("|     O    ");
+        System.out.println("|          ");
+        System.out.println("|          "); 
+        System.out.println("|          "); 
+        System.out.println("|__________");
+    }
+    
+    public void displayBody2() {
+        System.out.println("|-----|-   ");
+        System.out.println("|     O    ");
+        System.out.println("|     |    ");
+        System.out.println("|          "); 
+        System.out.println("|          "); 
+        System.out.println("|__________");
+    }
+
+    public void displayBody3() {
+        System.out.println("|-----|-   ");
+        System.out.println("|     O    ");
+        System.out.println("|     |    ");
+        System.out.println("|     |    ");
+        System.out.println("|          "); 
+        System.out.println("|__________");
+    }
+    
+    public void displayBody4() {
+        System.out.println("|-----|-   ");
+        System.out.println("|     O    ");
+        System.out.println("|    \\|   ");
+        System.out.println("|     |    ");
+        System.out.println("|          "); 
+        System.out.println("|__________");
+    }
+
+    public void displayBody5() {
+        System.out.println("|-----|-   ");
+        System.out.println("|     O    ");
+        System.out.println("|    \\|/  ");
+        System.out.println("|     |    "); 
+        System.out.println("|     |    "); 
+        System.out.println("|__________");
+    }
+
+    public void displayBody6() {
+        System.out.println("|-----|-   ");
+        System.out.println("|     O    ");
+        System.out.println("|    \\|/  ");
+        System.out.println("|     |    ");
+        System.out.println("|    /     "); 
+        System.out.println("|__________");
+    }
+
+    public void displayBody7() {
+        System.out.println("|-----|-   ");
+        System.out.println("|     O    ");
+        System.out.println("|    \\|/  ");
+        System.out.println("|     |    ");
+        System.out.println("|    / \\  ");
+        System.out.println("|__________");
+    }
+
+}

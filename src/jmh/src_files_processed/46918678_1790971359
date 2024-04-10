@@ -1,0 +1,458 @@
+
+import java.util.Random;
+class Main
+{
+    static char SOIL = '.';
+    static char SEED = 'S';
+    static char PLANT = 'P';
+    static char ROCKS = 'X';
+    static int FIELDLENGTH = 20;
+    static int FIELDWIDTH = 35;
+
+    static AQAconsole2017 console = new AQAconsole2017(); 
+
+    static int GetHowLongToRun()
+    {
+        int Years = 0;
+        console.println("Welcome to the Plant Growing Simulation");
+        console.println();
+        console.println("You can step through the simulation a year at a time");
+        console.println("or run the simulation for 0 to 5 years");
+        console.println("How many years do you want the simulation to run?");
+        do
+        {
+            Years = console.readInteger("Enter a number between 1 and 5, or -1 for stepping mode: ");
+            if (Years < -1 || Years > 5 || Years == 0)
+            {
+                console.println(Years + " is out of the range, please try again");
+            }
+        } while (Years < -1 || Years > 5 || Years == 0);
+        return Years;
+    }
+    
+    static void CreateNewField(char[][] Field)
+    {
+        Random RandomInt = new Random();
+        int Row = 0;
+        int Column = 0;
+        for (Row = 0; Row < FIELDLENGTH; Row++)
+        {
+            for (Column = 0; Column < FIELDWIDTH; Column++)
+            {
+                Field[Row][Column] = SOIL;
+            }
+        }
+
+        char option = console.readChar("Would you like to enter a start position (Y/N) ");
+        if ((option=='Y')||(option=='y')){
+            do{
+                Row=console.readInteger("Enter row position ");
+                if ((Row>=FIELDLENGTH)||(Row<0)){
+                    console.println("Please enter a vaid row");
+                }
+            }while((Row>=FIELDLENGTH)||(Row<0));
+            do{
+                Column=console.readInteger("Enter Column position ");
+                if ((Column>=FIELDWIDTH)||(Column<0)){
+                    console.println("Please enter a vaid Column");
+                }
+            }while((Column>=FIELDWIDTH)||(Column<0));
+            Field[Row][Column] = SEED;
+        }
+        else {
+            Row = FIELDLENGTH / 2;
+            Column = FIELDWIDTH / 2;
+            Field[Row][Column] = SEED;
+        }
+
+        OR
+        
+        static void specificSeed(char[][] Field)
+        {
+        int Row = 0;
+        int Column = 0;
+        for (Row = 0; Row < FIELDLENGTH; Row++)
+        {
+            for (Column = 0; Column < FIELDWIDTH; Column++)
+            {
+                Field[Row][Column] = SOIL;
+            }
+        }
+
+ 
+        console.println("There are 20 rows and 35 columns.");
+
+
+        do
+        {
+            console.println("What row do you want to plant it on?");
+            Row = console.readInteger("");
+
+ 
+            if (Row < 1 || Row > 20)
+            {
+                console.println("Sorry, that is out of bounds.");
+            }
+        } while (Row < 1 || Row > 20);
+        Row = Row - 1;
+        do
+        {
+            console.println("What column do you want to plant it on?");
+            Column = console.readInteger("");
+            if (Column < 1 || Column > 35)
+            {
+                console.println("Sorry, that is out of bounds.");
+            }
+        } while (Column < 1 || Column > 35);
+        Column = Column - 1;
+        Field[Row][Column] = SEED;
+    }
+    
+    static void specificSeed(char[][] Field)
+    {
+        int Row = 0;
+        int Column = 0;
+
+        for (Row = 0; Row < FIELDLENGTH; Row++)
+        {
+            for (Column = 0; Column < FIELDWIDTH; Column++)
+            {
+                Field[Row][Column] = SOIL;
+            }
+        }
+        console.println("There are 20 rows and 35 columns.");
+        do
+        {
+            console.println("What row do you want to plant it on?");
+            Row = console.readInteger("");
+            if (Row < 1 || Row > 20)
+            {
+                console.println("Sorry, that is out of bounds.");
+            }
+        } while (Row < 1 || Row > 20);
+        Row = Row - 1;
+        do
+        {
+            console.println("What column do you want to plant it on?");
+            Column = console.readInteger("");
+
+            if (Column < 1 || Column > 35)
+            {
+                console.println("Sorry, that is out of bounds.");
+            }
+        } while (Column < 1 || Column > 35);
+        Column = Column - 1;
+        Field[Row][Column] = SEED;
+    }
+
+    static void displayMenu(char[][] Field)
+    {
+        int response = 0;
+        int amount = 0;
+
+        console.println();
+        console.println("OPTIONS");
+        console.println("1. Load a file");
+        console.println("2. Set seed location");
+        console.println("3. Random seed");
+        console.println();
+        response = console.readInteger("");
+        console.println();
+
+        if (response == 1)
+        {
+            ReadFile(Field);
+        }
+        else if (response == 2)
+        {
+            specificSeed(Field);
+        }
+        else if (response == 3)
+        {
+            do
+            {
+                console.println("How many seeds do you want to plant randomly?");
+                amount = console.readInteger("");
+
+                if (amount < 0 || amount > 701)
+                {
+                    console.println("That is an invalid amount of seeds, please try again.");
+                }
+            } while (amount < 1 || amount > 700);
+
+        }
+    }
+
+    static void ReadFile(char[][] Field)
+    {
+        String FileName = "";
+        String FieldRow = "";
+        console.print("Enter file name: ");
+        FileName = console.readLine();
+        try
+        {
+            for (int Row = 0; Row < FIELDLENGTH; Row++)
+            {
+                for (int Column = 0; Column < FIELDWIDTH; Column++)
+                {
+                    Field[Row][Column] = SOIL;
+                }
+            }
+            AQAReadTextFile2017 FileHandle = new AQAReadTextFile2017(FileName);
+            for (int Row = 0; Row < FIELDLENGTH; Row++)
+            {
+                FieldRow = FileHandle.readLine();
+                for (int Column = 0; Column < FIELDWIDTH; Column++)
+                {
+                    Field[Row][Column] = FieldRow.charAt(Column);
+                }
+            }
+            FileHandle.closeFile();
+        }
+        catch(Exception e)
+        {
+            console.println ("Error! Incorrect file name is entered!");
+            ReadFile(Field);
+        }
+    }
+
+    static void InitialiseField(char[][] Field)
+    {
+        String Response = "";
+        console.print("Do you want to load a file with seed positions? (Y/N): ");
+        Response = console.readLine();
+        if (Response.equals("Y"))
+        {
+            ReadFile(Field);
+        }
+        else
+        {
+            CreateNewField(Field);
+        }
+    }
+
+    static void Display(char[][] Field, String Season, int Year)
+    {
+        console.println("Season: " + Season + "  Year number: " + Year);
+        for( int x =0;x<FIELDWIDTH;x++){
+            if(x<10){console.print("  "+x);}
+            else{console.print(" "+x);}
+        }
+        console.println();
+        for (int Row = 0; Row < FIELDLENGTH; Row++)
+        {
+            for (int Column = 0; Column < FIELDWIDTH; Column++)
+            {
+                console.print("  "+Field[Row][Column]);
+            }
+            console.println("|" + String.format("%3d", Row));
+        }
+    }
+
+    static void CountPlants(char[][] Field)
+    {
+        int NumberOfPlants = 0;
+        for (int Row = 0; Row < FIELDLENGTH; Row++)
+        {
+            for (int Column = 0; Column < FIELDWIDTH; Column++)
+            {
+                if (Field[Row][Column] == PLANT)
+                {
+                    NumberOfPlants++;
+                }
+            }
+        }
+        if (NumberOfPlants == 1)
+        {
+            console.println("There is 1 plant growing");
+        }
+        else
+        {
+            console.println("There are " + NumberOfPlants + " plants growing");
+        }
+    }
+
+    static void SimulateSpring(char[][] Field)
+    {
+        int PlantCount = 0;
+        Boolean Frost = false;
+        for (int Row = 0; Row < FIELDLENGTH; Row++)
+        {
+            for (int Column = 0; Column < FIELDWIDTH; Column++)
+            {
+                if (Field[Row][Column] == SEED)
+                {
+                    Field[Row][Column] = PLANT;
+                }
+            }
+        }
+        CountPlants(Field);
+        Random RandomInt = new Random();
+        if (RandomInt.nextInt(2) == 1)
+        {
+            Frost = true;
+        }
+        else
+        {
+            Frost = false;
+        }
+        if (Frost)
+        {
+            PlantCount = 0;
+            for (int Row = 0; Row < FIELDLENGTH; Row++)
+            {
+                for (int Column = 0; Column < FIELDWIDTH; Column++)
+                {
+                    if (Field[Row][Column] == PLANT)
+                    {
+                        PlantCount++;
+                        if (PlantCount % 3 == 0)
+                        {
+                            Field[Row][Column] = SOIL;
+                        }
+                    }
+                }
+            }
+            console.println("There has been a frost");
+            CountPlants(Field);
+        }
+    }
+
+    static void SimulateSummer(char[][] Field)
+    {
+        Random RandomInt = new Random();
+        int RainFall = RandomInt.nextInt(3);
+        int PlantCount = 0;
+        if (RainFall == 0)
+        {
+            PlantCount = 0;
+            for (int Row = 0; Row < FIELDLENGTH; Row++)
+            {
+                for (int Column = 0; Column < FIELDWIDTH; Column++)
+                {
+                    if (Field[Row][Column] == PLANT)
+                    {
+                        PlantCount++;
+                        if (PlantCount % 2 == 0)
+                        {
+                            Field[Row][Column] = SOIL;
+                        }
+                    }
+                }
+            }
+            console.println("There has been a drought");
+            CountPlants(Field);
+        }
+    }
+
+    static void SeedLands(char[][] Field, int Row, int Column)
+    {
+        if (Row >= 0 && Row < FIELDLENGTH && Column >= 0 && Column < FIELDWIDTH)
+        {
+            if (Field[Row][Column] == SOIL)
+            {
+                Field[Row][Column] = SEED;
+            }
+        }
+    }
+
+    static void SimulateAutumn(char[][] Field)
+    {
+        for (int Row = 0; Row < FIELDLENGTH; Row++)
+        {
+            for (int Column = 0; Column < FIELDWIDTH; Column++)
+            {
+                if (Field[Row][Column] == PLANT)
+                {
+                    SeedLands(Field, Row - 1, Column - 1);
+                    SeedLands(Field, Row - 1, Column);
+                    SeedLands(Field, Row - 1, Column + 1);
+                    SeedLands(Field, Row, Column - 1);
+                    SeedLands(Field, Row, Column + 1);
+                    SeedLands(Field, Row + 1, Column - 1);
+                    SeedLands(Field, Row + 1, Column);
+                    SeedLands(Field, Row + 1, Column + 1);
+                }
+            }
+        }
+    }
+
+    static void SimulateWinter(char[][] Field)
+    {
+        for (int Row = 0; Row < FIELDLENGTH; Row++)
+        {
+            for (int Column = 0; Column < FIELDWIDTH; Column++)
+            {
+                if (Field[Row][Column] == PLANT)
+                {
+                    Field[Row][Column] = SOIL;
+                }
+            }
+        }
+    }
+
+    static void SimulateOneYear(char[][] Field, int Year)
+    {
+        SimulateSpring(Field);
+        Display(Field, "Spring", Year);
+        console.println("Press Enter to continue");
+        console.readLine();
+        SimulateSummer(Field);
+        Display(Field, "Summer", Year);
+        console.println("Press Enter to continue");
+        console.readLine();
+        SimulateAutumn(Field);
+        Display(Field, "Autumn", Year);
+        console.println("Press Enter to continue");
+        console.readLine();
+        SimulateWinter(Field);
+        Display(Field, "Winter", Year);
+        console.println("Press Enter to continue");
+        console.readLine();
+    }
+
+    private static void Simulation()
+    {
+        int YearsToRun;
+        char[][] Field = new char[FIELDLENGTH][FIELDWIDTH];
+        Boolean Continuing;
+        int Year;
+        String Response;
+        YearsToRun = GetHowLongToRun();
+        if (YearsToRun != 0)
+        {
+            InitialiseField(Field);
+            if (YearsToRun >= 1)
+            {
+                for (Year = 1; Year <= YearsToRun; Year++)
+                {
+                    SimulateOneYear(Field, Year);
+                }
+            }
+            else
+            {
+                Continuing = true;
+                Year = 0;
+                while (Continuing)
+                {
+                    Year++;
+                    SimulateOneYear(Field, Year);
+                    console.print("Press Enter to run simulation for another Year, Input X to stop: ");
+                    Response = console.readLine();
+                    if (Response.equals("x") || Response.equals("X"))
+                    {
+                        Continuing = false;
+                    }
+                }
+            }
+            console.println("End of Simulation");
+        }
+        console.readLine();
+    }
+
+    public static void main(String[] args)
+    {
+        Simulation();
+    }
+
+}

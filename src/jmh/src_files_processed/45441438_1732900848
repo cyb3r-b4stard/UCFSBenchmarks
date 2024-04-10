@@ -1,0 +1,141 @@
+
+/**
+ * ## ##### ### #
+ * # ####### ##### ###### ########### #### ##### ## ###### ### # #######
+ */
+public class Company {
+
+    private String name = "";	
+    private int year;
+    private int employees = 0;
+    private Company parent = null;
+
+    /**
+     * Overloaded Constructor 3-parameters
+     */
+    public Company( String name, int year, int employees) {
+        this( name, year, employees, null );	
+    } 
+
+    /**
+     * Overloaded Constructor 4-parameters
+     */
+    public Company( String name, int year, int employees, Company parent ) {
+
+        this.name = name;
+        this.year = year;
+        this.employees = employees;
+        this.parent = parent;
+    } 
+
+    /**
+     * Retrieves name of the company
+     */
+    public String getName() {
+        return name;
+
+    } 
+
+    /**
+     * Retrieves the parent company
+     */
+    public Company getParent() {
+        return parent;		
+    } 
+
+    /**
+     * Returns a String representation for the current company
+     */
+    public String toString() {
+        String description;
+        description = "Company " +  getName() + ". Founded " + year +". Has "+ employees +"  employees";
+        if (getParent() != null)
+            description += ". Parent: " + getParent().getName();	
+        return description;
+    } 
+
+    /**
+     * Returns true if the objects being compared contain identical data
+     */
+    public boolean equals ( Company c ){
+        return name.equals(c.name) &&
+        year == c.year &&
+        employees == c.employees && 
+        parent == c.parent;
+    }
+
+    /**
+     * Determines if this company has more employees than another company
+     * Pre-Conditions: none, so ensure that c not null
+     */
+    public boolean isBigger( Company c ) {
+        
+        boolean isBigger = false;
+        if (c != null) {
+            if(c.employees < this.employees){
+                return true;
+            }
+        }
+        return isBigger;
+    } 
+
+    /**
+     * Static method to compare any two companies based on numbers of employees,
+     *   returns true if c1 has more employees than c2. 
+     * Preconditions: none, so veriy that c1 and c2 are not null
+     */
+    public static boolean isBigger( Company c1, Company c2 ) {
+        boolean isBigger = false;
+        if(c1 != null && c2 != null){
+            if(c1.employees > c2.employees){
+                return true;
+            }
+           
+        }
+        return isBigger;
+    } 
+
+    /**
+     * copy method - returns a Company object that is a copy of the current object, but not an alias
+     */
+    public Company copy(Company){
+        return new Company(this);  
+    }
+
+    public static void main(String[] args) {
+
+        Company c1 = new Company("Apple", 1974, 10000);
+        Company c2 = new Company("Dell", 1980, 13500, c1);
+        Company c3 = new Company("Swell", 1987, 2500, c2);
+        Company c4 = new Company("Queue", 1999, 13500, c1);
+
+        System.out.println( "---------Print objects-----------" );
+        System.out.println( "c1:" + c1);
+        System.out.println( "c2:" + c2);
+        System.out.println( "c3:" + c3);
+        System.out.println( "c4:" + c4);
+        System.out.println();
+
+        if (c1.isBigger(c4))
+            System.out.println(c1.getName() + " has more employees than " + c4.getName());
+        else
+            System.out.println(c4.getName() + " has at least as many employees as " + c1.getName());
+        if (c4.isBigger(c1))
+            System.out.println(c4.getName() + " has more employees than " + c1.getName());
+        else
+            System.out.println(c1.getName() + " has at least as many employees as " + c4.getName());
+
+        if (Company.isBigger(c4, c2))
+            System.out.println(c4.getName() + " has more employees than " + c2.getName());
+        else
+            System.out.println(c2.getName() + " has at least as many employees as " + c4.getName());
+
+        Company c5 = c2.copy();
+
+        System.out.println( "\n---------Verify we made copies, not aliases -------" );
+        System.out.println("c2 & c5 are different (should be true): " + (c2 != c5));
+        System.out.println("c2 & c5 store same data (should be true): " + (c2.equals(c5)));
+
+    } 
+
+} 

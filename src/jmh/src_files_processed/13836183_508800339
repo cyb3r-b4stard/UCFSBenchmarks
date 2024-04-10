@@ -1,0 +1,177 @@
+import java.util.*;
+import EvaluateClass.*;
+/**
+ * ##### # ########### ## ##### ############ ####.
+ * 
+ * @###### ######### #### 
+ * @####### ##/##/####
+ */
+public class Kroegentocht
+{
+    private ArrayList<Cafebezoek> cafebezoeken;
+    private ArrayList<Adres> adressenLijst;
+
+    /**
+     * Constructor for objects of class Kroegentocht
+     */
+    public Kroegentocht()
+    {
+        cafebezoeken = new ArrayList<>();
+        adressenLijst = new ArrayList<>();
+    }
+
+  
+  
+    public void setAdres(String straat, int nummer, String gemeente){
+        adressenLijst.add(new Adres(straat,nummer,gemeente));
+    }
+    
+    public void setCafebezoek(String straat, int dag, int maand, int jaar, String soortCafe, int consumpties, int tijd){
+        for(int i=0; i<adressenLijst.size(); i++){
+            if(straat.equals(adressenLijst.get(i).getStraat())){
+                cafebezoeken.add(new Cafebezoek(adressenLijst.get(i), dag, maand, jaar, soortCafe, consumpties, tijd));
+                break;
+            }
+        }
+    }
+    
+    public void verwijderAdres(String straat){
+        for(int i=0; i<adressenlijst.size(); i++){
+            if(straat.equals(adressenLijst.get(i).getStraat())){
+                adressenLijst.remove(i);
+                break;
+            }
+        }
+    }
+    
+    public void verwijderCafebezoek(int dag, int maand, int jaar){
+        for(int i=0; i<cafebezoeken.size(); i++){
+            if (cafebezoeken.get(i).getDag() == dag && cafebezoeken.get(i).getMaand() == maand && cafebezoeken.get(i).getJaar()==jaar){
+                cafebezoeken.remove(i);
+                break;
+            }
+        }
+    }
+
+    public int getConsumpties(){
+        int totaal = 0;
+    
+        for(int i=0; i<cafebezoeken.size(); i++){
+            totaal = totaal + cafebezoeken.get(i).getConsumpties();
+        }
+        return totaal;
+    }
+
+    public int aantalCafebezoeken(int dagBegin, int maandBegin, int jaarBegin, int dagEind, int maandEind, int jaarEind){
+        int aantal = 0;
+        for(int i=0; i<cafebezoeken.size(); i++){
+            if(jaarBegin <=cafebezoeken.get(i).getJaar() && cafebezoeken.get(i).getJaar() <= jaarEind){
+                if(jaarBegin == cafebezoeken.get(i).getJaar()){
+                    if(maandBegin <= cafebezoeken.get(i).getMaand()){
+                        if(maandBegin == cafebezoeken.get(i).getMaand()){
+                            if(dagBegin < cafebezoeken.get(i).getDag()){
+                                aantal = aantal + 1;
+                            }
+                        }
+                        else{
+                            aantal = aantal + 1;
+                        }
+                    }
+                }
+                else if(jaarEind == cafebezoeken.get(i).getJaar()){
+                    if(cafebezoeken.get(i).getMaand() <= maandEind){
+                        if(cafebezoeken.get(i).getMaand() == maandEind){
+                            if(cafebezoeken.get(i).getDag() < dagEind){
+                                aantal = aantal + 1;
+                            }
+                        }
+                        else{
+                            aantal = aantal + 1;
+                        }
+                    }
+                }
+                else{
+                    aantal = aantal + 1;
+                }
+            }
+        }
+        return aantal;
+    }
+    
+    public int soortenCafes(){
+        int teller = 0;
+        ArrayList<String> cafes;
+        cafes = new ArrayList<>();
+        cafes.add(cafebezoeken.get(0).getSoort());
+        
+        for(int i=1; i<cafebezoeken.size(); i++){
+            teller = 0;
+            for(int j = 0; j<cafes.size(); j++){
+                if(!cafes.get(j).equals(cafebezoeken.get(i).getSoort())){
+                    teller = teller + 1;
+                }
+            }
+            if(teller !=cafes.size()-1){
+                cafes.add(cafebezoeken.get(i).getSoort());
+            }
+        }
+        
+        return cafes.size();
+    }
+    
+    public int aantalSoortenCafe(String cafe){
+        int aantal = 0;
+        for(int i=0; i<cafebezoeken.size(); i++){
+            if(cafe.equals(cafebezoeken.get(i).getSoort())){
+                aantal = aantal + 1;
+            }
+        }
+        return aantal;
+    }
+    
+    public int langsteCafebezoek( int tijd){
+        int langsteTijd = 0;
+        for(int i = 0; i<cafebezoeken.size(); i++){
+            if(langsteTijd == 0){
+                langsteTijd = cafebezoeken.get(i).getTijd();
+            }
+            else if(langsteTijd > cafebezoeken.get(i).getTijd()){
+                langsteTijd = cafebezoeken.get(i).getTijd();
+            }
+        }
+        return langsteTijd;
+    }
+    
+    public static void main(Kroegentocht kroegentocht){
+        kroegentocht.setAdres("Vrijthof", 18, "Maastricht");
+        kroegentocht.setAdres("Kerkplein", 8, "Lanaken");
+        kroegentocht.setAdres("Bessemerstraat", 24, "Lanaken");
+        kroegentocht.setAdres("Kerkplein", 2, "Hasselt");
+        
+        kroegentocht.setCafebezoek("Vrijthof", 3, 11, 2014, "discotheek", 24, 270);
+        kroegentocht.setCafebezoek("Markt", 14, 11 2014, "loungeclub", 14, 180);
+        kroegentocht.setCafebezoek("Markt", 28, 11, 2014, "bruin cafe", 8, 120);
+        kroegentocht.setCafebezoek("Markt", 28, 11 2014, "bruin cafe", 10, 100);
+        kroegentocht.setCafebezoek("Vrijthof", 5, 12, 2014, "discotheek", 18, 240);
+        kroegentocht.setCafebezoek("Markt", 12, 12, 2014, "bruin cafe", 8, 120);
+        kroegentocht.setCafebezoek("Vrijthof", 12, 12, 2014, "loungeclub", 12, 170);
+        
+    }
+}
+        
+        
+    
+    
+       
+    
+    
+    
+    
+        
+
+       
+                
+    
+    
+    
+

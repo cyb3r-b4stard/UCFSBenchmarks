@@ -1,0 +1,331 @@
+import java.util.HashMap;   
+import java.util.Iterator;   
+import java.util.Set;   
+   
+   
+public class Player {   
+       
+   
+    private HashMap<String, Item> items;      
+    private Room currentRoom;   
+    private Room prevRoom;
+    private boolean eDefeated;
+       
+    /**  
+     * Initialise Room currentRoom, and create a HashMap, key is String, value is Item  
+     * @param room  
+     */   
+    public Player(Room room)    
+    {   
+        currentRoom = room; 
+        prevRoom = currentRoom;
+        items = new HashMap<String, Item>();   
+    }
+    public void back()
+    {
+       currentRoom = prevRoom; 
+    }
+   public boolean eDef()
+   {
+       if(currentRoom.enemyStatus(false)
+       {
+         return eDefeated = true;  
+        }
+    }
+       
+    public void attack()
+    {
+        currentRoom.attackEnemy();
+    }
+    
+    /**  
+     * Obtain current position  
+     * @param room  
+     */   
+    public void setRoom(Room room)   
+    {   
+        currentRoom = room;   
+    }   
+       
+    /**  
+     *   
+     * @return   current position  
+     */    
+    public Room getRoom()   
+    {   
+        return currentRoom;   
+    }   
+       
+    /**  
+     * Add an item in a room itemlist after ensure there  
+     * is not the item with same item name  
+     * @param name  
+     * @param description  
+     */   
+    public void addItem(String name, String description)   
+    {   
+        items.put(name, new Item(name,description));           
+     }   
+       
+    /**  
+     * If there is an item with the same name with "name" in current room, return the   
+     * attribute of that Item.  
+     * If not, return null;  
+     * @param name   use for searching HashMap items  
+     * @return  
+     */   
+    public Item checkTake(String name)   
+    {   
+        if(currentRoom.sameName(name))   
+            return (Item)currentRoom.getItemValue(name);   
+        else   
+            return null;   
+       
+    }   
+       
+    /**  
+     
+     */   
+    public boolean getItem(String name)   
+    {   
+        Item it = checkTake(name);   
+        if(it!=null)   
+        {   
+            if(!sameName(name))                
+            {   
+                addItem(it.getItemName(),it.getItemDescription());   
+                currentRoom.giveUpItem(name);   
+                return true;   
+            }   
+            else   
+                System.out.println("It is useless : " +name);   
+                   
+        }   
+        System.out.println("There is no " + name +  " of use in this Room.");   
+        return false;   
+           
+    }   
+       
+       
+    /**  
+     * If there is an item with the same name with "name" in player, return the attribute  
+     * of that Item.  
+     * If not, return null;  
+     * @param name   use for searching HashMap items  
+     * @return  
+     */   
+    public Item checkDrop(String name)   
+    {   
+        if(sameName(name))   
+            return (Item)getItemValue(name);   
+        else   
+            return null;   
+    }   
+       
+    /**  
+     *   
+     * @param name  
+     * @return       Return true, if search the HashMap items in player, if   
+     *               the Item exists, add that item to current room items and delete the  
+     *               item in player items.   
+     *               Return false, if it can not process it completely.   
+     */   
+    public boolean removeItem(String name)   
+    {   
+        Item it = checkDrop(name);   
+        if(it!=null)   
+        {   
+            if(!currentRoom.sameName(name))   
+            {   
+                currentRoom.addItem(it.getItemName(), it.getItemDescription());   
+                giveUpItem(name);   
+                return true;   
+            }   
+               
+        }   
+        return false;   
+    }   
+       
+    /**  
+     * Look for item in a room, if it exists, return true;  
+     * if it does not exist, return false.  
+     */   
+    public boolean sameName(String name)   
+    {   
+        Set<String> keys = items.keySet();   
+        for(Iterator<String> i=keys.iterator();i.hasNext();)   
+        {   
+            if(i.next().equals(name))   
+            {   
+                return true;   
+            }   
+        }   
+        return false;   
+    }   
+    
+    /**  
+     *   
+     * @param name  
+     * @return    an Item with key "name"  
+     */   
+    public Item getItemValue(String name)   
+    {   
+        return (Item)items.get(name);   
+    }   
+    /**  
+     * Search the Item in Room, if it exists, then remove   
+     * it from the room.  
+     * @param name  
+     */   
+    public void giveUpItem(String name)   
+    {   
+        items.remove(name);        
+    }   
+           
+    /**  
+     * Trade with NPC with the first Item in player's HashMap items. If player does not have  
+     * an item name as npc's item.  
+     */   
+    public void tradeWithNPC(String name)   
+    {   
+        if(sameName(name))   
+        {   
+            String it = currentRoom.getNPCItem();   
+            if(!sameName(it))   
+            {   
+                Item i = currentRoom.tradeNPC(getItemValue(name));   
+                items.put(i.getItemName(), i);   
+                System.out.println("You got " + i.getItemName()+   
+                                   ". It can be used for " + i.getItemDescription());   
+                items.remove(name);   
+            }   
+            else   
+            {   
+                System.out.println("Oops " +it);   
+            }   
+        }   
+        else   
+        {   
+            System.out.println("You do not have " +name);   
+        }   
+
+    }   
+    /**  
+     * Display the item name and description from HashMap.  
+     */   
+    public void printItemList()   
+    {   
+           
+        System.out.println("Items:");   
+        Set<String> keys = items.keySet();   
+        for(Iterator<String> i=keys.iterator();i.hasNext();)   
+        {   
+           
+            String name = (String)i.next();   
+            Item it = (Item)items.get(name);   
+            System.out.println(it.getItemName() +"   " + it.getItemDescription());   
+        }   
+    }   
+       
+    public void printCurrentRoomItem()   
+    {   
+        currentRoom.printItemList();   
+    }   
+   
+    public boolean existKey(String doorName)   
+    {   
+        if(items.get("key")!=null)   
+        {   
+            String gotkey = items.get("key").getItemDescription();   
+            System.out.println(gotkey);   
+            if(gotkey.equals(doorName))   
+            {   
+                return true;   
+            }   
+            else   
+            {   
+                System.out.println("You dont have the correct key");   
+                return false;   
+            }   
+        }   
+    
+        System.out.println("You dont have a key");   
+        return false;   
+    }   
+       
+       
+   
+    public void lockDoor(String doorName)   
+    {   
+        Room nextRoom = currentRoom.getExit(doorName);   
+        if(nextRoom!=null)   
+        {   
+            if(existKey(nextRoom.getRoomName()))   
+            {   
+                if(nextRoom.getDoorStatus().equals("lock"))   
+                {   
+                    System.out.println(doorName + " door was locked.");   
+                }   
+                else   
+                {   
+                    nextRoom.lockDoor(doorName);   
+                    System.out.println(doorName + " door is locked now");   
+                }   
+            }   
+               
+        }   
+        else   
+        {   
+            System.out.println("There is no door.");   
+        }   
+           
+    }   
+       
+    public void unlockDoor(String doorName)   
+    {   
+        Room nextRoom = currentRoom.getExit(doorName);   
+           
+        if(nextRoom!=null)   
+        {   
+            if(existKey(nextRoom.getRoomName()))   
+               
+            {   
+                if(nextRoom.getDoorStatus().equals("unlock"))   
+                {   
+                    System.out.println(doorName + " door was unlocked.");   
+                }   
+                else   
+                {   
+                    nextRoom.unlockDoor();   
+                    System.out.println(doorName + " door is unlocked now.");   
+                }   
+            }   
+        }   
+        else   
+        {   
+            System.out.println("There is no door.");   
+        }   
+    }   
+       
+    public boolean isLock(Room nextRoom)   
+    {   
+        String roomName = nextRoom.getRoomName();   
+        String door = nextRoom.getDoorStatus();   
+        if(door.equals("lock"))   
+        {   
+             
+            return true;   
+        }   
+        else   
+        {   
+            return false;   
+        }   
+           
+    }   
+       
+    public void printRoomItem()   
+    {   
+        currentRoom.printItemList();   
+    }   
+       
+}   

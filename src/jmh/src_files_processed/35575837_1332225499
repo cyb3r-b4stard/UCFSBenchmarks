@@ -1,0 +1,187 @@
+import java.util.*;
+public class DependencyTable
+{
+    private Table[] tables; 
+    private Matrix[] factorSet = {new Matrix(new int[]{0, 0, 0}), new Matrix(new int[]{1, 0, 0}),
+                                    new Matrix(new int[]{0, 1, 0}), new Matrix(new int[]{0, 0, 1}),
+                                    new Matrix(new int[]{1, 1, 0}), new Matrix(new int[]{1, -1, 0}),
+                                    new Matrix(new int[]{1, 0, 1}), new Matrix(new int[]{1, 0, -1}),
+                                    new Matrix(new int[]{0, 1, 1}), new Matrix(new int[]{0, 1, -1}), 
+                                    new Matrix(new int[]{1, 1, 1}), new Matrix(new int[]{1, -1, 1}), 
+                                    new Matrix(new int[]{1, 1, -1}), new Matrix(new int[]{1, -1, -1})};
+    
+    private Matrix[] key = {new Matrix(new int[][]{{1, 0, 0}, {0, 0, 0}, {0, 0, 0}}),
+                            new Matrix(new int[][]{{0, 1, 0}, {0, 0, 0}, {0, 0, 0}}),
+                            new Matrix(new int[][]{{0, 0, 1}, {0, 0, 0}, {0, 0, 0}}),
+                            new Matrix(new int[][]{{0, 0, 0}, {1, 0, 0}, {0, 0, 0}}),
+                            new Matrix(new int[][]{{0, 0, 0}, {0, 1, 0}, {0, 0, 0}}),
+                            new Matrix(new int[][]{{0, 0, 0}, {0, 0, 1}, {0, 0, 0}}),
+                            new Matrix(new int[][]{{0, 0, 0}, {0, 0, 0}, {1, 0, 0}}),
+                            new Matrix(new int[][]{{0, 0, 0}, {0, 0, 0}, {0, 1, 0}}),
+                            new Matrix(new int[][]{{0, 0, 0}, {0, 0, 0}, {0, 0, 1}})};
+    private Matrix zeroKey = new Matrix(new int[][]{{0, 0, 0}, {0, 0, 0}, {0, 0, 0}});
+    private Table zeroTable = new Table(zeroKey);
+    private int[] termCount = new int[169];
+    
+    public DependencyTable(int n)
+    {
+        tables = new Table[9];
+        
+        for (int i = 0; i < 9; i++)
+        {
+            tables[i] = new Table(key[i]);
+        }
+        
+        find(n);
+        findSolution();
+        /*
+        for (int j = 0; j < tables.length; j++)
+        {
+            for (int i = 0; i < tables[j].getTermCount().length; i++)
+            {
+                if (tables[j].getTermCount()[i] > 80)
+                    System.out.print(i +"\t");
+            }
+            System.out.println();
+        }
+        System.out.println();
+        for (int i = 0; i < zeroTable.getTermCount().length; i++)
+        {
+            if (zeroTable.getTermCount()[i] > 80)
+                System.out.print(i +"\t");
+        }*/
+    }
+    
+    private void find(int coef)
+    {
+        int count = 1;
+        Entry[][] tempTable;
+        while(count <= coef)
+        {
+            tempTable = new Entry[(int) Math.pow(2, count)][];
+            
+            for(int i = 0; i < 169 - count +1; i++)
+            {
+                for(int q = 0; q < tempTable.length; q++)
+                {
+                    int row = i/13 +1;
+                    int col = i%13 +1;
+                    tempTable[q] = new Entry[count];
+                    if(q < (tempTable.length)/2)
+                    {
+                        tempTable[q][0] = new Entry(factorSet[row], (factorSet[col]), 1, row, col);
+                    }
+                    else
+                    {
+                        tempTable[q][0] = new Entry(factorSet[row], (factorSet[col]), -1, row, col);
+                    }
+                }
+                
+                if(count > 1)
+                {
+                    for (int j = 1; j < 169 - count +2; j++)
+                    {
+                        for(int q = 0; q < tempTable.length; q++)
+                        {
+                            int row = j/13 +1;
+                            int col = j%13 +1;
+                            if(q%(Math.pow(2, 3 - (coef - count))) < (tempTable.length)/4)
+                            {
+                                tempTable[q][1] = new Entry(factorSet[row], (factorSet[col]), 1, row, col);
+                            }
+                            else
+                            {
+                                tempTable[q][1] = new Entry(factorSet[row], (factorSet[col]), -1, row, col);
+                            }
+                        }
+                        
+                        if(count > 2)
+                        {
+                            for (int k = 2; k < 169 - count +3; k++)
+                            {
+                                for(int q = 0; q < tempTable.length; q++)
+                                {
+                                    int row = k/13 +1;
+                                    int col = k%13 +1;
+                                    if(q%(Math.pow(2, 2 - (coef - count))) < tempTable.length/8)
+                                    {
+                                        tempTable[q][2] = new Entry(factorSet[row], (factorSet[col]), 1, row, col);
+                                    }
+                                    else
+                                    {
+                                        tempTable[q][2] = new Entry(factorSet[row], (factorSet[col]), -1, row, col);
+                                    }
+                                }
+                            
+                                if(count > 3)
+                                {
+                                    for (int l = 3; l < 169; l++)
+                                    {
+                                        for(int q = 0; q < tempTable.length; q++)
+                                        {
+                                            int row = l/13 +1;
+                                            int col = l%13 +1;
+                                            if(q%(Math.pow(2, 1 - (coef - count))) < tempTable.length/16)
+                                            {
+                                                tempTable[q][3] = new Entry(factorSet[row], (factorSet[col]), 1, row, col);
+                                            }
+                                            else
+                                            {
+                                                tempTable[q][3] = new Entry(factorSet[row], (factorSet[col]), -1, row, col);
+                                            }
+                                        }
+                                        findSums(tempTable);
+                                    }
+                                }
+                                else
+                                    findSums(tempTable);
+                            }
+                        }
+                        else
+                            findSums(tempTable);
+                    }
+                }
+                else
+                    findSums(tempTable);
+            }
+            count++;
+        }
+    }
+
+    private void findSums(Entry[][] tempTable)
+    {
+        for(int i = 0; i < tempTable.length; i++)
+        {
+            Matrix sum = new Matrix(new int [][]{{0, 0, 0}, {0, 0, 0}, {0, 0, 0}});
+            for (int j = 0; j < tempTable[i].length; j++)
+            {
+                sum = sum.add(tempTable[i][j].getTerm());
+            }
+            
+            for (int c = 0; c < tables.length; c++)
+            {
+                if (sum.compareTo(tables[c].getKey()))
+                    tables[c].addEntry(tempTable[i]);
+            }
+            /*
+            if (sum.compareTo(zeroKey))
+                zeroTable.addEntry(tempTable[i]);*/
+        }
+    }
+    
+    private void findSolution()
+    {
+        ArrayList 
+        for (int j = 0; j < tables.length; j++)
+        {
+            for (int i = 0; i < tables[j].getTermCount().length; i++)
+            {
+                if (tables[j].getTermCount()[i] > 80)
+                {
+                    
+                }
+            }
+        }
+        
+    }
+}

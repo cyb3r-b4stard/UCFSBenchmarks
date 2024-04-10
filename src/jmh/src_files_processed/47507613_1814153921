@@ -1,0 +1,106 @@
+
+/* #### ### ####### - ######, ########## #
+ * ####: ### ########
+ * ########: #########
+ * ##: #########
+ */
+
+import ecs100.*;
+import java.util.*;
+import java.io.*;
+import java.awt.Color;
+
+/** ####### ### ###### (###, ###, ## ###) #### ### ######## #####
+### ###### ### ### ######## ######## ###### ##### ######.
+ */
+
+public class ImageRenderer{
+    public static final        int top = 20;   
+    public static final int left = 20;  
+    public static final        int pixelSize = 2;  
+
+    public ImageRenderer(){
+        UI.initialise();
+        UI.addButton("Render", this::renderAFile);
+        UI.addButton("Quit", UI::quit);
+    }
+
+    public void renderAFile(){
+        UI.clearText();
+        UI.clearGraphics();
+        String fname = UIFileChooser.open("Image file to render");
+        if (fname != null){
+            this.renderImage(fname);
+        }
+    }
+
+    /**
+     * Renders a pnm image file with the given name.
+     * Renders the image at position (left, top).
+     * Each pixel of the image is rendered by a square of size pixelSize
+     * The first three tokens (other than comments) are
+     *    the magic number (P1, P2, or P3),
+     *    number of columns, (integer)
+     *    number of rows,  (integer)
+     * ppm and pgm files then have 
+     *    colour depth  (integer: range of possible color values)
+     * The remaining tokens are the pixel values
+     *  (0 or 1 for pbm, single integer for pgm; red, green, and blue integers for ppm)
+     * There may be comments anywhere in the file, which start with # and go to the end of the line. Comments should be ignored.
+     * The image may be "animated", in which case the file contains a sequence of images
+     * (ideally, but not necessarily, the same type and size), which should be rendered
+     * in sequence.
+     * This method should read the magic number then call the appropriate method for rendering the rest of the image
+     */                                
+    public void renderImage(String fname){
+
+        try{
+            Scanner sc = new Scanner(new File(fname));
+
+            if(sc.next().equals("P2")){
+                int col = sc.nextInt();
+                int row = sc.nextInt();
+                int greyScale = sc.nextInt();
+
+                if(greyScale != 255){
+                    greyScale = 255/greyScale;
+                }
+
+                for( int i = 0; i < row; i++){
+                    int c = sc.nextInt();
+                    c * greyScale = c;
+                    
+                    Color c1 = new Color(c, c, c);
+                    for(int j = 0; j < col; j++){
+
+                        Color c2 = new Color(c, c, c);
+                    }
+
+                }
+
+            }
+            else if(sc.next().equals("P3")){
+                int col = sc.nextInt();
+                int row = sc.nextInt();
+                int color = sc.nextInt();
+
+            }
+            else if(sc.next().equals("P1")){
+                int col = sc.nextInt();
+                int row = sc.nextInt();
+            }
+            else{
+                UI.println("Not valid");
+            }
+        }
+        catch(IOException e){
+            UI.println("File not found \n" + e);
+        }
+
+    }
+
+    public static void main(String[] args){
+        ImageRenderer im = new ImageRenderer();
+        im.renderImage("image-bee.ppm");   
+    }
+} 

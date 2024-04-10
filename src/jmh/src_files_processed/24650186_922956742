@@ -1,0 +1,88 @@
+import sum.werkzeuge.*;
+import sum.kern.*;
+/**
+ * @###### 
+ * @####### ## ## ##
+ */
+public class Schatzsuche
+{
+    Maus m;
+    Rechner r;
+    Buntstift s;
+    Buntstift s2;
+    Buntstift s3;
+    Bildschirm b;
+    public Schatzsuche()
+    {
+      b = new Bildschirm(800,600);
+      m = new Maus();
+      r = new Rechner();
+      s = new Buntstift();
+      s2 = new Buntstift();
+      s3 = new Buntstift();
+      
+      this.fuehreAus();
+    }
+
+    public void fuehreAus()
+    {
+        s.hoch();
+        s.bewegeBis(r.ganzeZufallsZahl(50,b.breite()-50),r.ganzeZufallsZahl(50,b.hoehe()-50));
+        s.setzeLinienBreite(5);
+        this.Kreuz();
+        
+    }
+    
+    public void Kreuz()
+    {
+       s.setzeFarbe(88);
+       for( int i=1 ; i<5 ; i++)
+       {
+           s.dreheUm(45);
+           s.bewegeUm(10);
+           s.bewegeUm(-10);
+           s.dreheUm(45);
+       }
+       this.Rechnen();
+    }
+    
+    public void Rechnen()
+    {
+        do
+        {
+            if (m.istGedrueckt())
+            {
+                s2.bewegeBis(10,10);       
+                s2.radiere();
+                s2.setzeFuellMuster(2);
+                s2.zeichneRechteck(150,20);
+                s2.normal();
+                s2.bewegeBis(10,25);
+                s2.schreibeZahl(r.wurzel(r.quadrat(m.hPosition() -
+                s.hPosition()) + r.quadrat(m.vPosition() - s.vPosition())));
+                while(m.istGedrueckt())
+                {
+                      
+                }
+            }
+            
+            
+        } while (r.wurzel
+                (r.quadrat(m.hPosition() - s.hPosition()) +
+                 r.quadrat(m.vPosition() - s.vPosition())) > 10);
+                 
+       if (r.wurzel
+                (r.quadrat(m.hPosition() - s.hPosition()) +
+                 r.quadrat(m.vPosition() - s.vPosition())) < 10)
+       {
+           s3.setzeSchriftGroesse(5)
+           s3.bewegeBis(40,10);
+           s3.runter();
+           s3.schreibeText("get noscoped 420");
+           s.runter();
+           this.Kreuz();
+       }
+                 
+    }
+
+}

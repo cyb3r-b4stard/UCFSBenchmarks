@@ -1,0 +1,99 @@
+import java.util.*;
+
+/**
+ * ######################.
+ * 
+ * #### ######### ###### ######### ######
+ * ### ### ############# ######## ######
+ * ### ## ###### ###### ############## ######
+ * ### ############# #### ########## ######
+ * 
+ * @###### #####, ######
+ * @####### #.#
+ */
+public class PatientenWarteschlange
+{
+    private int groesse;
+    private int patientenAnzahl;
+    private int patientenIndexNr = -1;
+    private String geloeschterPatient;
+    private String naechster;
+    public ArrayList<String> warteschlange = new ArrayList<String>();
+    private ArrayList<String> patient = new ArrayList<String>();
+    private HashMap<Integer, Integer> patientenIndex = new HashMap<Integer, Integer>(); 
+    private ArrayList<int> existingPatientsNr = new ArrayList<int>();
+    
+    /**
+     * Constructor for objects of class PatientenWarteschlange
+     */
+    public PatientenWarteschlange(int groesse)
+    {
+        if (groesse <= 0){
+            System.out.println("Die Warteschlange muss minimum einen Platz haben.");
+        }
+        
+        this.groesse = groesse;
+    }
+    
+    public void warteschlangeAnzeigen(){
+        System.out.println("Warteliste");
+        System.out.println("");
+        System.out.println("Pnr   |  Name");
+        System.out.println("-------------");
+        
+        for (int i = 0; i < warteschlange.size(); i++){
+            System.out.println(warteschlange.get(i));
+        }
+    }
+    
+    /**
+     * Methode um einen neuen Patienten anzulegen.
+     * 
+     * @param  patientNr, patientName, patientVorname
+     * 
+     * Muss 4-stellig sein !
+     * 
+     * @return
+     */
+    public void neuerPatient(int patientNr, String patientName)
+    {
+        if (String.valueOf(patientNr).length() != 4){
+            System.out.println("Die Patientennummer muss vier-stellig sein.");
+        } else if (existingPatientsNr.contains(patientNr))  {
+            System.out.println("Es gibt schon einen Patienten mit dieser Nummer.");
+        } else if (patientenAnzahl > groesse){
+            System.out.println("Die maximale Patientenanzahl ist erreicht worden.");
+        } else {
+            patient.clear();
+            patientenAnzahl += 1;
+            patientenIndexNr += 1;
+            patientenIndex.put(patientNr, patientenIndexNr);
+            patient.add(String.valueOf(patientNr)); 
+            patient.add("  " + patientName);
+            warteschlange.add(patient.toString());
+        }
+    }
+    
+    public String entfernePatient(int patientNr){
+        if (patientenIndex.get(patientNr) != null){
+            int index = patientenIndex.get(patientNr);
+            geloeschterPatient = warteschlange.get(index);
+            warteschlange.remove(index);
+        } else {
+            System.out.println("Es gibt keinen Patienten mit dieser Nummer.");
+        }
+        
+        return ("Patient gelöscht : " + geloeschterPatient);
+    }
+    
+    public String derNaechsteBitte(){
+        if (!(warteschlange.isEmpty())){
+            naechster = warteschlange.get(0);
+        } else {
+            System.out.println("Es ist kein Patient vorhanden.");
+        }
+        
+        warteschlange.remove(0);
+        return ("Nächster Patient: " + naechster);
+    }
+}  

@@ -1,0 +1,96 @@
+import shed.mbed.LCD;
+import shed.mbed.MBed;
+import shed.mbed.MBedUtils;
+import shed.mbed.LED;
+import shed.mbed.LEDColor;
+/**
+ * @###### ##### + ###
+ *
+ * #### ####### ###### ####### # ###### ## ### ##### ### ## ##### 
+ * #####.
+ *
+ * #### ### ## ## ###### #### #### ## ### ### ##### ### #####
+ * ######### ## ### ######## ## ### ############# ####. #### ####
+ * #### ### ############# ## ######:
+ *
+ *    #. ### ### ### ## ### ####, ### ### ###### ## ###.
+ *    #. ##### #### ###, ### ### ###### ## #####.
+ *    #. ### ### ### ## ### #####, ### ### ###### ## ###.
+ *
+ * ####: ######## ########## #### ###### ## #### #####. ### ##
+ * ### ## ##### ######## ### ######.
+ */
+public class Program
+{
+
+    private MBed mbed;
+    
+    /**
+     * Open a connection to the MBED.
+     */
+    public Program()
+    {
+        mbed = MBedUtils.getMBed();
+    }
+    
+    /**
+     * The starting point for the interactions.
+     */
+    public void run()
+    {
+        LCD lcd = mbed.getLCD();
+        lcd.print(0, 0, "Driving Test A");
+        
+        
+        LED led = mbed.getLEDBoard();
+        int colorIndex = 0;
+
+        while(mbed.isOpen()) {
+            
+            if(colorIndex==0) {
+                led.setColor(LEDColor.BLUE);
+            } else if(colorIndex==1) {
+                led.setColor(LEDColor.CYAN);
+            } else if(colorIndex==2) {
+                led.setColor(LEDColor.GREEN);
+            } else if(colorIndex==3) {
+                led.setColor(LEDColor.YELLOW);
+            } else if(colorIndex==4) {
+                led.setColor(LEDColor.RED);
+            } else if(colorIndex==5) {
+                led.setColor(LEDColor.MAGENTA);
+            }
+            if (pot2.get.Value()<0.1) {
+                led.setColor(LEDColor.BLACK);
+                
+            colorIndex++;
+            if(colorIndex>5) colorIndex=0; 
+            
+            
+            sleep(100);
+        }
+    }
+    
+    /**
+     * Close the connection to the MBED.
+     */
+    public void finish()
+    {
+        mbed.close();
+    }
+    
+    /**
+     * A simple support method for sleeping the program.
+     * @param millis The number of milliseconds to sleep for.
+     */
+    private void sleep(int millis)
+    {
+        try {
+            Thread.sleep(millis);
+        } 
+        catch (InterruptedException ex) {
+        }
+    }
+    
+
+}

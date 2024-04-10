@@ -1,0 +1,188 @@
+
+/**
+ * ######## #
+ * ###### #### ####### ## ######## ### ######### ## # #### #######
+ * 
+ * @###### ##### ####### 
+ * 
+ * @####### 
+ */
+public class Account 
+{
+    private int balance; 
+    private int agreedOverdraft=500; 
+    private int availableBalance; 
+    private int overdraftFee; 
+    private Customer accountHolder;
+
+    /**
+     * Constructor for objects of class Account
+     */
+    public Account(Customer customer)
+    {
+        setOverdraft(agreedOverdraft);
+        balance = 10; 
+        accountHolder = new Customer(customer.firstName, customer.surname, customer.customerId);
+                
+                                                          
+    }
+
+    /**
+     * Accessor method to return the balance of account
+     * 
+     * @param  no parameters needed
+     * @return    the balance 
+     */
+    
+    public int getBalance()
+    {
+        return balance;
+    }
+    
+    /**
+     * Mutator method that allows a deposit to be made into the account
+     * 
+     * @param Amount to be deposited
+     * @return None
+     */
+    public void deposit(int amount)
+    {
+        if (amount>0)
+        {
+            balance=balance+amount;
+            System.out.println("The balance of the account is £"+balance+".");
+        }
+        else if (amount==0)
+        {
+            System.out.println("\f");
+            System.out.println("You have not made any deposit in this transaction.");
+        }
+        else
+        {
+            System.err.println("You cannot withdraw funds during a deposit transaction");
+        }
+        calculateAvailable();
+        
+    }
+    
+    /**
+     * Mutator method that allows a withdrawal to be mad from the account
+     * 
+     * @param Amount to be withdrawn
+     * @return None
+     */
+    public void withdraw(int amount)
+    {
+        if (amount>(balance+agreedOverdraft))  
+        {
+            balance=balance-amount;
+            calculateFee(overdraftFee);
+            System.out.println("\f");
+            System.out.println("You have exceeded your authorised overdraft.");
+            System.out.println("You will be charged a fee of £"+overdraftFee+"."); 
+            System.out.println("The balance of the account is £"+balance+".");
+        }
+        else
+        {
+            balance=balance-amount;
+            System.out.println("The balance of the account is £"+balance+".");
+        }
+        calculateAvailable();          
+    }
+    
+     /**
+     * Mutator method to calculate the 3% overdraft fee
+     * 
+     * @param Withdrawal amount
+     * @return unauthorised overdraft fee
+     */
+    private void calculateFee(float amountOverdrawn)
+    {
+        if (balance<0-agreedOverdraft)
+        {
+           overdraftFee=0; 
+           amountOverdrawn=(balance+agreedOverdraft);   
+           overdraftFee=-(int)(amountOverdrawn/100*3);
+           balance=balance-overdraftFee;           
+        }
+        
+    }
+    
+      /**
+     * Method to calculate the funds available to the customer
+     * 
+     * @param 
+     * @return
+     */
+    public int calculateAvailable()
+    {
+        availableBalance=balance+agreedOverdraft;
+        return availableBalance;
+    }
+    
+     /**
+     * Mutator method to set the agreed overdraft limit on the account
+     * 
+     * @param The agreed overdraft limit
+     * @return None
+     */
+    private void setOverdraft(int overdraftLimit)
+    {
+        
+        if (overdraftLimit<=0)
+        {
+            System.out.println("\f");
+            System.out.println("You must set a positive overdraft limit");
+        }    
+        
+        else if (overdraftLimit>2000)
+        {
+            System.out.println("\f");
+            System.out.println("This cannot be the overdraft limit as it exceeds the max limit of £2000");
+        }
+        else
+        {       
+            agreedOverdraft=overdraftLimit;
+        }
+        calculateAvailable();
+    }  
+    
+    /**
+     * Method to print a short report containing current account information
+     * 
+     * @param None
+     * @return balance, overdraft limit
+     */
+    public void printReport()
+    {
+        System.out.println("\f");
+        System.out.println("The current balance of the account is £"+balance+".");
+        System.out.println("The agreed overdaft limit on this account is £"+agreedOverdraft+".");
+        System.out.println("The current amount available on this account is £"+availableBalance+".");
+        System.out.println("and the account holder's name is " +firstName " "+surname".");
+        System.out.println("and the account holder's customer Id is "+customerId".");
+    }
+    
+  
+
+    
+   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+}

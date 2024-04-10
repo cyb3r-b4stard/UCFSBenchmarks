@@ -1,0 +1,246 @@
+import java.net.*;
+import java.io.*;
+import java.util.*;
+import java.nio.charset.*;
+
+
+public class servFTP_UPV_incompleto {
+
+	public static void main(String args[]) {
+	try{
+		System.setProperty ("line.separator","\r\n");
+		int num_cliente = 1;
+		ServerSocket ss=new ServerSocket(21021);
+		System.out.println("Servidor FTP activado");
+		while (true) {
+			Socket s = ss.accept();
+			PrintWriter salida = new PrintWriter(s.getOutputStream());
+			Scanner entrada=new Scanner(s.getInputStream());
+			
+			System.out.println("Cliente "+ num_cliente +" conectado");
+			num_cliente++;
+			Boolean continuar;
+			
+			if (servFTP_util.log_or_quit(s)) 
+				{System.out.println("logged in");
+				 continuar = true;}
+			else
+				{System.out.println("NOT logged in");
+				 continuar = false;}
+
+			String linea; 
+			int orden;
+			
+			ServerSocket ss_datos = null;
+			Boolean modo_pasivo = false;
+			Boolean modo_activo = false;
+			String dir_IP_modo_activo = "";
+			int puerto_modo_activo = 0;
+			Socket s_datos = null;
+			String cadena;
+			String fichero;
+			File file;
+			int bytes;
+			byte[] buffer = new byte[1024];
+			
+			while (continuar) {
+				linea = entrada.nextLine();
+				orden = 0;
+				System.out.println("Recibido --> " + linea);
+				if (linea.equalsIgnoreCase("QUIT")) {orden = 1;}
+				else if (linea.equalsIgnoreCase("PWD")) {orden = 2;}
+				else if (linea.equalsIgnoreCase("SYST")) {orden = 3;}
+				else if (linea.equalsIgnoreCase("PASV")) {orden = 4;}
+				else if (linea.toUpperCase().startsWith("PORT")) {orden = 5;}
+				else if (linea.equalsIgnoreCase("LIST")) {orden = 6;}
+				else if (linea.toUpperCase().startsWith("RETR")) {orden = 7;}
+				else if (linea.toUpperCase().startsWith("STOR")) {orden = 8;}
+				else if (linea.toUpperCase().startsWith("TYPE")) {orden = 9;}
+			
+				switch (orden) {
+					case 1: servFTP_util.quit(s);
+						continuar = false;
+						break;
+
+            				case 2: salida.println("257 " + System.getProperty("user.dir"));
+						salida.flush();
+						break;
+	
+					case 3: salida.println("215 " + "UNIX Type");
+						salida.flush();
+						break;
+
+					case 4: 
+						ss_datos = new ServerSocket();
+						System.out.println("Creado servidor en puerto: " + ss_datos.getLocalPort()); 
+						cadena = servFTP_util.serverSocketToCadena(ss_datos);
+						System.out.println("Informacion para establecer la conexion de datos: " + cadena);
+						salida.println("227 Entrando en modo pasivo (" + cadena + ")");
+						salida.flush();
+						modo_pasivo = true;
+						modo_activo = false;
+						break;
+
+					case 5: 
+						String params = linea.substring(5);
+						StringTokenizer st = new StringTokenizer(params, ",");
+						String n1 = st.nextToken();
+						String n2 = st.nextToken();
+						String n3 = st.nextToken();
+						String n4 = st.nextToken();
+						String n5 = st.nextToken();
+						String n6 = st.nextToken();
+						dir_IP_modo_activo = n1 + "." + n2 + "." + n3 + "." + n4;
+						puerto_modo_activo = n5 x 256 + n6;
+						salida.println("200 comando PORT correcto");
+						salida.flush();
+						modo_activo = true;
+						modo_pasivo = false;
+						break;
+
+
+					case 6: if ((!modo_pasivo) && (!modo_activo))
+							{salida.println("425 No se ha establecido la conexion de datos");
+							 salida.flush();
+							 break;
+							}
+						if (modo_pasivo) {s_datos = new Socket (); }
+						if (modo_activo) {s_datos = new Socket (puerto_modo_activo); }
+						System.out.println("cliente conectado por conexion de datos");
+						salida.println("150 Conexion de datos aceptada");
+						salida.flush();
+						System.out.println("enviando contenido del directorio");
+					        File curDir = new File(".");
+					        File[] filesList = curDir.listFiles();
+						cadena = null;
+					        for(File f : filesList){
+							if(f.isDirectory()){
+								cadena = "Directorio: " + f.getName() + "\r\n";
+							}
+							else if(f.isFile()){
+								cadena = "Fichero: " + f.getName() + "\r\n";
+            						}
+							byte[] cadena_bytes = cadena.getBytes(StandardCharsets.UTF_8);
+							s_datos.getOutputStream().write(cadena_bytes, 0, cadena_bytes.length);
+						}
+						s_datos.close();
+						if (modo_pasivo) {ss_datos.close();}
+						modo_pasivo = false;
+						modo_activo = false;
+						salida.println("226 cerrando conexion de datos");
+						salida.flush();
+						break;
+
+					case 7: if ((!modo_pasivo) && (!modo_activo)) {
+							salida.println("425 No se ha establecido la conexion de datos");
+							salida.flush();
+							break;
+						}
+						if (modo_pasivo) {s_datos = new Socket (); }
+						if (modo_activo) {s_datos = new Socket (puerto_modo_activo); }
+						System.out.println("cliente conectado por conexion de datos");
+						fichero = linea.substring(5);
+						System.out.println("se ha solicitado el fichero " + fichero);
+						file = new File(fichero);
+						if (!file.exists()) {
+							salida.println("550 No se puede abrir el fichero " + fichero + ".No existe dicho fichero");
+							salida.flush();
+							break;
+						}
+						if (file.isDirectory()) {
+							salida.println("550 Solamente puedo devolver el contenido de ficheros, no de directorios");
+							salida.flush();
+							break;
+						}
+						if (!file.isFile()) {
+							salida.println("550 Error con el tipo de fichero");
+							salida.flush();
+							break;
+						}
+
+						FileInputStream fis = null;
+						try {
+							fis = new FileInputStream(fichero);
+						}
+						catch (FileNotFoundException e) {
+							salida.println("550 No se puede abrir el fichero " + fichero + ".No existe dicho fichero");
+							break;
+						}
+
+						System.out.println("enviando fichero al cliente");
+						salida.println("150 Conexion de datos aceptada");
+						salida.flush();
+						while ((bytes = fis.read(buffer)) != -1) {
+							s_datos.getOutputStream().write(buffer, 0, bytes);
+						}
+
+						s_datos.close();
+						if (modo_pasivo) {ss_datos.close();}
+						modo_pasivo = false;
+						modo_activo = false;
+						salida.println("226 cerrando conexion de datos");
+						salida.flush();
+						break;
+
+					case 8: if ((!modo_pasivo) && (!modo_activo)) {
+							salida.println("425 No se ha establecido la conexion de datos");
+							salida.flush();
+							break;
+						}
+						if (modo_pasivo) {s_datos = new Socket (); }
+						if (modo_activo) {s_datos = new Socket (puerto_modo_activo);  }
+						System.out.println("cliente conectado por conexion de datos");
+						fichero = linea.substring(5);
+						System.out.println("se va a recibir el fichero " + fichero);
+						file = new File(fichero);
+						if (file.exists()) {
+							salida.println("550 El fichero " + fichero + " ya existe. Este servidor FTP no sobreescribe ficheros");
+							salida.flush();
+							break;
+						}
+
+						FileOutputStream fos = null;
+						try {
+							fos = new FileOutputStream(fichero);
+						}
+						catch (FileNotFoundException e) {
+							salida.println("550 No se puede abrir el fichero " + fichero);
+							break;
+						}
+
+						System.out.println("recibiendo fichero del cliente");
+						salida.println("150 Conexion de datos aceptada");
+						salida.flush();
+						while ((bytes = s_datos.getInputStream().read(buffer)) != -1) {
+							fos.write(buffer, 0, bytes);
+						}
+
+						s_datos.close();
+						if (modo_pasivo) {ss_datos.close();}
+						modo_pasivo = false;
+						modo_activo = false;
+						salida.println("226 cerrando conexion de datos");
+						salida.flush();
+						break;
+
+					case 9: salida.println("200 este servidor siempre transmite en binario");
+						salida.flush();
+						break;
+
+
+					default:salida.println("502- Error! Se ha recibido " + linea);
+						salida.println("502- Esta orden no esta implementada en esta version del servidor");
+						salida.println("502  Continua utilizando este servidor con otras ordenes");
+						salida.flush();
+						break;
+				}
+			}
+		}
+	
+
+	} catch (IOException e) {
+		System.out.println("Error: No se puede conectar");
+		System.out.println(e);
+	}
+	}
+}

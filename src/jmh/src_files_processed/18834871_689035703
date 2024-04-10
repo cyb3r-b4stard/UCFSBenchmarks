@@ -1,0 +1,243 @@
+/* ###### ## ###### # ######## ###-#.
+ * ######## ########: ###### ######### ### #### ######## ###.
+ */
+
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import java.io.*;
+import javax.swing.JOpritonPane;
+
+
+
+/*******************************************************************************
+ * ######## ##### {@#### ####} ########### ...
+ *
+ * @######  ##### ########
+ * @####### #.##.#### — ####-##-##
+ */
+
+public class Telo extends Frame
+implements ActionListener
+{
+    private Button btnVypis, btnZorad, btnHladaj, btnPridaj, btnVymaz, btnZmaz; 
+    private ArrayList<String> aKnihy; 
+    private TextArea txtaVstup; 
+    
+    /**
+     * trieda na vytvorenie grafickeho prostredia
+     */
+   public Telo(){
+       super.setTitle (getClass().getSimpleName());
+       this.setLayout (new FlowLayout ());
+       
+       addWindowListener (new WindowAdapter ()
+    {
+        @Override
+        public void windowClosing (WindowEvent e ){ 
+            System.exit (0);
+        }
+    }
+    ); 
+    btnVypis = new Button ("Vypíš Knihu"); 
+    this.add(btnVypis);
+    
+    btnZorad = new Button ("Zoraď knihy podľa abecedy"); 
+    this.add(btnZorad);
+    
+    btnHladaj = new Button ("Hľadaj knihu"); 
+    this.add (btnHladaj);
+    
+    btnPriadaj = new Button ("Pridaj knihu"); 
+    this.add (btnPridaj);
+    
+    btnVymaz = new Button ("Vymaž knihu"); 
+    this.add (btnVymaz);
+    
+    btnZmaz = new Button ("Zmaž okno"); 
+    this.add (btnZmaz);
+    
+    btnVypis.addActionListener (this);
+    btnZorad.addActionListener (this);
+    btnHladaj.addActionListener (this);
+    btnPridaj.addActionLiestener (this);
+    btnVymaz.addActionListener (this);
+    btnZmaz.addActionListener (this);
+    
+    txtaVstup = new TextArea ("*** Vitajte v systéme knižnice kníh ***\n", 20,85, TextArea.SCROLLBARS_BOTH); 
+    this.add(txtaVstup);
+    
+    this.setSize(700,400); 
+    this.setLocation (200,200); 
+}
+
+/** 
+ * Metoda, kde je kazdemu tlacidlu pridelene co ma robit
+ */
+public void actionPerformed (ActionEvent e) {
+    String s = e.getActionCommand();
+    
+    /**
+     * Funkcia vypis: Nacita riadky zo suboru KNIHY.txt a vypise ich na obrazovku
+     */
+    
+    if (s.compraTo (btnVypis.getLabel ()) == 0) 
+    try {
+        txtaVstup.setText ("Vypísanie kníh\n"); 
+        BufferedReader be=new BufferedReader (new FileReader ("KNIHY.txt")); 
+        
+        String riadok;
+        int i=1; 
+        while ((riadok =br.readLine()) !=null) { 
+            textaVstup.append ("\n");
+            txtaVstup.append (i+" : ");
+            txtaVstup.append (riadok);
+            i++;
+        }
+        br.close (); 
+    }
+    catch (Exception ex) {
+        TxtaVstup.setText ("CHYBA - Pravdepodobne chybný názov súboru."); 
+    }
+    
+    /**
+     * Funkcia Zorad: Nacitava riadku zo suboru KNIHY.txt a zoradi ich podla abecedy. Potom ich zoradene ulozi do pomocneho suboru KNIHY1.txt a nakoniec ich vypise na obrazovku
+     */
+     
+    else if (s.compareTo (btnZorad.getLabel()) == 0) 
+    try { 
+        txtaVstup.setText ("Zoradenie Kníh podľa abecedy\n"); 
+
+        
+        Map<String, String> map=new TreeMap<String,String>(); 
+        String line= "";
+        while((line=reader.readLine ())!=null) { 
+            map.put (getField (line),line);
+        }
+        reader.close();
+        
+        BufferedWriter writer = new BufferedWriter (new FileWriter( "KNIHY1.txt"));
+        for (String val : map.values()) { 
+            writer.write(val);
+            writer.newLine ();
+        }
+        writer.close();
+        
+        try {
+            BufferedReade br = new BufferedReader (new FileReader ("KNIHY1.txt")); 
+            
+            String riadok;
+            int i = 1;
+            while ((riadok = br.readLine()) !=null) { 
+                txtaVstup.append ("\n");
+                txtaVstup.append (i+ " : ");
+                txtaVstup.append (riadok);
+                i++;
+            }
+            br.close();
+        }
+        catch (IOException ex) { 
+        }
+    } catch (Exception ex) {
+        txtaVstup.setText ("Chyba - Pravdepodobne chybný názov súboru"); 
+    }
+    
+    /**
+     * Funkcia hladaj: Prehladava subor KNIHY.txt a hlada kazdu zhodu s hladanym nazvom
+     */
+    
+    else if (s.compareTo (btnHladaj.getLabel()) == 0) 
+    try {
+        txtaVstup.setText ("Hľadáte Knihu"); 
+        BufferedReader br = new BufferedReader (new FileReader("KNIHY.txt")); 
+        
+        String hladanie = JOptionPane.showInputDialog (null, "Zadajte čo chcete vyhľadať", "Vyhľadávanie", JoptionPane.QUESTION_MESSAGE); 
+        txtaVstup.setText ("Nájdenie KNIHY podľa zadaného výrazu: \n\n"); 
+        
+        String riadok;
+        
+        while ((riadok = br.readLine()) !=null) { 
+            
+            if (riadok.contains (hladane)) { 
+                txtaVstup.append (riadok);
+                txtaVstup.append ("\n");
+            }
+        }
+        br.close(); 
+    }
+    catch (Exception ex) {
+        txtaVstup.setText ("CHYBA - Pravdepodobne chybný názov súboru"); 
+    }
+    
+    /**
+     * Funkcia Pridaj: Postupne vypise okna pre zapisanie Autora, Nazov knihy, Roku vydania a vydavatelstva a potom to pripise na subor KNIHY.txt
+     */
+    
+    else if (s.compareTo(btnPridaj.getLabel()) ==0) 
+    try { 
+        txtaVstup.setTest("Pridávanie Kníh"); 
+        PrintWriter PWriter = new PrintWriter (new FileOutputStram ("KNIHY.txt", true)); 
+        
+        String Autor = JOptionPane.showInputDialog (null, "Zadajte autora", "Pridávanie", JOptionPane.QUESTION_MESSAGE); 
+        String Kniha = JOptionPane.showInputDialog (null, "Zadajte názov knihy", "Pridávanie", JoptionPane.QUESTION_MESSAGE); 
+        String Rok = JOptionPane.showInputDialog (null, "Zadajte rok vydania", "Pridávanie", JOptionPane.QUESTION_MESSAGE); 
+        String Vydavatelstvo = JOptionPane.showInputDialog (null, "Zadajte vydavateľstvo", "Pridávanie", JOptionPane.QUESTION_MESSAGE); 
+        int q = Integer.parseInt (Rok);
+        PWriter.printg (Autor+" - "+ Album+" - "+Vydavatelstvo+" ("+q+")"); 
+        PWriter.println();
+        PWriter.close();
+        txtaVstup.setText ("Pridali ste túto knihu: \n\n")+Autor+" - "+ Album+" - "+Vydavatelstvo+" ("+q+")"); 
+    }
+    catch (Exception ex) {
+        txtaVstup.setText ("Chyba - Pravdepodobne ste nezadali do roku číslo"); 
+    }
+    /**
+     * Funkcia vymaz: Vytvori array list zo suboru KNIHY.txt a zmaze z neho riadok ktory sme zadali. Medzitym sa uplne vymaze obsah suboru KNIHY.txt, a nasledne sa do neho zapisu riadky z arry listu
+     */
+    
+    else if (s.compateTo (btnVymaz.getLabel ()) ==0) 
+    
+    try {
+        BufferedReader br= new BufferedReader (new FileReader ("KNIHY.txt")); 
+        
+        String hladanie = JOptionPane.showInputDialog(null, "Zadajte číslo riadku, ktorý chcete vymazať", "Vymaž", JOptionPane.QUESTION_MESSAGE); 
+        
+        txtaVstup.setText(""); 
+        
+        int a = Integer.parseInt (hladane); 
+        int k= 0;
+        String riadok;
+        
+        aKnihy = new ArrayList(); 
+        while ((riadok=br.readLine ()) !=null) { 
+            
+            aKnihy.add(k, riadok);
+            k++;
+            
+        }
+        br.close();
+        txtaVstup.append ("Vymazali ste túto knihu\n\n"+aKnihy.get(a-1)); 
+        aKnihy.remove(a-1); 
+        
+        BufferedWriter = new BufferedWriter (new FileWriter ("KNIHY.txt")); 
+        writer.close();
+        
+        PrintWriter PWriter = new PrintWriter (new FileOutputStream ("KNIHY.txt", true)); 
+        for (String str: aKnihy) { 
+            PWriter.pritf(str);
+            PWriter.println();
+        }
+    
+    PWriter.close();
+
+}
+catch (Exception ex) {
+    txtaVstup.setText ("Chyba pravdepodobne ste nezadali číslo riadku. Môžete si pomôcť výpisom Kníh"); 
+}
+else 
+txtaVstup.setText ("Zmazali ste obrazovku"); 
+}
+private static String getField(String line) { 
+    returnline.split(" ")[0];
+}
+}

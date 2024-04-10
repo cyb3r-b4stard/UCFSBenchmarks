@@ -1,0 +1,333 @@
+import javafx.application.*;
+import javafx.event.*;
+import javafx.scene.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.*;
+import javafx.scene.shape.*;
+import javafx.embed.swing.*;
+import javafx.application.*;
+import javafx.scene.text.*;
+import java.util.*;
+import javafx.scene.paint.Color;
+import javafx.geometry.Pos;
+
+/**
+ * ##### # ########### ## ##### ### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Map
+{
+    private Boat[][] values;
+    Ship[] ships;
+    private boolean[][] shot;
+
+    private final static int CARRIER = 1;
+    private final static int BATTLESHIP = 1;
+    private final static int DESTROYER = 2;
+    private final static int PATROL_BOAT = 3;
+    private final static int SUBMARINE = 4;
+
+    public Map()
+    {
+        this.fillBoard();
+        int result = CARRIER + BATTLESHIP + DESTROYER + PATROL_BOAT + SUBMARINE;
+        this.ships = new Ship [result];
+    }
+    
+    public Boat[][] getHiddenMap()
+    {
+        Boat[][] hiddenMap = new Boat[GameBoard.N_LINES][GameBoard.N_COLS];
+        for(int i = 0; i < GameBoard.N_LINES; i++)
+        {
+            for(int b = 0; b < GameBoard.N_COLS; b++)
+            {
+                if(values[i][b] != Boat.WATER && shot[i][b] == false)
+                {
+                    hiddenMap[i][b] = Boat.WATER;
+                }
+                else if(values[i][b] == Boat.WATER && shot[i][b] == false)
+                {
+                    hiddenMap[i][b] = Boat.WATER;
+                }
+                else if(values[i][b] == Boat.WATER && shot[i][b] == false)
+                {
+                    hiddenMap[i][b] = null;
+                }
+                else if(values[i][b] != Boat.WATER && shot[i][b] == true)
+                {
+                    hiddenMap[i][b] == values[i][b];
+                }
+            }
+        }
+        return values;
+    }
+
+    public int nLines()
+    {
+        return values.length;
+    }
+
+    public int nCols()
+    {
+        return values[0].length;
+    }
+
+    public void setShots()
+    {
+        this.shot = new boolean[GameBoard.N_LINES][GameBoard.N_COLS];
+    }
+
+    public boolean isShot(int line, int col)
+    {
+        return this.shot[line][col];
+    }
+
+    public void setOneShot(int line, int col)
+    {
+        if(!this.isShot(line, col))
+            this.shot[line][col] = true;
+    }
+
+    public Boat getValue(int line, int col)
+    {
+        return this.values[line][col];
+    }
+
+    private void fillBoard()
+    {
+        this.values = new Boat[GameBoard.N_LINES][GameBoard.N_COLS];
+        for(int i = 0; i < GameBoard.N_LINES; i++)
+        {
+            for(int j = 0; j < GameBoard.N_COLS; j++)
+            {
+                this.values[i][j] = Boat.WATER;
+            }   
+        }
+    }
+
+    private void fillBoardWithShips()
+    {
+        this.fillCarries();
+        this.fillBattleship();
+        this.fillDestroyer();
+        this.fillPatrolBoat();
+        this.fillSubmarine();
+    }
+
+    private void fillCarries ()
+    {
+        for(int i = 0; i < CARRIER; i++)
+        {
+            Ship ship = new Carrier();
+            ship = this.getRandomPosition(ship);
+            this.addShip(ship);
+        }
+    }
+
+    private void fillBattleship ()
+    {
+        for(int i = 0; i < BATTLESHIP; i++)
+        {
+            Ship ship = new Battleship();
+            ship = this.getRandomPosition(ship);
+            this.addShip(ship);
+        }
+    }
+
+    private void fillDestroyer ()
+    {
+        for(int i = 0; i < DESTROYER; i++)
+        {
+            Ship ship = new Destroyer();
+            ship = this.getRandomPosition(ship);
+            this.addShip(ship);
+        }
+    }
+
+    private void fillPatrolBoat ()
+    {
+        for(int i = 0; i < PATROL_BOAT; i++)
+        {
+            Ship ship = new Patrol_Boat();
+            ship = this.getRandomPosition(ship);
+            this.addShip(ship);
+        }    
+    }
+
+    private void fillSubmarine ()
+    {
+        for(int i = 0; i < SUBMARINE; i++)
+        {
+            Ship ship = new Submarine();
+            ship = this.getRandomPosition(ship);
+            this.addShip(ship);
+        }
+    }
+
+    private Ship getRandomPosition(Ship ship)
+    {
+        Random r1 = new Random();
+        int[] newPos = new int[] {r1.nextInt(GameBoard.N_LINES), r1.nextInt(GameBoard.N_COLS) }; 
+
+        boolean flag = true;
+        for(Ship ship2 : ships)
+        {
+            for(int i = 0; i < ship2.SIZE; i++)
+            {
+
+                while(flag)
+                {
+                    if(newPos[0] == ship.getPosition()[i][0] && newPos[1] == ship.getPosition()[i][1])
+                    {
+                        flag = false;
+                    }
+                    else
+                    {
+                        flag = true;
+                    }
+                }
+
+            }
+        }
+
+        if(flag == true)
+        {
+        }
+
+        return ship;
+    }
+
+    /*public boolean verifyBlock (int x, int y)
+    {
+        Map<Integer[], Boat> lista = new HashMap<Integer[], Boat> ();
+        for(Ship ship: ships)
+        {
+
+            if(x == 0 && y == 0) 
+            {
+                lista.put(new int[]{x+1, y},values[x+1][y]);
+                lista.put(values[x+1][y+1], new int[]{x+1, y+1});
+                lista.put(values[x][y+1], new int[]{x+1, y});
+
+                lista.addAll(Arrays.asList(pair1, pair2, pair3));                
+            }
+            if(x > 0 && x < N_COLS -1 && y == 0)
+            {
+                lista.put(values[x+1][y], new int[]{x+1, y});
+                lista.put(values[x-1][y], new int[]{x-1, y});
+                lista.put(values[x+1][y+1], new int[]{x+1, y+1});
+                lista.put(values[x][y+1], new int[]{x, y+1});
+                lista.put(values[x-1][y+1], new int[]{x-1, y+1});
+
+                lista.addAll(Arrays.asList(pair1, pair2, pair3, pair4, pair5));
+            }
+            if( x == N_COLS - 1 && y == 0)
+            {
+                lista.put(values[x-1][y], new int[]{x-1, y});
+                lista.put(values[x-1][y+1], new int[]{x-1, y+1});
+                lista.put(values[x][y+1], new int[]{x+1, y+1});
+
+                lista.addAll(Arrays.asList(pair1, pair2, pair3)); 
+            }
+
+            if(x == 0 && y > 0 && y < N_LINES - 1)
+            {
+                lista.put(values[x][y-1], new int[]{x, y-1});
+                lista.put(values[x+1][y-1], new int[]{x+1, y-1});
+                lista.put(values[x+1][y], new int[]{x+1, y});
+                lista.put(values[x+1][y+1], new int[]{x+1, y+1});
+                lista.put(values[x][y+1], new int[]{x, y+1});
+
+                lista.addAll(Arrays.asList(pair1, pair2, pair3, pair4, pair5));
+            }
+            if( x > 0 && x < N_COLS -1 && y > 0 && y < N_LINES - 1)
+            {
+                lista.put(values[x-1][y-1], new int[]{x-1, y-1});
+                lista.put(values[x][y-1], new int[]{x, y-1});
+                lista.put(values[x+1][y-1], new int[]{x+1, y});
+                lista.put(values[x-1][y], new int[]{x-1, y});
+                lista.put(values[x+1][y], new int[]{x+1, y});
+                lista.put(values[x-1][y+1], new int[]{x-1, y+1});
+                lista.put(values[x][y+1], new int[]{x, y+1});
+                lista.put(values[x+1][y+1], new int[]{x+1, y+1});
+
+                lista.addAll(Arrays.asList(pair1, pair2, pair3, pair4, pair5, pair6, pair7, pair8));
+            }
+            if(x == N_COLS - 1 && y > 0 && y < N_LINES - 1) 
+            {
+                lista.put(values[x][y-1], new int[]{x, y-1});
+                lista.put(values[x-1][y-1], new int[]{x-1, y-1});
+                lista.put(values[x-1][y], new int[]{x-1, y});
+                lista.put(values[x-1][y+1], new int[]{x-1, y+1});
+                lista.put(values[x][y+1], new int[]{x, y+1});
+
+                lista.addAll(Arrays.asList(pair1, pair2, pair3, pair4, pair5));
+            }
+            if(x == 0 && y == N_LINES - 1)
+            {
+                lista.put(values[x][y-1], new int[]{x, y-1});
+                lista.put(values[x+1][y-1], new int[]{x+1, y-1});
+                lista.put(values[x+1][y], new int[]{x+1, y});
+                lista.addAll(Arrays.asList(pair1, pair2, pair3)); 
+            }
+            if(x > 0 && x < N_COLS -1 && y == N_LINES - 1)
+            {
+                lista.put(values[x-1][y], new int[]{x-1, y});
+                lista.put(values[x-1][y-1], new int[]{x-1, y-1});
+                lista.put(values[x][y-1], new int[]{x, y-1});
+                lista.put(values[x+1][y-1], new int[]{x+1, y-1});
+                lista.put(values[x+1][y], new int[]{x+1, y});
+
+                lista.addAll(Arrays.asList(pair1, pair2, pair3, pair4, pair5));
+            }
+
+            if(x == N_COLS - 1 && y == N_LINES - 1)
+            {
+                lista.put(values[x][y-1], new int[]{x, y-1});
+                lista.put(values[x-1][y-1], new int[]{x-1, y-1});
+                lista.put(values[x-1][y], new int[]{x-1, y});
+
+                lista.addAll(Arrays.asList(pair1, pair2, pair3)); 
+            }
+            boolean flag = true;
+            lista.forEach((k, v) ->
+                {
+                    if(Boat.WATER == pair.getKey())
+                    {
+                    }
+                    else
+                    {
+                        return false;
+                    }    
+                });
+
+        }
+        return flag;
+    }*/
+
+    private void addShip(Ship ship)
+    {
+        int pos = this.getShipNextPosition();
+        if(!(this.ships.length >= pos))
+        {
+            this.ships[pos] = ship;
+        }
+
+    }
+
+    private int getShipNextPosition()
+    {
+        int totalSize = 0;
+
+        while(totalSize < ships.length && this.ships[totalSize] != null)
+        {
+            totalSize++;
+        }
+
+        return totalSize;
+    }
+}

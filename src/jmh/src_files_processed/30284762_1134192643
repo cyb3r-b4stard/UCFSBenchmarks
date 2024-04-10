@@ -1,0 +1,203 @@
+
+/**
+ * ##### # ########### ## ##### ##### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Chuck
+{
+    private GVdie d1;
+    private GVdie d2;
+    private GVdie d3;
+    private int credits;
+    private String message;
+    public static final int ONES = 1;
+    public static final int TWOS = 2;
+    public static final int THREES = 3;
+    public static final int FOURS = 4;
+    public static final int FIVES = 5;
+    public static final int SIXES = 6;
+    public static final int SMALL = 7;
+    public static final int LARGE = 8;
+    public static final int FIELD = 9;
+    public Chuck(String message){
+        d1 = new GVdie();
+        d2 = new GVdie();
+        d3 = new GVdie();
+        
+        credits = 0;
+        
+        this.message = message;
+        
+      }
+    public String getMessage(){
+        return message;
+    }
+    public int getCredits(){
+        return credits;
+    }
+    public void addCredits(int amount){
+        credits += amount;
+    }
+    public void placeBet(int choice){
+        if(choice == Chuck.ONES){
+            betOnOnes = true;
+        }
+        if(choice == Chuck.TWOS){
+            betOnTwos = true;
+        }
+        if(choice == Chuck.THREES){
+            betOnThrees = true;
+        }
+        if(choice == Chuck.FOURS){
+            betOnFours = true;
+        }
+        if(choice == Chuck.FIVES){
+            betOnFives = true;
+        }
+        if(choice == Chuck.SIXES){
+            betOnSixs = true;
+        }
+        if(choice == Chuck.SMALL){
+            betOnSmall = true;
+        }
+        if(choice == Chuck.LARGE){
+            betOnLarge = true;
+        }
+        if(choice == Chuck.FIELD){
+            betOnField = true;
+        }
+
+    }
+    public void cancelBet(int bet){
+        
+    }
+    public void roll(){
+        if (credits > 0){
+        d1.roll();
+        d2.roll();
+        d3.roll();
+        checkAllBets();
+        clearAllBets();
+    }
+    }
+    public void reset(){
+        
+    }
+    public void clearAllBets(){
+        
+    }
+    public boolean isTriplets (int num ) {
+        int v1 = d1.getValue();
+        int v2 = d2.getValue();
+        int v3 = d3.getValue();
+
+        if (v1 == v2 && v2 == v3 && v1 == v3){
+            return true;
+        }
+        else 
+        return false;
+    }
+    private boolean isDoubles(int num){
+        int v1 = d1.getValue();
+        int v2 = d2.getValue();
+        int v3 = d3.getValue();
+
+        if (v1 == v2 || v1 == v3 || v2 == v3 )
+            return true;
+            else
+            return false;
+        
+    }
+    private void checkLarge(){
+        int v1 = d1.getValue();
+        int v2 = d2.getValue();
+        int v3 = d3.getValue();
+        
+        credits -= 1;
+        if ((v1 + v2 + v3) > 10 && isTriplets == false){
+            credits += 2;
+            message = "You Won!";
+        }
+    }
+    private void checkSmall(){
+        int v1 = d1.getValue();
+        int v2 = d2.getValue();
+        int v3 = d3.getValue();
+        
+        credits -= 1;
+        if ((v1 + v2 + v3) < 11 && isTriplets == false){
+            credits += 2;
+            message = "You Won!";
+        }
+    }
+    private void checkField(){
+        int v1 = d1.getValue();
+        int v2 = d2.getValue();
+        int v3 = d3.getValue();
+        
+        credits -= 1
+        if((v1 + v2 + v3) < 8 && (v1 + v2 + v3) > 12 ){
+            credits += 2
+            message = "You Won!";
+        }
+    }
+    private void checkNumber(int num){
+        int v1 = d1.getValue();
+        int v2 = d2.getValue();
+        int v3 = d3.getValue(); 
+        
+        credits -= 1;
+        if(v1 == v2 && v1 == v3 && v2 == v3){
+            credits += 11;
+            message = "You Won!";
+        }
+        if(v1 == v2 || v1 == v3 || v2 == v3){
+            credits += 3;
+            message = "You Won!";
+        }
+        if(num == v1 || num == v2 || num == v3){
+            credits += 2;
+            message = "You Won!";
+        }
+    }
+    private void checkAllBets(){
+        message = "Sorry, you lose. Try again.";
+        if(betOnOnes){ 
+            checkNumber(Chuck.ONES);
+        }
+        if(betOnTwos){ 
+            checkNumber(Chuck.TWOS);
+        }
+        if(betOnThrees){ 
+            checkNumber(Chuck.THREES);
+        }
+        if(betOnFours){ 
+            checkNumber(Chuck.FOURS);
+        }
+        if(betOnFives){ 
+            checkNumber(Chuck.FIVES);
+        }
+        if(betOnSixes){ 
+            checkNumber(Chuck.SIXES);
+        }
+        if(betOnSmall){ 
+            checkNumber(Chuck.SMALL);
+        }
+        if(betOnLarge){ 
+            checkNumber(Chuck.LARGE);
+        }
+        if(betOnField){ 
+            checkNumber(Chuck.FIELD);
+        }
+    }
+    public boolean enoughCredits(){
+        if(credits > 0){
+        return true;
+        }
+        else{
+        return false;
+    }
+    }
+}

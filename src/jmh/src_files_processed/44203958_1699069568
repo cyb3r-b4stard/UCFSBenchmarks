@@ -1,0 +1,283 @@
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.Scanner;
+import java.util.Date;
+import java.text.DecimalFormat;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+
+
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+
+
+public class Productos
+{
+    
+    ArrayList<String> producto = new ArrayList<String>();
+    public static void main(String[] args){ 
+            Opcion();
+            
+    }      
+    public static int imprimirMenu() {
+            System.out.print("\n**********MENU PRINCIPAL**********\n");    
+            System.out.print("1. Agregar producto\n");
+            System.out.print("2. Buscar producto específico\n");
+            System.out.print("3. Ver productos registrados por categorías (sub-menú)\n");
+            System.out.print("4. Cantidades de productos en bodega (total en base a todas las categorías)\n");
+            System.out.print("5. Reporte de ingresos a bodega (fecha y hora)\n");
+            System.out.print("6. Ver totales $ y Q en bodega\n");
+            String input = getInput(">>> Seleccione opción del 1 al 6 y el 7 para salir: ");
+
+            int opcionSeleccionada = Integer.parseInt(input);
+            return opcionSeleccionada;
+    
+    }
+    public static void Opcion(){
+             int opcion = imprimirMenu();
+            switch(opcion){
+            case 1:
+            System.out.print("\u000C");
+            agregarProducto();
+            break;
+            case 2:
+            System.out.print("\u000C");
+            buscarProducto();
+            break;
+            case 3:
+            System.out.print("\u000c");
+            verProductos();
+            break;
+            case 4:
+            System.out.print("\u000c");
+            cantidadProductosBodega();
+            break;
+            case 5:
+            System.out.print("\u000c");
+            reporteIngresosBodega();
+            break;
+            case 6:
+            System.out.print("\u000c");
+            verTotales();
+            break;
+            case 7:
+                            System.out.print("\u000c");
+                            System.out.print("Saliendo del sistema...");
+                            System.exit(0);
+            default:
+                            System.out.print("\u000c");
+                            System.out.print("Opcion no valida marcó el número "+opcion+",ingresar un número del 1 al 7 nuevamente...");
+                            Opcion();
+                } 
+     }
+    public static String getInput(String prompt){
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            System.out.print(prompt);
+            System.out.flush();
+            try{
+                return br.readLine();
+            }catch(Exception e){
+                return "Error: \n" + e.getMessage();
+            }
+        }
+        
+       
+   
+      public static void agregarProducto() {
+        
+                String producto;
+                String categoria;
+                Date fechaIngreso;
+                double precio;
+                  String continuar = "s";
+                  Scanner in = new Scanner(System.in);
+                  Scanner in1 = new Scanner(System.in);
+                  Scanner in2 = new Scanner(System.in);
+                  Scanner in3 = new Scanner(System.in);
+                  
+  
+  
+          try{    
+                File productosPrecios = new File("C:/Users/Abelino/Documents/Programacion2017/Tarea1/ArchivosCreados/Productos.txt");
+                File categoriaProd = new File("C:/Users/Abelino/Documents/Programacion2017/Tarea1/ArchivosCreados/Categoria.txt");
+                File fechaIng = new File("C:/Users/Abelino/Documents/Programacion2017/Tarea1/ArchivosCreados/FechaIngreso.txt");
+                File precioProd = new File("C:/Users/Abelino/Documents/Programacion2017/Tarea1/ArchivosCreados/Precio.txt");
+                      
+                PrintWriter outputFile = new PrintWriter(productosPrecios);
+                PrintWriter outputFile1 = new PrintWriter(categoriaProd);
+                PrintWriter outputFile2 = new PrintWriter(fechaIng);
+                PrintWriter outputFile3 = new PrintWriter(precioProd);
+        
+        
+                while(continuar.equals("s")){
+                System.out.print("\u000C");
+                
+                System.out.print("Ingrese el nombre del Producto:   ");
+                producto = in.nextLine();
+                outputFile.print(producto  + "\n");
+                
+                System.out.print("Ingrese la categoria:   ");
+                categoria = in1.nextLine();
+                outputFile1.print(categoria+"\n");
+                           
+                System.out.print("Ingrese el precio:   ");
+                precio = in3.nextDouble();
+                outputFile3.print(precio+"\n");
+                
+                fechaIngreso = new Date();
+                outputFile2.print(fechaIngreso+"\n");
+                
+                Scanner ingreso = new Scanner(System.in);
+                System.out.print("  Presione S o s para agregar mas productos o cualquier tecla para regresar ");
+                continuar = ingreso.nextLine();
+                
+            }
+            outputFile.close();
+            outputFile1.close();
+            outputFile2.close();
+            outputFile3.close();
+            System.out.print("\u000C");
+                   
+                   Opcion();
+            }
+            
+            catch(Exception e){
+                            System.out.print("\nSe generó la siguiente excepción:\n" + e.toString());
+                        }
+        
+        
+        }  
+    
+    public static void buscarProducto(){
+    File buscarProducto = new File("C:/Users/Abelino/Documents/Programacion2017/Tarea1/ArchivosCreados/Productos.txt");    
+     ArrayList<String> prod = new ArrayList<String>();
+     String continuar = "s";
+        try{
+            Scanner inputFile = new Scanner(buscarProducto);  
+            Scanner in = new Scanner(System.in);
+            while(inputFile.hasNextLine()){
+           String producto = inputFile.nextLine()   ; 
+           prod.add(producto);
+             } 
+               
+             while(continuar.equals("s")){ 
+            System.out.print("\u000C");
+            System.out.print("Ingrese el nombre del producto que desea buscar\n");
+            String producto1 = in.nextLine();
+            int pos = prod.indexOf(producto1); 
+            if (pos >= 0){
+            System.out.print("\n El producto "+ producto1 +" esta en la posición " + pos + " de la lista.\n");
+                 }
+            else{
+            System.out.print("\n El producto no esta en la lista");
+            }
+            System.out.print(">>>Si desea puscar otro producto presione s <<<\n");
+            System.out.print(">>> Presione cualquier tecla para ir al menú principal <<<\n");
+            Scanner ingreso = new Scanner(System.in);
+            continuar = ingreso.nextLine();
+          }
+         System.out.print("\u000C");
+         Opcion();
+            }
+        
+            catch(Exception e){
+            System.out.print("\nSe generó la siguiente excepción:\n" + e.toString());
+        }      
+           
+    }
+        public static void verProductos(){
+           File buscarProducto = new File("C:/Users/Abelino/Documents/Programacion2017/Tarea1/ArchivosCreados/Productos.txt");    
+     ArrayList<String> prod = new ArrayList<String>();
+     String continuar = "s";
+        try{
+            Scanner inputFile = new Scanner(buscarProducto);  
+            Scanner in = new Scanner(System.in);
+            int i = 1;
+            System.out.print("Lista de Productos\n");
+            while(inputFile.hasNextLine()){
+           String producto = inputFile.nextLine()   ; 
+           System.out.print("\n"+i+".-"+producto+"\n");
+           i++;
+             } 
+             }
+            
+           catch(Exception e){
+            System.out.print("\nSe generó la siguiente excepción:\n" + e.toString());
+        }       
+            
+            
+         System.out.print("\n" + prod.toString());
+    }
+    public static void cantidadProductosBodega(){
+      
+         File buscarProducto = new File("C:/Users/Abelino/Documents/Programacion2017/Tarea1/ArchivosCreados/Productos.txt");    
+     ArrayList<String> prod = new ArrayList<String>();
+     String continuar = "s";
+        try{
+            Scanner inputFile = new Scanner(buscarProducto);  
+            Scanner in = new Scanner(System.in);
+            while(inputFile.hasNextLine()){
+           String producto = inputFile.nextLine()   ; 
+           prod.add(producto);
+             } 
+            
+            }
+          catch(Exception e){
+            System.out.print("\nSe generó la siguiente excepción:\n" + e.toString());  
+            
+        System.out.print("\n" + prod.size());
+       }
+       System.out.print("\n La cantidad de productos en bodega es: " + prod.size());
+       
+    } 
+    
+    
+    public static void reporteIngresosBodega(){
+        
+    } 
+    
+    public static double verTotales(){
+        
+             File precio = new File("C:/Users/Abelino/Documents/Programacion2017/Tarea1/ArchivosCreados/Precio.txt");    
+             ArrayList<Double> prod1 = new ArrayList<Double>();
+             
+             int i = 0;
+             double total = 0;
+             double producto;
+        try{
+            Scanner inputFile = new Scanner(precio);  
+            Scanner in = new Scanner(System.in);
+            while(inputFile.hasNextLine()){
+                   producto = inputFile.nextDouble()   ; 
+                   prod1.add(producto);
+             } 
+            
+            }
+            
+            }
+       
+        while(i <= prod1.size())
+        {
+            System.out.print(i+"\n");
+            total = total + prod1.get(i);
+            System.out.print(total+"\n");
+           i++;
+         }
+        
+       System.out.print("El total es:  ");
+       
+       System.out.print("\n La cantidad de productos en bodega es: " + prod1.size());
+       return total;
+       
+       catch(Exception e){
+            System.out.print("\nSe generó la siguiente excepción:\n" + e.toString());
+    }
+    
+   
+}
+
+

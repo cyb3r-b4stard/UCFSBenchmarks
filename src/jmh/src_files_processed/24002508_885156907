@@ -1,0 +1,92 @@
+import java.text.NumberFormat;
+public class Account
+{
+    private String owner;
+    private int acctNumber;
+    private String name;
+    private NumberFormat fmt= NumberFormat.getCurrencyInstance();
+    private final double RATE= 0.035;
+    private double initial;
+    private double balance;
+    private double amount;
+     
+    public Account(String owner, int account, double balance)
+    {
+      name=owner;
+      acctNumber=account;
+      balance=balance+initial
+   };
+   public double deposit(double amount)
+   {
+       if (amount <0)
+       {
+           System.out.println("The deposit amount is invalid.");
+       }
+       else
+       {
+           balance=balance+amount;
+        }
+        return balance;
+   }
+   public double withdraw(double amount, double fee)
+   {
+       amount +=fee;
+       if (amount<0)
+       {
+           System.out.println("This is not a valid withdrawal.");
+       }
+       else
+      {
+          if (amount>balance)
+          {
+              System.out.println("Error: Insuffiecient funds in account.");
+              System.out.println("Account #:" + " " + acctNumber);
+              System.out.println("Available Amount: "+ fmt.format(balance));
+            }
+            else 
+            {
+                balance=balance-amount;
+            }
+     }
+     return balance;
+   }
+   public double transfer( double withdraw, int acctNumber, int acct2)
+   {
+       double transfer= balance-withdraw;
+       double recieve= balance+withdraw;
+       if(amount<0)
+       {
+           System.out.println(" That is an invalid transfer amount.");
+        }
+        else
+        {
+         if(amount>balance)
+         {
+             System.out.println("Insuffiecient funds in account.");
+         }
+         else
+         {
+             balance= balance-withdraw;
+             balance=balance+withdraw;
+         }
+        }
+        return balance;
+    }
+   public double addInterest()
+   {
+       balance+= (balance*RATE);
+       return balance;
+    }
+    public double getBalance()
+    {
+        return balance;
+    }
+    public int getAccountNumber()
+    {
+        return acctNumber;
+    }
+    public String toString()
+    {
+        return(acctNumber + "\t" + name +"\t"+ fmt.format(balance));
+    }
+}

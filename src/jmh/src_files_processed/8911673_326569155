@@ -1,0 +1,149 @@
+public class Gefährt
+{
+    private LimousenenVerleih treffpunkt;
+    private String fahrer;
+    private String marke;
+    private int baujahr;
+    private int kmStdAlt;
+    private int kmStdNeu;
+    private boolean frei;
+
+    public Gefährt ( String marke, int kmStdAlt, int baujahr )
+    {
+        setMarke ( marke );
+        setKmStdAlt ( kmStdAlt );
+        setBaujahr ( baujahr );
+        setFrei ( true );
+        setKmStdNeu ( kmStdAlt );
+    }
+
+
+    public void setTreffpunkt ( LimousenenVerleih treffpunkt )
+    {
+        if ( treffpunkt != null )
+        {
+            this.treffpunkt = treffpunkt;
+        }
+
+    }
+
+    public void setFahrer ( String fahrer )
+    {
+        if ( fahrer != null )
+        {
+            this.fahrer = fahrer;
+        }
+    }
+
+    public void setMarke ( String marke )
+    {
+        if ( marke != null )
+        {
+            this.marke = marke;
+        }
+    }
+
+    private void setBaujahr ( int baujahr )
+    {
+        if ( baujahr > 1960 )
+        {
+            this.baujahr = baujahr;
+        }
+    }
+
+    public void setKmStdAlt ( int kmStdAlt )
+    {
+        if ( kmStdAlt > 0 && kmStdAlt < 99999 )
+        {
+            this.kmStdAlt = kmStdAlt;
+        }
+    }
+
+    private void setKmStdNeu ( int kmStdNeu )
+    {
+        if ( kmStdNeu > 0 && kmStdNeu < 99999 )
+        {
+            this.kmStdNeu = kmStdNeu;
+        }
+    }
+
+    public void setFrei ( boolean frei )
+    {
+        this.frei = frei;
+    }
+
+
+    public LimousenenVerleih getTreffpunkt ()
+    {
+        return treffpunkt;
+    }
+
+    public String getFahrer ()
+    {
+        return fahrer;
+    }
+
+    public String getMarke ()
+    {
+        return marke;
+    }
+
+    public int getBaujahr ()
+    {
+        return baujahr;
+    }
+
+    public int getKmStdAlt ()
+    {
+        return kmStdAlt;
+    }
+
+    public int getKmStdNeu ()
+    {
+        return kmStdNeu;
+    }
+
+    public boolean getFrei ()
+    {
+        return frei;
+    }
+
+
+    public void fahren ( int km )
+    {
+        kmStdNeu = kmStdAlt + km;
+        if ( kmStdNeu > 100000 )
+        {
+            kmStdNeu = kmStdNeu - 100000;
+        }
+    }
+
+    public int berechnekm ()
+    {
+        if ( kmStdNeu < kmStdAlt )
+        {
+            kmStdNeu = 100 000 - kmStdAlt;
+            return kmStdNeu;
+        }
+        else
+        {
+            return kmStdNeu - kmStdAlt;   
+        }
+    }
+
+    public float berechneFahrpreis ()
+    {
+        return (treffpunkt.getKmPreis () * berechnekm () ) + treffpunkt.getGrundPreis ();
+    }
+
+    public String toString ()
+    {
+        return "Name des Limousienenverleih: " + treffpunkt + "\nMarke: " + getMarke () + "\nBaujahr: " + getBaujahr () + "\nAlter Kilometerstand: " + getKmStdAlt();
+    }
+
+    public void toPrint ()
+    {
+        System.out.println ( this );
+    }
+
+}

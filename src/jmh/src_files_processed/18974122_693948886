@@ -1,0 +1,187 @@
+
+/**
+ * ##### ###### ########## ##### ###########.
+ * 
+ * @###### ########## #####
+ * @####### ####-##-##
+ */
+import java.util.ArrayList;
+
+public class Zug {
+    
+    private Lokomotive lok;
+    private Waggon wag;
+    private ArrayList<Waggon> Waggons;
+    
+    
+    /**
+     * Erzeugt einen Zug ohne Waggons (die Höchstgeschwindigkeit ist 160 km/h).
+     */
+    public Zug(int zugkraft) {
+        lok = new Lokomotive(160, zugkraft);
+        Waggons = new ArrayList<Waggon>();
+        
+    }
+    
+    /**
+     * Methode, die die Anzahl der Waggons des Zugs zurückgibt
+     * (aktuelle Größe des Datenfelds)
+     */
+    public int anzahlWaggons()
+    {
+        return Waggons.size();
+    }
+    
+    /**
+     * Methode, die am Ende de ArrayList einen Waggon mit der übergebenen Passagierkapazität hinzufügt.
+     * (Nur, wenn Zugkraft der Lok ausreicht)
+     */
+    public void waggonHinzu(int kapazitaet)
+    {
+        wag = new Waggon(kapazitaet);
+        if(lok.zugkraft - Waggons.size()> 0)
+        
+        {
+            if(lok.v == 0)
+            {
+                Waggons.add(wag);
+            }
+             else
+            {
+                System.out.println("\nSehr geehrter Zugführer,\nIhr Zug muss sich im Stillstand befinden, um einen Waggon anhängen zu können.");
+                System.out.println("Ihre aktuelle Geschwindigkeit beträgt jedoch " + lok.v +" km/h\n");
+            }
+        }
+        else
+        {
+                 System.out.println("\nSehr geehrter Zugführer, Ihr Zug kann nicht mehr als " +Waggons.size()+" Waggons ziehen! \n");
+        }
+    }
+    
+    /**
+     * Methode, die Gesamtanzahl der Passagiere in allen Waggons wiedergibt.
+     */
+    public int gibPassagiere()
+    {
+        int anzahl = 0;
+        for(Waggon wagg : Waggons)
+        {
+            anzahl = anzahl + wagg.anzahlPassagiere;
+        }
+        
+        return anzahl;
+    }
+    
+    /**
+     * Methode, die für das Auffüllen der Waggons zuständig ist
+     */
+    public int zusteigen (int anzahl)
+    {
+        for(Waggon wagg : Waggons)
+        {
+            
+            anzahl = wagg.zusteigen(anzahl);
+            
+        }
+        
+        return anzahl;
+    }
+    
+    /**
+     * Diese Methode soll einen Waggon abhängen, falls mindestens einer am Zug hängt
+     */
+    public void abkoppeln()
+    {
+        Waggon letzterWaggon = Waggons.get(Waggons.size()-1);
+        int letzteAnzahl = letzterWaggon.gibPassagiere();
+        
+        if(anzahlWaggons()> 0)
+        {
+            if(letzteAnzahl == 0)
+            {
+                Waggons.remove(Waggons.size()-1);
+            }
+            else
+            {
+                try
+                {
+                    System.out.println("\nEs befinden sich immer noch Passagiere im letzen Waggon!\n");
+                
+                    System.out.println("\nSehr geehrte Fahrgäste,");
+                    Thread.sleep(2000);
+                    System.out.println("Wir befinden uns an der Endstation.");
+                    Thread.sleep(2000);
+                    System.out.println("Wir bitten alle Fahrgäste auszusteigen");
+                    Thread.sleep(2000);
+                    System.out.println("und wünschen Ihnen noch einen angenehmen Tag\n");
+                }
+            }
+        }
+        else
+        {
+            System.out.println("\nEs gibt keine Waggons, die abgehängt werden könnten!\n");
+        }
+    }
+    
+    /**
+     * Methode für AIORGA und den mittleren Wagon
+     */
+    public Waggon mittlererWaggon()
+    {
+        if(anzahlWaggons()%2 == 0)
+        {
+            return null;
+        }
+        else
+        {
+            return Waggons.get(anzahlWaggons()/2);
+        }
+    }
+    
+    
+    /**
+     * Erhöht die Geschwindigkeit des Zugs um 10 km/h.
+     */
+    public void beschleunigen() {
+        lok.beschleunigen();
+    }
+    
+    /**
+     * Verringert die Geschwindigkeit des Zugs um 10 km/h.
+     */
+    public void bremsen() {
+        lok.bremsen();
+    }
+    
+    /**
+     * Bringt den Zug zum Stillstand und liefert den Bremsweg.
+     * @return Der Bremsweg der Lok in Metern.
+     */
+    public int vollbremsung() {
+        return lok.vollbremsung();
+    }    
+    
+    /**
+     * Die wohl wichtigste Methode eines Zuges!
+     * Probieren Sie sie ruhig aus - den Quelltext müssen Sie nicht verstehen.
+     */
+    public void verspaetung() {
+        try {
+            System.out.println("\nSehr geehrte Fahrgäste,");
+            Thread.sleep(2000);
+            System.out.println("aufgrund von Störungen im Betriebsablauf");
+            Thread.sleep(2000);
+            System.out.println("wird sich die Weiterfahrt dieses Zuges");
+            Thread.sleep(2000);
+            System.out.println("um unbestimmte Zeit verzögern.\n");
+        }
+        catch(InterruptedException e) {}
+    }
+    
+    
+    
+    
+    
+    
+    
+}

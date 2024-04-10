@@ -1,0 +1,182 @@
+
+/**
+ * ## ###### ##### ########## ### ####### #### ## ######
+ *
+ * 
+ * @###### (##### ######) 
+ * @####### (#)
+ */
+public class Model
+{
+    public int[][] rooster;
+    private int breedte, hoogte;
+    private int generatie;
+    
+    private int leeg;
+    /**
+     * Constructor for objects of class Model
+     */
+    public Model()
+    {
+        breedte = 80;
+        hoogte = 60;
+        rooster = new int[breedte][hoogte];
+        for (int x=0; x < breedte; x++) 
+        {
+            for (int y=0; y<hoogte; y++) 
+            {
+                rooster[x][y]= 0;
+            }
+
+        }
+        generatie = 0;
+
+        leeg =0;
+        rooster[13][11]=1;
+        rooster[14][11]=1;
+        rooster[15][11]=1;
+
+    }
+
+    /**
+     * wat is de breedte van het rooster
+     * 
+     * @return de breedte
+     */
+    public int getBreedte() 
+    {
+        return breedte;    
+    }
+
+    /**
+     * wat is de hoogte van het rooster?
+     * 
+     * @return de hoogte
+     */
+    public int getHoogte() 
+    {
+        return hoogte;
+    }
+
+    /**
+     * Geef de gekozen cel uit het rooster terug
+     * 
+     * @param x de x-coordinaat van de cel
+     * @param y de y-coordinaat van de cel
+     * 
+     * @return het cel op deze positie, null indien geen cel.
+     */
+    public int getCelUitRooster(int x, int y) {
+
+        if (x < 0 || x >= breedte) return 0;
+        if (y < 0 || y >= hoogte) return 0;
+        return rooster[x][y]; 
+    }
+
+    /**
+     * Breng de cel tot leven
+     * @param x de x-coordinaat van de cel
+     * @param y de y-coordinaat van de cel
+     */
+    public void maakLevend(int x,int y)
+    {
+        rooster[x][y]=1;
+    }
+
+    /**
+     * Vernietig de cel
+     * @param x de x-coordinaat van de cel
+     * @param y de y-coordinaat van de cel
+     */
+    public void maakDood(int x,int y)
+    {
+
+        rooster[x][y]=0;
+
+    }
+
+    public int telAantalBuren(int rij,int kolom)
+    {
+        int levendBuren =0;
+        int x =rij;
+        int y =kolom;
+        int links,rechts,onder,boven;
+        if(x>0)
+        {
+            links = x-1;
+        }
+        else
+        {
+            links= breedte-1;
+        }
+        if(x<breedte-1)
+        {
+            rechts = x+1;
+        }
+        else
+        {
+            rechts=0;
+        }
+        if(y>0)
+        {
+            boven = y-1;
+        }
+        else
+        {
+            boven= hoogte-1;
+        }
+        if(y<hoogte-1)
+        {
+            onder = y+1;
+        }
+        else
+        {
+            onder=0;
+        }
+        if(rooster[x][boven]==1){levendBuren++;}
+        if(rooster[x][onder]==1){levendBuren++;}
+        if(rooster[links][y]==1){levendBuren++;}
+        if(rooster[rechts][y]==1){levendBuren++;}
+        if(rooster[links][boven]==1){levendBuren++;}
+        if(rooster[links][onder]==1){levendBuren++;}
+        if(rooster[rechts][boven]==1){levendBuren++;}
+        if(rooster[rechts][onder]==1){levendBuren++;}
+        return levendBuren;
+    }
+
+    /**
+     * Laat de simulatie runnen
+     */
+    public void tick() 
+    {
+       
+        for (int x=0; x < breedte; x++) 
+        {
+            for (int y=0; y<hoogte; y++) 
+            {
+                int[breedte][hoogte] kopie=rooster[breedte][hoogte];
+                
+                if(rooster[x][y]==0&&telAantalBuren(x,y) ==3)
+                {
+                    rooster[x][y]=1;
+                   
+                }
+                if(rooster[x][y]==1)
+                {
+                    if(telAantalBuren(x,y)<2||telAantalBuren(x,y)>=4)
+                    {
+                        rooster[x][y]=0;
+
+                    }
+                    if(telAantalBuren(x,y)==2||telAantalBuren(x,y)==3)
+                    {
+                        rooster[x][y]=1;
+                    }
+
+                }
+
+            }
+        }
+    }
+
+}

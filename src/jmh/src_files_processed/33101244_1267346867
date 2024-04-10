@@ -1,0 +1,144 @@
+import java.awt.event.*;
+import java.awt.Graphics;
+import java.awt.Color;
+import javax.swing.JPanel;
+import javax.swing.JFrame;
+import javax.swing.Timer;
+
+class Ship extends Shape
+{
+  
+   int[] xPts, yPts; 
+   int polyPts = 4;
+   int x;
+   int y;
+   double[] startingXPts = {0,10,20,10};
+   double[] startingYPts = {20,0,20,14};
+   double asteroidRadius = 30;
+   Color color;
+
+     double radius = 10;
+    private double angle = 0;
+    private double rotationalSpeed = 2;
+    private double acceleration;
+    private double deceleration;
+    private double drag = .5;
+    private int[] startingMainThrustXPts = {-10,-25,-10};
+    private int[] startingMainThrustYPts = {5,0,5};
+    private int[] startingRearThrustXPts = {3,15,10,15};
+    private int[] startingRearThrustYPts = {0,12,0,-12};
+    private int[] mainThrustXPts = new int[3];
+    private int[] mainThrustYPts = new int[3];
+    private int[] rearThrustXPts = new int[4];
+    private int[] rearThrustYPts = new int[4];
+    
+  
+  
+   
+   int xVelocity = 1;
+   int yVelocity = 1;
+   private int posX;
+   private int posY;
+   private Graphics testGraphic;
+   
+ 
+    boolean turningLeft = false;
+   boolean turningRight = false;
+   boolean accelerating = false;
+   boolean decelerating = false;
+   public void setAccelerating(boolean a)
+   {
+       accelerating = a;
+     
+       
+    }
+    public void setDecelerating(boolean b)
+    {
+        decelerating = b;
+      
+       
+}
+public void setTurningLeft(boolean c)
+{ 
+   turningLeft = c;
+ 
+   
+}
+public void setTurningRight(boolean d)
+{
+    turningRight = d;
+  
+}
+public Ship (int x, int y, double angle, double rotationalSpeed, double acceleration, double deceleration, double drag){
+    this.x = x;
+    this.y = y;
+}
+
+
+
+        public Ship(int posX, int posY, Color astroidColor)
+   {
+     x=posX;
+     y=posY;
+     color = astroidColor;
+     xPts = new int[polyPts];
+     yPts = new int[polyPts];
+   }
+   
+   public void move(int width, int height)
+   {
+   
+     
+      
+         if(accelerating){
+            xVelocity += acceleration * Math.cos(angle);
+            yVelocity += acceleration * Math.sin(angle);
+           
+        }
+        if(decelerating){
+            xVelocity -= deceleration*Math.cos(angle);
+            yVelocity -= deceleration*Math.sin(angle);
+         
+           
+        }
+    
+      if (turningLeft){
+          angle -= rotationalSpeed;
+        }
+        if (turningRight){
+            angle += rotationalSpeed;
+        }
+      if(x<(0-(radius*2)))
+          x += width+(radius*2);
+      else if(x>(width+(radius*2)))
+          x -= width+(radius*2);
+                
+      if(y<(0-(radius*2))) {
+          y += height+(radius*2);
+      }
+      else if(y>(height+(radius*2)))
+          y -= height+(radius*2);
+
+      for(int i=0 ; i<polyPts ; i++) {
+      xPts[i] = (int)(startingXPts[i] * Math.cos(angle) - startingYPts[i] * Math.sin(angle) + x + 0.5);
+      yPts[i] = (int)(startingXPts[i] * Math.sin(angle) + startingYPts[i] * Math.cos(angle) + y + 0.5);
+     }
+   }
+    
+   public void draw( Graphics g )
+   {
+    g.setColor(color);
+    
+      if(accelerating){
+        mainThrustXPts = getXDrawPoly(startingMainThrustXPts, startingMainThrustYPts, angle, x);
+        mainThrustYPts = getYDrawPoly(startingMainThrustXPts, startingMainThrustYPts, angle, y);
+        g.fillPolygon(xPts, yPts,polyPts);
+   }
+  if(decelerating){
+      rearThrustXPts = getXDrawPoly(startingRearThrustXPts, startingRearThrustYPts[i] angle, x);
+      rearThrustYPts = getYDrawPoly(startingRearThrustXPts, startingRearThrustYPts[i] angle, y);
+      color = Color.BLUE;
+      g.fillPolygon(xPts, yPts,polyPts);
+}
+}
+  

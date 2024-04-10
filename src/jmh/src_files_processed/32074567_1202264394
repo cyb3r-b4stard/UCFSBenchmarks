@@ -1,0 +1,81 @@
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import java.awt.*;
+import objectdraw.*;
+/**
+ * ##### # ########### ## ##### ################# ####.
+ * 
+ * @###### (## ####) 
+ */
+public class Concentration extends FrameWindowController implements ActionListener
+{
+    private CardCollection cards = new CardCollection();
+    private JButton cheat;
+    private Card card;
+    private Card selectedCard = null;
+    private Card firstCard = null;
+    private Card secondCard = null;
+    private Card thirdCard = null;
+    private char[] cardSymbol =  {'a','b','c','d','e','f','g','h','i','j','k','l','m',
+                                           'n','o','p','q','r'};
+    private char shownSymbol= 'a';
+    public void begin () {
+        resize (400,480);
+        int cardWidth = 6;
+        int cardHeight = 6;
+        int cardPosition = 20;
+        int ycardPosition = 10;
+        int cardX = 0;
+        int cardY = 0;
+        int spacing = 10;
+        while (cardY < cardHeight){
+            cardX = 0;
+            cardPosition = 20;
+            Symbol
+            while (cardX < cardWidth) {
+                for (int i = 0; i < 36; i++) {
+                     cardSymbol[i] = 'a';
+                     i++;
+                }
+                card = new Card (shownSymbol, cardPosition, ycardPosition, canvas);
+                cards.addCard(card);
+                shownSymbol = cardSymbol[i];
+                cardPosition = cardPosition + 50 + spacing;
+                cardX++;
+            }
+            ycardPosition = ycardPosition + 50 + spacing;
+            cardY++;
+        }
+        cheat = new JButton ("cheat");
+        JPanel cheatPanel = new JPanel();
+        cheatPanel.add (cheat);
+        add(cheatPanel, BorderLayout.NORTH);
+        cheat.addActionListener(this);
+    }
+    public void actionPerformed (ActionEvent e) {
+        Object object = e.getSource();
+        if (object == cheat) {
+            cards.showCards();
+        }
+    }
+    public void onMouseClick (Location point) {
+        selectedCard = cards.getCardAt(point);
+        if (firstCard == null) {
+            firstCard = selectedCard;
+            selectedCard.showSymbol();
+        }
+        else if (firstCard != null && secondCard == null) {
+            secondCard = selectedCard;
+            selectedCard.showSymbol();
+        }
+        else if (firstCard != null && secondCard != null) {
+            firstCard.hideSymbol();
+            secondCard.hideSymbol();
+            firstCard = null;
+            secondCard = null;
+        }
+    }
+ }
+
+        

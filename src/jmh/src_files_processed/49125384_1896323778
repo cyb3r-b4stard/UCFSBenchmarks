@@ -1,0 +1,378 @@
+import javax.swing.JOptionPane;
+import java.util.*;
+import java.io.*;
+
+public class Major
+{
+    public static Stat user = new Stat(false);
+    public final static String[] ab={"Strength","Dexterity","Constitution","Inteligence","Wisdom","Charisma"};
+    public final static String[] OK = {"ok"};
+    public final static String[] YESNO = {"yes","no"};
+    public final static String[] clas = {"artificer","bard","cleric","druid","fighter","monk","mystic","paladin","ranger","rogue","sorcerer","warlock","wizard"};
+    public final static String[] rac={"elf"};
+    public static void launch(String[] args) throws Exception
+    {
+        while(true)
+        {
+            String[] cho = {"crafting","mass roller","overcasting","select user"};
+            int in = JOptionPane.showOptionDialog(null,"which program do you want to use?","D&D programs",1,3,null,cho,cho[1]);
+            if(in==-1)
+                quit();
+            if(in==0)
+                Crafting.main();
+            if(in==1)
+                MassRoller.main();
+            if(in==2)
+                Overcast.main();
+            if(in==3)
+                select();
+        }
+    }
+
+    public static void quit()
+    {
+        String[] cho = {"i'm sure","cancel"};
+        int in = JOptionPane.showOptionDialog(null,"are you sure you want to quit?","quiting",1,2,null,cho,cho[1]);
+        if(in==0)
+            System.exit(0);
+    }
+
+    public static void select() throws Exception 
+    {
+        String[] cho = {"preset","new user","save user"};
+        int in = JOptionPane.showOptionDialog(null,"what do you want to do?","D&D programs",1,3,null,cho,cho[1]);
+        if(in==-1)
+        {
+            quit();
+        }
+        else if(in==0)
+        {
+            
+            List<String> test = FileUtils.readFileAsListOfStrings("userList.txt");
+            String[] tray = test.toArray(new String[test.size()]);
+            String[] pre=new String[test.size()];
+            for(int i = 0;i<test.size();i++)
+            {
+                pre[i]=Scan.getWord(tray[i],0);
+            }
+            in= JOptionPane.showOptionDialog(null,"which preset would you like to use?","D&D programs",1,3,null,pre,pre[0]);
+            if(in==-1)
+            {
+                quit();
+            }
+            if(in==0)
+            {
+                user=new Stat();
+            }
+        }
+        else if(in==1)
+        {
+            String[] com={"ability scores","race","skills","level up","name"};
+            in= JOptionPane.showOptionDialog(null,"what do you want to edit?","D&D programs",1,3,null,com,com[0]);
+            if(in==-1)
+            {
+                quit();
+            }
+            else if(in==0)
+            {
+
+                in= JOptionPane.showOptionDialog(null,"which do you want to edit?","D&D programs",1,3,null,ab,ab[0]);
+                if(in==-1)
+                {
+                    quit();
+                }
+                else
+                {
+                    assign(in,"D&D programs");
+                }
+            }
+            else if(in==1)
+            {
+
+                in= JOptionPane.showOptionDialog(null,"what race are you?","D&D programs",1,3,null,rac,rac[0]);
+                if(in==-1)
+                {
+                    quit();
+                }
+                else if(in==0)
+                {
+
+                }
+            }
+            else if(in==2)
+            {
+                in= JOptionPane.showOptionDialog(null,"what ability score does the skill belong to?","D&D programs",1,3,null,ab,ab[0]);
+                ArrayList<String> skills = new ArrayList<String>();
+                skills.add("saving throw");
+                if(in==-1)
+                {
+                    quit();
+                }
+                else if(in==0)
+                {
+                    skills.add("athletics");
+                }
+                else if(in==1)
+                {
+                    skills.add("acrobatics");
+                    skills.add("sleight of hand");
+                    skills.add("stealth");
+                }
+                else if(in==2)
+                {
+
+                }
+                else if(in==3)
+                {
+                    skills.add("arcana");
+                    skills.add("religion");
+                    skills.add("investigation");
+                    skills.add("history");
+                    skills.add("nature");
+                }
+                else if(in==4)
+                {
+                    skills.add("animal handiling");
+                    skills.add("perception");
+                    skills.add("insight");
+                    skills.add("medicine");
+                    skills.add("survival");
+                }
+                else if(in==5)
+                {
+                    skills.add("deception");
+                    skills.add("persuasion");
+                    skills.add("intimidatiodn");
+                    skills.add("performance"); 
+                }
+                String [] skill = skills.toArray(new String[skills.size()]);
+
+                int inte= JOptionPane.showOptionDialog(null,"which skill are you proficient in?","D&D programs",1,3,null,skill,skill[0]);
+                user.skill[in][inte]=true;
+            }
+            else if(in==3)
+            {
+                in= JOptionPane.showOptionDialog(null,"what class do you want to level up in?","D&D programs",1,3,null,clas,clas[0]);
+                user.levelUp(in);
+            }
+            else if(in==4)
+            {
+                JOptionPane.showInputDialog(
+            }
+        }
+        else if(in==2)
+        {
+          
+                FileUtils.writeFile("userList.txt",writeStat(user));
+           
+        }
+        else
+        {
+            error("preset button invalid");
+        }
+
+    }
+
+    public static Stat readStat(String read)
+    {
+        Stat block = new Stat(false);
+        block.name = read.substring(0,Scan.find("\t",read));
+        read=read.substring(Scan.find("\t",read)+1,read.length());
+        for(int i = 0;i<6;i++)
+        {
+            block.ability[i]=Integer.parseInt(read.substring(0,Scan.find("\t",read)));
+            read=read.substring(Scan.find("\t",read)+1,read.length());
+        }
+        int ra = Integer.parseInt(read.substring(0,Scan.find("\t",read)));
+        if(ra==0)
+        {
+            block.race=Race.elf;
+        }
+        else
+        {
+            block.race=Race.elf;
+        }
+        read=read.substring(Scan.find("\t",read)+1,read.length());
+        {
+            int cla = Integer.parseInt(read.substring(0,Scan.find("\t",read)));
+            read=read.substring(Scan.find("\t",read)+1,read.length());
+            int i = 1;
+            while(cla!=-1&&i<=20)
+            {
+                block.levelUp(cla);
+                cla = Integer.parseInt(read.substring(0,Scan.find("\t",read)));
+                read=read.substring(Scan.find("\t",read)+1,read.length());
+                i++;
+            }
+        }
+        for(int i=0;i<6;i++)
+        {
+            for(int k = 0;k<6;k++)
+            {
+                if(read.charAt(0)=='1')
+                {
+                    block.skill[i][k]=true;
+                }
+                else
+                {
+                    block.skill[i][k]=false;
+                }
+                read=read.substring(1,read.length());
+            }
+        }
+        return block;
+    }
+
+    public static String writeStat(Stat read)
+    {
+        String out=read.name+"\t";
+        for(int i=0;i<6;i++)
+        {
+            out+=user.ability[i]+"\t";
+        }
+        if(read.race.equals(Race.elf))
+        {
+            out+="0\t";
+        }
+        else
+        {
+            out+="0\t";
+        }
+        int i =1;
+        boolean done=false;
+        while(!done&&i<=20)
+        {
+            try
+            {
+                out+=read.job[i].ID+"\t";
+            }
+            catch(Exception e)
+            {
+                out+="-1\t";
+                done=true;
+            }
+            i++;
+        }
+        for(i=0;i<6;i++)
+        {
+            for(int k = 0;k<6;k++)
+            {
+                if(read.skill[i][k])
+                {
+                    out+="1";
+                }
+                else
+                {
+                    out+="0";
+                }
+            }
+        }
+        return out+"\n";
+    }
+
+    public static void assign(int type,String title)
+    {
+        boolean valid = false;
+        if(Major.user.ability[type]!=-1)
+        {
+            valid=true;
+        }
+
+        String stat="";
+        if(type==0)
+        {
+            stat = "strength";
+        }
+        else if(type==1)
+        {
+            stat = "dexterity";
+        }
+        else if(type==2)
+        {
+            stat = "constitution";
+        }
+        else if(type==3)
+        {
+            stat = "inteligence";
+        }
+        else if(type==4)
+        {
+            stat = "wisdom";
+        }
+        else if(type==5)
+        {
+            stat = "charisma";
+        }
+        if(!valid)
+        {
+            user.ability[type]=getNum("What is your "+stat+" score?\n(not the modifier)",title);
+        }
+    }
+
+    public static void wait(int ms)
+    {
+        try {
+            Thread.currentThread().sleep(ms);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static int getNum(String input,String title)
+    {
+        boolean gud;
+        int slot=0;
+        do
+        {
+            gud=true;
+            String intake = JOptionPane.showInputDialog(null, input, title, 3);
+            if(intake==null)
+            {
+                Major.quit();
+            }
+            try
+            {
+                slot = Scan.getNum(intake);
+                if(Integer.parseInt(intake)!=slot)
+                {
+                    int mag = JOptionPane.showOptionDialog(null,"we are unsure what you inputed\nis "+slot+" correct?",title,1,3,null,Major.YESNO,Major.YESNO[0]);
+                    if(mag==-1)
+                    {
+                        Major.quit();
+                    }
+                    else if(mag==0)
+                    {
+
+                    }
+                    else if(mag==1)
+                    {
+                        gud=false;
+                    }
+                    else
+                    {
+                        error("invalid yes no input");
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                gud=false;
+                if(JOptionPane.showOptionDialog(null,"input does not contain any numbers",title,1,2,null,Major.OK,Major.OK[0])==-1)
+                {
+                    Major.quit();
+                }
+            }
+
+        }while(!gud);
+        return slot;
+
+    }
+
+    public static void error(String type)
+    {
+        if(JOptionPane.showOptionDialog(null,"ERROR\n"+type+"\nPlease ask your DM for help","mass roller",1,0,null,Major.OK,Major.OK[0])==-1)
+            Major.quit();   
+    }
+
+}

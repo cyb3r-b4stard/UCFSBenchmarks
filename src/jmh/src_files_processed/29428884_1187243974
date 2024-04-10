@@ -1,0 +1,2447 @@
+import java.io.*;
+import java.util.UUID;
+import java.util.List;
+import java.awt.Robot;
+import java.awt.GraphicsEnvironment;
+import java.awt.AWTException;
+import java.awt.Rectangle;
+import java.awt.Color;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Stack;
+
+import org.jsoup.nodes.Document;
+import org.jsoup.Jsoup;
+
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ListObjectsRequest;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.AmazonS3URI;
+
+import ncsa.hdf.object.*;
+import ncsa.hdf.object.h4.*;
+import ncsa.hdf.hdflib.HDFException;
+import ncsa.hdf.hdflib.HDFLibrary;
+import ncsa.hdf.hdf5lib.H5;
+import ncsa.hdf.hdf5lib.HDF5Constants;
+
+/**
+ * #### ###### ############ ### ## #### ##### ######## ## ###### ## ##### ###
+ * ### ### ### ####.
+ * <#>
+ * <#>#############:</#> ### #### #### # ##### ###### ### ######## #########
+ * #######, ### ## ###### ## ## ### ###### ##. ### #### ########### ## ######
+ * ##, ### ####:
+ * <#>
+ * #### ## #### ### ###### ########### ## ### ######## ########### ####
+ * ########, ### ## #### ## #### ### #### ## ### ####### ########
+ * (~/.###/###########) ##### ### ###### #### #### #### ### ########### ####.
+ * <#>
+ * <#>#######:</#> ## ##### ########## ####### ## #### ###########, ## ### ####
+ * ### ########### #### ## #### ###### #########.
+ *
+ * ####:
+ */
+public class GetModisData 
+{
+    /**
+     * Gets the MODIS file list from AWS.
+     */
+    public static void getDataLists() throws IOException {
+
+        /*
+         * The ProfileCredentialsProvider will return your [default]
+         * credential profile by reading from the credentials file located at
+         * (~/.aws/credentials).
+         */
+        AWSCredentials credentials = null;
+        try
+        {
+            credentials = new ProfileCredentialsProvider().getCredentials();
+        }
+        catch (Exception e) {
+            throw new AmazonClientException(
+                "Cannot load the credentials from the credential profiles file. " +
+                "Please make sure that your credentials file is at the correct " +
+                "location (~/.aws/credentials), and is in valid format.",
+                e);
+        }
+        AmazonS3URI uri=new AmazonS3URI("s3:
+        AmazonS3Client client=new AmazonS3Client(credentials);
+        Region usEast1=Region.getRegion(Regions.US_EAST_1);
+        client.setRegion(usEast1);
+        String bucket=uri.getBucket();
+        File saveList=new File("C:\\Users\\Tristan\\Dropbox\\Math 400 Project\\MOLT File List.txt");
+        try
+        {
+            FileWriter fw=new FileWriter(saveList);
+            try
+            {
+                BufferedWriter bw=new BufferedWriter(fw);
+                ObjectListing list1=client.listObjects(new ListObjectsRequest().withBucketName(bucket).withPrefix("MODIS/MOLT"));
+                for(S3ObjectSummary objectSummary : list1.getObjectSummaries())
+                {
+                    String temp=objectSummary.getKey();
+                    bw.write(temp,0,temp.length());
+                    bw.newLine();
+                }
+                while(list1.isTruncated())
+                {
+                    list1=client.listNextBatchOfObjects(list1);
+                    for(S3ObjectSummary objectSummary : list1.getObjectSummaries())
+                    {
+                        String temp=objectSummary.getKey();
+                        bw.write(temp,0,temp.length());
+                        bw.newLine();
+                    }
+                }
+                bw.close();
+                fw.close();
+            }
+            catch(FileNotFoundException e1)
+            { 
+            }
+        }
+        catch(IOException e2)
+        {
+        }
+        saveList=new File("C:\\Users\\Tristan\\Dropbox\\Math 400 Project\\MOLA File List.txt");
+        try
+        {
+            FileWriter fw=new FileWriter(saveList);
+            try
+            {
+                BufferedWriter bw=new BufferedWriter(fw);
+                ObjectListing list1=client.listObjects(new ListObjectsRequest().withBucketName(bucket).withPrefix("MODIS/MOLA"));
+                for(S3ObjectSummary objectSummary : list1.getObjectSummaries())
+                {
+                    String temp=objectSummary.getKey();
+                    bw.write(temp,0,temp.length());
+                    bw.newLine();
+                }
+                while(list1.isTruncated())
+                {
+                    list1=client.listNextBatchOfObjects(list1);
+                    for(S3ObjectSummary objectSummary : list1.getObjectSummaries())
+                    {
+                        String temp=objectSummary.getKey();
+                        bw.write(temp,0,temp.length());
+                        bw.newLine();
+                    }
+                }
+                bw.close();
+                fw.close();
+            }
+            catch(FileNotFoundException e1)
+            { 
+            }
+        }
+        catch(IOException e2)
+        {
+        }
+    }
+
+    /**
+     * Subsets the list of MOLA files to get a list of MOLA files that contain part of continental US.
+     */
+    public static void cullLists()
+    {
+        File mola=new File("C:\\Users\\Tristan\\Dropbox\\Math 400 Project\\MOLA File List.txt");
+        File molt=new File("C:\\Users\\Tristan\\Dropbox\\Math 400 Project\\MOLT File List.txt");
+        File mola2=new File("C:\\Users\\Tristan\\Dropbox\\Math 400 Project\\MOLA Culled File List.txt");
+        File molt2=new File("C:\\Users\\Tristan\\Dropbox\\Math 400 Project\\MOLT Culled File List.txt");
+        try
+        {
+            FileReader fra=new FileReader(mola);
+            FileReader frt=new FileReader(molt);
+            FileWriter fwa=new FileWriter(mola2);
+            FileWriter fwt=new FileWriter(molt2);
+            BufferedReader bra=new BufferedReader(fra);
+            BufferedReader brt=new BufferedReader(frt);
+            try
+            {
+                BufferedWriter bwa=new BufferedWriter(fwa);
+                BufferedWriter bwt=new BufferedWriter(fwt);
+                boolean isDone=false;
+                String temp="";
+                while(!isDone)
+                {
+                    temp=bra.readLine();
+                    if(temp==null)
+                    {
+                        isDone=true;
+                    }
+                    else if(temp.contains("h08v05") || temp.contains("h09v05") || temp.contains("h09v06") || temp.contains("h10v06") || temp.contains("h10v05") || temp.contains("h11v05") || temp.contains("h12v05") || temp.contains("h08v04") || temp.contains("h09v04") || temp.contains("h10v04") || temp.contains("h11v04") || temp.contains("h12v04") || temp.contains("h13v04"))
+                    {
+                        bwa.write(temp,0,temp.length());
+                        bwa.newLine();
+                    }
+                }
+                bwa.close();
+                bra.close();
+                isDone=false;
+                while(!isDone)
+                {
+                    temp=brt.readLine();
+                    if(temp==null)
+                    {
+                        isDone=true;
+                    }
+                    else if(temp.contains("h08v05") || temp.contains("h09v05") || temp.contains("h09v06") || temp.contains("h10v06") || temp.contains("h10v05") || temp.contains("h11v05") || temp.contains("h12v05") || temp.contains("h08v04") || temp.contains("h09v04") || temp.contains("h10v04") || temp.contains("h11v04") || temp.contains("h12v04") || temp.contains("h13v04"))
+                    {
+                        bwt.write(temp,0,temp.length());
+                        bwt.newLine();
+                    }
+                }
+                bwt.close();
+                brt.close();
+            }
+            catch(FileNotFoundException e1)
+            {
+            }
+        }
+        catch(IOException e2)
+        {
+        }
+    }
+
+    /**
+     * Downloads a single file from AWS given an AWS client and the AWS key for the file.
+     */
+    public static String downloadOne(AmazonS3Client client, String key)
+    {
+        S3Object object=client.getObject(new GetObjectRequest("nasanex",key));
+        int place=0;
+        String loc="C:\\Users\\Tristan\\MODIS\\";
+        for(int i=key.length()-1; i>-1; i--)
+        {
+            if(key.codePointAt(i)==47)
+            {
+                loc=loc.concat(key.substring(i+1));
+                break;
+            }
+        }
+        File f=new File(loc);
+        try
+        {
+            FileOutputStream fos=new FileOutputStream(f);
+            BufferedInputStream bis=new BufferedInputStream(object.getObjectContent());
+            BufferedOutputStream bos=new BufferedOutputStream(fos);
+            boolean isDone=false;
+            byte[] bytes=new byte[10];
+            int count=0;
+            while(!isDone)
+            {
+                bytes=new byte[10000];
+                count=bis.read(bytes,0,10000);
+                if(count!=-1)
+                {
+                    bos.write(bytes,0,count);
+                }
+                else
+                {
+                    isDone=true;
+                }
+            }
+            bos.close();
+            bis.close();
+            fos.close();
+        }
+        catch(IOException e2)
+        {
+            System.out.println("problem1");
+        }
+        return loc;
+    }
+
+    /**
+     * Miscelaneous test method.
+     */
+    public static void yes()
+    {
+        int[] list=new int[16138];
+        int spot;
+        double denom;
+        boolean isDone;
+        for(int i=0; i<16138; i++)
+        {
+            list[i]=i;
+        }
+        for(int i=0; i<16138; i++)
+        {
+            spot=16138/2;
+            denom=4.0;
+            isDone=false;
+            while(!isDone)
+            {
+                if(denom>32769)
+                {
+                    isDone=true;
+                    System.out.println(i);
+                }
+                if(spot<list[i])
+                {
+                    spot=spot+(new Long(Math.round((16138.0/denom)))).intValue();
+                    if(spot>16137)
+                    {
+                        spot=16137;
+                    }
+                    denom=denom*2.0;
+                }
+                else if(spot==list[i])
+                {
+                    isDone=true;
+                }
+                else
+                {
+                    spot=spot-(new Long(Math.round((16138.0/denom)))).intValue();
+                    if(spot<0)
+                    {
+                        spot=0;
+                    }
+                    denom=denom*2.0;
+                }
+            }
+        }
+    }
+
+    /**
+     * Takes a binary big endian with 2 byte values file and writes a plaintext version.
+     */
+    public static void toTxt(String loc)
+    {
+        try
+        {
+            File f=new File(loc);
+            File f2=new File((loc.substring(0,loc.length()-4)+".txt"));
+            FileInputStream fis=new FileInputStream(f);
+            FileWriter fw=new FileWriter(f2);
+            BufferedWriter bw=new BufferedWriter(fw);
+            BufferedInputStream bis=new BufferedInputStream(fis);
+            for(int i=0; i<2560000; i++)
+            {
+                bw.write(toNum(bis.read(),bis.read())+"\t");
+                if((i%1600)==1599)
+                {
+                    bw.newLine();
+                }
+            }
+            bw.close();
+            fw.close();
+            bis.close();
+            fis.close();
+        }
+        catch(IOException e)
+        {
+        }
+    }
+
+    /**
+     * Takes a set of 2 byte values in integer format that represent a big endian binary number and returns the integer they represent.
+     */
+    public static int toNum(int int1, int int2)
+    {
+        int toRet=0;
+        int temp=int1;
+        boolean isNegative=false;
+        int[] bin={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+        if(temp>=128)
+        {
+            temp=temp-128;
+            bin[0]=1;
+            isNegative=true;
+        }
+        if(temp>=64)
+        {
+            temp=temp-64;
+            bin[1]=1;
+        }
+        if(temp>=32)
+        {
+            temp=temp-32;
+            bin[2]=1;
+        }
+        if(temp>=16)
+        {
+            temp=temp-16;
+            bin[3]=1;
+        }
+        if(temp>=8)
+        {
+            temp=temp-8;
+            bin[4]=1;
+        }
+        if(temp>=4)
+        {
+            temp=temp-4;
+            bin[5]=1;
+        }
+        if(temp>=2)
+        {
+            temp=temp-2;
+            bin[6]=1;
+        }
+        if(temp==1)
+        {
+            bin[7]=1;
+        }
+        else if(temp>1)
+        {
+            System.out.println("Binary Reduce Problem");
+        }
+        temp=int2;
+        if(temp>=128)
+        {
+            temp=temp-128;
+            bin[8]=1;
+        }
+        if(temp>=64)
+        {
+            temp=temp-64;
+            bin[9]=1;
+        }
+        if(temp>=32)
+        {
+            temp=temp-32;
+            bin[10]=1;
+        }
+        if(temp>=16)
+        {
+            temp=temp-16;
+            bin[11]=1;
+        }
+        if(temp>=8)
+        {
+            temp=temp-8;
+            bin[12]=1;
+        }
+        if(temp>=4)
+        {
+            temp=temp-4;
+            bin[13]=1;
+        }
+        if(temp>=2)
+        {
+            temp=temp-2;
+            bin[14]=1;
+        }
+        if(temp==1)
+        {
+            bin[15]=1;
+        }
+        else if(temp>1)
+        {
+            System.out.println("Binary Reduce Problem");
+        }
+        if(isNegative)
+        {
+            for(int i=0; i<16; i++)
+            {
+                if(bin[i]==1)
+                {
+                    bin[i]=0;
+                }
+                else
+                {
+                    bin[i]=1;
+                }
+            }
+        }
+        for(double i=1.0; i<16; i++)
+        {
+            toRet=toRet+(((int) Math.pow(2.0,15.0-i))*bin[(int) i]);
+        }
+        if(isNegative)
+        {
+            toRet=(-1)*(toRet+1);
+        }
+        return toRet;
+    }
+
+    /**
+     * Takes an integer and returns 2 integers that are the big endian byte values for the original integer.
+     */
+    public static int[] toByte(int input)
+    {
+        int[] bin=new int[16];
+        boolean isNegative=false;
+        int temp=Math.abs(input);
+        int current;
+        int[] toRet=new int[2];
+        if(input<0)
+        {
+            isNegative=true;
+            temp--;
+        }
+        for(double i=14.0; i>-1; i--)
+        {
+            current=((int) Math.pow(2,i));
+            if(temp>=current)
+            {
+                temp=temp-current;
+                bin[(15-((int) i))]=1;
+            }
+        }
+        if(isNegative)
+        {
+            for(int i=0; i<16; i++)
+            {
+                if(bin[i]==1)
+                {
+                    bin[i]=0;
+                }
+                else
+                {
+                    bin[i]=1;
+                }
+            }
+        }
+        for(double i=0.0; i<8; i++)
+        {
+            toRet[0]=toRet[0]+(((int) Math.pow(2.0,i))*bin[7-((int) i)]);
+            toRet[1]=toRet[1]+(((int) Math.pow(2.0,i))*bin[15-((int) i)]);
+        }
+        return toRet;
+    }
+
+    /**
+     * Writes integers as 2 byte binary numbers using a specificed buffered output stream.
+     */
+    public static void flushToFile(double[] numArray, BufferedOutputStream bos)
+    {
+        try
+        {
+            int[] temp;
+            for(int i=0; i<numArray.length; i++)
+            {
+                temp=toByte(((int) numArray[i]));
+                bos.write(temp[0]);
+                bos.write(temp[1]);
+            }
+        }
+        catch(IOException e)
+        {
+        }
+    }
+
+    /**
+     * Takes a grid of binary numbers and sizes it down by a factor of 9 by averaging 3×3 squares in the grid.
+     */
+    public static void sizeDown(String loc)
+    {
+        try
+        {
+            File f=new File(loc);
+            File f2=new File((loc.substring(0,loc.length()-4)+" 2.bin"));
+            FileInputStream fis=new FileInputStream(f);
+            FileOutputStream fos=new FileOutputStream(f2);
+            BufferedOutputStream bos=new BufferedOutputStream(fos);
+            BufferedInputStream bis=new BufferedInputStream(fis);
+            int[] toFile=new int[3200];
+            double[] numArray=new double[1600];
+            for(int i=0; i<7680000; i++)
+            {
+                numArray[i%1600]=numArray[i%1600]+((1.0/9.0)*((double) toNum(bis.read(),bis.read())));
+                numArray[i%1600]=numArray[i%1600]+((1.0/9.0)*((double) toNum(bis.read(),bis.read())));
+                numArray[i%1600]=numArray[i%1600]+((1.0/9.0)*((double) toNum(bis.read(),bis.read())));
+                if((i%4800)==4799)
+                {
+                    flushToFile(numArray,bos);
+                    numArray=new double[1600];
+                }
+            }
+            bos.close();
+            fos.close();
+            bis.close();
+            fis.close();
+            f.delete();
+        }
+        catch(IOException e)
+        {
+        }
+    }
+
+    /**
+     * Automates the process of downloading MOLA data from AWS and converting it to sized down .bin files.
+     */
+    public static void automate(int delay)
+    {
+        File list=new File("C:\\Users\\Tristan\\Dropbox\\Math 400 Project\\MOLA Culled File List 2.txt");
+        try
+        {
+            FileReader fr=new FileReader(list);
+            BufferedReader br=new BufferedReader(fr);
+            AWSCredentials credentials = null;
+            try
+            {
+                credentials = new ProfileCredentialsProvider().getCredentials();
+            }
+            catch (Exception e) {
+                throw new AmazonClientException(
+                    "Cannot load the credentials from the credential profiles file. " +
+                    "Please make sure that your credentials file is at the correct " +
+                    "location (~/.aws/credentials), and is in valid format.",
+                    e);
+            }
+            AmazonS3URI uri=new AmazonS3URI("s3:
+            AmazonS3Client client=new AmazonS3Client(credentials);
+            Region usEast1=Region.getRegion(Regions.US_EAST_1);
+            client.setRegion(usEast1);
+            try
+            {
+                Robot bot=new Robot();
+                bot.setAutoDelay(0);
+                bot.setAutoWaitForIdle(true);
+                int[] hdfLoc=hdfIcon(bot);
+                int[] bjLoc=blueJIcon(bot);
+                bot.setAutoDelay(50);
+                int left=InputEvent.getMaskForButton(1);
+                int right=InputEvent.getMaskForButton(3);
+                String prevloc="";
+                String prevloc2="";
+                String loc="";
+                String s;
+                File saved=new File("C:\\Users\\Tristan\\MODIS\\250m 16 days NDVI.bin");
+                File newName;
+                File toDel;
+                for(int i=0; i<delay; i++)
+                {
+                    br.readLine();
+                }
+                for(int i=0; i<4; i++)
+                {
+                    s=br.readLine();
+                    prevloc=loc;
+                    loc=downloadOne(client,s);
+                    if(!checkHDF(bot,hdfLoc))
+                    {
+                        hdfLoc=hdfIcon(bot);
+                    }
+                    bot.mouseMove(hdfLoc[0],hdfLoc[1]);
+                    bot.mousePress(left);
+                    bot.mouseRelease(left);
+                    if(i!=0)
+                    {
+                        bot.mouseMove(50,60);
+                        bot.mousePress(left);
+                        bot.mouseRelease(left);
+                        if(!checkBJ(bot,bjLoc))
+                        {
+                            bjLoc=blueJIcon(bot);
+                        }
+                        bot.mouseMove(bjLoc[0],bjLoc[1]);
+                        bot.mousePress(left);
+                        bot.mouseRelease(left);
+                        toDel=new File(prevloc);
+                        toDel.delete();
+                        prevloc2=prevloc.substring(0,prevloc.length()-4)+".bin";
+                        newName=new File(prevloc2);
+                        saved.renameTo(newName);
+                        sizeDown(prevloc2);
+                        if(!checkHDF(bot,hdfLoc))
+                        {
+                            hdfLoc=hdfIcon(bot);
+                        }
+                        bot.mouseMove(hdfLoc[0],hdfLoc[1]);
+                        bot.mousePress(left);
+                        bot.mouseRelease(left);
+                    }
+                    bot.mouseMove(15,60);
+                    bot.mousePress(left);
+                    bot.mouseRelease(left);
+                    Thread.sleep(500);
+                    /*
+                    bot.keyPress(KeyEvent.VK_SHIFT);
+                    bot.keyPress(KeyEvent.VK_M);
+                    bot.keyRelease(KeyEvent.VK_M);
+                    bot.keyPress(KeyEvent.VK_O);
+                    bot.keyRelease(KeyEvent.VK_O);
+                    bot.keyPress(KeyEvent.VK_D);
+                    bot.keyRelease(KeyEvent.VK_D);
+                    bot.keyPress(KeyEvent.VK_I);
+                    bot.keyRelease(KeyEvent.VK_I);
+                    bot.keyPress(KeyEvent.VK_S);
+                    bot.keyRelease(KeyEvent.VK_S);
+                    bot.keyRelease(KeyEvent.VK_SHIFT);
+                    bot.mouseMove(1070,670);
+                    bot.mousePress(left);
+                    bot.mouseRelease(left);
+                    Thread.sleep(250);
+                    bot.mouseMove(1000,600);
+                    bot.mousePress(left);
+                    bot.mouseRelease(left);
+                    bot.keyPress(KeyEvent.VK_BACK_SPACE);
+                    bot.keyPress(KeyEvent.VK_BACK_SPACE);
+                    bot.keyPress(KeyEvent.VK_BACK_SPACE);
+                    bot.keyPress(KeyEvent.VK_BACK_SPACE);
+                    bot.keyPress(KeyEvent.VK_BACK_SPACE);
+                     */
+                    bot.mouseMove(1185,395);
+                    bot.mousePress(left);
+                    bot.mouseRelease(left);
+                    Thread.sleep(500);
+                    bot.mouseMove(1160,430);
+                    bot.mousePress(left);
+                    bot.mouseRelease(left);
+                    Thread.sleep(500);
+                    bot.mousePress(left);
+                    bot.mouseRelease(left);
+                    Thread.sleep(500);
+                    bot.mouseMove(860,445);
+                    bot.mousePress(left);
+                    bot.mouseRelease(left);
+                    Thread.sleep(1000);
+                    bot.mouseMove(1070,670);
+                    bot.mousePress(left);
+                    bot.mouseRelease(left);
+                    Thread.sleep(5000);
+                    bot.mouseMove(110,155);
+                    bot.mousePress(left);
+                    bot.mouseRelease(left);
+                    bot.mousePress(left);
+                    bot.mouseRelease(left);
+                    Thread.sleep(500);
+                    bot.mouseMove(80,178);
+                    bot.mousePress(left);
+                    bot.mouseRelease(left);
+                    bot.mousePress(left);
+                    bot.mouseRelease(left);
+                    Thread.sleep(500);
+                    bot.mouseMove(120,195);
+                    bot.mousePress(right);
+                    bot.mouseRelease(right);
+                    Thread.sleep(500);
+                    bot.mouseMove(135,215);
+                    bot.mousePress(left);
+                    bot.mouseRelease(left);
+                    Thread.sleep(4000);
+                    bot.keyPress(KeyEvent.VK_ALT);
+                    bot.keyPress(KeyEvent.VK_T);
+                    bot.keyRelease(KeyEvent.VK_T);
+                    bot.keyRelease(KeyEvent.VK_ALT);
+                    Thread.sleep(500);
+                    bot.keyPress(KeyEvent.VK_DOWN);
+                    bot.keyRelease(KeyEvent.VK_DOWN);
+                    bot.keyPress(KeyEvent.VK_RIGHT);
+                    bot.keyRelease(KeyEvent.VK_RIGHT);
+                    bot.keyPress(KeyEvent.VK_DOWN);
+                    bot.keyRelease(KeyEvent.VK_DOWN);
+                    bot.keyPress(KeyEvent.VK_DOWN);
+                    bot.keyRelease(KeyEvent.VK_DOWN);
+                    bot.keyPress(KeyEvent.VK_ENTER);
+                    bot.keyRelease(KeyEvent.VK_ENTER);
+                    Thread.sleep(1000);
+                    bot.keyPress(KeyEvent.VK_ENTER);
+                    bot.keyRelease(KeyEvent.VK_ENTER);
+                    Thread.sleep(500);
+                    if(!checkBJ(bot,bjLoc))
+                    {
+                        bjLoc=blueJIcon(bot);
+                    }
+                    bot.mouseMove(bjLoc[0],bjLoc[1]);
+                    bot.mousePress(left);
+                    bot.mouseRelease(left);
+                }
+                prevloc=loc;
+                toDel=new File(prevloc);
+                toDel.delete();
+                prevloc2=prevloc.substring(0,prevloc.length()-4)+".bin";
+                newName=new File(prevloc2);
+                saved.renameTo(newName);
+                sizeDown(prevloc2);
+            }
+            catch(AWTException e1)
+            {
+            }
+            catch(InterruptedException e2)
+            {
+            }
+            br.close();
+            fr.close();
+        }
+        catch(IOException e)
+        {
+        }
+    }
+
+    /**
+     * Checks that the HDF View icon is still at its last known position.
+     */
+    public static boolean checkHDF(Robot bot, int[] loc)
+    {
+        Color col1=bot.getPixelColor(loc[0],loc[1]);        
+        if(col1.getRed()==34 && col1.getBlue()==135 && col1.getGreen()==116)
+        {
+            Color col2=bot.getPixelColor(loc[0],loc[1]-1);
+            if(col2.getRed()==34 && col2.getBlue()==177 && col2.getGreen()==84)
+            {
+                return true;
+            }
+        }
+        System.out.println("lost hdf");
+        return false;
+    }
+
+    /**
+     * Checks that the blueJ icon is still at its last known position.
+     */
+    public static boolean checkBJ(Robot bot, int[] loc)
+    {
+        Color col1=bot.getPixelColor(loc[0],loc[1]);
+        if(col1.getRed()==125 && col1.getBlue()==184 && col1.getGreen()==155)
+        {
+            Color col2=bot.getPixelColor(loc[0],loc[1]-1);
+            if(col2.getRed()==189 && col2.getBlue()==222 && col2.getGreen()==206)
+            {
+                return true;
+            }
+        }
+        System.out.println("lost bj");
+        return false;
+    }
+
+    /**
+     * Finds the HDF View icon on the taskbar.
+     */
+    public static int[] hdfIcon(Robot bot)
+    {
+        Color col;
+        for(int i=1; i<1921;i++)
+        {
+            int x=(int) 960+(((int) Math.pow(-1.0,(double) (i+1)))*(i/2));
+            int y=1059;
+            col=bot.getPixelColor(x,y);
+            /*
+            if(x==960)
+            {
+            System.out.println(col.getBlue());
+            }*/
+            if(col.getRed()==34 && col.getBlue()==135 && col.getGreen()==116)
+            {
+                col=bot.getPixelColor(x,y-1);
+                if(col.getRed()==34 && col.getBlue()==177 && col.getGreen()==84)
+                {
+                    int[] loc={x,y};
+                    return loc;
+                }
+            }
+        }
+        int[] loc={};
+        return loc;
+    }
+
+    /**
+     * Finds the blueJ icon on the taskbar.
+     */
+    public static int[] blueJIcon(Robot bot)
+    {
+        Color col;
+        for(int i=1; i<1921;i++)
+        {
+            int x=(int) 960+(((int) Math.pow(-1.0,(double) (i+1)))*(i/2));
+            int y=1064;
+            col=bot.getPixelColor(x,y);
+            /*
+            if(x==960)
+            {
+            System.out.println(col.getBlue());
+            }*/
+            if(col.getRed()==125 && col.getBlue()==184 && col.getGreen()==155)
+            {
+                col=bot.getPixelColor(x,y-1);
+                if(col.getRed()==189 && col.getBlue()==222 && col.getGreen()==206)
+                {
+                    int[] loc={x,y};
+                    return loc;
+                }
+            }
+        }
+        int[] loc={};
+        return loc;
+    }
+
+    /**
+     * Checks that all desired files were successfully downloaded from AWS and converted to sized down .bin.
+     */
+    public static void confirmDownload()
+    {
+        File list=new File("C:\\Users\\Tristan\\Dropbox\\Math 400 Project\\MOLA Culled File List.txt");
+        try
+        {
+            FileReader fr=new FileReader(list);
+            BufferedReader br=new BufferedReader(fr);
+            String loc="";
+            String name=br.readLine();
+            File temp;
+            while(name!=null)
+            {
+                for(int i=name.length()-1; i>-1; i--)
+                {
+                    if(name.codePointAt(i)==47)
+                    {
+                        loc="c:\\Users\\Tristan\\MODIS\\"+name.substring(i+1,name.length()-4)+" 2.bin";
+                        break;
+                    }
+                }
+                temp=new File(loc);
+                if(!temp.exists())
+                {
+                    System.out.println(name);
+                }
+                name=br.readLine();
+            }
+        }
+        catch(IOException e)
+        {
+
+        }
+    }
+
+    /**
+     * Compiles all precipitation data and weather data into a single csv.
+     */
+    public static void createData()
+    {
+        File read=new File("c:\\Users\\Tristan\\MODIS\\Weather Data\\Station List.txt");
+        File precip;
+        File temp;
+        File write=new File("c:\\Users\\Tristan\\MODIS\\Weather Data\\All Weather.csv");
+        File problems=new File("c:\\Users\\Tristan\\MODIS\\Weather Data\\Problems.txt");
+        try
+        {
+            Stack<String> problemIDs=new Stack<String>();
+            ArrayList parsed;
+            FileReader fr=new FileReader(read);
+            FileReader frprecip;
+            FileReader frtemp;
+            BufferedReader brtemp;
+            BufferedReader brprecip;
+            FileWriter fw=new FileWriter(write);
+            FileWriter fwp=new FileWriter(problems);
+            BufferedWriter bwp=new BufferedWriter(fwp);
+            BufferedWriter bw=new BufferedWriter(fw);
+            BufferedReader br=new BufferedReader(fr);
+            String line="d";
+            String toWrite="Station ID,Location,Latitude,Longitude,";
+            int nameindex=0;
+            String longitude="";
+            String id="";
+            String precipline;
+            String templine;
+            boolean isDone;
+            boolean isFirst=true;
+            int offset;
+            int year=0;
+            int yeart;
+            int yearp;
+            boolean foundComma;
+            boolean allComma;
+            String degreeSymbol=String.copyValueOf(Character.toChars(176));
+            boolean[] gotYears;
+            for(int i=1;i<15;i++)
+            {
+                for(int j=1; j<13; j++)
+                {
+                    if(isFirst)
+                    {
+                        j=8;
+                        isFirst=false;
+                    }
+                    if(!(i==14 && j>4))
+                    {
+                        if(j<10)
+                        {
+                            toWrite=toWrite+"0"+j;
+                        }
+                        else
+                        {
+                            toWrite=toWrite+j;
+                        }
+                        if(i<10)
+                        {
+                            toWrite=toWrite+"/0"+i;
+                        }
+                        else
+                        {
+                            toWrite=toWrite+"/"+i;
+                        }
+                        toWrite=toWrite+" Precip. (cm),";
+                        if(j<10)
+                        {
+                            toWrite=toWrite+"0"+j;
+                        }
+                        else
+                        {
+                            toWrite=toWrite+j;
+                        }
+                        if(i<10)
+                        {
+                            toWrite=toWrite+"/0"+i;
+                        }
+                        else
+                        {
+                            toWrite=toWrite+"/"+i;
+                        }
+                        toWrite=toWrite+" Temp. ("+degreeSymbol+"C),";
+                    }
+                }
+            }
+            toWrite=toWrite.substring(0,toWrite.length()-1);
+            System.out.println(toWrite);
+            bw.write(toWrite);
+            bw.newLine();
+            while(line!=null)
+            {
+                gotYears=new boolean[14];
+                line=br.readLine();
+                if(line!=null)
+                {
+                    for(int i=70; i>40; i--)
+                    {
+                        if(line.codePointAt(i)!=32)
+                        {
+                            nameindex=i+1;
+                            break;
+                        }
+                    }
+                    longitude=line.substring(21,30);
+                    if(longitude.codePointAt(0)==32)
+                    {
+                        longitude=longitude.substring(1);
+                    }
+                    id=line.substring(0,11);
+                    precip=new File("c:\\Users\\Tristan\\MODIS\\Weather Data\\Data\\"+id+".raw.prcp");
+                    temp=new File("c:\\Users\\Tristan\\MODIS\\Weather Data\\Data\\"+id+".raw.tavg");
+                    frprecip=new FileReader(precip);
+                    frtemp=new FileReader(temp);
+                    brprecip=new BufferedReader(frprecip);
+                    brtemp=new BufferedReader(frtemp);
+                    toWrite=id+","+line.substring(41,nameindex)+" "+line.substring(38,40)+","+line.substring(13,20)+","+longitude+",";
+                    isDone=false;
+                    while(!isDone)
+                    {
+                        precipline=brprecip.readLine();
+                        templine=brtemp.readLine();
+                        if(templine==null || precipline==null)
+                        {
+                            year++;
+                            System.out.println("Data not through 2014 "+id+": "+year);
+                            if(!problemIDs.empty() && !problemIDs.peek().equals(id))
+                            {
+                                problemIDs.push(id);
+                            }
+                            else if(problemIDs.empty())
+                            {
+                                problemIDs.push(id);
+                            }
+                            isDone=true;
+                        }
+                        else
+                        {
+                            yeart=Integer.parseInt(templine.substring(12,16));
+                            yearp=Integer.parseInt(precipline.substring(12,16));
+                            offset=yearp-yeart;
+                            if(offset<0)
+                            {
+                                for(int i=0; i<((-1)*offset); i++)
+                                {
+                                    precipline=brprecip.readLine();
+                                }
+                            }
+                            else if(offset>0)
+                            {
+                                for(int i=0; i<offset; i++)
+                                {
+                                    templine=brtemp.readLine();
+                                }
+                            }
+                            year=Integer.parseInt(precipline.substring(12,16));
+                            if(year>2000 && year<2015)
+                            {
+                                parsed=parseLine(toWrite,precipline,templine,year,gotYears);
+                                toWrite=(String) parsed.get(0);
+                                if(((Boolean) parsed.get(1)).booleanValue() && !problemIDs.empty() && !problemIDs.peek().equals(id))
+                                {
+                                    problemIDs.push(id);
+                                }
+                                else if(((Boolean) parsed.get(1)).booleanValue() && problemIDs.empty())
+                                {
+                                    problemIDs.push(id);
+                                }
+                                if(year==2014)
+                                {
+                                    isDone=true;
+                                    gotYears[13]=true;
+                                }
+                                else if(year==2001)
+                                {
+                                    gotYears[0]=true;
+                                }
+                                else if(year==2002)
+                                {
+                                    gotYears[1]=true;
+                                }
+                                else if(year==2003)
+                                {
+                                    gotYears[2]=true;
+                                }
+                                else if(year==2004)
+                                {
+                                    gotYears[3]=true;
+                                }
+                                else if(year==2005)
+                                {
+                                    gotYears[4]=true;
+                                }
+                                else if(year==2006)
+                                {
+                                    gotYears[5]=true;
+                                }
+                                else if(year==2007)
+                                {
+                                    gotYears[6]=true;
+                                }
+                                else if(year==2008)
+                                {
+                                    gotYears[7]=true;
+                                }
+                                else if(year==2009)
+                                {
+                                    gotYears[8]=true;
+                                }
+                                else if(year==2010)
+                                {
+                                    gotYears[9]=true;
+                                }
+                                else if(year==2011)
+                                {
+                                    gotYears[10]=true;
+                                }
+                                else if(year==2012)
+                                {
+                                    gotYears[11]=true;
+                                }
+                                else
+                                {
+                                    gotYears[12]=true;
+                                }
+                            }
+                            if(year>2014)
+                            {
+                                toWrite=toWrite.substring(0,toWrite.length()-1);
+                                isDone=true;
+                            }
+                        }
+                    }
+                    for(int i=0; i<14;i++)
+                    {
+                        if(!gotYears[i])
+                        {
+                            int tempint=i+2001;
+                            System.out.println("Missing year "+id+":   "+tempint);
+                            if(!problemIDs.empty() && !problemIDs.peek().equals(id))
+                            {
+                                problemIDs.push(id);
+                            }
+                            else if(problemIDs.empty())
+                            {
+                                problemIDs.push(id);
+                            }
+                        }
+                    }
+                    foundComma=false;
+                    allComma=true;
+                    for(int i=toWrite.indexOf(longitude); i<toWrite.length(); i++)
+                    {
+                        if(foundComma && toWrite.codePointAt(i)!=44)
+                        {
+                            allComma=false;
+                        }
+                        if(!foundComma && toWrite.codePointAt(i)==44)
+                        {
+                            foundComma=true;
+                        }
+                    }
+                    if(!allComma)
+                    {
+                        bw.write(toWrite);
+                        bw.newLine();
+                    }
+                }
+            }
+            while(!problemIDs.empty())
+            {
+                bwp.write(problemIDs.pop());
+                bwp.newLine();
+            }
+            bw.close();
+            bwp.close();
+            fwp.close();
+            br.close();
+            fw.close();
+            fr.close();
+        }
+        catch(IOException e)
+        {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Helper method for createData()
+     */
+    public static ArrayList parseLine(String toWrite, String precip, String temp, int year, boolean[] gotYears)
+    {
+        boolean problem=false;
+        int prev=year-2002;
+        if(year!=2001 && !gotYears[year-2002])
+        {
+            while(prev>0 && !gotYears[prev])
+            {
+                for(int i=0; i<24; i++)
+                {
+                    toWrite=toWrite+",";
+                }
+                prev--;
+            }
+            problem=true;
+        }
+        else
+        {
+            double p;
+            double t;
+            int imax;
+            boolean isFirst=true;
+            if(year==2014)
+            {
+                imax=44;
+            }
+            else
+            {
+                imax=116;
+            }
+            for(int i=16; i<imax;i=i+9)
+            {
+                if(year==2001 && isFirst)
+                {
+                    i=79;
+                    isFirst=false;
+                }
+                p=Double.parseDouble(precip.substring(i,i+6))/100;
+                t=Double.parseDouble(temp.substring(i,i+6))/100;
+                if(p==-99.99 && t==-99.99)
+                {
+                    toWrite=toWrite+",,";
+                    problem=true;
+                }
+                else if(p==-99.99)
+                {
+                    toWrite=toWrite+","+t+",";
+                    problem=true;
+                }
+                else if(t==-99.99)
+                {
+                    toWrite=toWrite+p+",,";
+                    problem=true;
+                }
+                else
+                {
+                    toWrite=toWrite+p+","+t+",";
+                }
+            }
+        }
+        if(year==2014)
+        {
+            toWrite=toWrite.substring(0,toWrite.length()-1);
+        }
+        ArrayList toReturn=new ArrayList();
+        toReturn.add(toWrite);
+        toReturn.add(new Boolean(problem));
+        return toReturn;
+    }
+
+    /**
+     * Takes xml code containing the coordinates for the borders of the US and puts it into table form. Does not do this cleanly, hence the cleanCoordinates method. Also does not differentiate
+     * between continental US and non-continental US so this must be done manually.
+     */
+    public static void formatXML()
+    {
+        File f=new File("c:\\Users\\Tristan\\MODIS\\XML.txt");
+        File f2=new File("c:\\Users\\Tristan\\MODIS\\Coordinates.csv");
+        try
+        {
+            FileWriter fw=new FileWriter(f2);
+            FileReader fr=new FileReader(f);
+            BufferedWriter bw=new BufferedWriter(fw);
+            BufferedReader br=new BufferedReader(fr);
+            String line=br.readLine();
+            int prev;
+            while(line!=null)
+            {
+                prev=0;
+                for(int i=0; i<line.length(); i++)
+                {
+                    if(line.codePointAt(i)==32)
+                    {
+                        bw.write(line.substring(prev,i));
+                        bw.newLine();
+                        prev=i+1;
+                    }
+                }
+                bw.write(line.substring(prev));
+                bw.newLine();
+                line=br.readLine();
+            }
+            bw.close();
+            br.close();
+            fw.close();
+            fr.close();
+        }
+        catch(IOException e)
+        {
+        }
+    }
+
+    /**
+     * Removes extraneous xml code from coordinates file.
+     */
+    public static void cleanCoordinates()
+    {
+        File f=new File("c:\\Users\\Tristan\\MODIS\\Coordinates2.csv");
+        File f2=new File("c:\\Users\\Tristan\\MODIS\\Coordinates3.csv");
+        try
+        {
+            FileReader fr=new FileReader(f);
+            BufferedReader br=new BufferedReader(fr);
+            FileWriter fw=new FileWriter(f2);
+            BufferedWriter bw=new BufferedWriter(fw);
+            String line=br.readLine();
+            String line2=null;
+            int index=0;
+            while(line!=null)
+            {
+                if(line.contains("<"))
+                {
+                    for(int i=(line.length()-1); i>0; i--)
+                    {
+                        if(line.substring(i,i+1).equals(">"))
+                        {
+                            index=i+1;
+                            break;
+                        }
+                    }
+                    line2=line.substring(index);
+                    line=line.substring(0,line.indexOf("<"));
+                }
+                if((line.substring(line.length()-1)).equals(","))
+                {
+                    line=line.substring(0,line.length()-1);
+                }
+                bw.write(line);
+                bw.newLine();
+                if(line2!=null)
+                {
+                    if((line2.substring(line2.length()-1)).equals(","))
+                    {
+                        line2=line2.substring(0,line2.length()-1);
+                    }
+                    bw.write(line2);
+                    bw.newLine();
+                    line2=null;
+                }
+                line=br.readLine();
+            }
+            bw.close();
+            br.close();
+            fw.close();
+            fr.close();
+        }
+        catch(IOException e)
+        {
+        }
+    }
+
+    /**
+     * Creates list of booleans where each boolean represents whether of value in the vegetation data matrices is within US borders or not.
+     */
+    public static void cullMatrix()
+    {
+        File f=new File("c:\\Users\\Tristan\\MODIS\\CoordinatesLong.csv");
+        File f2=new File("c:\\Users\\Tristan\\MODIS\\CoordinatesLat.csv");
+        File f3=new File("c:\\Users\\Tristan\\MODIS\\Grid84.csv");
+        File f4=new File("c:\\Users\\Tristan\\MODIS\\Grid85.csv");
+        File f16=new File("c:\\Users\\Tristan\\MODIS\\Grid86.csv");
+        File f5=new File("c:\\Users\\Tristan\\MODIS\\Grid94.csv");
+        File f6=new File("c:\\Users\\Tristan\\MODIS\\Grid95.csv");
+        File f7=new File("c:\\Users\\Tristan\\MODIS\\Grid96.csv");
+        File f8=new File("c:\\Users\\Tristan\\MODIS\\Grid104.csv");
+        File f9=new File("c:\\Users\\Tristan\\MODIS\\Grid105.csv");
+        File f10=new File("c:\\Users\\Tristan\\MODIS\\Grid106.csv");
+        File f11=new File("c:\\Users\\Tristan\\MODIS\\Grid114.csv");
+        File f12=new File("c:\\Users\\Tristan\\MODIS\\Grid115.csv");
+        File f13=new File("c:\\Users\\Tristan\\MODIS\\Grid124.csv");
+        File f14=new File("c:\\Users\\Tristan\\MODIS\\Grid125.csv");
+        File f15=new File("c:\\Users\\Tristan\\MODIS\\Grid134.csv");
+        ArrayList<File> files=new ArrayList<File>();
+        files.add(f3);
+        files.add(f4);
+        files.add(f16);
+        files.add(f5);
+        files.add(f6);
+        files.add(f7);
+        files.add(f8);
+        files.add(f9);
+        files.add(f10);
+        files.add(f11);
+        files.add(f12);
+        files.add(f13);
+        files.add(f14);
+        files.add(f15);
+        try
+        {
+            double[][] listlat=new double[16138][2];
+            double[][] listlong=new double[16138][2];
+            FileReader fr=new FileReader(f);
+            FileReader fr2=new FileReader(f2);
+            BufferedReader br=new BufferedReader(fr);
+            BufferedReader br2=new BufferedReader(fr2);
+            String line;
+            String line2;
+            double[][] gridNumbers=new double[14][2];
+            gridNumbers[0][0]=8.0;
+            gridNumbers[0][1]=4.0;
+            gridNumbers[1][0]=8.0;
+            gridNumbers[1][1]=5.0;
+            gridNumbers[2][0]=8.0;
+            gridNumbers[2][1]=6.0;
+            gridNumbers[3][0]=9.0;
+            gridNumbers[3][1]=4.0;
+            gridNumbers[4][0]=9.0;
+            gridNumbers[4][1]=5.0;
+            gridNumbers[5][0]=9.0;
+            gridNumbers[5][1]=6.0;
+            gridNumbers[6][0]=10.0;
+            gridNumbers[6][1]=4.0;
+            gridNumbers[7][0]=10.0;
+            gridNumbers[7][1]=5.0;
+            gridNumbers[8][0]=10.0;
+            gridNumbers[8][1]=6.0;
+            gridNumbers[9][0]=11.0;
+            gridNumbers[9][1]=4.0;
+            gridNumbers[10][0]=11.0;
+            gridNumbers[10][1]=5.0;
+            gridNumbers[11][0]=12.0;
+            gridNumbers[11][1]=4.0;
+            gridNumbers[12][0]=12.0;
+            gridNumbers[12][1]=5.0;
+            gridNumbers[13][0]=13.0;
+            gridNumbers[13][1]=4.0;
+            double[][][] locations=new double[1600][1600][2];
+            boolean[][] isIn=new boolean[1600][1600];
+            boolean north;
+            boolean south;
+            boolean east;
+            boolean west;
+            boolean isDone;
+            int spot;
+            double denom;
+            BufferedWriter bw;
+            FileWriter fw;
+            String toWrite;
+            for(int i=0; i<16138; i++)
+            {
+                line=br.readLine();
+                line2=br2.readLine();
+                listlat[i][1]=Double.parseDouble(line2.substring(0,line2.indexOf(",")));
+                listlat[i][0]=Double.parseDouble(line2.substring(line2.indexOf(",")+1));
+                listlong[i][1]=Double.parseDouble(line.substring(0,line.indexOf(",")));
+                listlong[i][0]=Double.parseDouble(line.substring(line.indexOf(",")+1));
+            }
+            for(int i=0; i<14; i++)
+            {
+                fw=new FileWriter(files.get(i));
+                bw=new BufferedWriter(fw);
+                for(int c=1599; c>-1; c--)
+                {
+                    for(int r=0; r<1600; r++)
+                    {
+                        locations[r][c][0]=10.0*(9.0-gridNumbers[i][1])-(((double) r)/160.0)-(1.0/320.0);
+                        locations[r][c][1]=(-10.0*(17.0-gridNumbers[i][0])-((1599.0-c)/160.0)-(1.0/320.0))/Math.cos((locations[r][c][0]/180.0)*Math.PI);
+                        north=false;
+                        south=false;
+                        east=false;
+                        west=false;
+                        isDone=false;
+                        spot=16138/2;
+                        denom=4.0;
+                        while(!isDone)
+                        {
+                            if(denom>32769)
+                            {
+                                isDone=true;
+                            }
+                            if((listlong[spot][1]-0.5)<locations[r][c][1] && (listlong[spot][1]+0.5)>locations[r][c][1])
+                            {
+                                while(!isDone && spot>0 && (listlong[spot][1]+0.5)>locations[r][c][1])
+                                {
+                                    if(listlong[spot][0]>=locations[r][c][0])
+                                    {
+                                        north=true;
+                                        isDone=true;
+                                    }
+                                    else
+                                    {
+                                        spot--;
+                                    }
+                                }
+                                while(!isDone && spot<16138 && (listlong[spot][1]-0.5)<locations[r][c][1])
+                                {
+                                    if(listlong[spot][0]>=locations[r][c][0])
+                                    {
+                                        north=true;
+                                        isDone=true;
+                                    }
+                                    else
+                                    {
+                                        spot++;
+                                    }
+                                }
+                                isDone=true;
+                            }
+                            else if(listlong[spot][1]<locations[r][c][1])
+                            {
+                                spot=spot+(new Long(Math.round((16138.0/denom)))).intValue();
+                                if(spot>16137)
+                                {
+                                    spot=16137;
+                                }
+                                denom=denom*2.0;
+                            }
+                            else
+                            {
+                                spot=spot-(new Long(Math.round((16138.0/denom)))).intValue();
+                                if(spot<0)
+                                {
+                                    spot=0;
+                                }
+                                denom=denom*2.0;
+                            }
+                        }
+                        isDone=false;
+                        spot=16138/2;
+                        denom=4.0;
+                        while(!isDone)
+                        {
+                            if(denom>32769)
+                            {
+                                isDone=true;
+                            }
+                            if((listlong[spot][1]-0.5)<locations[r][c][1] && (listlong[spot][1]+0.5)>locations[r][c][1])
+                            {
+                                while(!isDone && spot>0 && (listlong[spot][1]+0.5)>locations[r][c][1])
+                                {
+                                    if(listlong[spot][0]<=locations[r][c][0])
+                                    {
+                                        south=true;
+                                        isDone=true;
+                                    }
+                                    else
+                                    {
+                                        spot--;
+                                    }
+                                }
+                                while(!isDone && spot<16138 && (listlong[spot][1]-0.5)<locations[r][c][1])
+                                {
+                                    if(listlong[spot][0]<=locations[r][c][0])
+                                    {
+                                        south=true;
+                                        isDone=true;
+                                    }
+                                    else
+                                    {
+                                        spot++;
+                                    }
+                                }
+                                isDone=true;
+                            }
+                            else if(listlong[spot][1]<locations[r][c][1])
+                            {
+                                spot=spot+(new Long(Math.round((16138.0/denom)))).intValue();
+                                if(spot>16137)
+                                {
+                                    spot=16137;
+                                }
+                                denom=denom*2.0;
+                            }
+                            else
+                            {
+                                spot=spot-(new Long(Math.round((16138.0/denom)))).intValue();
+                                if(spot<0)
+                                {
+                                    spot=0;
+                                }
+                                denom=denom*2.0;
+                            }
+                        }
+                        isDone=false;
+                        spot=16138/2;
+                        denom=4.0;
+                        while(!isDone)
+                        {
+                            if(denom>32769)
+                            {
+                                isDone=true;
+                            }
+                            if((listlat[spot][0]-0.5)<locations[r][c][0] && (listlat[spot][0]+0.5)>locations[r][c][0])
+                            {
+                                while(!isDone && spot>0 && (listlat[spot][0]+0.5)>locations[r][c][0])
+                                {
+                                    if(listlat[spot][1]>=locations[r][c][1])
+                                    {
+                                        east=true;
+                                        isDone=true;
+                                    }
+                                    else
+                                    {
+                                        spot--;
+                                    }
+                                }
+                                while(!isDone && spot<16138 && (listlat[spot][0]-0.5)<locations[r][c][0])
+                                {
+                                    if(listlat[spot][1]>=locations[r][c][1])
+                                    {
+                                        east=true;
+                                        isDone=true;
+                                    }
+                                    else
+                                    {
+                                        spot++;
+                                    }
+                                }
+                                isDone=true;
+                            }
+                            else if(listlat[spot][0]<locations[r][c][0])
+                            {
+                                spot=spot+(new Long(Math.round((16138.0/denom)))).intValue();
+                                if(spot>16137)
+                                {
+                                    spot=16137;
+                                }
+                                denom=denom*2.0;
+                            }
+                            else
+                            {
+                                spot=spot-(new Long(Math.round((16138.0/denom)))).intValue();
+                                if(spot<0)
+                                {
+                                    spot=0;
+                                }
+                                denom=denom*2.0;
+                            }
+                        }
+                        isDone=false;
+                        spot=16138/2;
+                        denom=4.0;
+                        while(!isDone)
+                        {
+                            if(denom>32769)
+                            {
+                                isDone=true;
+                            }
+                            if((listlat[spot][0]-0.5)<locations[r][c][0] && (listlat[spot][0]+0.5)>locations[r][c][0])
+                            {
+                                while(!isDone && spot>0 && (listlat[spot][0]+0.5)>locations[r][c][0])
+                                {
+                                    if(listlat[spot][1]<=locations[r][c][1])
+                                    {
+                                        west=true;
+                                        isDone=true;
+                                    }
+                                    else
+                                    {
+                                        spot--;
+                                    }
+                                }
+                                while(!isDone && spot<16138 && (listlat[spot][0]-0.5)<locations[r][c][0])
+                                {
+                                    if(listlat[spot][1]<=locations[r][c][1])
+                                    {
+                                        west=true;
+                                        isDone=true;
+                                    }
+                                    else
+                                    {
+                                        spot++;
+                                    }
+                                }
+                                isDone=true;
+                            }
+                            else if(listlat[spot][0]<locations[r][c][0])
+                            {
+                                spot=spot+(new Long(Math.round((16138.0/denom)))).intValue();
+                                if(spot>16137)
+                                {
+                                    spot=16137;
+                                }
+                                denom=denom*2.0;
+                            }
+                            else
+                            {
+                                spot=spot-(new Long(Math.round((16138.0/denom)))).intValue();
+                                if(spot<0)
+                                {
+                                    spot=0;
+                                }
+                                denom=denom*2.0;
+                            }
+                        }
+                        if(east && west && north && south)
+                        {
+                            isIn[r][c]=true;
+                        }
+                        else
+                        {
+                            isIn[r][c]=false;
+                        }
+                    }
+                }
+                for(int r=0; r<1600; r++)
+                {
+                    for(int c=0; c<1600; c++)
+                    {
+                        bw.write(Boolean.toString(isIn[r][c]));
+                        bw.newLine();
+                    }
+                }
+                bw.close();
+                fw.close();
+            }
+        }
+        catch(IOException e)
+        {
+        }
+    }
+
+    /**
+     * Checks to make sure every point in coordinate list is within sqrt(2) of the previous point geographically and the subsequent point geographically.
+     */
+    public static void checkGaps()
+    {
+        File f=new File("c:\\Users\\Tristan\\MODIS\\CoordinatesLong.csv");
+        File f2=new File("c:\\Users\\Tristan\\MODIS\\CoordinatesLat.csv");
+        try
+        {
+            double[][] listlat=new double[16138][2];
+            double[][] listlong=new double[16138][2];
+            FileReader fr2=new FileReader(f2);
+            BufferedReader br2=new BufferedReader(fr2);
+            String line2;
+            FileReader fr=new FileReader(f);
+            BufferedReader br=new BufferedReader(fr);
+            String line;
+            for(int i=0; i<16138; i++)
+            {
+                line2=br2.readLine();
+                listlat[i][1]=Double.parseDouble(line2.substring(0,line2.indexOf(",")));
+                listlat[i][0]=Double.parseDouble(line2.substring(line2.indexOf(",")+1));
+                line=br.readLine();
+                listlong[i][1]=Double.parseDouble(line.substring(0,line.indexOf(",")));
+                listlong[i][0]=Double.parseDouble(line.substring(line.indexOf(",")+1));
+            }
+            int spot;
+            boolean isDone;
+            boolean foundhigh;
+            boolean foundlow;
+            for(int i=0; i<16138; i++)
+            {
+                spot=0;
+                isDone=false;
+                foundhigh=false;
+                foundlow=false;
+                while(!isDone)
+                {
+                    if((i-spot)>-1 && Math.abs(listlat[i][1]-listlat[i-spot][1])<0.5 && Math.abs(listlat[i][0]-listlat[i-spot][0])<0.5)
+                    {
+                        foundlow=true;
+                        if(foundlow && foundhigh)
+                        {
+                            isDone=true;
+                        }
+                    }
+                    if((i+spot)<16138 && Math.abs(listlat[i][1]-listlat[i+spot][1])<0.5 && Math.abs(listlat[i][0]-listlat[i+spot][0])<0.5)
+                    {
+                        foundhigh=true;
+                        if(foundlow && foundhigh)
+                        {
+                            isDone=true;
+                        }
+                    }
+                    if((i+spot)>16137 && (i-spot)<0)
+                    {
+                        isDone=true;
+                    }
+                    spot++;
+                }
+                if(!foundhigh || ! foundlow)
+                {
+                    System.out.println(i+"; lat: "+listlat[i][0]+"; long: "+listlat[i][1]);
+                }
+            }
+            for(int i=0; i<16138; i++)
+            {
+                spot=0;
+                isDone=false;
+                foundhigh=false;
+                foundlow=false;
+                while(!isDone)
+                {
+                    if((i-spot)>-1 && Math.abs(listlong[i][1]-listlong[i-spot][1])<0.5 && Math.abs(listlong[i][0]-listlong[i-spot][0])<0.5)
+                    {
+                        foundlow=true;
+                        if(foundlow && foundhigh)
+                        {
+                            isDone=true;
+                        }
+                    }
+                    if((i+spot)<16138 && Math.abs(listlong[i][1]-listlong[i+spot][1])<0.5 && Math.abs(listlong[i][0]-listlong[i+spot][0])<0.5)
+                    {
+                        foundhigh=true;
+                        if(foundlow && foundhigh)
+                        {
+                            isDone=true;
+                        }
+                    }
+                    if((i+spot)>16137 && (i-spot)<0)
+                    {
+                        isDone=true;
+                    }
+                    spot++;
+                }
+                if(!foundhigh || ! foundlow)
+                {
+                    System.out.println(i+"; lat: "+listlat[i][0]+"; long: "+listlat[i][1]);
+                }
+            }
+        }
+        catch(IOException e)
+        {
+        }
+    }
+
+    public static void matchData()
+    {
+        File list=new File("C:\\Users\\Tristan\\Dropbox\\Math 400 Project\\MOLA Culled File List.txt");
+        File f2=new File("c:\\Users\\Tristan\\MODIS\\Weather Data\\stationlistlong.csv");
+        File f3=new File("c:\\Users\\Tristan\\MODIS\\Grid84.csv");
+        File f4=new File("c:\\Users\\Tristan\\MODIS\\Grid85.csv");
+        File f16=new File("c:\\Users\\Tristan\\MODIS\\Grid86.csv");
+        File f5=new File("c:\\Users\\Tristan\\MODIS\\Grid94.csv");
+        File f6=new File("c:\\Users\\Tristan\\MODIS\\Grid95.csv");
+        File f7=new File("c:\\Users\\Tristan\\MODIS\\Grid96.csv");
+        File f8=new File("c:\\Users\\Tristan\\MODIS\\Grid104.csv");
+        File f9=new File("c:\\Users\\Tristan\\MODIS\\Grid105.csv");
+        File f10=new File("c:\\Users\\Tristan\\MODIS\\Grid106.csv");
+        File f11=new File("c:\\Users\\Tristan\\MODIS\\Grid114.csv");
+        File f12=new File("c:\\Users\\Tristan\\MODIS\\Grid115.csv");
+        File f13=new File("c:\\Users\\Tristan\\MODIS\\Grid124.csv");
+        File f14=new File("c:\\Users\\Tristan\\MODIS\\Grid125.csv");
+        File f15=new File("c:\\Users\\Tristan\\MODIS\\Grid134.csv");
+        ArrayList<File> files=new ArrayList<File>();
+        files.add(f3);
+        files.add(f4);
+        files.add(f16);
+        files.add(f5);
+        files.add(f6);
+        files.add(f7);
+        files.add(f8);
+        files.add(f9);
+        files.add(f10);
+        files.add(f11);
+        files.add(f12);
+        files.add(f13);
+        files.add(f14);
+        files.add(f15);
+        try
+        {
+            ArrayList<String> stationNames=new ArrayList<String>();
+            ArrayList<String
+            Stack<String> mola=new Stack<String>();
+            FileReader fr=new FileReader(list);
+            FileReader fr3=new FileReader(f2);
+            BufferedReader br=new BufferedReader(fr);
+            BufferedREader br3=new BufferedReader(br3);
+            br2.readLine();
+            br3.readLine();
+            String line=br.readLine();
+            String line2;
+            double[][] data=new double[1218][273];
+            double[][] data2=new double[1218][273];
+            double[][] stationslong=new double[1218][2];
+            while(line!=null)
+            {
+                for(int i=line.length()-1; i>-1; i--)
+                {
+                    if(line.codePointAt(i)==47)
+                    {
+                        mola.push("c:\\Users\\Tristan\\MODIS\\"+line.substring(i+1,line.length()-4)+" 2.bin");
+                        break;
+                    }
+                }
+                line=br.readLine();
+            }
+            br.close();
+            fr.close();
+            boolean first;
+            int prev=0;
+            for(int j=0; j<1218; j++)
+            {
+                line2=br3.readLine();
+                StationNames.add(line2);
+                first=false;
+                for(int i=line2.length()-1; i>-1; i--)
+                {
+                    if(line2.substring(i,i+1).equals(","))
+                    {
+                        if(!first)
+                        {
+                            stationslong[j][1]=Double.parseDouble(line2.substring(i+1));
+                            prev=i;
+                            first=true;
+                        }
+                        else
+                        {
+                            stationslong[j][0]=Double.parseDouble(line2.substring(i+1,prev));
+                        }
+                    }
+                }
+            }
+            br2.close();
+            br3.close();
+            fr2.close();
+            fr3.close();
+            double[] location=new double[2];
+            int[][][] closest=new int[14][1600][1600];
+            double[][][] distances=new double[14][1600][1600];
+            double distance;
+            double[][] gridNumbers=new double[14][2];
+            gridNumbers[0][0]=8.0;
+            gridNumbers[0][1]=4.0;
+            gridNumbers[1][0]=8.0;
+            gridNumbers[1][1]=5.0;
+            gridNumbers[2][0]=8.0;
+            gridNumbers[2][1]=6.0;
+            gridNumbers[3][0]=9.0;
+            gridNumbers[3][1]=4.0;
+            gridNumbers[4][0]=9.0;
+            gridNumbers[4][1]=5.0;
+            gridNumbers[5][0]=9.0;
+            gridNumbers[5][1]=6.0;
+            gridNumbers[6][0]=10.0;
+            gridNumbers[6][1]=4.0;
+            gridNumbers[7][0]=10.0;
+            gridNumbers[7][1]=5.0;
+            gridNumbers[8][0]=10.0;
+            gridNumbers[8][1]=6.0;
+            gridNumbers[9][0]=11.0;
+            gridNumbers[9][1]=4.0;
+            gridNumbers[10][0]=11.0;
+            gridNumbers[10][1]=5.0;
+            gridNumbers[11][0]=12.0;
+            gridNumbers[11][1]=4.0;
+            gridNumbers[12][0]=12.0;
+            gridNumbers[12][1]=5.0;
+            gridNumbers[13][0]=13.0;
+            gridNumbers[13][1]=4.0;
+            int spot=1218/2;
+            double denom=4.0;
+            boolean isDone;
+            int increment;
+            double temp;
+            double max;
+            int index=0;
+            FileReader fr4;
+            BufferedReader br4;
+            boolean[][] grid=new boolean[1600][1600];
+            int[] pointCount=new int[1218];
+            double[] distancePointCount=new double[1218];
+            for(int i=0; i<14; i++)
+            {
+                fr4=new FileReader(files.get(i));
+                br4=new BufferedREader(fr4);
+                for(int r=0; r<1600; r++)
+                {
+                    for(int c=0; c<1600; c++)
+                    {
+                        grid[r][c]=Boolean.parseBoolean(br4.readLine());
+                    }
+                }
+                br4.close();
+                fr4.close();
+                for(int c=1599; c>-1; c--)
+                {
+                    for(int r=0; r<1600; r++)
+                    {
+                        if(grid[r][c])
+                        {
+                            location[0]=10.0*(9.0-gridNumbers[i][1])-(((double) r)/160.0)-(1.0/320.0);
+                            location[1]=(-10.0*(17.0-gridNumbers[i][0])-((1599.0-c)/160.0)-(1.0/320.0))/Math.cos((location[0]/180.0)*Math.PI);
+                            isDone=false;
+                            distance=0.0;
+                            while(!isDone)
+                            {
+                                if(denom>2437)
+                                {
+                                    isDone=true;
+                                    if(spot==1216)
+                                    {
+                                        distance=Math.sqrt(Math.pow(location[0]-stationslong[1217][0],2)+Math.pow(location[1]-stationslong[1217][1],2));
+                                    }
+                                    else
+                                    {
+                                        distance=Math.sqrt(Math.pow(location[0]-stationslong[0][0],2)+Math.pow(location[1]-stationslong[0][1],2));
+                                    }
+                                }
+                                if(location[1]>=stationslong[spot][1] && location[1]<=stationslong[spot+1][1])
+                                {
+                                    distance=Math.sqrt(Math.pow(location[0]-stationslong[spot][0],2)+Math.pow(location[1]-stationslong[spot][1],2));
+                                    isDone=true;
+                                }
+                                else if(location[1]>stationslong[spot+1][1])
+                                {
+                                    spot=spot+(new Long(Math.round((1218.0/denom)))).intValue();
+                                    if(spot>1216)
+                                    {
+                                        spot=1216;
+                                    }
+                                    denom=denom*2.0;
+                                }
+                                else
+                                {
+                                    spot=spot-(new Long(Math.round((1218.0/denom)))).intValue();
+                                    if(spot<0)
+                                    {
+                                        spot=0;
+                                    }
+                                    denom=denom*2.0;
+                                }
+                            }
+                            isDone=false;
+                            increment=1;
+                            max=distance;
+                            while(!isDone)
+                            {
+                                if((spot+increment)>1217 && (spot-increment)<0)
+                                {
+                                    isDone=true;
+                                    temp=Math.sqrt(Math.pow(location[0]-stationslong[1217][0],2)+Math.pow(location[1]-stationslong[1217][1],2));
+                                    if(temp<distance)
+                                    {
+                                        distance=temp;
+                                        index=1217
+                                    }
+                                    temp=Math.sqrt(Math.pow(location[0]-stationslong[0][0],2)+Math.pow(location[1]-stationslong[0][1],2));
+                                    if(temp<distance)
+                                    {
+                                        distance=temp;
+                                        index=0;
+                                    }
+                                }
+                                else if((spot+increment)>1217)
+                                {
+                                    if(Math.abs(stationslong[spot-increment][1]-location[1])>max)
+                                    {
+                                        isDone=true;
+                                    }
+                                    else
+                                    {
+                                        temp=Math.sqrt(Math.pow(location[0]-stationslong[spot-increment][0],2)+Math.pow(location[1]-stationslong[spot-increment][1],2));
+                                        if(temp<distance)
+                                        {
+                                            distance=temp;
+                                            index=spot-increment;
+                                        }
+                                        increment++;
+                                    }
+                                }
+                                else if((spot-increment)<0)
+                                {
+                                    if(Math.abs(stationslong[spot+increment][1]-location[1])>max)
+                                    {
+                                        isDone=true;
+                                    }
+                                    else
+                                    {
+                                        temp=Math.sqrt(Math.pow(location[0]-stationslong[spot+increment][0],2)+Math.pow(location[1]-stationslong[spot+increment][1],2));
+                                        if(temp<distance)
+                                        {
+                                            distance=temp;
+                                            index=spot+increment;
+                                        }
+                                        increment++;
+                                    }
+                                }
+                                else
+                                {
+                                    if(Math.abs(stationslong[spot+increment][1]-location[1])>max && Math.abs(stationslong[spot-increment][1]-location[1])>max)
+                                    {
+                                        isDone=true;
+                                    }
+                                    else
+                                    {
+                                        temp=Math.sqrt(Math.pow(location[0]-stationslong[spot+increment][0],2)+Math.pow(location[1]-stationslong[spot+increment][1],2));
+                                        if(temp<distance)
+                                        {
+                                            distance=temp;
+                                            index=spot+increment;
+                                        }
+                                        temp=Math.sqrt(Math.pow(location[0]-stationslong[spot-increment][0],2)+Math.pow(location[1]-stationslong[spot-increment][1],2));
+                                        if(temp<distance)
+                                        {
+                                            distance=temp;
+                                            index=spot-increment;
+                                        }
+                                        increment++;
+                                    }
+                                }
+                            }
+                            closest[i][r][c]=index;
+                            distances[i][r][c]=distance;
+                            pointCount[index]=pointCount[index]+1;
+                            distancePointCount[index]=distancePointcount[index]+(1.0/distance);
+                        }
+                        else
+                        {
+                            closest[i][r][c]=-1;
+                            distances[i][r][c]=-1;
+                        }
+                    }
+                }
+            }
+            int pointer;
+            FileInputStream fis;
+            BufferedInputStream bis;
+            int[] dat=new int[2];
+            int val;
+            int column=272;
+            int counter=0;
+            while(!mola.empty())
+            {
+                line=mola.pop();
+                File f17=new File(line);
+                if(line.contains("h08v04")
+                {
+                    pointer=0;
+                }
+                else if(line.contains("h08v05")
+                {
+                    pointer=1;
+                }
+                else if(line.contains("h08v06")
+                {
+                    pointer=2;
+                }
+                else if(line.contains("h09v04")
+                {
+                    pointer=3;
+                }
+                else if(line.contains("h09v05")
+                {
+                    pointer=4;
+                }
+                else if(line.contains("h09v06")
+                {
+                    pointer=5;
+                }
+                else if(line.contains("h10v04")
+                {
+                    pointer=6;
+                }
+                else if(line.contains("h10v05")
+                {
+                    pointer=7;
+                }
+                else if(line.contains("h10v06")
+                {
+                    pointer=8;
+                }
+                else if(line.contains("h11v04")
+                {
+                    pointer=9;
+                }
+                else if(line.contains("h11v05")
+                {
+                    pointer=10;
+                }
+                else if(line.contains("h12v04")
+                {
+                    pointer=11;
+                }
+                else if(line.contains("h12v05")
+                {
+                    pointer=12;
+                }
+                else
+                {
+                    pointer=13;
+                }
+                fis=new FileInputStream(f17);
+                bis=new BufferedInputStream(fis);
+                for(int r=0; i<1600;r++)
+                {
+                    for(int c=0; c<1600; c++)
+                    {
+                        dat[0]=bis.read();
+                        dat[1]=bis.read();
+                        if(closest[pointer][r][c]!=-1)
+                        {
+                            val=toNum(dat[0],dat[1]);
+                            data[(closest[pointer][r][c])][column]=data[(closest[pointer][r][c])][column]+(1/pointCount[(closest[pointer][r][c])])*val;
+                            data2[(closest[pointer][r][c])][column]=data2[(closest[pointer][r][c])][column]+(1/(distancePointCount[(closest[pointer][r][c])]*distance[pointer][r][c]))*val;
+                        }
+                    }
+                }
+                bis.close();
+                fis.close();
+                counter++;
+                if(counter%14==0)
+                {
+                    column--;
+                }
+            }
+            File f18=new File("c:\\Users\\Tristan\\MODIS\\Averaged Vegetation Data.csv");
+            FileWriter fru=new FileWriter(f18);
+            BufferedWriter bru=new BufferedWriter(fru);
+            int month=7;
+            int day=4;
+            int year=2002;
+            String header="Station ID, Location, Latitude, Longitude, # Data Points, Weighted # Data Points";
+            for(int i=0; i<273; i++)
+            {
+                if((month==1 || month==3 || month==5 || month==7 || month==8 || month==10 || month==12) && day>31)
+                {
+                    month++;
+                    day=day-31;
+                }
+                else if((month==4 || month==6 || month==9 || month==11) && day>30)
+                {
+                    month++;
+                    day=day-30;
+                }
+                else if(month==2 && (year==2004 || year==2008 || year==2012) && day>29)
+                {
+                    month++;
+                    day=day-29;
+                }
+                else if(month==2 && day>28)
+                {
+                    month++;
+                    day=day-28;
+                }
+                if(month==13)
+                {
+                    month=1;
+                    year++;
+                }
+                if(i==273)
+                {
+                    bru.write(header+month+"/"+day+"/"+year+","+"Weighted "+month+"/"+day+"/"+year);
+                    bru.newLine();
+                }
+                else
+                {
+                    header=header+month+"/"+day+"/"+year+","+"Weighted "+month+"/"+day+"/"+year+",";
+                    day=day+16;
+                }
+            }
+            for(int j=0; j<1218; j++)
+            {
+                for(int i=0; i<273; i++)
+                {
+                    if(i==0)
+                    {
+                        line=stationNames.get(j)+","pointCount[j]+","+distancePointCount[j]+",";
+                    }
+                    if(i==272)
+                    {
+                        bru.write(line+data[j][i]+","+data2[j][i]);
+                        bru.newLine();
+                    }
+                    else
+                    {
+                        line=line+data[j][i]+","+data2[j][i]+",";
+                    }
+                }
+            }
+            bru.close();
+            fru.close();
+        }
+        catch(IOException e)
+        {
+        }
+    }
+
+    /*
+    public static void getWeather()
+    {
+    File zips=new File("c:\\Users\\Tristan\\MODIS\\Zip Codes.csv");
+    File toWrite=new File("c:\\Users\\Tristan\\MODIS\\All Weather.bin");
+    URL url;
+    URLConnection con;
+    InputStream is;
+    InputStreamReader isr;
+    BufferedReader br;
+    String info;
+    int index;
+    int index2;
+    int temperature;
+    int daymax;
+    int monthmax=13;
+    String address;
+    String zip;
+    int[] bin;
+    boolean foundLine;
+
+    try
+    {
+    FileReader fr=new FileReader(zips);
+    BufferedReader br2=new BufferedReader(fr);
+    FileOutputStream fos=new FileOutputStream(toWrite);
+    BufferedOutputStream bos=new BufferedOutputStream(fos);
+    br2.readLine();
+    zip=br2.readLine();
+    while(zip!=null)
+    {
+    if(zip.length()==3)
+    {
+    zip="00"+zip;
+    }
+    else if(zip.length()==4)
+    {
+    zip="0"+zip;
+    }
+    for(int year=2005; year<2015; year++)
+    {
+    if(year==2014)
+    {
+    monthmax=5;
+    }
+    for(int month=1; month<13; month++)
+    {                
+    if(month==1 || month==3 || month==5 || month==7 || month==8 || month==10 || month==12)
+    {
+    daymax=32;
+    }
+    else if(month==2)
+    {
+    if(year==2008 || year==2012)
+    {
+    daymax=30;
+    }
+    else
+    {
+    daymax=29;
+    }
+    }
+    else
+    {
+    daymax=31;
+    }
+    for(int day=1; day<daymax; day++)
+    {
+    try
+    {
+    if(day<10 && month<10)
+    {
+    address="http:
+    }
+    else if(day<10)
+    {
+    address="http:
+    }
+    else if(month<10)
+    {
+    address="http:
+    }
+    else
+    {
+    address="http:
+    }
+    url=new URL(address);
+    con=url.openConnection();
+    con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11");
+    is=con.getInputStream();
+    isr=new InputStreamReader(is);
+    br=new BufferedReader(isr);
+    foundLine=false;
+    info="d";
+    while(!info.equals("</html>") && !foundLine)
+    {
+    info=br.readLine();
+    if(info!=null && info.length()>3 && info.substring(0,4).equals("<p>O"))
+    {
+    foundLine=true;
+    }
+    }
+    if(info.equals("</html>"))
+    {
+    System.out.println("Reached bottom : "+address);
+    }
+    else
+    {
+    br.close();
+    isr.close();
+    is.close();
+    index=info.indexOf("Average Temp:")+28;
+    index2=info.indexOf("&",index);
+    try
+    {
+    temperature=(int) (10*Double.parseDouble(info.substring(index,index2)));
+    bin=toByte(temperature);
+    bos.write(bin[0]);
+    bos.write(bin[1]);
+    }
+    catch(StringIndexOutOfBoundsException e2)
+    {
+    System.out.println(address);
+    System.out.println(info);
+    System.out.println(index);
+    System.out.println(index2);
+    }
+    }
+    }
+    catch(MalformedURLException e)
+    {
+    System.out.println("Problem 1");
+
+    }
+    }
+    }
+    }
+    zip=br2.readLine();
+    }
+    bos.close();
+    fos.close();
+    br2.close();
+    fr.close();
+    }
+    catch(IOException e1)
+    {
+    }
+    }*/
+}

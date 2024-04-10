@@ -1,0 +1,133 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.net.*;
+import java.io.*;
+/**
+ * ############# ##### ##### ######## #### ## ####### #### ####
+ *  #### ### ####### #### #####.
+ *  ### ###### #### ####### # ##### ## ########: 
+ *  ### # ### ####### & ###### ### # ####### ## ####.
+ * 
+ * #### #######  
+ * ###### #/##
+ */
+public class ContactServer
+{
+    public static final int DEFAULT_PORT = 5001;
+    private static ServerSocket serverSocket = null;
+    private static Socket clientSocket = null;
+    private static AddressBook addBook;
+    private static String fileName;
+    private static Scanner lscan, input;
+    private static PrintWriter output;
+    public ContactServer(int port)
+    {
+        fileName = "AddressBook.txt";
+        loadArray();
+        try
+        {
+            serverSocket = new ServerSocket(port);
+        }
+        catch(IOException e)
+        {
+            System.out.println("Connection to server failed...");
+        }
+    }
+    
+    private String loadArray()
+    {
+        try
+        {
+            addBook = new AddressBook(fileName);
+        }
+        catch(IOException e)
+        {
+            System.out.println("Error loading file...");
+        }
+    }
+    
+    public static void add(String contact)
+    {
+        addBook.addToFile(fileName, contact);
+    }
+    
+    private static String search(String name)
+    {
+        String str = addBook.search(name);
+        return str;
+    }
+    
+    private static void send(String info)
+    {
+        output.println(info);
+        System.out.println("Sent: " + info);
+    }
+    
+    public static String receive(Scanner from)
+    {
+        String info = from.nextLine();
+        return info;
+    }
+    
+    
+    public static void main(String[] args)
+    {
+        int port;
+        String portStr = new JOptionPane.showInputDialog("Enter Port Number");
+        
+        try 
+        {
+            port = Integer.parseInt(portStr);
+            if (port < 0 || port >= 65536) 
+            {
+                port = DEFAULT_PORT;  
+                System.out.println("Invalid port number. Using default. (" + DEFAULT_PORT + ")");    
+            }
+        }   
+        catch (NumberFormatException e) 
+        { 
+            port = DEFAULT_PORT;     
+        }
+        System.out.println("Listeniong on port " + port);
+        ContactServer server = new ContactServer(port);
+        
+        try
+        {
+            clientSocket = serverSocket.accept();
+            input = new Scanner(clientSocket.getInputStream());
+            output = new PrintWriter(clientSocket.getOutoutStream());
+        }
+        catch(IOException e)
+        {
+            System.out.println("An error occured accepting Server Socket connection.");
+        }
+        
+        String cmd;
+        boolean done = false;
+        while(!done)
+        {
+            System.out.println("Waiting for client input.");
+            line = receive(input);
+            lscan = new Scanner(receive(input));
+            lscan.useDelimiter(",");
+            if(lscan.hasNext()) cmd = lscan.next();
+            
+            if(cmd.equals("ADD")
+            {
+               String contact = lscan.next() + "," + lscan.next() + "," + lscan.next();
+               add(contact);
+                System.out.println("Added contact.");
+            }
+            else if(cmd.equals("SEARCH")
+            {
+                search(line.substring(7));
+                System.out.println("Searching contact...");
+            }
+            else if(cmd.equals("DONE")
+            {
+                System.exit(0);
+            }
+        }
+    }
+}

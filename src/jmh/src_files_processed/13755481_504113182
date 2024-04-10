@@ -1,0 +1,231 @@
+import java.util.ArrayList;
+
+/**
+ * ## ###### #'######## ######.
+ * #'####### ######## ### ##### ### #### ## ######## ##########.
+ *
+ * @###### ##### #. ###### ## ####### #######.
+ * @####### ####.##.##
+ */
+public class Auction
+{
+    private ArrayList<Lot> lots;
+    private int nextLotNumber;
+    
+
+    /**
+     * Crée une nouvelle vente aux enchères.
+     */
+    public Auction()
+    {
+        lots = new ArrayList<Lot>();
+        nextLotNumber = 1;
+    }
+
+    /**
+     * Entre un nouveau lot dans les enchères.
+     * @param description Une description du lot.import java.util.ArrayList;
+
+/**
+ * Un modèle d'enchères simple.
+ * L'enchère conserve une liste des lots de longueur arbitraire.
+ *
+ * @author David J. Barnes et Michael Kolling.
+ * @version 2008.03.30
+ */
+public  Auction
+{
+    private ArrayList<Lot> lots;
+    private int nextLotNumber;
+
+    /**
+     * Crée une nouvelle vente aux enchères.
+     */
+    public Auction()
+    {
+        lots = new ArrayList<Lot>();
+        nextLotNumber = 1;
+    }
+
+    /**
+     * Entre un nouveau lot dans les enchères.
+     * @param description Une description du lot.
+     */
+    public void enterLot(String description)
+    {
+        lots.add(new Lot(nextLotNumber, description));
+        nextLotNumber++;
+    }
+
+    /**
+     * Affiche la lite complète des lots dans cette enchère.
+     */
+    public void showLots()
+    {
+        for(Lot lot : lots) {
+            System.out.println(lot.toString());
+        }
+    }
+    
+    /**
+     * Offre pour un lot.
+     * Un message s'affiche, indiquant si l'offre a gagné
+     * ou non.
+     * @param number Le numéro de lot objet de l'offre.
+     * @param bidder La personne enchérissant pour ce lot.
+     * @param value  La valeur de l'offre.
+     */
+    public void bidFor(int lotNumber, Person bidder, long value)
+    {
+        Lot selectedLot = getLot(lotNumber);
+        if(selectedLot != null) {
+            boolean successful = selectedLot.bidFor(new Bid(bidder, value));
+            if(successful) {
+                System.out.println("L'offre pour le lot numéro " +
+                                   lotNumber + " a gagné.");
+            }
+            else {
+                Bid highestBid = selectedLot.getHighestBid();
+                System.out.println("Le lot numéro : " + lotNumber +
+                                   " a déjà une offre de : " +
+                                   highestBid.getValue());
+            }
+        }
+    }
+
+    /**
+     * Renvoie le lot avec le numéro donné. Renvoie null
+     * s'il n'existe pas de lot avec ce numéro.
+     * @param lotNumber Le numéro du lot à renvoyer.
+     */
+    public Lot getLot(int lotNumber)
+    {
+        if((lotNumber >= 1) && (lotNumber < nextLotNumber)) {
+            Lot selectedLot = lots.get(lotNumber - 1);
+            if(selectedLot.getNumber() != lotNumber) {
+                System.out.println("Erreur interne : le numéro de lot" +
+                                   selectedLot.getNumber() +
+                                   " a été renvoyé à la place de " +
+                                   lotNumber);
+                selectedLot = null;
+            }
+            return selectedLot;
+        }
+        else {
+            System.out.println("Le numéro de lot : " + lotNumber +
+                               " n'existe pas.");
+            return null;
+        }
+    }
+    
+
+     
+    public void enterLot(String description)
+    {
+        lots.add(new Lot(nextLotNumber, description));
+        nextLotNumber++;
+    }
+
+    /**
+     * Affiche la lite complète des lots dans cette enchère.
+     */
+    public void showLots()
+    {
+        for(Lot lot : lots) {
+            System.out.println(lot.toString());
+        }
+    }
+    
+    /**
+     * Offre pour un lot.
+     * Un message s'affiche, indiquant si l'offre a gagné
+     * ou non.
+     * @param number Le numéro de lot objet de l'offre.
+     * @param bidder La personne enchérissant pour ce lot.
+     * @param value  La valeur de l'offre.
+     */
+    public void bidFor(int lotNumber, Person bidder, long value)
+    {
+        Lot selectedLot = getLot(lotNumber);
+        if(selectedLot != null) {
+            boolean successful = selectedLot.bidFor(new Bid(bidder, value));
+            if(successful) {
+                System.out.println("L'offre pour le lot numéro " +
+                                   lotNumber + " a gagné.");
+            }
+            else {
+                Bid highestBid = selectedLot.getHighestBid();
+                System.out.println("Le lot numéro : " + lotNumber +
+                                   " a déjà une offre de : " +
+                                   highestBid.getValue());
+            }
+        }
+    }
+
+    /**
+     * Renvoie le lot avec le numéro donné. Renvoie null
+     * s'il n'existe pas de lot avec ce numéro.
+     * @param lotNumber Le numéro du lot à renvoyer.
+     */
+    public Lot getLot(int lotNumber)
+    {
+        if((lotNumber >= 1) && (lotNumber < nextLotNumber)) {
+            Lot selectedLot = lots.get(lotNumber - 1);
+            if(selectedLot.getNumber() != lotNumber) {
+                System.out.println("Erreur interne : le numéro de lot" +
+                                   selectedLot.getNumber() +
+                                   " a été renvoyé à la place de " +
+                                   lotNumber);
+                selectedLot = null;
+            }
+            return selectedLot;
+        }
+        else {
+            System.out.println("Le numéro de lot : " + lotNumber +
+                               " n'existe pas.");
+            return null;
+        }
+    }
+    
+    public void close(){
+        if(nextLotNumber==1){
+            System.out.println(" pas d'article ");
+        }
+        else{
+        for(int i=0;i<lots.size();i++){
+        Lot a=lots.get(i);
+        if(a.getHighestBid()==null){
+            System.out.println("Lot n° "+a.getNumber() +" pas d'offre ");
+        }
+        else
+        System.out.println("Lot n° "+a.getNumber() +"a un offre par "+(a.getHighestBid().getBidder()).getName()+", valeur " +a.getHighestBid().getValue());
+    }
+    }
+    }
+
+    public ArrayList<Lot> getUnsold(){
+    ArrayList<Lot> k=new ArrayList<Lot>();
+     for(int i=0;i<lots.size();i++){
+       Lot a=lots.get(i);
+       if(a.getHighestBid()==null){k.add(a);
+        System.out.println("lot n° "+a.getNumber()+" with the description "+a.getDescription() + " pas vendu");}
+      }
+
+     return k;
+    
+    
+     }
+    
+    public void supprimer(int i){
+         i=i-1;
+        if(i<=0){System.out.println("il n'y a pas de lot");}
+        else{
+    lots.remove(i);
+    ArrayList<Lot> u=new ArrayList<Lot>();
+    for(int k=0;k<lots.size();k++){
+    Lot a=lots.get(k);
+      u.add(new Lot(k+1,a.getDescription()));
+    }
+    lots=u;}
+    }
+}}

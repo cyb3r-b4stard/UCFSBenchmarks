@@ -1,0 +1,75 @@
+import java.awt.*;
+import java.applet.*;
+import java.awt.event.*;
+
+public class ELO extends Applet
+{
+    TextField r1, r2, s1, s2;
+    Button calculate;
+    int a = 0, intr1, intr2, ints1, ints2; 
+    double doubleE1, doubleE2, doublenewR1, doublenewR2;
+    
+    public void init()
+ {
+    setLayout( null );
+    r1 = new TextField( 20 );
+    r1.setBounds( 200, 100, 50, 20 );
+    add( r1 );
+    r2 = new TextField( 20 );
+    r2.setBounds( 200, 150, 50, 20 );
+    add( r2 );
+    s1 = new TextField( 20 );
+    s1.setBounds( 500, 100, 50, 20 );
+    add( s1 );
+    s2 = new TextField( 20 );
+    s2.setBounds( 500, 150, 50, 20 );
+    add( s2 );
+    calculate = new Button( "Calculate" );
+    calculate.setBounds( 100, 200, 80, 20 );
+    calculate.addActionListener( new calculateHandler() );
+    add( calculate );
+ }
+ 
+    public void paint( Graphics g )
+ {
+    g.setColor( Color.black );
+    g.drawString( "Ranking team 1:", 100, 110 );
+    g.drawString( "Ranking team 2:", 100, 160 ); 
+    g.drawString( "S team 1:", 400, 110 );
+    g.drawString( "S team 2:", 400, 160 );
+    g.drawString( "E:", 300, 50 );
+    g.drawString( "New ranking:", 600, 50 );
+    if( a == 1 )
+    {
+        /*doubleE1 = 1 / ( 1 + 10 ^ ( (intr2 - intr1)/400 ) );
+        doubleE2 = 1 / ( 1 + 10 ^ ( (intr1 - intr2)/400 ) );*/
+        doubleE1 = 0,5;
+        doubleE2 = 0,5;
+        doublenewR1 = intr1 + ( 10 * ( ints1 - ( 2 * doubleE1 ) ) );
+        doublenewR2 = intr2 + ( 10 * ( ints2 - ( 2 * doubleE2 ) ) );
+        g.setColor( Color.red );
+        g.drawString( "" + doubleE1, 300, 110 );
+        g.drawString( "" + doubleE2, 300, 160 );
+        g.drawString( "" + doublenewR1, 600, 110 );
+        g.drawString( "" + doublenewR2, 600, 160 );
+        a = 0;
+    }
+ }
+ 
+ class calculateHandler implements ActionListener
+ {
+    public void actionPerformed( ActionEvent e )
+  {
+    a++;
+    String stringr1 = r1.getText();
+    intr1 = Integer.parseInt( stringr1 );
+    String stringr2 = r2.getText();
+    intr2 = Integer.parseInt( stringr2 );
+    String strings1 = s1.getText();
+    ints1 = Integer.parseInt( strings1 );
+    String strings2 = s2.getText();
+    ints2 = Integer.parseInt( strings2 );
+    repaint();  
+  }
+ }
+}

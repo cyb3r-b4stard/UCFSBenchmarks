@@ -1,0 +1,78 @@
+public class CarpetPlanter extends BetterTurnerRobot
+{
+    public CarpetPlanter (int st, int av, Direction dir, int beeps)
+    {
+        super (st,av, dir, beeps);
+
+    }       
+
+    private boolean isRoom()
+    {
+        if(frontIsClear())
+        {   
+            turnLeft();
+            if(frontIsClear())
+            {
+                turnAround();
+                if(frontIsClear())
+                {
+                    turnLeft();
+                    return true;
+                }
+
+                else
+                {
+                    turnRight();
+                    return false;
+                }
+            }
+            else
+            {
+                turnLeft();
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+
+    }
+
+    private void enterRoom()
+    {
+        move();
+        turnLeft();
+        move();
+    }
+
+    private void exitRoom()
+    {
+        stepBackward();
+        turnRight();
+        stepBackward();
+
+    }
+
+    private void placeCarpet()
+    {
+        if (isRoom())
+        {
+            putBeeper();
+        }
+
+        else return false;
+    }
+    }
+
+
+    public boolean carpetRoom()
+    {
+        enterRoom();
+        isRoom();
+        putBeeper();
+        exitRoom();
+
+    } 
+}
+

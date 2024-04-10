@@ -1,0 +1,210 @@
+
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class BinaryTree
+{
+    private Node _root;
+
+    public BinaryTree (int num)
+    {
+        _root = new Node(num);
+        System.out.println("Root = " + _root.getNumber());
+    }
+
+    public Node getRoot()
+    {
+        return _root;
+    }
+
+    private Node getNode(Node current, int num)
+    {
+        Node temp = null;
+        if (current.getNumber() == num) {
+            temp = current;
+            System.out.println(printSons(temp));
+        } else {
+            if (current.getLeftSon() != null){
+                getNode(current.getLeftSon(), num);
+            }
+            if (current.getRightSon() != null){
+                getNode(current.getRightSon(), num);
+            }   
+        }
+        return temp;
+    }
+
+    public Node getNode(int num)
+    {
+        return getNode(_root, num);
+    }
+
+    public void fillTree(Node start) {
+        Node temp = start;
+        start.setLeftSon(new Node(125));
+        start.setRightSon(new Node(400));
+        temp = start.getLeftSon();
+        temp.setLeftSon(new Node(190));
+        temp.setRightSon(new Node(45));
+        temp = temp.getLeftSon();
+        temp.setLeftSon(new Node(150));
+        temp = start.getLeftSon();
+        temp = temp.getRightSon();
+        temp.setLeftSon(new Node(175));
+        temp.setRightSon(new Node(20));
+        temp = temp.getLeftSon();
+        temp.setRightSon(new Node(140));
+        temp = start.getRightSon();
+        temp.setRightSon(new Node(50));
+
+    }
+
+    public void addLeft(int toNode, int num) 
+    {
+        Node temp = getNode(toNode);
+        if (temp != null)
+            temp.setLeftSon(new Node(num));
+        else
+            System.out.println(" L !!!!");
+    }
+
+    public void addRight(int toNode, int num)
+    {
+        Node temp = getNode(toNode);
+        if (temp != null)
+            temp.setRightSon(new Node(num));
+        else
+            System.out.println(" R !!!!");
+
+    }
+
+    public static void f (Node t) 
+    {
+        f (null, t);
+    }
+
+    private static void f (Node p, Node t) 
+    {
+        if (t == null)
+            return ;
+        if (t.getLeftSon() == null && t.getRightSon() == null)
+        {
+            if (p.getLeftSon() == t)
+                p.setLeftSon(null);
+            else if (p.getRightSon() == t)
+                p.setRightSon(null);
+        }
+        else
+        {
+            f (t, t.getLeftSon());
+            f (t, t.getRightSon());
+        }
+    }
+
+    public static String printSons(Node n) 
+    {
+        String str = "";
+        if (n!=null) {
+            str = "\t" + n.getNumber() + "\n";
+            String nstr = "null";
+            String lft = " /\t";
+            String rgt = "\t\\";
+            Node rTemp = n.getRightSon(), lTemp = n.getLeftSon();
+            str = str + lft + rgt + "\n";
+            if (lTemp != null)
+                str = str + lTemp.getNumber();
+            else
+                str = str + nstr;
+            str = str + "\t\t";
+            if (rTemp != null)
+                str = str + rTemp.getNumber();
+            else
+                str = str + nstr;
+        }
+        return str;
+    }
+
+    public static int fun1(String s, int f)
+    {
+        int ans = f;
+        for (int i = f+1; i<s.length(); i++)
+            if(s.charAt(ans) < s.charAt(i))
+                ans = i;
+        return ans;
+    }
+
+    public static String fun2(String s, int i) 
+    {
+        char value = s.charAt(i);
+        while (i > 0 && s.charAt(i-1) < value) 
+        {
+            s = s.substring(0,i)+s.charAt(i-1)+s.substring(i+1);
+            i = i-1;
+        }
+        s=s.substring(0,i)+value+s.substring(i+1);
+        return s;
+    }
+
+    public static String something(String s)
+    {
+        for (int i = 0; i<s.length()-1 ;i++ )
+        {
+            int m = fun1(s, i);
+            s=fun2(s, m);   
+        }
+        return s;
+    }
+
+
+    public static boolean what(int[][] mat, int[] vec)
+    {
+        int n = mat.length;
+        int m = vec.length;
+        for (int i = 0;  i < m; i++) 
+        {
+            if ((vec[i] != mat[i][n-m+i]) || (vec[i] != mat[n-m+i][i])) 
+            {
+                   return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean what(int[][] mat, int[] vec, int ind1, int ind2, boolean bool)
+    {
+        if(!bool)
+            return false;
+        if (ind1+1 < vec.length) 
+        {
+            if((vec[ind1] != mat[ind1][ind2]) || (vec[ind1] != mat[ind2][ind1]))
+                return what(mat, vec, ind1+1, ind2+1, false);
+            else
+                return what(mat, vec, ind1+1,ind2+2,true);
+        }
+        return true;
+    }
+
+    public static void main(String[] args) {
+        BinaryTree bTree = new BinaryTree(300);
+        bTree.fillTree(bTree.getRoot());
+        bTree.f(bTree.getRoot());
+        System.out.println(printSons(bTree.getNode(400)));
+        String s = "abcdef";
+        System.out.println(s.charAt(1) < s.charAt(0));
+
+        System.out.println(fun1("davidkoperfild",1));
+        System.out.println(fun2("zevaxa",4));
+        System.out.println(something("ilya"));
+
+        int[][] mat1 = {{1,2,3,4},
+                        {2,3,4,5},
+                        {3,4,5,6}
+                        {4,5,6,7}};
+        int[] vec1 = {2,4,6};
+        System.out.println("what for : " + what(mat1,vec1));
+        System.out.println("what recursive : " + what(mat1,vec1,0,1,true));
+    }
+}

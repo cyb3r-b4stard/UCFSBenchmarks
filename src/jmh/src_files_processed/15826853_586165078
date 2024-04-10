@@ -1,0 +1,145 @@
+/**
+ * ### ###### ############# ##### ########### ########: 
+ * 
+ * @###### 
+ * @####### #.#.####
+ */
+
+import sum.komponenten.*;
+import sum.werkzeuge.*;
+import sum.ereignis.*;
+
+public class SuchAnwendung extends EBAnwendung
+{
+    private Knopf hatKnopfDatenErzeugen;
+    private Knopf hatKnopfEinfuegen;
+    private Knopf hatKnopfLoeschen;
+    private Knopf hatKnopfSuchen;
+    private Knopf hatKnopfBeenden;
+
+    private Zeilenbereich hatZeilenbereichTabelle;
+    private Textfeld hatTextfeldName;
+    private Textfeld hatTextfeldPunkte;
+    private Etikett hatEtikettPunkte;
+    private Etikett hatEtikettName;
+    private Etikett hatEtikettTabelleninhalt;
+    private Etikett hatEtikettAnzahl;
+    private Textfeld hatTextfeldAnzahl;
+    private Etikett hatEtikettIndex;
+    private Textfeld hatTextfeldIndex;
+
+    private SchuelerArray hatSchuelerArray;
+    int pLaufzeit;
+
+
+    /**
+     * Konstruktor
+     */
+    public SuchAnwendung()
+    {
+        super(550, 625);
+
+        hatKnopfEinfuegen = new Knopf(65, 133, 230, 30, "EinfŸgen");
+        hatKnopfEinfuegen.setzeBearbeiterGeklickt("hatKnopfEinfuegenGeklickt");
+        hatKnopfLoeschen = new Knopf(65, 270, 230, 30, "Lšschen");
+        hatKnopfLoeschen.setzeBearbeiterGeklickt("hatKnopfLoeschenGeklickt");
+        hatKnopfSuchen = new Knopf(65, 170, 230, 30, "Suchen");
+        hatKnopfSuchen.setzeBearbeiterGeklickt("hatKnopfSuchenGeklickt");
+        hatKnopfDatenErzeugen = new Knopf(65, 376, 230, 30, "Daten erzeugen");
+        hatKnopfDatenErzeugen.setzeBearbeiterGeklickt("hatKnopfDatenErzeugenGeklickt");
+
+        hatKnopfBeenden = new Knopf(65, 415, 230, 30, "Beenden");
+        hatKnopfBeenden.setzeBearbeiterGeklickt("beenden");
+        hatZeilenbereichTabelle = new Zeilenbereich(303, 50, 251, 445, "");
+        hatTextfeldName = new Textfeld(130, 50, 165, 30, "");
+        hatTextfeldName.setzeAusrichtung(Ausrichtung.LINKS);
+        hatTextfeldPunkte = new Textfeld(130, 90, 165, 30, "");
+        hatTextfeldPunkte.setzeAusrichtung(Ausrichtung.LINKS);
+        hatEtikettPunkte = new Etikett(64, 90, 60, 25, "Punkte");
+        hatEtikettPunkte.setzeAusrichtung(Ausrichtung.LINKS);
+        hatEtikettName = new Etikett(64, 50, 60, 30, "Name");
+        hatEtikettName.setzeAusrichtung(Ausrichtung.LINKS);
+        hatEtikettTabelleninhalt = new Etikett(302, 19, 100, 25, "Tabelleninhalt");
+        hatEtikettTabelleninhalt.setzeAusrichtung(Ausrichtung.LINKS);
+        hatEtikettAnzahl = new Etikett(65, 340, 60, 30, "Anzahl");
+        hatEtikettAnzahl.setzeAusrichtung(Ausrichtung.LINKS);
+        hatTextfeldAnzahl = new Textfeld(130, 340, 165, 30, "");
+        hatTextfeldAnzahl.setzeAusrichtung(Ausrichtung.LINKS);
+        hatEtikettIndex = new Etikett(65, 220, 60, 30, "Index");
+        hatEtikettIndex.setzeAusrichtung(Ausrichtung.LINKS);
+        hatTextfeldIndex = new Textfeld(130, 220, 165, 30, "");
+        hatTextfeldIndex.setzeAusrichtung(Ausrichtung.LINKS);
+        hatSchuelerArray = new SchuelerArray(100);
+        this.zeigeSchuelerfeldAn();
+    }
+
+    /**
+     * Vorher:nichts
+     * Nachher: die Daten werden in der Tabelle angezeigt.
+     */
+    private void zeigeSchuelerfeldAn()
+    {
+        hatZeilenbereichTabelle.loescheAlles();
+        for (int lSchuelerNr = 0; lSchuelerNr < hatSchuelerArray.laenge(); lSchuelerNr++)
+        {
+            if (lSchuelerNr < hatSchuelerArray.belegt())
+            {
+                Schueler lSchueler = hatSchuelerArray.inhaltAlsSchueler(lSchuelerNr);
+                hatZeilenbereichTabelle.haengeAn(lSchuelerNr + ": " + lSchueler.name() +" (" + lSchueler.punktzahl() + ")");
+            }
+            else
+                hatZeilenbereichTabelle.haengeAn(lSchuelerNr + ": frei");
+        }
+    }
+
+    /**
+     * Vorher: Ereignis GeklicktvonhatKnopfEinfuegen fand statt.
+     * Nachher: (schreiben Sie, was in dieser Methode ausgefuehrt wird)
+     */
+    public void hatKnopfEinfuegenGeklickt()
+    {
+        Object pInhalt = new Schueler();
+        hatSchuelerArray.fuegeSortiertEin(pInhalt);
+        this.zeigeSchuelerfeldAn();
+    }
+
+    /**
+     * Vorher: Ereignis GeklicktvonhatKnopfDatenErzeugen fand statt.
+     * Nachher: (schreiben Sie, was in dieser Methode ausgefuehrt wird)
+     */
+    public void hatKnopfDatenErzeugenGeklickt()
+    {
+        int pLaufzeit = hatTextfeldAnzahl.inhaltAlsGanzeZahl();
+        while (pLaufzeit>0)
+        {
+            this.hatKnopfEinfuegenGeklickt();
+            pLaufzeit = pLaufzeit -1;
+        }
+        this.zeigeSchuelerfeldAn();
+    }
+
+    /**
+     * Vorher: Ereignis GeklicktvonhatKnopfLoeschen fand statt.
+     * Nachher: (schreiben Sie, was in dieser Methode ausgefuehrt wird)
+     */
+    public void hatKnopfLoeschenGeklickt()
+    {
+        hatSchuelerArray.loesche(hatTextfeldIndex.inhaltAlsGanzeZahl());
+
+        this.zeigeSchuelerfeldAn();
+    }
+
+    /**
+     * Vorher: Ereignis GeklicktvonhatKnopfSuchen fand statt.
+     * Nachher: (schreiben Sie, was in dieser Methode ausgefuehrt wird)
+     */
+    public void hatKnopfSuchenGeklickt()
+    {
+        Schueler pSchueler = newSchueler(hatTextfeldname.inhaltAlsText());
+        hatSchuelerArray.Index(_pSchueler_);
+        this.zeigeSchuelerfeldAn;
+       
+        
+
+    }
+}

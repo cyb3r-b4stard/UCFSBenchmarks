@@ -1,0 +1,225 @@
+import java.util.*;
+
+/**
+ * #########.####
+ *
+ * ######## ### ### ######### #####. ### #### ###### ## ####### ########### ###    
+ * ### #### ## #####/######## ### ####### '####### ############()' ### 
+ * '###########(###### ####)'.
+ *
+ * ######### ### ######### #########
+ * ######## ###### ########## ####, #######
+ * ####:
+ *
+ * ######### (#) #### ###
+ *
+ *  @###### #############
+ */
+public class Organizer {
+
+    private Vector<Reminder> reminders;
+    private static final String ACTION_ADD = "add";
+    private static final String ACTION_REMOVE = "remove";
+    private static final String ACTION_QUIT = "quit";
+    private static final String TYPE_TASK = "task";
+    private static final String TYPE_MEETING = "meeting";
+    private static final String TYPE_BIRTHDAY = "birthday";
+    private static final int COMMAND=0;
+    private static final int PARAMETER=1;
+
+    public Organizer() {
+        reminders = new Vector<Reminder>();
+    }
+
+    public void run() {
+        do {
+            printList();
+        } while (parseCommand());
+    }
+
+    private void printList() {
+        int idx = 0;
+        for (Reminder r : reminders) {
+            System.out.println();
+            System.out.println(idx++ + ":");
+            System.out.println(r);
+            System.out.println();
+        }
+    }
+
+
+    /* parseCommand asks for a command, checks it and does whatever
+     * the user requested. It returns true if the program should continue
+     * running. */
+    private boolean parseCommand() {
+        boolean quit=false;
+        boolean done=false;
+        while(!done){
+
+            System.out.println("Insert command:");
+            System.out.printf("%s <%s | %s | %s>\n",ACTION_ADD,TYPE_TASK,TYPE_MEETING,TYPE_BIRTHDAY);
+            System.out.printf("%s<number>\n",ACTION_REMOVE);
+            System.out.printf("<%s>\n",ACTION_QUIT);
+            System.out.print(">");
+            String input=Input.readString();
+            String [] splittedInput=input.split(" ");
+            try{
+                switch(splittedInput[COMMAND]){
+                    case ACTION_ADD:
+                    done=addReminder(splittedInput[PARAMETER]);
+                    quit=true;
+                    break;
+                    case ACTION_REMOVE:
+                        if(!reminders.isEmpty())
+                        {
+                            done=reminders.remove(int 1);
+                            quit=true;
+                        }
+                        else{
+                            System.out.println("No Element left to remove!!\n\n");
+                            done=false;
+                        }
+                        break;
+                    case ACTION_QUIT:
+                    done=true;
+                    quit=false;
+                    break;
+                }
+                if(!done){
+                    System.out.printf("Task could not be executed try again\n\n");
+                }
+            }
+            catch(ArrayIndexOutOfBoundsException e)
+            {
+                System.out.println("False Command used  or check format (Have you add spaces between the words ?)\n\n");
+                done=false;
+            }
+        }
+        return quit;
+    }
+
+
+    /* addReminder adds a reminder of a given type. If the type is incorrect,
+     * false is returned. */
+    private boolean addReminder(String type) {
+        if (type.equals(TYPE_TASK)) {
+            long startTime = getTime("start time");
+            long endTime = getTime("end time");
+            System.out.print("Insert description: ");
+            String desc = Input.readString();
+            int priority = -1;
+            do {
+                System.out.printf("Insert priority (%d <= p <= %d): ", Reminder.MIN_PRIORITY, Reminder.MAX_PRIORITY);
+                priority = Input.readInt();
+            } while (priority < Reminder.MIN_PRIORITY || priority > Reminder.MAX_PRIORITY);
+
+            reminders.add(new Task(startTime, endTime, priority, desc));
+
+        } else if (type.equals(TYPE_MEETING)) {
+            long startTime = getTime("start time");
+            long endTime = getTime("end time");
+            System.out.print("Person to meet");
+            String person = Input.readString();
+            System.out.print("Location: ");
+            String location = Input.readString(); 
+            reminders.add(new Meeting(startTime,endTime,person,location));
+        } else if (type.equals(TYPE_BIRTHDAY)) {
+            long date=getDate(TYPE_BIRTHDAY);
+            System.out.println("Enter name");
+            String person=Input.readString();
+            System.out.println("Enter age");
+            int age=Input.readInt();
+            reminders.add(new Birthday(date,person,age));
+        } else {
+            /* ERROR, invalid type */
+            return false;
+        }
+        return true;
+    }
+
+
+    /* getTime asks the user for year, month, day, hours and minutes and returns
+     * a timestamp in milliseconds. "type" is a string that tells the user what
+     * kind of a timestamp we are asking for. */
+    private long getTime(String type) {
+        long timeInMillis = -1;
+        do {
+            System.out.printf("Insert %s (year, month, day, hours, minutes): ", type);
+            String timeString = Input.readString();
+            String parts[] = timeString.split(" ");
+            if (parts.length != 5) {
+                /* must contain year, month, day, hours, minutes */
+                continue;
+            }
+            timeInMillis = getTimestamp(parts);
+
+        } while (timeInMillis < 0);
+
+        return timeInMillis;
+    }
+
+    /* getDate asks the user for year, month, and day and returns
+     * a timestamp in milliseconds. "type" is a string that tells the user what
+     * kind of a timestamp we are asking for. */
+    private long getDate(String type) {
+        long timeInMillis = -1;
+        do {
+            System.out.printf("Insert %s (year, month, day): ", type);
+            String timeString = Input.readString();
+            String parts[] = timeString.split(" ");
+            if (parts.length != 3) {
+                /* must contain year, month, day */
+                continue;
+            }
+            timeInMillis = getTimestamp(parts);
+
+        } while (timeInMillis < 0);
+
+        return timeInMillis;
+    }
+
+
+
+
+    /* do magic with the Calendar class to get a time stamp out of
+     * the string array... */
+    private long getTimestamp(String[] parts) {
+        long timeInMillis = -1;
+        int[] vals = new int[parts.length];
+        int idx = 0;
+        for (String s : parts) {
+            vals[idx++] = getIntegerValue(s);
+        }
+
+        GregorianCalendar cal = new GregorianCalendar();
+        /* makes the calendar complain if invalid values are fed in */
+        cal.setLenient(false);
+        /* months must be set within 0 - 11 */
+        if (vals.length == 3)
+            cal.set(vals[0], vals[1] - 1, vals[2], 0, 0);
+        else
+            cal.set(vals[0], vals[1] - 1, vals[2], vals[3], vals[4]);
+        try {
+            /* if one of the fields is invalid, IllegalArgumentException is thrown */
+            timeInMillis = cal.getTimeInMillis();
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid time inserted, try again.");
+        }
+        return timeInMillis;
+    }
+
+    /* parse string to get an integer value */
+    private int getIntegerValue(String str) {
+        int value = -1;
+        try {
+            value = Integer.parseInt(str);
+        } catch (NumberFormatException e) {}
+        return value;
+    }
+
+
+    public static void main(String[] argv) {
+        Organizer organizer = new Organizer();
+        organizer.run();
+    }
+}

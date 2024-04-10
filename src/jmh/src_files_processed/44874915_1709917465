@@ -1,0 +1,221 @@
+ 
+
+/**
+##### ##: ###### #######
+#### ####; ###### ####
+####: ##/##/####
+## ########## #
+*/
+
+public class CuteCreature {
+
+	private String species = "";
+	private int level = 1;
+	private int currentHitPoints;
+	private int maximumHitPoints;
+	private int attackDamage;
+	private int experiencePoints = 0; 
+	private int experienceValue;
+	private boolean isSpecial = true;
+	private int exPointsNeededForNextLevel = 250 ; 
+	private int exPointsAccumulatedAtNextLevel = 250; 
+	
+	
+	public CuteCreature(String sp, int maximumhp, int attckdmg, 
+						int expvalue ,boolean isp) 
+	{
+		currentHitPoints = maximumhp;
+		species = sp;
+		maximumHitPoints = maximumhp;
+		attackDamage = attckdmg;
+		experienceValue = expvalue;
+		isSpecial = isp;
+	}
+	
+	public String getSpecies() {
+		return species;
+	}
+	public void setSpecies(String species) {
+		this.species = species;
+	}
+	public int getLevel() {
+		return level;
+	}
+	public void setLevel(int level) {
+		this.level = level;
+	}
+	public int getCurrentHitPoints() {
+		return currentHitPoints;
+	}
+	public void setCurrentHitPoints(int cuurentHitPoints) {
+		this.currentHitPoints = cuurentHitPoints;
+	}
+	public int getMaximumHitPoints() {
+		return maximumHitPoints;
+	}
+	public void setMaximumHitPoints(int maximumHitPoints) {
+		this.maximumHitPoints = maximumHitPoints;
+	}
+	public int getAttackDamage() {
+		return attackDamage;
+	}
+	public void setAttackDamage(int attackDamage) {
+		this.attackDamage = attackDamage;
+	}
+	public int getExperiencePoints() {
+		return experiencePoints;
+	}
+	public void setExperiencePoints(int experiencePoints) {
+		this.experiencePoints = experiencePoints;
+	}
+	public int getExperienceValue() {
+		return experienceValue;
+	}
+	public void setExperienceValue(int experienceValue) {
+		this.experienceValue = experienceValue;
+	}
+	public boolean isSpecial() {
+		return isSpecial;
+	}
+	public void setSpecial(boolean isSpecial) {
+		this.isSpecial = isSpecial;
+	}
+	
+	public int getExPointsNeededForNextLevel() {
+		return exPointsNeededForNextLevel;
+	}
+
+	public void setExPointsNeededForNextLevel(int exPointsNeededForNextLevel) {
+		this.exPointsNeededForNextLevel = exPointsNeededForNextLevel;
+	}
+
+	public void takeDamage(int dmg){
+		if (currentHitPoints - dmg <= 0){
+			
+			System.out.println(species + " has been incapacitated.");
+			currentHitPoints = 0;
+		}
+		else {
+			
+			currentHitPoints = currentHitPoints - dmg;
+		}
+	}
+	
+	private void levelUp(){
+		level++;
+		if (level >= 2 && level <= 10 ){
+			maximumHitPoints = maximumHitPoints + 4;
+			attackDamage = attackDamage + 3;
+		}
+		else if (level >= 11){
+			currentHitPoints =  currentHitPoints + 1;
+			maximumHitPoints = maximumHitPoints + 1;
+			attackDamage = attackDamage + 1;
+		}
+		experienceValue = experienceValue + 10;
+		System.out.println(species + " leveled to " + level + "!");
+	
+		
+	}
+	
+	public void gainExp(int exp){
+		experiencePoints = experiencePoints + exp;
+		
+		if (exp >= exPointsNeededForNextLevel){
+			int levels = exp / exPointsNeededForNextLevel;
+			for (int i=1; i <= levels; i++){
+				levelUp(); 
+				exPointsNeededForNextLevel = exPointsNeededForNextLevel + 50; 
+				exPointsAccumulatedAtNextLevel = exPointsAccumulatedAtNextLevel + exPointsNeededForNextLevel; 
+				
+			}
+		}
+		
+		System.out.println(species + " gained " + experiencePoints + " experience!");
+	}
+
+	public void attack(CuteCreature c){
+		double k; 
+		System.out.println(species + " attacks " + c.species + "!");
+		int min = (int) (attackDamage - (.20 * attackDamage));
+		int max = (int) (attackDamage + (.20 * attackDamage));
+		int damagePoint =  ((int) (Math.random()*(max - min))) + min;
+		
+		k = Math.random();
+		if (k <= .85){
+			c.takeDamage(damagePoint);
+			System.out.println("Hit! " + c.species + " took " + damagePoint + " damage!");
+		}
+		else if (k <= .05){
+			c.takeDamage(damagePoint * 2 ); 
+			System.out.println("Critical hit! " + c.species + " took " + damagePoint * 2 + " damage!");
+		}
+		else if (k <= .15){
+			System.out.println("Miss!");
+		}
+		
+		if (c.getCurrentHitPoints() == 0){
+			gainExp(c.getExperienceValue());
+			System.out.println(c.species + " fainted!");
+			System.out.println(species + " defeated " + c.species + "!");
+			System.out.println("\n");
+			System.out.println(c);
+			System.out.println(toString());
+		}
+		
+	}
+	
+	public String toString(){
+		String status = "";
+		if (isSpecial == true){
+			status = "*** Special! ***" + "\n";
+		}
+		String s = "";
+		
+		s = new String(
+		
+		"Level " + level + " " + species + "\n" +
+		"---------------------------------" + "\n" +
+		 status+ 
+		
+		"HP: " + currentHitPoints + "/" + maximumHitPoints + "\n" +
+		"Attack Dmg: " + attackDamage + "\n" +
+		"XP: " + experiencePoints + "/" + exPointsAccumulatedAtNextLevel + "\n" +
+		"XP Value: " + experienceValue + "\n");   
+		return s;
+		
+		
+	}
+	
+
+
+/**
+nsultani
+*/
+    public static void main(String[] args)
+    {
+        CuteCreature b = new CuteCreature("Bowlbasore", 40, 6, 600, false);
+        CuteCreature c = new CuteCreature("Tore-Chick", 40, 6, 600, true);
+
+        System.out.println(b);
+        System.out.println(c);
+        
+        while (true)
+        {
+            b.attack(c);
+            System.out.println();
+            if (c.currentHitPoints == 0)
+                break;
+            
+            c.attack(b);
+            System.out.println();
+            if (b.currentHitPoints == 0)
+                break;
+        }
+        
+    }
+        
+        System.out.println(b);
+        System.out.println(c);
+    }
+}

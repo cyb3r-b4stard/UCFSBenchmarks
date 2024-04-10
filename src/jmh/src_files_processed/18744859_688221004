@@ -1,0 +1,260 @@
+/**
+ * ############ ## ###### ###### 
+ */
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.PreparedStatement;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.JTextArea;
+import java.awt.Container;
+import javax.swing.JOptionPane;
+import javax.swing.JLabel;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.GridLayout;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.io.*;
+import java.awt.event.WindowEvent;
+public class UpdateStudentInfo extends JFrame
+{
+    static final String DRIVER = "com.mysql.jdbc.Driver"; 
+    static final String DATABASE = "studentmanagementsystem"; 
+    static final String HOST = "localhost"; 
+
+    static final String DATABASE_URL =
+        "jdbc:mysql:
+
+    public Connection connection = null;
+    Statement statement = null;    
+     PreparedStatement ps = null;
+    ResultSet rs = null;
+    Container con;
+JLabel SelectStudent, StudentID, Forename, Surname, Gender, DOB, Address, Password, CourseFees, PaymentType;
+  JTextField SelectStudentText, StudentIDText, ForenameText, SurnameText, GenderText, DOBText, AddressText, CourseFeesText, PaymentTypeText;
+JPasswordField PasswordText;
+JButton Update, Retrieve, Home;
+
+    JPanel topPanel, bottomPanel;
+   String user, password = null;
+    /**
+     * Constructor. This creates the widnow and button and initialises the
+     * required listener.
+     */
+    public UpdateStudentInfo()
+    {
+        super("Update Student"); 
+        
+        
+        con = getContentPane();
+        con.setLayout(new FlowLayout());
+        
+         user = "root";
+         password = "Group10";;
+        SelectStudent = new JLabel("Enter student name to update:");
+         
+       StudentID = new JLabel("Student ID:");
+        Forename = new JLabel("Forename:");
+        Surname = new JLabel("Surname:");
+        Gender = new JLabel("Gender:");
+        DOB = new JLabel("D.O.B(yyyy/mm/dd):");
+         Address = new JLabel("Address:");
+        Password = new JLabel("Password:");
+        CourseFees = new JLabel("Course Fees:");
+        PaymentType = new JLabel("Payemnt Type(Loan or Cash):");
+        SelectStudentText = new JTextField(20);
+        StudentIDText = new JTextField(20);
+         ForenameText = new JTextField(20);
+        SurnameText = new JTextField(20);
+        GenderText = new JTextField(20);
+        DOBText = new JTextField(20);
+        AddressText = new JTextField(20);
+        PasswordText = new JPasswordField(20);
+        CourseFeesText = new JTextField(20);
+        PaymentTypeText = new JTextField(20);
+        
+        
+        topPanel = new JPanel();
+        bottomPanel = new JPanel();
+        
+    Update = new JButton("Update");
+    Retrieve = new JButton("Retrieve");
+    Home = new JButton("Update Users Options");
+    
+
+        FlowLayout fLayout = new FlowLayout();
+       GridLayout gLayout = new GridLayout(13,2);
+       
+         topPanel.setLayout(gLayout);
+             
+ topPanel.add(SelectStudent);
+ topPanel.add(SelectStudentText);
+       topPanel.add(StudentID);
+        topPanel.add(StudentIDText);
+        topPanel.add(Forename);
+        topPanel.add(ForenameText);
+        topPanel.add(Surname);
+        topPanel.add(SurnameText);
+        topPanel.add(Gender);
+        topPanel.add(GenderText);
+        topPanel.add(DOB);
+        topPanel.add(DOBText);
+        topPanel.add(Address);
+        topPanel.add(AddressText);
+   topPanel.add(Password);
+     topPanel.add(PasswordText);
+     topPanel.add(CourseFees);
+        topPanel.add(CourseFeesText);
+        topPanel.add(PaymentType);
+        topPanel.add(PaymentTypeText);
+        topPanel.add(Retrieve);
+        topPanel.add(Update);
+        topPanel.add(Home);
+           
+      
+       con.add(topPanel);
+       con.add(bottomPanel);
+        
+
+      
+      
+      
+      
+        Retrieve.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+           
+         getConnection();    
+             retrievedata();
+             
+                 
+               
+           
+        
+    }
+        });
+       
+        Update.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                getConnection();
+            updatedata();
+             
+                 
+               
+           
+        
+    }
+        });
+        
+        Home.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+              AdminUpdateOption AUO = new AdminUpdateOption();
+               AUO.setVisible(true);
+               dispose();
+           
+    }
+        });
+        /*
+         * Some stuff to get everything displayed properly
+         */
+        pack(); 
+        setLocation(210,150); 
+        setSize(500, 300); 
+        setVisible(true); 
+        
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+   
+        public void getConnection(){
+               try{
+            Class.forName(DRIVER);
+            connection = DriverManager.getConnection(DATABASE_URL,user,password);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+            }
+    
+             private void retrievedata(){
+               String tmp = SelectStudentText.getText();
+               String sql = "select * from students where Forename=?";
+               try{
+               ps = connection.prepareStatement(sql);
+               ps.setString(1, tmp);
+               rs = ps.executeQuery();
+               if(rs.next())
+               {
+                   String addStudentID = rs.getString("Student_ID");
+                   StudentIDText.setText(addStudentID);
+                   String addForename = rs.getString("Forename");
+                   ForenameText.setText(addForename);
+                   String addSurname = rs.getString("Surname");
+                   SurnameText.setText(addSurname);
+                     String addGender = rs.getString("Gender");
+                   GenderText.setText(addGender);
+                   String addDOB = rs.getString("D.O.B");
+                   DOBText.setText(addDOB);
+                     String addAddress = rs.getString("Address");
+                   AddressText.setText(addAddress);
+                   String addPassword = rs.getString("Password");
+                   PasswordText.setText(addPassword);
+                   String addCourseFees = rs.getString("Course Fees");
+                   CourseFeesText.setText(addCourseFees);
+                   String addPayementType = rs.getString("Payment Type");
+                   PaymentTypeText.setText(addPayementType);
+                   
+                   
+                }
+            }
+                   catch(Exception e){
+                   JOptionPane.showMessageDialog(null,e);
+        }
+    }
+   
+        
+           public void updatedata(){
+                
+               
+               try{
+                  String StudentIDUpdate = StudentIDText.getText();
+                String ForenameUpdate = ForenameText.getText();
+                 String SurnameUpdate = SurnameText.getText();
+                 String GenderUpdate = GenderText.getText();
+                 String DOBUpdate = DOBText.getText();
+                 String AddressUpdate = AddressText.getText();
+                 String PasswordUpdate = String.valueOf(PasswordText.getText());
+                 String CFUpdate = CourseFeesText.getText();
+                 String PTUpdate = PaymentTypeText.getText();
+                  
+String sql = "update students set Student_ID = '"+StudentIDUpdate+"', Forename = '"+ ForenameUpdate+"', Surname = '"+SurnameUpdate+"',  Password = '"+PasswordUpdate+"', Gender = '"+GenderUpdate+"', D.O.B = '"+DOBUpdate+"', Address = '"+AddressUpdate+"', Course Fees = '"+CFUpdate+"', Payment Type = '"PTUpdate+"' where Student_ID = '"+StudentIDUpdate+"' ";
+                  ps= connection.prepareStatement(sql);
+                ps.execute();
+                  JOptionPane.showMessageDialog(null, "Student details has been updated");
+                   
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null,e);
+       }
+     }
+            
+    public static void  main(String [] args)
+    {
+     
+         UpdateStudentInfo myLogin = new UpdateStudentInfo();
+
+         
+    }
+}

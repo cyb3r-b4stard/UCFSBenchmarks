@@ -1,0 +1,440 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+/**
+ * ######.####  
+ *
+ * @######: ##### ####
+ * ##########: #########
+ * 
+ * ##### ####### ###########:
+ * #### ####### #### ### ######### ### # ###### #####.
+ *
+ */
+public class Dealer 
+{
+    private Hand hand;
+    private Player player;
+    private Shoe shoe;
+    private int decks;
+    private Scanner sc;
+
+    /**
+     * Constructs a blackjack dealer
+     * 
+     * @param p A player who will be playing blackjack with the dealer.
+     */
+    public Dealer(Player p)
+    {
+        player = p;
+        sc = new Scanner(System.in);
+        hand = new Hand();
+    } 
+
+    /**
+     * Asks the player how many decks they would like to play with
+     */
+    public void shoe()
+    {
+        boolean ask = true;
+        while(ask)
+        {
+            System.out.println("How many decks would you like to play with?");
+            boolean correctAnswer = true;
+            String sizeString = sc.nextLine();
+            int sizeNum = 0;    
+            try
+            {
+                sizeNum = Integer.parseInt(sizeString);
+            }
+            catch(Exception e)
+            {
+                correctAnswer = false;
+            }
+            if(!correctAnswer)
+            {
+                System.out.println("This is not a valid answer. Please enter an integer.");
+            }
+            else if(correctAnswer && (sizeNum == 2 || sizeNum == 4 || sizeNum == 6 || sizeNum == 8))
+            {
+                System.out.println("The shoe has " + sizeNum + " decks.");
+                decks = sizeNum;
+                shoe = new Shoe(sizeNum);
+                ask = false;
+            }
+            else if(sizeNum < 1)
+            {
+                System.out.println("You can't have a negative number of decks!");
+            }
+            else
+            {
+                System.out.println("This is not a valid number of decks. The shoe can have 2, 4, 6, or 8 decks.");
+            }
+        }
+    }   
+
+    /**
+     * reshuffles the deck.
+     */
+    public void reshuffle()
+    {
+        System.out.println("The dealer reshuffles the deck.\n");
+        shoe = new Shoe(decks);
+    }
+
+    /**
+     * Deals the player a card from the shoe
+     */
+    public void hitPlayer()
+    {
+        player.getHand().addCard(shoe.drawCard());
+        player.getHand().bust();
+        System.out.println("\nYou are dealt a " + player.getHand().getHand().get(player.getHand().getHand().size() - 1) + ".");
+    }
+
+    /**
+     * Makes the initial deal in a blackjack game.
+     */
+    public void initialDeal()
+    {
+        hitPlayer();
+        hand.addCard(shoe.drawCard());
+        System.out.println("The dealer draws a card.");
+        hitPlayer();
+        Card c2 = shoe.drawCard();
+        hand.addCard(c2);
+        System.out.println("The dealer draws a " + c2 +".");
+    }
+
+    /**
+     * Goes through the process of the dealer playing, given they stand on 17
+     */
+    public void hitDealer()
+    {
+        while(hand.getValue() < 17)
+        {
+            hand.addCard(shoe.drawCard());
+            hand.bust();
+            System.out.println(hand.getHand().get(hand.getHand().size()-1));
+        }
+    }
+
+    /**
+     * asks the player to make a bet
+     */
+    public void makeBet()
+    {
+        boolean ask = true;
+        while(ask)
+        {
+            System.out.println("What is your bet?");
+            int answerNum = 0;
+            String answerString = sc.nextLine();
+            boolean correctFormat = true;
+            try
+            {
+                answerNum = Integer.parseInt(answerString);
+            }
+            catch(Exception e)
+            {
+                correctFormat = false;
+            }
+            if(!correctFormat)
+            {
+                System.out.println("This is not a valid answer. Please enter an integer."); 
+            }
+            else if(answerNum <= player.getBalance() && answerNum >0)
+            {
+                player.bet(answerNum);
+                ask = false;
+            }
+            else
+            {
+                System.out.println("This is not a valid bet. Your bet must be between 1 and your total balance of " + player.getBalance() + ".");
+            }
+        }
+    }
+
+    /**
+     * Asks the player if they want insurance.
+     * 
+     * @return true if insurance is bought, false if not
+     */
+    public boolean askInsurance()
+    {
+        boolean ask = true;
+
+        while(ask)
+        {
+            System.out.println("How much would you like to pay for insurance? Answer 0 if you changed your mind.");
+            boolean correctAnswer = true;
+            String insuranceString = sc.nextLine();
+            int insuranceNum = -1;
+            try
+            {
+                insuranceNum = Integer.parseInt(insuranceString);
+            }
+            catch (Exception e)
+            {
+                correctAnswer = false;
+            }
+            if(!correctAnswer)
+            {
+                System.out.println("This is not a valid answer. Please enter an integer.");
+                ask = true;
+            }
+            else if(insuranceNum == 0)
+            {
+                System.out.println("Insurance has not been bought.");
+                return false;
+            }
+            else if(insuranceNum < 0)
+            {
+                System.out.println("You can't have a negative insurance bet!");
+                ask = true;
+            }
+            else if(insuranceNum <= player.getBet()*.5 && insuranceNum < player.getBalance())
+            {
+                System.out.println("Insurance has been bought.");
+                player.insurance(insuranceNum);
+                return true;
+            }
+            else
+            {
+                String max = "";
+                if(player.getBalance() < (int)(.5*player.getBet()))
+                {
+                    max = "the rest of your balance, which is $" + player.getBalance() + ".";
+                }
+                else
+                {
+                    max = "half of your current bet, which is $" + player.getBet() + ".";
+                }
+                System.out.println("This amount is too high. Your insurance bet must be at most "   + max);
+                ask = true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Displays the current hands.
+     */
+    public void current(boolean d)
+    {
+        if(d)
+        {
+            System.out.println("\nYour hand: " + player.getHand() + "\nDealer's hand: " + hand +"\n");
+        }
+        else
+        {
+            System.out.println("\nYour hand: " + player.getHand() + "\nDealer's hand: " + hand.getHand().get(1) + "\n");
+        }
+    }
+
+    /**
+     * Goes through a single round of blackjack.
+     */
+    public void round()
+    {
+        makeBet();
+        initialDeal();
+        boolean dealer = false;
+        if(player.getHand().getValue() == 21)
+        {
+            System.out.println("You got blackjack!");
+            if(hand.getValue() == 21)
+            {
+                System.out.println("The dealer also has blackjack! It's a push.\nYou get your $" + player.getBet() + " back.");
+                player.addMoney(player.getBet());
+            }
+            else
+            {
+                System.out.println("The dealer doesn't have blackjack. You win!\nYou recieve $" + (int)(2.5*player.getBet()) + ".");
+                player.addMoney((int)(2.5*player.getBet()));
+            }
+        }
+        else
+        {
+            boolean playerTurn = true;
+            int num = 1;    
+            boolean insurance = false;
+            while(playerTurn)
+            {
+                current(dealer);
+                if(num == 1 && hand.getHand().get(1).getValue() == 11 && player.getBet() <= (int)(player.getBalance()*.5) && player.getBalance() > 0 && !insurance)
+                {
+                    System.out.println("Would you like to hit, stand, buy insurance, or double down?");
+                }
+                else if(num == 1 && player.getBet() <= (int)(player.getBalance()*.5))
+                {
+                    System.out.println("Would you like to hit, stand, or double down?");
+                }
+                else if(player.getHand().getValue() < 21)
+                {
+                    System.out.println("Would you like to hit or stand?");
+                }
+                String answer = sc.nextLine();
+                if(player.getHand().charlie())
+                {
+                    playerTurn = false;
+                }
+                else if(answer.equalsIgnoreCase("hit"))
+                {
+                    hitPlayer();
+                    System.out.println(player.getHand().getHand().get(player.getHand().getHand().size()-1));
+                    num++;
+                }
+                else if(answer.equalsIgnoreCase("stand"))
+                {
+                    playerTurn = false;
+                }
+                else if(answer.equalsIgnoreCase("double down") && num == 1)
+                {
+                    player.addMoney(player.getBet());
+                    player.bet(player.getBet()*2);
+                    hitPlayer();
+                    num++;
+                }
+                else if(answer.equalsIgnoreCase("buy insurance") && num == 1)
+                {
+                    insurance = askInsurance();
+                }
+                else
+                {
+                    System.out.println("This is not a valid answer. Please choose one of the options listed.");
+                }
+                if(player.getHand().bust() || player.getHand().getValue() == 21)
+                {
+                    playerTurn = false;
+                }
+            }
+            if(player.getHand().bust())
+            {
+                System.out.println("You bust! The dealer wins.");
+            }
+            else if(player.getHand().charlie())
+            {
+                System.out.println("You got a Five Card Charlie! You win!\nYou recieve $" + 3*player.getBet() + ".");
+                player.addMoney(3*player.getBet());
+            }
+            else
+            {
+                System.out.println("\nIt's the dealer's turn.");
+                dealer = true;
+                current(dealer);
+                if(hand.getValue() == 21)
+                {
+                    System.out.println("The dealer has blackjack! The dealer wins!");
+                }
+                else
+                {
+                    hitDealer();
+                    if(hand.bust())
+                    {
+                        System.out.println("The dealer busts! You win!\n You recieve $" + 2*player.getBet() + ".");
+                        player.addMoney(2*player.getBet());
+                    }
+                    else if(hand.getValue() == player.getHand().getValue())
+                    {
+                        System.out.println("Both the dealer's hand and your hand have a value of " + hand.getValue() + ". It's a push.\nYou get your $" + player.getBet() + " back.");
+                        player.addMoney(player.getBet());
+                    }
+                    else if(hand.getValue() > player.getHand().getValue())
+                    {
+                        System.out.println("The dealer's hand's value is greater than your hand's. The dealer wins!");
+                    }
+                    else if(hand.charlie())
+                    {
+                        System.out.println("The dealer has a Five Card Charlie! The dealer wins!");
+                    }
+                    else
+                    {
+                        System.out.println("Your hand's value is greater than the dealer's hand's. You win!\nYou recieve $" + 2*player.getBet() + ".");
+                        player.addMoney(2*player.getBet());
+                    }
+                }
+            }
+        }
+        hand.clear();
+        player.getHand().clear();
+    }
+
+    /**
+     * Starts the game.
+     */
+    public void start()throws Exception
+    {
+        int num = 1;
+        boolean play = true;
+        shoe();
+        while(play)
+        {
+            boolean askPlay = true;
+            System.out.println("\fYour balance: " + player.getBalance());
+            while(askPlay)
+
+            {
+                if(num > 1)
+                {
+                    System.out.println("Would you like to play another round?");
+                    String answer = sc.nextLine();
+                    if(answer.equalsIgnoreCase("yes"))
+                    {
+                        play = true;
+                        askPlay = false;
+                    }
+                    else if(answer.equalsIgnoreCase("no"))
+                    {
+                        play = false;
+                        askPlay = false;
+                    }
+                    else
+                    {
+                        System.out.println("This is not a valid answer. Please answer Yes or No.");
+                    }
+                }
+                else
+                {
+                    askPlay = false;
+                }
+            }
+            System.out.println("\fYour balance: " + player.getBalance());
+            if((decks == 2 && shoe.getShoe().size() <= 52) || (decks>2 && shoe.getShoe().size() <= 104))
+            {
+                reshuffle();
+            }
+            if(play)
+            {
+                round();
+                System.out.println("\n*Enter anything to continue*");
+                sc.nextLine();
+            }
+            if(player.balance <= 0)
+            {
+                System.out.println("\fYou have run out of money. Goodbye!");
+                Thread.sleep(2000);
+                System.exit(0);
+            }
+            num++;
+        }
+        System.out.println("\nWould you like to tip the dealer?");
+        String Ans = sc.nextLine();
+        if(Ans.equalsIgnoreCase("Yes")
+        {
+            System.out.println("\nAfter tipping, you have made $" + (player.getBalance() - player.tip()) + ".");
+        }
+        System.out.println("\nThanks for playing. Goodbye!");
+        Thread.sleep(2000);
+        System.exit(0);
+    }
+
+    /**
+     * Returns the toString
+     * 
+     * @return the toString
+     */
+    public String toString()
+    {
+        return "Number of Decks: " + decks;
+    }
+}

@@ -26,43 +26,19 @@ or
 
 `cd UCFSBenchmarks`
 
-#### Step 3. Go to the folder with lexer files
+#### Step 3. Install dependencies
 
-`cd src/main/kotlin/org/srcgll/lexer`
+`./ucfs_install.sh`
 
-#### Step 4. Generate lexer file
+#### Step 4. Build project
 
-`jflex Java.x`
+`./ucfs_build.sh`
 
-#### Step 5. Return to the root folder
+## Execute Benchmarks
 
-`cd ../../../../../..`
+#### Step 1. Run benchmarks
 
-#### Step 6. Go to the antlr folder
-
-`cd src/main/kotlin/org/antlr/`
-
-#### Step 7. Generate antlr4 files
-
-`antlr4 Java8.g4`
-
-#### Step 8. Return to the root folder
-
-`cd ../../../../..`
-
-#### Step 9. Build project
-
-`./gradlew JmhJar`
-
-## Execute Benchmakrs
-
-#### Step 1. Go to the build folder with generated Jar file
-
-`cd build/libs`
-
-#### Step 2. Run benchmarks
-
-`java -cp srcgll-jmh.jar org.openjdk.jmh.Main -i 15 -bs 1 -r 0 -wi 5 -w 0 -bm ss -gc true -foe false -f 1 -rff "../results.csv" -tu ns -jvmArgs "-Xmx4096m -Xss4m -XX:+UseG1GC" `
+`./ucfs_bench.sh`
 
 ## Results
 

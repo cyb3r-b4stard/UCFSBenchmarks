@@ -1,0 +1,112 @@
+package MySQL;
+
+import java.sql.*;
+public class MySQLBenutzer {
+    static Connection ConnectionBenutzer;
+    static Statement StatementBenutzer;
+    public MySQLBenutzer()
+    {
+        /**
+         * 3306 is the default port for MySQL in XAMPP. Note both the 
+         * MySQL server and Apache must be running. 
+         */
+        String url = "jdbc:mysql:
+
+        /**
+         * The MySQL user.
+         */
+        String user = "root";
+
+        /**
+         * Password for the above MySQL user. If no password has been 
+         * set (as is the default for the root user in XAMPP's MySQL),
+         * an empty string can be used.
+         */
+        String password = "";
+
+        try
+        {
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            ConnectionBenutzer = DriverManager.getConnection(url, user, password);
+
+            StatementBenutzer = ConnectionBenutzer.createStatement();
+
+            StatementBenutzer.execute("CREATE DATABASE IF NOT EXISTS buecherei");
+            StatementBenutzer.execute("USE buecherei");
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }   
+    }
+
+    private static Connection getInstance()
+    {
+        if(ConnectionBenutzer == null)
+        {
+            new MySQLAusleihe();
+            return ConnectionBenutzer;
+        }
+        else
+        {
+            return ConnectionBenutzer;
+        }
+    }
+
+    public static void BenutzerErstellen(long Benutzernummer, String Name , String Kennwort)
+    {
+        ConnectionBenutzer = getInstance();
+        try
+        {
+            String sql = "INSERT INTO benutzer(Benutzernummer,Name,Kennwort) " +
+                "VALUES(?,?,?)";
+            PreparedStatement preparedStatement = ConnectionBenutzer.prepareStatement(sql);
+            preparedStatement.setLong(1, Benutzernummer);
+            preparedStatement.setString(2,  Name);
+            preparedStatement.setString(3, Kennwort);
+            preparedStatement.executeUpdate();
+        }
+
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static String BenutzerLesen(String Name)
+    {
+        ConnectionBenutzer = getInstance();
+        try {
+            StatementBenutzer = ConnectionBenutzer.createStatement();
+
+            String sql = "SELECT Kennwort FROM benutzer WHERE  Name = '" + Name + "' ";
+            ResultSet result = StatementBenutzer.executeQuery(sql);
+
+            while (result.next()) {
+                String Ausgelesen = result.getString("Code");
+                return Ausgelesen; 
+            }
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return new String = "Error";
+    }
+
+    public static boolean AusleiheLoeschen(long Code)
+    {
+        ConnectionBenutzer = getInstance();
+        try {
+            StatementBenutzer = ConnectionBenutzer.createStatement();
+
+            String sql = "DELETE FROM ausleihe WHERE Code = '" + Code + "' ";
+            StatementBenutzer.executeUpdate(sql);
+            return true;
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return false;
+    }
+}

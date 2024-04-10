@@ -1,0 +1,99 @@
+
+import squint.*;
+import javax.swing.*;
+
+/*
+ * ##### ########### - ### ##### ######
+ * 
+ * ########
+ */
+public class EmailReader extends GUIManager
+{
+    private final int WINDOW_WIDTH = 600, WINDOW_HEIGHT = 600;
+    
+    private final int FIELD_WIDTH = 40;
+    
+    private final String SERVER = "fuji.cs.williams.edu";
+    private final String PORT = "110";
+    
+    private String lineFromServer;
+
+    
+    private JTextField account;
+    private JTextField password;
+    private JTextField number;
+    private JTextArea message;
+    private JTextArea ok;
+    
+    private JButton login;
+    
+    private JButton logout;
+    
+    private JButton getmessage;
+    
+    public EmailReader() {
+        this.createWindow( WINDOW_WIDTH, WINDOW_HEIGHT );
+        
+        account = new JTextField (17);
+        password = new JPasswordField (12);
+        number = new JTextField (5);
+        message = new JTextArea (15, FIELD_WIDTH);
+        ok = new JTextArea (8, FIELD_WIDTH);
+        login = new JButton ( "Login");
+        logout = new JButton ("Logout");
+        getmessage = new JButton ("Get Message");
+
+        contentPane.add(new JLabel( "Mail Account" ));
+        contentPane.add(account);
+
+        contentPane.add(new JLabel ("Password"));
+        contentPane.add(password);
+
+        contentPane.add(login);
+        
+        contentPane.add(logout);
+        
+        contentPane.add(new JLabel ("Message Number to Retrieve"));
+        contentPane.add(number);
+        
+        contentPane.add(getmessage);
+
+        contentPane.add(new JScrollPane (message));
+
+        contentPane.add(new JScrollPane (ok));
+    }
+
+    /*
+     *  This method logs in the user, retrieves the message, and logs out.
+     */
+    public void buttonClicked( JButton whichbutton ) {
+        
+        if ( whichbutton == login) {
+        NetConnection connection;
+        connection = new NetConnection(SERVER, PORT);
+        ok.append(connection.in.nextLine() + "\n");
+        connection.out.println( "USER " + account.getText() );
+        ok.append( connection.in.nextLine() + "\n");
+        connection.out.println( "PASS " + password.getText() );
+        ok.append( connection.in.nextLine() + "\n");
+    }
+        
+        if (whichbutton == getmessage) {
+        NetConnection connection;
+        connection = new NetConnection(SERVER, PORT);
+        connection.out.println( "RETR " + number.getText());
+        lineFromServer = connection.in.nextLine();
+        if ( lineFromServer.startsWith( "+OK" ) ) {
+            message.append(connection.in.nextPOPResponse() + "\n");
+        } else {message.append( "ERROR" + "\n");
+        }
+    }
+        
+        if (whichbutton == logout) {
+        NetConnection connection    
+        connection.out.println( "QUIT");
+        ok.append( connection.in.nextLine() + "\n");
+
+    }
+}
+}

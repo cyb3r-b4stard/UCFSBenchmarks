@@ -1,0 +1,136 @@
+import java.util.*;
+
+public class main
+{
+    
+    public static void main(String args[])
+    {
+        int lives = 3;
+        int points = 1000;
+        String message = "welcome to the game! \n\nYou are stuck in the wilderness.\nTo the South you see a lake in the distance, to the East you can see trees.\nIn the distance to the South East you can see a large mountain, possibly a vocano, and near to it smoke is rising. \nWhich way do you want to go? (enter north, south, east, or west)";
+        boolean end = false;
+        boolean win = false;
+        String [][] map = new String [10][10];
+        int posX = 0;
+        int posY = 0;
+        Scanner keyboard = new Scanner(System.in);
+        
+        for (int y = 0; y < 10; y++)
+        {
+            for (int x = 0; x < 10; x++)
+            {
+                if ((y == 2 && (x == 3 || x == 5 || x == 6 || x == 7)) || (y == 0 && x == 6) || (y == 1 && (x == 5 || x == 6)) || (y == 3 && (x == 6 || x == 7)))
+                {
+                    map [y][x] = "forest";
+                }
+
+                {
+                    map [y][x] = "lake";
+                }
+                else if (y >= 7 && x <= 5)
+                {
+                    map [y][x] = "plains";
+                }
+                else if ((x == 7 || x == 8) && (y == 4 || y == 5))
+                {
+                    map [y][x] = "volcano";
+                }
+                else if (y == 6 && x == 8)
+                {
+                    map [y][x] = "X";
+                }
+                else if ((y == 7 || y == 8 || y == 9) && (x == 6 || x == 7 || x == 8))
+                {
+                    map [y][x] = "CC";
+                }
+                else
+                {
+                    map [y][x] = "empty";
+                }
+            }
+        }
+        
+        while (end == false)
+        {
+            System.out.println(message);
+            String DoM = keyboard.nextLine();
+            
+            int OposX = posX;
+            int OposY = posY;
+            
+            if (DoM == "north")
+            {
+                posY -= 1;
+            }
+            else if (DoM == "south")
+            {
+                posY += 1;
+            }
+            else if (DoM == "east")
+            {
+                posX += 1;
+            }
+            else if (DoM == "west")
+            {
+                posX -= 1;
+            }
+            
+            if (map[posY][posX] == "forest")
+            {
+                points = points + 1;
+            }
+            else if (map[posY][posX] == "plains")
+            {
+                points = points + 2;
+            }
+            else if (map[posY][posX] == "lake")
+            {
+                points = points - 1000;
+                lives = lives - 1;
+                posX = OposX;
+                posY = OposY;
+            }
+            else if (map[posY][posX] == "volcano")
+            {
+                lives = lives - 1;
+                points = points - 100;
+                posX = OposX;
+                posY = OposY;
+            }
+            else if (map[posY][posX] == "CC")
+            {
+                Random randNum = new Random();
+                int Rnum = randNum.nextInt(2);
+                if (Rnum == 0) 
+                {
+                    points = points + 50;
+                }
+                else
+                {
+                    points = points - 50;
+                    lives = lives - 1;
+                    posX = OposX;
+                    posY = OposY;
+                }
+            }
+            else if (map[posY][posX] == "X")
+            {
+                end = false;
+                win = true;
+            }
+            else
+            {
+                points = points - 5;
+            }
+        }
+        
+        if (win == true)
+        {
+            message = "";
+        }
+        else
+        {
+            message = "";
+        }
+    }
+}

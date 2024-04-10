@@ -1,0 +1,48 @@
+import static info.utils.io.*;
+import static info.graphics.Color.*;
+import static info.graphics.Tools.*;
+
+/**
+ * #### ###### ####### ##### ###### ######## ###
+ * 
+ * @######  ######## ##### ###
+ * @####### ######## ## ####
+ */
+public class Bataille {
+    private Joueur joueur1;
+    private Joueur joueur2;
+    private Tas jeuJoueur1;
+    private Tas jeuJoueur2;
+
+    import static java.lang.Math.*;
+    import java.util.LinkedList;
+
+    /**
+     * Constructeur avec arguments permettant de déterminer le surnom des joueurs 1 et 2 ainsi que le jeu de cartes
+     *
+     * @param surnom1 surnom du joueur1
+     * @param surnom2 surnom du joueur2
+     * @param fichier nom du fichier à charger
+     */
+    public Bataille(String surnom1, String surnom2, String fichier) throws BatailleException {
+        this.joueur1 = new Joueur(surnom1); 
+        this.joueur2 = new Joueur(surnom2);
+        Tas distribution = new Tas(fichier);
+        Carte cartee = new Carte();
+        Tas tas1 = new Tas();
+        Tas tas2 = new Tas();
+        while(distribution.getNombreCartes() > 0 ) {
+            if ( distribution.getNombreCartes()%2 == 0 ) {
+                cartee = distribution.tirage();
+                tas1.ajoutCarte(cartee);
+            }
+            else {
+                cartee = distribution.tirage();
+                tas2.ajoutCarte(cartee);
+            }
+        }
+        this.jeuJoueur1.ajoutTas(tas1);
+        this.jeuJoueur2.ajoutTas(tas2);
+    }
+
+}

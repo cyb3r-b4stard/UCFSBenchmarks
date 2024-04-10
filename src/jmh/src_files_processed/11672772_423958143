@@ -1,0 +1,542 @@
+
+/**
+ * ############### - ##### ## #### ## ### #### ######## ### ### #######
+ * ## ## ##### ### #### ##, ## ###### ### #### ##### #### ## ## ### ###### ####
+ * ##### #### ## #### ##, ## #### #### ### #### #### ## ###### ### ######## ######
+ * ## ##### #### ## ### ###### ## ### ## ##### ##### ### ## #### #####.  ## ##### ####
+ * ## # ### ########### #####.  ### #### ###### #### ###### ### ######## ## ##### ###
+ * ###### ## ### ########, ## #### ## ####### ## ## ### ###### ####.  ##### ### ######
+ * ### ##### ######.
+ * 
+ * @###### (#### ######) 
+ * @####### (### ##, ####)
+ */
+import java.util.Scanner;
+import java.io.*;
+import java.util.InputMismatchException;
+import java.io.PrintWriter;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
+import java.util.NoSuchElementException;
+
+public class MegaMillions104
+{
+    /**
+     * main - creates new MegaMillions104 object and calls readData, ballCount,
+     * and printArrays methods.
+     */
+    public static void main(String[] args)
+    {
+        int [][] regularBalls = new int [104][5];
+        int [] goldBalls = new int [104];
+        int [] whiteCount = new int [76];
+        int [] goldCount = new int [16];  
+        String inputFile = "megamillions104input.txt";
+        String outputFile = "megamillions104output.txt";
+        MegaMillions104 invokeMethod = new MegaMillions104();
+        invokeMethod.readData(regularBalls, goldBalls, inputFile, outputFile);
+        invokeMethod.ballCount(regularBalls, goldBalls, whiteCount, goldCount);
+        invokeMethod.printArrays(whiteCount, goldCount, inputFile, outputFile);
+        invokeMethod.arraySort(whiteCount, inputFile, outputFile);
+        invokeMethod.arraySort(goldCount, inputFile, outputFile);
+    }
+
+    /**
+     * readData - If the data can be read in, this method reads into a two 
+     * dimensional array.  It then outputs the data to the terminal as well
+     * as to the outputfile. If the data cannot be read in or if there is
+     * an error in outputting the data, the method displays appropriate
+     * exceptions.
+     * 
+     * @param     [][] r   two dimensional array of regular ball drawings
+     * @param      []  g   one dimensional array of gold ball drawings
+     * @param   input      the name of the data file to be read in
+     * @param   output     the name of the data file to be in the output
+     * 
+     * 
+     */
+    public void readData(int [][] r, int [] g, String input, String output)
+    {
+        Scanner myIn = null;
+        PrintWriter myOut = null;
+        boolean quit = true;
+        int row = 0;
+        try
+        {
+            System.out.println("Reading from input file: "+input);
+            myIn = new Scanner (new FileInputStream(input));
+            
+            while (myIn.hasNextInt() && row<=r.length)
+            {
+                if (myIn.hasNextInt != true)
+                {
+                    throw new (inputMismatchException e)
+                }
+
+                for (int j = 0; j < 5; j++)
+                {
+                    r[row][j] = myIn.nextInt();
+                }
+
+                if(myIn.hasNextInt())
+                {
+
+                    g[row] = myIn.nextInt();
+
+                }
+                row++;
+            }
+            
+            try
+            {
+
+                myOut = new PrintWriter(new FileOutputStream(output));
+
+                System.out.println("Writing the drawing data to the output file: "+output);
+
+                myOut.println(input+" data:\n");
+
+                for (int i = 0; i < row; i++)
+                {
+
+                    for (int j=0; j<5; j++)
+                    {
+                        myOut.printf("%3d ",r[i][j]);
+                    }
+                    myOut.println(" : "+g[i]);
+                }
+                myOut.println();
+                
+            }
+            catch(IllegalStateException e)
+            {
+                System.out.println("Exception--"+e.getMessage());
+                System.out.println("File stream is closed");
+            }
+            catch(IOException e)
+            {
+                System.out.println("Exception is--"+e.getMessage());
+                System.out.println("Something is wrong with the output file");
+            }
+            catch(Exception e)
+            {
+                System.out.println("Exception--"+e.getMessage());
+                System.out.println("There is an exception with the output");
+            }
+
+        }
+        catch(FileNotFoundException e)
+        {
+            System.out.println("Problem opening "+input+"  : the file was not found");
+        }
+        catch(IllegalStateException e)
+        {
+            System.out.println("Exception-- The file stream is closed");
+        }
+        catch(InputMismatchException e)
+        {
+            System.out.println("Exception is-- The data found in the file does not match type expected.");
+        }
+        catch(IndexOutOfBoundsException e)
+        {
+            System.out.println("Exception is--"+e.getMessage());
+            System.out.println("There is too much data to fit into the array");
+        }
+        catch(NoSuchElementException e)
+        {
+            System.out.println("Exception is--"+e.getMessage());
+            System.out.println("There is not enough data to fit the array");
+        }
+        catch(Exception e)
+        {
+            System.out.println("Exception-- "+e.getMessage());
+            System.out.println("There is an exception with the input");
+        }
+        
+            System.out.println("Closing the input file.");
+            myIn.close();  
+
+            
+                System.out.println("Closing the output file.");
+                myOut.close();  
+
+    }
+
+    /**
+     * ballCount - method calls the arrays of the white ball drawings
+     * runs for loop that increments a counter array if the element of
+     * the white ball or gold ball array is equal to the value of the
+     * counter.  Runs a counter for both the white balls and the gol
+     * 
+     * @param     [][] r   two dimensional array of regular ball drawings
+     * @param      []  g   one dimensional array of gold ball drawings
+     * @param      [] wc   one dimensional array of the count of the number of each white ball drawn
+     * @param      [] gc   one dimensional array of the count of the number of each gold ball drawn
+     * 
+     * 
+     */
+    public void ballCount(int [][] r, int [] g, int []wc, int [] gc)
+    {
+        for (int i = 0; i < 104; i++)
+        {
+            for (int j = 0; j < 5; j++)
+            {
+                for (int k = 1; k < 76; k++)
+                {
+                    if (k == r[i][j])
+                    {
+                        wc[k]++;
+                    }
+                }
+            }
+
+            for (int l = 1; l < 16; l++)
+            {
+                if (l == g[i])
+                {
+                    gc[l]++;
+                }
+            }
+        }
+
+    }
+
+    /**
+     * printArrays - If the data can be read in, this method prints two arrays
+     * to both the terminal and the output file.  The first array it prints is
+     * the number of gold balls drawn, and the second array it prints is the
+     * number of white balls drawn.  It throws abstract exceptions caught during
+     * the readData method
+     * 
+     * @param     [] wc    one dimensional array of white ball counts
+     * @param     []  gc   one dimensional array of gold ball counts
+     * @param   input      the name of the data file to be read in
+     * @param   output     the name of the data file to be in the output
+     * 
+     * 
+     */
+    public void printArrays(int [] wc, int [] gc, String input, String output)
+    {
+        PrintWriter myOut = null;
+        Scanner myIn = null;
+
+        try
+        {
+            myOut = new PrintWriter (new FileOutputStream(output, true));
+
+            myIn = new Scanner (new FileInputStream(input));
+
+            System.out.println("\n\nAppending to the output file: "+output);
+            System.out.println("Echo output to terminal:\n");
+
+            System.out.println("The number of gold balls drawn:");
+            myOut.println("The number of gold balls drawn:");
+            for (int i = 1; i < 16; i++)
+            {
+                System.out.printf("%4d%4d\n",i, gc[i]);
+                myOut.printf("%4d%4d\n",i, gc[i]);
+            }
+
+            System.out.println("\n\nThe number of white balls drawn:");
+            myOut.println("\n\nThe number of white balls drawn:");
+            for (int i = 1; i < 76; i++)
+            {
+                System.out.printf("%4d%4d\n",i,wc[i]);
+                myOut.printf("%4d%4d\n",i,wc[i]);
+            }
+
+            myOut.close();  
+        }
+        catch (IOException e)
+        {
+        }
+        catch (Exception e)
+        {
+        }
+
+    }
+
+    /**
+     * indexOfSmallest - takes the starting index (the index from arraySort method)
+     * and loops through the rest of the array based on this starting index.
+     * method determines what the next minimum element will be and then returns it
+     * 
+     * @param   startingIndex - the element in the array that the loop begins at
+     * @param   [] c - the array being looped through
+     * @param   numberUsed - the length of the array being called
+     */
+    private static int indexOfSmallest(int startIndex, int [] c, int numberUsed)
+    {
+        int indexOfMin = startIndex;
+        int index;
+        for(index = startIndex+1; index < numberUsed; index++)
+        {
+            if(c[indexOfMin]<c[index])
+            {
+                indexOfMin = index;
+            }
+        }
+        return indexOfMin;
+    }
+
+    /**
+     * interchange - rearranges an array based on data determined in arraySort method.
+     * for these purposes, it's based on the IndexOfSmallest method
+     * 
+     * @param   i - the index of the element being sorted
+     * @param   j - the index of the next smallest element
+     * @param   []c - the array being sorted.
+     */
+    private static void interchange(int i, int j, int [] c)
+    {
+        int temp;
+        temp = c[i];
+        c[i] = c[j];
+        c[j] = temp;
+    }
+
+    /**
+     * arraySort - takes the array of the ball count, calls the indexOfSmallest
+     * method, and rearranges the array based on the indexOfSmallest.  Outputs the
+     * contents of the array from the highest count to the lowest.
+     * 
+     * @param   [] c - the array that contains the data of the ball count
+     * @param   numberUsed - the length of the array containing the ball count
+     */
+    public void arraySort(int [] c, String input, String output)
+    {
+        PrintWriter myOut = null;
+        Scanner myIn = null;
+        try
+        {
+
+            myOut = new PrintWriter(new FileOutputStream(output, true));
+            
+            System.out.println("\n\nAppending to data now");
+            
+            myIn = new Scanner (new FileInputStream(input));
+
+            int index, indexOfNext;
+            int [] elements = new int[c.length];
+            for (index = 1; index < c.length; index++)
+            {
+                elements[index] = index;
+            }
+            myOut.println("\n\nSorted count:");
+            for (index = 1; index<c.length; index++)
+            {
+                indexOfNext=indexOfSmallest(index, c, c.length);
+                interchange(index, indexOfNext, c);
+                interchange(index, indexOfNext, elements);
+                myOut.printf("%4d%4d\n",elements[index],c[index]);
+            }
+            System.out.println("Closing output stream now");
+            myOut.close(); 
+        }
+        catch (IOException e)
+        {
+        }
+        catch (Exception e)
+        {
+        }
+
+    }
+}
+/**
+ * sample output:
+ * Reading from input file: megamillions104input.txt
+Writing the drawing data to the output file: megamillions104output.txt
+Closing the output.
+Closing the input file.
+
+Appending to the output file: megamillions104output.txt
+Echo output to terminal:
+
+The number of gold balls drawn:
+1   10
+2   9
+3   10
+4   2
+5   4
+6   9
+7   10
+8   6
+9   9
+10  8
+11  4
+12  6
+13  5
+14  3
+15  9
+
+The number of white balls drawn:
+1   6
+2   9
+3   10
+4   6
+5   4
+6   2
+7   6
+8   7
+9   7
+10  10
+11  6
+12  7
+13  8
+14  8
+15  4
+16  10
+17  5
+18  8
+19  7
+20  10
+21  3
+22  8
+23  10
+24  8
+25  12
+26  8
+27  5
+28  8
+29  14
+30  4
+31  9
+32  5
+33  6
+34  8
+35  13
+36  6
+37  5
+38  4
+39  5
+40  6
+41  8
+42  6
+43  7
+44  7
+45  10
+46  9
+47  9
+48  6
+49  11
+50  7
+51  9
+52  5
+53  7
+54  7
+55  2
+56  7
+57  8
+58  7
+59  8
+60  7
+61  3
+62  6
+63  6
+64  8
+65  5
+66  4
+67  4
+68  4
+69  8
+70  8
+71  7
+72  5
+73  7
+74  8
+75  3
+Sorted elements:
+29  14
+35  13
+25  12
+49  11
+10  10
+16  10
+20  10
+23  10
+3   10
+45  10
+31  9
+2   9
+46  9
+47  9
+51  9
+18  8
+22  8
+24  8
+26  8
+28  8
+34  8
+41  8
+13  8
+14  8
+57  8
+59  8
+64  8
+69  8
+70  8
+74  8
+12  7
+43  7
+44  7
+8   7
+50  7
+53  7
+54  7
+56  7
+9   7
+58  7
+19  7
+60  7
+71  7
+73  7
+48  6
+4   6
+11  6
+36  6
+40  6
+42  6
+62  6
+63  6
+7   6
+1   6
+33  6
+39  5
+17  5
+52  5
+27  5
+65  5
+37  5
+32  5
+72  5
+38  4
+66  4
+67  4
+68  4
+5   4
+15  4
+30  4
+21  3
+61  3
+75  3
+6   2
+55  2
+
+Sorted elements:
+1   10
+3   10
+7   10
+6   9
+2   9
+9   9
+15  9
+10  8
+8   6
+12  6
+13  5
+11  4
+5   4
+14  3
+4   2
+
+ */

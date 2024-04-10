@@ -1,0 +1,98 @@
+import java.util.Random;
+
+public class SPIELAUTOMAT{
+    private SPIELWALZE sw1, sw2, sw3;
+    private int z1, z2, z3, gewinn;
+    private Random zufall;
+    private int guthaben;
+    
+    public SPIELAUTOMAT(int guthabenStart){
+        sw1 = new SPIELWALZE(50,50,50,1);
+        sw2 = new SPIELWALZE(100,50,50,1);
+        sw3 = new SPIELWALZE(150,50,50,1);
+        z1 = 1;
+        z2 = 1;
+        z3 = 1;
+        zufall = new Random();
+        guthaben = guthabenStart;
+    }
+
+    public void zeichne(){
+        sw1.zeichne();
+        sw2.zeichne();
+        sw3.zeichne();
+    }
+
+    public void setzeFarbmuster(int z1Neu, int z2Neu, int z3Neu){
+        z1 = z1Neu;
+        z2 = z2Neu;
+        z3 = z3Neu;
+        sw1.faerbeUm(z1Neu);
+        sw2.faerbeUm(z2Neu);
+        sw3.faerbeUm(z3Neu);
+    }
+
+    public void spiele(){
+        ZEICHENFENSTER.gibFenster().loescheText("Gewinn : "+gewinn+"€", 200, 200);
+        setzeFarbmuster(zufall.nextInt(9),zufall.nextInt(9),zufall.nextInt(9));
+    }
+    
+    public void schreibeWerte(){
+        System.out.println("1. Farbe: "+z1);
+        System.out.println("2. Farbe: "+z2);
+        System.out.println("3. Farbe: "+z3);
+    }
+    
+    public void gewinnBerechnen(){
+        if((z1==z2) && (z2==z3)){
+            gewinn = 10;
+        }
+        else{
+            if(z1==z2 || z2==z3 || z1 == z3){
+                gewinn = 2;
+            }
+            else{
+                gewinn = 0;
+            }
+        }
+        ZEICHENFENSTER.gibFenster().zeichneText("Gewinn : "+gewinn+"€", 200, 200);
+    }
+    
+    public void gewinneSicher(){
+        while(gewinn==0){
+            spiele();
+            gewinnBerechnen();
+            ZEICHENFENSTER.gibFenster().warte(500);
+        }
+    }
+
+    public void spieleSelbst(){
+        while (guthaben > 0){
+            spiele();
+            gewinnBerechnen();
+            ZEICHENFENSTER.gibFenster().warte(500);
+            if (gewinn == 0) {
+                ZEICHENFENSTER.gibFenster().zeichneText("Guthaben : "(guthaben + gewinn)"€", 200, 250);
+                
+        
+        
+        
+        }
+    }
+        
+    
+    
+    
+    
+    
+    
+    }        
+
+
+    
+
+
+
+
+
+}

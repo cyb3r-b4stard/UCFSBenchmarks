@@ -1,0 +1,110 @@
+import java.util.Scanner;
+/**
+ * #############
+ * ######### ##### ### ##### ###### ####: ####, ### ###.
+ * @######## ########## 
+ * @####### ##.##.####
+ */
+public class RefresherDemo
+{
+    private static final int MAX_PERSONS = 5;
+    
+    private static String personName;
+    private static int personAge;
+    private static double personWeight;
+    private static String smallestPerson;
+    private static String largestPerson;
+    private static String oldestPerson;
+    private static String youngestPerson;
+    private static int oldAge;
+    private static int youngAge;
+    private static double smallWeight;
+    private static double largeWeight;
+    private static int ageSum;
+    private static double weightSum;
+    private static double ageAverage;
+    private static double weightAverage;
+    private static Scanner input;
+    
+    public static void main(String[] args)
+    {
+        System.out.println("I will gather the information on five people");
+        
+        input = new Scanner(System.in);
+        
+        getData(0);
+        
+        Refresher person = new Refresher(personName, personAge, personWeight);
+                        
+        smallestPerson = person.getName();
+        largestPerson = person.getName();
+        oldestPerson = person.getName();
+        youngestPerson = person.getName();
+        ageSum = person.getAge();
+        weightSum = person.getWeight();
+        oldAge = person.getAge();
+        youngAge = person.getAge();
+        smallWeight = person.getWeight();
+        largeWeight = person.getWeight();
+        
+        for(int personNo = 1; personNo < MAX_PERSONS; personNo++)
+        {
+            getData(personNo);
+        
+            person = new Refresher(personName, personAge, personWeight);
+        
+            findDetails(person);
+        }
+
+        findAverageAge();
+    
+        findAverageWeight();
+    
+        displayDetails();
+    }
+
+private static void getData(int personNo)
+{
+    System.out.println("Please enter data for person " + (personNo + 1) + ": ");
+    System.out.print("Name of person " + (personNo + 1) + ": ");
+    personName = input.next();
+    System.out.print("Age of person " + (personNo + 1) + ": ");
+    personAge = input.nextInt();
+    System.out.print("Weight of person " + (personNo + 1) + ": ");
+    personWeight = input.nextDouble();
+    System.out.println();
+}
+
+private static void findDetails (Refresher person)
+{
+    if(person.getAge() < youngAge)
+    {
+        youngestPerson = person.getName();
+        youngAge = person.getAge();
+    }
+    else if(person.getAge() > oldAge)
+    {
+        oldestPerson = person.getName();
+        oldAge = person.getAge();
+    }
+    
+    if(person.getWeight() < smallWeight)
+    {
+        smallestPerson = person.getName();
+        smallWeight = person.getWeight();
+    }
+    else if(person.getWeight() > largeWeight)
+    {
+        largestPerson = person.getName();
+        largeWeight = person.getWeight();
+    }
+    
+    ageSum += person.getAge();
+
+
+private static void displayDetails()
+{
+    System.out.println("Name of the oldest person: " + oldestPerson);
+    System.out.println("Name of the youngest person: " + youngestPerson);
+}
+}

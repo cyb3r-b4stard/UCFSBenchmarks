@@ -1,0 +1,251 @@
+import java.util.Random;
+public class SPIELWELT implements ITuWas, ITastatur
+{
+    private Bild hintergrund;
+    private BOMB bomb;
+    private BONBON bonbon;
+    private LEVEL schwierigkeit;
+    private Taste startKnopf,pauseKnopf,statistikKnopf,NeuesSpielKnopf,AlternativTastatur;
+    private Taktgeber takt;
+    private int level, Punktzahl, Spielezahl;
+    private Random zufall;
+    private AusgabePanel punkteanzeiger, Anleitung;
+    private Tastatur hoch;
+    private int[] punkte;
+    private Tastatur t;
+    private DREIECKE d;
+
+    public SPIELWELT()
+    {
+        Zeichnung.setzeFenstergroesse(1000,758);
+        hintergrund = new Bild(1000,758, "Hintergrund.jpg");
+        
+        t = new Tastatur();
+        t.meldeAnTaste("SPACE","hoch");
+        t.setzeLink(this);
+        
+        
+        Punktzahl = 0;
+        Spielezahl = 0;
+        level = 0;
+
+        takt = new Taktgeber();
+        takt.setzteZeitZwischenAktionen(1);
+        takt.setzeLink(this);
+        takt.setzeID(5);
+        
+        
+        punkte = new int[100];
+        
+        
+        
+        punkteanzeiger = new AusgabePanel("PUNKTE " + Punktzahl, 1075, 580, 230, 50);
+        punkteanzeiger.setzeHintergrundfarbe("rot");
+        punkteanzeiger.setzeSchriftgroesse(40);
+        
+        Anleitung = new AusgabePanel("Mit der SPACE- Taste den Vogel nach oben bewegen" "\n Ziel: Möglichst viele Bonbons sammeln "  , 1075, 480, 230, 10);
+        Anleitung.setzeHintergrundfarbe("rot");
+        Anleitung.setzeSchriftgroesse(40);
+        
+        
+        startKnopf = new Taste("PLAY", 1075, 50, 230, 50);
+        startKnopf.setzeLink(this);
+        startKnopf.setzeID(10);
+        
+        pauseKnopf = new Taste("STOP", 1075, 130, 230, 50);
+        pauseKnopf.setzeLink(this);
+        pauseKnopf.setzeID(20);
+        
+        statistikKnopf = new Taste("SHOW STATS", 1075, 210, 230, 50);
+        statistikKnopf.setzeLink(this);
+        statistikKnopf.setzeID(30);
+        
+        NeuesSpielKnopf = new Taste("NEW GAME", 1075, 290, 230, 50);
+        NeuesSpielKnopf.setzeLink(this);
+        NeuesSpielKnopf.setzeID(40);
+        
+        
+        AlternativTastatur = new Taste("JUMP", 1075, 370, 230, 50);
+        AlternativTastatur.setzeLink(this);
+        AlternativTastatur.setzeID(50);
+        
+        
+        
+        d = new DREIECKE();
+        bomb = new BOMB(450, 300);
+        bomb.setzteAufStartposition();
+        zufall = new Random();
+        bonbon = new BONBON(zufall.nextInt(950),zufall.nextInt(658));
+        bonbon.PositionsWechsel();
+        schwierigkeit = new LEVEL();
+        zufall = new Random();
+        
+        PunktzahlAusgeben();
+        
+        takt.endlos();
+        starte();
+       
+        
+    }
+    
+    public void tastenAktion(String r)
+    {
+        if(r == "hoch")
+        {
+            bomb.huepfen(1);
+        }
+    }
+    
+    
+    public void tuWas(int ID)
+    {
+        if(ID == 5) 
+        {
+            ticke();
+        }
+        else if(ID == 10)
+        {
+             starte();
+        }
+        else if(ID == 20)
+        {
+            stoppe();
+        }
+        else if( ID == 30)
+        {
+            vergangeneSpieleAnzeigen();
+        }
+        else if( ID == 40)
+        {
+            bomb.setzteAufStartposition();
+            bonbon.PositionsWechsel();
+            Punktzahl = 0;
+            
+            punkteanzeiger = new AusgabePanel("PUNKTE " + Punktzahl, 1075, 580, 230, 50);
+            punkteanzeiger.setzeHintergrundfarbe("rot");
+            punkteanzeiger.setzeSchriftgroesse(40);
+            schwierigkeit.DeleteAll();
+        }
+        else if( ID == 50)
+        {
+            bomb.huepfen(1);
+        }
+        
+    }
+   
+    public int PunktzahlAusgeben()
+    {
+        return Punktzahl;
+    }
+    
+
+    public void ticke()
+    {
+        bomb.bewege(1);
+        compare();
+        bomb.xAnzeiger();
+        bomb.yAnzeiger();
+        bonbon.yAnzeiger();
+        bonbon.yAnzeiger();
+        verschiedeneStufen();
+    }
+    
+    public void starte()
+    {
+        takt.endlos();
+        bomb.weitermachen();
+        punkte[Spielezahl] = PunktzahlAusgeben();
+        Spielezahl = Spielezahl + 1;
+    }
+     
+    public void stoppe()
+    
+    {
+        takt.stop();
+    }
+    
+    public void vergangeneSpieleAnzeigen()
+    {
+         System.out.println("Letzte Spiele :" + "\n 1:" + punkte[0] + "\n 2:"  + punkte[1] + "\n 3:" + punkte[2] + "\n 4:" + punkte[3] + "\n 5:" + punkte[4]
+         + "\n 6:" + punkte[5] + "\n 6:" + punkte[6] + "\n 7:" + punkte[7]+ "\n 8:" +  punkte[8] + "\n 9:" + punkte[8] + "\n 10:" + punkte[9] );
+    }
+  
+    
+    public void punkten()
+    {
+       
+            Punktzahl = Punktzahl + 1;
+            punkteanzeiger = new AusgabePanel("PUNKTE " + Punktzahl, 1075, 580, 230, 50);
+            punkteanzeiger.setzeHintergrundfarbe("rot");
+            punkteanzeiger.setzeSchriftgroesse(40);
+            
+            bonbon.PositionsWechsel();
+       
+        
+    }
+    
+    public void verschiedeneStufen()
+    {
+        if(Punktzahl == 1)
+        {
+            schwierigkeit.level1();
+            bomb.compare1();
+        }
+        else if(Punktzahl == 2)
+        {
+            schwierigkeit.level2();
+            bomb.compare2();
+        }
+        else if(Punktzahl == 3)
+        {
+            schwierigkeit.level3();
+            bomb.compare3();
+        }
+        else if(Punktzahl == 4)
+        {
+            schwierigkeit.level4();
+            bomb.compare4();
+        }
+        else if(Punktzahl == 5)
+        {
+            schwierigkeit.level5();
+            bomb.compare5();
+        }
+         else if(Punktzahl == 6)
+        {
+            schwierigkeit.level6();
+            bomb.compare6();
+        }
+         else if(Punktzahl == 7)
+        {
+            schwierigkeit.level7();
+            bomb.compare7();
+        } else if(Punktzahl == 8)
+        {
+            schwierigkeit.level8();
+            bomb.compare8();
+        }
+         else if(Punktzahl == 9)
+        {
+            schwierigkeit.level9();
+            bomb.compare9();
+        }
+         else if(Punktzahl == 10)
+        {
+            schwierigkeit.level10();
+            bomb.compare10();
+        }
+        
+    }
+    
+    public void compare()
+    {
+        if(bonbon.xAnzeiger()  >= bomb.xAnzeiger()  && bonbon.xAnzeiger() <= bomb.xAnzeiger() + 60 && bonbon.yAnzeiger()  >= bomb.yAnzeiger()  && bonbon.yAnzeiger() <= bomb.yAnzeiger() + 59)
+        {
+            punkten();
+        }
+    }
+    
+    
+}
+    

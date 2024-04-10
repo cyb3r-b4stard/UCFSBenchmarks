@@ -1,0 +1,67 @@
+public class Alumno {
+    private int alumnos[][],liga[], pos=0;
+
+    public Alumno()
+    {
+        alumnos=new int[0][4];
+        liga=new  int[0];
+    }
+    public Alumno(int x){
+        alumnos=new int[x][4];
+        liga=new int[x];
+        liga[0]=-1;
+    }
+    
+    public void agregar(int mat, int c1, int c2, int c3){
+        if(pos == alumnos.length-1)
+            makeBigger();
+        alumnos[pos][0]=mat;
+        alumnos[pos][1]=c1;
+        alumnos[pos][2]=c2;
+        alumnos[pos][3]=c3;
+        ordenarLiga();
+        pos++;
+    }
+    private void makeBigger(){
+        int alum[][]=new int [alumnos.length][4], lig[]=new int[liga.length];
+        for(int c=0; c<alumnos.length; c++){
+            for(int f=0; f<4; f++)
+                alum[c][f]=alumnos[c][f];
+            lig[c]=liga[c];
+            }
+        liga=lig;
+        alumnos=alum;
+    }
+    private void ordenarLiga(){
+        if(pos==0)
+            return ;
+        int desde=buscar(-1);
+        for(int c=0; c<pos; c++){
+            if(alumnos[desde][0]<alumnos[pos][0])
+                break;
+            else desde=buscar(desde);
+            }
+        liga[pos]=liga[desde];
+        if(buscar(desde)!=-1)
+            liga[desde]=pos;
+        
+       
+    }
+    private int buscar(int ligaa){
+        for(int n: liga)
+            if(n==ligaa)
+            return ligaa;
+            return -1;
+    }
+    public void impresion(){
+    int sec[]=new int[pos+1];
+    int val=-1;
+    for(int c=0; c<=pos; c++){
+    sec[c]=buscar(val);
+    val=buscar(val);
+    }
+    for(int c=0; c<=pos; c++){
+    System.out.println(alumnos[c][0]++"  "+alumnos[c][1]+);
+    }
+    }
+}

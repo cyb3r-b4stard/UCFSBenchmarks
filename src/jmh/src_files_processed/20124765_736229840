@@ -1,0 +1,482 @@
+package src.work;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+import org.newdawn.slick.SlickException;
+
+import src.others.Launch;
+import eea.engine.entity.StateBasedEntityManager;
+
+/**
+ * #### ##### ########## ######## ###.
+ * 
+ * @###### ########## #####
+ * @###### ######## #######
+ * @###### ###### ##¶##
+ * @###### ##### ####
+ */
+public class Map {
+    
+    private final int SIZE = 10;
+    private FieldEntity[][] map = new FieldEntity[SIZE][SIZE];
+    private ArrayList<Ship> allShips = new ArrayList<Ship>();;
+    
+    
+    /**
+     * Determines if the given ship is horizontal or vertical
+     * @param ship
+     */
+    private void  determineOrientation(Ship ship) {
+     Coordinate x  =  ship.getFront().getMapPosition();
+     FieldEntity hor, ver;
+     for(int i = 0; i<ship.getLength();i++){
+            
+                hor = (FieldEntity)getEntity(new Coordinate(ship.getFront().getMapPosition().getX()+i,ship.getFront().getMapPosition().getY()));
+                ver = (FieldEntity)getEntity(new Coordinate(ship.getFront().getMapPosition().getX()+i,ship.getFront().getMapPosition().getY()));
+  
+    }
+    
+    
+    /**
+     * Determines the length of the given ship
+     * @param ship
+     */
+    private void determineLength(Ship ship){
+        
+    }
+    
+    
+    /**
+     * This method is used for shooting on a given Entity on the Map
+     * 
+     * @param pos The field that is getting shot
+     * @throws SlickException 
+     */
+    public FieldEntity shootAtField(Coordinate pos) throws SlickException{
+        FieldEntity old = (FieldEntity) map[pos.getX()][pos.getY()],
+                newFE = new FieldEntity(old.getID().toUpperCase());
+        newFE.setPosition(old.getPosition());
+        newFE.addComponent(old.getEvent("ANDEvent"));
+        map[pos.getX()][pos.getY()] = newFE; 
+        StateBasedEntityManager.getInstance().addEntity(Launch.GAMEPLAY_STATE, getEntity(pos));
+        StateBasedEntityManager.getInstance().removeEntity(Launch.GAMEPLAY_STATE, old);
+        if(newFE.isShip()){
+            Ship tmp = getShip(old);
+            tmp.getShipParts().remove(old);
+            tmp.getShipParts().add(newFE);
+            
+            System.out.println(newFE.getID());
+            System.out.println(tmp.getFront().getID());
+            
+            if(tmp.isDestroyed()){
+                for(FieldEntity fe : tmp.getShipParts()){
+                    fe.setCorrectPic(tmp.getHorizontal());
+                }
+            }
+            else{
+                newFE.setDefaultShipPic();
+            }
+        }
+        return newFE;
+    }
+    
+    
+    /**
+     * Returns the entity at the given position in the map
+     * 
+     * @param pos Position where the entity is located
+     * @return Entity at pos
+     */
+    public FieldEntity getEntity(Coordinate pos){
+        return map[pos.getX()][pos.getY()];
+    }
+    
+    
+    /**
+     * Finds all elements of the given ship and stores them in the shipParts ArrayList
+     * @param ship
+     */
+    private void findAllShipElements(Ship ship){
+        FieldEntity fe;
+        for(int i = 0; i<ship.getLength();i++){
+            if(ship.getHorizontal()){
+                fe = (FieldEntity)getEntity(new Coordinate(ship.getFront().getMapPosition().getX()+i,ship.getFront().getMapPosition().getY()));
+                ship.getShipParts().add(fe);
+            }
+            else
+                ship.getShipParts().add((FieldEntity)getEntity(new Coordinate(ship.getFront().getMapPosition().getX(),ship.getFront().getMapPosition().getY()+i)));
+        }
+        System.out.println(ship.getShipParts().toString());
+    }
+    
+    
+    /**
+     * Called from the framework to initialize ships and map.
+     * 
+     * @throws SlickException
+     */
+    public void findAllShips() throws SlickException{
+        try{
+        allShips.clear();
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map[i].length; j++) {
+                FieldEntity tmp = map[i][j];
+                if(tmp.getID().toLowerCase().equals("f")){
+                    tmp.setMapPosition(new Coordinate(i, j));
+                    Ship ship = new Ship(tmp);
+                    determineOrientation(ship);
+                    determineLength(ship);
+                    findAllShipElements(ship);
+                    ship.rotateImages();
+                    allShips.add(ship);
+                    if(!ship.isDestroyed()){
+                        for(FieldEntity fe:ship.getShipParts()){
+                            if(fe.gotHit())
+                                fe.setDefaultShipPic();;
+                        }
+                    }
+                }
+            }
+        }
+        }
+        catch(NullPointerException ex){
+            System.out.println("TODO: Aufgabe 3 noch nicht gelÃ¶st!");
+        }
+    }
+    
+    
+    /**
+     * Finds and returns the position of a given entity on the map
+     * @param entity The entity
+     * @return The position of the Entity as Vector2Int
+     */
+    public Coordinate getPosition(FieldEntity entity){
+            int x=0, y=0;
+            for(int i=0; i<getMapSize()*getMapSize(); i++){
+                if(map[x][y].equals(entity))
+                    return new Coordinate(x, y);
+                x++;
+                if(x==SIZE){
+                    x=0;
+                    y++;
+                }
+            }
+            return null;
+    }
+    
+    /**
+     * Test if all ships are destroyed.
+     * 
+     * @return Returns true if all ships are destroxed.
+     */
+    public boolean allShipsDestroyed() {
+        boolean sawShip = false;
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map[i].length; j++) {
+                FieldEntity f = (FieldEntity) this.map[i][j];
+                if (f.isShip()) sawShip = true;
+                if (f.isShip() && !f.gotHit()) {
+                    return false;
+                }
+            }
+        }
+        return sawShip;
+    }
+
+    /**
+     * Fills all empty fields in the given rectangle with water
+     * @param xStart The left end of the rectangle
+     * @param yStart The top end of the rectangle
+     * @param xEnd The right end of the rectangle
+     * @param yEnd The bottom end of the rectangle
+     * 
+     * @throws SlickException 
+     */
+    public void fillWithWater(int xStart, int yStart, int xEnd, int yEnd) throws SlickException{
+        for(int i = xStart; i<=xEnd;i++){
+            for(int j = yStart; j<=yEnd;j++){
+                if(map[i][j]==null){
+                    map[i][j] = new FieldEntity("w");
+                }
+            }
+        }
+    }
+    
+    
+    /**
+     * Returns the ship where the given part belongs to
+     * 
+     * @param part The part of the ship
+     * @return The ship the part belongs to
+     */
+    public Ship getShip(FieldEntity part){
+        if (part.getID().toLowerCase().equals("w"))
+            return null;
+        for(Ship s: allShips){
+            for(FieldEntity teil:s.getShipParts()){
+                if(part.equals(teil))
+                    return s;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Method to get the size of the map.
+     * 
+     * @return The size of the map
+     */
+    public int getMapSize(){
+        return SIZE;
+    }
+    
+    /**
+     * Method to get the map as a string representation.
+     * 
+     * @return The map as a String
+     */
+    public String toString(){
+        StringBuilder string = new StringBuilder();
+        for(FieldEntity[] row: map){
+            for(FieldEntity e: row){
+                string.append(e.getID().substring(0,1));
+            }
+            string.append("\n");
+        }
+        return string.toString();
+    }
+    
+    /**
+     * Creates a map from a given String
+     * 
+     * @param map
+     * @throws SlickException
+     */
+    public void loadMap(String map) throws SlickException{
+        
+        int x=0, 
+            y=0;
+        for(int i=0; i<map.length(); i++){
+            this.map[y][x] = new FieldEntity(map.substring(i,i+1));
+            x++;
+            if(x==SIZE){
+                x=0;
+                y++;
+            }
+        }
+    }
+    
+    /**
+     * Fills all fields of the map which weren't hit yet with fog.
+     */
+    public void setFog(){
+        int x = 0, y = 0;
+        for (int i = 0; i < SIZE*SIZE; i++) {
+            if (!((FieldEntity) this.map[x][y]).gotHit())
+                ((FieldEntity) this.map[x][y]).setFog();
+            x++;
+            if(x==SIZE){
+                x=0;
+                y++;
+            }
+        }
+    }
+    
+    /**
+     * checks if the ships are complete, if all ships were placed, if all fields were filled
+     * 
+     * @return If that is the case
+     */
+    public boolean isValid(){
+        for(int y=0; y<map[0].length; y++){
+            for(int x=0; x<map.length; x++){
+                if(map[x][y]== null)
+                    return false;
+                if(map[x][y].getID().toLowerCase().equals("f")){
+                }
+            }
+        }
+        
+        return true;
+    }
+
+    /**
+     * This method is used for placing the ships on the map.
+     * 
+     * @throws SlickException
+     */
+    public void setShipsOnMap() throws SlickException{
+        try{
+        int shipSizes[] = {5,4,4,3,3,3,2,2,2,2};
+        Random random = new Random();
+        boolean  finish=false;
+        int x,y;
+        
+        while (!finish) {
+            for (int i : shipSizes) {
+                boolean horizontal = random.nextBoolean();
+                int tries = 0;
+                boolean valid = false;
+                
+                while (tries < 100 && !valid) {
+                    if (horizontal) {
+                        x = random.nextInt(SIZE - 1 - i);
+                        y = random.nextInt(SIZE - 1);
+                    } else {
+                        x = random.nextInt(SIZE - 1);
+                        y = random.nextInt(SIZE - 1 - i);
+                    }
+                    valid = isValidPosition(i, new Coordinate(x, y), horizontal);
+                    if (valid) {
+                        sourroundWithWater(setShip(i, new Coordinate(x, y), horizontal));
+                        finish = true;
+                    } else
+                        tries++;
+                }
+                
+                if (!valid) {
+                    this.map = new FieldEntity[SIZE][SIZE];
+                    finish = false;
+                    break;
+                }
+            }
+        }
+        }
+        catch(NullPointerException ex){
+            System.out.println("TODO: Aufgabe 3 noch nicht gelÃ¶st!");
+        }
+    }
+    
+    /**
+     * This method is used for surrounding the fields that a ship was placed on with water. 
+     * 
+     * @param ship Ship to which the water should be surrounded.
+     * @throws SlickException
+     */
+    private void sourroundWithWater(Ship ship) throws SlickException {
+        calcMetas(ship.getLength(), ship.getFront().getMapPosition(), ship.getHorizontal());
+        for(int i=0; i<checkHight;i++){
+            for(int j =0;j<checkLength;j++){
+                if(map[startCheck.getY()+i][startCheck.getX()+j] == null)
+                    map[startCheck.getY()+i][startCheck.getX()+j]= new FieldEntity("w");
+            }
+        }
+    }
+
+    private Coordinate startCheck;
+    private int checkLength, checkHight;
+    
+    private void calcMetas(int length, Coordinate headPos, boolean horizontal) {
+        checkLength=0;
+        checkHight=0;
+        startCheck = new Coordinate(0, 0);
+        
+        if(horizontal){
+            checkLength+=length+2;
+            checkHight+=3;
+        }
+        else{
+            checkLength+=3;
+            checkHight+=length+2;
+        }
+        
+        if(headPos.getX() == 0){
+            checkLength--;
+            startCheck.setX(headPos.getX());
+        } else{
+            startCheck.setX(headPos.getX()-1);
+        }
+        if(horizontal && headPos.getX()+length-1==SIZE)
+            checkLength--;
+        if(headPos.getY() == 0){
+            checkHight--;
+            startCheck.setY(headPos.getY());
+        } else{
+            startCheck.setY(headPos.getY()-1);
+        }
+        if(!horizontal && headPos.getY()+length-1==SIZE)
+            checkHight--;
+    }
+
+    /**
+     * Sub-method for placing a single ship of a given length at a given position with a given orientation
+     * 
+     * @param length The length of the ship
+     * @param headPos The position of the front of the ship
+     * @param horizontal If the ship is horizontal
+     * @return The new Ship
+     * 
+     * @throws SlickException
+     */
+    private Ship setShip(int length, Coordinate headPos, boolean horizontal) throws SlickException {
+        Ship ship=null;
+        int l, h;
+        try{
+        if (horizontal) {
+            l = length;
+            h = 1;
+        } else {
+            h = length;
+            l = 1;
+        }
+        
+        for(int i=0; i<h;i++){
+            for(int j =0;j<l;j++){
+                if(i==0 && j==0){
+                    FieldEntity front = new FieldEntity("f");
+                    map[headPos.getY()+i][headPos.getX()+j] = front;
+                    ship = new Ship(front);
+                    front.setMapPosition(headPos);
+                    ship.getShipParts().add(front);
+                }
+                else if(i==h-1 && j==l-1){
+                    map[headPos.getY()+i][headPos.getX()+j]= new FieldEntity("e");
+                    ship.getShipParts().add(map[headPos.getY()+i][headPos.getX()+j]);
+                }else {
+                    map[headPos.getY()+i][headPos.getX()+j]= new FieldEntity("m");
+                    ship.getShipParts().add(map[headPos.getY()+i][headPos.getX()+j]);
+                }
+            }
+        }
+        ship.setLength(ship.getShipParts().size());
+        ship.setHorizontal(horizontal);
+        }
+        catch(NullPointerException ex){
+            System.out.println("TODO: Aufgabe 3 noch nicht gelÃ¶st!");
+        }
+        return ship;
+    }
+
+    /**
+     * This method returns if a given coordinate is a valid position for a ship of a given length and given 
+     * orientation.
+     * 
+     * @param length The length of the ship
+     * @param headPos The Coordinate that the new ship's head shall be placed at
+     * @param horizontal If the ship is horizontal
+     * @return If the ship can be placed there
+     */
+    private boolean isValidPosition(int length, Coordinate headPos, boolean horizontal) {
+        boolean valid = true;
+        int l,h;
+        
+        if(horizontal){
+            l=length;
+            h=1;
+        }
+        else{
+            h=length;
+            l=1;
+        }
+            
+        
+        for(int i=0; i<h;i++){
+            for(int j =0;j<l;j++){
+                if(map[headPos.getY()+i][headPos.getX()+j] != null)
+                    valid = false;
+            }
+        }
+        return valid;       
+    }
+}

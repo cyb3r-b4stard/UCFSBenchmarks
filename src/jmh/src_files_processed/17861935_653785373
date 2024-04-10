@@ -1,0 +1,67 @@
+import java.io.*;
+import java.util.Scanner;
+public class L11ATest
+{
+    public static void main(String[] args) throws IOException 
+    {
+        FileReader read = new FileReader("quiz_scores.csv");
+        while(read.hasNext())
+        {
+            System.out.println(read.nextLine());
+        }
+        read = new FileReader("quiz_scores.csv");
+        int high = 0;
+        int low = 100;
+        double sum = 0.0;
+        double avg = 0.0;
+        int num = 0;
+        String name = "";
+        System.out.print("Name\t High\t Low\t Average");
+        while(read.hasNext())
+        {
+                String s = read.nextLine();
+                Scanner scan = new Scanner(s);
+                scan.useDelimiter(",");
+                if (scan.hasNext())
+                name = scan.next();
+                high = 0;
+                low = 100;
+                sum = 0.0;
+                avg = 0.0;
+                num = 0;
+                System.out.print("\n" + name + "\t ");
+                while(scan.hasNext())
+                {
+                        int score = scan.nextInt();
+                        if (score < low)
+                        {
+                               low = score;
+                        }
+                        if (score > high)
+                        {
+                               high = score;
+                        }
+                        ++num;
+                        sum += score;
+                        avg = sum/num;
+                }   
+                System.out.print(high + "\t" + low + "\t" + avg);
+        }
+        Room[] rObj = new Room[4];
+        read = new FileReader("rooms.csv");
+        String s = read.nextLine();
+        Scanner scan = new Scanner(s);
+        scan.useDelimiter(",");
+        while(read.hasNext() && scan.hasNext())
+        {
+                for(int i = 0;i < rObj.length;i++)
+                {
+                    String roomName = scan.next();
+                    System.out.print(rObj[i].toString());
+                    String description = scan.next();
+                    rObj[i] = new Room(roomName,description,null);
+                    System.out.println(rObj[i].toString());
+                }
+        
+    }
+}

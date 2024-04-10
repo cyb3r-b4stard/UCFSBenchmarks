@@ -1,0 +1,99 @@
+import java.util.*;
+
+public class GrosseZahl
+{
+    private ArrayList<Integer> zahl;
+     
+    public GrosseZahl()
+    {
+        zahl = new ArrayList<Integer>();
+        zahl.add(1);
+    }
+    
+    public int gibStelle(int i)
+    {
+        if(i<0)
+        {
+            return 0;
+        }
+        
+        if(zahl.size() < i)
+        {
+            return 0;
+        }
+        return zahl.get(i);
+    }
+    
+    public int anzahlStellen()
+    {
+        return zahl.size();
+    }
+    
+    public void addEins()
+    {
+        int ergebnis;
+        int uebertrag;
+        
+        if(zahl.size() ==0)
+        {
+            zahl.add(1);
+            return;
+        }
+        
+        ergebnis=gibStelle(0)+1;
+        uebertrag=ergebnis/10;
+        zahl.set(0,ergebnis%10);
+        
+        if(uebertrag==1)
+        {
+            for(int i=1; i<zahl.size();i++)
+            {
+                ergebnis=zahl.get(i)+uebertrag;
+                zahl.set(i,ergebnis%10);
+                uebertrag=ergebnis/10;
+            }
+        }
+        
+        if(uebertrag==1)
+        {
+            zahl.add(1);
+        }
+    }
+    
+    public void add(GrosseZahl andereZahl)
+    {
+        int laenge=andereZahl.anzahlStellen(),
+        int ergebnis;
+        int eintrag;
+        int uebertrag = 0;
+        
+        if(anzahlStellen()>andereZahl.anzahlStellen())
+        {
+            laenge.anzahlStellen();
+        }
+        ArrayList<Integer> zahlen = new ArrayList<Integer>();
+        
+        for(int i=0; i<laenge; i++)
+        {
+            ergebnis= gibStelle(i) + andereZahl.gibStelle(i) + uebertrag;
+            eintrag = ergebnis%10;
+            uebertrag=ergebnis/10;
+            zahlen.add(eintrag);
+        }
+        
+        if(uebertrag == 1)
+        {
+            zahlen.add(1);
+        }
+        
+        for(int i=0; i<zahl.size();i++)
+        {
+            zahl.set(i,zahlen.get(i));
+        }
+        
+        for(int i = zahl.size(); i<zahlen.size(); i++)
+        {
+            zahl.add(zahlen.get(i));
+        }
+    }
+}

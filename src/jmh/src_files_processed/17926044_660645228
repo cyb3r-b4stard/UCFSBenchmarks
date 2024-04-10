@@ -1,0 +1,325 @@
+
+   /* #### ### ####### ########## #, 
+    * ####:
+    * ########:
+    * ##:
+    */
+
+    import ecs100.*;
+    import java.awt.Color;
+    import java.util.*;
+    import java.io.*;
+
+  /** ##############
+  #### ####### ########. */
+
+  public class PatternsDrawer{
+
+    public static final double boardLeft = 50;   
+    public static final double boardTop = 50;
+    public static final double boardSize = 300;  
+
+    public PatternsDrawer(){
+        UI.initialise();
+        UI.addButton("Clear",UI::clearPanes);
+        UI.addButton("Core: Star", this::drawStar);
+        UI.addButton("Core: Illusion", this::drawIllusion);
+        UI.addButton("Core: Grid", this::drawGridBoard);
+        UI.addButton("Completion: Checkers", this::drawCheckersBoard);
+        UI.addButton("Completion: Concentric", this::drawConcentricBoard);
+        UI.addButton("Challenge Spiral", this::drawSpiralBoard);
+        UI.addButton("HexagonalGrid", this::HexagonalGrid);
+    }   
+
+    /** **/
+    public void drawStar(){
+        UI.clearGraphics();
+        int num = UI.askInt("How many rays:");
+        int angle=(360/num);
+        int cons =((360/num)*2);
+        int start = 0;
+        UI.setLineWidth(1);
+        while(angle<=360){
+        UI.drawOval(50,50,150,150);
+        UI.fillArc(50, 50, 150, 150, start, angle);
+        start = (start+cons);
+        angle = (angle);
+       }
+    }
+
+    /** **/
+    public void drawIllusion(){
+        UI.clearGraphics();
+        int TopSquares = UI.askInt("how many black Squares on top row?");
+        int rows = (300/TopSquares);
+        int row=50;
+        int coll=350;
+        while(row<=350){
+            int col = 50;
+            
+              while (col<=coll){
+              UI.fillRect(col, row, rows, rows);
+              col=(col+rows+5);
+             }
+           row=(row+rows+5);
+           coll=coll-rows-5;
+        }
+    
+
+    }
+
+    /** Draw a square grid board with white squares.
+    Asks the user for the number of squares on each side
+     */
+    public void drawGridBoard(){
+        UI.clearGraphics();
+        int TopSquares = UI.askInt("How many Squares on top row?");
+        int rows = (300/TopSquares);
+        int row=0;
+        while(row<300){
+            int col = 0;
+            while (col<300){
+            UI.drawRect(50, 50, col, row);
+            col=(col+rows);
+           }
+            row=(row+rows);
+        }
+    }
+
+    
+
+    /** Draw a checkered board with alternating black and white squares
+    Asks the user for the number of squares on each side
+     */
+    public void drawCheckersBoard(){
+              UI.clearGraphics();
+        int TopSquares = UI.askInt("How many rows?");
+        int rows = (300/TopSquares);
+        int row=50;
+        int x=1;
+        int b=2;
+        int rect = rows*(TopSquares+ 1);
+        UI.drawRect(50, 50, rect, rect);
+
+        while(row<=350){
+            int col = 50;
+            if(x==1){
+              while (col<=350){
+              UI.fillRect(col, row, rows, rows);
+              col=(col+(2*rows));
+             }
+           } 
+           if(x==2){
+             col=col+rows;
+             while (col<=350){
+              UI.fillRect(col, row, rows, rows);
+              col=(col+(2*rows));
+             }
+           }
+           row=(row+rows);
+           if(x>b){
+               x--;
+               b=2;
+            }
+           else{
+               x++;
+               b=1;
+            }
+ 
+        }
+         
+    }
+
+   /** Draw a board made of concentric circles, 2 pixel apart
+    Asks the user for the number of squares on each side
+     */
+    public void drawConcentricBoard(){
+        UI.clearGraphics();
+        int rows = UI.askInt("how many rows?");
+        int diam = (300/rows);
+        int row = 50;
+        while(row<350){
+            row = (row+diam);
+            int col = 50;
+            while (col<350){
+            int x = (col+diam);
+            int b = diam;
+            while (b>2){
+               
+                UI.drawOval(x-b/2,row-b/2,b,b);
+                b=b-4;
+            }
+            col=(col+diam);
+            
+        }
+      }
+    }
+     
+
+
+    
+    public void drawSpiralBoard(){
+        UI.clearGraphics();
+        int TopSquares = UI.askInt("How many Squares on top row? Choose between 5, 10, 15, 20, 25, and 30.");
+        int rows = (300/TopSquares);
+        int row=50;
+        int coll=0;
+        int x=1;
+        int b=2;
+        int row1=0;
+        while(row<=300){
+           int col = 50;
+           col=(col+coll);
+           if(x==1){
+             while ((col+coll)<(300+(row1*rows))){
+               UI.drawRect((col-(rows*row1)), row, rows, rows);
+               col=(col+rows);
+             }
+            }
+           row=(row+rows);
+           coll=coll+rows;
+           if(x>b){
+               x--;
+               b=2;
+            }
+           else if(x<b){
+               x++;
+               b=1;
+               row1=1;
+            }
+        }
+        row=50;
+        while(row>=50&&row<=300){
+           int col = 50;
+           col=(col+coll-rows);
+           if(x==1){
+             while ((col+coll)<(300+(row1*rows))){
+               UI.drawRect(col+((1/2)*rows), row, rows, rows);
+               col=(col+rows);
+             }
+            }
+           row=(row+rows);
+           coll=coll-rows;
+           if(x>b){
+               x--;
+               b=2;
+            }
+           else if(x<b){
+               x++;
+               b=1;
+               row1=1;
+            }
+        }
+        int vert=290;
+        int c=0;
+        int i=TopSquares;
+        while(vert>=50){
+            int square=50;
+            square=square+(2*rows*c);
+            if(TopSquares>=30){
+             i=1;
+            }
+            else{
+              i=0;
+            }
+            while(square<=(280-(2*rows*c)+(i*rows))){
+              
+              UI.drawRect(vert,square,rows,rows);
+              square=square+rows;
+             
+            }
+            c++;
+            vert=(vert-2*rows);
+           
+         }
+        vert=50;
+        c=0;
+        while(vert<=290){
+            int square=50;
+            c++;
+            square=square+(2*rows*c);
+            while(square<=(280-(2*rows*c)+2*rows)+(i*rows)){
+              UI.drawRect(vert,(square),rows,rows);
+              square=square+rows;
+            }
+             vert=(vert+2*rows);
+         }
+      }
+
+    public void HexagonalGrid(){
+      double rows=UI.askInt("how many rows");  
+      double xline = rows;
+      int yline = (int)xline;
+      int sta=yline;
+      double width=300/rows;
+      double yc=50;
+      double d=1;
+      double yy=50;
+      double i=2;
+      double line=0;
+      double rect = width*(rows+ 1);
+      yline=yline/2;
+      UI.println(yline);
+      yline=yline*2;
+           while(yc<=350){
+            double col = 50;
+            if(d==1){
+                col=50;
+                double e=0;
+                            while (col<=350){
+                    double x[] = {(width/4)+col,0+col,(width/4)+col,(3*width/4)+col,width+col,(3*width/4)+col};
+                    double y[] = {yc,(width/2)+yc,width+yc,width+yc,(width/2)+yc,yc};
+                    UI.drawPolygon (x, y, 6);
+                    col=col+(0.5*width);
+                    e=e+1;
+                    if(e==2){
+                        col=col+0.5*width;
+                        e=0;
+                    }
+                    
+             }
+
+           } 
+                      if(yline != sta &&d==2){
+                 UI.drawLine(coll-0.5*width,line,coll,line);
+                }
+                       if(d==2){
+                col=50+0.75*width;
+                double e=0;
+                            while (col<=350){
+                    double x[] = {(width/4)+col,0+col,(width/4)+col,(3*width/4)+col,width+col,(3*width/4)+col};
+                    double y[] = {yc,(width/2)+yc,width+yc,width+yc,(width/2)+yc,yc};
+                    UI.drawPolygon (x, y, 6);
+                    col=col+(0.5*width);
+                    e=e+1;
+                    if(e==2){
+                        col=col+0.5*width;
+                        e=0;
+                    }
+             }
+
+           } 
+           yc=yc+0.5*width;
+           line = yc-0.5*width;
+           
+           if(d==2){
+               UI.drawLine(50,line,50+0.5*width,line);
+             }
+
+           
+           if(d>i){
+              d--;
+              i=2;
+            }
+           else{
+               d++;
+               i=1;
+            }
+ 
+     }
+     yc=yc+0.5*width;
+     line = yc-0.5*width;
+     UI.drawLine(50,rect,50+0.5*width,rect);
+        
+   }
+   }

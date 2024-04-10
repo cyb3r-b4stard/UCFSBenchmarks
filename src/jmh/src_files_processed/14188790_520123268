@@ -1,0 +1,96 @@
+
+import java.util.Scanner;
+import java.util.StringTokenizer;
+
+/**
+ * ###### ######
+ */
+public class Parser 
+{
+    private CommandWords aCommandWords;  
+    private Scanner reader;
+    private boolean aBoolean;
+
+    /**
+     * Constructeur par defaut qui cree les 2 objets prevus pour les attributs
+     */
+    public Parser() 
+    {
+        aCommandWords = new CommandWords();
+        reader= new Scanner(System.in);
+        this.aBoolean=false;
+
+    } 
+
+    /**
+     * Obtient une nouvelle commande de l'utilisateur. La commande est lu dans le parsing dans le: 'inputLine'.
+     */
+    public Command getCommand(final String inputLine) 
+    {
+        String word1;
+        String word2;
+        String vEast;
+
+        StringTokenizer tokenizer = new StringTokenizer(inputLine);
+
+        if(tokenizer.hasMoreTokens())
+            word1 = tokenizer.nextToken();      
+        else
+            word1 = null;
+        if(tokenizer.hasMoreTokens())
+            word2 = tokenizer.nextToken();      
+
+        else
+            word2 = null;
+        Command vCommand = this.aCommandWords.getCommandWord(word1);
+        if(vCommand != null) 
+        {            vCommand.setSecondWord(word2);
+            if(true)
+
+            {
+                switch(word2) 
+
+                {
+                    case "est":
+                    word2 ="ouest";
+                    vCommand.setSecondWord(word2);
+                    System.out.println(word2);break;
+                   
+                    case "nord":
+                    word2="sud";
+                    vCommand.setSecondWord(word2);
+                    System.out.println(word2); break;
+                    
+                    case "sud": 
+                    word2="nord";
+                    vCommand.setSecondWord(word2);
+                    System.out.println(word2); break;
+
+                    default: 
+                    word2 = "est";
+                    vCommand.setSecondWord(word2);
+                    System.out.println(word2);break;
+                }
+                return vCommand
+            }
+            else 
+                vCommand.setSecondWord(word2);
+
+        }
+
+        return  vCommand;
+    }
+
+    public boolean setBoolean(final boolean pBoolean)
+    {
+        return  this.aBoolean = pBoolean;
+    }
+
+    /**
+     * Retourne les méthodes valide listé dans getCommandList
+     */
+    public String showCommands()
+    {
+        return aCommandWords.getCommandList();
+    }
+} 

@@ -1,0 +1,245 @@
+
+/** 
+ * @###### ####### ######
+ * @####### #.#
+ */
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+
+public class SearchWindow extends JFrame
+{
+
+    
+
+    /**
+     * Constructor for objects of class SearchWindow
+     */
+    public SearchWindow()
+    {
+        super("Arquivio 1.0");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        String[] categories = {"Front Cover", "Contents Section", "Article", "Film Review", "TV Review", "Theatre Review", 
+        "Editorial", "Letters", "Interview", "Regular Feature Column", "Publi-Reportage", "Advertisement - Whole Page",
+        "Advertisement - Half-Page", "Advertisement - Quarter-Page", "Comic Strip", "Cartoon", "Photo Novel", "Centrefold",
+        "Music Section", "Film Festival Report", "Back Cover"};
+        JList<String> pageCats = new JList<>(categories);
+        pageCats.setVisibleRowCount(10);
+        
+        JScrollPane catsScroller = new JScrollPane(pageCats);
+        
+        String[] meta = {"Black-and-White", "Colour", "Mixed"};
+        JComboBox<String> metaBox = new JComboBox<>(meta);
+             
+        JButton enterSearch = new JButton("Search");
+        JButton resetFields = new JButton("Reset Fields");
+        JButton exitApp = new JButton("Exit");
+        
+        JPanel paneSearch = new JPanel();
+        JPanel left = new JPanel();
+        JPanel right = new JPanel();
+        
+        paneSearch.setLayout(new BoxLayout(paneSearch, BoxLayout.X_AXIS));
+        
+        left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
+        right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
+        
+        
+        JScrollPane paneScroller = new JScrollPane(paneSearch);
+        
+        enterSearch.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+               ResultsWindow resultsWindow = new ResultsWindow();
+               resultsWindow.setVisible(true);
+               setVisible(false);
+            }
+        }
+        );
+        
+        exitApp.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int response = JOptionPane.showConfirmDialog(paneScroller, "Are you sure you want to exit Arquivio?",
+                "Confirm Exit", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if(response==JOptionPane.YES_OPTION) {
+                    dispose();
+                }
+            }
+        }
+        );
+        
+               
+        JLabel instructions = new JLabel("Please enter search Information and press 'Search'.");
+        JLabel title = new JLabel("Title of publication:");
+        JLabel language = new JLabel("Language of publication:");
+        JLabel country = new JLabel("Country of publication:");
+        JLabel place = new JLabel("Place of publication:");
+        JLabel price = new JLabel("Price:");
+        JLabel date = new JLabel("Date of publication:");
+        JLabel frequency = new JLabel("Frequency of publication:");
+        JLabel firstIssue = new JLabel("Date of first issue:");
+        JLabel lastIssue = new JLabel("Date of last issue:");
+        JLabel pageNo = new JLabel("Page number");
+        JLabel pageCat = new JLabel("Page contains:");
+        JLabel pageMeta = new JLabel("Page metadata");
+        
+        JTextField titleT = new JTextField(100);
+        JTextField languageT = new JTextField(20);
+        JTextField countryT = new JTextField(20);
+        JTextField placeT = new JTextField(25);
+        JTextField priceT = new JTextField(20);       
+        JTextField dateT = new JTextField(20); 
+        JTextField frequencyT = new JTextField(20); 
+        JTextField firstIssueT = new JTextField(20);
+        JTextField lastIssueT = new JTextField(20);
+        JTextField pageNoT = new JTextField(5);
+        pageNoT.setMaximumSize(new Dimension(Integer.MAX_VALUE, pageNoT.getPreferredSize().height));
+
+        
+        
+        JMenuItem scan = new JMenuItem("Scan new publication");
+        JMenuItem loadImage = new JMenuItem("Load image from folder");
+        JMenuItem exitM = new JMenuItem("Exit");
+        JMenuItem searchArchive = new JMenuItem("Search archive");
+        JMenuItem print = new JMenuItem("Print...");
+        JMenuItem about = new JMenuItem("About Arquivio 1.0");
+        JMenuItem saveImage = new JMenuItem("Save scanned image in folder");
+        JMenu file = new JMenu("File");
+        JMenu help = new JMenu("Help");
+        JMenuBar menuBar = new JMenuBar();
+        file.add(scan);
+        file.addSeparator();
+        file.add(searchArchive);
+        file.addSeparator();
+        file.add(loadImage);
+        file.add(saveImage);
+        file.addSeparator();
+        file.add(print);
+        file.addSeparator();
+        file.add(exitM);
+        help.add(about);
+        menuBar.add(file);
+        menuBar.add(help);
+        setJMenuBar(menuBar);
+        
+        left.setBorder(new EmptyBorder(10, 40, 35, 40));
+        right.setBorder(new EmptyBorder(20, 30, 25, 50));
+        
+        Box box = Box.createHorizontalBox();
+        box.add(enterSearch);
+        box.add(Box.createHorizontalStrut(10));
+        box.add(resetFields);
+        
+        left.add(instructions);
+        left.add(Box.createVerticalStrut(10));
+        left.add(title);
+        left.add(titleT);
+        left.add(Box.createVerticalStrut(9));
+        left.add(language);
+        left.add(languageT);
+        left.add(Box.createVerticalStrut(9));
+        left.add(country);
+        left.add(countryT);
+        left.add(Box.createVerticalStrut(9));
+        left.add(place);
+        left.add(placeT);
+        left.add(Box.createVerticalStrut(9));
+        left.add(firstIssue);
+        left.add(firstIssueT);
+        left.add(Box.createVerticalStrut(9));
+        left.add(lastIssue);
+        left.add(lastIssueT);
+        left.add(Box.createVerticalStrut(9));
+        left.add(frequency);
+        left.add(frequencyT);
+        left.add(Box.createVerticalStrut(9));
+        left.add(price);
+        left.add(priceT);
+        left.add(Box.createVerticalStrut(9));
+        left.add(date);
+        left.add(dateT);
+        right.add(pageNo);
+        right.add(Box.createVerticalStrut(5));
+
+        right.add(pageNoT);
+        right.add(Box.createVerticalStrut(10));
+        right.add(pageCat);
+        right.add(Box.createVerticalStrut(5));
+        right.add(catsScroller);
+        right.add(box);
+        
+        paneSearch.add(left, BorderLayout.WEST);
+        paneSearch.add(right, BorderLayout.EAST);
+        add(paneSearch);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setVisible(true);
+        
+        resetFields.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+        for(Component control : paneSearch.getComponents())
+        {
+            if(control instanceof JTextField)
+            {
+                JTextField ctrl = (JTextField) control;
+                ctrl.setText("");
+            }
+            else if (control instanceof JList)
+            {
+                JList<String> ctr = (JList<>) control;
+                ctr.setSelectedIndex(0);
+            }
+        }
+            }
+        }
+        );
+        
+        
+         searchArchive.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                SearchWindow searchWindow = new SearchWindow();
+                searchWindow.setVisible(true);
+                setVisible(false);
+        }
+    }
+    );
+    
+        scan.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                EnterPubInfo enterWindow = new EnterPubInfo();
+                    enterWindow.setVisible(true);
+                    setVisible(false);
+        }
+    }
+    );
+    
+        exitM.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int response = JOptionPane.showConfirmDialog(paneSearch, "Are you sure you want to exit Arquivio?",
+                    "Confirm Exit", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if(response==JOptionPane.YES_OPTION) {
+                    setVisible(false);
+                    System.exit(0);
+                }
+            }
+    }
+    );
+    }
+    
+    private static void setLookAndFeel()
+    {   try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+        }
+        catch (Exception exc) {
+            System.out.println(exc.getMessage());
+        }
+    }
+    
+    public static void main(String[] args) {
+        setLookAndFeel();
+        SearchWindow searchWindow = new SearchWindow();
+    }
+
+    
+}

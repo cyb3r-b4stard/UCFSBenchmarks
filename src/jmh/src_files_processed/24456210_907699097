@@ -1,0 +1,185 @@
+
+/**
+ * ##### # ########### ## ##### ############ ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import edu.duke.*;
+import java.io.*;
+import java.lang.Math;
+import java.util.ArrayList;
+
+public class AllTagFinder {
+    /*   
+    public String findProtein(String dna,int position) {
+        
+        int start = dna.indexOf("atg", position);
+        if (start == -1) {
+            return "";
+        }
+        int stop = StopIndex(dna, start);
+        if(stop < 0) return "";
+        
+        return dna.substring(start, stopPos+3);
+    }*/
+    public int findStopIndex(String dna, int start){
+        
+        int[] stopList = new int[3];
+        stopList[0] = findStopCodon(dna,start,"tag");
+        stopList[1] = findStopCodon(dna,start,"tga");
+        stopList[2] = findStopCodon(dna,start,"taa");
+        int stopPos = -1;
+        for(int i = 0; i < 3; i++) {
+            if(stopList[i] != -1){
+                               
+                if(stopPos == -1){
+                    stopPos = stopList[i];
+                }
+                else if(stopPos > stopList[i]){
+                    stopPos = stopList[i];
+                }
+            }
+        }
+        return stopPos;
+    }
+    
+    public int findStopCodon(String dna, int start, String codon){
+        
+        int stop = dna.indexOf(codon, start);
+        if( stop <= 0) return -1;
+        if ((stop - start) % 3 == 0) {
+            return stop;
+        }
+        else {
+            return -1;
+        }
+    }
+    
+    public void printAll(String dna){
+        
+        String protein = "";
+        int position = 0;
+        String dnaLow = dna.toLowerCase();
+
+        while(position < dnaLow.length()){
+            int start = dnaLow.indexOf("atg", position);
+            
+            if (start == -1) {
+                break;
+            }
+            int stop = findStopIndex(dnaLow, start + 3);
+            if(stop < 0){
+                position += 3;
+                continue;
+            }
+            
+            protein = dna.substring(start, stop + 3);
+            System.out.println("Protein " + protein + " length " + protein.length());
+            position = stop + 3;
+        }
+
+    }
+    
+    public StorageResource storeAll(String dna){
+        
+        String protein = "";
+        int position = 0;
+        String dnaLow = dna.toLowerCase();
+        StorageResource store = new StorageResource();
+        while(position < dnaLow.length()){
+            int start = dnaLow.indexOf("atg", position);
+            
+            if (start == -1) {
+                break;
+            }
+            int stop = findStopIndex(dnaLow, start + 3);
+            if(stop < 0){
+                position += 3;
+                continue;
+            }
+            
+            protein = dna.substring(start, stop + 3);
+            store.add(protein);
+            position = stop + 3;
+        }
+        return store;
+    }
+    
+    public float cgRatio(String dna){
+        String dnaLow = dna.toLowerCase();
+        int number = 0;
+        for(char protein: dnaLow){
+            if(protein == 'c' || protein == 'g'){
+                number++;
+            }
+        }
+        dna.length();
+        float ratio = (float(number))/(dna.length());
+        return ratio;
+    }
+    
+    public void testStorageFinder(){
+        FileResource file = new FileResource("brca1line.fa");
+        String dna = file.asString();
+        StorageResource store = storeAll(dna);
+        for(String gene: store.data()){
+        }
+        System.out.println("size = " + store.size());
+    }
+    
+    public void testFinder(){
+        String dna;
+        /*
+        dna = "ATGAAATGAAAA";
+        System.out.println("DNA string is:");
+        System.out.println(dna);
+        System.out.println("Gene found is:");
+        printAll(dna);
+        System.out.println();
+                
+        dna = "ccatgccctaataaatgtctgtaatgtaga";
+        System.out.println("DNA string is:");
+        System.out.println(dna);
+        System.out.println("Gene found is:");
+        printAll(dna); 
+        System.out.println();
+        */
+        dna = "CATGTAATAGATGAATGACTGATAGATATGCTTGTATGCTATGAAAATGTGAAATGACCCA";
+        System.out.println();
+        System.out.println("DNA string is:");
+        /*
+        for(int i =0; i< dna.length();++i){
+            System.out.print(i%10);
+        }*/
+        System.out.println(dna);
+        System.out.println("Gene found is:");
+        printAll(dna);
+        System.out.println();
+        
+    }
+    
+    /*
+    public ArrayList<String> findAllProteins(String dna){
+        this.dna = dna;
+        this.position = 0;
+        ArrayList<String> proteinList = new ArrayList<String>();
+        String protein = "";
+        while(true){
+            protein = findProtein();
+            if(protein == ""|| position >= dna.length()) break;
+            proteinList.add(protein);
+        }
+        return proteinList;
+    }*/
+    
+    public void realTesting() {
+        DirectoryResource dr = new DirectoryResource();
+        for (File f : dr.selectedFiles()) {
+            FileResource fr = new FileResource(f);
+            String s = fr.asString();
+            System.out.println("read " + s.length() + " characters");
+            printAll(s);
+        }
+    }
+}

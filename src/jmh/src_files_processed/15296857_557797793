@@ -1,0 +1,394 @@
+import java.awt.event.KeyEvent;
+import SpaceSmasher.Ball;
+import SpaceSmasher.Block;
+import SpaceSmasher.Ball.BallType;
+import SpaceSmasher.Block.BlockState;
+import SpaceSmasher.Block.BlockType;
+import SpaceSmasher.Paddle.PaddleState;
+import SpaceSmasher.SpaceSmasher;
+import SpaceSmasher.Paddle;
+import SpaceSmasher.Trap;
+import Engine.Vector2;
+import Engine.World;
+import Engine.World.BoundCollidedStatus;
+
+
+/*
+ * ##### ### ######## ##### 
+ * (####### ### ### #### ### ##### ###)
+ *  
+ * #######:  ## ##### # ###### ##### ### ###### ### #### ## ### ####
+ * ######## #### ### ########. 
+ * 
+ * ######### #######:
+ *  
+ * -##########(): #### ## ###### # "#####" ### ### 
+ * #####-########, ##### ######## ####. ##'## ##### ### #####
+ * #### ## ### #### #### ## #### ######.
+ *
+ * -######(): ##### #############, ######### ## ##########, 
+ *  #### ########, ### ##### #### ##### #### ##. 
+ * 
+ * 
+ * #######: ###### ####, #### ######, ### ####
+ */
+
+public class MySpaceSmasherLoopsLab extends SpaceSmasher {
+		
+    protected void initialize() {
+        lifeSet.add(5);
+        paddleSet.add(1);
+        ballSet.add(1);									
+        ballSet.get(0).setToInvisible();
+        blockSet.setBlocksPerRow(6);					
+       
+        
+        
+        /* TODO 1
+         * Single For Loop
+         * Building the blockSet
+         * 
+         * for( <one_time_initialization> ; <someBooleanQuestion>; <increment_expression> ) {
+         *   
+         * } 
+         * 
+         * 
+         * Notice the similarities to the if statement in the for loop structure below.
+         * Both have a boolean expression (the question) that determines if the code
+         * in the block (or body of the loop or if) should be executed.  The primary difference
+         * is that a loop may execute its code body 0, 1, or n(>1) times, whereas an if statement
+         * will execute its code body (or block) 0 or 1 times exactly.
+         * 
+         * Question: Can you completely skip over a loop, not doing the code in the body even once?
+         * Answer: If the loop's boolean expression results in false it will be skipped, even if
+         * it's the first loop iteration.  For example "for(int i = 100; i < 10; i++) {" won't execute
+         * even one loop iteration.
+         * 
+         * This for loop adds blocks to each row of our game, one row at a time.  
+         * Since the blocks per row is configured above as 6, we add 6 blocks per loop
+         * iteration, and our engine behind the scenes takes us to the next row.
+         * 
+         * If we removed this for statement:
+         * before: The game will build only one row of blocks, as indicated by the statements inside
+         * the loop, but will not repeat those block creation steps for rows two or three.
+         * after: The game builds multiple rows of blocks, controlled by the loop variable 'i'.
+         * 
+         * TODO 1b: Draw a flowchart of the single for loop.
+         */
+        
+         for(int i= 0 ; i <= 5 ; i++) {
+            blockSet.addNormalBlock(1);
+	        blockSet.addFireBlock(1);
+	        blockSet.addNormalBlock(1);
+	        blockSet.addFireBlock(1);
+	        blockSet.addFreezingBlock(1);  
+	        blockSet.addFreezingBlock(1);
+	     }
+	        
+        /* TODO 3
+         * The While Loop
+         * 
+         * Take the above for loop and convert it to the logically equivalent while loop.
+         * Note that all for loops can be converted to while loops, and vice-versa.
+         * Consider the pseudocode first...
+         * 
+         * 
+         * for( <expression1> ; <expression2>; <expression3> ) {
+         *   	print "Hello";
+         * } 
+         * 
+         * <expression1>;
+         * while( <expression2> ) {
+         * 		print "Hello";
+         * 		<expression3>;
+         * }
+         * 
+         * before and after are the same!  Before, a for loop built the rows, and after, 
+         * a while loop builds the same rows.
+         * 
+         */
+        
+        
+        
+        /* TODO 4
+         * Nested For Loops 
+         * A.k.a. loops inside loops, loops for use with multi-dimensional arrays, etc.
+         * 
+         * for( <variable_initializationA> ; <someBooleanQuestionA>; <increment_expressionA> ) {
+         *   
+         *   for( <variable_initializationB> ; <someBooleanQuestionB>; <increment_expressionB> ) {
+         *   	
+         *   	
+         *   }  
+         * }    
+         * 
+         * 
+         * Question: In this example, we put a loop inside a loop and called this a nested loop. How
+         * many times can we nest one loop inside another?
+         * Answer: Loops can be nested one inside another until the computational limits of your
+         * finite computer have been reached. 
+         * 
+         * This set of for loops iterate over the blocks in our game; one loop controls getting 
+         * blocks in the x-axis and the second loop controls movement in the y-axis.  
+         * Notice we ask the game for the number of rows and columns found in the blockSet, rather
+         * than try to manage that and remember it ourselves.
+         * 
+         * In pseudocode, the outer for structure loops over every possible row value from 0 to n-1
+         * where n is the number of rows in the blockSet.  For any given row, the inner for structure
+         * starts the column count at 0 and loops the innermost code m times (where m == #ofColumns).
+         * Thus, the total number of times the two lines are executed below is n*m (which is 6*3 in 
+         * this example. 
+         * 
+         * If we removed this set of nested for loops:
+         * before: The game will not reveal whether a block is a fire or ice block.
+         * after: The game builds multiple rows of blocks, controlled by the loop variable 'i'.
+         * 
+         * TODO 4b: Draw a flowchart of the nested for loops.
+         */
+	        
+        	int nextRow = 0, nextColumn = 0;    
+        			Block nextBlock = blockSet.getBlockAt(nextRow, nextColumn);  
+	            	nextBlock.revealPower();
+            
+        /* TODO 7
+         * Nested For and While Loops
+         * 
+         * In this section, we'll convert the innermost for loop above to a logically
+         * equivalent while loop, and our game will remain unchanged.  In fact, any for loop
+         * can be recast as a while loop, and the same is true for while to for loop 
+         * conversions.  So we'll test this in this section by converting the loop that
+         * walks over columns above to a while loop.  Remember that for loops and while 
+         * loops have the same <variable_initialization>, <loopTest> and <increment> expressions
+         * but not all in the same place.  Lets start above by changing the "for" loop
+         * to a "while" loop above, and then move the variable initialization and increment
+         * elsewhere.
+         * 
+         * before: The secret powers of all blocks are revealed. 
+         * after: The secret powers of all blocks are still revealed.
+         *  
+         * Consider the following loops that are equivalent, as you rewrite your for loop.
+         *  
+         * for( <expression1> ; <expression2>; <expression3> ) {
+         *   	print "Hello";
+         * } 
+         * 
+         * <expression1>;
+         * while( <expression2> ) {
+         * 		print "Hello";
+         * 		<expression3>;
+         * }
+         *  
+         *  
+         */  
+    }
+
+    private boolean areAllBlocksRemoved() {     
+    	 boolean retVal = true;
+           
+           int nextColumn = 0;
+           while( blockSet.getNumColumns() ) {
+             (nextBlock);  
+           } 
+          
+          
+          /* 
+          * 
+          * Notice the similarities to the for structure found in the while structure above.
+          * Both have a boolean expression (the question) that determines if the code
+          * in the block (or body of the loop) should be executed.  The primary differences
+          * are that the while header includes only one of the three expressions found in the for
+          * loop, and may look like a simpler structure.  In fact, the while solves any and all of 
+          * the problems a for loop can, but is more distributed with respect to its variable
+          * initialization and increment.
+          * 
+          * 
+          * This for loop adds blocks to each row of our game, one row at a time.  
+          * Since the blocks per row is configured above as 6, we add 6 blocks per loop
+          * iteration, and our engine behind the scenes takes us to the next row.
+          * 
+          * In pseudocode, the while seeks to loop over all of the blocks in the first row(==0)
+          * and if even one block still exists (ie, != null) we break out of the loop after
+          * setting the return value to false, meaning the game is stil ongoing.
+          * 
+          * If we removed this while statement: 
+          * 
+          * before: The game wont ever end unless the block at row 0 and column 0 has been destroyed.
+          * after: The game ends when all of the blocks in the topmost row (0) have been destroyed.
+          * 
+          * 
+          */
+    	 int nextRow = 0;
+    	    	
+    	 int nextColumn = 0;  
+    	     Block nextBlock = blockSet.getBlockAt(nextRow, nextColumn);  
+             if (nextBlock != null && nextBlock.getType() != Block.BlockType.EMPTY ) { 
+                 retVal = false;
+             }
+             nextColumn++;
+         
+    	 
+    	 /* TODO 5
+    	  * Nested While & For Loops For a Better Winning Condition
+    	  * A.K.A. nested loops
+    	  * 
+    	  * Add a second layer of looping to the code above by nesting the while loop completely inside 
+    	  * of a new for loop that you will build.  This new loop should wrap the existing code (which 
+    	  * checks the blocks in a given column) and extend this so the new outer loop varies the row selected, 
+    	  * rather than always using row 0 as the code does currently.
+    	  * 
+    	  * If you didn't have the outer "for" loop:
+    	  * before: The game's winning condition is to destroy bricks in all columns, for row 0 only
+    	  * after:  The game's winning condition is to destroy bricks in all columns, for all rows.  
+    	  * 
+    	  */
+    	 
+         return retVal;
+    }
+    
+    protected void update() {
+        Paddle paddle = paddleSet.get(0);
+        Ball ball = ballSet.get(0);
+
+    
+        boolean playerWonGame = areAllBlocksRemoved();
+        if (playerWonGame) {  
+            gameWin();		  
+        } 
+     
+        if(!playerWonGame) {       
+           if (keyboard.isButtonTapped(KeyEvent.VK_SPACE)  || (mouse.MouseOnScreen() && mouse.isButtonTapped(1) )) {      	
+        	   if(ball.isVisible()==false )  ball.spawn(paddle);  
+            }
+            
+            if (keyboard.isButtonDown(KeyEvent.VK_LEFT)) {            
+                paddle.moveLeft();
+               
+            } else if (keyboard.isButtonDown(KeyEvent.VK_RIGHT)) { 		
+                paddle.moveRight();
+            } else if (mouse.MouseOnScreen()) {					       
+                paddle.setCenterX(mouse.getWorldX());    
+                paddle.clampPaddle(); 
+            }
+            
+            if ( ball != null && ball.isVisible()) {  
+                BoundCollidedStatus status = ball.collideWorldBound();
+      
+                switch (status) {
+                    case TOP: {
+                        ball.reflectTop();
+                        ball.playBounceSound();
+                        break;
+                    }
+
+                    case BOTTOM: {
+                        ball.setToInvisible();
+                        ball.playDieSound();
+
+                        lifeSet.remove();
+
+                        if (lifeSet.getCount() < 1) {
+                            gameLost();
+                        }
+
+                        break;
+                    }
+
+                    case LEFT: {
+                        ball.reflectLeft();
+                        ball.playBounceSound();
+                        break;
+                    }
+
+                    case RIGHT: {
+                        ball.reflectRight();
+                        ball.playBounceSound();
+                        break;
+                    }
+                    default:
+                        break;
+                }
+
+                if(paddle.collided(ball)) {  
+                	paddle.reflect(ball);  
+                	ball.playBounceSound();
+                }
+                
+                 if(paddle.getState()==PaddleState.NORMAL) ball.setType(Ball.BallType.NORMAL);
+                if(paddle.getState()==PaddleState.FIRE) ball.setType(Ball.BallType.FIRE); 
+                else if(paddle.getState()==PaddleState.ICE) ball.setType(Ball.BallType.ICE); 
+               
+                
+                /** ball.setState(paddle.getState());  REDUCE to this!  */
+             
+                if (blockSet.isBallCollidingWithABlock(ball)) {
+                    handleBlockBallCollision(ball, paddle);
+                }
+            }
+        }
+    }
+    
+    private void removeNeighboringBlocks(int targetRow, int targetCol, Block.BlockType type) {
+    	/* TODO 6
+    	 * Nested For Loops For Removing Neighboring Blocks
+    	 * A.k.a. "Loop inside a loop"
+    	 * 
+    	 * The code in this section will add special behaviors to special block types such as 
+    	 * FIRE and ICE.  If a fire block is destroyed, all neighboring fire blocks should be removed
+    	 * as far away as 2 blocks, in both the x and y axis.  Since there are two axes to consider
+    	 * here, we'll have 2 loops - one for checking blocks in the x axis (the two neighbors to the
+    	 * left and the two neighbors to the right), and the second loop surrounding the first to 
+    	 * adjust the y-axis so we also look at the neighbors above and below the block in question.  
+    	 * 
+    	 * 
+    	 * Note that this effect is relative to only one block (the destroyed block) and not cumulative
+    	 * in that if a destroyed fire block removes a neighboring block, you don't reapply this algorithm
+    	 * for that neighbor too; she simply disappears without removing her neighbors as well.
+    	 * 
+    	 * before: When a fire or ice block is destroyed, it is the only block removed from the set
+    	 * after: When a fire or ice block is destroyed, all blocks of that type that are 2 blocks or
+    	 * less away will also be destroyed.
+    	 *  
+    	 * Start by uncommenting out the starter code below and transforming the "for" statements 
+    	 * from pseudocode to actual code.  Some lines of code (like the ones that skip certain cases)
+    	 * have already been written for you, and you just need to wrap these lines inside your loops.
+    	 *  
+    	 *  Green lines of code need to be uncommented below and transformed into working for loops
+    	 *  Blue lines of code below need to be uncommented and left as is.
+    	 */  
+    	 int row=0, col=0;
+    	     /** if (row < 0 || row >= blockSet.getNumRows()) continue;  
+    		  		/** if (col < 0 || col >= blockSet.getNumColumns()) continue;  
+    				    Block nextBlock = blockSet.getBlockAt(row, col);  
+		 			    if (nextBlock != null && nextBlock.getType() == type) blockSet.remove(nextBlock); */ 
+
+    }
+
+	private void handleBlockBallCollision(Ball ball, Paddle paddle) {
+		Block block = blockSet.getCollidedBlock(ball);	
+        block.reflect(ball);						    
+		
+		int row = block.getRow();
+		int col = block.getColumn();
+		
+	
+		if(block.getType() != Block.BlockType.CAGE_ACTIVE)  
+			blockSet.remove(block); 
+	
+		
+		ball.playBounceSound();  
+		
+		switch(block.getType()) {  
+			case FIRE:
+				removeNeighboringBlocks(row, col, Block.BlockType.FIRE);  
+				paddle.startFire(); 
+				break;
+			
+			case FREEZING:
+				removeNeighboringBlocks(row, col, Block.BlockType.FREEZING);
+				paddle.startIce(); 
+				
+			case NORMAL:  
+			default:	  
+		}
+	}
+}

@@ -1,0 +1,100 @@
+
+/* #### ### ####### ########## #
+ * ####: ######### #######
+ * ########: ##########
+ * ##: #########
+ */
+
+import ecs100.*;
+import java.awt.Color;
+import java.util.*;
+import java.io.*;
+
+/** #################: ###### # ###### ## #########, #### ### ######## ## ### #########  */
+public class BusinessReminders{
+
+    /** Constructor: set up user interface */
+    public BusinessReminders(){
+        UI.initialise();
+        UI.addButton("Clear", UI::clearText );
+        UI.addButton("Core: Vet", this::vetReminder );
+        UI.addButton("Completion: WOF", this::wofReminder );
+        UI.addButton("Quit", UI::quit );
+        UI.setDivider(1);
+    }
+
+    /**
+     * Write out a series of at least five reminders to pet owners.
+     * Each reminder should 
+     * - be addressed to a different person
+     * - refer to their pet's name and the type of animal several time
+     * - indicate the price of the visit.
+     * vetReminder should repeatedly call a method which sends a reminder to a single pet owner,
+     * passing different arguments to the method each time.
+     */
+    public void vetReminder(){
+      this.singleVetReminder("Jane", "Fluffy", "cat", 60.50);
+      this.singleVetReminder("Alex", "", "dog", 70.80);
+      this.singleVetReminder("Brendan", "Louis", "cat", 60.50);
+      this.singleVetReminder("Allison", "Leeroy", "rabbit", 40.50);
+      this.singleVetReminder("Tim", "Ghost", "cat", 60.50);
+      
+    }
+    
+   public void singleVetReminder(String name, String petName, String animalType, double price){
+      UI.printf("Dear %s,\n\n",name); 
+      UI.println("Our records show that your " + animalType + " " + petName + " is due for their annual check up and vaccination."); 
+      UI.println("Vaccinations ensure " + petName + " will be protected from a range of potential viruses.");
+      UI.printf("The check up fee for your %s will be $%.2f but if you book within the next few days we will take 10%% off\n", animalType, price);
+      UI.println("the total price of the check up.\n"); 
+      UI.println("We look forward to seeing you.\n");
+      UI.println("The team at Central Vet Clinic\n");
+      UI.println("--------------------------------------------------------------\n");
+    }
+    
+    
+    /**
+     * Write out a series of at least five Warrant of fitness reminders.
+     * Each reminder should
+     * - be addressed to a different person using both their full name and their first name
+     * - refer to the car type (several times), registration, and the year the vehicle was
+     *   first registered
+     * - remind the owner the number of months the warrant of fitness will be issued for
+     *   (6 or 12) and the warrant due date
+     * - recommend another service indicating its price
+     * - offer a 10% discount of the total cost if the owner decides to book for both
+     *   the warrant of fitness and the extra service
+     * - indicate the total cost after discount (with 2 decimal places).
+     */
+    public void wofReminder(){
+       this.singleWofReminder("Allison Hannigan", "Honda Integra", "JID630", 2006, 6, "1 August", "Wheel alignment", 60.50); 
+       this.singleWofReminder("Charlie Anderson", "Mitsubishi Lancer", "KSV425", 2003, 12, "1 August", "Oil change", 30.80);
+       this.singleWofReminder("Jake Perry", "Honda Prelude", "ONW238", 2010, 6, "1 August", "Fluid top up", 58.50);
+       this.singleWofReminder("Adam Rogerson", "Toyota Corolla", "HGO983", 1998, 12, "1 August", "Service", 75.50);
+       this.singleWofReminder("John Smith", "Ford Laser", "LMQ658", 2000, 6, "1 August", "Brake check", 45.70);
+       
+    }
+
+    public void singleWofReminder(String fullName, String carType, String carRegistration, int yearRegistered, 
+    int issuedWarrant, String warrantDate, String otherServices, double otherPrice){
+       double warrantPrice = 35.00;
+       double discountPrice = (warrantPrice + otherPrice) * (1-0.10);
+       String upperCase = carType.toUpperCase(); 
+       UI.printf("Dear %s %s,\n\n", fullName);
+       UI.printf("According to our records, your %d %s (%s) is due for its %d\nmonthly warrant of fitness on the %s costing $%.2f.\n\n",  
+       yearRegistered, upperCase, carRegistration, issuedWarrant, warrantDate, warrantPrice);
+       UI.printf("Our records also show that your %s needs a %s costing $%.2f.\n\n", carType, otherServices, otherPrice);
+       String toPrint = "If you book both of these suggested services with us we will offer a 10 discount off the price of both.\n";
+       toPrint += "This will bring your total to $%.2f.\n\n";
+       UI.printf(toPrint, discountPrice);
+       UI.printf("Please phone (04) 5630574 to book your car in and wee look forward to seeing you.\n\n");
+       UI.printf("Regards, Central City Mechanics\n");
+       UI.println("--------------------------------------------------------------\n");
+      
+    }
+    
+    public String firstName(String firstName){
+       firstName  
+    }
+}
+

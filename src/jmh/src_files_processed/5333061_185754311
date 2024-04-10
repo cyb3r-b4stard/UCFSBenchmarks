@@ -1,0 +1,192 @@
+/**
+ * @######  ######## ######
+ * @####### #-##-##
+ * ##### ########## #.
+ *
+ * ## ## #####, ########, #### ########### ########## ## ## ### #### ### # ####
+ * ### ###### ## ######## #### ### ##### ####### ## ### #####.
+ *
+ * # ####### ## ####### ### ####### ####### #####
+ * # ######## ############# ######.
+ *
+ *  ##### #######: ##########@#####.###
+ *  #####: ######
+ *  ####### # ##### ##: #####
+ *  ###### ####: ######
+ *  ###### ## #### #### #### ## #### ##########: #
+ */
+import java.util.Scanner;
+
+public class Ciphers {
+
+    public static final int MAX_ROWS = 5;
+    public static void main(String[] args) {
+        Scanner keyboard = new Scanner(System.in);
+        showIntro();
+        doEncryptions(keyboard);
+        doDecryptions(keyboard);
+        keyboard.close();
+    }
+
+    public static void showIntro() {
+        System.out.println("This program demonstrates a transposition cipher.");
+        System.out.println("A cipher is an algorithm to encrypt or decrypt a message.");
+        System.out.println();
+        System.out.println("This program will demonstrate encrypting a message with");
+        System.out.println("a columnar transposition cipher, both with and without");
+        System.out.println("padding characters. The program will then decrypt a message");
+        System.out.println("assuming it was encrypted with a columnar transposition cipher");
+        System.out.println("with padding.\n");
+    }   
+
+    public static void doEncryptions(Scanner keyboard) {
+        System.out.println("A demonstration of encrypting with a columnar transposition cipher:");
+        System.out.print("Enter the message to encrypt: ");
+        String messageEncrypt = keyboard.nextLine();
+        System.out.println();
+
+        System.out.println("Message encrypted with columnar transposition cipher and no padding.");
+        int rowNum = 2;
+        while (rowNum <= MAX_ROWS) {
+            System.out.print("Encrypted with " + rowNum + " rows: ");
+            encrypt(messageEncrypt, rowNum);
+            rowNum++;
+        }
+
+        System.out.println();
+        System.out.println("Message encrypted with columnar transposition cipher and padding.");
+        System.out.println();
+        int num = 2;
+        while (num <= MAX_ROWS) {
+            System.out.print("Clear text padded for " + num + " rows: ");
+            System.out.print(encryptPadding(messageEncrypt, num));
+            System.out.println();
+
+            System.out.print("Encrypted with " + num + " rows: ");
+            String paddedMessage = new String(encryptPadding(messageEncrypt, num));
+            encrypt(paddedMessage, num);
+            System.out.println();
+            num++;
+        }
+
+    }
+
+    public static void encrypt(String message, int rows) {
+        int i = 0;
+        int index = 0;
+        int letter = 0;
+
+
+        while (i < rows) {
+
+            for (int j = 0; j < message.length(); j = j + rows) {
+
+                if (j == 0) j = i + j;
+
+                System.out.print(message.charAt(j));
+
+            }
+
+            index++;
+            i++;
+        }
+
+        System.out.print("\n");
+
+    }
+    public static String encryptPadding(String message, int rows) {
+
+        int num = 2;
+        int padding = 0;
+        if (message.length() % rows != 0) {
+            padding = rows - (message.length() % rows) ;
+
+            for (int x = 0; x < padding; x++) {
+                message = message + "X";
+            }
+
+        }
+        return message;
+    }
+
+
+    public static void doDecryptions(Scanner keyboard) {
+        System.out.println("A demonstration of decrypting with a columnar transposition cipher:");
+        System.out.println("If the length of the message is not a multiple of the number of rows"); 
+        System.out.println("it will be padded, which may throw off the decryption.");
+        System.out.println();
+
+        System.out.print("Enter the message to decrypt: ");
+        String messageDecrypt = keyboard.nextLine();
+        System.out.println();
+
+        System.out.println("Messages Decrypted with a Columnar Transposition Cipher/n");
+        int num = 2;
+        while (num <= MAX_ROWS) {
+            System.out.print("Decrypted text padded for " + num + " rows: ");
+            System.out.print(encryptPadding(message, num));
+            System.out.println();
+
+            System.out.print("Decrypted with " + num + " rows: ");
+            String paddedMessage = new String(encryptPadding(message, num));
+            encrypt(paddedMessage, num);
+            System.out.println();
+            num++;
+        }
+
+        
+    }
+
+    public static String decryptMessage(String message, int rows) {
+        String decryptedMessage = new String(encrypt(message, rows));
+        return 
+
+    }
+    public static void showTests() {
+        System.out.println();
+        System.out.println("This displays automatic tests of the program: ");
+
+        String encryptedMessage = "AEIBFJCGXDHX"; 
+        String expected = "ABCDEFGHIJXX";
+        decryptTest(encryptedMessage, expected, 4, 1);
+
+        encryptedMessage = "CPEOURMT!"; 
+        expected = "COMPUTER!";
+        decryptTest(encryptedMessage, expected, 3, 2);
+
+
+        String clearMessage = "Dell_CS_HallXXX";
+        expected = "DCleSll_XlHX_aX";
+        encryptTest(clearMessage, expected, 5, 1);
+
+        clearMessage = "Texas_LonghornsX";
+        expected = "Tsnre_gnxLhsaooX";
+        encryptTest(clearMessage, expected, 4, 2);
+
+
+    }
+
+    public static void decryptTest(String encryptedMessage,
+    String expected, int rows, int testNumber) {
+
+        System.out.println();
+        String actual = new String(decryptMessage(encryptedMessage, rows));
+        System.out.println("expected: " + expected + ", actual: " + actual);
+        if(expected.equals(actual))
+            System.out.println("passed decrypt test" + testNumber);
+        else
+            System.out.println("FAILED DECRYPT TEST " + testNumber);
+    }
+
+    public static void encryptTest(String clearMessage,
+    String expected, int rows, int testNumber) {
+
+        System.out.println();
+        String actual = encryptMessage(clearMessage, rows);
+        System.out.println("expected: " + expected + ", actual: " + actual);
+        if(expected.equals(actual))
+            System.out.println("passed encrypt test" + testNumber);
+        else
+            System.out.println("FAILED ENCRYPT TEST " + testNumber);
+    }
+}

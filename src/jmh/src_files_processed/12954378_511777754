@@ -1,0 +1,148 @@
+import java.io.*;
+class PhoneBook
+{ 
+
+    PhoneEntry[] phoneBook;    
+
+    PhoneBook()    
+    {
+        phoneBook = new PhoneEntry[ 50 ] ;
+
+        phoneBook[0] = new PhoneEntry( "Stew" , " Pid", "(418)665-1223");
+        phoneBook[1] = new PhoneEntry( "Ima" , "Knob", "(860)399-3044");
+        phoneBook[2] = new PhoneEntry("Ug" , "Lee", "(815)439-9271");
+        phoneBook[3] = new PhoneEntry(  "Ali", "Katt", "(312)223-1937");
+        phoneBook[4] = new PhoneEntry(  "Joe", "King", "(913)883-2874");
+        phoneBook[5] = new PhoneEntry(  "Violet", "Smith", "(913)898-2823");
+        phoneBook[6] = new PhoneEntry(  "Alex", "Mandela", "number");
+
+    }
+    public PhoneEntry search( String targetF, String targetL )  
+    {
+        for (int j=0; j<phoneBook.length; j++)
+        {
+            if(phoneBook [j]!= null)
+            {
+                if ( phoneBook[ j ]. lastName.equalsIgnoreCase( targetL)&& 
+                phoneBook[ j ]. firstName.equalsIgnoreCase( targetF))  return phoneBook[ j ];
+            }
+        }
+        return null;
+    }
+
+    public void add (String f, String l, String p)
+    {
+        PhoneEntry temp = new PhoneEntry (f,l,p);
+        for (int i=0; i<phoneBook.length; i++)
+        {
+            if (phoneBook [i]== null)
+            {
+                phoneBook[i] = temp;
+                i=phoneBook.length; 
+            }
+        }
+
+    }
+
+    public void delete( String targetF, String targetL )  
+    {
+        int count = 0;
+        for (int i=0; i<phoneBook.length; i++)
+        {if (phoneBook[i]!=null)count++;
+
+        }
+        int locationOfDeletedObject=50;
+        for (int j=0; j<phoneBook.length; j++)
+        {
+
+            if(phoneBook [j]!= null)
+            {
+                if ( phoneBook[ j ]. lastName.equalsIgnoreCase( targetL)&& 
+                phoneBook[ j ]. firstName.equalsIgnoreCase( targetF))
+                {
+                    phoneBook[ j ]= null;
+                    locationOfDeletedObject=j;
+                }
+            }
+
+        }
+        phoneBook[locationOfDeletedObject]= phoneBook[count-1];
+        phoneBook[count-1]=null;
+    }
+
+    public void sort()
+    {
+        for(int i=0; i<phoneBook.length; i++)
+        {
+            for (int j=0; j<phoneBook.length-1;j++)
+            {
+                if(phoneBook[j]!=null && phoneBook[j+1]!=null)
+                {
+                    if (phoneBook[j].lastName.compareToIgnoreCase(phoneBook[j+1].lastName)>0)
+                    {
+                        PhoneEntry temp=phoneBook[j];
+                        phoneBook[j]= phoneBook[j+1];
+                        phoneBook [j+1] = temp;
+                    }
+                }
+            }
+        }
+
+    }
+
+    public void saveToFile()
+    {
+        PrintWriter outputStream = null;
+        try
+        {
+            outputStream =
+            new PrintWriter(new FileOutputStream("out.txt"));
+
+            for (int i=0; i<phoneBook.length; i++ )
+            {
+                if (phoneBook[i]!=null){
+                    outputStream.println(phoneBook[i].firstName);
+                    outputStream.println(phoneBook[i].lastName);
+                    outputStream.println(phoneBook[i].phone);
+                }
+                else
+                    outputStream.close();
+            }
+
+        }
+        catch(Exception steve)
+        {
+            System.out.println("We had an error with steve ");
+        }
+
+    }
+
+    public void openFile()
+    { int i=0;
+
+        try
+        {
+            BufferedReader file = new BufferedReader(new FileReader("fileOfNumbers.txt"));
+            while(file.ready())
+            {
+                if ( phoneBook[i]!=null){
+                    String firstName = file.readLine();
+                    String lastName = file.readLine();
+                    String phone = file.readLine();
+                    PhoneEntry temp = new PhoneEntry(firstName,lastName,phone);
+                    phoneBook[i]=temp;
+                    i++;
+                }
+            }
+            else
+            file.close();
+        }
+    }
+    catch(Exception bob)
+    {
+        System.out.println("You threw exception Bob");
+    }
+
+}
+
+}

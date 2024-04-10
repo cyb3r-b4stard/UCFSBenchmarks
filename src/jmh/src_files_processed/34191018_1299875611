@@ -1,0 +1,265 @@
+ 
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+
+
+public class Layer implements Serializable {
+
+
+    /**
+     * The class fingerprint that is set to indicate serialization compatibility
+     * with a previous version of the class
+     */
+    private static final long serialVersionUID = 4L;
+
+    /**
+     * Parent neural network - to which this layer belongs
+     */
+    private NeuralNetwork parentNetwork;
+
+    /**
+     * Collection of neurons in this layer
+     */
+    protected List<Neuron> neurons;
+
+    /**
+     * Label for this layer
+     */
+    private String label;
+
+    /**
+     * Creates an instance of empty Layer
+     */
+    public Layer() {
+        neurons = new ArrayList<>();
+    }
+    
+    /**
+     * Creates an instance of empty Layer for specified number of neurons
+     * @param neuronsCount number of neurons in this layer
+     */
+    public Layer(int neuronsCount) {
+       neurons = new ArrayList<>(neuronsCount);
+    }    
+
+    /**
+     * Creates an instance of Layer with the specified number of neurons with
+     * specified neuron properties
+     *
+     * @param neuronsCount number of neurons in layer
+     * @param neuronProperties properties of neurons in layer
+     */
+    public Layer(int neuronsCount, NeuronProperties neuronProperties) {
+        this(neuronsCount);
+
+        for (int i = 0; i < neuronsCount; i++) {
+            Neuron neuron = NeuronFactory.createNeuron(neuronProperties);
+            this.addNeuron(neuron);
+        }
+    }
+
+    /**
+     * Sets reference on parent network
+     *
+     * @param parent parent network
+     */
+    public final void setParentNetwork(NeuralNetwork parent) {
+        this.parentNetwork = parent;
+    }
+
+    /**
+     * Returns reference to parent network
+     *
+     * @return reference on parent neural network
+     */
+    public final NeuralNetwork getParentNetwork() {
+        return this.parentNetwork;
+    }
+
+    /**
+     * Returns array neurons in this layer as array
+     *
+     * @return array of neurons in this layer
+     */
+    public final List<Neuron> getNeurons() {
+        return neurons;        
+    }
+
+    /**
+     * Adds specified neuron to this layer
+     *
+     * @param neuron neuron to add
+     */
+    public final void addNeuron(Neuron neuron) {
+        if (neuron == null) {
+            throw new IllegalArgumentException("Neuron cant be null!");
+        }
+
+        neuron.setParentLayer(this);
+
+        neurons.add(neuron);
+        
+        if (parentNetwork != null)
+            parentNetwork.fireNetworkEvent(new NeuralNetworkEvent(neuron, NeuralNetworkEvent.Type.NEURON_ADDED));                
+    }
+
+    /**
+     * Adds specified neuron to this layer,at specified index position
+     *
+     * Throws IllegalArgumentException if neuron is null, or index is
+     * illegal value (index<0 or index>neuronsCount)      
+     * 
+     * @param neuron neuron to add
+     * @param index index position at which neuron should be added
+     */
+    public final void addNeuron(int index, Neuron neuron) {
+        if (neuron == null) {
+            throw new IllegalArgumentException("Neuron cant be null!");
+        }
+
+        neurons.add(index, neuron);        
+        
+        neuron.setParentLayer(this);
+        
+        if (parentNetwork != null)
+            parentNetwork.fireNetworkEvent(new NeuralNetworkEvent(neuron, NeuralNetworkEvent.Type.NEURON_ADDED));                        
+    }
+
+    /**
+     * Sets (replace) the neuron at specified position in layer
+     *
+     * @param index index position to set/replace
+     * @param neuron new Neuron object to set
+     */
+    public final void setNeuron(int index, Neuron neuron) {
+        if (neuron == null) {
+            throw new IllegalArgumentException("Neuron cant be null!");
+        }
+        
+        neurons.set(index, neuron);
+        
+        neuron.setParentLayer(this);       
+        
+        if (parentNetwork != null)
+            parentNetwork.fireNetworkEvent(new NeuralNetworkEvent(neuron, NeuralNetworkEvent.Type.NEURON_ADDED));                        
+        
+    }
+
+    /**
+     * Removes neuron from layer
+     *
+     * @param neuron neuron to remove
+     */
+    public final void removeNeuron(Neuron neuron) {
+        int index = indexOf(neuron);
+        removeNeuronAt(index);
+    }
+
+    /**
+     * Removes neuron at specified index position in this layer
+     *
+     * @param index index position of neuron to remove
+     */
+    public final void removeNeuronAt(int index) {
+        Neuron neuron = neurons.get(index);
+        neuron.setParentLayer(null);
+        neuron.removeAllConnections(); 
+        neurons.remove(index);                
+        
+        if (parentNetwork != null)
+            parentNetwork.fireNetworkEvent(new NeuralNetworkEvent(this, NeuralNetworkEvent.Type.NEURON_REMOVED));                        
+    }
+
+    public final void removeAllNeurons() {
+        neurons.clear();
+        
+        if (parentNetwork != null)
+            parentNetwork.fireNetworkEvent(new NeuralNetworkEvent(this, NeuralNetworkEvent.Type.NEURON_REMOVED));                                
+    }
+
+    /**
+     * Returns neuron at specified index position in this layer
+     *
+     * @param index neuron index position
+     * @return neuron at specified index position
+     */
+    public Neuron getNeuronAt(int index) {
+        return neurons.get(index);
+    }
+
+    /**
+     * Returns the index position in layer for the specified neuron
+     *
+     * @param neuron neuron object
+     * @return index position of specified neuron
+     */
+    public int indexOf(Neuron neuron) {
+        return neurons.indexOf(neuron);
+    }
+
+    /**
+     * Returns number of neurons in this layer
+     *
+     * @return number of neurons in this layer
+     */
+    public int getNeuronsCount() {
+        return neurons.size();
+    }
+   
+
+    /**
+     * Performs calculaton for all neurons in this layer
+     */
+    public void calculate() {
+
+          neurons.parallelStream().forEach( n -> n.calculate());
+
+    }
+
+    /**
+     * Resets the activation and input levels for all neurons in this layer
+     */
+    public void reset() {
+        for (Neuron neuron : this.neurons) {
+            neuron.reset();
+        }
+    }
+
+    /**
+     * Initialize connection weights for the whole layer to to specified value
+     *
+     * @param value the weight value
+     */
+    public void initializeWeights(double value) {
+        for (Neuron neuron : this.neurons) {
+            neuron.initializeWeights(value);
+        }
+    }
+
+    /**
+     * Get layer label
+     *
+     * @return layer label
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * Set layer label
+     *
+     * @param label layer label to set
+     */
+    public void setLabel(String label) {
+        this.label = label;
+    }
+    
+    public boolean isEmpty() {
+        return neurons.isEmpty();
+    }
+
+}

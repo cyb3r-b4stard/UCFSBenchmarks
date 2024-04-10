@@ -1,0 +1,146 @@
+import java.util.ArrayList;
+import java.util.Iterator;
+public class Club 
+{
+    private ArrayList<Member> ledenlijst;
+    private String naam;
+    private double lidgeld;
+
+    public Club(String naam)
+    {
+        this.naam = naam;
+        ledenlijst = new ArrayList<Member>();
+
+    }
+
+    public boolean addMember(Member lid)
+    {
+        if (lid==null)
+        {
+            return false;
+        }
+
+        if (! ledenlijst.contains(lid))
+        {
+            return ledenlijst.add(lid);
+        }
+        return false;
+    }
+
+    public int getNrOfMembers()
+    {
+        return ledenlijst.size();
+    }
+
+    public void showOverview()
+    {
+        System.out.println("Overview of all members of club " + naam);
+    }
+
+    public int joinedInYear(int jaar)
+    {
+        int aantal = 0;
+
+        for(Member eenlid: ledenlijst)
+        {
+            if(eenlid.getYear() == jaar)
+            {
+                aantal++;
+
+            }
+
+        }
+
+        return aantal;
+
+    }
+
+    public boolean isMember(String famNaam)
+    {
+        for(Member eenlid: ledenlijst)
+        {
+            if(eenlid.getLastName().equals(famNaam))
+            {
+                return true;
+            }
+
+
+        }
+        return false;
+
+    }
+
+    public ArrayList<Member> removeMembersFromYear(int year)
+    {
+        ArrayList<Member> verwijder = new ArrayList<Member>();
+        Iterator<Member> it = ledenlijst.iterator();
+
+        while (it.hasNext())
+        {
+            Member eenLid = it.next();
+
+            if (eenLid.getYear() == year)
+            {
+                verwijder.add(eenLid);
+                it.remove();
+            }
+
+        }
+        return verwijder;
+    }
+
+    public ArrayList<String> showSortedNames()
+    {
+        ArrayList<String> namenlijst = new ArrayList<>();
+
+        for(Member eenLid : ledenlijst)
+        {
+            namenlijst.add(eenLid.getLastName());
+
+                       
+        }
+        namenlijst.sort(null);
+
+        for(String naam: namenlijst)
+        {
+        System.out.println(naam);
+        }
+         
+
+
+        return namenlijst;
+
+    }
+
+    public void assignContributions(int year)
+    {
+        for(Member eenLid : ledenlijst)
+        {
+            if ( (eenLid.getYear()-year) == 0)
+            {
+                int geld = 300;
+                eenLid.lidGeld(geld);
+            }
+            else
+            {
+                int geld= int((year - eenLid.getYear())*300);
+                eenLid.lidGeld(geld);
+            }
+            
+                       
+        }
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     *
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y
+     */
+    public double get(int y)
+    {
+        return y;
+    }
+
+
+}

@@ -1,0 +1,61 @@
+/* #### ### #### ### ########## # 
+ * ####:##（######）
+ * ########:
+ * ##:##########
+ */
+
+import ecs100.*;
+
+/** ####### ### ########### ########## ## # ####### ####### ####### */
+
+public class CircuitCalculator{
+
+    public static final double supplyVoltage = 20; 
+
+    /** Constructor, sets up the user interface */
+    public CircuitCalculator(){
+        UI.initialise();
+        UI.addButton("Core", this::calculateCircuitCore); 
+        UI.addButton("Completion", this::calculateCircuitCompletion );
+        UI.addButton("Quit", UI::quit);
+    }
+
+    /** Calculates and prints the following properties of a voltage divider circuit:
+     *   output voltage, current, power,
+     *   supply current and power
+     *   efficiency of circuit
+     *  Asks the user for the supply voltage, the resistors R1 and R2, and the resistance of the load.
+     */
+    public void calculateCircuitCore(){
+        double R1=UI.askDouble("R1");
+        double R2=UI.askDouble("R2");
+        double RL=UI.askDouble("RL");
+        double Rx=R2*RL;
+        double Ry=R2+Rl;
+        double RZ=R1+Rx/Ry;
+        double I=supplyVoltage/RZ;
+        double P=supplyVoltage*I;
+        UI.println("The supply voltage is" + supplyVoltage + "V");
+        UI.println("The supply current is" +      I      + "A");
+        UI.println("The supply power is " +      P      + "W");
+        double Rb=Rx/Ry;
+        double UL=supplyVoltage*Rb/Rz;
+        double IL=UL/RL;
+        double PL=UL*IL;
+        double η=PL/P;
+        UI.println("The load voltage is" +     UL      +"V");
+        UI.println("The load curremt is" +     IL      +"A");
+        UI.println("The load power is" +      PL      + "W");
+        UI.println("The effciency of the circuit is" +     η      );
+    }
+
+    /** 
+     *  
+     */
+    public void calculateCircuitCompletion(){
+        /*# YOUR CODE HERE */
+
+    }
+
+
+}

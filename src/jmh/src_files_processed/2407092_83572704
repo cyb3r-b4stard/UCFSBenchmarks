@@ -1,0 +1,43 @@
+Critter.java 
+ 
+package info.gridworld.actor; 
+ 
+import info.gridworld.grid.Location; 
+import java.util.ArrayList; 
+ 
+/** 
+ * A Critter is an actor that moves through its world, processing 
+ * other actors in some way and then moving to a new location. 
+ * Define your own critters by extending this class and overriding any methods of this class except for act. 
+ * When you override these methods, be sure to preserve the postconditions. 
+ * The implementation of this class is testable on the AP CS A and AB Exams. 
+ */ 
+public class Critter extends Actor 
+{ 
+ /** 
+ * A critter acts by getting a list of other actors, processing that list, getting locations to move to, 
+ * selecting one of them, and moving to the selected location. 
+ */ 
+ public void act() 
+ { 
+ if (getGrid() == null) 
+ return; 
+ ArrayList<Actor> actors = getActors(); 
+ processActors(actors); 
+ ArrayList<Location> moveLocs = getMoveLocations(); 
+ Location loc = selectMoveLocation(moveLocs); 
+ makeMove(loc); 
+ } 
+ 
+ 
+ 
+ /** 
+ * Gets the actors for processing. Implemented to return the actors that occupy neighboring grid locations. 
+ * Override this method in subclasses to look elsewhere for actors to process. 
+ * Postcondition: The state of all actors is unchanged. 
+ * @return a list of actors that this critter wishes to process 
+ */ 
+ public ArrayList<Actor> getActors() 
+ { 
+ return getGrid().getNeighbors(getLocation()); 
+ } 

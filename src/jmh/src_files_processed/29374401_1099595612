@@ -1,0 +1,109 @@
+
+/**
+ * ##### # ########### ## ### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+
+import edu.duke.*;
+import org.apache.commons.csv.*;
+import java.io.*;
+public class CSV {
+    public void readFood(){
+        FileResource fr = new FileResource();
+        CSVParser parser = fr.getCSVParser();
+        for(CSVRecord record : parser){
+            System.out.println(record.get("Name"));
+        }
+    }
+    
+    public void listExporters(CSVParser parser, String exportOfInterest){
+        for (CSVRecord record : parser){
+            String export = record.get("Exports");
+            if(export.contains(exportOfInterest)){
+                String country = record.get("Country");
+                System.out.println(country);
+            }
+        }
+    }
+    
+    public void testExport(){
+        FileResource fr = new FileResource();
+        CSVParser parser = fr.getCSVParser();
+        listExporters(parser, "coffee");
+    }
+    
+    public void tester(){
+        FileResource fr = new FileResource();
+        CSVParser parser = fr.getCSVParser();
+        bigExporters(parser,"$999,999,999,999");
+    }
+    
+    public void countryInfo(CSVParser parser, String country){
+        for (CSVRecord record : parser){
+            String tgtCountry = record.get("Country");
+            if (tgtCountry.contains(country)){
+                String resCountry = record.get("Country");
+                String resExport = record.get("Exports");
+                String resValue = record.get("Value (dollars)");
+                System.out.print(resCountry+": ");
+                System.out.print(resExport+": ");
+                System.out.println(resValue);
+            } 
+        }
+    }
+    
+    public void listExportersTwoProducts(CSVParser parser, String export1, String export2){
+        for (CSVRecord record : parser){
+            String export = record.get("Exports");
+            if(export.contains(export1) & export.contains(export2)){
+                String country = record.get("Country");
+                System.out.println(country);
+            }
+        }
+    }
+    
+    public int numberOfExporters(CSVParser parser, String exportItem){
+        int exportCount = 0;
+        for (CSVRecord record : parser){
+            String export = record.get("Exports");
+            if(export.contains(exportItem)){
+                exportCount++;
+            }
+        }
+        return exportCount;
+    }
+    
+    public void bigExporters (CSVParser parser, String amount){
+        for (CSVRecord record : parser){
+            String value = record.get("Value (dollars)");
+            if (value.length() > amount.length()){
+                String country = record.get("Country");
+                System.out.println(country+": "+value);
+            }
+        }
+    }
+    
+    public void testHottestDay(){
+        FileResource fr = new FileResource("nc_weather/2015/weather-2015-04-01.csv");
+        CSVRecord largest = hottestHourInFile(fr.get(CSVParser());
+        System.out.println("Hottest temperature was "+largest.get("TemperatureF")+" at "+largest.get("TimeEST"));
+    }
+    
+    public CSVRecord hottestHourInFile(CSVParser parser){
+        CSVRecord largestSoFar = null;
+        for(CSVRecord currentRow : parser){
+            if(largestSoFar == null){
+                largestSoFar = currentRow;
+            } else {
+                double currentTemp = Double.parseDouble(currentRow.get("TemperatureF"));
+                double largestTemp = Double.parseDouble(largestSoFar.get("TemperatureF"));
+                if(currentTemp > largestTemp){
+                    largestSoFar = currentRow;
+                }
+            }
+        }
+        return largestSoFar;
+    }
+}

@@ -1,0 +1,166 @@
+import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.ArrayList;
+/**
+ * ##### # ########### ## ##### ##### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Hotel
+{
+    private HashSet<Room> occupiedrooms;
+    private HashMap<String, ArrayList<String>> papersOrdered;
+
+    /**
+     * Constructor for objects of class Hotel
+     */
+    public Hotel()
+    {
+        occupiedrooms = new HashSet<Room>();
+        papersOrdered = new HashMap<String, ArrayList<String>>();
+    }
+
+    public void addPaper(String roomNo, String paper)
+    {
+        if (isValidNo(roomNo) && roomTaken(roomNo)){
+            for(Room room : occupiedrooms) {
+                if (room.getRoomNo().equals(roomNo)) {
+                    ArrayList<String> papers = new ArrayList<String>();
+                    papers = papersOrdered.get(roomNo);
+                    papers.add(paper);
+                    papersOrdered.put(roomNo,papers);
+                }
+            }
+        }
+        }
+    }
+
+    public void CheckIn (String roomNo, String guestName)
+    {
+        if (isValidNo(roomNo) && !roomTaken(roomNo)){
+            Room newRoom = new Room(roomNo, guestName);
+            occupiedrooms.add(newRoom);
+        }
+        else {
+            System.out.println("eroor, room is not valid or has been taken");
+        }
+    }
+
+    public HashSet<Room> getOccupiedRooms ()
+    {
+        return occupiedrooms;
+    }
+
+    public ArrayList<String> getPapersOrdered(String roomNo)
+    {
+        return papersOrdered.get(roomNo);
+    }
+
+    public boolean roomTaken(String roomNo)
+    {
+        for(Room room : occupiedrooms) {
+            if(room.getRoomNo() == roomNo) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getGuest(String roomNo)
+    {
+        for(Room room : occupiedrooms) {
+            if (room.getRoomNo() == roomNo) {
+                return room.getGuest();
+            }
+        }
+        return null;
+    }
+
+    public void removeRoom(String roomNo)
+    {
+        for(Room room : occupiedrooms) {
+            if (room.getRoomNo() == roomNo) {
+                occupiedrooms.remove(room);
+                papersOrdered.remove(roomNo);
+                System.out.println(room.getGuest() + " - is vacating");
+            }
+        }
+    }
+    
+    public void whichPapers(String roomNo)
+    {
+        for(Room room : occupiedrooms) {
+            if (room.getRoomNo() == roomNo) {
+                for(String paper : room.getPapers())
+                {
+                    System.out.println(paper);
+                    System.out.println("#####");
+                }
+            }
+            }
+    }
+    
+        
+    public Boolean isValidLength(String roomNo)
+    {
+
+        if(roomNo.length()==3) {
+            return true;
+        }
+        else {
+            return false;
+        }
+
+    }
+
+    public boolean isValidNumber(String roomNo)
+    {
+        char[] c = roomNo.toCharArray();
+        for(int i=0; i < roomNo.length(); i++)
+        {
+            if ( !Character.isDigit(c[i]))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isValidRoomNo(String roomNo)
+    {
+        String roomNumb = roomNo.substring(1,3);
+        int converted = Integer.parseInt(roomNumb);
+        if (converted >= 1 && converted <= 12) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public boolean isValidFloor(String roomNo)
+    {
+        String floor = roomNo.substring(0,1);
+        int converted = Integer.parseInt(floor);
+        if(converted >= 0 && converted <= 8) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public Boolean isValidNo(String roomNo)
+    {
+        if (isValidLength(roomNo) && isValidNumber(roomNo) && isValidRoomNo(roomNo) && isValidFloor(roomNo)){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+   
+}

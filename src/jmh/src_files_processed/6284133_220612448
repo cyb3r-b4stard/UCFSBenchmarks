@@ -1,0 +1,123 @@
+import java.util.Set;
+import java.util.HashMap;
+import java.util.HashSet;
+/**
+ * ##### #### - # #### ## ## ######### ####.
+ *
+ * #### ##### ## #### ## ### "##### ## ####" ###########. 
+ * "##### ## ####" ## # #### ######, #### ##### ######### ####.  
+ *
+ * # "####" ########## ### ######## ## ### ####### ## ### ####.  ## ## 
+ * ######### ## ##### ##### ### #####.  ### #### ######## ####, ### #### 
+ * ###### # ######### ## ### ########### ####.
+ * 
+ * @######  ####### #######, ##### #. ###### ### ### ####
+ * @####### #####,##,####
+ */
+
+public class Room 
+{
+    private String description;
+    private HashMap<String, Room> exits;        
+    private HashSet<Item> items;
+
+    /**
+     * Create a room described "description". Initially, it has
+     * no exits. "description" is something like "a kitchen" or
+     * "an open court yard".
+     * Initially there are no items but there is a possibilty for items in every room.
+     * @param description The room's description.
+     */
+    public Room(String description) 
+    {
+        this.description = description;
+        exits = new HashMap<String, Room>();
+        items = new HashSet<Item>();
+    }
+
+    /**
+     * Define an exit from this room.
+     * @param direction The direction of the exit.
+     * @param neighbor  The room to which the exit leads.
+     */
+    public void setExit(String direction, Room neighbor) 
+    {
+        exits.put(direction, neighbor);
+    }
+
+    /**
+     * @return The short description of the room
+     * (the one that was defined in the constructor).
+     */
+    public String getShortDescription()
+    {
+        return description;
+    }
+
+    /**
+     * Return a description of the room in the form:
+     *     You are in the kitchen.
+     *     Exits: north west
+     * Also returns a description of the items in the room in the ecample form of:
+     *     book: a book written in an undecipherable language.
+     * @return A long description of this room
+     */
+    public String getLongDescription()
+    {
+        return "You are " + description + ".\n" + getExitString() + ".\n" + getItemString() + ".";
+    }
+
+    /**
+     * Return a string describing the room's exits, for example
+     * "Exits: north west".
+     * @return Details of the room's exits.
+     */
+    private String getExitString()
+    {
+        String returnString = "Exits:";
+        Set<String> keys = exits.keySet();
+        for(String exit : keys) {
+            returnString += " " + exit;
+        }
+        return returnString;
+    }
+
+    /**
+     * Return the room that is reached if we go from this room in direction
+     * "direction". If there is no room in that direction, return null.
+     * @param direction The exit's direction.
+     * @return The room in the given direction.
+     */
+    public Room getExit(String direction) 
+    {
+        return exits.get(direction);
+    }
+
+    /**
+     * Adds a new item to room
+     * @param Item Takes a parameter Item to know what to add to the room
+     */
+    public void addItem(Item itemType) 
+    {
+        items.add(itemType);
+    }
+
+    /**
+     * Return a string describing the items in the room for example
+     * book: a book written in an undecipherable language.
+     * @return Returns all the items in a room and their descriptions.
+     */
+    private String getItemString()
+    {
+        String returnString = "Items in room :";
+        if(items.isEmpty()) {
+            for(Item item : items){
+                System.out.println(item.getName() + ": " + item.getDescription() + ".\n";
+            }
+        }
+        else {
+            returnString += "no items in room";
+        }  
+        return returnString;
+    }
+}

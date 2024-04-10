@@ -1,0 +1,80 @@
+
+    public class BankovyUcet 
+    {
+    private static final int MAX_POHYB = 30000;
+    private String nazovUctu;
+    private double stavNaUcte;
+    private double MAX_ROCNA_UROKOVA_SADZBA = 10.0;
+    private static double urokovaSadzba;
+
+   public BankovyUcet (String nazovUctu, double pocStav)
+  { this.nazovUctu = nazovUctu;
+    stavNaUcte = 0;
+    this.urokovaSadzba = 0.0;
+    if(pocStav > 0 && pocStav <=MAX_POHYB)
+    {
+        stavNaUcte = pocStav;
+    }
+  } 
+  public boolean nastavurokovuSadzbu(double novaSadzba)
+   {
+   if (novaSadzba<= MAX_UROKOVA_SADZBA)
+   this.urokovaSadzba=novaSadzba;
+   return true; 
+   } else return false;
+
+  
+  public BankovyUcet(String nazovUctu)
+  {
+    this(nazovUctu, 100);
+   }
+  public BankovyUcet ()
+  {
+  this("testovaci ucet");
+  }
+  public String toString()
+  {
+  return String.format("[Ucet : nazov = %s, stav = %8.2f]", nazovUctu, stavNaUcte);
+  }
+  public String vlozitPeniaze(int vklad)
+  {
+  String vys;
+    if (vklad<=0)
+    {
+        vys= "vklad musi byt kladny";
+    } 
+    else
+    {
+    if(vklad>MAX_POHYB)
+    {
+        vys= "volam policiu";
+    }
+    else{
+         stavNaUcte= stavNaUcte + vklad;
+         vys= "vklad sa podaril";
+    }}
+
+    stavNaUcte = stavNaUcte + vklad;
+    vys = "Vklad sa podaril";
+    return vys;
+  }
+  public String vyberPeniaze(int vyber)
+  {
+      if(vyber<=0)
+      {
+          return "vyber musi byt kladny";
+    }
+      if(vyber>MAX_POHYB)
+        {
+            return "spinave peniaze nevydavam";
+    }
+    if(vyber > stavNaUcte)
+    {
+        return "Prilis maly zostatok";
+    }
+    String vys;
+    stavNaUcte = stavNaUcte - vyber;
+    vys = "vyber sa podaril";
+    return vys;
+  }
+}

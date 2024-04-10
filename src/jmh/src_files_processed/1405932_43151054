@@ -1,0 +1,79 @@
+
+public class Queens
+{
+
+    static int[][] board = new int[8][8];
+
+    board[][];
+    public static void main(String[] args) {
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (sum(i,j) == 0)
+                    board[i][j] += 1;
+                System.out.print(board[i][j] + " ");
+                if (j == 7)
+                    System.out.println();
+            }
+        }
+    }
+
+    public static int vsum(int a, int b) {
+        int sum = 0;
+        for (int k = 0; k < b; k++) {
+            sum += board[a][k];
+        }
+        return sum;
+    }
+
+    public static int hsum(int a, int b) {
+        int sum = 0;
+        for (int k = 0; k < a; k++) {
+            sum += board[k][b];
+        }
+        return sum;
+    }
+
+    public static int dsum1(int a, int b) {
+        int sum = 0;
+
+        if (a < b) {
+            b = b - a;
+            a = 0;
+        } else if (b < a) {
+            a = a - b;
+            b = 0;
+        } else {
+            a = b = 0;
+        }
+
+        for (int k = 0; k < 8-a-b; k++) {
+            sum += board[a+k][b+k];
+        }
+        return sum;
+    }
+
+    public static int dsum2(int a, int b) {
+        int sum = 0;
+
+        if (a + b < 8) {
+            a = a + b;
+            b = 0;
+        } else if (a + b > 8) {
+            a = 7;
+            a = 7 - (a - b);
+        } else {
+            a = 0;
+            b = 7;
+        }
+        
+        for (int k = 0; k < 8-a-b; k++) {
+            sum += board[a+k][7-(b+k)];
+        }
+        return sum;
+    }
+
+    public static int sum(int a, int b) {
+        return hsum(a, b) + vsum(a, b) + dsum1(a, b) + dsum2(a, b);
+    }
+}

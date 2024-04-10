@@ -1,0 +1,500 @@
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.zip.DataFormatException;
+
+import static org.junit.Assert.*;
+
+/**
+ * ### #### ##### ############.
+ *
+ * @########_######  ####
+ * @###### ######
+ * @########_####### (#### ## ##)
+ * @####### (###### ####)
+ */
+public class BirdListTest
+{
+    BirdList bl;  
+    Repository r;
+    /**
+     * Default constructor for test class BirdListTest
+     */
+    public BirdListTest()
+    {
+    }
+
+    /**
+     * Sets up the test fixture.
+     *
+     * Called before every test case method.
+     */
+    @Before
+    public void setUp() {
+        r = Repository.getInstance();
+        Repository.getInstance().reset();
+        bl = new BirdList("2014");
+    }
+
+    /**
+     * Tests that constructors for BirdList class creates an object.
+     */
+    @Test
+    public void testConstructor() {
+        assertNotNull(bl);
+        assertEquals("2014", bl.getDescription());
+        assertEquals(0, bl.size());
+
+        BirdList bl1 = new BirdList();
+        assertEquals("", bl1.getDescription());
+        assertEquals(0, bl1.size());
+
+    }
+
+    /**
+     * Tests the toString method from the BirdList class.
+     */
+    public void testToString()  {
+        try {
+            Sighting s1 = new Sighting(20111, "Western tanager", 
+                    "2011 05 09 at 0715", "tree by front balcony",
+                    "sunny", 1, "immature male feeding");
+            Sighting s2 = new Sighting(20112, "American Robin", 
+                    "2014 04 03 at 0645", "backyard",
+                    "cloudy", 2, "singing his heart out");
+            bl.rememberSighting(s1);
+            bl.rememberSighting(s2);
+
+            String result = "List: 2014\n20111\nSighting: " + 
+                "WETA 2011 05 09 at 0715 tree by front balcony";
+            result += "\nsunny Number = 1\nimmature male feeding\n";
+            result += "20112\nSighting: AMRO 2014 04 03 at 0645 backyard";
+            result += "\ncloudy Number = 2\nsinging his heart out";
+
+            assertEquals(result, bl.toString());   
+        }
+        catch (Exception e) {
+            fail("Unexpected exception - " + e.toString());
+        }
+
+    }
+
+    /**
+     * Tests the remember sighting method from the BirdList class.
+     */
+    @Test
+    public void testRememberSighting() {
+        try {
+            Sighting t = null;
+            bl.rememberSighting(t);
+            fail("Sighting is unknown, please enter a valid indentifier.");
+        }
+        catch (DataFormatException dfe) {
+            assertEquals("Sighting is unknown," +
+                "please enter a valid indentifier.", dfe.getMessage());
+        }
+        catch (Exception e) {
+            fail("Unexpected exception - " + e.getMessage());
+        }
+
+        try {
+            Sighting s1 = new Sighting(20111, "Western tanager", 
+                    "2011 05 09 at 0715", "tree by front balcony",
+                    "sunny", 1, "immature male feeding");
+            Sighting s2 = new Sighting(20112, "American Robin", 
+                    "2014 04 03 at 0645", "backyard",
+                    "cloudy", 1, "singing his heart out");
+            bl.rememberSighting(s1);
+            assertEquals(1, bl.size());
+            bl.rememberSighting(s2);
+            assertEquals(2, bl.size());
+        }
+        catch (Exception e) {
+            fail("Unexpected exception - " + e.getMessage());
+        }
+
+    }
+
+    /**
+     * Tests the equals method from the BirdList class.
+     */
+    @Test
+    public void testEquals() {
+        assertFalse(bl.equals(null));
+        assertTrue(bl.equals(bl));
+        assertFalse(bl.equals(""));
+        BirdList bl1 = new BirdList("2014");
+        assertTrue(bl.equals(bl1));
+        bl1.setDescription("2013");
+        assertFalse(bl.equals(bl1));
+    }
+
+
+    /**
+     * Tests if the bird species is unique.
+     */
+    @Test
+    public void testUniqueSpecies() {
+        try {
+            Sighting s1 = new Sighting(20111, "Western tanager", 
+                    "2011 05 09 at 0715", "tree by front balcony",
+                    "sunny", 1, "immature male feeding");
+            Sighting s2 = new Sighting(20112, "American Robin", 
+                    "2014 04 03 at 0645", "backyard",
+                    "cloudy", 2, "singing his heart out");
+            Sighting s3 = new Sighting(20113, "American Robin", 
+                    "2014 04 13 at 0645", "backyard",
+                    "cloudy", 2, "singing his heart out");
+            Sighting s4 = new Sighting(20114, "American Robin", 
+                    "2014 04 23 at 0645", "backyard",
+                    "cloudy", 2, "singing his heart out");
+            bl.rememberSighting(s1);
+            bl.rememberSighting(s2);
+            bl.rememberSighting(s3);
+            bl.rememberSighting(s4);
+
+            assertEquals(0, bl.uniqueSpecies());
+        }
+        catch (Exception e) {
+            fail("Unexpected exception - " + e.toString());
+        }
+
+    }
+
+    /**
+     * Tests the abbreviation order of BirdSpecies.
+     */
+    @Test
+    public void testAbbreviationOrder() {
+        try {
+            Sighting s1 = new Sighting(20111, "Western tanager", 
+                    "2011 05 09 at 0715", "tree by front balcony",
+                    "sunny", 1, "immature male feeding");
+            Sighting s2 = new Sighting(20112, "American Robin", 
+                    "2014 04 03 at 0645", "backyard",
+                    "cloudy", 2, "singing his heart out");
+            Sighting s3 = new Sighting(20113, "American Robin", 
+                    "2014 04 13 at 0645", "backyard",
+                    "cloudy", 2, "singing his heart out");
+            Sighting s4 = new Sighting(20114, "American Robin", 
+                    "2014 04 23 at 0645", "backyard",
+                    "cloudy", 2, "singing his heart out");
+
+            bl.rememberSighting(s1);
+            bl.rememberSighting(s2);
+            bl.rememberSighting(s3);
+            bl.rememberSighting(s4);
+
+            String target = s2.toString() + "\n" + s3.toString() + "\n" +
+                s4.toString() + "\n" + s1.toString();
+            assertEquals(0, bl.uniqueSpecies());
+        }
+        catch (Exception e) {
+            fail("Unexpected exception - " + e.toString());
+        }
+    }
+
+    /**
+     * Tests the date order.
+     */
+    @Test
+    public void testDateOrder() {
+        try {
+            Sighting s1 = new Sighting(20111, "Western tanager", 
+                    "2011 05 09 at 0715", "tree by front balcony",
+                    "sunny", 1, "immature male feeding");
+            Sighting s2 = new Sighting(20112, "American Robin", 
+                    "2014 04 03 at 0645", "backyard",
+                    "cloudy", 2, "singing his heart out");
+            Sighting s3 = new Sighting(20141, "American Robin", 
+                    "2014 04 13 at 0645", "backyard",
+                    "cloudy", 2, "singing his heart out");
+            Sighting s4 = new Sighting(20142, "American Robin", 
+                    "2014 04 23 at 0645", "backyard",
+                    "cloudy", 2, "singing his heart out");
+
+            bl.rememberSighting(s1);
+            bl.rememberSighting(s2);
+            bl.rememberSighting(s3);
+            bl.rememberSighting(s4);
+        }
+        catch (Exception e) {
+            fail("Unexpected exception - " + e.toString());
+        }
+
+    }
+
+    /**
+     * Tests the scientific order.
+     */
+    @Test
+    public void testScientificOrder() {
+        try {
+            BirdSpecies bs = new BirdSpecies("Western tanager", 
+                    "Tanagerus occidentalis");
+            bs = new BirdSpecies("American robin", "Turdus migratorius");
+            bs = new BirdSpecies("Snowy owl", "Bubo scandiacus");
+            Sighting s1 = new Sighting(20111, "Western tanager", 
+                    "2011 05 09 at 0715", "tree by front balcony",
+                    "sunny", 1, "immature male feeding");
+
+            Sighting s2 = new Sighting(20112, "American Robin", 
+                    "2014 04 03 at 0645", "backyard",
+                    "cloudy", 2, "singing his heart out");
+
+            Sighting s3 = new Sighting(20141, 
+                    "Snowy owl", "2014 04 13 at 0645", 
+                    "backyard", "cloudy", 2, "looking regal");
+
+            Sighting s4 = new Sighting(20142, "American Robin", 
+                    "2014 04 23 at 0645", 
+                    "backyard", "cloudy", 2, "singing his heart out");
+
+            bl.rememberSighting(s4);
+            bl.rememberSighting(s2);
+            bl.rememberSighting(s1);
+            bl.rememberSighting(s3);
+        }
+        catch (Exception e) {
+            fail("Unexpected exception - " + toString());
+        }
+    }
+
+    /**
+     * Tests the most method from the BirdList class.
+     */
+    @Test
+    public void testMost() {
+
+        Sighting[] t;
+        Sighting s1 = new Sighting();
+        Sighting s2 = new Sighting();
+        Sighting s3 = new Sighting();
+        Sighting s4 = new Sighting();
+        try {
+            BirdSpecies bs = new BirdSpecies("Western tanager", 
+                    "Tanagerus occidentalis");
+            bs = new BirdSpecies("American robin", "Turdus migratorius");
+            bs = new BirdSpecies("Snowy owl", "Bubo scandiacus");
+            s1 = new Sighting(1, "Western tanager", "2011 05 09 at 0715", 
+                "tree by front balcony", "sunny", 1, "immature male feeding");
+            s2 = new Sighting(2, "American Robin", 
+                "2014 04 03 at 0645", "backyard",
+                "cloudy", 3, "singing his heart out");
+            s3 = new Sighting(3, "American Robin", 
+                "2014 04 13 at 0645", "backyard",
+                "cloudy", 3, "singing his heart out");
+            s4 = new Sighting(4, "American Robin", "2014 04 23 at 0645", 
+                "backyard", "cloudy", 2, "singing his heart out");
+        }
+        catch (Exception e) {
+            fail("Unexpected exception: " + e.toString());
+        }
+        try {
+            t = bl.getMostOfSpecies(null);
+            fail("no sightings");
+        }
+        catch (DataFormatException dfe) {
+            assertEquals("The abbreviation is unknown." + 
+                "Please enter an abbreviation.", dfe.getMessage());
+        }
+        catch (Exception e) {
+            fail("unexpected exception " + e.toString());
+        }
+
+        try {
+            t = bl.getMostOfSpecies("");
+            fail("no sightings");
+        }
+        catch (DataFormatException dfe) {
+            assertEquals("No abbreviation has been detected." +  
+                "Please enter an abbreviation.", dfe.getMessage());
+        }
+        catch (Exception e) {
+            fail("unexpected exception " + e.toString());
+        }
+        try {
+            t = bl.getMostOfSpecies("AMRO");
+            fail("no sightings");
+        }
+        catch (DataFormatException dfe) {
+            assertEquals("There are no sightings found for this species."  
+                + "Please try another.", dfe.getMessage());
+        }
+        catch (Exception e) {
+            fail("unexpected exception " + e.toString());
+        }
+
+        try {
+            bl.rememberSighting(s1);
+            bl.rememberSighting(s2);
+            bl.rememberSighting(s3);
+            bl.rememberSighting(s4);
+
+            t = bl.getMostOfSpecies("AMRO");
+            assertEquals(2, t.length);
+            System.out.println("AMRO");
+            for (int i = 0; i < t.length; i++) {
+                System.out.println(t[i]);
+            }
+
+            t = bl.getMostOfSpecies("WETA");
+            assertEquals(1, t.length);
+            System.out.println("WETA");
+            for (int i = 0; i < t.length; i++) {
+                System.out.println(t[i]);
+            }
+
+        }
+        catch (Exception e) {
+        }
+
+    }
+
+    /**
+     * Tests the earliest from BirdList class.
+     */
+    @Test
+    public void testEarliest() {
+        Sighting[] t;
+        Sighting s1 = new Sighting();
+        Sighting s2 = new Sighting();
+        Sighting s3 = new Sighting();
+        Sighting s4 = new Sighting();
+        try {
+            BirdSpecies bs = new BirdSpecies("Western tanager", 
+                    "Tanagerus occidentalis");
+            bs = new BirdSpecies("American robin", "Turdus migratorius");
+            bs = new BirdSpecies("Snowy owl", "Bubo scandiacus");
+            s1 = new Sighting(20111, "Western tanager", "2011 05 09 at 0715", 
+                "tree by front balcony",
+                "sunny", 1, "immature male feeding");
+            s2 = new Sighting(20112, "American Robin", "2014 04 03 at 0645", 
+                "backyard",
+                "cloudy", 3, "singing his heart out");
+            s3 = new Sighting(20112, "American Robin", "2014 04 13 at 0645", 
+                "backyard",
+                "cloudy", 3, "singing his heart out");
+            s4 = new Sighting(20112, "American Robin", "2014 04 03 at 0645", 
+                "backyard",
+                "cloudy", 2, "singing his heart out");
+
+            try {
+                t = bl.getEarliestSighting(null);
+                fail("no sightings");
+            }
+            catch (DataFormatException dfe) {
+                assertEquals("The abbreviation is unknown." + 
+                    "Please enter an abbreviation.", dfe.getMessage());
+            }
+            catch (Exception e) {
+                fail("unexpected exception " + e.toString());
+            }
+
+            try {
+                t = bl.getEarliestSighting("");
+                fail("no sightings");
+            }
+            catch (DataFormatException dfe) {
+                assertEquals("No abbreviation has been detected." + 
+                    "Please enter an abbreviation.", dfe.getMessage());
+            }
+            catch (Exception e) {
+                fail("unexpected exception " + e.toString());
+            }
+
+            try {
+                bl.rememberSighting(s1);
+                bl.rememberSighting(s2);
+                bl.rememberSighting(s3);
+                bl.rememberSighting(s4);
+
+                t = bl.getEarliestSighting("AMRO");
+                assertEquals(2, t.length);
+                System.out.println("AMRO");
+                for (int i = 0; i < t.length; i++) {
+                    System.out.println(t[i]);
+                }
+
+                t = bl.getEarliestSighting("WETA");
+                assertEquals(1, t.length);
+                System.out.println("WETA");
+                for (int i = 0; i < t.length; i++) {
+                    System.out.println(t[i]);
+                }
+
+            }
+            catch (Exception e) {
+            }
+        }
+        catch (Exception e) {
+            fail("Unexpected exception - " + e.toString());
+        }
+
+    }
+
+    /**
+     * Tests the toHTML method from BirdList Class.
+     * Test modified from Rick's college example.
+     */
+    @Test
+    public void testToHTML()  {
+        try {
+            Sighting s1 = new Sighting(201110, "Western tanager", 
+                    "2011 05 09 at 0715", "tree by front balcony",
+                    "sunny", 1, "immature male feeding");
+            Sighting s2 = new Sighting(201410, "American Robin", 
+                    "2014 04 03 at 0645", "backyard",
+                    "cloudy", 2, "singing his heart out");
+            bl.rememberSighting(s1);
+            bl.rememberSighting(s2);
+
+            String result = "<TR><TD colspan=\"7\"><div align=\"center\">List: 2014</div></TD></TR>\n";
+            result += "<TR><TDIdentifier: </TD><TD>Bird Species: </TD><TD>"
+            + "<TD>Day and time of the sighting: </TD><TD>Sighting location" +
+            "<TD>Weather conditions during the sighting: </TD><TD>" +
+            "Number of birds in sighting: </TD><TD>Watcher notes: </TD><TD>";             
+            assertEquals(result, bl.toHTML()); 
+        }
+        catch (Exception e)  {
+        }
+    }
+
+    /**
+     * Tests toCSVFile method from BirdList class.
+     */
+    @Test
+    public void testToCSVFile()  {
+
+    }
+
+    /**
+     * Tears down the test fixture.
+     *
+     * Called after every test case method.
+     */
+    @After
+    public void tearDown()
+    {
+        try {
+            Sighting s100 = new Sighting(2015100, "Funky Monkey", 
+                    "2015 15 08 at 1212", "On the jungle excursion",
+                    "hot!", 4, "having a party");
+            Sighting s101 =  new Sighting(2015100, "Brown Creeper", 
+                    "2015 15 09 at 0212", "hanging from tree",
+                    "windy", 4, "having breakfast");   
+
+            bl.rememberSighting(s100);
+            bl.rememberSighting(s101);
+            bl.toCSVFile
+
+            Runtime r = Runtime.getRuntime();
+            String url = bl.getDescription() + ".csv";
+            r.exec("rundll32 url.dll, FileProtocolHandler" + url);
+        }
+
+        catch (Exception e) {
+        }
+    }
+}

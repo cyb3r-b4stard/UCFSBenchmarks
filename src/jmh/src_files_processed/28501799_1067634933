@@ -1,0 +1,357 @@
+import java.util.Iterator;
+
+public class DoublyLinkedList<T>
+implements Iterable<T>
+{
+    private Element first, last;
+    private int size;
+
+    public DoublyLinkedList()
+    {
+        first = last = null;
+        size = 0;
+    }
+
+    public int size()
+    {
+        return size;
+    }
+
+    public boolean isEmpty()
+    {
+        return size == 0;
+    }
+
+    public void add( T content ) 
+    {
+        Element e = new Element( content );
+        if ( isEmpty() ) 
+        {
+            first = last = e;
+        }
+        else 
+        {
+            last.connectAsNext( e );
+            last = e;
+        }
+        size++;
+    }
+
+    public void addFirst( T content ) 
+    {
+        Element e = new Element( content );
+        if ( isEmpty() ) 
+        {
+            first = last = e;
+        }
+        else 
+        {
+            first.connectAsPrevious( e );
+            first = e;
+        }
+        size++;
+    }
+
+    public T getFirst() 
+    {
+        if ( !isEmpty() )
+        {
+            return first.getContent();
+        }
+        else
+        {
+            throw new IllegalStateException();
+        }
+    }
+
+    public T get( int index ) 
+    {
+        if ( index >= 0 && index < size )
+        {
+            Element current = first;
+            for ( int i = 0; i < index; i++ )
+            {
+                current = current.getNext();
+            }
+            return current.getContent();
+        }
+        else
+        {
+            throw new IllegalStateException();
+        }
+    }
+
+    public T removeFirst()
+    {
+        if ( !isEmpty() ) 
+        {
+            T result = first.getContent();
+            if ( first.hasNext() )
+            {
+                first = first.getNext();
+                first.disconnectPrevious();
+            }
+            else
+            {
+                first = last = null;
+            }
+            size--;
+            return result;
+        }
+        else
+        {
+            throw new IllegalStateException();
+        }
+    }
+
+    public void showAll()
+    {
+        Element current = first;
+        while ( current != null )
+        {
+            System.out.print( current.getContent().toString() );
+            if ( current != last )
+            {
+                System.out.print(", ");
+            }
+            current = current.getNext();
+        }
+        System.out.println();
+    }
+
+
+    public Iterator<T> iterator()
+    {
+        return new ForwardIterator();
+    }
+
+    private abstract class ListIterator implements Iterator<T>
+    {
+        protected Element next;
+
+        protected ListIterator()
+        {
+            next = first;
+        }
+
+        public boolean hasNext()
+        {
+            return next != null;
+        }
+
+        public T next()
+        {
+            if ( hasNext() )
+            {
+                T content = next.getContent();
+                next = step();
+                return content;
+            }
+            else
+            {
+                throw new IllegalStateException();
+            }
+        }
+
+        protected abstract Element step();
+    
+    }
+
+    private class ForwardIterator extends ListIterator
+    {
+        protected Element step()
+        {
+            return next.getNext();
+        }
+
+    }
+
+    @FunctionalInterface
+    public static interface SubstitutionStrategy<T>
+    {
+        T substitute( T ref );
+    }
+
+    public void substituteAll( SubstitutionStrategy<T> s )
+    {
+        Element current = first;
+        while ( current != null )
+        {
+            current.setContent( s.substitute( current.getContent() ) );
+            current = current.getNext();
+        }
+    }
+
+    @FunctionalInterface
+    public static interface InspectionStrategy<T>
+    {
+        void inspect( T ref );
+    }
+
+    public void inspectAll( InspectionStrategy<T> s )
+    {
+        Element current = first;
+        while ( current != null )
+        {
+            s.inspect( current.getContent() );
+            current = current.getNext();
+        }
+    }
+
+    @FunctionalInterface
+    public static interface DeletionStrategy<T>
+    {
+        boolean select( T ref );
+    }
+
+    public void deleteSelected( DeletionStrategy<T> s )
+    {
+        Element current = first;
+        while ( current != null )
+        {
+            Element candidate = current;
+            current = current.getNext(); 
+            if ( s.select( candidate.getContent() ) )
+            {
+                remove( candidate );
+            }
+        }
+    }
+
+    private void remove( Element e )
+    {
+        if ( e != null ) 
+        {
+            if ( e.hasNext() && e.hasPrevious() )
+            {
+                e.getPrevious().connectAsNext( e.getNext() );
+            } else if ( e == first && e.hasNext() )
+            {
+                first = first.getNext();
+                first.disconnectPrevious();
+            } else if ( e == last && e.hasPrevious() )
+            {
+                last = last.getPrevious();
+                last.disconnectNext();
+            } else {
+                first = last = null;
+            }
+            size--;
+        }
+    }
+    
+    public static interface InsertionStrategy<T>
+    {
+        boolean select ( T ref );
+        T insert ( T ref );
+    }
+    
+    public void insertBehindSelected ( InsertionStrategy<T> s )
+    {
+        Element current = first;
+        Element add = new Element (s.insert(current.getContent()));
+        while ( current != null ) {
+            if ( s.select( current.getContent() )) {
+                insertBehind(current, add);
+            }
+            current = current.getNext()
+        }
+    }
+    
+    public void insertBehind ( Element list, Element add ) 
+    {
+        if ( list != null ) {
+            if ( list.hasNext() )
+            {
+                list.getNext().connectAsPrevious(add);
+            }
+            list.connectAsNext(add);
+            ++size;
+        }
+        add( add.getContent() );
+    }
+
+    private class Element
+    {
+        private T content;
+        private Element previous, next;
+
+        public Element( T c )
+        {
+            content = c;
+            previous = next = null;
+        }
+
+        public T getContent()
+        {
+            return content;
+        }
+
+        public void setContent( T c )
+        {
+            content = c;
+        }
+
+        public boolean hasNext()
+        {
+            return next != null;
+        }
+
+        public Element getNext()
+        {
+            return next;
+        }
+
+        public void disconnectNext()
+        {
+            if ( hasNext() ) 
+            {
+                next.previous = null;
+                next = null;
+            }
+        }
+
+        public void connectAsNext( Element e)
+        {
+            disconnectNext();
+            next = e;
+            if ( e != null ) 
+            {
+                e.disconnectPrevious();
+                e.previous = this;
+            }
+        }
+
+        public boolean hasPrevious()
+        {
+            return previous != null;
+        }
+
+        public Element getPrevious()
+        {
+            return previous;
+        }
+
+        public void disconnectPrevious()
+        {
+            if ( hasPrevious() )
+            {
+                previous.next = null;
+                previous = null;
+
+            }
+        }
+
+        public void connectAsPrevious( Element e )
+        {
+            disconnectPrevious();
+            previous = e;
+            if ( e != null )
+            {
+                e.disconnectNext();
+                e.next = this;
+            }
+        }
+    }
+
+}

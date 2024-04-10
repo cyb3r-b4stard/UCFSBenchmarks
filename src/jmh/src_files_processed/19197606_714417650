@@ -1,0 +1,609 @@
+import java.util.ArrayList;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.Scanner;
+import java.util.HashSet;
+
+/**
+ * ##### ######### ### ####### ###
+ * 
+ * @###### ######## ######## ######
+ * @####### ##/##/####
+ */
+public class TPV implements Serializable
+{
+    private LectorEntrada teclado;;
+    private Almacen almacenprincipal;
+    private CarteraClientes clientesprincipal;
+    private LineasDetalle movimientosprincipal;
+    private Ventas ventasprincipal;
+
+    /**
+     * Constructor for objects of class TPV
+     */
+    public TPV()
+    {
+        
+         almacenprincipal = new Almacen();
+         clientesprincipal = new CarteraClientes();
+         movimientosprincipal = new LineasDetalle();
+         ventasprincipal = new Ventas();
+         
+         teclado = new LectorEntrada(); 
+         
+         cargardatos();
+         
+         menuprincipal();
+         
+
+           }
+    /**
+     * Método main. Cuerpo principal del programa
+     * 
+     * @param  
+     * @return  
+     */
+    public void main()
+    {
+     TPV otrotpv = new TPV();
+    }
+    
+    /**
+     * Método menuprincipal. Se encarga de seleccionar la acción correspondiente
+     * 
+     * @param  
+     * @return  
+     */
+    public void menuprincipal()
+    {
+     String entrada = "";
+    while (!entrada.equals("5")) {
+        System.out.print('\u000C'); 
+        System.out.println("...          Menú Principal          ...");
+        System.out.println("\n");
+        System.out.println("1 -      Menu de tickets.");
+        System.out.println("\n");
+        System.out.println("2 -      Menu de clientes.");
+        System.out.println("\n");
+        System.out.println("3 -      Menu de articulos.");
+        System.out.println("\n");
+        System.out.println("4 -      Menu de ayuda.");
+        System.out.println("\n");
+        System.out.println("5 -      Salir del programa.");
+        System.out.println("\n");
+        entrada = teclado.getInput();
+        if (entrada.equals("1")){
+            menutickets();
+        }
+        if (entrada.equals("2")){
+            menuclientes();
+        }
+        if (entrada.equals("3")){
+            menuarticulos();
+        }
+    }
+    almacenprincipal.guardar();
+    clientesprincipal.guardar();
+    movimientosprincipal.guardar();
+    ventasprincipal.guardar();
+    }    
+    /**
+     * Método menutickets. Se encarga de la parte de gestión de los tickets
+     * 
+     * @param  
+     * @return  
+     */
+    public void menutickets()
+    {
+    
+    Ticket otroticket;    
+    otroticket = null;        
+    Articulo articulonuevo;
+    articulonuevo = null;
+    Movimiento lineanueva;
+    int falloi;
+    falloi = 0;
+    boolean malalinea;
+    double totalticket;
+    int stocklinea;
+    stocklinea = 0;
+    
+    String entrada = "";
+    while (!entrada.equals("5")) {
+        System.out.print('\u000C'); 
+        System.out.println("...          Menú de Tickets          ...");
+        System.out.println("\n");
+        System.out.println("1 -      Alta de tickets.");
+        System.out.println("\n");
+        System.out.println("2 -      Mostrar tickets.");
+        System.out.println("\n");
+        System.out.println("3 -      Facturar tickets (no implementado).");
+        System.out.println("\n");
+        System.out.println("4 -      Listado de tickets.");
+        System.out.println("\n");
+        System.out.println("5 -      Menú principal.");
+        System.out.println("\n");
+        entrada = teclado.getInput();
+        if (entrada.equals("4")){
+            System.out.print('\u000C'); 
+            System.out.println("CLIENTE         TICKET ID      FECHA"); 
+            System.out.println("=======         =========      ====="); 
+            ventasprincipal.mostrarVentas();
+            pulseysiga();
+        }
+    if (entrada.equals("2")){
+        int ticketamostrar = ventasprincipal.totalDeTickets()-1;
+        while (ticketamostrar >0)) {
+            System.out.print('\u000C'); 
+            System.out.println("CLIENTE         TICKET ID      FECHA"); 
+            System.out.println("=======         =========      ====="); 
+            ventasprincipal.mostrarTicket(ticketamostrar);
+            System.out.println("\n");
+            System.out.println("CODIGO        DESCRIPCION              CANTIDAD    PRECIO    IVA     PVP"); 
+            System.out.println("======        ===========              ========    ======    ===     ===");            
+            movimientosprincipal.mostrarMovimientosTicket(otroticket.getcodigoticket());
+            System.out.println("\n");
+            totalticket = movimientosprincipal.totalMovimientosTicket(otroticket.getcodigoticket());
+            System.out.println("TOTAL "+String.format("%6.2f",totalticket)+" EUROS");
+
+            System.out.println("\n");           
+            pulseysiga();
+            ticketamostrar--;
+            }
+
+            }
+            
+    if (entrada.equals("1")){
+            System.out.print('\u000C'); 
+            System.out.println("Introduzca el código del cliente:");
+            String newcodigo = teclado.getInput();
+            if (clientesprincipal.esCliente(newcodigo).equals("")) {
+                System.out.println("Error. El código introducido no corresponde a ningún cliente.");
+                pulse();
+            } else {
+                otroticket = new Ticket(newcodigo);
+                ventasprincipal.guardarTicket(otroticket);
+                ventasprincipal.guardar();
+                String newarticulovendido="?";
+            
+            while (!newarticulovendido.equals("")) {
+            System.out.print('\u000C'); 
+            System.out.println("CLIENTE         TICKET ID      FECHA"); 
+            System.out.println("=======         =========      ====="); 
+            ventasprincipal.mostrarTicket(ventasprincipal.totalDeTickets()-1);
+            System.out.println("\n");
+            System.out.println("CODIGO        DESCRIPCION              CANTIDAD    PRECIO    IVA     PVP"); 
+            System.out.println("======        ===========              ========    ======    ===     ===");            
+            movimientosprincipal.mostrarMovimientosTicket(otroticket.getcodigoticket());
+            System.out.println("\n");
+            totalticket = movimientosprincipal.totalMovimientosTicket(otroticket.getcodigoticket());
+            System.out.println("TOTAL "+String.format("%6.2f",totalticket)+" EUROS");
+
+            System.out.println("\n");           
+            System.out.println("Introduzca el código del artículo a vender (o intro para acabar):");
+            newarticulovendido = teclado.getInput();
+            if (!newarticulovendido.equals("")) {
+            malalinea = false;
+            int posnuevo = almacenprincipal.posArticulo(newarticulovendido);
+            if (posnuevo == -1 ) {
+                System.out.println("Error. El código introducido no corresponde a un artículo existente.");
+                System.out.println("Los siguientes artículos contienen esa información en su descripción.");
+                almacenprincipal.estaEnArticulo(newarticulovendido);
+                malalinea = true;
+                pulse();
+            } else {
+                
+                articulonuevo = almacenprincipal.eligeArticulo(posnuevo);
+                stocklinea = articulonuevo.getstock() - movimientosprincipal.modStockArticulo(newarticulovendido);
+                System.out.println("Stock actual " + stocklinea + " unidades.");
+                System.out.println("Introduzca la cantidad a vender");
+            String newcantidad = teclado.getInput();
+            try {
+                 falloi = Integer.parseInt(newcantidad);
+                } catch (NumberFormatException e) {
+                   System.out.println("Error en la cantidad. El artículo no se añadirá.");
+                   malalinea = true;
+                   pulse();
+            }
+             if ((falloi>stocklinea) && (falloi!=0)) {
+                   System.out.println("Stock insuficiente. El artículo no se añadirá.");
+                   malalinea = true;
+                   pulse();
+                }
+
+            if (malalinea == false) {
+                    lineanueva = new Movimiento(articulonuevo, falloi, otroticket.getcodigoticket());
+                    movimientosprincipal.guardarMovimiento(lineanueva);
+                    movimientosprincipal.guardar();
+             pulseysiga();
+            }
+
+            }
+            }
+           
+            
+        } 
+        }
+
+    }  
+    }
+    }
+        /**
+     * Método menuclientes. Se encarga de la parte de gestión de los clientes
+     * 
+     * @param  
+     * @return  
+     */
+    public void menuclientes()
+    {
+    
+    Cliente otrocliente;    
+        
+    String entrada = "";
+    while (!entrada.equals("5")) {
+        System.out.print('\u000C'); 
+        System.out.println("...          Menú de Clientes          ...");
+        System.out.println("\n");
+        System.out.println("1 -      Alta de clientes.");
+        System.out.println("\n");
+        System.out.println("2 -      Baja de clientes.");
+        System.out.println("\n");
+        System.out.println("3 -      Modificación de clientes.");
+        System.out.println("\n");
+        System.out.println("4 -      Listado de clientes.");
+        System.out.println("\n");
+        System.out.println("5 -      Menú principal.");
+        System.out.println("\n");
+        entrada = teclado.getInput();
+        if (entrada.equals("1")){
+            System.out.print('\u000C'); 
+            System.out.println("Introduzca el código del nuevo cliente:");
+            String newcodigo = teclado.getInput();
+            if (!clientesprincipal.esCliente(newcodigo).equals("")) {
+                System.out.println("Error. El código introducido corresponde a un cliente ya existente.");
+            } else {
+                System.out.println("Introduzca el NIF/CIF");
+                String newnif= teclado.getInput();
+                System.out.println("Introduzca el nombre o razón fiscal");
+                String newnombre= teclado.getInput();
+                System.out.println("Introduzca la dirección");
+                String newdireccion = teclado.getInput();
+                System.out.println("Introduzca la fecha de alta");
+                String newfecha = teclado.getInput();
+                otrocliente = new Cliente(newcodigo, newnif, newnombre, newdireccion, newfecha);
+                clientesprincipal.agnadirCliente(otrocliente);
+                clientesprincipal.guardar();
+            }
+            
+            pulseysiga();
+        }
+
+        if (entrada.equals("4")){
+            System.out.print('\u000C'); 
+            System.out.println("CODIGO        NIF/CIF   NOMBRE/RAZÓN FISCAL            DIRECCIÓN                         ALTA"); 
+            clientesprincipal.mostrarCarteraClientes();
+            pulseysiga();
+        }
+        if (entrada.equals("2")){
+            System.out.print('\u000C'); 
+            System.out.println("Introduzca el código del cliente a eliminar:");
+            String killcliente = teclado.getInput();
+            int posborrado = clientesprincipal.posCliente(killcliente);
+            if (posborrado == -1) {
+                System.out.println("Error. El código introducido no corresponde a un cliente existente.");
+            } else {
+                Cliente clienteaborrar;
+                clienteaborrar = clientesprincipal.eligeCliente(posborrado);
+                System.out.println("CODIGO        NIF/CIF   NOMBRE/RAZÓN FISCAL            DIRECCIÓN                         ALTA"); 
+                clientesprincipal.mostrarCliente(posborrado);
+                System.out.println("\n");
+                System.out.println("Introduzca Y para borrar el cliente");
+                String kill = teclado.getInput();
+                if (kill.equals("Y")) {
+                    clientesprincipal.borrarCliente(posborrado);
+                }
+            }
+            almacenprincipal.guardar();
+            pulseysiga();
+        }
+        if (entrada.equals("3")){
+            System.out.print('\u000C'); 
+            System.out.println("Introduzca el código del cliente a modificar:");
+            String newcodigo = teclado.getInput();
+            int poscambio = clientesprincipal.posCliente(newcodigo);
+            if (poscambio == -1) {
+                System.out.println("Error. El código introducido no corresponde a un cliente existente.");
+            } else {
+                Cliente clienteacambiar;
+                clienteacambiar = clientesprincipal.eligeCliente(poscambio);
+                System.out.println("CODIGO        NIF/CIF   NOMBRE/RAZÓN FISCAL            DIRECCIÓN                         ALTA"); 
+                clientesprincipal.mostrarCliente(poscambio);
+                System.out.println("\n");
+                System.out.println("Introduzca el nuevo CIF/NIE o N para mantener el actual");
+                String newnifcie= teclado.getInput();
+                if (!newnifcie.equals("N")) {
+                   clienteacambiar.setnifcie(newnifcie);
+                }
+                System.out.println("\n");
+                System.out.println("Introduzca el nuevo nombre o N para mantener el actual");
+                String newnombre= teclado.getInput();
+                if (!newnombre.equals("N")) {
+                   clienteacambiar.setnombre(newnombre);
+                }
+                System.out.println("\n");
+                System.out.println("Introduzca la nueva dirección o N para mantener la actual");
+                String newdireccion= teclado.getInput();
+                if (!newdireccion.equals("N")) {
+                   clienteacambiar.setdireccion(newdireccion);
+                }
+                System.out.println("\n");
+                System.out.println("Introduzca la nueva fecha de alta o N para mantener la actual");
+                String newfecha= teclado.getInput();
+                if (!newfecha.equals("N")) {
+                   clienteacambiar.setfecha(newfecha);
+                }
+                
+            }
+            clientesprincipal.guardar();
+           
+            pulseysiga();
+
+         }
+      }
+    }
+    /**
+     * Método menuartículos. Se encarga de la parte de gestión de los artículos
+     * 
+     * @param  
+     * @return  
+     */
+    
+    public void menuarticulos()
+    {
+
+    Articulo otroarticulo;
+    boolean malarticulo;
+    malarticulo = false;
+    double fallod;
+    int falloi;
+
+    String entrada = "";
+    
+    while (!entrada.equals("5")) {
+        System.out.print('\u000C'); 
+        System.out.println("...          Menú de Artículos          ...");
+        System.out.println("\n");
+        System.out.println("1 -      Alta de artículos.");
+        System.out.println("\n");
+        System.out.println("2 -      Baja de artículos.");
+        System.out.println("\n");
+        System.out.println("3 -      Modificación de artículos.");
+        System.out.println("\n");
+        System.out.println("4 -      Listado de artículos.");
+        System.out.println("\n");
+        System.out.println("5 -      Menú principal.");
+        System.out.println("\n");
+        entrada = teclado.getInput();
+        if (entrada.equals("4")){
+            System.out.print('\u000C'); 
+            System.out.println("CODIGO        DESCRIPCION              PRECIO  IVA    PVP"); 
+            almacenprincipal.mostrarTodosArticulos();
+            pulseysiga();
+        }
+        if (entrada.equals("2")){
+            System.out.print('\u000C'); 
+            System.out.println("Introduzca el código del artículo a eliminar:");
+            String killcodigo = teclado.getInput();
+            int posborrado = almacenprincipal.posArticulo(killcodigo);
+            if (posborrado == -1) {
+                System.out.println("Error. El código introducido no corresponde a un artículo existente.");
+            } else {
+                Articulo articuloaborrar;
+                articuloaborrar = almacenprincipal.eligeArticulo(posborrado);
+                System.out.println("CODIGO        DESCRIPCION              PRECIO  IVA    PVP"); 
+                almacenprincipal.mostrarArticulo(posborrado);
+                System.out.println("\n");
+                System.out.println("Introduzca Y para borrar el artículo");
+                String kill = teclado.getInput();
+                if (kill.equals("Y")) {
+                    almacenprincipal.borrarArticulo(posborrado);
+                }
+            }
+            almacenprincipal.guardar();
+            pulseysiga();
+        }
+        if (entrada.equals("3")){
+            System.out.print('\u000C'); 
+            System.out.println("Introduzca el código del artículo a modificar:");
+            String newcodigo = teclado.getInput();
+            int poscambio = almacenprincipal.posArticulo(newcodigo);
+            if (poscambio == -1) {
+                System.out.println("Error. El código introducido no corresponde a un artículo existente.");
+            } else {
+                Articulo articuloacambiar;
+                articuloacambiar = almacenprincipal.eligeArticulo(poscambio);
+                System.out.println("CODIGO        DESCRIPCION              PRECIO  IVA    PVP"); 
+                almacenprincipal.mostrarArticulo(poscambio);
+                System.out.println("\n");
+                System.out.println("Introduzca la nueva descripción o N para mantener la actual");
+                String newdescripcion= teclado.getInput();
+                if (!newdescripcion.equals("N")) {
+                    articuloacambiar.setdescripcion(newdescripcion);
+                }
+                System.out.println("\n");
+                System.out.println("Introduzca el precio sin iva del artículo o N para mantener el actual");
+                String newpreciosiniva= teclado.getInput();
+                if (!newpreciosiniva.equals("N")) {
+                    try {
+                        fallod = Double.parseDouble(newpreciosiniva);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error en el precio. El artículo no se modificará.");
+                        malarticulo = true;
+                    }
+                    if (malarticulo == false) {
+                        articuloacambiar.setpreciosiniva(Double.parseDouble(newpreciosiniva));
+                    }
+                }
+                System.out.println("\n");
+                System.out.println("Introduzca el iva del artículo o N para mantener el actual");
+                String newiva= teclado.getInput();
+                if (!newiva.equals("N")) {
+                    try {
+                        fallod = Double.parseDouble(newiva);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error en el iva. El artículo no se amodificará.");
+                        malarticulo = true;
+                    }
+                    if (malarticulo == false) {
+                        articuloacambiar.setiva(Double.parseDouble(newiva));
+                    }
+                }
+                System.out.println("\n");
+                System.out.println("Introduzca el stock del artículo o N para mantener el actual");
+                String newstock= teclado.getInput();
+                if (!newstock.equals("N")) {
+                    try {
+                        falloi = Integer.parseInt(newstock);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error en el stock. El artículo no se amodificará.");
+                        malarticulo = true;
+                    }
+                    if (malarticulo == false) {
+                        articuloacambiar.setstock(Integer.parseInt(newstock));
+                    }
+                }
+
+            }
+            almacenprincipal.guardar();
+           
+            pulseysiga();
+        }
+        if (entrada.equals("1")){
+            System.out.print('\u000C'); 
+            System.out.println("Introduzca el código del nuevo artículo:");
+            String newcodigo = teclado.getInput();
+            if ((almacenprincipal.esArticulo(newcodigo) != null)) {
+                System.out.println("Error. El código introducido corresponde a un artículo ya existente.");
+            } else {
+                System.out.println("Introduzca la descripción");
+                String newdescripcion= teclado.getInput();
+                System.out.println("Introduzca el precio sin iva del artículo");
+                String newpreciosiniva= teclado.getInput();
+                try {
+                    fallod = Double.parseDouble(newpreciosiniva);
+                } catch (NumberFormatException e) {
+                    System.out.println("Error en el precio. El artículo no se añadirá.");
+                    malarticulo = true;
+                }
+                System.out.println("Introduzca el iva aplicable al artículo");
+                String newiva = teclado.getInput();
+                try {
+                    fallod = Double.parseDouble(newiva);
+                } catch (NumberFormatException e) {
+                    System.out.println("Error en el iva. El artículo no se añadirá.");
+                    malarticulo = true;
+                }
+                System.out.println("Introduzca el stock inicial del artículo");
+                String newstock = teclado.getInput();
+                try {
+                    falloi = Integer.parseInt(newstock);
+                } catch (NumberFormatException e) {
+                   System.out.println("Error en el stock inicial. El artículo no se añadirá.");
+                   malarticulo = true;
+                }
+                if (malarticulo == false) {
+                    otroarticulo = new Articulo(newcodigo, newdescripcion, Double.parseDouble(newpreciosiniva), Double.parseDouble(newiva), Integer.parseInt(newstock));
+                    almacenprincipal.guardararticulo(otroarticulo);
+                    almacenprincipal.guardar();
+                }
+
+            }
+
+            pulseysiga();
+        }
+    }
+     
+    }
+
+    /**
+     * Método cargardatos. Crea las distintas instancias de los objetos y carga los datos almacenados en los archivos
+     * 
+     * @param  
+     * @return  
+     */
+    
+    public void cargardatos() 
+    {
+    System.out.print('\u000C');     
+      
+           
+    boolean cargaarticulos = false;
+    System.out.println("Cargando artículos...");
+    cargaarticulos = almacenprincipal.cargar();
+    if (cargaarticulos == false) {
+        System.out.println("Error al cargar los artículos. Debe crearse un nuevo inventario o usar una copia de seguridad del archivo.");
+    } else {
+        System.out.println("Carga de inventario correcta.");
+        System.out.println(almacenprincipal.totalDeArticulos()+" artículos cargados.");
+        
+    }
+    boolean cargaclientes = false;
+    System.out.println("Cargando clientes...");
+
+    cargaclientes = clientesprincipal.cargar();
+    if (cargaclientes == false) {
+        System.out.println("Error al cargar los clientes. Debe crearse una nueva cartera de clientes o usar una copia de seguridad del archivo.");
+    } else {
+        System.out.println("Carga de clientes correcta.");
+        System.out.println(clientesprincipal.totalDeClientes()+" clientes cargados.");
+        
+    }
+    boolean cargaventas = false;
+    System.out.println("Cargando ventas...");
+
+    cargaventas = ventasprincipal.cargar();
+    if (cargaventas == false) {
+        System.out.println("Error al cargar las ventas. Deben crearse nuevos tickets o usar una copia de seguridad del archivo.");
+    } else {
+        System.out.println("Carga de ventas correcta.");
+        System.out.println(ventasprincipal.totalDeTickets()+" tickets cargados.");
+        
+    }
+    boolean cargamovimientos = false;
+    System.out.println("Cargando movimientos...");
+
+    cargamovimientos = movimientosprincipal.cargar();
+    if (cargamovimientos == false) {
+        System.out.println("Error al cargar los movimientos de almacén. Debe usar una copia de seguridad del archivo.");
+        
+    } else {
+        System.out.println("Carga de movimientos correcta.");
+        System.out.println(movimientosprincipal.totalDeMovimientos()+" movimientos cargados.");
+        
+    }
+        pulseysiga();
+    }
+    /**
+     * Método pulse y siga. Espera una entrada de teclado y borra la pantalla
+     * 
+     * @param  
+     * @return    
+     */
+    public void pulseysiga()
+    {
+        pulse();
+        System.out.print('\u000C');
+    }
+    /**
+     * Método pulse. Espera una entrada de teclado
+     * 
+     * @param 
+     * @return      
+     */
+    public void pulse()
+    {
+        System.out.println("Pulse intro para continuar.");
+        String entrada = teclado.getInput();
+    }}

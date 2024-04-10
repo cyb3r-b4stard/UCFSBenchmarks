@@ -1,0 +1,148 @@
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JButton;
+import javax.swing.JTextField;
+import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
+import javax.swing.GroupLayout;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+
+
+/**
+ * ########### ### #### ### ###### ##############.
+ * 
+ * @###### (### ####) 
+ * @####### (#### ############## #### ### #####)
+ */
+public class EingabeFenster extends JFrame implements ActionListener
+{
+    private Zieleinlauf hZielEinlauf;
+    private JButton buttonziel;
+    private JTextField TextName,TextLand,TextZeit;
+    private JTextArea TextFeld;
+
+    /**
+     * Konstruktor für Objekte der Klasse EingabeFenster
+     */
+    public EingabeFenster(String pTitle)
+    {
+        erzeugeLayout();
+        
+        hZielEinlauf = new Zieleinlauf(this);
+        
+        this.setTitle(pTitle);
+        
+        this.setVisible(true);
+    }
+
+    /**
+     * Erzeugt das Layout des Eingabefensters.
+     */
+    public void erzeugeLayout()
+    {
+        JPanel panelLineStart;
+        panelLineStart = new JPanel();
+        
+        JLabel lblName = new JLabel("Name:");
+        JLabel lblLand = new JLabel("Land:");
+        JLabel lblZeit = new JLabel("Zeit in Sek:");
+        
+        JTextField txtName = new JTextField(10);
+        JTextField txtLand = new JTextField(10);
+        JTextField txtZeit = new JTextField(10);
+        
+        JButton btnZiel = new JButton("Am Ziel");
+        btnZiel.addActionListener(this);
+        
+        JTextArea txtAreaAusgabe = new JTextArea("");
+        txtAreaAusgabe.setRows(10);
+        txtAreaAusgabe.setColumns(20);
+        JScrollPane panelTextArea;
+        panelTextArea = new JScrollPane(txtAreaAusgabe);
+        
+        GroupLayout layout = new GroupLayout(this.getContentPane());
+        layout.setHorizontalGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addComponent(lblName)
+                .addComponent(lblLand)
+                .addComponent(lblZeit)
+             )
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addComponent(txtName)
+                .addComponent(txtLand)
+                .addComponent(txtZeit)
+                .addComponent(btnZiel)             
+            )
+            .addComponent(panelTextArea)
+        );
+        layout.linkSize(SwingConstants.HORIZONTAL, txtName, txtLand, txtZeit, btnZiel);
+
+        layout.setVerticalGroup(layout.createParallelGroup()
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblName)
+                    .addComponent(txtName)
+                )
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblLand)
+                    .addComponent(txtLand)
+                )
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblZeit)
+                    .addComponent(txtZeit)
+                )
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnZiel)
+                )
+            )
+            .addComponent(panelTextArea)
+        );
+        
+        this.getContentPane().setLayout(layout);
+        layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+        
+        this.pack();
+        
+        buttonziel = btnZiel;
+        TextName = txtName;
+        TextLand = txtLand;
+        TextZeit = txtZeit;
+        TextFeld = txtAreaAusgabe;
+    }
+    
+    public String getName()
+    {
+        return TextName.getText();
+    }
+    
+    public String getLand()
+    {
+        return TextLand.getText();        
+    }
+    
+    public int getZeit()
+    {
+        return Integer.parseInt(TextZeit.getText());
+    }
+    
+    public void actionPerformed (ActionEvent e)
+    {    
+        if (e.getSource() == buttonziel) 
+        {
+            hZielEinlauf.btnZielClick();
+            updateLayout();           
+        }  
+    }       
+    
+    public void updateLayout()
+    {
+        hZielEinlauf.ergebnisListe.toFirst();
+        TextFeld.setText(hZielEinlauf.ergebnisListe.getContent().getName() + " - " + hZielEinlauf.ergebnisListe.getContent().getLand());
+        TextFeld.append(/n"     " + hZielEinlauf.ergebnisListe.getContent().getZeit() + "sek");
+    }
+}

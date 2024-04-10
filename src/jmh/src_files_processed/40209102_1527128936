@@ -1,0 +1,74 @@
+
+/**
+ * ###### #########.
+ * 
+ * @###### (### ####)
+ * @####### (#### ############## #### ### #####)
+ */
+
+import java.io.*;
+
+public class Aufgabe14
+{
+    public static void main( String args[] ) {
+        JConsole fenster = new JConsole("Aufgabe14");
+
+        while (true) {
+            String datei;
+
+            do {
+                datei = fenster.readFilename("k:/data/xxx.txt ");
+            }
+            while (datei == null);
+
+            double m[][]; 
+            try {
+                m = fenster.readArray(datei);
+            }
+            catch (IOException fehler) {
+                fenster.println(fehler);
+                continue; 
+            }
+            if (m == null) {
+                fenster.println("FEHLER: Array ist leer.");
+                continue;
+            }
+
+            int z = m.length; 
+            int s = m[0].length; 
+
+            fenster.println("Zeilenanzahl : " + z);
+            fenster.println("Spaltenanzahl: " + s);
+            fenster.println("Ausgabe der Matrix m" );
+            Werkzeuge.matr_ausg(m, fenster);
+            if (z == s-1) {
+
+                int n = z;
+                double a[][] = new double[n][n];
+                double y[] = new double[n];
+
+                for (int i=0; i<n; i++){ 
+                    for ( int j=0; j<n; j++){
+                        a[i] [j] = m[i] [j];
+                        y[i] = m[i] [n];
+                    }
+                }
+                fenster.println("Ausgabe der Matrix a" );
+                Werkzeuge.matr_ausg(a, fenster);
+                fenster.println("Ausgabe des Vektors y" );
+                Werkzeuge.vekt_ausg(y, fenster);
+                boolean orthogonal = true; 
+                double x[] = new double[n]; 
+                double at[][] = new double[n][n];
+                if (orthogonal) {
+                    at = werkzeuge.tranponiert(a);
+                    x = werkzeuge.matr_mal_vekt(at,y);
+                }
+                else {
+                    fenster.println("Ausgabe 14 benötigt lgs...txt als Input");
+                    break;
+                }
+
+            } 
+        } 
+    }

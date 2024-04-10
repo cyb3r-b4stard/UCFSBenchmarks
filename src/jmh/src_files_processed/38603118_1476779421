@@ -1,0 +1,261 @@
+import java.util.HashMap;
+
+/**
+ * ####### ############# ## ####### # ## ###-#####
+ * ####### ## ###### ## ##.##.####.
+ */
+public class Player {
+    private String name, type;
+    private int health, gold, carryWeight;
+    private HashMap<String, Item> items;
+
+    /**
+     * Konstruktør for spilleren. Denne konstruktøren setter helsen til 100, gullbeholdningen til 1000 og vekten spilleren kan bære til 50kg.
+     * @param name Navnet på spilleren
+     * @param type Spillerens type. Spilleren kan bare være en av følgende [Mage, Warrior, Rogue, Ranger]. Hvis annet er spesifisert blir typen satt til unspecified.
+     */
+    public Player(String name, String type) {
+        setName(name);
+        setType(type);
+        setHealth(100);
+        setGold(1000);
+        setCarryWeight(50);
+        this.items = new HashMap<>();
+    }
+
+    /**
+     * Konstruktør for spilleren. Denne konstruktøren lar deg selv definere hvor mye gull spilleren har og hvor mange kg spilleren kan bære
+     * @param name Navnet på spilleren
+     * @param type Spillerens type. Spilleren kan bare være en av følgende [Mage, Warrior, Rogue, Ranger]. Hvis annet er spesifisert blir typen satt til unspecified.
+     * @param weight Antall kg spilleren kan bære
+     * @param gold Antall gull spilleren har
+     */
+    public Player(String name, String type, int weight, int gold) {
+        setName(name);
+        setType(type);
+        setHealth(100);
+        setCarryWeight(weight);
+        setGold(gold);
+        this.items = new HashMap<>();
+    }
+
+    /**
+     * Metode for å kjøpe en gjenstand.
+     * @param item gjenstanden som spilleren vil kjøpe
+     * @return true hvis spilleren får kjøpt gjenstanden, false hvis ikke
+     */
+    public void buyItem(Item item) {
+        if(canCarryWeight(item) & hasEnoughMoney(item)) {
+            this.items.put(item.getName(),item);
+            this.gold -= item.getValue();
+        }else{
+            System.out.println("you cant carry this");
+        }
+    }
+
+    /**
+     * Metode for å finne en gjenstand som spilleren har kjøpt
+     * @param search Navnet på gjenstanden du ønsker å finne
+     * @return gjenstanden hvis den blir funnet, null hvis ikke
+     */
+    public Item findItem(String search) {
+        return items.get(search);
+       
+        /*for(Item value : items.values()) {
+        if(items.name.equalsIgnoreCase(search)) {
+        return item;*/
+
+
+    }
+
+    /**
+     * Metode for å selge en gjenstand
+     * @param item gjenstanden som vil bli solgt
+     */
+    public boolean sellItem(Item item) {
+        Item itemToSell = findItem(item.getName());
+        
+        if(itemToSell != null) {
+            this.items.remove(itemToSell);
+            this.gold += itemToSell.getValue();
+            return true;
+        }else{
+            return false;
+        }
+             
+       
+
+    } 
+
+    /**
+     * Metode for å printe informasjon om spilleren. Gjenstandene til spilleren blir også printet, hvis spilleren har noen gjenstander.
+     */
+    /*public void print() {
+        System.out.println("-----------------------------");
+        System.out.println("Navn: " + this.name);
+        System.out.println("Type: " + this.type);
+        System.out.println("Helse: " + this.health + "/100");
+        System.out.println("Gullbeholdning: " + this.gold + " gullstykker");
+        System.out.println(this.name + " kan bære " + this.carryWeight + " kg. Han bærer foreløpig " + this.totalWeight());
+        System.out.println();
+        if(this.items.size() > 0) {
+            printItems();
+        }
+        System.out.println("------------------------------");
+    }*/
+    
+      public String toString() {
+        return System.out.printl "---------------------"+
+        "navn: "+ this.name +
+        "type: "+ this.type +
+        "helse: "+ this.health + "/100" +
+        "gullbeholdning: " + this.gold + " gullstykker" +
+        this.name + "kan bære " + this.carryWeight + " kg." +
+        "Han bærer foreløpig " + this.totalWeight();
+        
+        
+        
+    }
+    
+    /**
+     * Metode for å printe alle gjenstandene til spilleren
+     */
+    private void printItems() {
+        System.out.println("Printer " + this.name + " sine gjenstander");
+        for (Item value : items.values()){
+            value.print();
+        }
+
+        /*for(Item item : items) {
+        item.print();
+        }*/
+    }
+
+    /**
+     * Hjelpemetode for å sjekke om spilleren kan bære en gjenstand.
+     * @param item gjenstanden vi sjekker mot
+     * @return true hvis spilleren har kapasitet til å bære gjenstanden, false hvis ikke
+     */
+    public boolean canCarryWeight(Item item) {
+        return (totalWeight() + item.getWeight()) <= this.carryWeight;
+    }
+
+    /**
+     * Hjelpemetode for å sjekke om spilleren har nok penger til å kjøpe gjenstanden
+     * @param item gjenstanden spilleren ønsker å kjøpe
+     * @return true hvis spilleren har nok penger, false hvis ikke
+     */
+    public boolean hasEnoughMoney(Item item) {
+        return this.gold > item.getValue();
+    }
+
+    /**
+     * Metode for å sjekke om spilleren er død.
+     * @return true hvis helsen til spillern er <= 0, false hvis ikke
+     */
+    public boolean isDead() {
+        return this.health <= 0;
+    }
+
+    /**
+     * Metode for å endre helsen til spilleren. Helsen kan bli endret, både med positive og negative heltall
+     * @param newHealth den nye helsen til spilleren.
+     */
+    public void changeHealth(int newHealth) {
+        this.health += newHealth;
+        if (this.health > 100) {
+            this.health = 100;
+        } else if(this.health < 0) {
+            this.health = 0;
+        }
+    }
+
+    /**
+     * Metode for å returnere totalvekten spilleren bærer på det. Dvs. alle gjenstandene til spilleren.
+     * @return
+     */
+    public int totalWeight() {
+        int weight = 0;
+        for(Item item : items.values() ) {
+            weight += item.getWeight();
+        }
+        return weight;
+    }
+
+    /**
+     * Metode for å sjekke at riktig type blir satt på spilleren.
+     * @param type Spillerens type. Spilleren kan bare være en av følgende [Mage, Warrior, Rogue, Ranger]. Hvis annet er spesifisert blir typen satt til unspecified.
+     * @return typen til spilleren. Hvis feil type blir sendt som parameter, da blir typen returnert som unspecified.
+     */
+    public String checkType(String type) {
+        if(type.equalsIgnoreCase("Warrior")) {
+            return type;
+        } else if(type.equalsIgnoreCase("Rogue")) {
+            return type;
+        } else if(type.equalsIgnoreCase("Mage")) {
+            return type;
+        } else if (type.equalsIgnoreCase("Ranger")) {
+            return type;
+        } else {
+            return "Unspecified";
+        }
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = Utilities.checkString(name);
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = checkType(type).trim().toLowerCase();
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public void setHealth(int health) {
+        this.health = Utilities.cleanNegative(health);
+    }
+
+    public int getGold() {
+        return gold;
+    }
+
+    public void setGold(int gold) {
+        this.gold = Utilities.cleanNegative(gold);
+    }
+
+    public int getCarryWeight() {
+        return carryWeight;
+    }
+
+    public void setCarryWeight(int carryWeight) {
+        this.carryWeight = carryWeight;
+    }
+
+    public HashMap<String, Item> getItems() {
+        return items;
+    }
+
+    public boolean useItem(Item item){
+        Item itemToUse = findItem(item.getName());
+        if (itemToUse != null){
+            System.out.print(this.name + " uses " + item.getName() + " and " + item.getAction() +"..");
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public void setItems(HashMap<String, Item> items) {
+        this.items = items;
+    }
+}

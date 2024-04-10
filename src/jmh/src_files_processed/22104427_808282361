@@ -1,0 +1,58 @@
+
+package Ch02;
+import objectdraw.*;
+import java.awt.*;
+
+public class  A1_010_RandomBox_Lane extends WindowController 
+{
+    private RandomIntGenerator ranGen;
+    private FilledRect Box;
+    private Text My_Width_Is;
+    private Text My_Height_Is;
+    private Text My_Location_X_is;
+    private Text My_Location_Y_is;
+    private Text My_Red_Is;
+    private Text My_Green_Is;
+    private Text My_Blue_Is;
+
+    public static void main(String[]args)
+    {
+        new A1_010_RandomBox_Lane().startController(500,500);
+
+    }
+
+    public void begin() 
+    { ranGen= new RandomIntGenerator(1,255);
+        My_Width_Is= new Text("My Width Is:",0,10,canvas);
+        My_Height_Is=new Text("My Height Is:",0,30,canvas);
+        My_Location_X_is=new Text("My Location X Is: ",0,50,canvas);
+        My_Location_Y_is=new Text("My Location Y Is: ",0,70,canvas);
+        My_Red_Is=new Text("Red Color:",150,10,canvas);
+        My_Green_Is=new Text("Green Color:",150,30,canvas);
+        My_Blue_Is=new Text("Blue Color:",150,50,canvas);
+        Box= new FilledRect (canvas.getWidth()/2,canvas.getHeight()/2,ranGen.nextValue(), ranGen.nextValue(), canvas);
+        Box.moveTo(250,250)
+    }
+
+    public void onMousePress(Location point)
+    {  
+        
+        Box.move(-Box.getWidth()/2,-Box.getHeight()/2);
+        Box.setWidth(ranGen.nextValue());
+
+        Box.setHeight(ranGen.nextValue());
+
+        Box.setColor ( new Color ( ranGen.nextValue(), ranGen.nextValue(), ranGen.nextValue() ));   
+        
+
+        My_Width_Is.setText("My Width Is:"+ Box.getWidth ());
+        My_Height_Is.setText("My Height Is:"+ Box.getHeight ());
+        My_Location_X_is.setText("My Location X :"+ Box.getX ());
+        My_Location_Y_is.setText("My location Y:"+ Box.getY());
+        My_Red_Is.setText("Red Color:"+Box.getColor());
+        My_Green_Is.setText("Green Color:"+Box.getColor());
+        My_Blue_Is.setText("Blue Color:"+Box.getColor());
+
+
+    }
+}

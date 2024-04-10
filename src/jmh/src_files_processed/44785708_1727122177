@@ -1,0 +1,128 @@
+import sacco.testers.*;
+public class LifeModel implements GameOfLife
+{
+    private boolean[][] booArr;
+    
+    public LifeModel()
+    {
+        booArr = new boolean[40][50];
+    }
+    
+    public int numRows()
+    {
+        return booArr.length;
+    }
+    
+    public int numCols()
+    {
+        return booArr[0].length;
+    }
+    
+    public boolean getValAt(int r, int c)
+    {
+        return booArr[r][c];
+    }
+    
+    public void setVals(boolean[][] arr)
+    {
+        booArr = arr;
+    }
+    
+    public void setValAt(int r, int c, boolean val)
+    {
+        booArr[r][c] = val;
+    }
+    
+    public void toggle(int r, int c)
+    {
+        if(booArr[r][c])
+        {
+            booArr[r][c] = false;
+        }
+        else
+        {
+            booArr[r][c] = true;
+        }
+    }
+    
+    public void reset()
+    {
+        for(int r = 0; r < booArr.length; r++)
+        {
+            for(int c = 0; c < booArr[0].length; c++)
+            {
+                booArr[r][c] = false;
+            }
+        }
+    }
+    
+    public int numOfNeighbors(int r, int c)
+    {
+        int count = 0;
+        
+        for(int i = r-1; i <= r+1; i++)
+        {
+            for(int j = c-1; j <= c+1; j++)
+            {
+                if(i < 0 || j < 0)
+                {
+                }
+                else if(i > booArr.length-1 || j > booArr[0].length-1)
+                {
+                }
+                else if(i != r || j != c)
+                {
+                    count += 0;
+                }
+                else
+                {
+                    count++;
+                }
+            }
+        }
+        
+        return count;
+    }
+    
+    public void step()
+    {
+        boolean[][] newBoo = new boolean[40][50];
+        
+        for(int i = 0; i < 40; i++)
+        {
+            for(int j = 0; j < 50; j++)
+            {
+                if(getValAt(i,j))
+                {
+                    if(numOfNeighbors(i,j) == 2 || numOfNeighbors(i,j) == 3)
+                    {
+                        newBoo[i][j] = true;
+                    }
+                }
+                else if(!getValAt(i,j)
+                {
+                    if(numOfNeighbors(i,j) == 3)
+                    {
+                        newBoo[i][j] = true;
+                    }
+                    else
+                    {
+                        newBoo[i][j] = false;
+                    }
+                }
+                else
+                {
+                    newBoo[i][j] = false;
+                }
+            }
+        }
+        
+        booArr = newBoo;
+    }
+    
+    public static void main()
+    {
+        LifeModel model = new LifeModel();
+        GameOfLifeRunner.launchGame(model);
+    }
+}

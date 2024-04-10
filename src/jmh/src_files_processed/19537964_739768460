@@ -1,0 +1,79 @@
+/*
+ * ######### (#) #### ### ###### <####@##############.##>
+ * ### ###### ########.
+ *
+ * ############## ### ### ## ###### ### ###### #####, #### ## #######
+ * ############, ### ######### ######## #### ### ######### ##########
+ * ### ###:
+ * #. ############### ## ###### #### #### ###### ### ##### #########
+ *    ######, #### #### ## ########## ### ### ######### ##########.
+ * #. ############### ## ###### #### #### ######### ### ##### #########
+ *    ######, #### #### ## ########## ### ### ######### ########## ## ###
+ *    ############# ###/## ##### ######### ######## #### ### ############.
+ * #. ### #### ## ### ###### ### ### ## #### ## ####### ## ####### ########
+ *    ####### #### #### ######## ####### ######## ##### ####### ##########.
+ *
+ * #### ######## ## ######## ## ### ###### ``## ##'' ### ### ####### ##
+ * ####### ##########, #########, ### ### ####### ##, ### ####### ##########
+ * ## ############### ### ####### ### # ########## ####### ### ##########.
+ * ## ## ##### ##### ### ###### ## ###### ### ### ######, ########,
+ * ##########, #######, #########, ## ############# ####### (#########, ### 
+ * ### ####### ##, ########### ## ########## ##### ## ########; #### ## ###,
+ * ####, ## #######; ## ######## ############) ####### ###### ### ## ###
+ * ###### ## #########, ####### ## ########, ###### #########, ## #### 
+ * (######### ########## ## #########) ####### ## ### ### ### ## ### ### ##
+ * #### ########, #### ## ####### ## ### ########### ## #### ######.
+ */
+ 
+import java.awt.*;
+import javax.swing.*; 
+import javax.swing.border.*;
+import javax.swing.table.*;
+import javax.swing.event.*;
+import java.awt.event.*;
+ 
+public class SI_Holzlager extends JPanel
+{
+    private JButton button1;
+    private String namex;
+    private MySQL mysql;
+    private GAME game;
+    
+    public SI_Holzlager(GAME gamex,String name,int x,int y)
+    {
+        game = gamex;
+        namex = name;
+        mysql = new MySQL();
+        setDesign(x,y);
+    }
+    
+    public void setDesign(int x,int y)
+    {
+        setLayout(null);
+        setOpaque(false);
+        setBounds(x*18+(x-1)*150, (y+1)*10+y*130, 150, 130);
+        setBorder(new BevelBorder(BevelBorder.RAISED, Color.black, Color.lightGray, Color.lightGray, Color.black));
+        
+        button1 = new JButton();
+        button1.setText("Holzlager");
+        add(button1);
+        button1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button1.setFocusPainted(false);
+        button1.addActionListener(e -> button1ActionPerformed(e));
+        button1.setBorder(UIManager.getBorder("ToggleButton.border"));
+        button1.setBounds(30, 90, 90, 30);
+    }
+    
+    private void button1ActionPerformed(ActionEvent e) {
+        if(JOptionPane.showConfirmDialog(this, "Möchtest du dein Holzlager verbessern?\nKosten:  Gold - 50000 | Ressorcen - 750", "Rathaus Verbesserung", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) != 1)
+        {
+            if(Integer.parseInt(mysql.gold(namex)[0])>=50000 && Integer.parseInt(mysql.ressi(namex)[0])>=750) {
+                mysql.uploadGold(namex, Integer.parseInt(mysql.gold(namex)[0])-50000);
+                mysql.uploadRessi(namex, Integer.parseInt(mysql.ressi(namex)[0])-750);
+                game.gold.loadGoldOnly(namex);
+                game.ressi.loadRessiOnly(namex);
+                System.out.println("Das Gold und die Ressourcen wurden dir erfolgreich abgezogen!");
+            } else System.out.println("Du hast nicht genug Gold/Ressourcen!");
+        }
+    }
+}

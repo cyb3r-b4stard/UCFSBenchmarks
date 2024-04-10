@@ -1,0 +1,82 @@
+import java.util.*;
+public class Club extends Comparable
+{
+    private Member lid;
+    private String clubnaam;
+    private int aantal;
+    private ArrayList<Member>leden;
+    public Club(String clubname){
+        clubnaam=clubname;
+        leden=new ArrayList<Member>();
+    }
+
+    public void addMember(Member speler){
+        lid=speler;
+        aantal+=1;
+        leden.add(speler);
+
+    }
+
+    public int getNrOfMembers(){
+        return aantal;
+    }
+
+    public void showOverview(){
+        System.out.println("Overview of all members of club "+clubnaam);
+        for(Member lid:leden){
+
+            System.out.println("Member: firstName="+lid.getFirstName()+", lastName="+lid.getLastName()+", eMail="+lid.getEmail()+", joined the club in");
+
+        }
+
+    }
+
+    public int joinedInYear(int jaartal){
+        int counter=0;
+        for (Member lid:leden){
+            if(lid.getYear()==jaartal){
+                counter+=1;
+            }
+
+        }
+        return counter;
+    }
+
+    public boolean isMember(String achternaam){
+        boolean checker=false;
+        for(Member lid:leden) {
+            if (lid.getLastName().equals(achternaam) && !checker){
+                checker=true;
+
+            }
+
+        }
+        return checker;
+    }
+
+    public ArrayList removeMembersFromYear(int jaar){
+        ArrayList<Member>weg;
+        weg=new ArrayList<Member>();
+        Iterator<Member> it=leden.iterator();
+        while(it.hasNext()){
+            lid=it.next();
+            if(lid.getYear()==jaar){
+                weg.add(lid);
+                it.remove();
+
+            }
+
+        }
+        return weg;
+    }
+
+    public void showSortedNames(){
+        Collections.sort(leden, new Comparator<Member>(){
+        
+            public int compare(Member lid1, Member lid2){
+           
+             return lid1.getLastName().compareTo(lid2.getLastName());
+        });
+
+    }    
+}}

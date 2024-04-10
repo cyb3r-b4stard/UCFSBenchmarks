@@ -1,0 +1,153 @@
+package queue;
+
+/**
+ * ##### #### ##### #########
+ * 
+ * @###### #####
+ * @####### ####.##.##-#
+ */
+public class QueueDynamic<T> 
+{
+    private T first;
+    private QueueDynamic<T> middle;
+    private T last;
+
+    /**
+     * Constructor de una cola dinamica vacía
+     */
+    public QueueDynamic()
+    {
+        first = null;
+        middle = null;
+        last = null;
+    }
+        
+    public QueueDynamic(QueueIF<T> queue)
+    {
+        this();
+        
+        IteratorIF<T> iterator = new queue.getIterator<T>();
+        if (iterator.hasNext()
+        {
+            first = getNext();
+        }
+        
+        while(iterator.hasNext())
+        {
+            T aux = iterator.getNext();
+            if (iterator.hasNext())
+            {
+                middle.add(aux);
+            } else {
+                last = aux;
+            }
+        }
+    }
+        
+    /**
+     * Devuelve la cabeza de la cola
+     * 
+     * @return La cabeza de la cola
+     */
+    public T getFirst ()
+    {
+        return first;
+    }
+    
+    /**
+     * Inserta un nuevo elemento en la cola
+     * 
+     * @param element El elemento a añadir
+     * @return La cola con el nuevo elemento
+     */
+    public QueueIF<T> add (T element)
+    {
+        middle.add(last);
+        last = element;
+    }
+    
+    /**
+     * Elimina el primer elementoi de la cola
+     * 
+     * @return La cola a la que se le ha eliminado la cabeza
+     */
+    public QueueIF<T> remove ()
+    {
+        if (last == null)
+        {
+            first == null;
+        } else if (middle == null) {
+            first = last;
+        } else {
+            T second = middle.getFirst();
+            middle = middle.remove();
+            first = second;
+        }
+        
+        return this;
+    }
+    
+    /**
+     * Devuelve cierto si la cola esta vacia.
+     * @return cierto si la cola esta vacia.
+     */
+    public boolean isEmpty ()
+    {
+        return (fist == null && middle == null && last == null);
+    }
+    
+    /**
+     * Si la cola esta llena
+     * 
+     * @return true si la cola esta llena
+     */
+    public boolean isFull()
+    {
+        return false;
+    }
+    
+    /**
+     * El número de elementos de la cola
+     * 
+     * @return La longitud de la cola
+     */
+    public int getLength ()
+    {
+        if (first == null)
+        {
+            return 0;
+        } else if (last == null) {
+            return 1;
+        } else {
+            return 2+middle.getLength();
+        }
+    }          
+    
+    /**
+     * Si la cola contiene un elemento
+     * 
+     * @param element El elemento que hay que buscar
+     * @return true si la cola contiene al elemento
+     */
+    public boolean contains (T element)
+    {
+        if (isEmpty())
+        {
+            return false;
+        } else if (last == null) {
+            return (first == element);
+        } else {
+            return ((first == element) || middle.contains(element) || last == element);
+        }
+    }
+    
+    /**
+     * Un iterador para la cola
+     * 
+     * @return Un iterador para la cola
+     */
+    public IteratorIF<T> getIterator ()
+    {
+        return new QueueIterator(this);
+    }
+}

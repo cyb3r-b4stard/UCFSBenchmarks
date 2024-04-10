@@ -1,0 +1,212 @@
+/*
+ * ######### (#) #### ### ###### <####@##############.##>
+ * ### ###### ########.
+ *
+ * ############## ### ### ## ###### ### ###### #####, #### ## #######
+ * ############, ### ######### ######## #### ### ######### ##########
+ * ### ###:
+ * #. ############### ## ###### #### #### ###### ### ##### #########
+ *    ######, #### #### ## ########## ### ### ######### ##########.
+ * #. ############### ## ###### #### #### ######### ### ##### #########
+ *    ######, #### #### ## ########## ### ### ######### ########## ## ###
+ *    ############# ###/## ##### ######### ######## #### ### ############.
+ * #. ### #### ## ### ###### ### ### ## #### ## ####### ## ####### ########
+ *    ####### #### #### ######## ####### ######## ##### ####### ##########.
+ *
+ * #### ######## ## ######## ## ### ###### ``## ##'' ### ### ####### ##
+ * ####### ##########, #########, ### ### ####### ##, ### ####### ##########
+ * ## ############### ### ####### ### # ########## ####### ### ##########. 
+ * ## ## ##### ##### ### ###### ## ###### ### ### ######, ########,
+ * ##########, #######, #########, ## ############# ####### (#########, ### 
+ * ### ####### ##, ########### ## ########## ##### ## ########; #### ## ###,
+ * ####, ## #######; ## ######## ############) ####### ###### ### ## ###
+ * ###### ## #########, ####### ## ########, ###### #########, ## ####
+ * (######### ########## ## #########) ####### ## ### ### ### ## ### ### ##
+ * #### ########, #### ## ####### ## ### ########### ## #### ######.
+ */
+
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.table.*;
+import javax.swing.event.*;
+import java.awt.event.*;
+
+public class O_Mine extends JButton
+{
+    private GAME framex;
+    public String levelx;
+    private double goldAmount;
+    private int[] buildCost;
+
+    public O_Mine(String level, GAME frame)
+    {
+        framex = frame;
+        levelx = level;
+        setLayout(null);
+        setDesign(level);
+        setOptions(level);
+        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        setFocusPainted(false);
+        setOpaque(false);
+        setBorderPainted(false);
+        setContentAreaFilled(false);
+        addActionListener(e -> buttonActionPerformed(e));
+        framex.add(this);    
+
+        setBounds(850, 245, 100, 100);
+        setVisible(true);
+    }
+
+    public void update(int level)
+    {
+        setDesign(String.valueOf(level));
+        setOptions(String.valueOf(level));
+        levelx = String.valueOf(level);
+    }
+
+    public O_Mine(String level)
+    {
+        levelx = level;
+        setOptions(level);
+    }
+
+    private ImageIcon iconChange(String imgl)
+    {
+        ImageIcon imageIcon = new ImageIcon(imgl);
+        Image image = imageIcon.getImage();
+        Image newimg = image.getScaledInstance(50, 50,  java.awt.Image.SCALE_DEFAULT);
+        imageIcon = new ImageIcon(newimg);
+        return imageIcon;
+    }
+
+    private void buttonActionPerformed(ActionEvent e) {
+        framex.panel1.setVisible(false);
+        framex.panel1.setBounds(0, 0, 0, 0);
+        framex.button5.setIcon(framex.iconChange("Daten/Icons/Game/out1.png"));
+        framex.troop = 0;
+        framex.map.mine.setEnabled(true);
+        framex.map.glager.setEnabled(true);
+        PU_Mine mine = new PU_Mine(framex.getLocation().x,framex.getLocation().y,framex,levelx,framex.hf);
+    }
+
+    public void setDesign(String level)
+    {
+        if(level.equals("1"))
+        {
+            setIcon(iconChange("Daten/Icons/Game/out1.png"));
+            setRolloverIcon(iconChange("Daten/Icons/Game/in1.png"));
+        }
+        if(level.equals("2"))
+        {
+            setIcon(iconChange("Daten/Icons/Game/in1.png"));
+            setRolloverIcon(iconChange("Daten/Icons/Game/out1.png"));
+        }
+        if(level.equals("3"))
+        {
+            setIcon(iconChange("Daten/Icons/Game/in1.png"));
+            setRolloverIcon(iconChange("Daten/Icons/Game/out1.png"));
+        }
+        if(level.equals("4"))
+        {
+            setIcon(iconChange("Daten/Icons/Game/in1.png"));
+            setRolloverIcon(iconChange("Daten/Icons/Game/out1.png"));
+        }
+        if(level.equals("5"))
+        {
+            setIcon(iconChange("Daten/Icons/Game/in1.png"));
+            setRolloverIcon(iconChange("Daten/Icons/Game/out1.png"));
+        }
+        if(level.equals("6"))
+        {
+            setIcon(iconChange("Daten/Icons/Game/in1.png"));
+            setRolloverIcon(iconChange("Daten/Icons/Game/out1.png"));
+        }
+        if(level.equals("7"))
+        {
+            setIcon(iconChange("Daten/Icons/Game/in1.png"));
+            setRolloverIcon(iconChange("Daten/Icons/Game/out1.png"));
+        }
+        if(level.equals("8"))
+        {
+            setIcon(iconChange("Daten/Icons/Game/in1.png"));
+            setRolloverIcon(iconChange("Daten/Icons/Game/out1.png"));
+        }
+        if(level.equals("9"))
+        {
+            setIcon(iconChange("Daten/Icons/Game/in1.png"));
+            setRolloverIcon(iconChange("Daten/Icons/Game/out1.png"));
+        }
+        if(level.equals("10"))
+        {
+            setIcon(iconChange("Daten/Icons/Game/in1.png"));
+            setIcon(iconChange(""));
+            setRolloverIcon(iconChange("Daten/Icons/Game/out1.png"));
+        }
+    }
+
+    public void setOptions(String level)
+    {
+        buildCost = new int[] {0,0};
+        if(level.equals("1"))
+        {
+            goldAmount = 1000.0 / 3600000.0;
+            buildCost = new int[] {500,1500};
+        }
+        if(level.equals("2"))
+        {
+            goldAmount = 2000.0 / 3600000.0;
+            buildCost = new int[] {1000,3000};
+        }
+        if(level.equals("3"))
+        {
+            goldAmount = 3000.0 / 3600000.0;
+            buildCost = new int[] {2500,5000};
+        }
+        if(level.equals("4"))
+        {
+            goldAmount = 4000.0 / 3600000.0;
+            buildCost = new int[] {5000,10000};
+        } 
+        if(level.equals("5"))
+        {
+            goldAmount = 8000.0 / 3600000.0;
+            buildCost = new int[] {7500,35000};
+        }
+        if(level.equals("6"))
+        {
+            goldAmount = 10000.0 / 3600000.0;
+            buildCost = new int[] {10000,120000};
+        }
+        if(level.equals("7"))
+        {
+            goldAmount = 30000.0 / 3600000.0;
+            buildCost = new int[] {80000,250000};
+        }
+        if(level.equals("8"))
+        {
+            goldAmount = 35000.0 / 3600000.0;
+            buildCost = new int[] {100000,750000};
+        }
+        if(level.equals("9"))
+        {
+            goldAmount = 40000.0 / 3600000.0;
+            buildCost = new int[] {200000,1500000};
+        }
+        if(level.equals("10"))
+        {
+            goldAmount = 50000.0 / 3600000.0;
+            buildCost = new int[] {0,0};
+        }
+    }
+
+    public int[] giveCost()
+    {
+        return buildCost; 
+    }
+
+    public double giveG()
+    {
+        return goldAmount;
+    }
+}

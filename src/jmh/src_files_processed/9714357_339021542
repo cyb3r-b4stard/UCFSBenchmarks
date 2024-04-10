@@ -1,0 +1,134 @@
+
+/**
+ * #### ## ### ## #######.
+ * 
+ * @###### ### ########. 
+ * @####### ##-##-#### ##:##.
+ */
+public class Orc
+{
+    private String nome;
+    private double vida;
+    private Status status;
+    private int experiencia;
+    private double gerarNumero;
+
+    public double getVida(){
+        return this.vida;
+    }
+
+    public int getExperiencia(){
+        return this.experiencia;
+    }
+
+    public double getGerarNumero(){
+        return this.gerarNumero;
+    }
+
+    public Status getStatus(){
+        return this.status;
+    }
+
+    public void setExperiencia(int experiencia){
+        this.experiencia = experiencia;
+    }
+
+    public void setVida(double vida){
+        this.vida = vida;
+    }
+
+    public void setStatus(Status status){
+        this.status = status;
+    }
+
+    public void setNome(String nome){
+        this.nome = nome;
+    }
+
+    /**
+     *Construtor Orc que declara seus valores.
+     */
+    public Orc()
+    {
+        this.nome = "Sheldon";
+        this.vida = 110;
+        this.status = Status.VIVO;
+        this.experiencia = 0;
+        this.gerarNumero = 0.0;
+    }
+
+    private double gerarNumero(){
+        Orc orc = new Orc();
+        double gNumero = 0.0;
+        int  numeroDeLetrasNoNome = this.nome.length();
+        if( numeroDeLetrasNoNome <= 5){
+            gNumero = gNumero - 60;
+        }else{
+            if( numeroDeLetrasNoNome > 5){
+                gNumero = gNumero + 65;
+            }
+        }
+        if (this.vida >= 30 && this.vida <= 60){
+            gNumero = gNumero * 2;
+        }else{
+            if (this.vida <= 20){
+                gNumero = gNumero * 3;
+            }
+        }
+        if (orc.getStatus().equals("FUGINDO")){
+            gNumero = gNumero / 2;
+        }else{
+            if(orc.getStatus().equals("DORMINDO") || orc.getStatus().equals("CAÇANDO")){
+                gNumero = gNumero + 1;
+            }
+        }
+        if (orc.getExperiencia() % 2 == 0){
+            gNumero = gNumero * gNumero;
+        }else {
+            if(orc.getExperiencia() % 2 != 0 && orc.getExperiencia() > 2){
+                gNumero = gNumero * gNumero * gNumero;
+            }
+        }
+        return gNumero;
+    }  
+
+    /**
+     *Metodo que verifica se o Orc receberá ou não a flechada.
+     * @param Orc perderá¡ 10 de vida se a variavel do metodo gerarNumero() for mais que 100.
+     * 
+     */
+    public void serAtingidoPorElfo()
+    {
+        Orc orc = new Orc();
+        double desvio = this.gerarNumero();
+        switch (desvio) {
+            case(desvio <= 0.0) 
+            this.experiencia = this.experiencia + 2;
+            break;
+            case 2: (desvio > 0.0 && desvio < 100.0)
+            break;
+            this.vida = this.vida - 10;
+        }
+
+    }
+
+    public void perderVida(){
+        int quantidadeDeVidaASerPerdida = 10;
+        this.vida = this.vida - 10;
+        double vidaAposFlechada = this.vida - quantidadeDeVidaASerPerdida;
+        this.vida -= vidaAposFlechada >= 0 ? quantidadeDeVidaASerPerdida : this.vida;
+        this.status = this.vida == 0 ? Status.MORTO : this.status;
+    }
+
+    /**
+     * Imprime a vida atual do Orc.
+     * 
+     * @return Vida atual do Orc no seguinte formato de exemplo.
+     * 
+     * "Vida atual: 110"
+     */
+    public String toString(){
+        return "Vida atual: " + this.vida;
+    }
+
+}

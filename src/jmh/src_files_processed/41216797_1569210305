@@ -1,0 +1,85 @@
+
+import java.util.ArrayList;             
+
+public class UniversityManagerTest {
+    static UniversityManager universityManager = new UniversityManager();                   
+    
+    public static void main(String[] args) {
+        UniversityManagerTest.run();                                                        
+    }
+
+    public static void storePeople() {
+        universityManager.clear();                                                              
+        universityManager.addPeople(new Lecturer("Wood", 35, "Computing Science"));             
+        universityManager.addPeople(new Lecturer("Jones", 45, "Mathematics"));
+        universityManager.addPeople(new Student("Smith", 19, "Software Engineering"));          
+        universityManager.addPeople(new Student("Brown", 21, "Maths"));
+        universityManager.addPeople(new Administrator("McCormick", 60, "Principal and Vice-Chancellor"));
+        universityManager.addPeople(new Administrator("Adams", 55, "School Manager"));          
+    }
+
+    public static void printArrayList(ArrayList<Person> list) {
+        for (Person people : list)                                                              
+            System.out.println(people.getName()); 
+    }
+
+    public static void run() {
+        storePeople();                                                                          
+        System.out.println("\n--People List--");                                                
+        universityManager.printPeopleList();                                                    
+        System.out.println();
+        System.out.println("\n--People Tree--");
+        universityManager.printPeopleTree();
+        System.out.println();   
+        System.out.println("\n--Pre Order --\n" + universityManager.preWalk());
+        System.out.println("\n--In Order --\n" + universityManager.inWalk());
+        System.out.println("\n--Post Order --\n" + universityManager.postWalk());
+        System.out.println("\n--Find--");
+        String personToFind1 = "Brown"; 
+        String person = universityManager.find(personToFind1);              
+        if (person != null) {                                                
+            System.out.println("Found: " + person);                         
+        }else{                                                                
+            System.out.println("Could not find "+ personToFind1);           
+        }
+        System.out.println("\n--Find--");
+        String personToFind2 = "Black"; 
+        person = universityManager.find(personToFind2);
+        if (person != null)
+            System.out.println("Found: " + person);
+        else
+            System.out.println("Could not find "+ personToFind2);
+        ArrayList<Person> sortedPeople;
+        System.out.println("\n--Sorted--");
+        storePeople();
+        sortedPeople = universityManager.sort();
+        printArrayList(sortedPeople);
+    }
+
+    /**
+     * the pre-order walk
+     */
+    public static void preOrderTest() {
+        storePeople();
+        System.out.println("\n--In Order --\n" + universityManager.preWalk());
+        System.out.println(universityManager.printPeopleTree();
+    }
+
+    /**
+     * the in-order walk
+     */
+    public static void inOrderTest() {
+        storePeople();
+        System.out.println("\n--In Order --\n" + universityManager.inWalk());
+        System.out.println(universityManager.printPeopleTree();
+    }
+
+    /**
+     * the post-order walk
+     */
+    public static void postOrderTest() {
+        storePeople();
+        System.out.println("\n--Post Order --\n" + universityManager.postWalk());
+        System.out.println(universityManager.printPeopleTree();
+    }
+}

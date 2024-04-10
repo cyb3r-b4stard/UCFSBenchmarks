@@ -1,0 +1,219 @@
+import java.util.ArrayList;
+import java.util.Iterator; 
+
+/**
+ * .############.
+ * ########## #####.
+ * 
+ * ####: ##### ####### #-##-##
+ * #######: # ###'# #### ## ### ### ######## ## ###### ##### ####### ############.
+ * 
+ * ### ##. ###### ##########'# #### #### ###### ## ########.
+ * 
+ * @###### ##. ###### ##########
+ * @####### ########
+ * 
+ */
+
+public class CreditAgency
+{
+
+    private int currentDate;
+
+    private int customerID;
+    private String customerName;
+    private double customerBalance; 
+    private double customerLastPayment; 
+    private double customerCreditRating; 
+
+    private int transID;
+    private int custID; 
+    /*
+     * There are 4 types of transactions based on the value of transaction type
+     * x - is a remove transaction and the associated customer object is removed from the customer arraylist.
+     * lp - is a last payment transaction and the value of last payment attribute is changed for the associated customer.
+     * b - is a balance transaction and the value of balance attribute is changed for the associated customer.
+     * cr - is a credit rating transaction and the value of the credit rating is changed for the associated customer. 
+     */
+    private String transType; 
+    private double transValue; 
+
+    Customer thisCustomer;
+    Transaction thisTransaction;
+
+    ArrayList<Customer> customers;
+    ArrayList<Transaction> transactions;
+
+    private ReadFile transactionReader; 
+    private ReadFile customerReader; 
+
+    /**
+     * AptRentalAgency Constructor
+     */
+    public CreditAgency()
+    {
+        currentDate = 20140321;
+
+        customers = new ArrayList<Customer>();
+        transactions = new ArrayList<Transaction>();
+
+        readTransactions();
+        readCustomers();
+    }
+
+    /**
+     * .readCustomers.
+     * Reads in the Customer objects.
+     */
+    private void readCustomers()
+    {
+        customerReader = new ReadFile("CustomerData.txt");
+
+        customerReader.setSeparator(",");
+        for(customerReader.readInputLine(); !customerReader.eof(); customerReader.readInputLine())
+        {
+            customerID = customerReader.getIntField(1);
+            customerName = customerReader.getStringField(2);
+            customerBalance = customerReader.getDoubleField(3);
+            customerLastPayment = customerReader.getDoubleField(4);
+            customerCreditRating = customerReader.getDoubleField(5);
+
+            thisCustomer = new Customer(customerID, customerName, customerBalance, customerLastPayment, customerCreditRating);
+
+            customers.add(thisCustomer);
+        }
+        System.out.println("\nAll " + customers.size() + " customers read from the file and added to the ArrayList.\n");
+    }
+
+    /**
+     * .printAllCustomers.
+     */
+    public void printAllCustomers()
+    {
+        System.out.println("\nCurrent Customer List on " + currentDate + "\n");
+        System.out.println("CustID  Name                        Balance LastPay  CreditRating");
+        System.out.println("------  -----------------           ------- -------  ------------");
+        for(Customer theCustomer: customers)
+        {
+            theCustomer.printInfo();
+        }
+        System.out.println("\nEnd of Customer List with " + customers.size() + " customers. \n");
+    }
+
+    /**
+     * .printAllTransactions.
+     */
+    public void printAllTransactions()
+    {
+        System.out.println("\nCurrent Transaction List on " + currentDate + "\n");
+        System.out.println("TransID CustID  TransType TransValue");
+        System.out.println("-------  -------- --------- ----------");
+        for(Transaction theTransaction: transactions)
+        {
+            theTransaction.printInfo();
+        }
+        System.out.println("\nEnd of Transactions List. \n");
+    }
+
+    public Customer findCustomer(int pCustID)
+    {
+        for(int i=0;i<customers.size();i++)
+        {
+            thisCustomer = customers.get(i);
+            if(thisCustomer.getCustomerID() == pCustID)
+            {
+                return thisCustomer;
+
+            }
+
+        }
+        return null;
+    }
+
+    /**
+     * .readTransaction.
+     * Reads in the Trasaction objects.
+     * 
+     */
+    private void readTransactions()
+    {
+
+        transactionReader = new ReadFile("TransactionData.txt");
+
+        transactionReader.setSeparator(",");
+
+        transactionReader.readInputLine();
+
+        while(transactionReader.eof() == false)        
+        {
+            transID = transactionReader.getIntField(1);
+            custID = transactionReader.getIntField(2);
+            transType = transactionReader.getStringField(3);
+            transValue = transactionReader.getDoubleField(4);
+
+            thisTransaction = new Transaction(transID, custID, transType, transValue);
+
+            transactions.add(thisTransaction);
+
+            transactionReader.readInputLine();
+
+        }
+        System.out.println("All transactions read from the file and added to the ArrayList transactions");
+
+    }
+
+    /**
+     * .executeTransaction.
+     */
+    public void executeTransactions()
+
+    { int i;
+        for(i=0; i < transactions.size(); i++)
+
+        { 
+            thisTransaction = transactions.get(i);
+            
+            custID = thisTransaction.getCustID();
+            transID = thisTransaction.getTransID()
+            transType = thisTransaction.getTransType();
+            transValue = thisTransaction.getTransValue();
+            
+            thisCustomer = findCustomer(custID);
+            
+            if(thisCustomer != null)
+            {
+            
+            
+            
+            if(transType.equals("x"))
+            {
+                transactions.remove(thisCustomer);
+                return;
+
+            }
+
+            if(transType.equals("lp"))
+            {
+                thisCustomer.updateLastPayment(transValue);
+                return;
+            }
+
+            if(transType.equals("b"))
+            {
+                thisCustomer.updateBalance(transValue);  
+                return;
+            }
+
+            if(transType.equals("cr"))
+            {
+                thisCustomer.updateCreditRating(transValue); 
+                return;
+            }
+        }
+                      
+            
+        }
+
+    
+    }
+}

@@ -1,0 +1,287 @@
+import org.segonds.elevators.model.*;
+
+public class NewController implements Controller {
+/* Declaration of instance variables */
+ControlledBuilding building;
+ControlledElevator E[];
+
+int nbFloors;
+int topFloor;
+
+final Direction UP = Direction.UP;
+final Direction DOWN = Direction.DOWN;
+final Direction UNCOMMITTED = Direction.UNCOMMITTED;
+
+public void setup(int controlledBuilding ) {
+building = b;
+
+E = building.getElevators();
+
+nbFloors = building.getNbFloors();
+topFloor = nbFloors - 1;
+}
+
+public void reset() {}
+
+public String getName() {
+return "Baseline Controller";
+}
+
+
+public void tick(Clock clock) {
+for (int i = 0; i < E.length; i++) {
+double speed = E[i].getSpeed();
+
+Direction CD = E[i].getDirection();
+
+if (CD == UP && speed > 0)
+handleCase1(i);
+else
+if (CD == UP && speed == 0)
+handleCase2(i);
+else
+if (CD == DOWN && speed < 0)
+handleCase3(i);
+else
+if (CD == DOWN && speed == 0)
+handleCase4(i);
+else
+if (CD == UNCOMMITTED)
+handleCase5(i);
+}
+}
+
+public void handleCase1(int i) {
+int nextFloor = E[i].nextStoppableFloor();
+
+boolean candidates[] = new boolean [nbFloors];
+
+for (int f = nextFloor; f <= topFloor; f++)
+if (building.isFloorRequested(f, UP) || E[i].isFloorRequested(f))
+candidates[f] = true;
+
+
+int target = -1;
+
+for (int f = 0; f <= topFloor; f++)
+if (candidates[f] == true) {
+target = f;
+break;
+}
+
+if (target != -1)
+E[i].setTarget(target);
+else
+handleCase5(i);
+}
+
+public void handleCase2(int i) {
+
+int currentFloor = E[i].getFloor();
+
+if (currentFloor == topFloor) {
+handleCase5(i);
+return;
+}
+
+if (! E[i].isClosing() )
+return; 
+
+int nextFloor = currentFloor + 1;
+
+boolean candidates[] = new boolean [nbFloors];
+
+for (int f = nextFloor; f <= topFloor; f++)
+if (building.isFloorRequested(f, UP) || E[i].isFloorRequested(f))
+candidates[f] = true;
+
+int target = -1;
+
+for (int f = 0; f <= topFloor; f++)
+if (candidates[f] == true) {
+target = f;
+break;
+}
+
+if (target != -1)
+E[i].setTarget(target);
+else
+handleCase5(i);
+}
+
+public void handleCase3(int i) {
+int nextFloor = E[i].nextStoppableFloor();
+
+boolean candidates[] = new boolean [nbFloors];
+
+for (int f = nextFloor; f >= 0; f--)
+if (building.isFloorRequested(f, DOWN) || E[i].isFloorRequested(f))
+candidates[f] = true;
+
+int target = -1;
+
+for (int f = topFloor; f >= 0; f--)
+if (candidates[f] == true) {
+target = f;
+break;
+}
+
+if (target != -1)
+E[i].setTarget(target);
+else
+handleCase5(i);
+}
+
+public void handleCase4(int i) {
+int currentFloor = E[i].getFloor();
+if (currentFloor == 0) {
+handleCase5(i);
+return;
+}
+
+if (! E[i].isClosing() )
+return;
+
+int nextFloor = currentFloor - 1;
+
+boolean candidates[] = new boolean [nbFloors];
+
+for (int f = nextFloor; f >= 0; f--)
+if (building.isFloorRequested(f, DOWN) || E[i].isFloorRequested(f))
+candidates[f] = true;
+
+int target = -1;
+
+for (int f = topFloor; f >= 0; f--)
+if (candidates[f] == true) {
+target = f;
+break;
+}
+
+if (target != -1)
+E[i].setTarget(target);
+else
+handleCase5(i);
+}
+
+void handleCase5(int i) {
+
+boolean candidates[] = new boolean [nbFloors];
+
+if (i ==0){
+for (int f = 0; f <= topFloor; f++)
+if (building.isFloorRequested(f, UP) || E[i].isFloorRequested(f))
+candidates[f] = true ;
+
+int target = -1;
+
+
+for (int f = 0; f <= topFloor; f++)
+if (candidates[f] == true) {
+target = f;
+break;
+}
+
+if (target != -1) {
+E[i].setTarget(target);
+E[i].setDirection(UP);
+return;
+}
+
+
+
+for (int f = 0; f <= topFloor; f++)
+if (building.isFloorRequested(f, DOWN) || E[i].isFloorRequested(f))
+candidates[f] = true;
+
+for (int f = topFloor; f >= 0; f--)
+if (candidates[f] == true) {
+target = f;
+break;
+}
+
+if (target != -1) {
+E[i].setTarget(target);
+E[i].setDirection(DOWN);
+return;
+}
+}
+else if ( i == 1)
+{
+for (int f = 0; f <= topFloor; f++)
+if (building.isFloorRequested(f, UP) || E[i].isFloorRequested(f))
+candidates[f] = true ;
+
+int target = -1;
+
+
+for (int f = 0; f <= topFloor; f++)
+if (candidates[f] == true) {
+target = f;
+break;
+}
+
+if (target != -1) {
+E[i].setTarget(target);
+E[i].setDirection(UP);
+return;
+}
+
+
+
+for (int f = 0; f <= topFloor; f++)
+if (building.isFloorRequested(f, DOWN) || E[i].isFloorRequested(f))
+candidates[f] = true;
+
+for (int f = topFloor; f >= 0; f--)
+if (candidates[f] == true) {
+target = f;
+break;
+}
+
+if (target != -1) {
+E[i].setTarget(target);
+E[i].setDirection(DOWN);
+return;
+}
+}
+else if ( i == 2 )
+{
+for (int f = 0; f <= topFloor; f++)
+if (building.isFloorRequested(f, UP) || E[i].isFloorRequested(f))
+candidates[f] = true ;
+
+int target = -1;
+
+
+for (int f = 0; f <= topFloor; f++)
+if (candidates[f] == true) {
+target = f;
+break;
+}
+
+if (target != -1) {
+E[i].setTarget(target);
+E[i].setDirection(UP);
+return;
+}
+
+
+
+for (int f = 0; f <= topFloor; f++)
+if (building.isFloorRequested(f, DOWN) || E[i].isFloorRequested(f))
+candidates[f] = true;
+
+for (int f = topFloor; f >= 0; f--)
+if (candidates[f] == true) {
+target = f;
+break;
+}
+
+if (target != -1) {
+E[i].setTarget(target);
+E[i].setDirection(DOWN);
+return;
+
+
+

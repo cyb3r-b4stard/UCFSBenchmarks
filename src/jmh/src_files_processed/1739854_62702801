@@ -1,0 +1,70 @@
+import objectdraw.*;
+import java.awt.*;
+import java.util.*;
+public class car extends ActiveObject
+{
+    private FilledRect body;
+    private FilledOval wheel1;
+    private FilledOval wheel2;
+    private FilledRect cab;
+    private frog frog;
+    private static final int BODY_WIDTH = 40;
+    private static final int BODY_HEIGHT = 25;
+    private static final int CAB_SIDE_LENGTH = 20;
+    private static final int WHEEL_WIDTH = 15;
+    private int xSpeed;
+
+    public car(frog f, int x, int y, int speed, DrawingCanvas c)
+    {
+        body = new FilledRect(x, y, BODY_WIDTH, BODY_HEIGHT, c);
+        wheel1 = new FilledOval(x + 40, y + 25, WHEEL_WIDTH, WHEEL_WIDTH, c);
+        wheel2 = new FilledOval(x, y + 25, WHEEL_WIDTH, WHEEL_WIDTH, c);
+        cab = new FilledRect(x + 40 , y + 5, CAB_SIDE_LENGTH, CAB_SIDE_LENGTH,c);
+        int r = new random;
+        wheel1.setColor(new Color(0,0,0));
+        wheel2.setColor(new Color(0,0,0));
+        body.setColor(Color.red);
+        cab.setColor(Color.red);
+        xSpeed = speed;
+        frog = f;
+
+        this.start();
+    }
+
+    public void run()
+    {
+        while(true)
+        {
+            body.move(xSpeed,0);
+            wheel1.move(xSpeed,0);
+            wheel2.move(xSpeed,0);
+            cab.move(xSpeed,0);
+            pause(20);
+            if(xSpeed > 0)
+            {
+                if (body.getX() >= 500)
+                {
+                    body.moveTo (-50,100);
+                    wheel1.moveTo (-10,125);
+                    wheel2.moveTo (-50,125);
+                    cab.moveTo (-10, 105);
+                }
+
+            }
+            else if(xSpeed < 0)
+            {
+                if (body.getX() <= 0)
+                {
+                    wheel1.moveTo(570,325);
+                    wheel2.moveTo( 530,325);
+                    body.moveTo( 550,300);
+                    cab.moveTo( 530,305);
+                }
+            }
+            if(frog.getBody().overlaps(cab))
+            {
+                frog.die();
+            }
+        }
+    }
+}

@@ -1,0 +1,211 @@
+/**
+ * @######: 
+ */
+import java.util.*;
+
+public class BinaryTree  {
+    private TreeNode myRoot;
+
+    public BinaryTree() 
+    { 
+        myRoot=null;
+        makeTree();
+    }
+
+
+    public void makeTree()
+    {
+        int x = 5;
+        myRoot = new TreeNode(x);
+        myRoot.setLeft(new TreeNode(x));
+        myRoot.setRight(new TreeNode(x));
+
+        myRoot.getRight().setRight(new TreeNode(x));
+
+        myRoot.getLeft().setLeft(new TreeNode(x));
+        myRoot.getLeft().setRight(new TreeNode(x));
+
+        TreeNode temp1 = myRoot.getLeft().getLeft();
+        TreeNode temp2 = myRoot.getLeft().getRight();
+
+        temp1.setLeft(new TreeNode(x));
+        temp2.setRight(new TreeNode(x));
+
+        temp1 = temp1.getLeft();
+        temp1.setLeft(new TreeNode(x));
+        temp1.setRight(new TreeNode(x));
+        temp1 = temp1.getRight();
+        temp1.setRight(new TreeNode(x));
+
+        temp2 = temp2.getRight();
+        temp2.setRight(new TreeNode(x));
+        temp2.setLeft(new TreeNode(x));
+        temp2 = temp2.getLeft();
+        temp2.setRight(new TreeNode(x));
+    }
+
+    public int numNodes()
+    {
+        return numNodesHelper(myRoot);
+    }
+
+    private int numNodesHelper(TreeNode root) 
+    {
+        if(root==null)
+            return 0;
+        else
+            return 1+numNodesHelper(root.getLeft())+numNodesHelper(root.getRight());
+    }
+
+    public int numLeaves() 
+    {
+        return numLeavesHelper(myRoot);
+    }
+
+    private int numLeavesHelper(TreeNode root) 
+    {
+        if(root==null)
+            return 0;
+        else if(isLeaf(root))
+            return 1;
+        else
+            return numLeavesHelper(root.getLeft())+numLeavesHelper(root.getRight());
+    }
+
+    public int height() 
+    {
+        return heightHelper(myRoot);
+    }
+
+    private int heightHelper(TreeNode root)
+    {
+        if(root!=null)
+            return 1+Math.max(heightHelper(root.getLeft()),heightHelper(root.getRight()));
+        else 
+            return 0;
+    }
+
+    public int width() {
+        return widthHelper(myRoot);
+    }
+
+    private int widthHelper(TreeNode root)
+    {
+        if(root==null)
+            return 0;
+        int wL= 2+heightHelper(root.getLeft())+heightHelper(root.getRight());
+        return wL;
+    }
+
+    public TreeNode findAncestor(TreeNode root,Comparable ancestor)
+    {
+        if(root==null)
+            return null;
+        else if(root.getValue().equals(ancestor))
+            return root;
+        else
+        {
+            TreeNode temp=findAncestor(root.getLeft(),ancestor);
+            if(temp==null)
+                findAncestor(root.getRight(),ancestor);
+            else
+                findAncestor(root.getRight(),ancestor);
+        }
+    }
+
+    public TreeNode findDescendant(TreeNode root,Comparable descendant)
+    {
+        if(root==null)
+            return null;
+        else if(root.equals(descendant))
+            return root;
+        else
+        {
+            TreeNode temp=findDescendant(root.getLeft(),descendant);
+            if(temp==null)
+                findDescendant(root.getRight(),descendant);
+            else
+                findDescendant(root.getLeft(),descendant);
+        }
+    }
+
+    public boolean isDescendant(Comparable ancestor, Comparable possibleDescendant) 
+    {
+        TreeNode temp=findAncestor(myRoot,ancestor);
+        if(temp!=null)
+        {
+            TreeNode temp2=findDescendant(myRoot,possibleDescendant)
+            if()
+            {
+
+            }
+            else 
+                return false;
+        }
+        else
+            return false;
+    }
+
+    public boolean isFull() 
+    {
+        return isFullHelper(myRoot);
+    }
+
+    public boolean isLeaf(TreeNode root)
+    {
+        if(root.getRight()==null && root.getLeft()==null)
+            return true;
+        else
+            return false;
+    }
+
+    private boolean isFullHelper(TreeNode root) 
+    {
+        return true;
+    }
+
+    public void clear() 
+    {
+        myRoot = null;  
+    }
+
+
+    public String preOrder() 
+    {
+        return "";
+    }
+
+    private String preOrderRecursiveHelper(TreeNode root)
+    {
+        return "";
+    }
+
+    public String postOrder() 
+    {
+        return "";
+    }
+
+    private String postOrderRecursiveHelper(TreeNode root)
+    {
+        return "";
+    }
+
+    public String levelOrderTraversal()
+    {
+
+        return "";
+    }
+
+    public String toString() 
+    {
+
+
+        return "";
+    }
+
+    private String toStringHelper(TreeNode root)
+    {
+        return "";
+    }
+
+}

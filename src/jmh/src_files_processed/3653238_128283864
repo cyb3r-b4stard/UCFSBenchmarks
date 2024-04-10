@@ -1,0 +1,205 @@
+
+import java.awt.*;
+import java.awt.geom.*;
+import java.awt.Graphics;
+import java.awt.Point;
+
+/**
+ * ## ##### ###### ######## ### ######## ########### #### ######## ### ##########
+ * ## #### "###### ####".
+ * 
+ * @###### #.#######
+ * @####### #### ####
+ */
+public class Tracertest extends ImageN6K
+{
+    private boolean penDown;
+    private double x,y;
+    private double cap;
+    /**
+     * Tracertest : Construit un quadrillage rouge et noir. 
+     */
+    public Tracertest()
+    {
+        super("jeu de dame",800,800);
+        Graphics g=getGraphics();
+        g.setColor(Color.red);
+        g.fillRect(0,0,800,800);
+        for( int i=0;i<10;i++) 
+                              { 
+                                for(int j=0;j<10;j++)
+                                                     { if((i+j)%2==0){  g.setColor(Color.black);
+                                                                       g.fillRect(80*i,80*j,80,80);
+                                                                     } 
+                                                       else  { } 
+                                                     }                   
+        
+                               }                      
+        repaint();
+        x = 200; y = 200; cap = 90.0;
+        penDown = false;
+    }
+    public void pion() 
+    {
+    Graphics g=getGraphics();
+    g.setColor(Color.blue);
+    g.fillOval(20,20,40,40);
+    repaint();  
+    }    
+    public void mouvement()
+    {
+    Graphics g=getGraphics();     
+    g.setColor(Color.blue);    
+     for(int i=0; i<400; i++) 
+                            { 
+                                quadrillage();
+                                g.fillOval(20+i,20,40,40);
+                                repaint();
+                            }
+        
+        
+    }
+    public void quadrillage()
+{
+Graphics g=getGraphics();
+g.setColor(Color.red);
+g.fillRect(0,0,800,800);
+        for( int i=0;i<10;i++) 
+                              { 
+                                for(int j=0;j<10;j++)
+                                                     { if((i+j)%2==0){  g.setColor(Color.black);
+                                                                       g.fillRect(80*i,80*j,80,80);
+                                                                     } 
+                                                       else  { } 
+                                                     }                   
+        
+                               }   
+    repaint();                           
+}
+/** joueur1  : positionne les pions du joueur 1, en couleur bleu.
+ */
+public void joueur1()
+{
+Graphics g=getGraphics();    
+        for( int i=0;i<10;i++) 
+                              { 
+                                for(int j=0;j<4;j++)
+                                                     { if((i+j)%2==0){  g.setColor(Color.blue);
+                                                                       g.fillOval(80*i+20,80*j+20,40,40);
+                                                                     } 
+                                                       else  { } 
+                                                     }                   
+        
+                               }   
+repaint();                               
+}     
+/** joueur2 : positionne les pions du joueur 2, en couleur verte 
+ */
+public void joueur2()
+{
+ Graphics g=getGraphics();    
+        for( int i=0;i<10;i++) 
+                              { 
+                                for(int j=0;j<4;j++)
+                                                     { if((i+j)%2==1){  g.setColor(Color.green);
+                                                                       g.fillOval(80*(9-i)+20,80*(9-j)+20,40,40);
+                                                                     } 
+                                                       else  { } 
+                                                     }                   
+        
+                               }   
+repaint();       
+}    
+public void deplacementjoueur1(int i, int j, int a, int b)
+{ Graphics g=getGraphics();
+  if( a==i+1 || b==j+1)   
+                       {g.setColor(Color.black);
+                        g.fillRect(80*i,80*j,80,80);
+                        g.setColor(Color.blue);
+                        g.fillOval(80*a+20,80*b+20,40,40);
+                       }
+  if( a==i-1 || b==j+1)
+                      {
+                      if(i==0) {
+                                System.out.print(" mouvement impossible");
+                                }
+                      else           
+                                {g.setColor(Color.black);
+                                 g.fillRect(80*i,80*j,80,80);
+                                 g.setColor(Color.blue);
+                                 g.fillOval(80*a+20,80*b+20,40,40);
+                                 }
+                       }      
+  else 
+        {
+         System.out.print("mouvement impossible");
+        }
+  repaint();      
+    }        
+public int getcoordonnéeix()
+{
+  Graphics g=getGraphics();
+  Point pi= new Point();;
+  pi.x=mouseX();
+  pi.y=mouseY();
+  waitClick(pi);
+  int a = pi.x%80;
+  return a;
+                         }
+  
+  
+  
+  
+ 
+}
+    /**
+     * Baisse le stylo (les déplacements ultérieurs du stylo laissent une trace)
+     */
+    public void penDown() { penDown=true; }
+
+    /**
+     * Lève le stylo (les déplacements ultérieurs du stylo ne laissent pas de trace)
+     */
+    public void penUp() { penDown=false; }
+
+    /**
+     * Avance le stylo dans la direction courante, et laisse une trace si le stylo est baissé
+     * @param distance La distance à parcourir (positive)
+     */
+    public void forward(double distance)
+    {
+        double orgX = x, orgY = y;
+        if (distance<=0.0) return;
+        x += distance*Math.cos(cap*Math.PI/180.0);
+        y -= distance*Math.sin(cap*Math.PI/180.0);
+        if (penDown) {
+            Shape line=new Line2D.Double(orgX,orgY,x,y);
+            createGraphics().draw(line);
+            repaint();
+        }
+    }
+
+    /**
+     * Tourne dans le sens trigonométrique, d'un angle donné en paramètre.
+     * @param angle L'angle en degrés.
+     */
+    public void turn(double angle) 
+    {
+        cap += angle;
+        cap = Math.IEEEremainder(cap,360.0);
+    }
+
+    /**
+     * Change la couleur du stylo
+     * @param color Une chaîne de caractères pouvant prendre les valeurs "red", "green", "blue" ou "black".
+     */
+    public void penChange(String color)
+    {
+        Graphics g=getGraphics();
+        if (color.equals("red")) g.setColor(Color.red);
+        if (color.equals("green")) g.setColor(Color.green);
+        if (color.equals("blue")) g.setColor(Color.blue);
+        if (color.equals("black")) g.setColor(Color.black);
+    }
+   
+}

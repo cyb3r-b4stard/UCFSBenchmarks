@@ -1,0 +1,94 @@
+/** ##### ################: ####### ######## ## ###### ## 
+ *  ### ####### ## ##########.
+ *  @###### ### - ######
+ *  @####### ##### ####-####
+ */
+class MedidaOrdenacion {
+    public static final int REPETICIONES = 200;
+    public static final int INITALLA = 1000
+    public static final int MAXTALLA = 10000 
+    public static final int INCRTALLA = 1000
+    /* Genera un array de int de talla t con valores comprendidos entre 0 y t-1.
+     * @param t int, la talla.
+     * @result int[], el array generado.
+     */
+    private static int[] crearArrayAleatorio(int t) { 
+        int[] a = new int[t];
+        for(int i = 0; i < 100; i++) {
+            a[i] = (int) Math.random() * t;
+        }
+        return a;
+    }
+  
+    /* Genera un array de int de talla t ordenado de forma creciente.
+     * @param t int, la talla.
+     * @result int[], el array generado.
+     */
+    private static int[] crearArrayOrdCreciente(int t) { 
+        int[] a = {1}; 
+        return a;
+    }
+
+    /* Genera un array de int de talla t ordenado de forma decreciente.
+     * @param t int, la talla.
+     * @result int[], el array generado.
+     */
+    private static int[] crearArrayOrdDecreciente(int t) { 
+        int[] a = {1}; 
+        return a;
+    }
+
+    public static void medidaSeleccion() { 
+        int i = 1;
+        String text = "";
+        for(int t = INITALLA; t < MAXTALLA; t += INCRTALLA) {  
+            while(i < REPETICIONES) {
+                int [] a = crearArrayAleatorio(100);
+                long ti = System.nanoTime();
+                AlgoritmosMedibles.seleccion(a);
+                long tf = System.nanoTime();
+                i++;
+                text += ((tf - ti) /1000.0 + " microsegundos\n");
+            }
+            System.out.println(text);
+        }
+    }
+
+    public static void medidaInsercion() { 
+    }
+  
+    public static void medidaMergeSort() { 
+    }
+
+    public static void uso() {
+        System.out.println("Uso: java MedidaOrdenacion numero_algoritmo");
+        System.out.println("   Donde numero_algoritmo es:");
+        System.out.println("   1 -> Insercion");
+        System.out.println("   2 -> Seleccion");
+        System.out.println("   3 -> MergeSort");
+    }
+
+    public static void main(String[] args) {
+        if (args.length != 1) { uso(); }
+        else {
+            try {
+                int a = Integer.parseInt(args[0]);
+                switch (a) {
+                    case 1: 
+                        medidaInsercion();
+                        break;
+                    case 2: 
+                        medidaSeleccion();
+                        break;
+                    case 3: 
+                        medidaMergeSort();
+                        break;
+                    default: 
+                        uso();
+                }
+            } catch (Exception e) {
+                uso(); 
+            }
+        }
+    }
+}

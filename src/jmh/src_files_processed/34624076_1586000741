@@ -1,0 +1,894 @@
+
+import java.awt.EventQueue; 
+import java.awt.event.ActionEvent; 
+import java.awt.event.ActionListener; 
+ 
+import javax.swing.JFrame; 
+import javax.swing.JPanel; 
+import java.awt.Color; 
+import java.awt.Event; 
+ 
+import java.awt.event.KeyEvent; 
+import java.awt.event.KeyListener; 
+import javax.swing.JTextFiel ; 
+import javax.swing.JLabel; 
+import javax.swing.ImageIcon; 
+import javax.swing.JButton; 
+ 
+import com.pi4j.io.gpio.GpioController; 
+import com.pi4j.io.gpio.GpioFactory; 
+import com.pi4j.io.gpio.GpioPinDigitalInput; 
+import com.pi4j.io.gpio.PinPullResistance; 
+import com.pi4j.io.gpio.RaspiPin; 
+import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent; 
+import com.pi4j.io.gpio.event.GpioPinListenerDigital; 
+import java.awt.Font; 
+import javax.swing.SwingConstants; 
+import java.awt.Panel; 
+import java.awt.Label; 
+import java.awt.Dimension; 
+ 
+public class archerygui implements KeyListener
+{ 
+ 
+static     archerygui win ow; 
+     static     int sum1=0; 
+      static    int sum2=0;  
+       static   int sum3=0; 
+       static int token=1; 
+    JLabel Label1, Label2, Label3,Label31, Label41, Label51; 
+    JLabel lblNewLabel_1,lblNewLabel_2; 
+    JLabel lblNewLabel = new JLabel(); 
+     
+   static JFrame frame; 
+    JButton btnNewButton1 = new JButton("Reset Score"); 
+    JButton btnNewButton2 = new JButton("Reset Score"); 
+    JButton btnNewButton3 = new JButton("Reset Score"); 
+    private JButton btnNewButton; 
+    private JButton btnNewButton_1; 
+    private JButton btnNewButton_2; 
+    private Panel panel; 
+    /** 
+     * Launch the application. 
+     */ 
+    public static voi  main(String[] args)  
+    { 
+  
+                    win ow = new archerygui(); 
+                    for(;;) { 
+                         
+                    win ow.frame.setVisible(true); 
+                     }    
+             } 
+     
+     
+ 
+    /** 
+     * Create the application. 
+     */ 
+    public archerygui()  { 
+         isplay();       
+        raspberry_pi(); 
+        frame. ispose(); 
+     } 
+     
+    public voi  keyPresse (KeyEvent arg0)  { 
+         
+     } 
+ 
+    public voi  keyRelease (KeyEvent arg0)  { 
+         
+     } 
+ 
+    public voi  keyType (KeyEvent arg0)  { 
+         
+     } 
+     
+public voi  raspberry_pi() { 
+     
+   ImageIcon icon1=null; 
+    System.out.println("<--Pi4J--> GPIO Listen Example ... starte ."); 
+     JTextFiel  t1= new JTextFiel (5); 
+     frame.getContentPane().a  (t1); 
+      
+  ImageIcon icon1;
+                icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archery.png"); 
+                        lblNewLabel.setIcon(icon1); 
+                        lblNewLabel_1.setIcon(icon1); 
+                        lblNewLabel_2.setIcon(icon1); 
+                        JLabel lblStanleySports = new JLabel("Stanley Sports"); 
+                        lblStanleySports.setForegroun (Color.RED); 
+                        lblStanleySports.setFont(new Font("Eras Bol  ITC", Font.BOLD | Font.ITALIC, 28)); 
+                        panel.a  (lblStanleySports); 
+                         
+  
+ 
+ 
+    t1.a  KeyListener(new KeyListener()  { 
+         
+            public voi  keyPresse (KeyEvent e) { 
+                System.out.println("In Key Presse "); 
+                ImageIcon icon1; 
+                         icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archery.png"); 
+                        lblNewLabel.setIcon(icon1); 
+                 
+         
+                if(e.getKeyChar() == '1') 
+                 {                    
+                  icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archeryBE.png"          ); 
+                  lblNewLabel.setIcon(icon1);     
+                   for(long i=0;i<85000;i++); 
+ 
+                   System.out.println("In 1"); 
+                  
+                 } 
+                if(e.getKeyChar() == '2') 
+                 { 
+                     icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archeryBE.png"          ); 
+                  lblNewLabel.setIcon(icon1);                               
+                    System.out.println("In 2"); 
+               
+                 } 
+                if(e.getKeyChar() =='3') 
+                 { 
+                   icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archeryBE.png"          ); 
+                  lblNewLabel.setIcon(icon1);                               
+                    System.out.println("In 3"); 
+                   
+                 } 
+ 
+ 
+   if(e.getKeyChar() =='q' || e.getKeyChar() =='Q' ) 
+                 { 
+                   sum1 = sum1+10;   
+                 System.out.println("Sum : "+ sum1); 
+                         icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archery1.png"); 
+                        lblNewLabel.setIcon(icon1); 
+                        Label1.setText("Score :" + sum1);   
+                        try  { 
+                            Threa .sleep(1000); 
+                         } catch (Interrupte Exception e)  { 
+                            e.printStackTrace(); 
+                         } 
+ 
+                   
+                 } 
+ 
+ 
+ 
+      if(e.getKeyChar() =='w' || e.getKeyChar() =='W' ) 
+                 { 
+                 sum1 = sum1+20;    
+                        System.out.println("Sum : "+ sum1);  
+                         icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archery2.png"); 
+                        lblNewLabel.setIcon(icon1); 
+                        Label1.setText("Score :" + sum1);                    
+                        try  { 
+                            Threa .sleep(1000); 
+                         } catch (Interrupte Exception e)  { 
+                            e.printStackTrace(); 
+                         } 
+                   
+                 } 
+   
+ 
+      if(e.getKeyChar() =='e' || e.getKeyChar() =='E' ) 
+                 { 
+                  sum1 = sum1+30;    
+                                System.out.println("Sum : "+ sum1); 
+                                icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archery3.png"); 
+                                lblNewLabel.setIcon(icon1); 
+                                Label1.setText("Score :" + sum1);                        
+                                try  { 
+                                    Threa .sleep(1000); 
+                                 } catch (Interrupte Exception e)  { 
+                                    e.printStackTrace(); 
+                                 } 
+                 
+                 } 
+   
+      if(e.getKeyChar() =='r' || e.getKeyChar() =='R' ) 
+                 { 
+                      sum1 = sum1+40;  
+                                        System.out.println("Sum : "+ sum1); 
+                                        icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archery4.png"); 
+                                        lblNewLabel.setIcon(icon1); 
+                                        Label1.setText("Score :" + sum1); 
+                                        try  { 
+                                            Threa .sleep(1000); 
+                                         } catch (Interrupte Exception e)  { 
+                                            e.printStackTrace(); 
+                                         } 
+  
+                 } 
+ 
+ 
+   
+      if(e.getKeyChar() =='t' || e.getKeyChar() =='T' ) 
+                 { 
+                  sum1 = sum1+50;  
+                                System.out.println("Sum : "+ sum1);  
+                               icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archery5.png"); 
+                                lblNewLabel.setIcon(icon1); 
+                                Label1.setText("Score :" + sum1); 
+                                try  { 
+                                    Threa .sleep(1000); 
+                                 } catch (Interrupte Exception e)  { 
+                                    e.printStackTrace(); 
+                                 } 
+                        icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archeryBE.png"); 
+                        lblNewLabel.setIcon(icon1); 
+                        Label1.setText("Score :" + sum1);   
+                        try  { 
+                            Threa .sleep(1000); 
+                         } catch (Interrupte Exception e)  { 
+                            e.printStackTrace(); 
+                         }      
+                   
+                 } 
+   
+ 
+     if(e.getKeyChar() =='y' || e.getKeyChar() =='Y' ) 
+                 { 
+                 sum2 = sum2+10;   
+                                 System.out.println("Sum : "+ sum2); 
+                                         icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archeryBE.png"); 
+                                        lblNewLabel_1.setIcon(icon1); 
+                                        Label2.setText("Score :" + sum2);   
+                                        try  { 
+                                            Threa .sleep(1000); 
+                                         } catch (Interrupte Exception e)  { 
+                                            e.printStackTrace(); 
+                                         } 
+                                                   
+                 } 
+ 
+   if(e.getKeyChar() =='u' || e.getKeyChar() =='U' ) 
+                 { 
+                  sum2 = sum2+20;    
+                                        System.out.println("Sum : "+ sum2);  
+                                         icon1=new ImageIcon("/root/Desktop/ep/Image/archery2.png"); 
+                                        lblNewLabel_1.setIcon(icon1); 
+                                        Label2.setText("Score :" + sum2);                    
+                                        try  { 
+                                            Threa .sleep(1000); 
+                                         } catch (Interrupte Exception e)  { 
+                                            e.printStackTrace(); 
+                                         } 
+                  
+                 } 
+ 
+   if(e.getKeyChar() =='i' || e.getKeyChar() =='I' ) 
+                 { 
+                     sum2 = sum2+30;    
+                                                System.out.println("Sum : "+ sum2); 
+                                                icon1=new ImageIcon("/root/Desktop/ep/Image/archery3.png"); 
+                                                lblNewLabel_1.setIcon(icon1); 
+                                                Label2.setText("Score :" + sum2);                        
+                                                try  { 
+                                                    Threa .sleep(1000); 
+                                                 } catch (Interrupte Exception e)  { 
+                                                    e.printStackTrace(); 
+                                                 } 
+           
+                 } 
+ 
+   if(e.getKeyChar() =='o' || e.getKeyChar() =='O' ) 
+                 { 
+               sum2 = sum2+40;  
+                                                        System.out.println("Sum : "+ sum2); 
+                                                        icon1=new ImageIcon("/root/Desktop/ep/Image/archery4.png"); 
+                                                        lblNewLabel_1.setIcon(icon1); 
+                                                        Label2.setText("Score :" + sum2); 
+                                                        try  { 
+                                                            Threa .sleep(1000); 
+                                                         } catch (Interrupte Exception e)  { 
+                                                            e.printStackTrace(); 
+                                                         } 
+ 
+                   
+                 } 
+ 
+   if(e.getKeyChar() =='p' || e.getKeyChar() =='P' ) 
+                 { 
+               sum2 = sum2+50;  
+                                                System.out.println("Sum : "+ sum2);  
+                                               icon1=new ImageIcon("/root/Desktop/ep/Image/archery5.png"); 
+                                                lblNewLabel_1.setIcon(icon1); 
+                                                Label2.setText("Score :" + sum2); 
+                                                try  { 
+                                                    Threa .sleep(1000); 
+                                                 } catch (Interrupte Exception e)  { 
+                                                    e.printStackTrace(); 
+                                                 } 
+                                        icon1=new ImageIcon("/root/Desktop/ep/Image/archeryBE.png"); 
+                                        lblNewLabel_1.setIcon(icon1); 
+                                        Label2.setText("Score :" + sum2);   
+                                        try  { 
+                                            Threa .sleep(1000); 
+                                         } catch (Interrupte Exception e)  { 
+                                            e.printStackTrace(); 
+                                         }      
+                   
+                 } 
+   
+ 
+ 
+ 
+ 
+     if(e.getKeyChar() =='a' || e.getKeyChar() =='A' ) 
+                 { 
+                    sum3 = sum3+10;   
+                                                 System.out.println("Sum : "+ sum3); 
+                                                         icon1=new ImageIcon("/root/Desktop/ep/Image/archery1.png"); 
+                                                        lblNewLabel_2.setIcon(icon1); 
+                                                        Label3.setText("Score :" + sum3);   
+                                                        try  { 
+                                                            Threa .sleep(1000); 
+                                                         } catch (Interrupte Exception e)  { 
+                                                            e.printStackTrace(); 
+                                                         } 
+                   
+                 } 
+ 
+   if(e.getKeyChar() =='s' || e.getKeyChar() =='S' ) 
+                 { 
+                 sum3 = sum3+20;    
+                                                        System.out.println("Sum : "+ sum3);  
+                                                         icon1=new ImageIcon("/root/Desktop/ep/Image/archery2.png"); 
+                                                        lblNewLabel_2.setIcon(icon1); 
+                                                        Label3.setText("Score :" + sum3);                    
+                                                        try  { 
+                                                            Threa .sleep(1000); 
+                                                         } catch (Interrupte Exception e)  { 
+                                                            e.printStackTrace(); 
+                                                         } 
+                                             
+                   
+                 } 
+ 
+ 
+   if(e.getKeyChar() ==' ' || e.getKeyChar() =='D' ) 
+                 { 
+                   sum3 = sum3+30;    
+                                                                System.out.println("Sum : "+ sum3); 
+                                                                icon1=new ImageIcon("/root/Desktop/ep/Image/archery3.png"); 
+                                                                lblNewLabel_2.setIcon(icon1); 
+                                                                Label3.setText("Score :" + sum3);                        
+                                                                try  { 
+                                                                    Threa .sleep(1000); 
+                                                                 } catch (Interrupte Exception e)  { 
+                                                                    e.printStackTrace(); 
+                                                                 } 
+ 
+                   
+                 } 
+ 
+ 
+   if(e.getKeyChar() =='f' || e.getKeyChar() =='F' ) 
+                 { 
+                   sum3 = sum3+40;  
+                                                                        System.out.println("Sum : "+ sum3); 
+                                                                        icon1=new ImageIcon("/root/Desktop/ep/Image/archery4.png"); 
+                                                                        lblNewLabel_2.setIcon(icon1); 
+                                                                        Label3.setText("Score :" + sum3); 
+                                                                        try  { 
+                                                                            Threa .sleep(1000); 
+                                                                         } catch (Interrupte Exception e)  { 
+                                                                            e.printStackTrace(); 
+                                                                         } 
+                                                          
+                   
+                 } 
+ 
+ 
+ 
+   if(e.getKeyChar() =='g' || e.getKeyChar() =='G' ) 
+                 { 
+                  sum3 = sum3+50;  
+                                                                System.out.println("Sum : "+ sum3);  
+                                                               icon1=new ImageIcon("/root/Desktop/ep/Image/archery5.png"); 
+                                                                lblNewLabel_2.setIcon(icon1); 
+                                                                Label3.setText("Score :" + sum3); 
+                                                                try  { 
+                                                                    Threa .sleep(1000); 
+                                                                 } catch (Interrupte Exception e)  { 
+                                                                    e.printStackTrace(); 
+                                                                 } 
+                                                        icon1=new ImageIcon("/root/Desktop/ep/Image/archeryBE.png"); 
+                                                        lblNewLabel_2.setIcon(icon1); 
+                                                        Label3.setText("Score :" + sum3);   
+                                                        try  { 
+                                                            Threa .sleep(1000); 
+                                                         } catch (Interrupte Exception e)  { 
+                                                            e.printStackTrace(); 
+                                                         }    
+                   
+                 } 
+   
+ 
+ 
+                 
+         } 
+ 
+            public voi  keyRelease (KeyEvent arg0)  { 
+                 
+             } 
+ 
+            public voi  keyType (KeyEvent arg0)  { 
+                 
+             } 
+         
+     }); 
+/* 
+    final GpioController gpio = GpioFactory.getInstance(); 
+ 
+    GpioPinListenerDigital listener  = new GpioPinListenerDigital()  { 
+        
+        public voi  han leGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event)  { 
+             ImageIcon icon1; 
+                icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archery.png"); 
+                        lblNewLabel.setIcon(icon1); 
+                        lblNewLabel_1.setIcon(icon1); 
+                        lblNewLabel_2.setIcon(icon1); 
+                        JLabel lblStanleySports = new JLabel("Stanley Sports"); 
+                        lblStanleySports.setForegroun (Color.RED); 
+                        lblStanleySports.setFont(new Font("Eras Bol  ITC", Font.BOLD | Font.ITALIC, 28)); 
+                        panel.a  (lblStanleySports); 
+                         
+                        
+                         
+            if(event.getPin().toString().equals("  "GPIO 0  " <GPIO 0>")) 
+             {    
+                if(event.getState().toString().equals("HIGH")) 
+                 {   sum1 = sum1+10;   
+                 System.out.println("Sum : "+ sum1); 
+                         icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archery1.png"); 
+                        lblNewLabel.setIcon(icon1); 
+                        Label1.setText("Score :" + sum1);   
+                        try  { 
+                            Threa .sleep(1000); 
+                         } catch (Interrupte Exception e)  { 
+                            e.printStackTrace(); 
+                         } 
+                         
+                 } 
+                 
+             }  
+ 
+ 
+                if(event.getPin().toString().equals("  "GPIO 1  " <GPIO 1>")) 
+                 {   
+                    if(event.getState().toString().equals("HIGH")) 
+                     {   sum1 = sum1+20;    
+                        System.out.println("Sum : "+ sum1);  
+                         icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archery2.png"); 
+                        lblNewLabel.setIcon(icon1); 
+                        Label1.setText("Score :" + sum1);                    
+                        try  { 
+                            Threa .sleep(1000); 
+                         } catch (Interrupte Exception e)  { 
+                            e.printStackTrace(); 
+                         } 
+                     } 
+                 } 
+ 
+ 
+                    if(event.getPin().toString().equals("  "GPIO 2  " <GPIO 2>")) 
+                     {                            
+                        if(event.getState().toString().equals("HIGH")) 
+                         {       sum1 = sum1+30;    
+                                System.out.println("Sum : "+ sum1); 
+                                icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archery3.png"); 
+                                lblNewLabel.setIcon(icon1); 
+                                Label1.setText("Score :" + sum1);                        
+                                try  { 
+                                    Threa .sleep(1000); 
+                                 } catch (Interrupte Exception e)  { 
+                                    e.printStackTrace(); 
+                                 } 
+                         } 
+                     } 
+ 
+ 
+                        if(event.getPin().toString().equals("  "GPIO 3  " <GPIO 3>")) 
+                         {                                
+                            if(event.getState().toString().equals("HIGH")) 
+                             {       sum1 = sum1+40;  
+                                        System.out.println("Sum : "+ sum1); 
+                                        icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archery4.png"); 
+                                        lblNewLabel.setIcon(icon1); 
+                                        Label1.setText("Score :" + sum1); 
+                                        try  { 
+                                            Threa .sleep(1000); 
+                                         } catch (Interrupte Exception e)  { 
+                                            e.printStackTrace(); 
+                                         } 
+                             } 
+                             
+                         } 
+ 
+ 
+                            if(event.getPin().toString().equals("  "GPIO 4  " <GPIO 4>")) 
+                             {    
+                                if(event.getState().toString().equals("HIGH")) 
+                                 {   sum1 = sum1+50;  
+                                System.out.println("Sum : "+ sum1);  
+                               icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archery5.png"); 
+                                lblNewLabel.setIcon(icon1); 
+                                Label1.setText("Score :" + sum1); 
+                                try  { 
+                                    Threa .sleep(1000); 
+                                 } catch (Interrupte Exception e)  { 
+                                    e.printStackTrace(); 
+                                 } 
+                        icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archeryBE.png"); 
+                        lblNewLabel.setIcon(icon1); 
+                        Label1.setText("Score :" + sum1);   
+                        try  { 
+                            Threa .sleep(1000); 
+                         } catch (Interrupte Exception e)  { 
+                            e.printStackTrace(); 
+                         }         
+                                 } 
+                             } 
+ 
+ 
+                            if(event.getPin().toString().equals("  "GPIO 5  " <GPIO 5>")) 
+                             {    
+                                if(event.getState().toString().equals("HIGH")) 
+                                 {   sum2 = sum2+10;   
+                                 System.out.println("Sum : "+ sum2); 
+                                         icon1=new ImageIcon("/home/pi/Desktop/archery/Image/archeryBE.png"); 
+                                        lblNewLabel_1.setIcon(icon1); 
+                                        Label2.setText("Score :" + sum2);   
+                                        try  { 
+                                            Threa .sleep(1000); 
+                                         } catch (Interrupte Exception e)  { 
+                                            e.printStackTrace(); 
+                                         } 
+                                         
+                                 } 
+                                 
+                             }  
+ 
+ 
+                                if(event.getPin().toString().equals("  "GPIO 6  " <GPIO 6>")) 
+                                 {   
+                                    if(event.getState().toString().equals("HIGH")) 
+                                     {   sum2 = sum2+20;    
+                                        System.out.println("Sum : "+ sum2);  
+                                         icon1=new ImageIcon("/root/Desktop/ep/Image/archery2.png"); 
+                                        lblNewLabel_1.setIcon(icon1); 
+                                        Label2.setText("Score :" + sum2);                    
+                                        try  { 
+                                            Threa .sleep(1000); 
+                                         } catch (Interrupte Exception e)  { 
+                                            e.printStackTrace(); 
+                                         } 
+                                     } 
+                                 } 
+ 
+ 
+                                    if(event.getPin().toString().equals("  "GPIO 7  " <GPIO 7>")) 
+                                     {                            
+                                        if(event.getState().toString().equals("HIGH")) 
+                                         {       sum2 = sum2+30;    
+                                                System.out.println("Sum : "+ sum2); 
+                                                icon1=new ImageIcon("/root/Desktop/ep/Image/archery3.png"); 
+                                                lblNewLabel_1.setIcon(icon1); 
+                                                Label2.setText("Score :" + sum2);                        
+                                                try  { 
+                                                    Threa .sleep(1000); 
+                                                 } catch (Interrupte Exception e)  { 
+                                                    e.printStackTrace(); 
+                                                 } 
+                                         } 
+                                     } 
+ 
+                                        if(event.getPin().toString().equals("  "GPIO 10  " <GPIO 10>")) 
+                                         {                                
+                                            if(event.getState().toString().equals("HIGH")) 
+                                             {       sum2 = sum2+40;  
+                                                        System.out.println("Sum : "+ sum2); 
+                                                        icon1=new ImageIcon("/root/Desktop/ep/Image/archery4.png"); 
+                                                        lblNewLabel_1.setIcon(icon1); 
+                                                        Label2.setText("Score :" + sum2); 
+                                                        try  { 
+                                                            Threa .sleep(1000); 
+                                                         } catch (Interrupte Exception e)  { 
+                                                            e.printStackTrace(); 
+                                                         } 
+                                             } 
+                                             
+                                         } 
+ 
+ 
+                                            if(event.getPin().toString().equals("  "GPIO 11  " <GPIO 11>")) 
+                                             {    
+                                                if(event.getState().toString().equals("HIGH")) 
+                                                 {   sum2 = sum2+50;  
+                                                System.out.println("Sum : "+ sum2);  
+                                               icon1=new ImageIcon("/root/Desktop/ep/Image/archery5.png"); 
+                                                lblNewLabel_1.setIcon(icon1); 
+                                                Label2.setText("Score :" + sum2); 
+                                                try  { 
+                                                    Threa .sleep(1000); 
+                                                 } catch (Interrupte Exception e)  { 
+                                                    e.printStackTrace(); 
+                                                 } 
+                                        icon1=new ImageIcon("/root/Desktop/ep/Image/archeryBE.png"); 
+                                        lblNewLabel_1.setIcon(icon1); 
+                                        Label2.setText("Score :" + sum2);   
+                                        try  { 
+                                            Threa .sleep(1000); 
+                                         } catch (Interrupte Exception e)  { 
+                                            e.printStackTrace(); 
+                                         }         
+                                                 } 
+                                             } 
+ 
+ 
+                                            if(event.getPin().toString().equals("  "GPIO 12  " <GPIO 12>")) 
+                                             {    
+                                                if(event.getState().toString().equals("HIGH")) 
+                                                 {   sum3 = sum3+10;   
+                                                 System.out.println("Sum : "+ sum3); 
+                                                         icon1=new ImageIcon("/root/Desktop/ep/Image/archery1.png"); 
+                                                        lblNewLabel_2.setIcon(icon1); 
+                                                        Label3.setText("Score :" + sum3);   
+                                                        try  { 
+                                                            Threa .sleep(1000); 
+                                                         } catch (Interrupte Exception e)  { 
+                                                            e.printStackTrace(); 
+                                                         } 
+                                                         
+                                                 } 
+                                                 
+                                             }  
+ 
+ 
+                                                if(event.getPin().toString().equals("  "GPIO 13  " <GPIO 13>")) 
+                                                 {   
+                                                    if(event.getState().toString().equals("HIGH")) 
+                                                     {   sum3 = sum3+20;    
+                                                        System.out.println("Sum : "+ sum3);  
+                                                         icon1=new ImageIcon("/root/Desktop/ep/Image/archery2.png"); 
+                                                        lblNewLabel_2.setIcon(icon1); 
+                                                        Label3.setText("Score :" + sum3);                    
+                                                        try  { 
+                                                            Threa .sleep(1000); 
+                                                         } catch (Interrupte Exception e)  { 
+                                                            e.printStackTrace(); 
+                                                         } 
+                                                     } 
+                                                 } 
+ 
+ 
+                                                    if(event.getPin().toString().equals("  "GPIO 14  " <GPIO 14>")) 
+                                                     {                            
+                                                        if(event.getState().toString().equals("HIGH")) 
+                                                         {       sum3 = sum3+30;    
+                                                                System.out.println("Sum : "+ sum3); 
+                                                                icon1=new ImageIcon("/root/Desktop/ep/Image/archery3.png"); 
+                                                                lblNewLabel_2.setIcon(icon1); 
+                                                                Label3.setText("Score :" + sum3);                        
+                                                                try  { 
+                                                                    Threa .sleep(1000); 
+                                                                 } catch (Interrupte Exception e)  { 
+                                                                    e.printStackTrace(); 
+                                                                 } 
+                                                         } 
+                                                     } 
+ 
+ 
+                                                        if(event.getPin().toString().equals("  "GPIO 15  " <GPIO 15>")) 
+                                                         {                                
+                                                            if(event.getState().toString().equals("HIGH")) 
+                                                             {       sum3 = sum3+40;  
+                                                                        System.out.println("Sum : "+ sum3); 
+                                                                        icon1=new ImageIcon("/root/Desktop/ep/Image/archery4.png"); 
+                                                                        lblNewLabel_2.setIcon(icon1); 
+                                                                        Label3.setText("Score :" + sum3); 
+                                                                        try  { 
+                                                                            Threa .sleep(1000); 
+                                                                         } catch (Interrupte Exception e)  { 
+                                                                            e.printStackTrace(); 
+                                                                         } 
+                                                             } 
+                                                             
+                                                         } 
+ 
+                                                            if(event.getPin().toString().equals("  "GPIO 16  " <GPIO 16>")) 
+                                                             {    
+                                                                if(event.getState().toString().equals("HIGH")) 
+                                                                 {   sum3 = sum3+50;  
+                                                                System.out.println("Sum : "+ sum3);  
+                                                               icon1=new ImageIcon("/root/Desktop/ep/Image/archery5.png"); 
+                                                                lblNewLabel_2.setIcon(icon1); 
+                                                                Label3.setText("Score :" + sum3); 
+                                                                try  { 
+                                                                    Threa .sleep(1000); 
+                                                                 } catch (Interrupte Exception e)  { 
+                                                                    e.printStackTrace(); 
+                                                                 } 
+                                                        icon1=new ImageIcon("/root/Desktop/ep/Image/archeryBE.png"); 
+                                                        lblNewLabel_2.setIcon(icon1); 
+                                                        Label3.setText("Score :" + sum3);   
+                                                        try  { 
+                                                            Threa .sleep(1000); 
+                                                         } catch (Interrupte Exception e)  { 
+                                                            e.printStackTrace(); 
+                                                         }         
+                                                                 } 
+                                                             } 
+ } 
+   */  
+ }; 
+     
+    GpioPinDigitalInput[] pins =  { 
+           gpio.provisionDigitalInputPin(RaspiPin.GPIO_00, PinPullResistance.PULL_DOWN), 
+            gpio.provisionDigitalInputPin(RaspiPin.GPIO_01, PinPullResistance.PULL_DOWN), 
+            gpio.provisionDigitalInputPin(RaspiPin.GPIO_02, PinPullResistance.PULL_DOWN), 
+            gpio.provisionDigitalInputPin(RaspiPin.GPIO_03, PinPullResistance.PULL_DOWN), 
+            gpio.provisionDigitalInputPin(RaspiPin.GPIO_04, PinPullResistance.PULL_DOWN), 
+            gpio.provisionDigitalInputPin(RaspiPin.GPIO_05, PinPullResistance.PULL_DOWN), 
+            gpio.provisionDigitalInputPin(RaspiPin.GPIO_06, PinPullResistance.PULL_DOWN),   
+            gpio.provisionDigitalInputPin(RaspiPin.GPIO_07, PinPullResistance.PULL_DOWN), 
+             
+            gpio.provisionDigitalInputPin(RaspiPin.GPIO_10, PinPullResistance.PULL_DOWN), 
+            gpio.provisionDigitalInputPin(RaspiPin.GPIO_11, PinPullResistance.PULL_DOWN),  
+            gpio.provisionDigitalInputPin(RaspiPin.GPIO_12, PinPullResistance.PULL_DOWN), 
+            gpio.provisionDigitalInputPin(RaspiPin.GPIO_13, PinPullResistance.PULL_DOWN), 
+            gpio.provisionDigitalInputPin(RaspiPin.GPIO_14, PinPullResistance.PULL_DOWN), 
+            gpio.provisionDigitalInputPin(RaspiPin.GPIO_15, PinPullResistance.PULL_DOWN),                
+            gpio.provisionDigitalInputPin(RaspiPin.GPIO_16, PinPullResistance.PULL_DOWN),  
+             
+     }; 
+ 
+    gpio.a  Listener(listener, pins); 
+     
+    System.out.println(" ... complete the GPIO circuit an  see the listener fee back here in the console."); 
+     
+  
+     
+     } 
+      
+    public voi   isplay() { 
+     
+          frame = new JFrame(); 
+          frame.getContentPane().setBackgroun (Color.BLACK); 
+        try { 
+            System.out.println("Before sleep"); 
+            Threa .currentThrea ().sleep(1000); 
+            System.out.println("After sleep"); 
+             
+         }catch(Interrupte Exception e) { 
+            e.printStackTrace(); 
+         } 
+         
+        System.out.println("Insi e  isplay"); 
+        frame.setBoun s(100, 100, 655, 436); 
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+        frame.getContentPane().setLayout(null); 
+         
+        JPanel panel_3 = new JPanel(); 
+        panel_3.setBackgroun (Color.ORANGE); 
+        panel_3.setBoun s(44, 247, 115, 48); 
+        frame.getContentPane().a  (panel_3); 
+         
+        JPanel panel_4 = new JPanel(); 
+        panel_4.setBackgroun (Color.ORANGE); 
+        panel_4.setBoun s(253, 247, 115, 48); 
+        frame.getContentPane().a  (panel_4); 
+         
+        JPanel panel_5 = new JPanel(); 
+        panel_5.setBackgroun (Color.ORANGE); 
+        panel_5.setBoun s(466, 247, 115, 48); 
+        frame.getContentPane().a  (panel_5); 
+         
+        JPanel panel_31 = new JPanel(); 
+        panel_31.setBackgroun (Color.ORANGE); 
+        panel_31.setBoun s(44, 7, 115, 29); 
+        frame.getContentPane().a  (panel_31); 
+         
+        JPanel panel_41 = new JPanel(); 
+        panel_41.setBackgroun (Color.ORANGE); 
+        panel_41.setBoun s(253, 7, 115, 29); 
+        frame.getContentPane().a  (panel_41); 
+         
+        JPanel panel_51 = new JPanel(); 
+        panel_51.setBackgroun (Color.ORANGE); 
+        panel_51.setBoun s(466, 7, 115, 29); 
+        frame.getContentPane().a  (panel_51); 
+         
+        Label31 = new JLabel("Player" + token); 
+        Label31.setHorizontalAlignment(SwingConstants.TRAILING); 
+        Label31.setFont(new Font("Eras Bol  ITC", Font.BOLD, 16)); 
+        Label41 = new JLabel("Player" + ++token); 
+        Label41.setFont(new Font("Eras Bol  ITC", Font.BOLD, 16)); 
+        Label51 = new JLabel("Player" + ++token); 
+        Label51.setFont(new Font("Eras Bol  ITC", Font.BOLD, 16)); 
+             
+        panel_31.a  (Label31); 
+        panel_41.a  (Label41); 
+        panel_51.a  (Label51); 
+         
+         
+         
+        Label1 = new JLabel("Score :" + sum1); 
+        Label1.setHorizontalAlignment(SwingConstants.TRAILING); 
+        Label1.setFont(new Font("Eras Bol  ITC", Font.BOLD, 16)); 
+        Label2 = new JLabel("Score :" + sum2); 
+        Label2.setFont(new Font("Eras Bol  ITC", Font.BOLD, 16)); 
+        Label3 = new JLabel("Score :" + sum3); 
+        Label3.setFont(new Font("Eras Bol  ITC", Font.BOLD, 16)); 
+             
+        panel_3.a  (Label1); 
+        panel_4.a  (Label2); 
+        panel_5.a  (Label3); 
+                 
+        lblNewLabel.setIcon(new ImageIcon("/home/pi/Desktop/archery/Image/archery.png")); 
+        lblNewLabel.setBoun s(10, 30, 196, 206); 
+        frame.getContentPane().a  (lblNewLabel); 
+        System.out.println("After 1 image"); 
+        lblNewLabel_1 = new JLabel(""); 
+        lblNewLabel_1.setIcon(new ImageIcon("/home/pi/Desktop/archery/Image/archery.png")); 
+        lblNewLabel_1.setBoun s(220, 30, 196, 206); 
+        frame.getContentPane().a  (lblNewLabel_1); 
+        lblNewLabel_2 = new JLabel(); 
+        lblNewLabel_2.setBackgroun (new Color(0, 0, 0)); 
+        lblNewLabel_2.setIcon(new ImageIcon("/home/pi/Desktop/archery/Image/archery.png")); 
+        lblNewLabel_2.setBoun s(431, 30, 198, 206); 
+        frame.getContentPane().a  (lblNewLabel_2); 
+         
+        btnNewButton = new JButton("Reset"); 
+        btnNewButton.a  ActionListener(new ActionListener()  { 
+            public voi  actionPerforme (ActionEvent arg0)  { 
+                 sum1=0; 
+                 Label1.setText("Score :" + sum1);   
+                 Label31.setText("Player"+ ++token); 
+             } 
+         }); 
+        
+        btnNewButton.setBoun s(44, 306, 115, 23); 
+        frame.getContentPane().a  (btnNewButton); 
+         
+        btnNewButton_1 = new JButton("Reset"); 
+        btnNewButton_1.a  ActionListener(new ActionListener()  { 
+            public voi  actionPerforme (ActionEvent arg0)  { 
+                 sum2=0; 
+                 Label2.setText("Score :" + sum2);   
+                Label41.setText("Player"+ ++token); 
+             } 
+         }); 
+        btnNewButton_1.setBoun s(253, 306, 115, 23); 
+        frame.getContentPane().a  (btnNewButton_1); 
+         
+        btnNewButton_2 = new JButton("Reset"); 
+        btnNewButton_2.a  ActionListener(new ActionListener()  { 
+            public voi  actionPerforme (ActionEvent arg0)  { 
+                 sum3=0; 
+                 Label3.setText("Score :" + sum3);   
+                Label51.setText("Player"+ ++token); 
+             } 
+         }); 
+        btnNewButton_2.setBoun s(466, 306, 115, 23); 
+        frame.getContentPane().a  (btnNewButton_2); 
+         
+        panel = new Panel(); 
+        panel.setVisible(false); 
+        panel.setBackgroun (Color.ORANGE); 
+        panel.setBoun s(10, 346, 619, 44); 
+        frame.getContentPane().a  (panel); 
+         
+        JLabel lblStanleySports = new JLabel("Stanley Sports"); 
+        lblStanleySports.setForegroun (Color.RED); 
+        lblStanleySports.setFont(new Font("Eras Bol  ITC", Font.BOLD | Font.ITALIC, 28)); 
+        panel.a  (lblStanleySports); 
+         
+         
+         
+     } 
+ } 
+}

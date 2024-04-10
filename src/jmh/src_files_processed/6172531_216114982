@@ -1,0 +1,218 @@
+
+/**
+ * ##### # ########### ## ##### ##### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+ 
+
+import java.util.*;
+import sos.dated.util.*;
+import sos.dated.util.Iterator;
+
+/**
+ * ###### #######, ############ ### ### ## <####>########</####> ### <####>##########<####>.
+ *
+ * ## #### #######, ### ##### ###### ######## ## # ### ## ###### ## ##### ######.
+ * ##### ##### ###### #### #### ####, ## ### # <####>##########</####> ## ##### ### ######.
+ *
+ * ## ########'# #########, ##### #### ####### #### ####, ## ########### 
+ * ## # <####>########</####>, ####### # ##### ## ### ###### ## ###### #####.
+ *
+ * @######  #### ## ########
+ */
+public class StockExample
+{
+  /**
+   * The stock market, mapping stocks to dated values of prices.
+   */
+  private Map<String,DatedValue<Double,Date>> stockMarket;
+
+  /**
+   * A convenient array of dates.
+   */
+  private static Date[] d;
+  
+  /**
+   * The largest possible date to be used as the end of time.
+   */
+  private static final Date END_OF_TIME = new Date( Long.MAX_VALUE );
+
+  /**
+   * Number of dates to store in the array.
+   */
+  private static final int NUM_DATES = 100;
+  
+  /**
+   * A random number generator that generates the change in stock prices.
+   */
+  private static Random r = new Random( 1 );
+
+  static
+  {
+    Calendar calendar = Calendar.getInstance();
+    calendar.set( 2003, 1, 1 );
+    d = new Date[NUM_DATES];
+    for( int i = 0; i < NUM_DATES; )
+    {
+      calendar.add( Calendar.DAY_OF_MONTH, 1 );
+      int day = calendar.get( Calendar.DAY_OF_WEEK );
+      if( day == Calendar.SATURDAY || day == Calendar.SUNDAY )
+        continue;
+      Date date = calendar.getTime();
+      d[i] = date;
+      i++;
+    }
+  }
+  
+  /** 
+   * Creates a new instance of StockExample 
+   */
+  public StockExample()
+  {
+    initializeStockMarket();
+  }
+  
+  /**
+   * Initializes the stock market with the specified stock and initial
+   * stock price and randomly generates prices for the dates stored
+   * in <code>d</code>.
+   */
+  private void initializeStock( String stock, double initialValue )
+  {
+    DatedValue<Double,Date> values = new ValueByDate<Double,Date>();
+    
+    stockMarket.put( stock, values );
+    
+    double value = initialValue;
+    for( int i = 0; i < d.length - 1; i++ )
+    {
+      values.set( Double.valueOf( value ), d[i], d[i+1] );
+      double change = r.nextDouble();
+      value += change < 0.6? -change : change;
+      if( value < 0.0 )
+        value = 0.0;
+    }
+  }
+  
+  /**
+   * Initializes the stock market with three fictitious companies.
+   */
+  private void initializeStockMarket()
+  {
+    stockMarket = new HashMap<String,DatedValue<Double,Date>>();
+    
+    initializeStock( "Global Software For Geeks", 100.00 );
+    initializeStock( "Compewter Materials", 50.00 );
+    initializeStock( "Mice With Wheels", 10.50 );
+  }
+  
+  /**
+   * Returns the value of the specified stock at the specified date.
+   */
+  private double lookupStockPrice( String stock, Date date )
+  {
+    DatedValue<Double,Date> values = stockMarket.get( stock );
+    if( values == null )
+      throw new NoSuchElementException();
+    
+    Double value = values.get( date );
+    assert value != null;
+    
+    return value.doubleValue();
+  }
+
+  /**
+   * Calculates and returns the value of the specified portfolio at the
+   * specified date.
+   */
+  private double getPortfolioValue( DatedMap<String,Integer,Date> portfolio, Date date )
+  {
+    double total = 0.0;
+    
+    DatedSet<DatedMap.Entry<String,Integer,Date>,Date> entrySet = portfolio.entrySet();
+    Iterator<DatedMap.Entry<String,Integer,Date>,Date> iter = entrySet.iterator( date );
+    while( iter.hasNext() )
+    {
+      DatedMap.Entry<String,Integer,Date> entry = iter.next();
+      
+      String stock = entry.getKey();
+      
+      Integer shares = entry.getValue();
+      
+      double price = lookupStockPrice( stock, date );
+      double value = price * shares.intValue();
+      
+      total += value;
+    }
+    return total;
+  }
+  
+  /**
+   * Increments the number of stock shares in the specified portfolio.
+   */
+  private void buyStock( DatedMap<String,Integer,Date> portfolio, String stock, int numShares, Date date )
+  {
+    Integer currentShares = portfolio.get( stock, date );
+    
+    if( currentShares == null )
+    {
+      portfolio.put( stock, Integer.valueOf( numShares ), date, END_OF_TIME );
+      return;
+    }
+    
+    int totalShares = currentShares.intValue() + numShares;
+    
+    portfolio.put( stock, Integer.valueOf( totalShares ), date, END_OF_TIME );
+  }
+  
+  /**
+   * Run the example program.
+   */
+  public void run()
+  {
+    DatedMap<String,Integer,Date> portfolio = new TreeMapByKey<String,Integer,Date>();
+    
+    double value = getPortfolioValue( portfolio, d[0] );
+    assert value == 0.0;
+    System.out.println( "Portfolio on " + d[0] + ": " + portfolio.toString( d[0] ));
+    
+    buyStock( portfolio, "Compewter Materials", 100, d[10] );
+    buyStock( portfolio, "Mice With Wheels", 250, d[10] );
+    
+    System.out.println( "Portfolio on " + d[15] + ": " + portfolio.toString( d[15] ));
+    value = getPortfolioValue( portfolio, d[15] );
+    System.out.println( "Portfolio value on " + d[15] + " is " + value );
+
+    buyStock( portfolio, "Global Software For Geeks", 10, d[50] );
+    
+    System.out.println( "Portfolio on " + d[50] + ": " + portfolio.toString( d[50] ));
+    value = getPortfolioValue( portfolio, d[50] );
+    System.out.println( "Portfolio value on " + d[50] + " is " + value );
+    
+    buyStock( portfolio, "Mice With Wheels", 20, d[75] );
+    
+    System.out.println( "Portfolio on " + d[80] + ": " + portfolio.toString( d[80] ));
+    value = getPortfolioValue( portfolio, d[80] );
+    System.out.println( "Portfolio value on " + d[80] + " is " + value );
+    
+    System.out.println( "Entire portfolio: " + portfolio );
+    System.out.println( "Entire stock market: " + stockMarket );
+  }
+  
+  /**
+   * Runs the StockExample sample program, which illustrates a use of <code>DatedMap</code>
+   * and <code>DatedValue</code>.
+   *
+   * @param args the command line arguments
+   */
+  public static void main(String[] args)
+  {
+    StockExample example = new StockExample();
+    example.run();
+  }
+  
+}
+
+  	StockExample.java 	 

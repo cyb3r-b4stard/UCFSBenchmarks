@@ -1,0 +1,189 @@
+
+/* #### ### #### ### ##########
+ * ####:
+ * ########:
+ * ##:
+ */
+
+import ecs100.*;
+import java.util.*;
+import java.io.*;
+import java.awt.Color;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import javax.swing.JColorChooser;
+
+/** ############## ###### ### #### ## ####, #######, ######, ### #### ## ##### ## # ###### ## ####.
+### ####### ###### #######
+- ####, ######, ####. (####)
+- ########## ########## (####)
+- ########## #### ### ## ###### ########. (####)
+- #####  (####)
+- ####&####  (####)
+- #### (### ######)  (####)
+
+- ###### ######### ##### (##########)
+- #### (######-####)  (##########)
+- ####### ########### ######  (##########)
+
+- ###-### ######### ### ####### (#########)
+- ###### ##### (#########)
+ */
+public class ImageProcessor {
+
+    private Color image[][];
+    private Color tempImage[][];
+    private final int pixelSize = 1;
+    private final int imageLeft = 10;
+    private final int top = 10;
+    private final int tempLeft = 500;
+        
+    public ImageProcessor(){
+        UI.initialise();
+        UI.setDivider(0.0);
+        UI.setImmediateRepaint(false);
+        UI.setWindowSize(800, 800);
+        UI.addButton("Quit", UI::quit);
+        UI.addButton("Load", this::load);
+        UI.addButton("Save", this::save);
+        UI.addButton("Commit", this::commit);
+        UI.addSlider("Brightness", -100, 100, this::brightness);
+        UI.addButton("Horiz Flip", this::horizFlip);
+        UI.addButton("Rot 90", this::rot90);
+        UI.addButton("Load Merge", this::loadMerge);
+        UI.addSlider("Merge Level", 0, 100, this::setMergeLevel);
+        UI.addButton("Crop&Zoom", this::cropAndZoom);
+        UI.addButton("Blur", this::blur);
+        UI.addSlider("Rotate", -180, 180, this::rotate);
+        UI.addButton("Set Paint", this::setPaint);
+        UI.addButton("Set Filter", this::setFilter);
+        UI.addButton("Convolve", this::convolve);
+        UI.addButton("Red-eye", this::redEye);
+        UI.addButton("Pour", this::pour);
+        UI.addButton("Brush", this::brush);
+             
+
+    }
+    
+    public void load(){
+        UI.clearGraphics();
+        Color image[][] = loadImage();
+        Color tempImage[][] = loadImage();
+        draw();
+        
+        
+        
+    }
+    
+    public void draw(){
+        this.drawImage(image, 500);
+        this.drawImage(tempImage, 10);
+        UI.repaintGraphics();
+    }
+    
+    public void drawImage(Color[][] picture, int x){
+        for (int i = 0; i <picture.length; i++){
+            for (int j = 0; j<picture[0].picture; j++){
+                UI.setColor(picture[i][j]);
+                UI.fillRect(i * pixelSize + x, j*pixelSize + top, pixelSize, pixelSize);
+            }
+        }
+        
+    }
+        
+    public void save(){
+    }
+    
+    public void commit(){
+    }
+    
+    public void brightness(double brightness){
+    }
+    
+    public void horizFlip(){
+    }
+    
+    public void rot90(){
+    }
+    
+    public void loadMerge(){
+    }
+    
+    public void setMergeLevel(double mergeLevel){
+    }
+    
+    public void cropAndZoom(){
+    }
+    
+    public void blur(){
+    }
+    
+    public void rotate(double rotation){
+    }
+    
+    public void setPaint(){
+    }
+    
+    public void setFilter(){
+    }
+    
+    public void convolve(){
+    }
+    
+    public void redEye(){
+    }
+    
+    public void pour(){
+    }
+    
+    public void brush(){
+    }
+      
+    
+    
+    public Color[][] loadImage() {
+        String imageName = UIFileChooser.open();
+        if (imageName==null) return null;
+        try {
+            BufferedImage img = ImageIO.read(new File(imageName));
+            int rows = img.getHeight();
+            int cols = img.getWidth();
+            Color[][] ans = new Color[cols][rows];
+            for (int row = 0; row < rows; row++){
+                for (int col = 0; col < cols; col++){                
+                    Color c = new Color(img.getRGB(col, row));
+                    ans[col][row] = c;
+                }
+            }
+            UI.printMessage("Loaded "+ imageName);
+            return ans;
+        } catch(IOException e){
+            UI.println("Image reading failed: "+e);
+            return null;
+        }
+    }
+
+    public  void saveImage() {
+        int rows = image.length;
+        int cols = image[0].length;
+        BufferedImage img = new BufferedImage(cols, rows, BufferedImage.TYPE_INT_RGB);
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                Color c =this.image[row][col];
+                img.setRGB(col, row, c.getRGB());
+            }
+        }
+        try {
+            String fname = UIFileChooser.save("save to png image file");
+            if (fname==null){return;}
+            File imageFile = new File(fname);
+            ImageIO.write(img, "png", imageFile);
+        } catch(IOException e){UI.println("Image reading failed: "+e);}
+    }
+
+
+    public static void main(String args[]){
+        ImageProcessor one = new ImageProcessor();
+    }
+
+}

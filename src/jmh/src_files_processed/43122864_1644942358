@@ -1,0 +1,154 @@
+import java.util.*;
+import javax.swing.JOptionPane;
+import javax.swing.JFrame;
+import javax.swing.JDialog;
+
+/**
+ * ### #### ##### - ######## ### ###### #### ### #######, ######### ### ##### ####### ## ####### #### #####
+ * ### ######### ####### ##### ## # ###### ## ### ### #### ##### ### ###### ## ### #######
+ * 
+ * @###### #### ####### 
+ * @####### ##/##/## ####### ###
+ */
+
+public class Game{
+     public int turn; 
+     public int playerPick1; 
+     public int playerPick2; 
+     public Numbers numbers;
+     public String player1;
+     public String player2;
+     private Random randomGenerator;
+     public int gameWon;
+
+ public Game(){
+    turn=1; 
+    numbers = new Numbers(); 
+    randomGenerator = new Random();
+    startGame();
+ }
+ public void startGame(){
+    String number1;
+    int gameStart; 
+    number1 = JOptionPane.showInputDialog ("WELCOME TO GET15!\n\nYou have the following options:" +
+    "\n[1] Start the game" + " - User goes first \n[2] Start the game - Computer goes first " +
+    "\n[3] Rules of the game \n\nEnter your option:  ");  
+    gameStart = Integer.parseInt (number1 );
+    if (gameStart == 1)
+    doHumanFirst();
+    else if (gameStart == 2)
+    doComputerFirst();
+    else if (gameStart == 3)
+    doRules();
+    else
+    startGame();
+ }
+ private void doHumanFirst()  {   
+    player1="You";
+    player2="Computer";
+        
+    playGame();
+    
+        
+ }    
+ private void doComputerFirst() {   
+    player1="Computer";
+    player2="You";
+        
+    playGame();
+     
+ }
+ private void doRules() {   
+    System.out.println ( "Get15 is a two person game played with the number 1 - 9.");
+    System.out.println ( "Players alternately pick an available number."); 
+    System.out.println ( "They can choose any number not already chosen");
+    System.out.println ( "and can see what the other player has taken.");
+    System.out.println ( "The winner is the first to be able to make a total ");
+    System.out.println ( "of 15 from exactly 3 numbers.");
+    System.out.println ( "In this version of the game you will play against ");
+    System.out.println ( "a computer oponent of random ability.");
+    System.out.println ( "Good luck!");
+    startGame();
+ }    
+    
+ public void playGame(){
+    while (turn<10){
+    player1Turn();
+    numbers.checkWin(turn);
+    gameWon = numbers.winner;
+    if (gameWon ==1)
+    winnerMessage(1);
+    turn++;
+    player2Turn();
+    numbers.checkWin(turn);
+    turn++;
+    }
+ }
+
+ public void player1Turn(){
+    
+    if (player1=="You"){
+    String pick1;
+    pick1 = JOptionPane.showInputDialog(player1 +"r Turn \n\n" +player1+"r Numbers: " + numbers.player1Picks +
+    "\n\n"+player2+"'s Numbers: " +numbers.player2Picks + "\n\nEnter your selection from available numbers:  " +numbers.gameNumbers + ":", 
+    "Enter an available number");  
+    playerPick1 = Integer.parseInt (pick1);
+    numbers.removeNumber1( playerPick1);
+    int illegalEntry=numbers.found;
+     if (illegalEntry==0) {
+       JOptionPane.showMessageDialog(null,
+       "Number not available. Pick again",
+       "Illegal Pick",
+       JOptionPane.WARNING_MESSAGE);
+       turn--; 
+       player1Turn(); 
+    }
+    }
+    if (player1=="Computer"){
+        int compPick=randomGenerator.nextInt(numbers.gameNumbers.size());
+        playerPick1=numbers.gameNumbers.get(compPick);
+        numbers.removeNumber1( playerPick1);
+    }
+   
+ }
+
+ public void player2Turn(){
+    
+    if (player2=="You"){
+   String pick2;
+   pick2 = JOptionPane.showInputDialog(player2+"r Turn \n\n" + player2+"r Numbers: " + numbers.player2Picks +
+   "\n\n"+player1+"'s Numbers: " +numbers.player1Picks + "\n\nEnter your selection from available numbers:  " +numbers.gameNumbers);  
+   playerPick2 = Integer.parseInt (pick2);
+   numbers.removeNumber2(playerPick2);
+   int illegalEntry=numbers.found;
+    if (illegalEntry==0) {
+    JOptionPane.showMessageDialog(null,
+    "Number not available. Pick again",
+    "Illegal Pick",
+    JOptionPane.WARNING_MESSAGE);
+    turn--;
+    player2Turn();
+   }
+   }
+   if (player2=="Computer"){
+    int compPick=randomGenerator.nextInt(numbers.gameNumbers.size());
+    playerPick2=numbers.gameNumbers.get(compPick);
+    numbers.removeNumber2(playerPick2);
+    }
+  
+    
+ }
+ 
+ public void winnerMessage (int player) {
+      int winMessage=JOptionPane.showConfirmDialog (null, "Player1 wins! \n Another game?", 
+      "There's a winner!", JOptionPane.YES_NO_OPTION);
+      if (winMessage == 0) 
+      Game game = new game();
+      if (winMessage==1)
+      System.exit(0);
+      if (winMessage==-1)
+      System.exit(0);
+    }
+    
+    
+}

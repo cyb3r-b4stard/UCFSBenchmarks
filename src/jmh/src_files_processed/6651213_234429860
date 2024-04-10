@@ -1,0 +1,68 @@
+import info.gridworld.actor.Actor;
+import info.gridworld.actor.Critter;
+import info.gridworld.actor.Rock;
+import info.gridworld.grid.Grid;
+import info.gridworld.grid.Location;
+import java.util.ArrayList;
+public class RockLobster extends Critter
+{
+    
+   
+    public void processActors (ArrayList<Actor> actors)
+    {
+        for (Actor a: actors)
+        {
+            if (!(a instanceof Rock) && !(a instanceof Critter))
+            {
+                a.removeSelfFromGrid();
+            }
+            if(a instanceof Rock)
+            {
+                a.removeSelfFromGrid();
+                Location loc = getLocation();
+                RockLobster rLobster = new RockLobster();
+                Grid<Actor> gr = getGrid();
+                rLobster.putSelfInGrid(gr, loc);
+            }
+        }
+    }
+    
+    public ArrayList<Location> getMoveLocations()
+    {
+        Location loc = getLocation();
+        Location fowardLeft = loc.getAdjacentLocation(Location.NORTHWEST);
+        Location fowardRight = loc.getAdjacentLocation(Location.NORTHEAST);
+        ArrayList<Actor> a= getGrid().getNeighbors(fowardLeft);
+        ArrayList<Actor> b= getGrid().getNeighbors(fowardRight);
+        int aSize = a.size();
+        int bSize = b.size();
+        if (aSize>bSize)
+        {
+            ArrayList<Location> moveable = new ArrayList<Location>();
+            moveable.add(0,fowardLeft);
+            return moveable;
+        }
+        if (bSize>aSize)
+        {
+            ArrayList<Location> moveable = = new ArrayList<Location>();;
+            moveable.add(0,fowardRight);
+            return moveable;
+        }
+        if(aSize==bSize)
+        {
+            ArrayList<Location> moveable = = new ArrayList<Location>();;
+            moveable.add(0, fowardLeft);
+        }
+    }
+    
+    public Location selectMoveLocation(ArrayList<Location> locs)
+    {
+        int n = locs.size();
+        if (n==0)
+        {
+            int r = (int) (Math.random()*2);
+            return locs.get(r);
+        }
+    }
+    
+}

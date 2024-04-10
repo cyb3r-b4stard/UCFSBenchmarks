@@ -1,0 +1,128 @@
+package store;
+
+import java.io.IOException;
+
+/**
+ * ############# ## # #### ############## ## #########. ## ########,
+ * ### ## #### ### ####### ### ######## #############
+ * 
+ * @###### ######## #########
+ * @####### #.#
+ */
+
+public class CNBookStore implements BookStore
+{
+    
+    private ObjectArrayList inventory = new ObjectArrayList();
+    private ObjectArrayList reservedItems = new ObjectArrayList();
+    private ObjectArrayList soldItems = new ObjectArrayList();
+    
+    public void addBook(String title, String author, int priceInPence, int ID) throws BookConflictException {
+        
+        Book newBook  = new Book(title, author, priceInPence, ID);
+         
+         boolean isValid = true;
+        
+        for(int i = 0; i < inventory.size(); i++)
+        {
+            Book existingBook = (Book)inventory.get(i);
+     
+            if (newBook.getId() == existingBook.getId())
+            {
+  
+                if(newBook.getTitle() != existingBook.getTitle())
+                {
+                 isValid = false;
+                }
+                
+              
+               
+            }
+        }
+        
+        if( ! isValid)
+        {
+            throw new BookConflictException();
+        }
+        
+        inventory.add(newBook);
+     
+    }
+
+    public void sellBook(int ID) throws BookNotInStockException, AllCopiesReservedException {      
+        
+        Book soldBook  = new Book(title, author, priceInPence, ID);ID);
+        
+        inventory.remove(soldBook);
+    }
+
+    public Reservation reserveBook(int ID) throws BookNotInStockException, AllCopiesReservedException {
+        return new PoorReservation();
+    }
+    
+    public Reservation reserveBook(int ID, String notes) throws BookNotInStockException, AllCopiesReservedException {
+        return new PoorReservation();
+    }
+    
+    public void unreserveBook(int ID, Reservation reservation) throws BookNotReservedException {
+        return;
+    }
+    
+    public void sellReservedBook(int ID, Reservation reservation) throws BookNotReservedException {
+        return;
+    }
+    
+    public int copiesInStock(int ID) {
+        return 0;
+    }
+    
+    public int getTotalNumberOfBooks(){
+        return inventory.size();
+    }
+    
+    public int getNumberOfDifferentBooks(){
+        return 0;
+    }
+    
+    public int getNumberOfSoldBooks(){
+        return soldItems.size();
+    }
+    
+    public int getNumberOfReservedBooks(){
+        return reservedItems.size();
+    }
+    
+    public int getTotalCostOfSoldBooks(){
+          
+        
+        int totalCostOfBooksSold = 0;
+        
+
+        for(int i = 0; i < soldItems.size(); i++)
+        {
+            Book b = (Book)soldItems.get(i);
+            totalCostOfBooksSold = totalCostOfBooksSold + b.getPriceInPence();   
+        }
+        
+        return totalCostOfBooksSold;
+    
+    }
+    
+    public int getTotalCostOfBookStock(){
+        int totalCostOfBooksStock = 0;
+
+        for(int i = 0; i < soldItems.size(); i++)
+        {
+            Book b = (Book)inventory.get(i);
+            totalCostOfBooksStock = totalCostOfBooksStock + b.getPriceInPence();   
+        }
+        
+        return totalCostOfBooksStock;
+    }
+    
+    public void empty(){
+        inventory = new ObjectArrayList();
+        reservedItems = new ObjectArrayList();     
+        soldItems = new ObjectArrayList();   
+    }
+}

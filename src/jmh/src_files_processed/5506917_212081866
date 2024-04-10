@@ -1,0 +1,307 @@
+
+/**
+ * ###### ######## ### ##### ###########.
+ * ########### ## #### ####### 
+ * ########### ####### ### ####### 
+ * ########### ##.###### ### ##### ########
+ * ########### ####### ####### ### #######
+ * ########### ######## ########
+ * @###### (####### #######-#####) 
+ * @####### (##-#-##)
+ * ########## #
+ */
+import java.util.*;
+import java.io.*;
+public class StudentDriver
+{
+    public static void main(){
+        Scanner scan = new Scanner(System.in).useDelimiter("\n");
+        ArrayList <Student> students = new ArrayList <Student>();
+        String input;
+        int idx;
+        boolean flag = true;
+        while (flag) {
+            System.out.println("Student Info Menu:");
+            System.out.println("Enter L to (L)oad Student info");
+            System.out.println("Enter M to (M)odify Student info");
+            System.out.println("Enter P to (P)rint Student info");
+            System.out.println("Enter R to (R)ead data from file");
+            System.out.println("Enter W to (W)rite data to file");
+            System.out.println("Enter D to (D)elete a student");
+            System.out.println("Enter Q to quit");
+            System.out.println("Please enter your choice: ");
+            input = scan.next();
+            input = input.toUpperCase();
+            switch(input) {
+                case "L":
+                    students.add(loadStudent());
+                    break;
+                case "M":
+                    idx = findStudents(students, scan);
+                    modifyStudents(students.get(idx));
+                    break;
+                case "P":
+                    idx = findStudents (students, scan);
+                    printStudents(students.get(idx));
+                    break;
+                case "R":
+                    students = read(students);
+                    break;
+                case "W":
+                    write(students);
+                    break;
+                case "D":
+                    idx = findStudents(students, scan);
+                    deleteStudent(students,idx);
+                    break;
+                case "Q":
+                    flag = false;
+                    break;
+
+                default:
+                    System.out.println("invalid entry");
+            }
+        }
+    }
+
+    /***************************************************************************************************************************
+     * Load Students
+     **************************************************************************************************************************/
+     public static Student loadStudent() { 
+        Scanner scan = new Scanner(System.in).useDelimiter("\n");
+        Student stud;
+        String extras;
+        String lastName;
+        String firstName;
+        String street;
+        String city;
+        String phone;
+        int zip;
+        double gpa;
+        boolean clearance;
+        
+        System.out.print("Enter Last Name: ");
+        lastName = scan.next();
+        System.out.print("Enter First Name: ");
+        firstName = scan.next();
+        System.out.print("Enter Home1: ");
+        System.out.print("Enter Street: ");
+        street = scan.next();
+        System.out.print("Enter city: ");
+        city = scan.next();
+        System.out.print("Enter zip: ");
+        Address home1 = new Address(street, city, zip);
+        System.out.print("Enter Home2: ");
+        System.out.print("Enter Street: ");
+        street = scan.next();
+        System.out.print("Enter city: ");
+        city = scan.next();
+        System.out.print("Enter zip: ");
+        zip = scan.nextInt();
+        Address home2 = new Address(street, city, zip);
+        System.out.print("Enter Phone Number: ");
+        phone = scan.next();
+        System.out.print("Enter GPA: ");
+        gpa = scan.nextDouble();
+        System.out.println("Is the student an athlete, artist or neither?");
+        System.out.println("Enter A for athlete, R for artist, and N for neither");
+        extras = scan.next();
+        extras = extras.toUpperCase();
+        switch (extras) {
+            case "A":
+                System.out.println("Do you have a doctors clearance? yes or no?");
+                String str = scan.next();
+                str = str.toUpperCase;
+                if (str == "y") {
+                    clerance = true;
+                }
+                 else{
+                    clearance = false;
+                }
+                System.out.println("Do you want to play Basketball or Baseball?");
+                System.out.println("Please Enter K if you are in Basketball or an S if you are in Baseball");
+                str = scan.next();
+                str = str.toUpperCase;
+                switch (input) {
+                    case "K":
+                        Athlete.add(Basketball(basketball()));
+                    case "S":
+                        Athlete.add(Baseball(baseball()));
+                        System.out.println("What position do you want to play?");
+                        System.out.println("Enter P for (P)itcher");
+                        System.out.println("Enter C for (C)atcher");
+                        System.out.println("Enter F for (F)irst base");
+                        System.out.println("Enter S for (S)econd base");
+                        System.out.println("Enter T for (T)hird base");
+                        System.out.println("Enter SS for (S)hort stop");
+                        System.out.println("Enter L for (L)eft field");
+                        System.out.println("Enter CF for (C)enter Field");
+                        System.out.println("Enter R for (R)ight field");
+                        switch (input){
+                            case "P":
+                                Baseball.add.(pitcher());
+                            case "C":
+                                Baseball.add.(catcher());
+                            case "F":
+                                Baseball.add.(first_base());
+                            case "S":
+                                Baseball.add.(second_base());
+                            case "T":
+                                Baseball.add.(third_base());
+                            case "SS":
+                                Baseball.add.(short_stop());
+                            case "L":
+                                Baseball.add.(left_field());
+                            case "CF":
+                                Baseball.add.(center_field());
+                            case "R":
+                                Baseball.add.(right_field());
+                        }
+                    Athlete.add(Baseball(baseball()));
+                }
+            case "R":
+                 Student.add(Artist(artist()));
+                 if (cleared == true) {
+                    System.out.println("Welcome to the Art World!!!");
+                 }
+                 System.out.println("Do you want to be a Musician or an Actor?");
+                 System.out.println("Please Enter M if you are a musician or an T if you are an actor");
+                 switch (input) {
+                     case "M":
+                        Artist.add(Musician(musician()));
+                     case "A":
+                        Artist.add(Actor(actor()));
+                 }
+            case "N":
+            
+        }
+        stud = new Student(lastName, firstName, home1, home2, phone, gpa);
+        return stud;
+    }
+
+    /***************************************************************************************************************************
+     * Find Students
+     **************************************************************************************************************************/
+    public static int findStudents(ArrayList <Student> students, Scanner scan) { 
+        System.out.println("Id\tname");
+        for (int i = 0; i < students.size(); i++) {
+            System.out.println(students.get(i).getId() + "\t" + students.get(i).getLastName() + ", " + students.get(i).getFirstName());
+        }
+        System.out.print("ID number: ");
+        int id = scan.nextInt();
+        int idx = -1;
+        for (int i = 0; i < students.size(); i++) {
+            if(students.get(i).getId() == id) {
+                idx = i;
+                return idx;
+            }
+        }
+        return 0;
+    }
+
+    /***************************************************************************************************************************
+     * Modify Students
+     **************************************************************************************************************************/
+    public static void modifyStudents(Student stud) { 
+        Scanner scan = new Scanner(System.in).useDelimiter("\n");
+        System.out.println("Current Last Name: " + stud.getLastName());
+        System.out.print("New Last Name:");
+        String lname = scan.next();
+        stud.setLastName(lname);
+        System.out.println("Current First Name: " + stud.getFirstName());
+        System.out.print("New First Name:");
+        String fname = scan.next();
+        stud.setFirstName(fname);
+        System.out.println("Current Home1 Street: " + stud.getHome1().getStreet());
+        System.out.println("New Home1 Street:");
+        String street = scan.next();
+        stud.getHome1().setStreet(street);
+        System.out.println("Current Home1 City: " + stud.getHome1().getCity());
+        System.out.print("New Home1 City:");
+        String city = scan.next();
+        stud.getHome1().setCity(city);
+        System.out.println("Current Home1 Zip: " + stud.getHome1().getZip());
+        System.out.print("New Home1 Zip:");
+        int zip = scan.nextInt();
+        stud.getHome1().setZip(zip);
+        System.out.println("Current Home2 Street: " + stud.getHome2().getStreet());
+        System.out.print("New Home2 Street:");
+        String street2 = scan.next();
+        stud.getHome2().setStreet(street2);
+        System.out.println("Current Home2 City: " + stud.getHome2().getCity());
+        System.out.print("New Home2 City:");
+        String city2 = scan.next();
+        stud.getHome2().setCity(city2);
+        System.out.println("Current Home2 Zip: " + stud.getHome2().getZip());
+        System.out.print("New Home2 Zip:");
+        int zip2 = scan.nextInt();
+        stud.getHome2().setZip(zip2);
+        System.out.println("Current Phone: " + stud.getPhone());
+        System.out.print("New Phone:");
+        String phone = scan.next();
+        stud.setPhone(phone);
+        System.out.println("Current GPA: " + stud.getGpa());
+        System.out.print("New GPA:");
+        double gpa = scan.nextDouble();
+        stud.setGpa(gpa);
+    }
+
+    /***************************************************************************************************************************
+     * Print Students
+     **************************************************************************************************************************/
+    public static void printStudents(Student stud) { 
+        System.out.println(stud.toString());
+    }
+
+    /***************************************************************************************************************************
+     * List Students
+     **************************************************************************************************************************/
+    public static void listStudents(ArrayList <Student> students) { 
+        for (int i = 0; i < students.size(); i++) {
+            System.out.println(students.get(i));
+        }       
+    }
+
+    /***************************************************************************************************************************
+     * Read Students
+     **************************************************************************************************************************/
+    public static ArrayList <Student>read(ArrayList <Student> students) { 
+        try {
+            File file = new File("student.dat");
+            FileInputStream fileInStream = new FileInputStream(file);
+            ObjectInputStream objInStream = new ObjectInputStream(fileInStream);
+            students = (ArrayList <Student>)objInStream.readObject();
+        }
+        catch(IndexOutOfBoundsException ex){
+            System.out.println("ERROR!" + ex.toString());
+        }
+        catch(Exception ex){
+            System.out.println("ERROR!" + ex.toString());
+        }
+        return students;
+    }
+
+    /***************************************************************************************************************************
+     * Write Students
+     **************************************************************************************************************************/
+    public static void write(ArrayList <Student> students) { 
+        try {
+            File file = new File("student.dat");
+            FileOutputStream fileOutStream = new FileOutputStream(file);
+            ObjectOutputStream objOutStream = new ObjectOutputStream(fileOutStream);
+            objOutStream.writeObject(students);
+            objOutStream.close();
+            fileOutStream.close();
+        }
+        catch(Exception ex){
+            System.out.println("ERROR!" + ex.toString());
+        }
+    }
+
+    /***************************************************************************************************************************
+     * Delete Students
+     **************************************************************************************************************************/
+    public static void deleteStudent(ArrayList <Student> students, int idx) { 
+        students.remove(idx);
+    }
+}

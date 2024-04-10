@@ -1,0 +1,89 @@
+/**
+ * ######### ########### ##### ## ## ##### #####
+ *
+ * @###### ##### ########
+ * @####### ##/#/####
+ */
+import java.util.Scanner;
+import java.io.IOException;
+import java.util.Random;
+public class Pi
+{
+    public static boolean isInside (double xPos, double yPos)
+    {
+        double distance = Math.sqrt((xPos * xPos) + (yPos * yPos));
+        return (distance <= 1.0);
+    }
+
+    public static double computePI (int trialCount)
+    {  
+        Random randomGen = new Random ();     
+        int hits = 0;
+        double PI = 0;      
+        double totalThrows = 0;
+        double totalPI = 0;
+        
+        for (int x = 1; x <= trialCount; x++)
+        {
+            double xPos = (randomGen.nextDouble()) * 2 - 1.0;
+            double yPos = (randomGen.nextDouble()) * 2 - 1.0;
+            if (isInside(xPos, yPos))
+            {
+                hits++;
+            }
+            
+            totalThrows += 1;
+            PI = (4.0 * (hits/totalThrows));
+            totalPI += PI;
+            System.out.printf("%s%1s%s%2.10f\n", "Trial[", x, "]: pi = ", PI);
+            
+        }
+        double estPI = (totalPI / totalThrows);
+        System.out.printf("%s%2.10f\n", "Estimate of pi = ", estPI);
+        
+        return PI;
+    }
+    
+
+    public static void main(String[] args) throws IOException
+    {
+        Scanner in = new Scanner(System.in);
+
+        System.out.print("How many darts/trial? ");
+        int trialCount = in.nextInt();
+        double PI = computePI(trialCount);
+
+        double [] phLevels = {5.6, 6.2, 6.0, 5.5, 5.7, 6.1, 7.4, 5.5, 5.5, 6.3, 6.4, 2.1, 6.9};
+
+double minimum = Integer.MAX_VALUE;
+for (int index = 0; index <= phLevels.length; index++;)
+{
+               if(minimum > phLevels[index])
+               {
+                     minimum = phLevels[index];
+               }
+}
+
+double maximum = Integer.MIN_VALUE;
+double totalPH = 0;
+for (int index = 0; index <= phLevels.length; index++;)
+{
+               if(maximum > phLevels[index])
+               {
+                     maximum = phLevels[index];
+               }
+}
+
+for (int index = 0; index <= phLevels.length; index++;)
+{
+              if (phLevels[index] != minimum || maximum)
+              {
+                System.out.println(phLevels[index]);
+                totalPH += phLevels[index];
+              }
+ 
+}
+double avgPH = (totalPH / phLevels.length);
+System.out.println(avgPH);
+    }
+}

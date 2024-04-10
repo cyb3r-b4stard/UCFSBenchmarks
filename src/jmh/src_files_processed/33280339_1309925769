@@ -1,0 +1,128 @@
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.Calendar;
+import java.awt.EventQueue;
+
+/**
+ * ### ####### ############ ############# ### ####### ##### ##########.
+ * ### ####### ##### ####### ### #######. ### ############## ###### ###
+ * ##:## (###########) ### ##:## (#### ###### ### ###########).
+ *
+ * #### ############ ###### ######### "###########" (#### ### #########
+ * "###############") ########, ##### ### ### ####### ############# 
+ * ####. #### #########, ### ### ## ### ##### ### ########: ### 
+ * ####### ####### ####, #### ### ############ ##### ###### ########
+ * ###.
+ * 
+ * @###### ####### ####### ### ##### #. ######
+ * @####### ##.##.####
+ */
+public class Uhrenanzeige
+{
+    private Nummernanzeige stunden;
+    private Nummernanzeige minuten;
+    private Nummernanzeige sekunden;
+    private Nummernanzeige hundertstelSekunden;
+    private String zeitanzeige;    
+    private Timer myGlobalTimer = new Timer();
+    private Calendar zeit = Calendar.getInstance();
+    
+    
+    private Display anzeige = new Display("Uhrenanzeige", 12);
+    private final Runnable doUpdateClock = new Runnable() {public void run() {taktsignalGeben(); anzeige.setText(gibUhrzeit());}};
+        
+    private TimerTask updateClockTask = new TimerTask() {public void run() {EventQueue.invokeLater(doUpdateClock);}};
+    
+    /**
+     * Konstruktor für ein Exemplar von Uhrenanzeige.
+     * Mit diesem Konstruktor wird die Anzeige auf 00:00:00:00 initialisiert.
+     */
+    public Uhrenanzeige()
+    {
+        stunden = new Nummernanzeige(24);
+        minuten = new Nummernanzeige(60);
+        sekunden = new Nummernanzeige(60);
+        hundertstelSekunden = new Nummernanzeige(100);
+  
+        setzeAktuelleUhrzeit();
+            
+        myGlobalTimer.scheduleAtFixedRate(updateClockTask, 10, 10);
+    }
+
+    /**
+     * Konstruktor für ein Exemplar von Uhrenanzeige.
+     * Mit diesem Konstruktor wird die Anzeige auf den Wert
+     * initialisiert, der durch 'stunde' und 'minute' 
+     * definiert ist.
+     */
+    public Uhrenanzeige(int stunde, int minute, int sekunde, int hundertstelSekunde)
+    {
+        stunden = new Nummernanzeige(24);
+        minuten = new Nummernanzeige(60);
+        sekunden = new Nummernanzeige(60);
+        hundertstelSekunden = new Nummernanzeige(100);
+        setzeUhrzeit(stunde, minute, sekunde, hundertstelSekunde);
+    }
+
+    /**
+     * Diese Operation sollte einmal pro Hundertstelsekunde aufgerufen werden -
+     * sie sorgt dafür, dass diese Uhrenanzeige um Hundertstelsekunde
+     * weiter gestellt wird.
+     */
+    public void taktsignalGeben()
+    {
+        hundertstelSekunden.erhoehen();
+        if(hundertstelSekunden.gibWert() == 0) {  
+            sekunden.erhoehen();
+            if(sekunden.gibWert() == 0) {  
+                minuten.erhoehen();
+                if(minuten.gibWert() == 0) {  
+                    stunden.erhoehen();
+                }
+            }
+        }
+        anzeigeAktualisieren();
+    }
+
+    /**
+     * Setze die Uhrzeit dieser Anzeige auf die gegebene 'stunde' und
+     * 'minute'.
+     */
+    public void setzeUhrzeit(int stunde, int minute, int sekunde, int hundertstelSekunde)
+    {
+        stunden.setzeWert(stunde);
+        minuten.setzeWert(minute);
+        sekunden.setzeWert(sekunde);
+        hundertstelSekunden.setzeWert(hundertstelSekunde);
+        anzeigeAktualisieren();
+    }
+    
+    public void setzeAktuelleUhrzeit()
+    {
+        setzeUhrzeit(zeit.get(Calendar.HOUR_OF_DAY), zeit.get(Calendar.MINUTE), zeit.get(Calendar.SECOND), zeit.get(Calendar.MILLISECOND));
+    }
+
+    /**
+     * Liefere die aktuelle Uhrzeit dieser Uhrenanzeige im Format SS:MM:SS:HH.
+     */
+    public String gibUhrzeit()
+    {
+        return zeitanzeige;
+    }
+    
+    /**
+     * Aktualisiere die interne Zeichenkette, die die Zeitanzeige hält.
+     */
+    private void anzeigeAktualisieren()
+    {
+        zeitanzeige = stunden.gibAnzeigewert() + ":"
+                      + minuten.gibAnzeigewert() + ":"
+                      + sekunden.gibAnzeigewert() + ":"
+                      + hundertstelSekunden.gibAnzeigewert();
+    }
+    
+    public static void main(String[])
+    {
+        Uhrenanzeige ua = new Uhrenanzeige;
+    }
+}

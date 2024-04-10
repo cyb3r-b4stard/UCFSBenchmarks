@@ -1,0 +1,318 @@
+
+
+/* #### ### #### ### ########## # 
+ * ####:######### #####
+ * ########:#########
+ * ##:#########
+ */
+
+import comp102.*;
+import java.util.*;
+import java.awt.Color;
+import java.io.*;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+
+
+/** ############## ###### ### #### ## ####### ### #### #
+    ######### ##### ## # ###### ## ####.
+    ### ####### ########## ### ##### ## # ## ##### ## ########, ##### ####
+     ### ## ####### # (#####) ### ### (#####).
+    ### ##### ######## ##### ####### (####### ####### ### ###) #### ####
+     - #### # ### ## #### ##### #### ### ##### # ## ##### ## ######### ######
+       #### ### ##### #####.
+     - ##### ### ## ##### ## ######### ###### ## ### ##### ##### ## # ### ####.
+     - ###### ### ## ###### ## ######### ###### ## ### ##### ##### ## ### ######
+    
+    ### ### ## ######## ### ####### ## ###### ## #####:
+     - ####### ### #####
+     - ######## ### ########
+     - ###### ##### ### #######
+     - ###### ### ### #### ####### ## ### ##### ## #### ### #####
+     - ##### ####### ##### #### ### ####### #####
+     - #### ## ## ### #####
+
+     - #### ### #####.  [######]
+
+     - ##### ### #####, #### ### ### ######### ###### #### ### ###### # ##########
+       ### #### #### ##### (##### ####)  [#########]
+
+
+ */
+public class ImageProcessor implements UIButtonListener, UIMouseListener{
+    private int[][] image = new int[][]{{80,80,80},
+                                        {80,200,80},
+                                        {80,80,80}}; 
+ 
+    private int selectedRow = 0;
+    private int selectedCol = 0;
+
+    private final int pixelSize = 1;  
+
+
+    /** Construct a new ImageProcessor object
+     * and set up the GUI
+     */
+    public ImageProcessor(){
+        UI.setMouseListener(this);
+
+        UI.addButton("Load", this);
+        UI.addButton("Save", this);
+        UI.addButton("Lighten", this);
+        UI.addButton("Contrast", this);
+        UI.addButton("Rotate", this);
+        UI.addButton("Expand", this);
+        UI.addButton("Merge", this);
+        UI.addButton("Zoom", this);
+        UI.addButton("Blur", this);
+        UI.addButton("FillErase", this);
+
+        this.computeGreyColours();
+    }
+
+    /** Respond to button presses */
+    public void buttonPerformed(String cmd){
+        if (cmd.equals("Load"))            { this.image = this.loadImage(UIFileChooser.open()); }
+        else if (cmd.equals("Save"))       { this.saveImage();     }
+        else if (cmd.equals("Lighten"))    { this.lightenImage();  }
+        else if (cmd.equals("Contrast"))   { this.contrastImage(); }
+        else if (cmd.equals("Rotate"))     { this.rotateImage();     }
+        else if (cmd.equals("Merge"))       { this.mergeImage();     }
+        else if (cmd.equals("Expand"))     { this.expandImage();     }
+        else if (cmd.equals("Zoom"))       { this.zoomImage(); }
+        else if (cmd.equals("Blur"))       { this.blurImage();     }
+        else if (cmd.equals("FillErase"))  { this.fillErase();     }
+
+        this.selectedRow = 0;
+        this.selectedCol = 0;
+        this.redisplayImage();
+    }
+
+    /** Respond to mouse events */
+    public void mousePerformed(String action, double x, double y) {
+        if (action.equals("released")){
+            this.setPos(x, y);
+        }
+    }
+
+    /** Make all pixels in the image lighter by 20 greylevels.
+        but make sure that you never go over 255 (maximum level - white).
+     */
+    public void lightenImage(){
+        int rows = image.length;
+        int cols = image[0].length;
+        
+        for(int row = 0; row<rows; row++){
+            for (int col = 0; col<cols; col++){
+                while(this.image<=(255)(255)){
+                    this.image = this.image + 20;
+                    
+                    
+                }
+                
+                
+            }
+            
+            
+        }
+    }  
+
+    /** Increase the contrast of the image -
+        make all lighter pixels in the image (above 128) even lighter (by 20%)
+        and make all darker pixels even darker (by 20%)
+    */
+    public void contrastImage(){
+    } 
+
+
+    /** Rotate the image 180 degrees
+        Each cell in the top half is swapped with the corresponding cell
+        on the other side of the center of the images.
+        Eg, the top-left cell gets swapped with the bottom-right cell
+        the left-center cell gets swapped with the right-center cell
+        etc.
+    */
+    public void rotateImage(){
+    }
+
+
+
+
+    /** Expand the top left quarter of the image to fill the whole image
+        each pixel in the top left quarter will be copied to four pixels
+        in the new image.
+        Be careful not to try to access elements past the edge of the array!
+        Hint: It is actually easier to work backwards from the bottom right corner.
+    */
+    public void expandImage(){
+    }
+
+    /** Merge two images 
+        Ask the user to select another image file, and load it into another array.
+        Work out the rows and columns shared by the images
+        For each pixel value in the shared region, replace the current pixel value
+        by the average of the pixel value in current image and the corresponding
+        pixel value in the other image.
+    */
+    public void mergeImage(){
+        int [][] other = this.loadImage(UIFileChooser.open());
+        int rows = Math.min(this.image.length, other.length);       
+        int cols = Math.min(this.image[0].length, other[0].length); 
+    }
+        
+ 
+
+
+
+
+
+    /** Zoom in on the image, expanding by 133%, centered on the currently
+        selected pixel.
+        (The user can use the mouse to select a pixel which will be highlighted)
+        Hint: the selected pixel should stay where it is, and other pixels should be
+        moved away from it by a factor or 4/3.
+        Be careful not to try to access elements past the edge of the array!
+        Be careful not to leave gaps in the image.
+        Hint: It is easier to make a new array, copy the image over, expanding as you go
+        and then assign the new array to the image field.
+    */
+    public void zoomImage(){
+    }
+
+
+
+    /** Blur the image 
+        Modify each pixel to make it a weighted average of itself and
+        the pixels around it
+        A simple blur will weight the pixel by 0.4, its horizontal and vertical
+        neighbours by 0.1, and the diagonal neighbours by 0.05.
+        Hint: It is easier to make a new image array of the same size as the image,
+        then work out the weighted averages in the new array,
+        and then assign the new array to the image field.
+    */
+    public void blurImage(){
+        double[][] weights = {{0.05, 0.1, 0.05},     
+                              {0.1, 0.4, 0.1},       
+                              {0.05, 0.1, 0.05}};
+    }
+            
+            
+
+
+    /** Erase the connected region of the image, starting at the selected point,
+        with values within 10 greylevels of the selected point. 
+        This will need a recursive helper method - spreadWhite, which spreads
+        white to the pixel at (x,y) if it is within the range (min to max) and is
+        not already white. It then has to spreadWhite to each of its four neighbours.
+    */
+
+    public void fillErase(){
+    }
+
+
+
+    /** field and helper methods to precompute and store all the possible grey colours,
+        so the redisplay method does not have to constantly construct new color objects */
+    private Color[] greyColors = new Color[256];
+
+    /** Display the image on the screen with each pixel as a square of size pixelSize.
+        To speed it up, all the possible colours from 0 - 255 have been precalculated.
+    */
+    public void redisplayImage(){
+        UI.clearGraphics(false);
+        for(int row=0; row<this.image.length; row++){
+            int y = row * this.pixelSize;
+            for(int col=0; col<this.image[0].length; col++){
+                int x = col * this.pixelSize;
+                UI.setColor(this.greyColor(this.image[row][col]));
+                UI.fillRect(x, y, this.pixelSize, this.pixelSize, false);
+            }
+        }
+        UI.setColor(Color.red);
+        UI.drawRect(this.selectedCol*this.pixelSize,this.selectedRow*this.pixelSize,
+                             this.pixelSize,this.pixelSize);
+        UI.repaintGraphics();
+    }
+
+    /** Get and return an image as a two-dimensional grey-scale image (from 0-255). 
+        This method will cause the image to be returned as a grey-scale image,
+        regardless of the original colouration.
+    */
+    public int[][] loadImage(String imageName) {
+        int[][] ans = null;
+        if (imageName==null) return null;
+        try {
+            BufferedImage img = ImageIO.read(new File(imageName));
+            UI.printMessage("loaded image height(rows)= " + img.getHeight() +
+                            "  width(cols)= " + img.getWidth());
+            ans = new int[img.getHeight()][img.getWidth()];
+            for (int row = 0; row < img.getHeight(); row++){
+                for (int col = 0; col < img.getWidth(); col++){
+                    Color c = new Color(img.getRGB(col, row), true);
+                    ans[row][col] = (int)Math.round((0.3 * c.getRed()) + (0.59 * c.getGreen())
+                                                    + (0.11 * c.getBlue()));
+                }
+            }
+        } catch(IOException e){UI.println("Image reading failed: "+e);}
+        return ans;
+    }
+
+
+    /**
+       Write the current greyscale image to the specified filename
+    */
+    public  void saveImage() {
+        int height = this.image.length;
+        int width = this.image[0].length;
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
+                int greyscaleValue = this.image[row][col];
+                Color c = new Color(greyscaleValue, greyscaleValue, greyscaleValue);
+                img.setRGB(col, row, c.getRGB());
+            }
+        }
+        try {
+            String fname = UIFileChooser.save("save to png image file");
+            if (fname==null) return;
+            File imageFile = new File(fname);
+            ImageIO.write(img, "png", new File(fname));
+        } catch(IOException e){UI.println("Image reading failed: "+e);}
+    }
+
+    private void computeGreyColours(){
+        for (int i=0; i<256; i++){
+            this.greyColors[i] = new Color(i, i, i);
+        }
+    }
+    private Color greyColor(int grey){
+        if (grey < 0){
+            return Color.blue;
+        }
+        else if (grey > 255){
+            return Color.red;
+        }
+        else {
+            return this.greyColors[grey];
+        }
+    }
+
+    /** Set the selected Row and Col to the pixel on the mouse position x, y */
+    public void setPos(double x, double y){
+        int row = (int)(y/this.pixelSize);
+        int col = (int)(x/this.pixelSize);
+        if (this.image != null && row < this.image.length && col < this.image[0].length){
+            this.selectedRow = row;
+            this.selectedCol = col;
+            this.redisplayImage();
+        }
+    }
+
+
+
+    public static void main(String[] arguments){
+        ImageProcessor ob = new ImageProcessor();
+    }        
+
+
+}

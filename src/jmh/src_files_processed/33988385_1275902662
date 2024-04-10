@@ -1,0 +1,453 @@
+import java.util.*;
+import java.io.*;
+public class Story
+{
+    static Scanner input = new Scanner (System.in);
+
+    public static Character loadCharacter(String saveFile) throws IOException
+    {
+        Scanner read = new Scanner ( new File ( saveFile  ));
+        String inf= "";
+        String temp = "";
+        while (read.hasNext())
+        {
+            inf = inf + read.nextLine();
+        }
+        inf.trim();
+        delayedPrint(25,"Loading Character\n");
+        String npcName= inf.substring((inf.indexOf("Name:")+6),(inf.indexOf("Class:")-1));
+        String npcClass = inf.substring((inf.indexOf("Class:")+7),(inf.indexOf("ArmorClass:")-1));
+        int npcArmorClass = Integer.parseInt(inf.substring((inf.indexOf("ArmorClass:")+12),(inf.indexOf("Health:")-1)));
+        int npcHealth = Integer.parseInt(inf.substring((inf.indexOf("Health:")+8),(inf.indexOf("Social")-1)));
+        String socialStatus = inf.substring((inf.indexOf("Rank:")+6),(inf.indexOf("Current")-1));
+        double npcGold = Double.parseDouble(inf.substring((inf.indexOf("Gold:")+6),(inf.indexOf("Int:")-1)));
+        int Int = Integer.parseInt(inf.substring((inf.indexOf("Int:")+5),(inf.indexOf("Dex:")-1)));
+        int Dex = Integer.parseInt(inf.substring((inf.indexOf("Dex:")+5),(inf.indexOf("Str:")-1)));
+        int Str = Integer.parseInt(inf.substring((inf.indexOf("Str:")+5),(inf.indexOf("Cha:")-1)));
+        int Cha = Integer.parseInt(inf.substring((inf.indexOf("Cha:")+5),(inf.indexOf("Wis:")-1)));
+        int Wis = Integer.parseInt(inf.substring((inf.indexOf("Wis:")+5),(inf.indexOf("Con:")-1)));
+        int Con = Integer.parseInt(inf.substring((inf.indexOf("Con:")+5),(inf.indexOf("Level:")-1)));
+        int charLevel = Integer.parseInt(inf.substring((inf.indexOf("Level:")+7), (inf.indexOf("XP")-1)));
+        double charXP = Double.parseDouble(inf.substring((inf.indexOf("XP:")+4), (inf.indexOf("Inventory:")-1)));
+        String rest = inf.substring(inf.indexOf("Inventory:")+11);
+
+        Inventory charInv = new Inventory();
+
+        charInv = fillInventory(rest,charInv);
+
+        Character inUse = new Character(Int, Dex, Str, Cha, Wis, Con, npcName, 
+                socialStatus, npcGold, npcArmorClass, npcHealth, npcClass, charInv, charLevel, charXP);
+        System.out.println(inUse);
+        return inUse;
+    }
+
+    public static Inventory fillInventory(String rest,Inventory empty)
+    {
+        while (rest.indexOf("?") >0)
+        {
+            String check = rest.substring(1,4);
+            String code = rest.substring(0,rest.indexOf("?"));
+            rest = rest.substring(1);
+            if(check.equals("XXX"))
+            {
+                Weapon add;
+                add = inputCodeWpn(code);
+                empty.addWeapon(add);
+            }
+            else if(check.equals("XXY"))
+            {
+                Weapon add;
+                add = inputCodeRel(code);
+                empty.addWeapon(add);
+            }
+            else if (check.equals("XXZ"))
+            {
+                Weapon add;
+                add = inputCodeRan(code);
+                empty.addWeapon(add);
+            }
+            else if (check.equals("XYY"))
+            {
+                Item add;
+                add = inputCodeItem(code);
+                empty.addItem(add);
+            }
+            else if (check.equals("XYZ"))
+            {
+                Item add;
+                add = inputCodeMaterial(code);
+                empty.addItem(add);
+            }
+        }
+        return empty;
+    }
+
+    public static Weapon inputCodeWpn(String code)
+    {
+        Weapon constructed;
+        int dmg;
+        int dur;
+        String desc;
+        double val;
+        desc = code.substring(3,code.indexOf("|"));
+        code = code.substring(code.indexOf("|")+1);
+        dur = Integer.parseInt(code.substring(0, code.indexOf("|")));
+        code = code.substring(code.indexOf("|")+1);
+        dmg = Integer.parseInt(code.substring(0,code.indexOf("|")));
+        code = code.substring(code.indexOf("|")+1);
+        val= Double.parseDouble(code.substring(0,code.indexOf("?")));
+
+        constructed = new Weapon(dmg,dur,desc,val);
+        return constructed;
+    }
+
+    public static Weapon inputCodeRel(String code)
+    {
+        Weapon constructed;
+        int dmg;
+        int dur;
+        String desc;
+        double val;
+        String rel;
+        desc = code.substring(3,code.indexOf("|"));
+        code = code.substring(code.indexOf("|")+1);
+        dur = Integer.parseInt(code.substring(0, code.indexOf("|")));
+        code = code.substring(code.indexOf("|")+1);
+        dmg = Integer.parseInt(code.substring(0,code.indexOf("|")));
+        code = code.substring(code.indexOf("|")+1);
+        val= Double.parseDouble(code.substring(0,code.indexOf("|")));
+        code = code.substring(code.indexOf("|")+1);
+        rel = code.substring(0, code.indexOf("?"));
+
+        constructed = new Relic(dmg,dur,desc,val,rel);
+        return constructed;
+    }
+
+    public static Weapon inputCodeRan(String code)
+    {
+        Weapon constructed;
+        int dmg;
+        int dur;
+        String desc;
+        double val;
+        int ran;
+        desc = code.substring(3,code.indexOf("|"));
+        code = code.substring(code.indexOf("|")+1);
+        dur = Integer.parseInt(code.substring(0, code.indexOf("|")));
+        code = code.substring(code.indexOf("|")+1);
+        dmg = Integer.parseInt(code.substring(0,code.indexOf("|")));
+        code = code.substring(code.indexOf("|")+1);
+        val= Double.parseDouble(code.substring(0,code.indexOf("|")));
+        code = code.substring(code.indexOf("|")+1);
+        ran = Integer.parseInt(code.substring(0, code.indexOf("?")));
+
+        constructed = new Ranged(dmg,dur,desc,val,ran);
+        return constructed;
+    }
+
+    public static Item inputCodeItem(String code)
+    {
+        Item constructed;
+        String name;
+        String desc;
+        double val;
+        boolean questItem;
+
+        name = code.substring(3,code.indexOf("|"));
+        code = code.substring(code.indexOf("|")+1);
+        desc = code.substring(0,code.indexOf("|"));
+        code = code.substring(code.indexOf("|")+1);
+        val = Double.parseDouble(code.substring(0, code.indexOf("|")));
+        code = code.substring(code.indexOf("|")+1);
+        questItem = Boolean.parseBoolean(code.substring(0,code.indexOf("?")));
+
+        constructed = new Item( name,desc,val,questItem);
+        return constructed;
+    }
+
+    public static Item inputCodeMaterial(String code)
+    {
+        Item constructed;
+        String name;
+        String desc;
+        double val;
+        boolean questItem;
+        int matRank;
+
+        name = code.substring(3,code.indexOf("|"));
+        code = code.substring(code.indexOf("|")+1);
+        desc = code.substring(0,code.indexOf("|"));
+        code = code.substring(code.indexOf("|")+1);
+        val = Double.parseDouble(code.substring(0, code.indexOf("|")));
+        code = code.substring(code.indexOf("|")+1);
+        questItem = Boolean.parseBoolean(code.substring(0,code.indexOf("|")));
+        code = code.substring(code.indexOf("|")+1);
+        matRank = Integer.parseInt(code.substring(0,code.indexOf("?")));
+
+        constructed = new Material( name,desc,val,questItem,matRank);
+        return constructed;
+    }
+
+    public static void main (String args[]) throws IOException
+    {
+        delayedPrint(25,"Welcome to AdventureGame 1.0, Please enter a save file to load, or create a character first.");
+        String file; 
+        file = input.nextLine()+ ".txt";
+        file.trim();
+        file.toLowerCase();
+        Character inUse = new Character();
+        inUse = loadCharacter(file);
+        delayedPrint(25,"\n\n");
+
+        delayedPrint(25, "Welcome " +inUse.getName() + " To Adventure Game!!");
+        System.out.println( "----------------------------------------------------");
+
+        delayedPrint(25,"Please Enter your level code obtained at the end of the last checkpoint, if new game, please press enter");
+        String level = input.nextLine();
+        if(level.equals(""))
+        {
+            LevelTutorial(inUse) ;  
+        }
+    }
+
+    public static void interpretAction(String action,List<Monster> monsterList,Weapon equipped, Character c)throws IOException
+    {
+        boolean valid = false;
+        String[] acceptAct = {"Attack", "Save", "Equip", "Speak","Use"};
+        int actionInd = -1;
+        for(int i = 0; i<acceptAct.length; i++)
+        {
+            if(action.equalsIgnoreCase(acceptAct[i]))
+            {
+                actionInd = i;
+                valid = true;  
+                break;
+            }
+        }
+        if(valid)
+        {
+            if(actionInd == 0)
+            {
+                delayedPrint(25,"Okay, what would you like to attack?");
+                while(valid)
+                {
+                    String target = input.nextLine();
+                    target.trim();
+                    for(int i = 0; i<monsterList.size(); i++)
+                    {
+                        if(target.equalsIgnoreCase(monsterList.get(i).getName()))
+                        {
+                            Attack(c,equipped, monsterList.get(i));
+                            valid = false;
+                            break;
+                        }
+
+                    }
+                    if(valid)
+                    {
+                        delayedPrint(25,"There is no character with that name!");   
+                    }
+                }
+            }
+            if(actionInd == 1)
+            {
+                delayedPrint(25,"Please enter the file name for your character. You may use the original file, but the character will be overridden");
+                String file = input.nextLine();
+                save(c, file); 
+            }
+            if(actionInd == 2)
+            {
+                delayedPrint(25,"Please enter the weapon you would like to equip");
+                String equip = input.nextLine();
+                c.getInv().equip(equip);
+                delayedPrint(25,"You have equipped " + c.getInv().getWeaponInv().get(0).getDesc());
+            }
+            if(actionInd == 3)
+            {
+                for(int i = 0; i < monsterList.size(); i++)
+                {
+                    delayedPrint(25,monsterList.get(i).getName() + " says: " +monsterList.get(i).getResponse());  
+
+                }
+            }
+            if(actionInd = 4)
+            {
+             delayedPrint(25,"What Item would you like to use?");
+             String use = input.nextLine();
+             Inventory i = c.getInv().getItemInv();
+             int restored = 0;
+             for(int i = 0; i < i.size();i++)
+             {
+              if( use.equalsIgnoreCase(i.get(i))
+              {
+               if(use.equalsIgnoreCase("Health Potion"))
+               {
+                restored = Math.random()*4+1;
+                delayedPrint(25,"You chug the potion, and red liquid runs down your chin. You restore ");
+                System.out.print(restored);
+                delayedPrint(25, " health");
+                c.setHealth(c.getHealth() + restored);
+               }
+               else if(use.equalsIgnoreCase("Cheese Wheel"))
+               {
+                restored = 3;
+                delayedPrint(25, "You eat the entire cheese wheel, and everyone is very confused. You restore ");
+                System.out.print(restored);
+                delayedPrint(25, " health");
+                c.setHealth(c.getHealth() + restored);
+               }
+               else
+               {
+                delayedPrint(25, "There is no item with that name!!!");   
+               }
+               
+              }
+             }
+            }
+        }
+    }
+
+    public static void Encounter(List<Monster> m, Character c)throws IOException
+    {
+        for(int i = 0; i<m.size(); i++)
+        {
+            delayedPrint(25,"\nYou are attacked by '" + m.get(i).getName()+ "'");
+            delayedPrint(25,m.get(i).getName() + " says: " +m.get(i).getIntro());
+        }
+        System.out.println("-----------------------------------------------------------");
+        while (m.size() > 0 && c.getHealth()>0)
+        {
+            delayedPrint(25,"What would you like to do?");
+            String in = input.nextLine();
+            in.trim();
+            interpretAction(in, m,c.getInv().getWeaponInv().get(0),c);
+            System.out.println("-----------------------------------------------------------");
+            for(int i = 0; i<m.size(); i++)
+            {
+                if(m.get(i).getHealth()<0)
+                {
+                    m.remove(i);   
+                }
+                if(m.size()>0 && m.get(i).getHealth()<m.get(i).getPotionThreshhold() && m.get(i).getPotions() >0)
+                {
+                    delayedPrint(25,""+m.get(i).getName() + " drinks a potion!"); 
+                    delayedPrint(25, m.get(i).getName() + " restores " + m.get(i).usePotion()+ " health!");
+                }
+                else if(m.size()>0)
+                {
+                    delayedPrint(25,m.get(i).getName() + " Attacks!");
+                    delayedPrint(25,m.get(i).getRandomSaying()+"\n");
+                    AttackYou(m.get(i), c);
+                }
+            }
+            System.out.println("-----------------------------------------------------------");
+        }
+    }
+
+    public static void LevelTutorial(Character c) throws IOException
+    {
+        ArrayList<Monster> monsterList = new ArrayList<Monster>();     
+
+        Monster Boogar = new Monster("Boogar",
+                "There is a formula quiz... OF DEATH",
+                "Ill calculate the area under the curve... OF YOUR DEAD BODY",
+                "I want it to sting a little bit...",
+                "Screw point extracting... Im a LIFE extracting machine!",
+                "The AP test no longer has to kill you... I WILL",
+                "A slope field is a graphical representation of a family of curves that share the same derivatives.",
+                "Check the CALENDAR",
+                "NO! HOW CAN YOU HAVE GOTTEN A 5?!?!?",
+                3, 10, 6, 1, 3, 10, 0);
+        monsterList.add(Boogar);                            
+        delayedPrint(25,"You walk into calculus one morning, and are faced by Boogar the Accursed!!!");
+        delayedPrint(25, "A quick glance into your backpack shows your Wooden Sword(equipped), Wooden Bow, and Mjolnir, Thor's Hammer!");
+        Encounter(monsterList, c);
+
+                                     
+    }
+    public static Monster Attack(Character c,Weapon w, Monster target) throws IOException
+    {
+        int like =(int) (Math.random()*20)+1;
+        if(c.getNPCClass().equals("Fighter"))
+        {
+            like++;   
+        }
+        if(like> target.getArmor())
+        {
+            if(like> target.getArmor()*2+2)
+            {
+                delayedPrint(25,"\nCritical Hit! Double Damage!");
+                target.setHealth(target.getHealth() - w.use()*2);
+                delayedPrint(25,"You deal " +w.getDmg()*2+ " damage!");
+            }
+            else
+            {
+                target.setHealth(target.getHealth()-w.use());
+                delayedPrint(25,"\nYou have hit your target!");
+                delayedPrint(25,"You deal " +w.getDmg()+ " damage!");
+            }
+        }
+        else
+        {
+            delayedPrint(25,"\nYou have missed!");   
+        }
+
+        if(target.getHealth()<0)
+        {
+
+            delayedPrint(25,"\nYou have slain " + target.getName() + "\n" +target.getDeath());
+            delayedPrint(25,"Please enter the file name for your character. You may use the original file, but the character will be overridden");
+            String file = input.nextLine();
+            save(c, file); 
+        }
+        return target;
+    }
+
+    public static Character AttackYou(Monster attacker, Character target)
+    {
+        int like =(int) (Math.random()*15)+1+attacker.getMod();
+        if(target.getDex()>13)
+        {
+            like--;   
+        }
+        if(like > target.getArmorClass())
+        {
+            target.setHealth(target.getHealth()-attacker.getAttack());
+
+            delayedPrint(25,attacker.getName() + " Deals " +attacker.getAttack()+ " Damage! You now have " + target.getHealth()+ " Hit Points");
+            if(target.getHealth()<0)
+            {
+                delayedPrint(25,"You have been slain by "+ attacker.getName()+ "Please re run the program, and load a valid save file."); 
+            }
+
+        }
+        else if(like %2 ==0)
+        {
+            delayedPrint(25,"You manage to jump out of the way just in time, and avoid the attack!");   
+        }
+        else
+        {
+            delayedPrint(25,"The attack fails to connect with any flesh, and hits your armor");  
+        }
+        return target;
+    }
+
+    public static void save(Character inUse,String file) throws IOException 
+    {
+        file = file +".txt";
+        PrintWriter save = new PrintWriter(new File(file));
+        save.println(inUse);
+        save.close();
+    }
+
+    public static void delayedPrint(int delay, String s) {
+        try {
+            for (char c : s.toCharArray()) {
+                System.out.print(c);  
+                Thread.sleep(delay);  
+            }
+        } catch (InterruptedException e) {
+        }
+        System.out.println(); 
+    }
+}

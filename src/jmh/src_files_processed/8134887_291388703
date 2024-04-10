@@ -1,0 +1,243 @@
+import java.util.Date;
+import java.util.Calendar;
+import java.util.ArrayList;
+import java.io.*;
+import java.io.FileReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.Locale;
+public class Clinica
+{
+    
+    
+    private   ArrayList<Servicos_Medicos> ServicosMedicos = new ArrayList<Servicos_Medicos>();
+    private   ArrayList<Funcionario> funcionarios = new ArrayList<Funcionario>();
+    private   ArrayList<Paciente> pacientes = new ArrayList<Paciente>();
+    
+   
+   
+    
+    
+    
+    
+    
+    
+   
+
+    public Clinica()
+    {
+
+        funcionarios.add(new Medicos("Sandra", 25));
+        funcionarios.add(new Medicos("Gustavo", 32));
+        funcionarios.add(new Medicos("Andre", 45));
+        funcionarios.add(new Medicos("Ana", 54));
+        funcionarios.add(new Tecnicos("Jonas", 44));
+        funcionarios.add(new Tecnicos("Henrique", 45));
+
+    
+    }
+    
+    public void MarcarServicos()
+    {
+   ArrayList<String> DadosDosPacientes = new ArrayList<String>();
+   
+       try 
+       {
+           FileReader fileReader = new FileReader("dados.txt");
+            BufferedReader bufferedReader = new BufferedReader(fileReader); 
+                    String linha = bufferedReader.readLine() ;
+                        DadosDosPacientes.add(linha);
+                            while ( ( linha = bufferedReader.readLine() ) != null) 
+                                    {
+                                            DadosDosPacientes.add(linha);
+                                        }
+                                            fileReader.close();
+                                                bufferedReader.close();
+        } 
+                        catch (IOException e) {
+                                    e.printStackTrace();
+       }
+ 
+      
+                    if(DadosDosPacientes.get(0).equals("Exame"))
+                            { 
+                                    Paciente p = NovoPaciente(DadosDosPacientes , 3 , 2); 
+            
+                                        Calendar  c = ObterData(DadosDosPacientes.get(4), DadosDosPacientes.get(5));
+                                        
+                                        int hora = c.get(Calendar.HOUR_OF_DAY);
+                                       
+            
+                                            System.out.println("Solicitando Exame para data "+c.getTime()); 
+                                            
+                                            if
+        
+                                            
+                                              int Verifica = ServicosMedicos.size(); 
+            
+                                                auxMarcarExame(p,c,DadosDosPacientes);
+                                                
+
+      
+                       while(Verifica == ServicosMedicos.size())
+                       {
+                           
+                           c.add(Calendar.MINUTE , 10); 
+                           System.out.println("Solicitando novo horario para" + c.getTime());
+                           auxMarcarExame(p,c,DadosDosPacientes); 
+                           
+                           
+                           
+                           
+                        }
+
+ }   }
+ 
+ 
+ public void auxMarcarExame(Paciente p, Calendar c, ArrayList<String> DadosDosPacientes){
+            for(int i=0; i<funcionarios.size(); i++) 
+            {
+                if(funcionarios.get(i) instanceof Tecnicos)
+                {
+                    
+                    if(funcionarios.get(i).getDisponibilidade(c) == true)
+                    {
+                        MarcarExame(p, c , DadosDosPacientes, funcionarios.get(i));
+                        System.out.println("Exame Marcaco com sucesso para "+ c.getTime() + " com funcionario " + funcionarios.get(i).getNome());
+                        break; 
+                
+                
+                    }
+                }
+}
+ }
+ 
+  public void MarcarExame(Paciente p, Calendar c, ArrayList<String> DadosDosPacientes, Funcionario f)
+{
+    
+    
+    
+                 if(DadosDosPacientes.get(1).equals("Endoscopia"))
+           {
+            
+               
+               ServicosMedicos.add(new Endoscopia(p, c , c , f));
+               f.AddServico(ServicosMedicos.get(ServicosMedicos.size()-1));
+           
+           
+        }
+          if(DadosDosPacientes.get(1).equals("Biopsia"))
+           {
+               
+               ServicosMedicos.add(new Biopsia(p, c , c, f));
+               f.AddServico(ServicosMedicos.get(ServicosMedicos.size()-1));
+                
+               
+           
+           
+        }
+              if(DadosDosPacientes.get(1).equals("Ressonancia"))
+           {
+              ;
+           
+               ServicosMedicos.add(new Ressonancia(p,c,c, f));
+               f.AddServico(ServicosMedicos.get(ServicosMedicos.size()-1));
+           
+        }
+}
+ 
+   
+public Calendar ObterData(String Dia_mes_ano, String horas)
+{
+    
+    
+        Date d  = new Date();
+        Calendar c = Calendar.getInstance();
+       try 
+       {
+           SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy - HH:mm");
+           d = df.parse(Dia_mes_ano+" - "+horas);
+              
+           
+           c.setTime(d);
+           
+           
+       }
+       catch (ParseException ex)
+       {
+           ex.printStackTrace();
+       }
+       
+       
+       
+       return c;
+    
+    
+}
+    
+    public boolean Paciente_Cadastrado(String nome) 
+    {
+        for(int i=0; i<pacientes.size(); i++)
+        {
+            if(pacientes.get(i).getNome().equals(nome))
+            {
+                return true;
+            
+            
+        }
+    }
+    return false;
+        
+        
+}
+
+public Paciente NovoPaciente(ArrayList<String> DadosDosPacientes, int indice_idade , int indice_nome) 
+{
+  
+    Paciente p;
+    int i=0;
+   
+  if(Paciente_Cadastrado(DadosDosPacientes.get(2))==false) 
+      {
+                   System.out.println("Paciente nao cadastrado, Cadastrando novo");
+                                int idade = Integer.parseInt(DadosDosPacientes.get(indice_idade));
+           
+                                    if(idade >65) 
+                           {
+                                p = new Paciente_Idoso(DadosDosPacientes.get(indice_nome), idade);
+                                pacientes.add(p);
+                                         
+                                            
+                                        }
+                                            else 
+                                                {
+                                                    p = new Paciente_Nao_Idoso(DadosDosPacientes.get(indice_nome), idade);
+                                                    pacientes.add(p);
+                                                            
+                                                           
+                 
+                 
+                } 
+                
+                return p;
+            }
+            else{   
+                            System.out.println("Paciente ja Cadastrado , Buscando Registro");
+                            
+                              
+                                while((!pacientes.get(i).getNome().equals(DadosDosPacientes.get(indice_nome))))
+                                        {
+                                                i++;
+            
+            
+                                            }
+                           
+                                 System.out.println("Registro Encontrado com sucesso!");
+                                 return pacientes.get(i);
+                                    }
+                   
+
+                
+            }}

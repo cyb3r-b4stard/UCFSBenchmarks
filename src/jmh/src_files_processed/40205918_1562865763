@@ -1,0 +1,146 @@
+import java.util.Scanner;
+
+public class UI
+{
+    private ClockDisplay Clock;
+    private String setHour = "Set the hour.";
+    private String setMinute = "Set the minute.";
+    private static Scanner _s = new Scanner(System.in);
+    
+    /**
+     * Constructor for objects of class UI
+     * Asks user to set initial time, and the repeats the "process". 
+     */
+    public UI()
+    {
+        System.out.println ("\fWelcome to 12h Clock Sim!");
+        
+        int h = 0;
+        int m = 0;
+        int Sampm = 0;
+        boolean ampm = false;
+        
+        int p = 0;
+        try
+        {
+            while (p == 0)
+            {
+                System.out.println ("Setiing up clock\n [0] am\n [1] pm.");
+                Sampm = Integer.valueOf(_s.next());
+                
+                System.out.println (setHour);
+                String hour = _s.next();
+                h = Integer.valueOf(hour);
+                
+                if (h == 12)
+                   {
+                       h = 0;
+                   }
+                
+                System.out.println (setMinute);
+                String minute = _s.next();
+                m = Integer.valueOf(minute); 
+                
+                if (h < 12 & m < 60 & (Sampm == 0| Sampm == 1))
+                {
+                    p++;
+                }
+                else
+                {
+                    System.out.println ("\fInvalid time. Try again");
+                }
+            }
+            
+            if (Sampm == 0)
+            {
+                ampm = false;
+            }
+            else if (Sampm == 1)
+            {
+                ampm = true;
+            }
+            
+            Clock = new ClockDisplay(ampm,h,m);
+            
+            int n = 0;
+            while (n != 1)
+            {
+                n = process();
+            }
+        }
+        catch (Exception E)
+        {
+            System.out.println("\f Please don't type in Strings! Only use Numbers!")
+        }
+        System.out.println ("\f Thank You!");
+    }
+   
+    /**
+     * User can choose between three options:
+     * s = set time of the clock.
+     * a = tick 1 minute.
+     * x = exit program.
+     */
+    private int process()
+    {
+        System.out.println ("\f");        
+        System.out.println (Clock.current());
+        System.out.println ("\n [s] Set Time \n [a] Tick\n\n [x] Exit");
+    
+        String check = _s.nextLine();
+       if (check.equals("s"))
+       {
+           int h = 0;
+           int m = 0;
+           boolean ampm = false;
+           int Sampm = 0;
+           int p = 0;
+           while (p == 0)
+           {
+               System.out.println ("Setiing up clock\n [0] am\n [1] pm.");
+
+               if (Sampm == 1)
+               {
+                   ampm = true;
+               }
+            
+               System.out.println (setHour);
+               String hour = _s.next();
+               h = Integer.valueOf(hour);
+    
+               System.out.println (setMinute);
+               String minute = _s.next();
+               m = Integer.valueOf(minute);
+               
+               if (h == 12)
+               {
+                   h = 0;
+               }
+               
+               if (h < 12 & m < 60 & (Sampm == 0| Sampm == 1))
+               {
+                   p++;
+               }
+               else
+               {
+                   System.out.println ("÷fInvalid time. Try again");
+               }
+           }
+    
+           Clock.setTime(ampm,h,m);
+       }
+       else if (check.equals("a"))
+       {
+           Clock.timeTick();
+           return 0;
+       }
+        
+       else if(check.equals("x"))
+       {
+           Clock.timeTick();
+           return 1;
+       }
+        
+       return 0;
+    }
+}

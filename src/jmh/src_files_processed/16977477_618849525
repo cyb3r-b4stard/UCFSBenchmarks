@@ -1,0 +1,128 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class MainSpieleserver {
+
+	public static void main(String args[]) throws IOException {
+		final int portNumber = 81;
+		System.out.println("Creating server socket on port " + portNumber);
+		ServerSocket serverSocket = new ServerSocket(portNumber);
+		while (true) {
+			Socket socket = serverSocket.accept();
+			OutputStream os = socket.getOutputStream();
+			PrintWriter pw = new PrintWriter(os, true);
+			
+            int anzahlSpiele    = 10;
+            int anzahlSpieler   = 0;
+            int antwortSpieler  = 0; 
+            int namenSpielerGen = 0;            
+            int anzahlBot       = 2;
+            int antwortBot      = 0;  
+            int namenBotGen     = 0;               
+            int anzahlRunden    = 100;   
+            int brettAnzeigen   = 0;
+       
+            String nameSpieler  = "";
+            String nameBot      = "";
+ 
+            pw.println(" $$\\      $$\\                                                   $$\\                   ");
+            pw.println(" $$$\\    $$$ |                                                  $$ |                   ");
+            pw.println(" $$$$\\  $$$$ | $$$$$$\\  $$$$$$$\\   $$$$$$\\   $$$$$$\\   $$$$$$\\  $$ |$$\\   $$\\     "); 
+            pw.println(" $$\\$$\\$$ $$ |$$  __$$\\ $$  __$$\\ $$  __$$\\ $$  __$$\\ $$  __$$\\ $$ |$$ |  $$ |    ");
+            pw.println(" $$ \\$$$  $$ |$$ /  $$ |$$ |  $$ |$$ /  $$ |$$ /  $$ |$$ /  $$ |$$ |$$ |  $$ |           ");
+            pw.println(" $$ |\\$  /$$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |$$ |$$ |  $$ |           ");
+            pw.println(" $$ | \\_/ $$ |\\$$$$$$  |$$ |  $$ |\\$$$$$$  |$$$$$$$  |\\$$$$$$  |$$ |\\$$$$$$$ |       ");
+            pw.println(" \\__|     \\__| \\______/ \\__|  \\__| \\______/ $$  ____/  \\______/ \\__| \\____$$ |   ");
+            pw.println("                                            $$ |                    $$\\   $$ |           ");
+            pw.println("                                            $$ |                    \\$$$$$$  |           ");
+            pw.println("                                            \\__|                    \\______/            ");
+        
+            pw.println("Version 0.1");
+            pw.println("Vereinfachte Spielregeln");
+			
+
+			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				
+			pw.println("Anzahl Spiele   : ");
+			String stringZahl = br.readLine();
+
+            int intZahl = Integer.parseInt(stringZahl);
+            Integer integerZahl = new Integer(stringZahl);			
+            anzahlSpiele = integerZahl;  
+        
+            /* Eingabe der Anzahl Spieler
+            System.out.print("Anzahl Spieler  : ");
+            anzahlSpieler = eingabe.nextInt();
+
+            System.out.print("Antwort Spieler : ");
+            antwortSpieler = eingabe.nextInt();        
+
+            System.out.print("Gen.Spielername : ");
+            namenSpielerGen = eingabe.nextInt();              
+        
+            System.out.print("Anzahl Bots     : ");
+            anzahlBot = eingabe.nextInt();
+
+            System.out.print("Antwort Bots    : ");
+            antwortBot = eingabe.nextInt();    
+        
+            System.out.print("Gen.Botname     : ");
+            namenBotGen = eingabe.nextInt();         
+        
+            System.out.print("Anzahl Runden   : ");
+            anzahlRunden = eingabe.nextInt();
+       
+            System.out.print("Brett Anzeigen  : ");
+            brettAnzeigen = eingabe.nextInt();
+            */
+            int[] meinArray = new int[10];
+        
+            pw.println("");
+            pw.println("Jetzt legt der Spieleserver los ...");
+            pw.println("");        
+        
+            for (int i = 1; i <= anzahlSpiele; i++){
+                Spiel spiel = new Spiel(anzahlSpieler, antwortSpieler, namenSpielerGen, anzahlBot, antwortBot, namenBotGen, anzahlRunden, brettAnzeigen);
+                String sieger = spiel.spielen();
+
+                if (sieger.equals("Bot 1"))
+                    meinArray[0] = meinArray[0] + 1;
+                if (sieger.equals("Bot 2"))
+                    meinArray[1] = meinArray[1] + 1; 
+                if (sieger.equals("Bot 3"))
+                    meinArray[2] = meinArray[2] + 1;
+                if (sieger.equals("Bot 4"))
+                    meinArray[3] = meinArray[3] + 1;
+                if (sieger.equals("Bot 5"))
+                    meinArray[4] = meinArray[4] + 1;
+                if (sieger.equals("Bot 6"))
+                    meinArray[5] = meinArray[5] + 1;
+                if (sieger.equals("Bot 7"))
+                    meinArray[6] = meinArray[6] + 1; 
+                if (sieger.equals("Bot 8"))
+                    meinArray[7] = meinArray[7] + 1;
+                if (sieger.equals("Bot 9"))
+                    meinArray[8] = meinArray[8] + 1;
+                if (sieger.equals("Bot 10"))
+                    meinArray[9] = meinArray[9] + 1;
+                             
+            }
+        
+            for (int i = 0; i < 10; i++){
+                pw.println("Bot " + i + " hat " + meinArray[i] + " Spiele gewonnen ");
+            }
+			
+			
+					
+			pw.close();
+			socket.close();
+
+			System.out.println("Und wieder ein Spiel gespielt ..." ;
+		}
+	}
+}

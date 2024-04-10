@@ -1,0 +1,123 @@
+
+class WARTESCHLANGE
+{
+    KNOTEN anfang;
+    
+    WARTESCHLANGE()
+    {
+        anfang = null;
+    }
+    
+    void HintenEinfuegen(DATENELEMENT datenelementNeu)
+    {
+        if (anfang == null)
+        {
+            anfang = new KNOTEN(datenelementNeu);
+        }
+        else
+        {
+            anfang.HintenEinfuegen(datenelementNeu); 
+        }
+    }
+    
+    void VorneEinfuegen(DATENELEMENT datenelementNeu)
+    {
+        if (anfang == null)
+        {
+            anfang = new KNOTEN(datenelementNeu);
+        }
+        else
+        {
+            KNOTEN alterAnfang = anfang;
+            anfang = new KNOTEN(datenelementNeu);
+            anfang.NachfolgerSetzen(alterAnfang);
+        }
+    }
+    
+    DATENELEMENT VorneEntfernen()
+    {
+          if (anfang == null)
+        {
+            return null;
+        }
+          else
+        {
+            DATENELEMENT ergebnis = anfang.DatenelementGeben();
+            anfang = anfang.NachfolgerGeben();
+            
+            return ergebnis;
+        }
+       
+    }
+    
+      DATENELEMENT HintenEntfernen()
+    {
+        if (anfang == null)
+        {
+            System.out.println("Warteschlange ist leer");
+            return null;
+        }
+        else
+        {
+            if (anfang.NachfolgerGeben() == null)
+            {
+                KNOTEN alterAnfang = anfang;
+                anfang = null;
+                return alterAnfang.DatenelementGeben();
+            }
+            else
+            {
+                  return anfang.HintenEntfernen();  
+            } 
+        }
+        
+    }
+    
+    
+    DATENELEMENT Suchen(String suchschluessel)
+    {
+      if ( anfang == null)
+      {
+          return null; 
+          
+      }
+      else
+      {
+            return anfang.Suchen(suchschluessel);
+      }
+    }
+        
+    
+    DATENELEMENT Entfernen(String suchschluessel)
+    {
+        return null; 
+    }
+    
+    
+    int LaengeGeben()
+    {
+        if(nachfolger == null)
+        {
+            return 0;
+        }
+        else
+        {
+            retrun anfang.LaengeGeben();
+        }
+    }
+    
+    
+    void InformationAusgeben()
+    {
+        System.out.println();
+        System.out.println("Warteschlange");
+        if (anfang == null)
+        {
+            System.out.println("leer");
+        }
+        else
+        {
+            anfang.InformationAusgeben();   
+        }
+    }
+}

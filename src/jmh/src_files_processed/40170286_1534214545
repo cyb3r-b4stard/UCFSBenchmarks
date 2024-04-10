@@ -1,0 +1,132 @@
+import java.util.Arrays;
+/**
+ * #### ### ###### #### ### #######
+ * ###### ###### ########.
+ * 
+ * @###### ##### #. ###### ### ####### #######.
+ * @####### ####.##.##
+ */
+public class LogAnalyzer
+{
+    private int[] hourCounts;
+    private LogfileReader reader;
+
+    /**
+     * Create an object to analyze hourly web accesses.
+     */
+    public LogAnalyzer()
+    { 
+        hourCounts = new int[24];
+        reader = new LogfileReader();
+    }
+
+    /**
+     * Analyze the hourly access data from the log file.
+     */
+    public void analyzeHourlyData()
+    {
+        while(reader.hasNext()) {
+            LogEntry entry = reader.next();
+            int hour = entry.getHour();
+            hourCounts[hour]++;
+        }
+    }
+
+    /**
+     * Print the hourly counts.
+     * These should have been set with a prior
+     * call to analyzeHourlyData.
+     */
+    public void printHourlyCounts()
+    {
+        System.out.println("Hr: Count");
+        for(int hour = 0; hour < hourCounts.length; hour++) {
+            System.out.println(hour + ": " + hourCounts[hour]);
+        }
+    }
+    
+     /**
+     * @return the total number of accesses recorded in the 
+     * log file
+     */
+    public int numberOfAccesses()
+    {
+        int total = 0;
+        for(int hourcount: hourCounts) {
+            total = total + hourcount;
+        }
+        return total;
+    }
+
+    /**
+     * Print the lines of data read by the LogfileReader
+     */
+    public void printData()
+    {
+        reader.printData();
+    }
+    
+    /**
+     * @return the busiest hour of the day. 
+     */
+    public int busiestHour() 
+    { 
+        int busyHour = 0;
+        int busyHourCount = 0;
+        for(int hour = 0; hour < hourCounts.length; hour++) {
+            if(hourCounts[hour] > busyHourCount) {
+                busyHourCount = hourCounts[hour];
+                busyHour = hour;
+            }
+        }    
+        return busyHour;
+    }
+    
+    /**
+     *@return the quietest hour of the day. 
+     */
+    public int quietestHour()
+    {
+        int hour = 0;
+        int quietHour = 0;
+        int quietHourCount = 0;
+        while(hour < hourCounts.length) {
+            if(quietHour == 0) {
+                   quietHourCount = hourCounts[hour];
+                   quietHour = hour;
+            }
+            else if(hourCounts[hour] < quietHourCount) {
+                quietHourCount = hourCounts[hour];
+                quietHour = hour;
+            }
+        hour++;
+        }
+        return quietHour;
+    }
+    
+    /**
+     *@returns the first hour of the busiest two hour period of the day. 
+     */
+    public int busiestTwoHours()
+    {
+        int firstHour = 0;
+        int secondHour = firstHour + 1;
+        int busyTwoHour = 0;
+        int busyTwoHourCount = 0;
+        while(firstHour < hourCounts.length) {
+            int twoHourCount = hourCounts[firstHour] + hourCounts[secondHour];
+            if(twoHourCount > busyTwoHourCount) {
+                busyTwoHourCount = twoHourCount;
+                busyTwoHour = firstHour;
+            }
+            firstHour++;
+        }
+        return busyTwoHour;
+    }
+   public int medianHourlyAccess()
+   {
+       int medianHourCount;
+       hourCountsSorted[] = Arrays.sort(hourCounts);
+    }   
+  
+}

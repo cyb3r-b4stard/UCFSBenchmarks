@@ -1,0 +1,187 @@
+import java.util.Random;
+import java.util.ArrayList;
+import java.text.DecimalFormat;
+
+/**
+ * ####### #####, ########## # ####### ##### ### ####### ### ### ## ### ### ##.
+ * 
+ * @###### (#### #######) 
+ * @####### (######## ### ######## ####)
+ */
+public class Website
+{
+   private int hits, maxNumberOfWineCases;
+   private double salesTotal;
+
+   /**
+    * Constructor for objects of class Website
+    */
+   public Website()
+   {   
+       salesTotal = 0.0;
+       hits = 9;
+       maxNumberOfWineCases = 10;
+   }
+    
+   /**
+    * return the number of hits the website has had
+    */
+   public int getHits()
+   {
+        return hits;
+   }
+  
+   /**
+    * return the total sales for the website. 
+    */
+   public double getsales()
+   {
+       return salesTotal;
+   }
+   
+   /**
+    * set a random and unique ID to a browser
+    */
+    public int setID()
+   {
+       Random randomID = new Random();
+       return randomID.nextInt(8999) + 1000;
+   }
+    
+   /**
+    * choose a browser to log into the website
+    */
+   public void browserLogin(Browser newBrowser)
+   {
+        if(newBrowser.getLoginStatus() == false)
+        {
+            newBrowser.setWebsite(this);
+            System.out.println("Wine direct welcomes browser " + newBrowser.getID() + ", you are now logged in");
+            hits ++;
+            newBrowser.setLoginStatus(true);
+        }
+        else
+        {
+            System.out.println("You are already logged in");
+        }
+   }
+    
+   /**
+    * allow a browser to become a buyer.
+    * give the browser an ID if they havnt already got one.
+    * check that the browser is the correct legal age to buy alcohol (18).
+    */
+   public void becomeBuyer(Browser newBrowser)
+   {
+         int currentYear = 2013;
+         if(currentYear - newBrowser.getYearOfBirth() < 18 )
+           {
+               System.out.println("Sorry you are underage, the police are coming to get you");
+            }
+            else if(newBrowser.getID() == 0 )
+            {
+                newBrowser.setWebsite(this);
+                newBrowser.setID();
+                System.out.println("Success!! You are now registered. You ID is " + newBrowser.getID());
+            }
+            else
+            {
+                System.out.println("you are already a buyer");
+            }
+       
+   }
+
+    /**
+    * A checkout for purchasing the wine.
+    * this should print a message to the customer.
+    * if the browser isnt logged in, they may go no further.
+    * if the browser is the 10th hit, or any multiple of 10, they recieve a discount.
+    */
+   public void checkout(Browser newBrowser)
+   {   
+    ArrayList<WineCase> basket = newBrowser.getBasket();
+    DecimalFormat df = new DecimalFormat("0.00");
+   
+    
+    if(newBrowser.getID() == 0)
+    {
+        System.out.println("sorry you need to become a buyer before you may purchase wine");
+    }
+    else
+    {
+     if(basketOverFull() == false);
+     {
+       if (newBrowser.getLoginStatus() == true)
+       {
+           System.out.printf("%s %18s\n" , "Wine description" , "Cost");
+           System.out.printf("%s\n" , "----------------------------------");
+           if(checkHitDiscount(basket) == true)
+           {    
+               for( WineCase wineCase : basket)
+               {
+                   salesTotal += wineCase.getPrice() * 0.9;
+                   System.out.printf("%12s %24s\n", wineCase.getDescription() , df.format(wineCase.getPrice() * 0.9));
+               }
+               System.out.printf("%s\n" , "----------------------------------");
+               System.out.printf("%s %26s" , "Total Cost" , df.format(salesTotal));
+           }
+           else
+           {
+              for( WineCase wineCase : basket)
+              {
+                  salesTotal += wineCase.getPrice();
+                  System.out.printf("%12s %24s\n", wineCase.getDescription() , wineCase.getPrice());
+              }
+              System.out.printf("%s\n" , "----------------------------------");
+              System.out.printf("%s %26s" , "Total Cost" , salesTotal);
+           }
+       }    
+       else
+       {
+           System.out.println("You need to log in before you may purchase wine");
+       }
+       basket.clear();
+       newBrowser.setLoginStatus(false);
+       salesTotal = 0;
+     }
+    }
+   else
+   {
+       System.out.println("Your basket is too full");
+   }
+   }
+   
+
+   /**
+    * checks the amount of bottles in the basket, if its more than 5, the browser wins a discount.
+    */
+   public boolean checkHitDiscount(ArrayList<WineCase> basket)
+   { 
+       if(basket.size() > 4)
+       {
+           return true;
+       }
+       else
+       {
+           return false;
+       }
+   }
+   
+   
+   /**
+    * Checks wether the basket is over full and returns wether over full or not
+    */
+   public boolean basketOverFull(ArrayList<WineCase> basket)
+   {
+       if(basket.size() > maxNumberOfWineCases)
+       {
+           return true;
+       }
+       else
+       {
+           return false;
+       }
+   }
+   
+
+}

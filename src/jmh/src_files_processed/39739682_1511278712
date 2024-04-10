@@ -1,0 +1,174 @@
+import drawingTools.*;
+
+import java.util.ArrayList;
+/**
+ * ##### # ########### ## ##### ######### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class BrickWall
+{
+    private int bWidth;
+    private int bHeight;
+    private int numRows;
+    private int rowLength;
+    private ArrayList<String> colors;
+    private ArrayList<Rectangle> bricks;
+    private boolean isDecreasing;
+    private boolean isSymmetric;
+    private boolean isMultiColor;
+    private int currentColor;
+    private int startX;
+    private int startY;
+
+    /**
+     * Constructor for objects of class BrickWall.
+     * @param rows The number of rows in the wall
+     * @param rowlen The number of bricks in a row
+     */
+    public BrickWall(int rows, int rowLen)
+    {
+        setUpColors();
+        bWidth = 54;
+        bHeight = 16;
+        startX = 10;
+        startY = 550;
+        bricks = new ArrayList<Rectangle>();
+        currentColor = 0;
+        setNumRows(rows);
+        setRowLength(rowLen);
+        this.isMultiColor = false;
+        this.isDecreasing = false;
+        this.isSymmetric = false;
+    }
+
+    private void setUpColors() {
+        colors = new ArrayList<String>();
+        colors.add("red");
+        colors.add("yellow");
+        colors.add("blue");
+        colors.add("green");
+        colors.add("magenta");
+        colors.add("pink");
+    }
+
+    /**
+     * Toggle whether the wall is multicoloured.
+     */
+    public void toggleMultiColour() {
+        isMultiColor = !isMultiColor;
+        currentColor = 0;
+    }
+
+    /**
+     * Toggle whether the decrease in a row length is symmetric.
+     */
+    public void toggleSymmetric() {
+        isSymmetric = !isSymmetric;
+    }
+
+    /**
+     * Toggle whether the length of a new row is one less than the length of the previous row.
+     */
+    public void toggleDecrease() {
+        isDecreasing = ! isDecreasing;
+    }
+
+    /**
+     * @return the number of bricks in the current wall.
+     */
+    public int getNumberOfBricks() {
+        return bricks.size();
+    }
+
+    /**
+     * Set the length of a row.  There can be no more than 22 bricks in a row.
+     * @param len The number of bricks in a row.  If len is less than or equal
+     * to zero OR len is greater than 22, the row length will be assigned the value 22.
+     * Otherwise the length of a row will be assigned the value of len.
+     */
+    public void setRowLength(int len) {
+        if (len <= 0 || len > 22) {
+            rowLength = 22;
+        } else {
+            rowLength = len;
+        }
+    }
+
+    /**
+     * Set the maximum number of rows in the wall.  If the length of a row decreases, 
+     * there may not be this many rows in the wall.
+     * @param rows The maximum number of rows in the wall.  If rows is less than
+     * or equal to zero OR rows is greater than 30, the number of rows will be assigned the value 30.
+     * Otherwise the number of rows will be assigned the value of rows.
+     */
+    public void setNumRows(int rows) {
+        if (rows <= 0 || rows > 30) {
+            numRows = 30;
+        } else {
+            numRows = rows;
+        }
+    }
+
+    /**
+     * Delete all the bricks in the current wall and clear the canvas.
+     */
+    public void eraseWall() {
+        Canvas canvas = Canvas.getCanvas();
+        for (int i=0; !bricks.isEmpty(); i++) {
+            canvas.erase(bricks.remove(0));
+        }
+    }
+
+
+    /**
+     * Draw the wall.  The first brick will be positioned at the coordinates (10, 550).  
+     * The number of bricks in a row is specified by setRowLength().  The maximum number of rows
+     * is specified by setNumRows().  If isDecreasing is true, each subsequent row of bricks 
+     * contains one brick less than the previous row.  If symmetric is true AND isDecreasing is true then
+     * the wall is pyramid shaped.  If symmetric is false AND isDecreasing is true then the wall is shaped
+     * like a right angle triangle.
+     */
+    public void draw()
+    {
+        eraseWall();
+        drawWall(startX, startY, rowLength, numRows);
+    }
+
+    private void drawBrick(int xCoordinate, int yCoordinate){
+        Rectangle brick = new Rectangle();
+        brick.setPosition(xCoordinate, yCoordinate);
+        brick.setHeight(bHeight);
+        brick.setWidth(bWidth);
+        bricks.add(brick);
+        if(isMultiColor == true) {
+            if(currentColor < colors.size()) {
+                brick.changeColor(colors.get(currentColor))
+                currentColor++;
+            }
+            else {
+                currentColor = 0;
+            }
+        }
+        brick.makeVisible();
+    }
+
+    private void drawRowOfBricks(int xFirstBrick, int yFirstBrick, int rowLength) {
+        int newXBrickCoordinate = 0;
+        for(int i = 0; i < rowLength; i++) {
+            drawBrick(xFirstBrick + newXBrickCoordinate, yFirstBrick);
+            newXBrickCoordinate += bricks.get(i).getWidth();
+        }
+    }
+    
+    private void drawWall(int xFirstBrick, int yFirstBrick, int rowLength, int rows){
+        int count = 0;
+        int newYRowCoordinate = 0;
+        while(count < rows) {
+            drawRowOfBricks(xFirstBrick, yFirstBrick - newYRowCoordinate, rowLength);
+            newYRowCoordinate += bricks.get(count).getHeight();
+            count++;
+        }
+    }
+}

@@ -1,0 +1,101 @@
+import java.util.*;
+/**
+ * ##### # ########### ## ##### ######## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Tiereraten
+{
+    Scanner eingabe = new Scanner(System.in);
+    String text;
+    boolean abbruch;
+    
+    BinaryTree<String> baum;
+    BinaryTree<String> wurzel; 
+    
+    /**
+     * Constructor for objects of class Programm
+     */
+    public Tiereraten()
+    {
+        baum = new BinaryTree<String>("Ist es ein Haustier?");
+        wurzel = baum;
+        baum.setLeftTree(new BinaryTree<String>("Haifisch"));
+        baum.setRightTree(new BinaryTree<String>("Ist es ein Säugetier?"));
+        baum = baum.getRightTree();
+        baum.setLeftTree(new BinaryTree<String>("Schildkroete"));
+        baum.setRightTree(new BinaryTree<String>("Hund"));
+        
+        baum = wurzel;
+        
+        spielen(baum);
+    }
+
+    public void spielen(BinaryTree<String> b)
+    {        
+        if(b.getLeftTree().isEmpty() && b.getRightTree().isEmpty()) 
+        {
+            System.out.println("Ist es ein/e " + b.getContent());
+            text = eingabe.nextLine();
+            if(text.equals("ja")) 
+            {
+                System.out.println("Juhu, ich habe richtig geraten!");
+            }
+            else if(text.equals("nein")) 
+            {
+                neuesTierEinfuegen(b);
+            }
+        }
+        
+        else 
+        {
+            System.out.println(b.getContent());
+            System.out.println("ja oder nein eingeben: ");
+            text = eingabe.nextLine(); 
+            
+            if(text.equals("ja")) 
+            {
+                spielen(b.getRightTree());
+            }
+            
+            else if(text.equals("nein")) 
+            {
+                spielen(b.getLeftTree());
+            }
+        }
+    }
+    
+    public void neuesTierEinfuegen(BinaryTree<String> b) 
+    {
+        String fragetext;
+        String tier;
+        String nf;
+        
+        System.out.println("Ein neues Tier muss eingefügt werden."); 
+        System.out.println("Bitte den neuen Tiernamen eingeben: ");
+        tier = eingabe.nextLine();
+        System.out.println("Bitte die ja/nein-Frage eingeben: ");
+        fragetext = eingabe.nextLine();
+        System.out.println("Wo soll das neue Tier eingefügt werden? l für linken Teilbaum (nein) und r für rechten Teilbaum (ja): ");
+        nf = eingabe.nextLine();
+        
+        if (nf.equals("r"))
+        {
+            b.setLeftTree(new BinaryTree<String>(b.getContent()));
+            b.setRightTree(new BinaryTree<String> tier);
+            b.setContent(new BinaryTree<String>fragetext);
+        }
+        else
+        {
+            b.setRightTree(new BinaryTree<String>b.getContent());
+            b.setLeftTree(new BinaryTree<String>tier);
+            b.setContent(new BinaryTree<String>fragetext);
+            
+        }
+        
+        System.out.println("Okay, neue Runde!");
+        baum = wurzel;
+        spielen(baum);
+    }
+}

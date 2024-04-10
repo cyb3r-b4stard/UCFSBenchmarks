@@ -1,0 +1,207 @@
+import java.util.Random;
+/**
+ * ##### # ########### ## ##### ######## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Obesenec {
+    private Random r;
+    private GetData get;
+    private String[] slova = {"informatika", "java", "telesna vychova", "semestralna praca", "operacny system"};
+    private String slovo;
+    private boolean koniec = false;
+    private int zlaOdpoved = 0;
+    private boolean [] najdenePismena;
+    private String entryWord = " ";
+    
+    public Obesenec() {
+        this.r = new Random();
+        this.get = new GetData();
+        this.hrajHru();
+    }
+    
+    public void hrajHru() {
+        this.slovo = this.slova[this.r.nextInt(this.slova.length)];
+        this.najdenePismena = new boolean[this.slovo.length()];
+        
+        while (this.!koniec) {
+            ukazSibenicu();
+            ukazSlovo();
+            dajOtazku();
+            skontrolujOtazku();
+            if (zlaOdpoved==6) {
+                System.out.print('\u000C');
+                ukazSibenicu();
+                System.out.println("Je nám to ľúto ale prehrali ste.");
+                System.out.println("Slovo bolo: " + slovo);
+                koniec = true;
+                
+            }
+        }
+    }
+    
+    public void ukazSibenicu() {
+        System.out.print('\u000C');
+        if (zlaOdpoved==0) {
+            man_0();
+        }
+        if (zlaOdpoved==1) {
+            man_1();
+        }
+        if (zlaOdpoved==2) {
+            man_2();
+        }
+        if (zlaOdpoved==3) {
+            man_3();
+        }
+        if (zlaOdpoved==4) {
+            man_4();
+        }
+        if (zlaOdpoved==5) {
+            man_5();
+        }
+         if (zlaOdpoved==6) {
+            man_6();
+        }
+        if (zlaOdpoved==7) {
+        completedMan();
+        }
+        System.out.println("\n");
+    
+    }
+    
+    public boolean ukazSlovo() {
+        boolean spravnaOdpoved = false;
+        char ch = entryWord.charAt(0);
+        for (int i=0; i < slovo.length(); i++) {
+            if (najdenePismena[i]==true) {
+                System.out.print(slovo.charAt(i)+" ");
+            } else if (slovo.charAt(i)==ch) {
+                System.out.print(slovo.charAt(i)+ " ");
+                najdenePismena[i] = true;
+                spravnaOdpoved = true;
+            } else {
+                System.out.print("_ ");
+            }
+        }
+        return spravnaOdpoved;
+    }
+    
+    
+    public void dajOtazku() {
+       System.out.println("\n\n písmenko?");
+       System.out.println("Máte " + (6 - zlaOdpoved) + " zostavajucych písmen.");
+       System.out.println("Zadajte odpoveď >");
+       do {
+       entryWord = get.aWord();
+    } while(entryWord.length() == 0); 
+    
+    }
+    
+    public void skontrolujOtazku() {
+        boolean spravnaOdpoved;
+        if (entryWord.length()>1) {
+            if (entryWord.equals(slovo)) {
+                System.out.println("\n\n Ano! Vyhrali ste!");
+                koniec = true;
+                System.out.println("Slač enter aby si mohol pokračovať!");
+                String pause = get.aWord();
+            }
+        }
+        else {
+            ukazSibenicu();
+            spravnaOdpoved = ukazSlovo();
+            if (spravnaOdpoved) {
+                System.out.println("\n\n Spravna odpoved!");
+                System.out.println("Slač enter aby si mohol pokračovať!");
+                String pause = get.aWord();
+            }
+            else {
+                zlaOdpoved++;
+                System.out.println("\n\n Zla odpoved!");
+                System.out.println("Slač enter aby si mohol pokračovať!");
+                String pause = get.aWord();
+            }
+        }
+    }
+    
+    
+    public void completedMan() {
+       System.out.println("_____");
+       System.out.println("|   |");
+       System.out.println("|   o");
+       System.out.println("|  /|\\"); 
+       System.out.println("|  / \\"); 
+       System.out.println("_____");
+    }
+    
+    public void man_0() {
+       System.out.println("_____");
+       System.out.println("|   |");
+       System.out.println("|   ");
+       System.out.println("|   "); 
+       System.out.println("|   "); 
+       System.out.println("|   "); 
+       System.out.println("_____");
+    }
+    
+    public void man_1() {
+       System.out.println("_____");
+       System.out.println("|   |");
+       System.out.println("|   o");
+       System.out.println("|    "); 
+       System.out.println("|    "); 
+       System.out.println("|   "); 
+       System.out.println("_____");
+    }
+    
+    public void man_2() {
+       System.out.println("_____");
+       System.out.println("|   |");
+       System.out.println("|   o");
+       System.out.println("|   | "); 
+       System.out.println("|    "); 
+       System.out.println("|   "); 
+       System.out.println("_____");
+    }
+    
+     public void man_3() {
+       System.out.println("_____");
+       System.out.println("|   |");
+       System.out.println("|   o");
+       System.out.println("|  /| "); 
+       System.out.println("|    "); 
+       System.out.println("|   "); 
+       System.out.println("_____");
+    }
+    
+    public void man_4() {
+       System.out.println("_____");
+       System.out.println("|   |");
+       System.out.println("|   o");
+       System.out.println("|  /|\\ "); 
+       System.out.println("|    "); 
+       System.out.println("|   "); 
+       System.out.println("_____");
+    }
+    
+    public void man_5() {
+       System.out.println("_____");
+       System.out.println("|   |");
+       System.out.println("|   o");
+       System.out.println("|  /|\\ ");
+       System.out.println("|    \\"); 
+       System.out.println("_____");
+    }
+    
+    public void man_6() {
+       System.out.println("_____");
+       System.out.println("|   |");
+       System.out.println("|   o");
+       System.out.println("|  /|\\ ");
+       System.out.println("|  / \\"); 
+       System.out.println("|   "); 
+       System.out.println("_____");
+    }
+}

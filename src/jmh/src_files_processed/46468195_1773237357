@@ -1,0 +1,101 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+/**
+ * # ##### #### ########## ## ##### ## ##### ######## ##### ### ######!
+ * 
+ * @###### #### #### & ##### ##
+ */
+public class BallCourt
+{
+    private BallCourtFrame frame; 
+    private Ball[] balls;
+
+    /**
+     * Creates a new BallCourt object.
+     */
+    public BallCourt(int numBalls)
+    {
+        if (numBalls > 0)
+        {
+            balls = new Ball[numBalls];
+            for(int i=0; i<balls.length; i++)
+            {
+                balls [i] = new Ball;
+            }
+        }
+        frame = new BallCourtFrame(this); 
+    }
+
+    /**
+     * Draws Balls in the frame
+     */
+    public void paintComponent(Graphics brush)
+    {
+        
+
+        brush.setColor(Color.BLACK);
+        brush.fillRect(0,0,COURT_WIDTH + 2*X_CORNER, COURT_HEIGHT + 2*Y_CORNER); 
+        brush.setColor(Color.LIGHT_GRAY);
+        brush.fillRect(X_CORNER, Y_CORNER, COURT_WIDTH, COURT_HEIGHT); 
+
+        brush.setColor(singleBall.getColor());
+        brush.fillOval(singleBall.getX(), singleBall.getY(), singleBall.getDiameter(), singleBall.getDiameter());
+    }
+
+    /**
+     * Starts the animation
+     */
+    public void startAnimation() 
+    { 
+        frame.animator.start(); 
+    }
+
+    /**
+     * Stops the animation
+     */
+    public void pauseAnimation()
+    {
+        frame.animator.stop();
+    }
+
+    /****CONSTANTS FOR YOUR CONVENIENCE --- DO NOT MODIFY****/
+    public final static int X_CORNER = 25;
+    public final static int Y_CORNER = 25;
+    public final static int COURT_WIDTH = 400;
+    public final static int COURT_HEIGHT = 400;
+    /**** END CONSTANTS ****/
+
+
+    /****FRAME AND ANIMATION STUFF --- DO NOT MODIFY****/
+    private static class BallCourtFrame implements ActionListener
+    {
+        private JPanel drawing; 
+        private Timer animator; 
+
+        private BallCourtFrame(final BallCourt court)
+        {
+            JFrame frame = new JFrame("Bouncing Balls"); 
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+            drawing = new JPanel(){public void paintComponent(Graphics g){court.paintComponent(g);}}; 
+            drawing.setPreferredSize(new Dimension(2*BallCourt.X_CORNER+BallCourt.COURT_WIDTH, 2*BallCourt.Y_CORNER+BallCourt.COURT_HEIGHT));
+            frame.add(drawing); 
+            frame.pack(); 
+            frame.setVisible(true); 
+
+            animator = new Timer(30,this); 
+
+            animator.start(); 
+        }
+
+        /**
+         * Method that controls the animation timer
+         */
+        public void actionPerformed(ActionEvent e) 
+        { 
+            drawing.repaint(); 
+        }        
+    }
+}

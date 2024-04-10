@@ -1,0 +1,369 @@
+package contents;
+
+import java.util.ArrayList;
+
+/**
+ * ##### ###### ########## #### ###### ## ###. #### ###### ### ### ###-###### (#####
+ * {@######### #######}) ### ### #### ######## ### ### ####, ## ### #### ### ######
+ * ########. ####¼### ###### ### #### ###### ### ######## ### ########¤####, ### ###
+ * ####### ### #### ###¤##. ####### ### ### #### {@#### ####} ### ### ######## ####.
+ * 
+ * @###### #. ##¶######, #. #########
+ * @####### ##
+ * @##### ##
+ */
+public class Person extends Subject {
+
+    /**
+     * Referenz auf den Raum, in dem sich diese Person gerade befindet. Hat den Wert
+     * {@code null}, falls diese Person sich in keinem Raum befindet.
+     * 
+     * @since u1
+     */
+    private Room room;
+
+    /**
+     * Eine Liste aller RÃ¤ume, in denen diese Person bisher gewesen ist.
+     * 
+     * @since u4b
+     */
+    private final ArrayList<Room> roomLog;
+
+    /**
+     * Der Gegenstand, den diese Person bei sich trÃ¤gt. Hat den Wert {@code null}, falls
+     * diese Person keinen Gegenstand trÃ¤gt.
+     * 
+     * @since u1
+     * @deprecated u3, replaced by {@linkplain Person#inventory}
+     */
+    @Deprecated
+    private Item item;
+
+    /**
+     * Das Inventar dieser Person, d. h. eine Sammlung von GegenstÃ¤nden, die diese Person
+     * bei sich trÃ¤gt.
+     * 
+     * @since u3, replaces {@linkplain Person#item}
+     */
+    private final Inventory inventory;
+
+    /**
+     * Erzeugt eine neue Person mit den gegebenen Werten fÃ¼r Name, Alias und
+     * Beschreibung. Siehe auch {@linkplain Subject#Subject(String, String, String)}.
+     * Erzeugt ein leeres Inventar, das 5 GegenstÃ¤nde aufnehmen kann und ein leeres
+     * Raumlog.
+     * 
+     * @param pName
+     *            der Name der neuen Person
+     * @param pAlias
+     *            der Alias der neuen Person
+     * @param pDescription
+     *            die Beschreibung der neuen Person
+     * 
+     * @version u4b
+     * @since u1
+     */
+    public Person(final String pName, final String pAlias, final String pDescription) {
+        pName = PIRMUD.getValidPersonName(pName);
+        super(pName, pAlias, pDescription);
+        inventory = new Inventory(5);
+        roomLog = new ArrayList<Room>();
+    }
+
+    /**
+     * Gibt den Raum zurÃ¼ck, in dem sich diese Person befindet.
+     * 
+     * Achtung: {@code null} ist ein gÃ¼ltiger RÃ¼ckgabewert, falls diese Person sich in
+     * keinem Raum befindet!
+     * 
+     * @return den Raum, in dem sich diese Person befindet oder {@code null}, falls sich
+     *         diese Person in keinem Raum befindet!
+     * 
+     * @since u1
+     */
+    public Room getRoom() {
+        return room;
+    }
+
+    /**
+     * Gibt eine Liste aller RÃ¤ume zurÃ¼ck, die diese Person bisher besucht hat.
+     * 
+     * Damit das Raum-Logbuch nicht von auÃŸen geÃ¤ndert werden kann, wird nicht das
+     * Raum-Logbuch selbst, sondern eine neue Liste, die die selben Elemente enthÃ¤lt,
+     * ausgegeben.
+     * 
+     * @return Liste aller bisher besuchten RÃ¤ume
+     * 
+     * @since u4b
+     */
+    public ArrayList<Room> getRoomLog() {
+        return new ArrayList<Room>(roomLog);
+    }
+
+    /**
+     * Gibt den Gegenstand zurÃ¼ck, den diese Person trÃ¤gt.
+     * 
+     * Achtung: {@code null} ist ein gÃ¼ltiger RÃ¼ckgabewert, falls diese Person keinen
+     * Gegenstand trÃ¤gt!
+     * 
+     * @return den Gegenstand, den diese Person trÃ¤gt oder {@code null}, falls diese
+     *         Person keinen Gegenstand trÃ¤gt!
+     * 
+     * @since u1
+     * @deprecated u3, replaced by {@linkplain Person#getInventory()}
+     */
+    @Deprecated
+    public Item getItem() {
+        return item;
+    }
+
+    /**
+     * Gibt das Inventar dieser Person zurÃ¼ck.
+     * 
+     * @return das Inventar dieser Person
+     * 
+     * @since u3, replaces {@linkplain Person#getItem()}
+     */
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    /**
+     * Setzt den Raum dieser Person auf den Ã¼bergebenen Raum, sofern dieser {@code null}
+     * ist oder den Eintritt erlaubt und gibt danach den Namen der Person, den Namen des
+     * neuen Raums und - falls vorhanden - den Namen des getragenen Gegenstandes aus. In
+     * diesem Fall wird {@code true} zurÃ¼ckgegeben. Nach erfolgtem Transfer in den neuen
+     * Raum wird die aktuelle Person aus der Liste ihres vorherigen Raums entfernt
+     * {@linkplain Room#removePerson(Person)} und in die Liste des neuen Raums
+     * aufgenommen {@linkplain Room#addPerson(Person)}. Der neue Raum wird dann in das
+     * Raum-Logbuch dieser Person eingetragen.
+     * 
+     * Falls die Person sich bereits in diesem Raum befindet, passiert gar nichts und es
+     * wird {@code false} zurÃ¼ckgegeben, da kein Transfer stattgefunden hat.
+     * 
+     * Falls der Raum {@code null} ist, wird diese Person aus dem aktuellen Raum entfernt
+     * und {@code true} zurÃ¼ckgegeben.
+     * 
+     * Anderenfalls wird nichts gemacht und {@code false} zurÃ¼ckgegeben.
+     * 
+     * @param pRoom
+     *            der neue Raum fÃ¼r diese Person
+     * @return {@code true} falls die Person erfolgreich transferiert wurde,
+     *         {@code false} sonst
+     * 
+     * @version u4b
+     * @since u1
+     */
+    public boolean transfer(final Room pRoom) {
+        if (pRoom == room) {
+            return false;
+        }
+        if (pRoom == null || pRoom.allowedToEnter()) {
+            if (room != null) {
+                room.removePerson(this);
+            }
+            room = pRoom;
+            if (room != null) {
+                room.addPerson(this);
+                roomLog.add(room);
+            }
+            print();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Realisiert das Aufheben des als Parameter gegebenen aufhebbaren Gegenstandes aus
+     * dem selben Raum, in dem sich diese Person befindet. Erfolgreiches Aufheben wird
+     * durch den RÃ¼ckgabewert {@code true} angezeigt. Das Aufheben schlÃ¤gt fehl
+     * (RÃ¼ckgabewert {@code false}, falls sich der Gegenstand nicht im selben Raum
+     * befindet wie die Person oder diese Person sich nicht in einem Raum befindet, oder
+     * diese Person bereits die maximale Zahl von GegenstÃ¤nden im Inventar hat, oder der
+     * Wert {@code null} Ã¼bergeben wurde. Im Erfolgsfall wird anschlieÃŸend der Name
+     * dieser Person ausgegeben mit dem Namen des Raumes, in dem sich diese Person
+     * befindet und dem Namen des Gegenstandes, den diese Person gerade aufgehoben hat.
+     * 
+     * Im Misserfolgsfall wird der Grund des Misserfolgs ausgegeben.
+     * 
+     * @param pCollectable
+     *            der Gegenstand, den diese Person aufheben soll
+     * @return {@code true} falls der Gegenstand erfolgreich aufgehoben wurde,
+     *         {@code false} sonst
+     * 
+     * @version u3
+     * @since u1
+     */
+    public boolean take(final Collectable pCollectable) {
+        if (room == null) {
+            System.out.println("take for " + getName() + " failed: no valid room");
+            return false;
+        }
+        if (pCollectable == null) {
+            System.out.println("take for " + getName() + " failed: item is null");
+            return false;
+        }
+        if (pCollectable.getRoom() != room) {
+            System.out.println("take for " + getName()
+                + " failed: item is not in the room");
+            return false;
+        }
+        if (!pCollectable.transfer(this)) {
+            System.out.println("take for " + getName() + " failed: inventory is full");
+            return false;
+        }
+        print();
+        return true;
+    }
+
+    /**
+     * Realisiert das Ablegen des Ã¼bergebenen Gegenstandes in den Raum, in dem sich diese
+     * Person befindet. Falls das Ablegen gelingt, wird {@code true} zurÃ¼ckgegeben, sonst
+     * {@code false}. Das Ablegen gelingt genau dann, wenn sich diese Person in einem
+     * Raum befindet und der Gegenstand sich im Inventar befindet.
+     * 
+     * Im Erfolgsfall wird anschlieÃŸend der Name dieser Person ausgegeben mit dem Namen
+     * des Raumes, in dem sich diese Person befindet und dem Namen des Gegenstandes, den
+     * diese Person gerade aufgehoben hat.
+     * 
+     * Im Misserfolgsfall wird der Grund des Misserfolgs ausgegeben.
+     * 
+     * @param dropject
+     *            der Gegenstand, der abgelegt werden soll
+     * @return {@code true} falls der Gegenstand erfolgreich abgelegt wurde,
+     *         {@code false} sonst
+     * 
+     * @version u3
+     * @since u1
+     */
+    public boolean drop(final Collectable dropject) {
+        if (room == null) {
+            System.out.println("drop for " + getName() + " failed: no valid room");
+            return false;
+        }
+        if (!inventory.contains(dropject)) {
+            System.out
+            .println("drop for " + getName() + " failed: item not in inventory");
+            return false;
+        }
+        dropject.transfer(getRoom());
+        print();
+        return true;
+    }
+
+    /**
+     * Sofern der Ã¼bergebene Name ungleich {@code null} ist und der aktuelle Raum der
+     * Person ungleich {@code null} ist, lÃ¤sst diese Methode die Person durch den Ausgang
+     * gehen, der den Ã¼bergebenen Namen aufweist, wenn solch einer in dem Raum der Person
+     * existiert und die Benutzung gestattet (dies ist der Fall, wenn der Ziel-Raum noch
+     * Personen aufnehmen kann). In diesem Fall wird {@code true} zurÃ¼ckgegeben.
+     * Ansonsten wird {@code false} zurÃ¼ckgegeben.
+     * 
+     * @param exitName
+     *            Der Name des Ausgangs, den die Person benutzen soll.
+     * @return {@code true} falls ein Ausgang mit dem Namen in diesem Raum existiert und
+     *         die Benutzung dieses Ausgangs erfolgreich war, {@code false} sonst
+     * 
+     * @version u5
+     * @since u2
+     */
+    public boolean walk(final String exitName) {
+        if (exitName == null || room == null) {
+            return false;
+        }
+        return walk(room.getExitByName(exitName));
+    }
+
+    /**
+     * Sofern der gegebene Ausgang ungleich {@code null} ist, lÃ¤sst diese Methode die
+     * Person durch diesen Ausgang gehen, wenn dieser die Benutzung gestattet (dies ist
+     * der Fall, wenn der Ziel-Raum noch Personen aufnehmen kann). In diesem Fall wird
+     * {@code true} zurÃ¼ckgegeben. Ansonsten wird {@code false} zurÃ¼ckgegeben.
+     * 
+     * Der Aufrufende muss sicherstellen, dass der gegebene Ausgang sich im selben Raum
+     * wie die Person befindet; beispielsweise so wie dieses in der WalkAction
+     * {@linkplain WalkAction} umgesetzt ist.
+     * 
+     * @param exit
+     *            Der Ausgangs, den die Person benutzen soll.
+     * @return {@code true} wenn der Ausgang ungleich {@code null} ist und die Benutzung
+     *         dieses Ausgangs erfolgreich war, {@code false} sonst
+     * 
+     * @since u5v
+     */
+    public boolean walk(final Exit exit) {
+        if (exit == null) {
+            return false;
+        }
+        return exit.use(this);
+    }
+
+    /**
+     * Nimmt eine an eine Person gesendete Zeichenkette entgegen. Wird in
+     * {@linkplain Player} Ã¼berschrieben. Hier passiert gar nichts.
+     * 
+     * @param message
+     *            die an die Person gerichtete Nachricht
+     * 
+     * @since u5
+     */
+    public void send(final String message) {
+    }
+
+    /**
+     * lÃ¤sst die Person etwas in den Raum hinein (fÃ¼r alle Anwesenden) sagen.
+     * 
+     * Ein Aufruf mit {@code null} als Parameter ist mÃ¶glich, aber sinnlos.
+     * 
+     * @param message
+     *            die Aussage, die die Person tÃ¤tigt
+     * 
+     * @version u5
+     * @since u4b, moved from {@linkplain Blob}
+     */
+    public void say(final String message) {
+        if (room != null) {
+            room.send(this, "say", "\'" + message + "\'");
+        }
+    }
+
+    /**
+     * lÃ¤sst die Person der gegebenen Person die gegebene Nachricht senden. Der Person
+     * selbst wird das Ãœbersenden der Nachricht bestÃ¤tigt. Ist der Parameter fÃ¼r den
+     * EmpfÃ¤nger {@code null}, tut diese Methode nichts.
+     * 
+     * Ein Aufruf mit {@code null} als Parameter fÃ¼r die Nachricht ist mÃ¶glich, aber
+     * sinnlos.
+     * 
+     * @param receiver
+     *            EmpfÃ¤nger der Nachricht
+     * @param message
+     *            Text der Nachricht
+     * 
+     * @since u5
+     */
+    public void tell(final Person receiver, final String message) {
+        if (receiver != null) {
+            receiver.send(getName() + " tells you \'" + message + "\'");
+            send("You tell " + receiver.getName() + " \'" + message + "\'");
+        }
+    }
+
+    /**
+     * Gibt den Namen und die Beschreibung dieser Person aus. Falls sich diese Person in
+     * einem Raum befindet, wird zusÃ¤tzlich der Name dieses Raumes ausgegeben. Falls
+     * diese Person GegenstÃ¤nde trÃ¤gt, werden diese ebenfalls ausgegeben (siehe
+     * {@linkplain Inventory#print()}).
+     * 
+     * @version u3
+     * @since u1
+     */
+    public void print() {
+        super.print();
+        if (room != null) {
+            System.out.println("
+        }
+        inventory.print();
+    }
+
+}

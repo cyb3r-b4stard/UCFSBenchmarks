@@ -1,0 +1,1976 @@
+import java.util.Random;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+/**
+ * ##### # ########### ## ##### #### ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class Area
+{
+    private boolean walkable = true;
+    private boolean unwalkable = false;
+    private int rowNum;
+    private int colNum;
+    private double west;
+    private double east;
+    private double south;
+    private double north;
+    private int row;
+    private int col;
+    private int bRow;
+    private int bCol;
+    private int eRow;
+    private int eCol;
+    Random gen = new Random();
+    private Space[][] area;
+    String jerry;
+    /**
+     * Constructor for objects of class Area
+     */
+    public Area(String type, int size)
+    {
+        rowNum = size;
+        colNum = size;
+        area = new Space[rowNum][colNum];
+        west = 0;
+        east = 0;
+        north = 0;
+        south = 0;
+        bRow = 0;
+        bCol = 0;
+        eRow = size - 1;
+        eCol = size - 1;
+    }
+
+    /**
+     * Check's surrounding locations
+     */
+    private boolean isAvailable(int row, int col)
+    {
+        double check = 0;
+        if (area[row][col].getWalkable() == walkable)
+        {
+            check = 5;
+        }
+        try 
+        {
+            if (area[row + 1][col].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        try 
+        {
+            if (area[row - 1][col].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        try 
+        {
+            if (area[row][col + 1].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        try 
+        {
+            if (area[row][col - 1].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+
+        if (check > 1)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    /**
+     *   Returns amount of surrounding cells
+     */
+    private double countAttached(int row, int col)
+    {
+        double check = 0;
+        try 
+        {
+            if (area[row + 1][col].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        try 
+        {
+            if (area[row - 1][col].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        try 
+        {
+            if (area[row][col + 1].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        try 
+        {
+            if (area[row][col - 1].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        try 
+        {
+            if (area[row - 1][col - 1].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        try 
+        {
+            if (area[row - 1][col + 1].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        try 
+        {
+            if (area[row + 1][col - 1].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        try 
+        {
+            if (area[row + 1][col + 1].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+
+        return check;
+    }
+
+    /**
+     *   Returns amount of surrounding cells
+     */
+    private double countDirectional(int row, int col)
+    {
+        double check = 0;
+        try 
+        {
+            if (area[row + 1][col].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        try 
+        {
+            if (area[row - 1][col].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        try 
+        {
+            if (area[row][col + 1].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        try 
+        {
+            if (area[row][col - 1].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        return check;
+    }
+
+    /**
+     *   Returns amount of surrounding cells
+     */
+    private double countDiagonal(int row, int col)
+    {
+        double check = 0;
+        try 
+        {
+            if (area[row - 1][col - 1].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        try 
+        {
+            if (area[row - 1][col + 1].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        try 
+        {
+            if (area[row + 1][col - 1].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        try 
+        {
+            if (area[row + 1][col + 1].getWalkable() == walkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+
+        return check;
+    }
+
+    /**
+     * draws area
+     */
+    public Space[][] drawArea()
+    {
+        for (int row = 0; row < area.length; row++)
+        {
+            for (int col = 0; col < area[0].length; col++)
+            {
+                if (col != area[0].length - 1)
+                {
+                    if (area[row][col].getProgressionType().equals("entrance"))
+                    {
+                        System.out.print("B" + " ");
+                    }
+                    else
+                    if (area[row][col].getProgressionType().equals("end"))
+                    {
+                        System.out.println("X" + " ");
+                    }
+                    else
+                    if (area[row][col].getWalkable() == true)
+                    {
+                        System.out.print("O" + " ");
+                    }
+                    else
+                    {
+                        System.out.print("#" + " ");
+                    }
+                }
+                else
+                {
+                    if (area[row][col].getProgressionType().equals("entrance"))
+                    {
+                        System.out.print("B" + " " + " ");
+                    }
+                    else
+                    if (area[row][col].getProgressionType().equals("end"))
+                    {
+                        System.out.println("X" + " " + " ");
+                    }
+                    else
+                    if (area[row][col].getWalkable() == true)
+                    {
+                        System.out.print("O" + " " + " ");
+                    }
+                    else
+                    {
+                        System.out.print("#" + " " + " ");
+                    }
+                    System.out.println();
+                }
+            }
+        }
+        return area;
+    }
+
+    /**
+     * -------------------------------------------------------------------------BREAK FOR VOID METHODS-------------------------------------------------------------------------
+     */
+    /**
+     * Draws path
+     */
+    public void makePath()
+    {
+        boolean completeable = false;
+
+        while (completeable == false)
+        {
+            boolean started = false;
+            double amount = 0;
+
+            for (row = 0; row < area.length; row++)
+            {
+                for (col = 0; col < area[0].length; col++)
+                {
+                    area[row][col].setProgressionType("middle");
+                }
+            }
+
+            for (row = 0; row < area.length; row++)
+            {
+                for (col = 0; col < area[0].length; col++)
+                {
+                    area[row][col] = new Space(false);
+                }
+            }
+
+            for (int rowLoop = 0; rowLoop < area.length; rowLoop++)
+            {
+                for (int colLoop = 0; colLoop < area[0].length; colLoop++)
+                {
+                    row = rowLoop;
+                    col = colLoop;
+
+                    if (this.isAvailable(row, col))
+                    {
+                        do 
+                        {
+                            area[row][col].setWalkable(walkable);
+
+                            north = gen.nextInt(100);
+                            west = gen.nextInt(100);
+                            south = gen.nextInt(100);
+                            east = gen.nextInt(100);
+                            amount++;
+                            if (row == 0 || this.isAvailable(row - 1, col) == false)
+                            {
+                                north = 0;
+                            }
+                            if (row == area.length - 1 || this.isAvailable(row + 1, col) == false)
+                            {
+                                south = 0;
+                            }
+                            if (col == 0 || this.isAvailable(row, col - 1) == false)
+                            {
+                                west = 0;
+                            }
+                            if (col == area[0].length - 1 || this.isAvailable(row, col + 1) == false)
+                            {
+                                east = 0;
+                            }
+
+                            if (north > west && north > east && north > south)
+                            {
+
+                                row = row - 1;
+                            }
+                            else
+                            if (west > north && west > south && west > east)
+                            {
+
+                                col = col - 1;
+                            }
+                            else
+                            if (east > west && east > north && east > south)
+                            {
+
+                                col = col + 1;
+                            }
+                            else
+                            if (south > north && south > east && south > west)
+                            {
+
+                                row = row + 1;
+                            }
+                        }  while (west + east + north + south > 0);
+                    }
+
+                }
+            }
+
+            for (int row = 0; row < area.length; row++)
+            {
+                for (int col = 0; col < area[0].length; col++)
+                {
+                    if (area[row][col].getWalkable() == unwalkable)
+                    {
+                        double dir = this.countDirectional(row, col);
+                        double dia = this.countDiagonal(row, col);
+                        if (dir < 4 && dia == 0)
+                        {
+                            area[row][col].setWalkable(walkable);
+                        }
+                    }
+                }
+            }
+
+            for (int row = 0; row < area.length; row++)
+            {
+                for (int col = 0; col < area[0].length; col++)
+                {
+                    double dir = this.countDirectional(row, col);
+                    double dia = this.countDiagonal(row, col);
+                    if (area[row][col].getWalkable() == unwalkable)
+                    {
+                        if (dir == 1 && dia > 2)
+                        {
+                            area[row][col].setWalkable(walkable);
+                        }
+                    }
+                }
+            }
+
+            area[eRow][eCol].setProgressionType("end");
+            for (int row = 0; row < area.length; row++)
+            {
+                for (int col = 0; col < area[0].length; col++)
+                {
+                    if (area[row][col].getProgressionType().equals("end"))
+                    {
+                        area[row][col - 1].setWalkable(walkable);
+                        area[row - 1][col].setWalkable(walkable);
+                        area[row - 1][col - 1].setWalkable(unwalkable);
+                    }
+                }
+            }
+
+            for (int row = 0; row < area.length; row++)
+            {
+                for (int col = 0; col < area[0].length; col++)
+                {
+                    this.isAlone(row, col);
+                }
+            }
+
+            String trial = "fail";
+            int divergentLocationsTotal = 0;
+            ArrayList<String> divergentLocations = new ArrayList<String>();
+            ArrayList<String> previousLocations = new ArrayList<String>();
+
+            String lastDirection = "down";
+            row = bRow;
+            col = bRow;
+            while (trial.equals("fail"))
+            {
+                System.out.println("LOCATION" + row + " " + col);
+                System.out.println("variables");
+                double upPri = 0;
+                double downPri = 0;
+                double leftPri = 0;
+                double rightPri = 0;
+                double walkableSpaces = 0;
+                String position = row + " " + col;
+                System.out.println("position is " + position);
+                boolean alreadyLoggedPL = false;
+                System.out.println("first forloop");
+
+                for (String temp : previousLocations)
+                {
+                    if (temp.equals(position))
+                    {
+                        alreadyLoggedPL = true;
+                        System.out.println("how");
+                    }
+                }
+
+                if (alreadyLoggedPL == false)
+                {
+                    System.out.println("position added");
+                    previousLocations.add(previousLocations.size(),position);
+                }
+
+                System.out.println("Checkings");
+                try 
+                {
+                    if (area[row + 1][col].getWalkable() == walkable || area[row + 1][col].getProgressionType().equals("end"))
+                    {
+                        downPri++;  System.out.println("downPri + 1 for walkable");
+
+                        if (lastDirection.equals("up"))
+                        {
+                            downPri--;   System.out.println("downPri - 1 for direction");
+                        }
+                        else
+                        {
+                            for (String temp : previousLocations)
+                            {
+                                if (temp.equals((row + 1) + " " + (col)))
+                                {
+                                    downPri--;   System.out.println("downPri - 1 for being in previous locations");
+                                }
+                            }
+                        }
+                        if (downPri == 1)
+                        {
+                            downPri = 4;    System.out.println("downPri = 4 for priority");
+                            walkableSpaces++;
+                        }
+                    } 
+                } catch (IndexOutOfBoundsException e){downPri = 0;}
+                System.out.println("final downPri = " + downPri);
+                try
+                {
+                    if (area[row - 1][col].getWalkable() == walkable || area[row - 1][col].getProgressionType().equals("end"))
+                    {
+                        upPri++;
+                        if (lastDirection.equals("down"))
+                        {
+                            upPri--;
+                        }
+                        else
+                        {
+                            for (String temp : previousLocations)
+                            {
+                                if (temp.equals((row - 1) + " " + (col)))
+                                {
+                                    upPri--;
+                                }
+                            }
+                        }
+                        if (upPri == 1)
+                        {
+                            upPri = 2;
+                            walkableSpaces++;
+                        }
+                    }
+                } catch (IndexOutOfBoundsException e) {upPri = 0;}
+
+                try
+                {
+                    if (area[row][col - 1].getWalkable() == walkable || area[row][col - 1].getProgressionType().equals("end"))
+                    {
+                        leftPri++;
+                        if (lastDirection.equals("right"))
+                        {
+                            leftPri--;
+                        }
+                        else
+                        {
+                            for (String temp : previousLocations)
+                            {
+                                if (temp.equals((row) + " " + (col - 1)))
+                                {
+                                    leftPri--;
+                                }
+                            }
+                        }
+                        if (leftPri == 1)
+                        {
+                            leftPri = 1;
+                            walkableSpaces++;
+                        }
+                    }
+                } catch (IndexOutOfBoundsException e) {leftPri = 0;}
+
+                try
+                {
+
+                    if (area[row][col + 1].getWalkable() == walkable || area[row][col + 1].getProgressionType().equals("end"))
+                    {
+                        rightPri++;
+                        if (lastDirection.equals("left"))
+                        {
+                            rightPri--;
+                        }
+                        else
+                        {
+                            for (String temp : previousLocations)
+                            {
+                                if (temp.equals((row) + " " + (col + 1)))
+                                {
+                                    rightPri--;
+                                }
+                            }
+                        }
+                        if (rightPri == 1)
+                        {
+                            rightPri = 3;
+                            walkableSpaces++;
+                        }
+                    }
+                } catch (IndexOutOfBoundsException e) {rightPri = 0;}
+                System.out.println("down: " + downPri + " right: " + rightPri + " left: " + leftPri + " up: " + upPri);
+                System.out.println("Decision");
+                System.out.println("Visited locations: " + previousLocations.size());
+                System.out.println("DivergentLocations: " + divergentLocations.size());
+                if (walkableSpaces > 1)
+                {
+                    divergentLocations.add(divergentLocations.size(),position);
+                    System.out.println("walkableSpaces > 1");
+                }
+                if (walkableSpaces == 0)
+                {
+                    System.out.println("walkableSpaces == 0");
+                    if (divergentLocations.size() > 0)
+                    {
+                        Scanner coordinate = new Scanner(divergentLocations.get(divergentLocations.size() - 1));
+                        row = coordinate.nextInt();
+                        col = coordinate.nextInt();
+                        divergentLocations.remove(divergentLocations.size() - 1);
+
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    System.out.println("Priority");
+                    if (downPri > rightPri && downPri > upPri && downPri > leftPri)
+                    {
+                        lastDirection = "down";
+                        row = row + 1;
+                    }
+                    else
+                    if (rightPri > downPri && rightPri > upPri && rightPri > leftPri)
+                    {
+                        lastDirection = "right";
+                        col = col + 1;
+                    }
+                    else
+                    if (upPri > downPri && upPri > rightPri && upPri > leftPri)
+                    {
+                        lastDirection = "up";
+                        row = row - 1;
+                    }
+                    else
+                    if (leftPri > downPri && leftPri > rightPri && leftPri > upPri)
+                    {
+                        lastDirection = "left";
+                        col = col - 1;
+                    }
+                }
+                System.out.println("Evaluation of Trial");
+                System.out.println("dlt " + divergentLocationsTotal);
+                if (area[row][col].getProgressionType().equals("end"))
+                {
+
+                    trial = "success";
+
+                }
+
+                if (trial.equals("success"))
+                {
+                    completeable = true;
+                    System.out.println("success");
+                }
+                else
+                {
+                    System.out.println("failed");
+                }
+            }
+            area[bRow][bCol].setProgressionType("entrance");
+        }
+    }
+
+    /**
+     * Check's surrounding locations
+     */
+    private void isAlone(int row, int col)
+    {
+        int check = 0;
+        try 
+        {
+            if (area[row + 1][col].getWalkable() == unwalkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        try 
+        {
+            if (area[row - 1][col].getWalkable() == unwalkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        try 
+        {
+            if (area[row][col + 1].getWalkable() == unwalkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+        try 
+        {
+            if (area[row][col - 1].getWalkable() == unwalkable)
+            {
+                check++;
+            }
+        } catch (IndexOutOfBoundsException e){}
+
+        if (check == 4)
+        {
+            area[row][col].setWalkable(unwalkable);
+        }
+    }
+
+    /**
+     * Populates the already established two dimensional array
+     */
+    public void populateRandomly(boolean pOutside,int pTime)
+    {
+        boolean outside = pOutside;
+        int chance;
+        int time = pTime;
+        Quality largest;
+        ArrayList<Quality> qualities = new ArrayList<Quality>();
+
+        largest = new Quality("initial");
+
+        qualities.add(new Quality("grassland"));
+        qualities.add(new Quality("aquatic"));
+        qualities.add(new Quality("desert"));
+        qualities.add(new Quality("forest"));
+        qualities.add(new Quality("tundra"));
+
+        for (Quality temp : qualities)
+        {
+            temp.addChance(gen.nextInt(100));
+            if (temp.getChance() > largest.getChance())
+            {
+                largest = temp;
+            }
+        }
+        qualities.clear();
+        for (row = 0; row < area.length; row++)
+        {
+            for (col = 0; col < area[0].length; col++)
+            {
+                area[row][col].setBiome(largest.getName());
+            }
+        }
+        System.out.println("AREA PREVALENT VARIABLES");
+        System.out.println();
+        System.out.println("Biome: " + largest.getName());
+
+        if (area[0][0].getBiome().equals("grassland"))
+        {
+            for (row = 0; row < area.length; row++)
+            {
+                for (col = 0; col < area[0].length; col++)
+                {
+                    area[row][col].setElevation(50);
+                }
+            }
+        }
+        else if (area[0][0].getBiome().equals("aquatic"))
+        {
+            chance = gen.nextInt(30);
+            for (row = 0; row < area.length; row++)
+            {
+                for (col = 0; col < area[0].length; col++)
+                {
+                    area[row][col].setElevation(20 + chance);
+                }
+            }
+        }
+        else if (area[0][0].getBiome().equals("tundra"))
+        {
+            chance = gen.nextInt(20);
+            for (row = 0; row < area.length; row++)
+            {
+                for (col = 0; col < area[0].length; col++)
+                {
+                    area[row][col].setElevation(70 + chance);
+                }
+            } 
+        }
+        else if (area[0][0].getBiome().equals("forest"))
+        {
+            chance = gen.nextInt(20);
+            for (row = 0; row < area.length; row++)
+            {
+                for (col = 0; col < area[0].length; col++)
+                {
+                    area[row][col].setElevation(40 + chance);
+                }
+            } 
+        }
+        else if (area[0][0].getBiome().equals("desert"))
+        {
+            chance = gen.nextInt(20);
+            for (row = 0; row < area.length; row++)
+            {
+                for (col = 0; col < area[0].length; col++)
+                {
+                    area[row][col].setElevation(55 + chance);
+                }
+            } 
+        }
+        System.out.println("Elevation: " + area[0][0].getElevation());
+
+        for (row = 0; row < area.length; row++)
+        {
+            for (col = 0; col < area[0].length; col++)
+            {
+                area[row][col].setGravity(Math.abs(area[row][col].getElevation() - 100));
+            }
+        }
+        System.out.println("Gravity: " + area[0][0].getGravity());
+
+        largest = new Quality("initial");
+
+        qualities.add(new Quality("grass"));
+        qualities.add(new Quality("on fire"));
+        qualities.add(new Quality("volcanic"));
+        qualities.add(new Quality("ice lake"));
+        qualities.add(new Quality("marsh"));
+        qualities.add(new Quality("snow mounds"));
+        qualities.add(new Quality("sand mounds"));
+        qualities.add(new Quality("cave"));
+        qualities.add(new Quality("underground"));
+        qualities.add(new Quality("flooded"));
+        qualities.add(new Quality("space"));
+        qualities.add(new Quality("ancient civilization"));
+        qualities.add(new Quality("jungle"));
+        qualities.add(new Quality("castle"));
+        qualities.add(new Quality("dungeon"));
+        qualities.add(new Quality("island"));
+        qualities.add(new Quality("sky platform"));
+
+        for (Quality temp : qualities)
+        {
+            temp.addChance(gen.nextInt(100));
+        }
+
+        if (area[0][0].getBiome().equals("grassland"))
+        {
+            for (Quality temp : qualities)
+            {
+                if (temp.getName().equals("volcanic"))
+                {
+                    temp.setChance(0);
+                }
+                else if (temp.getName().equals("ice lake"))
+                {
+                    temp.setChance(0);
+                }
+                else if (temp.getName().equals("marsh"))
+                {
+                    temp.setChance(0);
+                }
+                else if (temp.getName().equals("snow mounds"))
+                {
+                    temp.setChance(0);
+                }else if (temp.getName().equals("sand mounds"))
+                {
+                    temp.setChance(0);
+                }
+                else 
+                if (temp.getName().equals("space"))
+                {
+                    temp.setChance(0);
+                }
+                else 
+                if (temp.getName().equals("jungle"))
+                {
+                    temp.setChance(0);
+                }
+                else 
+                if (temp.getName().equals("island"))
+                {
+                    temp.setChance(0);
+                }
+            }
+        }
+        else if (area[0][0].getBiome().equals("tundra"))
+        {
+            for (Quality temp : qualities)
+            {
+                if (temp.getName().equals("on fire"))
+                {
+                    temp.setChance(0);
+                }
+                else if (temp.getName().equals("marsh"))
+                {
+                    temp.setChance(0);
+                }
+                else if (temp.getName().equals("space"))
+                {
+                    temp.setChance(0);
+                }
+                else 
+                if (temp.getName().equals("jungle"))
+                {
+                    temp.setChance(0);
+                }else 
+                if (temp.getName().equals("flooded"))
+                {
+                    temp.setChance(0);
+                }
+            }
+        }
+        else if (area[0][0].getBiome().equals("forest"))
+        {
+            for (Quality temp : qualities)
+            {
+                if (temp.getName().equals("space"))
+                {
+                    temp.setChance(0);
+                }
+                else 
+                if (temp.getName().equals("island"))
+                {
+                    temp.setChance(0);
+                }
+                else if (temp.getName().equals("volcanic"))
+                {
+                    temp.setChance(0);
+                }
+            }
+        }
+        else if (area[0][0].getBiome().equals("desert"))
+        {
+            for (Quality temp : qualities)
+            {
+                if (temp.getName().equals("volcanic"))
+                {
+                    temp.setChance(0);
+                }
+                else if (temp.getName().equals("ice lake"))
+                {
+                    temp.setChance(0);
+                }
+                else if (temp.getName().equals("marsh"))
+                {
+                    temp.setChance(0);
+                }
+                else if (temp.getName().equals("snow mounds"))
+                {
+                    temp.setChance(0);
+                }
+                else 
+                if (temp.getName().equals("space"))
+                {
+                    temp.setChance(0);
+                }
+                else 
+                if (temp.getName().equals("jungle"))
+                {
+                    temp.setChance(0);
+                }
+                else 
+                if (temp.getName().equals("island"))
+                {
+                    temp.setChance(0);
+                }
+                else if (temp.getName().equals("underground"))
+                {
+                    temp.setChance(0);
+                }
+                else if (temp.getName().equals("flooded"))
+                {
+                    temp.setChance(0);
+                }
+            }
+        }
+        else if (area[0][0].getBiome().equals("aquatic"))
+        {
+            for (Quality temp : qualities)
+            {
+                if (temp.getName().equals("on fire"))
+                {
+                    temp.setChance(0);
+                }
+                else if (temp.getName().equals("volcanic"))
+                {
+                    temp.setChance(0);
+                }
+                else 
+                if (temp.getName().equals("space"))
+                {
+                    temp.setChance(0);
+                }
+                else 
+                if (temp.getName().equals("snow mounds"))
+                {
+                    temp.setChance(0);
+                }
+                else if (temp.getName().equals("sand mounds"))
+                {
+                    temp.setChance(0);
+                }
+                else
+                if (temp.getName().equals("flooded"))
+                {
+                    temp.addChance(100);
+                }
+            }
+        }
+
+        for (Quality temp : qualities)
+        {
+            if (temp.getChance() > largest.getChance())
+            {
+                largest = temp;
+            }
+        }
+        qualities.clear();
+        for (row = 0; row < area.length; row++)
+        {
+            for (col = 0; col < area[0].length; col++)
+            {
+                area[row][col].setEnvironmentTheme(largest.getName());
+            }
+        }
+        System.out.println("Environment Theme: " + area[row][col].getEnvironmentTheme());
+
+        largest = new Quality("initial");
+        qualities.add(new Quality("special"));
+
+        qualities.add(new Quality("euphoric"));
+        qualities.add(new Quality("cheerful"));
+        qualities.add(new Quality("inviting"));
+        qualities.add(new Quality("pleasant"));
+        qualities.add(new Quality("erotic"));
+        qualities.add(new Quality("mysterious"));
+        qualities.add(new Quality("mystical"));
+        qualities.add(new Quality("nonchalant"));
+        qualities.add(new Quality("confusing"));
+        qualities.add(new Quality("isolated"));
+        qualities.add(new Quality("solemn"));
+        qualities.add(new Quality("cautious"));
+        qualities.add(new Quality("chaotic"));
+        qualities.add(new Quality("frightening"));
+        qualities.add(new Quality("depressing"));
+        qualities.add(new Quality("mind altering melancholy"));
+
+        for (Quality temp : qualities)
+        {
+            temp.addChance(gen.nextInt(100));
+            if (temp.getChance() > largest.getChance())
+            {
+                largest = temp;
+            }
+        }
+        qualities.clear();
+        for (row = 0; row < area.length; row++)
+        {
+            for (col = 0; col < area[0].length; col++)
+            {
+                area[row][col].setMood(largest.getName());
+            }
+        }
+        System.out.println("Mood: " + area[0][0].getMood());
+
+        for (row = 0; row < area.length; row++)
+        {
+            for (col = 0; col < area[0].length; col++)
+            {
+                area[row][col].setOutside(outside);
+            }
+        }
+        System.out.println("Outside: " + area[0][0].getOutside());
+
+
+        if (outside == true)
+        {
+            for (row = 0; row < area.length; row++)
+            {
+                for (col = 0; col < area[0].length; col++)
+                {
+                    Space currentLocation = area[row][col];
+
+
+                    if (time > 5 && time < 19)
+                    {
+                        currentLocation.setLightType("sun"); 
+                    }
+                    else
+                    {
+                        currentLocation.setLightType("moon");
+                    }
+
+
+                    if (currentLocation.getLightType().equals("sun"))
+                    {
+                        if (time > 5 && time < 7)
+                        {
+                            currentLocation.setLightTint("dawn");
+                        }
+                        else if (time > 18 && time < 20)
+                        {
+                            currentLocation.setLightTint("dusk");
+                        }
+                        else
+                        {
+                            currentLocation.setLightTint("bright");
+                        }
+                    }
+                    else if (currentLocation.getLightType().equals("moon"))
+                    {
+                        currentLocation.setLightTint("moonlight");
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (row = 0; row < area.length; row++)
+            {
+                for (col = 0; col < area[0].length; col++)
+                {
+                    area[row][col].setLightType("candle");
+                    area[row][col].setLightTint("dim candle");
+                }
+            }
+        }
+        System.out.println("Light Type: " + area[0][0].getLightType());
+        System.out.println("Light Tint: " + area[0][0].getLightTint());
+
+        for (row = 0; row < area.length; row++)
+        {
+            for (col = 0; col < area[0].length; col++)
+            {
+                area[row][col].setPressure(area[row][col].getGravity());
+            }
+        }
+        System.out.println("Pressure: " + area[0][0].getPressure());
+
+        for (row = 0; row < area.length; row++)
+        {
+            for (col = 0; col < area[0].length; col++)
+            {
+                Space currentLocation = area[row][col];
+                System.out.println("VARIABLES FOR ROW " + row + " COL " + col);
+
+                int temperature = 0;
+                if (currentLocation.getBiome().equals("grassland"))
+                {
+                    temperature = 75;
+                }
+                else if (currentLocation.getBiome().equals("aquatic"))
+                {
+                    temperature = 60;
+                }
+                else if (currentLocation.getBiome().equals("desert"))
+                {
+                    temperature = 95;
+                }
+                else if (currentLocation.getBiome().equals("forest"))
+                {
+                    temperature = 70;
+                }
+                else if (currentLocation.getBiome().equals("tundra"))
+                {
+                    temperature = 30;
+                }
+
+                if (time < 9 || time > 18)
+                {
+                    temperature = temperature - 10; 
+                }
+
+                if (currentLocation.getEnvironmentTheme().equals("on fire"))
+                {
+                    temperature = temperature + 20;
+                }
+                else
+                if (currentLocation.getEnvironmentTheme().equals("volcanic"))
+                {
+                    temperature = temperature + 30;
+                }
+                else
+                if (currentLocation.getEnvironmentTheme().equals("ice lake"))
+                {
+                    temperature = temperature - 20;
+                }   
+                else
+                if (currentLocation.getEnvironmentTheme().equals("marsh"))
+                {
+                    temperature = temperature + 10;
+                }   
+                else
+                if (currentLocation.getEnvironmentTheme().equals("snow mounds"))
+                {
+                    temperature = temperature - 10;
+                }   
+                else
+                if (currentLocation.getEnvironmentTheme().equals("sand mounds"))
+                {
+                    temperature = temperature + 10;
+                }   
+                else
+                if (currentLocation.getEnvironmentTheme().equals("cave"))
+                {
+                    temperature = temperature - 15;
+                }   
+                else
+                if (currentLocation.getEnvironmentTheme().equals("underground"))
+                {
+                    temperature = temperature + 10;
+                }   
+                else
+                if (currentLocation.getEnvironmentTheme().equals("island"))
+                {
+                    temperature = temperature + 5;
+                }   
+                else
+                if (currentLocation.getEnvironmentTheme().equals("space"))
+                {
+                    temperature = -100;
+                }
+
+                if (currentLocation.getElevation() > 80)
+                {
+                    temperature = temperature - 20;
+                }
+                else if (currentLocation.getElevation() < 30)
+                {
+                    temperature = temperature + 20;
+                }
+
+                if (currentLocation.getMood().equals("euphoric"))
+                {
+                    temperature = 75;
+                }
+                else
+                if (currentLocation.getMood().equals("cheerful"))
+                {
+                    if (temperature > 80)
+                    {
+                        temperature = temperature - 10;
+                    }
+                    if (temperature < 60)
+                    {
+                        temperature = temperature + 10;
+                    }
+                }
+                else
+                if (currentLocation.getMood().equals("frightening"))
+                {
+                    if (temperature > 80)
+                    {
+                        temperature = temperature + 5;
+                    }
+                    if (temperature < 60)
+                    {
+                        temperature = temperature - 10;
+                    }
+                }
+                else
+                if (currentLocation.getMood().equals("mind altering melancholy"))
+                {
+                    temperature = 50;
+                }
+                currentLocation.setTemperature(temperature);
+                System.out.println("Temperature: " + currentLocation.getTemperature());
+
+                int wind = 0;
+
+                if (currentLocation.getOutside() == false)
+                {
+                    wind = gen.nextInt(10);
+                }
+                else
+                {
+                    if (currentLocation.getBiome().equals("grassland"))
+                    {
+                        wind = gen.nextInt(40) + 1;
+                    }
+                    else
+                    if (currentLocation.getBiome().equals("aquatic"))
+                    {
+                        wind = gen.nextInt(60) + 1;
+                    }
+                    else
+                    if (currentLocation.getBiome().equals("desert"))
+                    {
+                        wind = gen.nextInt(70) + 1;
+                    }
+                    else
+                    if (currentLocation.getBiome().equals("forest"))
+                    {
+                        wind = gen.nextInt(20) + 1;
+                    }
+                    else
+                    if (currentLocation.getBiome().equals("tundra"))
+                    {
+                        wind = gen.nextInt(70) + 1;
+                    }
+                    wind = wind + (currentLocation.getElevation()/10);
+                }
+                System.out.println("Wind: " + currentLocation.getWind());
+
+                if (currentLocation.getOutside() == true)
+                {
+                    currentLocation.setCeiling("sky");
+                }
+                else
+                {
+                    if (currentLocation.getEnvironmentTheme().equals("cave"))
+                    {
+                        currentLocation.setCeiling("rock");
+                    }
+                    else
+                    {
+                        int ceilingType = gen.nextInt(2);
+                        if (ceilingType == 0)
+                        {
+                            currentLocation.setCeiling("brick");
+                        }
+                        else
+                        if (ceilingType == 1)
+                        {
+                            currentLocation.setCeiling("tile");
+                        }
+                    }
+                }
+                System.out.println("Ceiling: " + currentLocation.getCeiling());
+
+
+                if (currentLocation.getOutside() == false)
+                {
+                    currentLocation.setPrecipitationType("leaking rain");
+                }
+                else
+                {
+                    largest = new Quality("initial");
+
+                    qualities.add(new Quality("rain"));
+                    qualities.add(new Quality("snow"));
+                    qualities.add(new Quality("sleet"));
+                    qualities.add(new Quality("hail"));
+                    qualities.add(new Quality("ash"));
+                    qualities.add(new Quality("acid"));
+
+                    if (currentLocation.getBiome().equals("grassland"))
+                    {
+                        for (Quality temp : qualities)
+                        {
+                            if (temp.getName().equals("rain"))
+                            {
+                                temp.addChance(gen.nextInt(100) + 1);
+                            }
+                            else if (temp.getName().equals("snow") || temp.getName().equals("sleet"))
+                            {
+                                temp.addChance(gen.nextInt(20) + 1);
+                            }
+                        }
+                    }
+                    else
+                    if (currentLocation.getBiome().equals("aquatic"))
+                    {
+                        for (Quality temp : qualities)
+                        {
+                            if (temp.getName().equals("rain"))
+                            {
+                                temp.addChance(gen.nextInt(100) + 1);
+                            }
+                        }
+                    }
+                    else
+                    if (currentLocation.getBiome().equals("desert"))
+                    {
+                        for (Quality temp : qualities)
+                        {
+                            if (temp.getName().equals("rain"))
+                            {
+                                temp.addChance(gen.nextInt(100) + 1);
+                            }
+                        }
+                    }
+                    else
+                    if (currentLocation.getBiome().equals("forest"))
+                    {
+                        for (Quality temp : qualities)
+                        {
+                            if (temp.getName().equals("rain"))
+                            {
+                                temp.addChance(gen.nextInt(100) + 1);
+                            }
+                            else
+                            if (temp.getName().equals("snow") || temp.getName().equals("hail") || temp.getName().equals("sleet"))
+                            {
+                                temp.addChance(gen.nextInt(75));
+                            }
+                        }
+                    }
+                    else
+                    if (currentLocation.getBiome().equals("tundra"))
+                    {
+                        for (Quality temp : qualities)
+                        {
+                            if (temp.getName().equals("snow") || temp.getName().equals("hail") || temp.getName().equals("sleet"))
+                            {
+                                temp.addChance(gen.nextInt(75));
+                            }
+                        }
+                    }
+
+                    if (currentLocation.getEnvironmentTheme().equals("on fire"))
+                    {
+                        for (Quality temp : qualities)
+                        {
+                            if (temp.getName().equals("ash"))
+                            {
+                                temp.addChance(gen.nextInt(100) + 1);
+                            }
+                            else
+                            if (temp.getName().equals("rain") || temp.getName().equals("acid"))
+                            {
+                                temp.addChance(gen.nextInt(75));
+                            }
+                        }
+                    }
+                    else
+                    if (currentLocation.getEnvironmentTheme().equals("volcanic"))
+                    {
+                        for (Quality temp : qualities)
+                        {
+                            if (temp.getName().equals("ash"))
+                            {
+                                temp.addChance(gen.nextInt(100) + 1);
+                            }
+                        }
+                    }
+                    else
+                    if (currentLocation.getEnvironmentTheme().equals("ice lake"))
+                    {
+                        for (Quality temp : qualities)
+                        {
+                            if (temp.getName().equals("hail"))
+                            {
+                                temp.addChance(gen.nextInt(100) + 1);
+                            }
+                            else
+                            if (temp.getName().equals("snow") || temp.getName().equals("rain") || temp.getName().equals("sleet"))
+                            {
+                                temp.addChance(gen.nextInt(75));
+                            }
+                        }
+                    }
+                    else
+                    if (currentLocation.getEnvironmentTheme().equals("marsh"))
+                    {
+                        for (Quality temp : qualities)
+                        {
+                            if (temp.getName().equals("rain"))
+                            {
+                                temp.addChance(gen.nextInt(100) + 1);
+                            }
+                        }
+                    }
+                    else
+                    if (currentLocation.getEnvironmentTheme().equals("snow mounds"))
+                    {
+                        for (Quality temp : qualities)
+                        {
+                            if (temp.getName().equals("snow"))
+                            {
+                                temp.addChance(gen.nextInt(100) + 1);
+                            }
+                            else
+                            if (temp.getName().equals("sleet") || temp.getName().equals("rain"))
+                            {
+                                temp.addChance(gen.nextInt(30));
+                            }
+                        }
+                    }
+                    else
+                    if (currentLocation.getEnvironmentTheme().equals("sand mounds"))
+                    {
+                        for (Quality temp : qualities)
+                        {
+                            if (temp.getName().equals("rain"))
+                            {
+                                temp.addChance(gen.nextInt(100) + 1);
+                            }
+                        }
+
+                        for (Quality temp : qualities)
+                        {
+                            if (temp.getChance() > largest.getChance())
+                            {
+                                largest = temp;
+                            }
+                        }
+                        qualities.clear();
+                        for (row = 0; row < area.length; row++)
+                        {
+                            for (col = 0; col < area[0].length; col++)
+                            {
+                                area[row][col].setPrecipitationType(largest.getName());
+                            }
+                        }
+                    }
+
+
+                    int precipitationLevel = gen.nextInt(100) + 1;
+                    if (precipitationLevel > 20)
+                    {
+                        precipitationLevel = 0;
+                    }
+                    else
+                    {
+                        precipitationLevel = precipitationLevel/2;
+                    }
+                    if (currentLocation.getOutside() == false)
+                    {
+                        precipitationLevel = gen.nextInt(1);
+                    }
+                    currentLocation.setPrecipitationLevel(precipitationLevel);
+                    System.out.println("Preciptation Level: " + precipitationLevel);
+
+                    int humidity = ((precipitationLevel * 10) + temperature)/2;
+                    if (humidity > 100)
+                    {
+                        humidity = 100;
+                    }
+                    currentLocation.setHumidity(humidity);
+                    System.out.println("Preciptation Level: " + humidity);
+
+
+                    int vegitation = 0;
+
+                    if (currentLocation.getOutside() == true)
+                    {
+                        if (currentLocation.getBiome().equals("grassland"))
+                        {
+                            vegitation = vegitation + 40;
+                        }
+                        if (currentLocation.getBiome().equals("aquatic"))
+                        {
+                            vegitation = vegitation + 70;
+                        }
+                        if (currentLocation.getBiome().equals("desert"))
+                        {
+                            vegitation = vegitation + 5;
+                        }
+                        if (currentLocation.getBiome().equals("forest"))
+                        {
+                            vegitation = vegitation + 60;
+                        }
+                        if (currentLocation.getBiome().equals("tundra"))
+                        {
+                            vegitation = vegitation + 5;
+                        }
+                        if (currentLocation.getElevation() != 50)
+                        {
+                            vegitation = vegitation - (Math.abs(currentLocation.getElevation() - 50))/10;
+                        }
+                        if (currentLocation.getTemperature() < 50)
+                        {
+                            vegitation = vegitation - 50;
+                        }
+                        if (currentLocation.getPrecipitationType().equals("rain"))
+                        {
+                            vegitation = vegitation + 20;
+                        }
+                        if (currentLocation.getHumidity() > 70)
+                        {
+                            vegitation = vegitation + 40;
+                        }
+                    }
+                    if (vegitation < 0)
+                    {
+                        vegitation = 0;
+                    }
+                    if (vegitation > 100)
+                    {
+                        vegitation = 100;   
+                    }
+                    currentLocation.setVegitation(vegitation);
+                    System.out.println("Vegitation: " + currentLocation.getVegitation());
+
+                    int waterLevel = 0;
+
+                    if (currentLocation.getBiome().equals("aquatic"))
+                    {
+                        waterLevel = gen.nextInt(5);
+                    }
+                    if (currentLocation.getEnvironmentTheme().equals("flooded"))
+                    {
+                        waterLevel = gen.nextInt(30) + 20;
+                    }
+                    else if (currentLocation.getEnvironmentTheme().equals("marsh"))
+                    {
+                        waterLevel = gen.nextInt(30) + 10;
+                    }
+                    currentLocation.setWaterLevel(waterLevel);
+                    System.out.println("Water level: " + currentLocation.getWaterLevel());
+
+                    int luminescence = 100;
+
+                    if (currentLocation.getLightType().equals("sun"))
+                    {
+                        if (time > 5 && time < 7)
+                        {
+                            luminescence = 80;
+                        }
+                        else if (time > 18 && time < 20)
+                        {
+                            luminescence = 60;
+                        }
+                        else
+                        {
+                            luminescence = 100;
+                        }
+                    }
+                    else if (currentLocation.getLightType().equals("moon"))
+                    {
+                        luminescence = 50;
+                    }
+
+                    if (currentLocation.getBiome().equals("desert"))
+                    {
+                        luminescence = luminescence + 10;
+                    }
+                    else
+                    if (currentLocation.getBiome().equals("forest"))
+                    {
+                        luminescence = luminescence - 10;
+                    }
+                    else
+                    if (currentLocation.getBiome().equals("tundra"))
+                    {
+                        luminescence = luminescence - 10;
+                    }
+
+                    if (currentLocation.getEnvironmentTheme().equals("marsh"))
+                    {
+                        luminescence = luminescence - 20;
+                    }
+                    else
+                    if (currentLocation.getEnvironmentTheme().equals("cave"))
+                    {
+                        luminescence = 40;
+                    }
+                    else
+                    if (currentLocation.getEnvironmentTheme().equals("underground"))
+                    {
+                        luminescence = 20;
+                    }
+                    else
+                    if (currentLocation.getEnvironmentTheme().equals("sky platform"))
+                    {
+                        luminescence = 100;
+                    }
+                    currentLocation.setLuminescence(luminescence);
+                    System.out.println("Luminescence: " + luminescence);
+
+
+                    String floor = "";
+
+                    if (currentLocation.getOutside() == true)
+                    {
+                        if (currentLocation.getBiome().equals("grassland"))
+                        {
+                            if (currentLocation.getEnvironmentTheme().equals("grass"))
+                            {
+                                floor = "grass";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("on fire"))
+                            {
+                                floor = "dying grass";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("volcanic"))
+                            {
+                                floor = "dead grass";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("ice lake"))
+                            {
+                                floor = "frosted grass";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("cave"))
+                            {
+                                floor = "rock";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("underground"))
+                            {
+                                floor = "crumbling gravel";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("flooded"))
+                            {
+                                if (waterLevel > 5)
+                                {
+                                    floor = "water";
+                                }
+                                else
+                                {
+                                    floor = "wet grass";
+                                }
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("ancient civilization"))
+                            {
+                                floor = "carved stone";
+                            }
+                        }
+                        else
+                        if (currentLocation.getBiome().equals("aquatic"))
+                        {
+                            if (currentLocation.getEnvironmentTheme().equals("grass"))
+                            {
+                                if (waterLevel > 5)
+                                {
+                                    floor = "water";
+                                }
+                                else
+                                {
+                                    floor = "wet grass";
+                                }
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("ice lake"))
+                            {
+                                floor = "ice";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("marsh"))
+                            {
+                                floor = "swamp mush";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("cave"))
+                            {
+                                floor = "rock";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("underground"))
+                            {
+                                floor = "crumbling rock";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("flooded"))
+                            {
+                                floor = "deep water";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("ancient civilization"))
+                            {
+                                floor = "carved rock";
+                            }
+                        }
+                        else
+                        if (currentLocation.getBiome().equals("desert"))
+                        {
+
+                            if (currentLocation.getEnvironmentTheme().equals("ancient civilization"))
+                            {
+                                floor = "crumbling sandstone";
+                            }
+                            else
+                            if  (currentLocation.getEnvironmentTheme().equals("sand mounds"))
+                            {
+                                floor = "sand";
+                            }
+
+                        }
+                        else
+                        if (currentLocation.getBiome().equals("forest"))
+                        {
+                            if (currentLocation.getEnvironmentTheme().equals("on fire"))
+                            {
+                                floor = "heated soil";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("ice lake"))
+                            {
+                                floor = "frozen soil";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("marsh"))
+                            {
+                                floor = "wet soil";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("snow mounds"))
+                            {
+                                floor = "deep snow";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("cave"))
+                            {
+                                floor = "rock";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("underground"))
+                            {
+                                floor = "crumbling soil";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("flooded"))
+                            {
+                                floor = "wet soil";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("ancient civilization"))
+                            {
+                                floor = "ornamental carved rock";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("jungle"))
+                            {
+                                floor = "fertile soil";
+                            }
+                        }
+                        else
+                        if (currentLocation.getBiome().equals("tundra"))
+                        {
+                            if (currentLocation.getEnvironmentTheme().equals("volcanic"))
+                            {
+                                floor = "melting snow";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("ice lake"))
+                            {
+                                floor = "ice";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("snow mounds"))
+                            {
+                                floor = "deep snow";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("cave"))
+                            {
+                                floor = "frozen rock";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("underground"))
+                            {
+                                floor = "frozen soil";
+                            }
+                            else
+                            if (currentLocation.getEnvironmentTheme().equals("ancient civilization"))
+                            {
+                                floor = "ornamentally carved ice";
+                            }
+                        }
+
+                        if (currentLocation.getEnvironmentTheme().equals("castle"))
+                        {
+                            floor = "ornamentally carved stone";
+                        }
+                        else
+                        if (currentLocation.getEnvironmentTheme().equals("dungeon"))
+                        {
+                            floor = "crumbling stone";
+                        }
+                        else
+                        if (currentLocation.getEnvironmentTheme().equals("island"))
+                        {
+                            floor = "sand";
+                        }
+                        else
+                        if (currentLocation.getEnvironmentTheme().equals("sky platform"))
+                        {
+                            floor = "clouds";
+                        }
+
+                    }
+                    else
+                    {
+
+                    }
+                    currentLocation.setFloor(floor);
+                    System.out.println("Floor: " + floor);
+
+                    String floorSound = "";
+                    if (currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals(""))
+                    {
+                        floorSound = "";
+                    }
+                    else
+                    if (currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals(""))
+                    {
+                        floorSound = "";
+                    }
+                    else
+                    if (currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals(""))
+                    {
+                        floorSound = "";
+                    }
+                    else
+                    if (currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals("") ||
+                    currentLocation.getFloor().equals(""))
+                    {
+                        floorSound = "";
+                    }
+                    currentLocation.setFloorSounds(floorSound);
+                    System.out.println("Floor sounds: " + currentLocation.getFloorSounds());
+
+
+                    int stillness = 100;
+
+                    if (currentLocation.getEnvironmentTheme().equals("on fire"))
+                    {
+                        stillness = stillness - 20;
+                    }
+                    else
+                    if (currentLocation.getEnvironmentTheme().equals("volcanic"))
+                    {
+                        stillness = stillness - 30;
+                    }
+                    stillness = stillness - (currentLocation.getWind() * 4);
+                    stillness = stillness - (currentLocation.getPrecipitation() * 4);
+                    stillness = stillness - wateLevel;
+                    currentLocation.setStillness(stillness);
+                    System.out.println("Stillness: " + currentLocation.setStillness(););
+                    
+                    
+
+
+
+
+                    chance = gen.nextInt(100);
+                    if (currentLocation.getMood().equals("depressing"))
+                    {
+                        chance = Math.abs(chance - 30);
+                    }
+                    else if (currentLocation.getMood().equals("cheerful"))
+                    {
+                        chance = chance + 30;
+                    }
+
+                    for (row = 0; row < area.length; row++)
+                    {
+                        for (col = 0; col < area[0].length; col++)
+                        {
+                            currentLocation.setLuminescence(chance);
+                        }
+                    }
+                }
+            }
+
+            for (row = 0; row < area.length; row++)
+            {
+                for (col = 0; col < area[0].length; col++)
+                {
+                    area[row][col].setElectrostatics(1);
+                    if (area[row][col].getPrecipitationType().equals("rain") && area[row][col].getPrecipitationLevel() > 6)
+                    {
+                        area[row][col].setElectrostatics(gen.nextInt(10) + 10);
+                    }
+                }
+            }
+            System.out.println("Electrostatics: " + area[0][0].getElectrostatics());
+        }
+    }
+}

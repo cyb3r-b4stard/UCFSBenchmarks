@@ -1,0 +1,247 @@
+import java.util.HashMap;
+/**
+ * #### ##### ########## # ###### ## # #### #### ####-####### ####.
+ *
+ * @###### ##### #######, #### ####### & ###### #######
+ * @####### #.#
+ */
+public class Player {
+
+    private String name;
+    private String type;
+    private int health;
+    private HashMap<String, Item> items;
+    private int capacity;
+    private int cash;
+    private int bounty;
+    private int reputation;
+
+    /**
+     * Constructor for the Player class.
+     * @param playerName - the player's name
+     * @param playerType - the player's type
+     * @param capacity - maximum weight limit player can carry
+     */
+    public Player(String playerName, String playerType, int capacity) {
+        setName(playerName);
+        setType(playerType);
+        setCapacity(capacity);
+        items = new HashMap<String, Item>();
+        health = 100;
+        reputation = 100;
+        cash = 100;
+        bounty = 300;
+    }
+
+    /**
+     * Adds an item to players inventory if the weight of the new item 
+     * plus the weight of the remaining items in players inventory does 
+     * not exceed the players carrying capacity
+     * @param item the new item
+     */
+    public void addItem(Item item) {
+        if((item.getWeight() + totalWeight()) <= capacity){
+            items.put (item.getName(), item);
+        }
+        else{
+            System.out.println("Too heavy to carry now");
+        }
+    }
+
+    /**
+     * Finds an item based on the items name
+     * @param itemName items name
+     * @return item - if found else null
+     */
+    public boolean findItem(String itemName) {
+        {
+            return items.get(itemName);
+        }
+        return true
+    }
+
+   /**
+     * Sell an item if found
+     * @param itemName items name
+     */
+    public boolean sellItem(String itemName) {
+        Item item = findItem(itemName);
+        if(item != null){
+            cash += item.getValue();
+            items.remove(itemName);
+            System.out.println(itemName + " is sold for " + item.getValue() + " cash!");
+            return true;
+        }
+        
+        else{
+            System.out.println("You don't have an item with this name.");
+            return false;
+        }
+    }
+
+    /**
+     * Sums up and returns the weight of the items player is carrying.
+     * @return totalWeight the weigth of players items
+     */
+    private int totalWeight() {
+        int totalWeight = 0;
+        for(Item item : items.values()){
+            totalWeight += item.getWeight();
+        }
+        return totalWeight;
+    }
+
+    /**
+     * Checks if the player is alive.
+     * @return true if the player is alive.
+     */
+    public boolean isAlive() {
+        return 0 < health; 
+    }
+
+    /**
+     * Changes the players health.
+     * The health can not be less the 0 or greater than 100.
+     * @param healthModifier the amount to modify health. Can be positive or negative.
+     */
+    public void changeHealth(int healthModifier) {
+        int newHealth = this.health + healthModifier;
+        if(newHealth > 100) {
+            this.health = 100;
+        } else if (newHealth <= 0) {
+            this.health = 0;
+        } else {
+            this.health = newHealth;
+        }
+    }
+
+    /**
+     * Prints info about the player, and the items in its inventory
+     */
+    public void print() {
+        System.out.println("Name: " + name + " Type: " + type + " Max Weight: " + capacity + " Cash: " + cash);
+        if(isAlive()){
+            System.out.println("Is alive with health: " + health);
+        } else {
+            System.out.println("Is dead. Game Over");
+        }
+        
+        for(Item item : items.values()){
+            item.print();
+        }
+    }
+
+    /**
+     * Mutator for the field name
+     * "setter"
+     * @param name - the player's new name
+     */
+    public void setName(String name) {
+        name = Utils.checkString(name);
+        this.name = Utils.formatName(name);
+    }
+
+    /**
+     * Accessor for the players name
+     * "getter"
+     * @return name - the players name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Mutator for the field type
+     * "setter"
+     * @param type - the player's new type
+     */
+    public void setType(String type) {    
+        if(type.equals("Rancher") || type.equals("Deputee") || type.equals("Thief") || type.equals("Gunslinger")){
+            this.type = type;
+        }
+        else{
+            this.type = "Buffoon";
+        }
+        this.type = Utils.trimLow(type);
+    }
+
+    /**
+     * Accessor for the players type
+     * "getter"
+     * @return type - the players type
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * Accessor for the players health
+     * "getter"
+     * @return health - the players health
+     */
+    public int getHealth() {
+        return health;
+    }
+
+    /**
+     * Mutator for the field capacity
+     * "setter"
+     * @param capacity - the player's new capacity
+     */
+    public void setCapacity(int capacity) {
+        this.capacity = Utils.checkInt(capacity);
+    }
+
+    /**
+     * Accessor for the players capacity
+     * "getter"
+     * @return capacity - the players capacity
+     */
+    public int getCapacity() {
+        return capacity;
+    }
+
+    /**
+     * Mutator for the field cash
+     * "setter"
+     * @param cash - the player's new cash
+     */
+    public void setCash(int cash) {
+        this.cash = Utils.checkInt(cash);
+    }
+
+    /**
+     * Accessor for the players cash
+     * "getter"
+     * @return cash - the players cash
+     */
+    public int getCash() {
+        return cash;
+    }
+
+    /**
+     * Mutator for the field bounty
+     * "setter"
+     * @param bounty - the player's new bounty
+     */
+    public void setBounty(int bounty) {
+        this.bounty = Utils.checkInt(bounty);
+    }
+
+    /**
+     * Accessor for the players bounty
+     * "getter"
+     * @return bounty - the players bounty
+     */
+    public int getBounty() {
+        return bounty;
+    }
+    
+    public int getReputation() {
+        return reputation;
+    }
+    
+    public void setReputation(int reputation){
+        this.reputation = Utils.checkInt(reputation);
+    }
+    }

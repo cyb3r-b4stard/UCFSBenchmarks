@@ -1,0 +1,382 @@
+import java.applet.Applet;
+import java.applet.AudioClip;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+
+/**
+ * 
+ * ~~~~~~~~~~~~~~~~~~~~~ #### ~~~~~~~~~~~~~~~~~~~~~
+ * #### # .. 
+ * ###### # #### ####### ## #####.
+ * ###### # ###### #### #####.#### ### ###
+ * #####.#### ### ####.#### ## ### ### #########.
+ * ####### ### ### #### ## # #### ###########.
+ * 
+ * #### # .. 
+ * !!!!!! ## ##### ##### !!!!!!
+ * #### ## ###### ####.###.*; (## ### ### ######### ## #####.####)
+ * ##### #### #### ####### ###### (######## #########)
+ * ####, ####, ##### #### ### ####### ##### ######## ## ### ######
+ * ##########, ##### ## ### ####### ###### ## # #### 
+ * (## ### ###### ###### #### ## ### #####)
+ * ######### ##### #### ## ###### #,##,###,### (#####, ##, ####, ####)
+ * ####### ##### #####;
+ * #####, ##### ## ## ####### ###### ## ###### ### ##### ##### #### #####
+ * 
+ * #### #  ..
+ * !!!!!! ## ##### ##### !!!!!! 
+ * ##### # ####### ###########.... (## ##########)
+ * ########## ### ### ######## ######### ## # ### ##### ## ####; 
+ * 
+ * #### ## .. 
+ * !!!!!! ## ##### ##### !!!!!!
+ * ##### ####### ########### ### ### ##### #####.
+ * ## ###### #### ##### ### ########## ### # ##### #########
+ *   ###### #####(### ####, ### ####, ### ######, ##### ######)
+ * ########## ### ######## ######### ## ##### ############# #########
+ * ### ### ##########=# ### #####=# (# ###### ##### ## ############)
+ * 
+ * #### # .. 
+ * !!!!!! ## ##### #### !!!!!!
+ * ###### ## ######## ######## (#.#. #####) ## #### ##### ###### #####.
+ * ####### ##### ##### = ### #####();
+ * #### #### #### ####### ##### ######## ### ######## ####### #####.
+ * 
+ * ########## ##### ## # ### ##### ## ###### #########()
+ * ## ########### (####,###), ######### ### (##### ## ####), 
+ * ##### #####.####
+ * 
+ * #### #### #### ####### ##### ######## ### ######## ####### #####.
+ * 
+ * #### # .. 
+ * !!!!!! ## ##### ##### !!!!!!
+ * ##### ### ######### ###### ###### ####().
+ * ###### #### ####(########## #) 
+ * {
+ *   #.########(#####);
+ *   #.########(####,####,##########,##########);
+ * }
+ * 
+ * #### ##
+ * !!!!!! ## ##### #### !!!!!!
+ * ##### # #### ## #### ## ###### ###### #### ## #####
+ * ### ####... ### ### ##### #####.. #.#. #### ######
+ * 
+ * #### #
+ * !!!!!! ## ##### ##### !!!!!!
+ * ##### # ###### ###### #########()
+ * #### ######## #### ## #### ##### ## #########
+ * #######: ## (######### == #) 
+ *            #### += #####;
+ * (#### ####### ####: # ###### ### ##### ## ######## ### ######## ## ### #####
+ *  .. ### ##### ## # ## ########### ##### ####### ######)
+ * 
+ * #### ## .. 
+ * !!!!!! ## ##### #### !!!!!!
+ * ## ###### ###############:
+ * ##### # #### ## #### ## ###### ###### #########() ## #####.
+ * ### ####... ### ##### #### ####
+ * 
+ * #### # .. 
+ * !!!!!! ## ##### ##### !!!!!!
+ * ##### ####### ############ .. ####### ### ######### ########
+ * ### ###### #### ############(### #) #### ####### # ## #########
+ * 
+ * #### ## ..
+ * !!!!!! ## ##### #### !!!!!!
+ * ######## ### ####-## ###### ## ###### ##########()
+ * ### ####... ### ###### ## #### ## ####### ### ##### #####
+ * 
+ * #### # .. 
+ * !!!!!! ## ##### ##### !!!!!!
+ * ##### ### ###### ####### #### ####### # ####### ### ##### ## ##########
+ * #### #### ####### ####### ### ##### ######## ## ##### ## ### #####
+ * ## ## ## ### #####.. ###### ####, ##### ### ##### #### ###, ##### #########
+ * #######: ##### ## #########.. #### ### ##### ## ###### #####..
+ *  ## (######### == # && !####.#######(#### + ########## + #, ####)) {
+ *    ###### ####;
+ * 
+ * #### ## .. 
+ * !!!!!! ## ##### #### !!!!!!
+ * ##### ## ## ######### ## ###### ###############().
+ * ## ##### #### ###, #### #### ### #####
+ * 
+ * #### # .. 
+ * !!!!!! ## ##### #### !!!!!!
+ * ###### ####### ##### ###### ####.
+ * ########## #### ## ## #####.### ### ## ### ######## #### ## ### ######
+ * ##### ####### ###### #####
+ * ## #### #### ### ###### ## #####
+ * (### #### # # # # ### ##,####,####,#####)
+ * ####: ### #### ####...
+ * ## ##### ############# #### ## ## #### ## ##### #####
+ * 
+ * #### #..
+ * ###### #### ####### ## # ######## ###.
+ * (## #######
+ *  #####-##### ## #### ####### ## ### ####### ########
+ *  ###### ###### -> #### -> ######## ### ####
+ *  ##### ####
+ *  ###### ### '####' ###### #############
+ *  ### #### # #### ### #### #### #### ### ### .### #########
+ *  .. ## ###### #### ### #### ## #### ######### )
+ *  #### #### ## ####### #### ### ##### ## ### ########
+ *  ... ## ###### ###### ...
+ * 
+ */
+
+public class Game extends JPanel implements KeyListener, ActionListener 
+{
+
+    public cycle flynn = new cycle();
+     public cycle shark = new cycle
+     private int frameCount;
+     private static String title = "~~ Tron Light Cycles ~~  "
+      + "CONTROLS: Flynn(BLUE): Arrow keys and \']\' .. Sark(RED): RDFG keys and- \'Q\' .. \'6\' to start";
+    private Timer timer;
+    private static Image offScreenBuffer;
+    private Graphics offScreenGraphics;
+   
+    
+    /**
+    * main() is needed to initialize the window.<br>
+    * THIS METHOD SHOULD NOT BE MODIFIED! .. <br>
+    * you should write all necessary initialization code in initRound()
+    */
+   public static void main(String[] args) 
+   {
+
+   
+   
+   {
+       JFrame window = new JFrame(title);
+       window.setBounds(0, 0, 1280, 972);
+       window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+       window.setResizable(false);
+
+       Game game = new Game();
+       window.getContentPane().add(game);
+       window.setBackground(Color.YELLOW);
+       window.setVisible(true);
+       game.init();
+       window.addKeyListener(game);
+    }
+    }
+
+    /**
+    * init method needed to initialize non-static fields<br>
+    * THIS METHOD SHOULD NOT BE MODIFIED! ..
+    */
+   public void init() 
+   {
+       offScreenBuffer = createImage(getWidth(), getHeight());
+       offScreenGraphics = offScreenBuffer.getGraphics();
+       timer = new Timer(20, this);
+       initRound();
+    }
+
+    /**
+    * initializes all fields needed for each round of play (i.e. restart)
+    */
+   public void initRound() 
+   {
+       frameCount = 0;
+       offScreenGraphics.clearRect(0, 0, 1280, 972);
+       repaint();
+
+       flynn = new cycle(1080,100,270,Color.BLUE);
+       flynn = new cycle(1080,100,270,Color.RED);
+       
+       
+    }
+
+    /**
+    * Called automatically after a repaint request<br>
+    * THIS METHOD SHOULD NOT BE MODIFIED! ..
+    */
+   public void paint(Graphics g) 
+   {
+       draw((Graphics2D) offScreenGraphics);
+       g.drawImage(offScreenBuffer, 0, 0, this);
+   }
+
+   /**
+   * renders all objects to Graphics g
+   */
+  public void draw(Graphics2D g) 
+  {
+      g.setColor(Color.GREEN);
+
+       flynn.draw(g);
+       sark.draw(g);
+  }
+
+  /**
+   * Called automatically when the timer fires<br>
+   * this is where all the game fields will be updated
+   */
+  public void actionPerformed(ActionEvent e) 
+  {
+
+      flynn.updatePos();
+      sark.updatePos();
+
+      frameCount++;
+      repaint();
+     if (flynn.willDie()== true)
+       timer.stop();
+     if (sark.willDie()== true)
+       timer.stop();
+  }
+
+  /**
+   * handles any key pressed events and updates the Cycle's direction by setting
+   * their direction to either 0,90,180 or 270 based on which key is pressed.
+   */
+  public void keyPressed(KeyEvent e) 
+  {
+      int keyCode = e.getKeyCode();
+      int dirction;
+      if (keyCode == KeyEvent.VK_LEFT) 
+      {
+          flynn.setDirection(180);
+      } 
+      else if (keyCode == KeyEvent.VK_RIGHT) 
+      {
+            flynn.setDirection(0);
+      }
+      else if (keyCode == KeyEvent.VK_UP)
+      {
+            flynn.setDirection(90);
+      }
+      else if (keyCode == KeyEvent.VK_DOWN)
+      {
+            flynn.setDirection(270);
+      }
+      
+       if (keyCode == KeyEvent.VK_A)
+      { 
+          sark.setDirection(180);
+      }
+      else if (keyCode == KeyEvent.VK_D)
+      {
+          sark.setDirection(0);
+      }
+        else if (keyCode == KeyEvent.VK_W)
+      {
+          sark.setDirection(90);
+      }
+        else if (keyCode == KeyEvent.VK_S)
+      {
+          sark.setDirection(270);
+      }
+          
+  }
+
+  /**
+   * handles any key released events ... <br>
+   * starts game by the '6 Key'<br>
+   * kills the game window by the 'Escape Key'
+   */
+  public void keyReleased(KeyEvent e) 
+  {
+      int keyCode = e.getKeyCode();
+      if (keyCode == KeyEvent.VK_6) 
+      {
+          if (!timer.isRunning()) 
+          {
+              timer.start();
+              initRound();
+          }
+      }
+      else if (keyCode == KeyEvent.VK_ESCAPE) 
+      {
+          System.exit(0);
+      }
+  }
+
+  /**
+   * this method is needed for implementing interface KeyListener<br>
+   * THIS METHOD SHOULD NOT BE MODIFIED! ..
+   */
+  public void keyTyped(KeyEvent e) 
+  {
+  }
+
+  /**
+   * returns true if the color value of the pixel<br>
+   * with coordinates (x,y) is WHITE, false otherwise<br>
+   * NOTE: THIS METHOD SHOULD NOT BE MODIFIED!!!
+   */
+  public static boolean isWhite(int x, int y) 
+  {
+      BufferedImage bi = (BufferedImage) offScreenBuffer;
+      if (bi == null)
+        return true;
+      try 
+      {
+          int colorVal = bi.getRGB(x, y);
+          return (colorVal == -1);
+      } 
+      catch (Exception ex) 
+      {
+          return false;
+      }
+  }
+
+}
+
+/**
+ * some possible extra credit opportunities...
+ * 
+ * MAKE THE BACKGROUND BLACK...
+ * change WHITE to BLACK in method main()
+ * change -1 to -16777216 in method isWhite()
+ * 
+ * CREATE A BOOST BUTTON FOR PLAYERS...
+ * create a boolean variable called boost
+ * write method public void setBoost(boolean b)
+ * .. modify the move method to set the value of speed
+ * to 8 if boost is true
+ * 
+ * --figure out how to invoke the boost method on
+ * flynn and sark in keyPressed and keyReleased methods
+ * (use VK_CLOSE_BRACKET for flynn and VK_Q for sark)
+ *  
+ * 
+ * ADD SOUND EFFECTS...
+ * find a .wav file and save it in your src folder
+ * create a field
+ *   private AudioClip sound1;
+ * initialize sound1 in method init()
+ *   sound1 = Applet.newAudioClip(getClass().getResource("boing.wav"));
+ * play the sound when appropriate
+ *   sound1.play();
+ * 
+ * 
+ * ADD A SPLASH SCREEN...
+ * find a .jpg or .png file and save it in your src folder
+ * create a field
+ *   private BufferedImage img;
+ * initialize it in method init()
+ *   try {
+ *       img = ImageIO.read(getClass().getResource("splash.jpg"));
+ *   } catch (IOException e) {
+ *       e.printStackTrace();
+ *   }
+ *   offScreenGraphics.drawImage(img, 0, 0, this);
+ *   repaint();
+ * 
+ * 
+ * KEEP SCORE FOR THE PLAYERS...
+ * create a field score in the class Cycle
+ * create a getter and a setter method
+ * invoke the getter and setter methods to keep score
+ * winMessage += "flynn: " + flynn.getScore(); 
+ * 
+ * 
+ */

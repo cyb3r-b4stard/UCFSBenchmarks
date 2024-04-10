@@ -1,0 +1,108 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.*;
+
+public class FadingSquares extends JPanel  implements ActionListener
+{
+    Timer t=new Timer(100,this);
+    Graphics2D g2;
+    int randomColor
+    int inc=0;
+    Color shadeOfGray;
+    public void paintComponent(Graphics g)
+    {
+      super.paintComponent(g);
+      g2=(Graphics2D) g;
+      
+      
+     g2.setPaint(Color.white);
+     Rectangle2D rectangleFrame=new Rectangle2D.Double(0,0,600,400);
+     g2.fill(rectangleFrame);
+     g2.setPaint(Color.BLACK);
+     g2.setStroke(new BasicStroke(5));
+     
+     
+     
+      shadeOfGray = new Color(176, 15, 99); 
+     g2.setColor(shadeOfGray);
+     SquaresEk(g2, 400,150,0,60+inc);
+     inc=inc+20;
+      shadeOfGray = new Color(176, 15, 88); 
+     g2.setColor(shadeOfGray);
+     
+     SquaresEk(g2, 400,150,20,60+inc);
+     inc=inc+20;
+      shadeOfGray = new Color(176, 15, 77); 
+     g2.setColor(shadeOfGray);
+     SquaresEk(g2, 400,150,30,60+inc);
+     inc=inc+20;
+     
+     shadeOfGray = new Color(176, 15,66); 
+     g2.setColor(shadeOfGray);   
+     
+     SquaresEk(g2, 400,150,40,0+inc);
+     shadeOfGray = new Color(176, 15,55); 
+     g2.setColor(shadeOfGray);
+     SquaresEk(g2, 400,150,80,20+inc);
+     shadeOfGray = new Color(176, 15, 44); 
+     g2.setColor(shadeOfGray);
+     SquaresEk(g2, 400,150,120,40+inc);
+     shadeOfGray = new Color(176, 15, 33); 
+     g2.setColor(shadeOfGray);
+     SquaresEk(g2, 400,150,160,60+inc);
+     inc=inc+20;
+     shadeOfGray = new Color(176, 15, 22); 
+     g2.setColor(shadeOfGray);
+     SquaresEk(g2, 400,150,200,60+inc);
+     inc=inc+20;
+    t.start();
+    
+}
+public void actionPerformed(ActionEvent e)
+         {
+             repaint();
+            }
+     public void SquaresEk(Graphics2D g2, double xc,double yc, double radius,double startAngle)
+        {
+         double theAngle=startAngle;
+         
+         for(int i=2; i<6; i++)
+          {
+          double x1=Math.round(xc+radius*Math.sin(Math.toRadians(theAngle)));
+          double y1=Math.round(yc+radius*Math.cos(Math.toRadians(theAngle)));
+          theAngle=90.0+theAngle;
+          double x2=Math.round(xc+radius*Math.sin(Math.toRadians(theAngle)));
+          double y2=Math.round(yc+radius*Math.cos(Math.toRadians(theAngle)));
+        
+          Line2D side=new Line2D.Double(x1,y1,x2,y2);
+          g2.draw(side);
+           
+        }
+      }
+   public static void color(){
+     
+       
+             int R = (int)(Math.random( )*256);
+             int G = (int)(Math.random( )*256);
+             int B= (int)(Math.random( )*256);
+             randomColor = new Color(R, G, B); 
+             
+        }
+    
+    
+  
+   
+      public static void main()
+      {
+        FadingSquares drwg=new FadingSquares();
+        
+        JFrame f= new JFrame();
+        f.setVisible(true);
+        f.setSize (600,400);
+        f.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
+        f.setTitle("General Graphics");
+        f.getContentPane().setBackground(Color.green);
+        f.add(drwg);
+    }
+}

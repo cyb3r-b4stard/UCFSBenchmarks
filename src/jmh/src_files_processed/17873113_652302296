@@ -1,0 +1,355 @@
+
+/**
+ * # # # # # # #   -   # # # # # #   ##   -   ###   -   # # #
+ *
+ * ##### ###### #### # ##### ### ######### #'#####.
+ * 
+ * ### ############  ## ##### #'## ##### #### ### #########�:
+ *
+ * ## #########, ## ###### (# = #######, # = #####, # = ####, # = #########, # = #######, # = #####, # = ####, 
+ *                         # = ####, # = ###,  # = #### #####, ## = ####### ## ####). ## ###### ### ###### ### #######.
+ *                         
+ * #�##### ## ######, ## ###### ##### #### ## #### #############. ###### ### ###### = ####.
+ * 
+ * ## ##### ## #######, ## ###### ####### ## ## # ##. ###### ### ###### = ##.
+ * 
+ * ## #######, ## ######  (# = ######## # ######, # = ######). ###### ### ###### = #.
+ * 
+ * #'####### ## ## ###### (###### ## ##########). ###### ### ###### = ��#######��. ## ###### #### ### ########## ##### ######## 
+ * (#### ######### #### ### ############# ## ## ######).
+ * 
+ * ## ##### (###### ## ##########). ###### ### ###### = ��#######��. ## ###### #### ### ########## ##### ######## 
+ * (#### ######### #### ### ############# ## ## ######).
+ * 
+ * ## ###### ## ###### (###### ## ##########). ###### ### ###### = ��#######��. ## ###### #### ### ########## ##### ######## 
+ * (#### ######### #### ### ############# ## ## ######).
+ * 
+ * ## ####### #### #### ## ## ###### ## ## ######## ### #### ## ######## #########. ###### ### ###### = ####.
+ * 
+ * ## ###### #�############## ######## (###### ###### #######). ### ####### ######## # # ## ###### ######/######## 
+ * # ## ###### ######### ### ### ### ######. ### ####### #### ####### ############### ### ### #############.
+ *  
+ **/
+ 
+import java.text.*;
+
+public class Album {
+
+    
+
+    private static final String[] CATEGORIES = { "Inconnue", "Disco", "Jazz", "Classique",
+        "Country", "Blues", "Rock", "Punk", "Pop", "Blue Grass", "Musique de film"};
+
+    private static final String[] SUPPORTS = {"Cassette 8 pistes", "Vinyle"};     
+    
+    
+    public static final int MAX_CATEGORIES = CATEGORIES.length - 1;
+    public static final int MAX_SUPPORTS = SUPPORTS.length - 1;
+    public static final int MIN_CATEGORIES = 0;
+    public static final int MIN_SUPPORTS = 0;
+    
+    public static final int DUREE_MIN = 30;
+    public static final int DUREE_MAX = 90;
+    public static final int DUREE_DEFAUT = 60;
+    
+    public static final int ANNEE_MIN = 1960;
+    public static final int ANNEE_MAX = 1979;
+    public static final int ANNEE_DEFAUT = 1970;    
+    
+    public static final int SUPPORT_DEFAUT = 1;    
+    
+    public static final int CATEGORIE_DEFAUT = 0;    
+    
+    public static final String ARTISTE_DEFAUT = "Inconnu";
+    public static final String TITRE_DEFAUT = "Inconnu";
+    public static final String MAISON_DISQUE_DEFAUT = "Inconnue";
+    
+    public static final boolean POCHETTE_ORIGINALE_DEFAUT = true;
+    
+    
+    
+   
+    
+    /*************************************************************************************
+    * Retourne la chaine de caracteres correspondant a un numero de categorie recu en
+    * parametre. Si le numero ne correspond pas a une categorie existante, la methode 
+    * retourne la chaine vide ("").
+    **************************************************************************************/
+     public static String categorie (int no) {
+         String reponse = "";
+        
+         if(no >=  MIN_CATEGORIES && no <= MAX_CATEGORIES){
+             reponse = CATEGORIES[no];
+         }
+           
+         return reponse;
+      }
+        
+    
+      
+    /*************************************************************************************
+    * Retourne la chaine de caracteres correspondant a un numero de support recu en
+    * parametre. Si le numero ne correspond pas a un support existant, la methode 
+    * retourne la chaine vide ("").
+    **************************************************************************************/
+     public static String support (int no) {
+         String reponse = "";
+                 
+         if(no >= MIN_SUPPORTS && no <= MAX_SUPPORTS){
+             reponse = SUPPORTS[no];
+         }
+                 
+         return reponse; 
+      }
+      
+      
+    
+
+
+    /**
+     * Cree un nouvel album avec les donnees passees en parametre.
+     * 
+     * Lorsqu'une valeur passee en parametre ne fait pas partie des valeurs permises, la valeur
+     * par defaut est attribuee automatiquement a l'attribut correspondant.
+     * 
+     * Les attributs pour lesquels on ne recoit pas de valeur en parametre sont mis aux
+     * valeurs par defaut.
+     *   
+     * Le numero est attribue automatiquement par le constructeur.
+     */
+    public Album ( String titre, int categorie, int anneeSortie, int support) {
+        if(titre == null){
+            this.titre = TITRE_DEFAUT;
+        }
+        else {
+            this.titre = titre;
+        }
+        if(categorie <  MIN_CATEGORIES || categorie > MAX_CATEGORIES){
+            this.categorie = 0;
+        }
+        else {
+            this.categorie = categorie;
+        }
+        if(anneeSortie < ANNEE_MIN || anneeSortie > ANNEE_MAX){
+            this.anneeSortie = 1970;
+        }
+        else {
+            this.anneeSortie = anneeSortie;
+        }
+        if(support < MIN_SUPPORTS || support > MIN_SUPPORTS){
+            this.support = 1;
+        }
+        else {
+            this.support = support;
+        }
+        numeroAlbum = numeroAlbum +1;
+        duree = DUREE_DEFAUT;
+        artiste = ARTISTE_DEFAUT;
+        maisonDisque = MAISON_DISQUE_DEFAUT;
+        pochetteOriginale = POCHETTE_ORIGINALE_DEFAUT;
+    }
+
+   /**
+     * Cree un nouvel album avec les donnees passees en parametre.
+     * 
+     * Lorsqu'une valeur passee en parametre ne fait pas partie des valeurs permises, la valeur
+     * par defaut est attribuee automatiquement a l'attribut correspondant.
+     *   
+     * Le numero est attribue automatiquement lors de la creation de l'album.
+     * 
+     * IMPORTANT : Ce constructeur DOIT appeler l'autre constructeur pour effectuer une partie
+     *             du travail.
+     */
+    public Album (String titre, int categorie, int anneeSortie, int duree, int support, String maisonDisque, 
+                  String artiste, boolean pochetteOriginale){
+        Album nouvelleInstance = new this(titre, categorie, anneeSortie, support);
+        /*
+        if(duree >= DUREE_MIN && duree <= DUREE_MAX){
+            nouvelleInstance.setDuree(duree);
+        } 
+        
+       */
+    }
+
+
+           
+    
+    
+    
+    
+    
+    public String getCategorie(){
+        return categorie(categorie);
+    }
+    
+    public String getSupport(){
+        return support(categorie);
+    }
+    
+    public int getAnneeSortie(){
+        return anneeSortie;
+    }
+    
+    public boolean getPochetteOriginale(){
+        return pochetteOriginale;
+    }
+    
+    public int getDuree(){
+        return duree;
+    }
+    
+    public String getTitre(){
+        return titre;
+    }
+    
+    public String getArtiste(){
+        return artiste;
+    }
+    
+    public String getMaisonDisque(){
+        return maisonDisque;
+    }
+    
+    public int getNumeroAlbum(){
+        return numeroAlbum;
+    }
+    
+
+     /**
+     * Modifie l'annee de sortie de l'album.
+     * Si l'annee de sortie n'est pas parmi les valeurs permises, 
+     * aucune modification n'est effectuee et aucun message d'erreur 
+     * ne sera affiche.
+     */
+    public void setAnneeSortie ( int anneeSortie ) {
+        if (anneeSortie >= ANNEE_MIN && anneeSortie <= ANNEE_MAX){
+            this.anneeSortie = anneeSortie;
+        } 
+    }
+
+     /**
+     * Modifie la duree de l'album.
+     * Si la duree n'est pas parmi les valeurs permises, aucune modification
+     * n'est effectuee et aucun message d'erreur ne sera affiche.
+     */
+    public void setDuree ( int duree ) {
+        if(duree >= DUREE_MIN && duree <= DUREE_MAX){
+            this.duree = duree;
+        }
+        
+    }
+
+     /**
+     * Modifie la categorie d'un album.
+     * Si la categorie n'est pas parmi les choix possibles, aucune modification
+     * n'est effectuee et aucun message d'erreur ne sera affiche.
+     */
+    public void setCategorie (int categorie){
+        if(categorie <  MIN_CATEGORIES || categorie > MAX_CATEGORIES){
+            this.categorie = categorie;
+        }
+        
+    }
+
+     /**
+     * Modifie le format de l'album.
+     * Si le format n'est pas parmi les valeurs permises, aucune modification
+     * n'est effectuee et aucun message d'erreur ne sera affiche.
+     */
+    public void setSupport(int support){
+        if(support < MIN_SUPPORTS || support > MIN_SUPPORTS){
+            this.support = support;
+        }
+    }
+
+    
+
+     /**
+     * Modifie le titre de l'album.
+     * Si le titre est null, aucune modification
+     * n'est effectuee et aucun message d'erreur ne sera affiche.
+     */
+    public void setTitre (String titre){
+         
+        if(titre == null){
+            this.titre = titre;
+        }
+        
+    }
+
+    /**
+     * Modifie l'artiste (ou le groupe) de l'album.
+     * Si le parametre est null, aucune modification
+     * n'est effectuee et aucun message d'erreur ne sera affiche.
+     */
+    public void setArtiste (String artiste){
+
+        if(artiste == null){
+            this.artiste = artiste;
+        } 
+        
+
+    }
+    
+     /**
+     * Modifie la maison de disque de l'album.
+     * Si le parametre est null, aucune modification
+     * n'est effectuee et aucun message d'erreur ne sera affiche.
+     */
+     public void setMaisonDisque (String maisonDisque){
+
+         
+        if(maisonDisque == null){
+            this.maisonDisque = maisonDisque;
+        }
+        
+
+    }
+    
+     /**
+     * Modifie l'attribut qui indique si l'album est dans sa pochette
+     * originale ou non.
+     */
+    public void setPochetteOriginale (boolean pochetteOriginale){
+               
+        this.pochetteOriginale = pochetteOriginale;      
+        
+    }
+
+    
+    
+    
+    
+     /******************************************************************************
+     * Retourne une chaine de caracteres qui correspond aux caracteristiques d'un 
+     * album. Chaque attribut est precede d'une courte description.
+     * Pour la categorie et le support, on doit inclure la valeur numerique ET
+     * la chaine de caracteres correspondante. Chaque attribut doit �tre
+     * sur une ligne differente.
+     ******************************************************************************/
+    public String toString(){
+        
+        String stringRetour; 
+        stringRetour = String.format("L'album " + titre + "\nL'artiste " + artiste + "\nSortie en " + anneeSortie + "\nDuree " + duree + "\nCategorie " + categorie(categorie) + ", " + categorie + "\nSupport " + support(support) + ", " + support
+        + "\nPochette originale: " + (pochetteOriginale ? "true" : "false"));
+        
+       return stringRetour;
+        
+    }
+    
+    
+
+
+    private static int numeroAlbum =0;
+
+
+    private int anneeSortie;
+    private int duree;
+    private int categorie;
+    private int support;
+    private String titre;
+    private String artiste;
+    private String maisonDisque;
+    private boolean pochetteOriginale;
+    
+}

@@ -1,0 +1,334 @@
+
+/**
+ * # # # # # # # # ##.##
+ *
+ * ## ######### #### ##### ####### #### ## ###
+ * 
+ * ######## ######## ######## #####
+ * #.# 
+ * ## #### ####
+ *
+ * ############
+ * ####_#####@#######.###
+ * 
+ * ###### ###########
+ */
+
+public class Tp2Gr10 {
+
+    public static void presenterLogiciel () {
+        System.out.println ("Ce programme vous servira a transformer ou analyser une chaine de caracteres.");
+        System.out.println ("Si vous decidez de transformer, les lettres minuscules seront placees selon l'ordre de l'alphabet entre deux '*'.");
+        System.out.println ("Si ce sont des lettres majuscules, elles seront placees entre deux '@'.");
+        System.out.println ("Il y a aussi la possibilite de combiner les deux options.");
+        System.out.println ("Vous pouvez aussi faire l'analyse complete d'un caractere ou d'une chaine de caracteres.");
+        System.out.println ("Si vous decidez d'analyser un caractere, le programme vous dira si c'est une lettre, une voyelle, consonne, etc..");
+        System.out.println ("Si vous decidez d'analyser une chaine, il vous dira le nombre de lettres, de voyelles, de consonnes, etc..");
+    }
+
+    public static void afficherStats () {
+        System.out.print ("Statistiques");
+    }
+
+    public static void menuOperations () {
+        System.out.println ("Menu des operations: ");
+        System.out.println ("1 - Transformer");
+        System.out.println ("2 - Analyser");
+        System.out.println ("3 - Terminer le programme");
+        System.out.print ("Veuillez faire votre choix: ");
+    }
+
+    public static void menuTransformations () {
+        System.out.println ("Menu des transformations: ");
+        System.out.println ("1 - Remplacer les lettres minuscules par leur position dans l'alphabet entre 2 *");
+        System.out.println ("2 - Remplacer les lettres MAJUSCULES par leur position dans l'alphabet entre 2 @");
+        System.out.println ("3 - Combinaison des options 1 et 2");
+        System.out.print ("Veuillez faire votre choix: ");                
+    }
+
+    public static void menuAnalyse () {
+        System.out.println ("Menu d'analyse: ");
+        System.out.println ("1 - Analyse complete d'un caractere");
+        System.out.println ("2 - Analyse complete d'une chaine de caracteres"); 
+        System.out.print ("Veuillez faire votre choix: ");
+    }
+
+    public static int saisirEtValiderChoix (int min, int max) {
+        return 0;
+    }
+
+    public static boolean AlphaNum (char c) {
+        return !Character.isLetterOrDigit (c);
+    }
+
+    public static boolean estNombre (char c) {
+        return Character.isDigit (c);
+    }
+
+    public static boolean estLettre (char c) {
+        return Character.isLetter (c);
+    }
+
+    public static boolean estMajuscule (char c) {  
+        return Character.isUpperCase (c);
+    }
+
+    public static boolean estMinuscule (char c) {
+        return Character.isLowerCase(c);
+    }
+
+    public static boolean estVoyelle (char c) {
+        c = Character.toLowerCase (c);
+
+        return c == 'a' || c == 'e' || c == 'i' ||
+        c == 'o' || c == 'u' || c == 'y';
+    }
+
+    public static boolean estConsonne (char c) {
+        c = Character.toLowerCase (c);
+
+        return c == 'b' || c == 'c' || c == 'd' || c == 'f' || c == 'g' || 
+        c == 'h' || c == 'j' || c == 'k' || c == 'l' || c == 'm' || 
+        c == 'n' || c == 'p' || c == 'q' || c == 'r' || c == 's' || 
+        c == 't' || c == 'v' || c == 'w' || c == 'x' || c == 'z';
+
+    }
+
+    public static String SaisirEtValiderChaine (String msg, int min, int max) {
+        boolean erreurMinMaxPositifs = false;
+        boolean erreurMinSupMax = false;
+        boolean erreurIntervalle = false;
+
+        if (!((min > 0) && (max > 0))) {
+            erreurMinMaxPositifs = true;
+        }
+
+        if (max <= min) {
+            erreurMinSupMax = true;
+        }
+
+        if ((min < 3)||(max > 32)) {
+            erreurMinSupMax = true;
+        }
+
+        if (!((msg.length() >= min) && (msg.length() <= max))) {
+            erreurIntervalle = true;
+        }
+
+        if (erreurMinMaxPositifs == true) {
+            msg = "min et/ou max doivent etre positifs ";
+        } else if (erreurMinSupMax == true) {
+            msg = "Le minimumum est de 3 et le maximum est est de 32";
+        } else if (erreurIntervalle == true) {
+            msg = "la longeur de la chaine n est pas comprise dans l intervalle ["+min+";"+max+"]";
+        }
+
+        return msg;
+    }
+
+    public static int retournePosAlpha (char c) {
+        c = Character.toLowerCase (c);
+        return ((int)c - (int)'a') + 1;
+    }
+
+    public static String changerMajuscules (String s) {
+        String chaineFinale = "";        
+
+        for (int i = 0; i < s.length(); i++) {
+            if (estMajuscule (s.charAt(i)) == true) {
+                chaineFinale = chaineFinale + "@" + Integer.toString(retournePosAlpha(s.charAt(i))) + "@";
+            } else {
+                chaineFinale = chaineFinale + s.charAt(i);
+            }
+        }
+
+        return chaineFinale;
+    }
+
+    public static String changerMinuscules (String s) {
+        String chaineFinale = "";
+
+        for (int i = 0; i < s.length(); i++) {
+            if (estMinuscule (s.charAt(i)) == true) {
+                chaineFinale = chaineFinale + "*" + Integer.toString (retournePosAlpha (s.charAt(i))) + "*";
+            } else {
+                chaineFinale = chaineFinale + s.charAt(i);
+            }
+        }
+
+        return chaineFinale;
+    }
+
+    public static char saisirEtValiderCaractere () {
+        return 'a';
+    }
+
+    public static void analyseComplete (char c) {
+        System.out.println(" ---- RESULTATS D'ANALYSE -------");
+        System.out.println("Lettre : "+ estLettre (c));
+        System.out.println("Voyelle : "+ estVoyelle (c));
+        System.out.println("Consonne : "+ estConsonne (c));
+        System.out.println("Chiffre : "+ estNombre (c));
+        System.out.println("Caractere non alpha-numerique : "+ AlphaNum (c));
+    }
+
+    public static void analyseComplete (String s) {
+        int compteurVoyelle = 0;
+        int compteurConsonne = 0;
+        int compteurAlphanumerique = 0;
+        int compteurLettre = 0;
+        int compteurChiffre = 0; 
+        int compteurMinuscule = 0;
+        int compteurMajuscule = 0;
+
+        for (int i = 0; i < s.length(); i++) {
+
+            if (estMinuscule (s.charAt(i)) == true) {
+                compteurMinuscule = compteurMinuscule + 1;
+            }  
+
+            if (estMajuscule (s.charAt(i)) == true) {
+                compteurMajuscule = compteurMajuscule + 1;
+            }  
+
+            if (estLettre (s.charAt(i)) == true) {
+                compteurLettre = compteurLettre + 1;
+            }             
+
+            if (estVoyelle (s.charAt(i)) == true) {               
+                compteurVoyelle = compteurVoyelle + 1;       
+
+            } 
+
+            if (estConsonne (s.charAt(i)) == true) {
+                compteurConsonne = compteurConsonne + 1;   
+            } 
+
+            if (estNombre (s.charAt(i)) == true) {
+                compteurChiffre = compteurChiffre + 1;
+            } 
+
+            if (AlphaNum (s.charAt(i)) == true) {
+                compteurAlphanumerique = compteurAlphanumerique + 1;
+            }
+
+        } 
+
+        System.out.println ("---- RESULTATS D'ANALYSE -------");
+        System.out.println ("Nombre de lettres (au total : " + compteurLettre + ", minuscules : " + compteurMinuscule +", majuscules : " + compteurMajuscule);
+        System.out.println ("Nombre de voyelles (au total : " + compteurVoyelle + ", minuscules : " + compteurMinuscule + ", majuscules : " + compteurMajuscule);
+        System.out.println ("Nombre de consonnes (au total : " + compteurConsonne + ", minuscules : " + compteurMinuscule + ", majuscules : " + compteurMajuscule);
+        System.out.println ("Nombre total de chiffres : " + compteurChiffre);
+        System.out.println ("Nombre total de caracteres non alpha-numerique : " + compteurAlphanumerique);
+    }
+
+    public static void main (String[] params) {
+        int oper;
+        int trans;
+        int analyse;
+        String chaine;
+        char c;        
+
+        presenterLogiciel ();
+        menuOperations ();
+        oper = Clavier.lireInt();
+
+        while (oper < 1 || oper > 3) {
+            System.out.println ("ERREUR! Votre choix n'est pas valide!");
+            System.out.print ("Veuillez recommencer: ");
+            oper = Clavier.lireInt();
+        }
+
+        if (oper == 1) {
+            menuTransformations ();
+            trans = Clavier.lireInt();
+
+            while (trans < 1 || trans > 3) {
+                System.out.println ("ERREUR! Votre choix n'est pas valide!");
+                System.out.print ("Veuillez recommencer: ");
+                trans = Clavier.lireInt();
+            }
+
+            if (trans == 1) {
+                System.out.print ("Veuillez entrer une chaine: ");
+                chaine = Clavier.lireString();
+                chaine = changerMinuscules(chaine);
+                System.out.println (chaine); 
+
+                do {
+                    menuOperations ();
+                    oper = Clavier.lireInt();
+
+                    if (oper < 1 || oper > 3) {
+                        System.out.println ("ERREUR! Votre choix n'est pas valide!");
+                        System.out.print ("Veuillez recommencer: ");
+                        oper = Clavier.lireInt();
+                    }
+
+                    if (oper == 1) {
+                        menuTransformations ();
+                        trans = Clavier.lireInt();
+
+                        if (trans < 1 || trans > 3) {
+                            System.out.println ("ERREUR! Votre choix n'est pas valide!");
+                            System.out.print ("Veuillez recommencer: ");
+                            trans = Clavier.lireInt();
+                        }
+                        if (trans == 1) {
+                            System.out.print ("Veuillez entrer une chaine: ");
+                            chaine = Clavier.lireString();
+                            chaine = changerMinuscules(chaine);
+                            System.out.println (chaine);
+                        }
+                        if (trans == 2) {
+                            System.out.print ("Veuillez entrer une chaine: ");  
+                            chaine = Clavier.lireString();
+                            chaine = changerMajuscules(chaine);
+                            System.out.print (chaine);
+
+                        }
+                        if (trans == 3) {
+                            System.out.print ("Veuillez entrer une chaine: ");
+                            chaine = Clavier.lireString();
+                            chaine = changerMinuscules(chaine);
+                            chaine = changerMajuscules(chaine);
+                            System.out.print (chaine);
+
+                        }
+                    }
+                }
+
+                if (oper == 2) {
+                    menuAnalyse ();
+                    analyse = Clavier.lireInt();
+
+                    while (analyse < 1 || analyse > 2) {
+                        System.out.println ("Erreur! Votre choix n'est pas valide!");
+                        System.out.print ("Veuillez recommencer: ");
+                        analyse = Clavier.lireInt();
+                    }
+
+                    if (analyse == 1) {
+                        System.out.print ("Veuillez entrer un caractere: ");
+                        c = Clavier.lireCharLn();
+
+                        analyseComplete(c);
+                    }
+
+                    if (analyse == 2) {
+                        System.out.print ("Veuillez entrer une chaine: ");
+                        chaine = Clavier.lireString();
+
+                        analyseComplete(chaine);
+
+                    }
+                }
+
+                if (oper == 3) {
+                    afficherStats ();
+                    System.out.println ("Fermeture normale du logiciel!");
+                } 
+            }
+        }
+    }
+}

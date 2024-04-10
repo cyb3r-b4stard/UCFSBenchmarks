@@ -1,0 +1,95 @@
+
+/**
+ * ##### # ########### ## ##### ############ ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import java.util.ArrayList;
+public class CO2Footprint
+{
+    private int myNumPeople;
+    private boolean myPaper, myPlastic, myGlass, myCans;
+    private double myGallonsUsed;
+    private double myWasteEmissions, myWasteReduction, myNetWasteEmissions;
+    private double myElecEmissions;  
+    private double myAvgElecBill, myAvgElecPrice;
+    private double myGasEmissions;
+    private int myNumBulbsReplaced;
+    
+    
+    
+    /**
+     * Constructor for objects of type CO2Footprint
+     */
+    CO2Footprint(double gallonsUsed, double avgElecBill, double avgElecPrice, int numPeople, boolean paper, boolean plastic, boolean glass, boolean cans, int numBulbsReplaced)
+    {
+        myGallonsUsed = gallonsUsed;
+        myAvgElecBill = avgElecBill;
+        myAvgElecPrice = avgElecPrice;
+        myNumPeople = numPeople;
+        myPaper = paper;
+        myPlastic = plastic;
+        myGlass = glass;
+        myCans = cans;
+        myNumBulbsReplaced = numBulbsReplaced;
+    }
+    
+   
+    
+    public double calcCO2FromGas()
+    {
+        return myGallonsUsed * (8.78 * 10E-3) * 2204.6;
+    }
+    
+    public double calcCO2FromElec()
+    {
+        return (myAvgElecBill / myAvgElecPrice) * 1.37 * 12;
+    }
+    
+    public double calcCO2FromWaste()
+    {
+        return myNumPeople * 1018;
+    }
+    
+    public double calcWasteReduction()
+    {
+        if(myPaper)
+       {
+           myWasteReduction += (184.0 * myNumPeople);
+       }
+       
+       if(myPlastic)
+       {
+           myWasteReduction += (25.6 * myNumPeople);
+       }
+       
+       if(myGlass)
+       {
+           myWasteReduction += (46.6 * myNumPeople);
+       }
+       
+       if(myCans)
+       {
+           myWasteReduction += (165.8 * myNumPeople);
+       }
+       
+       return myWasteReduction;
+    }
+    
+    public double calcNetWasteCO2()
+    {
+        return (myNumPeople * 1018) - myWasteReduction;
+    }
+    
+    public double calcBulbReduction()
+    {
+        return myNumBulbsReplaced * 1.37 * 73;
+    }
+    
+    public double calcTotalFootprint()
+    {
+        return void;
+    }
+    
+}

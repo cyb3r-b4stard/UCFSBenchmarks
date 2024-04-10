@@ -1,0 +1,238 @@
+
+import info.graphics.*;
+import static info.utils.io.*;
+import static info.graphics.Color.*;
+import static info.graphics.Tools.*;
+import static java.lang.Math.*;
+
+/**
+ * #### ###### ####### ##### ###### ### ###
+ * 
+ * @######  ######## ##### ###
+ * @####### ######## ## ####
+ */
+public class TP4 {
+
+    static int compteur (int n, int p) {
+        int res = 1;
+        int compteur = 0;
+        while (compteur < p) {
+            res = res * n;
+            compteur++;
+        }
+        return res;
+    }
+
+    static void drawRandomShapes(int n){
+        assert n > 0 : "Le nombre de formes doit être positif !";
+        int compteur=0;
+        Window window = new Window(1360,900, "Fenêtre");
+        while(compteur < n){
+            drawRandomShape(window);
+            compteur++;
+        }
+    }
+
+    static void drawRandomShape(Window window) {
+        Color c = randomColor();
+        boolean fill = random.nextBoolean();
+        int w = 20 + random.nextInt(180);
+        int h = 20 + random.nextInt(180);
+        int x = random.nextInt(window.getWidth()-w);
+        int y = random.nextInt(window.getHeight()-h);
+        int shape = random.nextInt(3);
+        if (shape==0) {
+            window.drawRectangle(x, y, fill, c, w, h);
+        } else if (shape==1) {
+            window.drawEllipse(x, y, fill, c, w, h);
+        } else {
+            window.drawTriangle(x, y, fill, c, w, h);
+        };
+
+    }
+
+    static Color randomColor() {
+        Color c;
+        int r = random.nextInt(6);
+        if (r == 0) {
+            c = white;
+        } else if (r == 1) {
+            c = red;
+        } else if (r == 2) {
+            c = blue;
+        } else if (r == 3) {
+            c = green;
+        } else if (r == 4) {
+            c = orange;
+        } else {
+            c = cyan;
+        } 
+        return c;
+    }
+
+    static void toss(){
+        int n=1;
+        boolean bool;
+        double vrai=0;
+        double faux=0;
+        double pourcentV=0.0;
+        double pourcentF=0.0;
+        while((pourcentV != 50.0) && (pourcentF != 50.0) || (n<100)){
+            bool = random.nextBoolean();
+            if(bool==true){ 
+                vrai++;
+            }
+            else{ 
+                faux++;
+            }
+            pourcentV=(vrai/(double)n)*100;
+            pourcentF=(faux/(double)n)*100;
+            n++;
+        }
+        output.println("Nombre de tirages = " + n);
+        output.println("pile = " + pourcentV + " %");
+        output.println("face = " + pourcentF + " %");
+        assert n > 0 : "Le nombre de formes doit être positif !";
+    }
+
+    static void drawRow(){
+        Window myWindow;
+        int n = 0;
+        int i = 0;
+        int large = random.nextInt(800)+200;;
+        int carre = 33;
+        int nbCarre = large/carre;
+        int nbCarreL= nbCarre*33;
+        Color color;
+        int x = 0;
+        myWindow = new Window(large,245,"mechant");
+        while(nbCarreL<large){
+            if(n==i){
+                color = red;
+                n++;
+            }else{
+                color = blue;
+                i++;
+            }
+            myWindow.drawRectangle(x,115,true,color,carre,carre);
+            x = x + 33;    
+        }
+    }     
+
+    static void drawChessboard(){
+        int largeur = random.nextInt(800)+200;
+        Window window = new Window(largeur, 245, "Chessboard");
+        int n = 0;
+        int i = n;
+        int y = 0;
+        int x = 0;
+        int p = 0;
+        int o = 0;
+        int carre = 33;
+        int nbCarreL = largeur / carre + 1;
+        int nbCarreH = 245 / carre + 1;
+        Color color;
+        while(o < nbCarreH){
+            while(p < nbCarreL){
+                if(n==i){
+                    color = black;
+                    n++;
+                }else{
+                    color = white;
+                    i++;
+                }
+                window.drawRectangle(x, y, true, color, carre, carre);
+                x = x + 33;
+                p++;
+
+            } 
+            if(i!=n){
+                i++;
+            }else{
+                n++;
+            }
+            p = 0;
+            y = y + 33;
+            x = 0;
+            o++;
+        }
+    }
+
+    static int puissance(int n, int p) {
+        int res = 1;
+        int compteur = 0;
+        while (compteur < p) {
+            res = res + n;
+            compteur++;
+        }
+        return res;
+    }
+
+    static void saisirEtCalculer(){
+        int n;
+        int p;
+        output.print("n ? ");
+        n = input.nextInt();
+        output.print("p ? ");
+        p = input.nextInt();
+        output.println("Le calcul donne " + puissance(n,p));
+    }
+
+    static int triple(int a) {
+        return 30;
+    }
+
+    static void drawCircles(int distance){
+        Window window = new Window(800, 240, "drawCircles");
+        window.setBackgroundColor(black);
+        int bord=0;
+        int i =0;
+        while(true){
+            while(bord < window.getWidth() - 30){
+                window.drawEllipse(0 + bord, window.getHeight()/4, false, red, 30, window.getHeight()/4);
+                bord += distance;
+                window.drawEllipse(0 + bord, window.getHeight()/4, false, orange, 30, window.getHeight()/4);
+                bord += distance;
+                window.drawEllipse(0 + bord, window.getHeight()/4, false, yellow, 30, window.getHeight()/4);
+                bord += distance;
+            }
+        }
+    }
+        
+    static void drawFirstBall() {
+        int x=random.nextInt(800);
+        int y=240; 
+        Window window = new Window(x+200, y, "First Ball"); 
+        int diameter = 60;   
+        Ellipse ball; 
+        ball = new Ellipse(0, 90, true, red, diameter, diameter); 
+        window.draw(ball); 
+        pause(2000);
+        ball.setX(300); 
+        pause(2000);
+        ball.setX(600); 
+    }
+    static void drawBall() {
+        int x=random.nextInt(800);
+        int y=x;
+        Window window = new Window(x+200, y, "DrawBall");
+        int diameter = 60;
+        Ellipse ball;
+        ball = new Ellipse(0, 90, true, black, diameter, diameter);
+        window.draw(ball);
+        pause(20);
+        int i = 0;
+        while( < window.getWidth()) {
+            ball.setX(i++);
+            pause(5);
+       }    
+     }
+    static void bouncingBall(){
+        int x=random.nextInt(00);
+        int y=x;
+        Window window = new Window(x+200, y, "DrawBall");
+        int diameter = 60;
+        Ellipse ball;
+        ball = new Ellipse(0, 90, true, black, diameter, diameter);
+    }
+}

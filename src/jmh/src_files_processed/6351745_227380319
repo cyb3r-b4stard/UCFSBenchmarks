@@ -1,0 +1,301 @@
+
+/**
+ * ##### # ########### ## ##### #### ####.
+ * 
+ * @###### ###### #####
+ * @####### #/#/##
+ */
+public class Date
+{
+    private int day;
+    private int month;
+    private int year;
+    public Date(){
+        day=month=year=0;
+    }
+    
+    public Date(int months, int days, int years){
+        day=days;
+        month=months;
+        year=years;
+    }
+    
+    public Date(Date copyDate){
+        day=copyDate.day;
+        month=copyDate.month;
+        year=copyDate.year;
+    }
+    
+    public void add(){
+        Date myDate=new Date(7,23,2017);
+        Date result=new Date(myDate);
+        result.day=result.day+15;
+        result=monthChecker(result);
+        System.out.println("The original date is: "+toString(myDate));
+        System.out.println("The date after adding 15 days is: "+toString(result));
+        
+    }
+    
+    public void subtract(){
+        Date myDate=new Date(3,20,2014);
+        Date result=new Date(myDate);
+        result.day=result.day-30;
+        result=monthChecker(result);
+        System.out.println("The original date is: "+toString(myDate));
+        System.out.println("The date after subtracting 30 days is: "+toString(result));
+    }
+    
+    public void dateDiff(){
+        Date dateOne = new Date(3,15, 2014);
+        Date dateTwo = new Date(4, 18, 2014);
+        int differ;
+        differ = difference(dateOne, dateTwo);
+        System.out.println("the difference between " + dateOne + 
+        " and "+ dateTwo + " is" + differ + " days");
+    }
+    
+    public String toString(Date theDate){
+        return(theDate.month+", "+theDate.day+", "+theDate.year);
+    }
+    
+    public int difference(Date dateCheckOne, Date dateCheckTwo){
+        int diff=0;
+        int totalOne=0;
+        int totalTwo=0;
+        if(dateCheckOne.month==1||dateCheckOne.month==3||dateCheckOne.month==5||
+        dateCheckOne.month==7||dateCheckOne.month==8||dateCheckOne.month==10||
+        dateCheckOne.month==12){
+            totalOne=dateCheckOne.year*365+dateCheckOne.month*31+dateCheckOne.day;
+        }
+        else if(dateCheckOne.month==9||dateCheckOne.month==11||
+        dateCheckOne.month==4||dateCheckOne.month==6){
+            totalOne=dateCheckOne.year*365+dateCheckOne.month*30+dateCheckOne.day;
+        }
+        else if(dateCheckOne.month==2){
+            totalOne=dateCheckOne.year*365+dateCheckOne.month*28+dateCheckOne.day;
+        }
+        
+        if(dateCheckTwo.month==1||dateCheckTwo.month==3||dateCheckTwo.month==5||
+        dateCheckTwo.month==7||dateCheckTwo.month==8||dateCheckTwo.month==10||
+        dateCheckTwo.month==12){
+            totalTwo=dateCheckTwo.year*365+dateCheckTwo.month*28+dateCheckTwo.day;
+        }
+        else if(dateCheckTwo.month==9||dateCheckTwo.month==11||
+        dateCheckTwo.month==4||dateCheckTwo.month==6){
+            totalTwo=dateCheckTwo.year*365+dateCheckTwo.month*30+dateCheckTwo.day;
+        }
+        else if(dateCheckTwo.month==2){
+            totalTwo=dateCheckTwo.year*365+dateCheckTwo.month*28+dateCheckTwo.day;
+        }
+        
+        if(totalOne>totalTwo){
+            diff=totalOne-totalTwo;
+        }
+        else if(totalOne<totalTwo){
+            diff=totalTwo-totalOne;
+        }
+        else{
+            diff=0;
+        }
+        
+        return diff;
+    }
+    
+    public int totalDays(Date before){
+        int after=0;
+        if(before.month==1)after+=31;
+        else if(before.month==2)after+=28;
+        else if(before.month==3)after+=31;
+        else if(before.month==4)after+=30;
+        else if(before.month==5)after+=31;
+        else if(before.month==6)after+=30;
+        else if(before.month==7)after+=31;
+        else if(before.month==8)after+=31;
+        else if(before.month==9)after+=30;
+        else if(before.month==10)after+=31;
+        else if(before.month==11)after+=30;
+        else after+=31;
+        after=after+before.day;
+        return after;
+    }
+    
+    public int differenceCalc(Date before, Date after){
+        int diff=0;
+        int dateOne=0;
+        int dateTwo=0;
+        if(before.month==1)dateOne+=31;
+        else if(before.month==2)dateOne+=28;
+        else if(before.month==3)dateOne+=31;
+        else if(before.month==4)dateOne+=30;
+        else if(before.month==5)dateOne+=31;
+        else if(before.month==6)dateOne+=30;
+        else if(before.month==7)dateOne+=31;
+        else if(before.month==8)dateOne+=31;
+        else if(before.month==9)dateOne+=30;
+        else if(before.month==10)dateOne+=31;
+        else if(before.month==11)dateOne+=30;
+        
+        if(after.month==1)dateTwo+=31;
+        else if(after.month==2)dateTwo+=28;
+        else if(after.month==3)dateTwo+=31;
+        else if(after.month==4)dateTwo+=30;
+        else if(after.month==5)dateTwo+=31;
+        else if(after.month==6)dateTwo+=30;
+        else if(after.month==7)dateTwo+=31;
+        else if(after.month==8)dateTwo+=31;
+        else if(after.month==9)dateTwo+=30;
+        else if(after.month==10)dateTwo+=31;
+        else if(after.month==11)dateTwo+=30;
+        
+        dateOne
+        
+        if(dateOne>dateTwo)diff=dateOne-dateTwo;
+        else diff=dateTwo-dateOne;
+        
+        return diff;
+    }
+    public Date monthChecker(Date dateCheck){
+       Date dateChe=dateCheck;
+       if(dateCheck.month==1){
+            if(dateCheck.day>31){
+               dateChe.month=dateCheck.month+1;
+               dateChe.day=dateCheck.day-31;
+             }
+            else if(dateCheck.day<1){
+               dateChe.month=12;
+               dateChe.day=dateCheck.day+31;
+               dateChe.year=dateCheck.year-1;
+             }
+        }
+        else if(dateCheck.month==2){
+            if(dateCheck.day>28){
+                dateChe.month=dateCheck.month+1;
+                dateChe.day=dateCheck.day-28;
+            }
+            else if(dateCheck.day<1){
+                dateChe.month=dateCheck.month-1;
+                dateChe.day=dateCheck.day+31;
+            }
+        }
+        else if(dateCheck.month==3){
+            if(dateCheck.day>31){
+                dateChe.month=dateCheck.month+1;
+                dateChe.day=dateCheck.day-31;
+            }
+            else if(dateCheck.day<1){
+                dateChe.month=dateCheck.month-1;
+                dateChe.day=dateCheck.day+28;
+            }
+        }
+        else if(dateCheck.month==4){
+            if(dateCheck.day>30){
+                dateChe.month=dateCheck.month+1;
+                dateChe.day=dateCheck.day-30;
+            }
+            else if(dateCheck.day<1){
+                dateChe.month=dateCheck.month-1;
+                dateChe.day=dateCheck.day+31;
+            }
+        }
+        else if(dateCheck.month==5){
+            if(dateCheck.day>31){
+                dateChe.month=dateCheck.month+1;
+                dateChe.day=dateCheck.day-31;
+            }
+            else if(dateCheck.day<1){
+                dateChe.month=dateCheck.month-1;
+                dateChe.day=dateCheck.day+30;
+            }
+        }
+        else if(dateCheck.month==6){
+            if(dateCheck.day>31){
+                dateChe.month=dateCheck.month+1;
+                dateChe.day=dateCheck.day-31;
+            }
+            else if(dateCheck.day<1){
+                dateChe.month=dateCheck.month-1;
+                dateChe.day=dateCheck.day+30;
+            }
+        }
+        else if(dateCheck.month==7){
+            if(dateCheck.day>31){
+                dateChe.month=dateCheck.month+1;
+                dateChe.day=dateCheck.day-31;
+            }
+            else if(dateCheck.day<1){
+                dateChe.month=dateCheck.month-1;
+                dateChe.day=dateCheck.day+30;
+            }
+        }
+        else if(dateCheck.month==8){
+            if(dateCheck.day>31){
+                dateChe.month=dateCheck.month+1;
+                dateChe.day=dateCheck.day-31;
+            }
+            else if(dateCheck.day<1){
+                dateChe.month=dateCheck.month-1;
+                dateChe.day=dateCheck.day+31;
+            }
+        }
+        else if(dateCheck.month==9){
+            if(dateCheck.day>31){
+                dateChe.month=dateCheck.month+1;
+                dateChe.day=dateCheck.day-30;
+            }
+            else if(dateCheck.day<1){
+                dateChe.month=dateCheck.month-1;
+                dateChe.day=dateCheck.day+31;
+            }
+        }
+        else if(dateCheck.month==10){
+            if(dateCheck.day>31){
+                dateChe.month=dateCheck.month+1;
+                dateChe.day=dateCheck.day-31;
+            }
+            else if(dateCheck.day<1){
+                dateChe.month=dateCheck.month-1;
+                dateChe.day=dateCheck.day+30;
+            }
+        }
+        else if(dateCheck.month==11){
+            if(dateCheck.day>31){
+                dateChe.month=dateCheck.month+1;
+                dateChe.day=dateCheck.day-30;
+            }
+            else if(dateCheck.day<1){
+                dateChe.month=dateCheck.month-1;
+                dateChe.day=dateCheck.day+31;
+            }
+        }
+        else if(dateCheck.month==12){
+            if(dateCheck.day>31){
+                dateChe.month=1;
+                dateChe.day=dateCheck.day-31;
+                dateChe.year=dateCheck.year+1;
+            }
+            else if(dateCheck.day<1){
+                dateChe.month=dateCheck.month-1;
+                dateChe.day=dateCheck.day+30;
+            }
+        }
+        return dateChe;
+    }
+    
+    public boolean equals(Date other){
+        return this.day == other.day; 
+               
+    }
+    
+    public int compareTo(Date other){
+        int result;
+        
+        if(this.day > other.day)result = 1;
+        else if (this.day == other.day) result =  0;
+        else result =  -1;
+        
+        return result;
+    }
+    
+
+    
+}

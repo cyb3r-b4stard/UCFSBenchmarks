@@ -1,0 +1,199 @@
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+import java.io.PrintWriter;
+import java.io.FileOutputStream;
+import java.util.Random;
+/**
+ * # ###### ###### ### ##### ## ###### ## #####; # ####### #### ### #### ## #### ## ##### ## ########### ### ### #####.
+ * #####:
+ * # ####### ##### ##### #### ###/### ##### ## ### #######, ### ########### #### ###/### ########## ####### ##### ## ### #####.
+ * ###########, ## #### ### ####### #### ######## #### # ####### ## #######. ########## ## ### #### ### ####### ##### ##, ##### #### ###### ## # #######, ##### ####### ############# (####, ######, ######)
+ */
+public class Lab6
+{
+    public static void main(String[] args)
+    {
+        
+    }
+    
+    public static void Lab6a()
+    {
+        Scanner input = null;
+        PrintWriter output = null;
+        PrintWriter acc = null;
+        try
+        {
+            input = new Scanner(new FileInputStream("advice.txt"));
+        }
+        catch (FileNotFoundException e)
+        {
+            System.out.println("I'm sorry, but you may not have \"advice.txt\" in your directory.");
+            System.out.println("Creating one....");
+            try
+            {
+                acc = new PrintWriter(new FileOutputStream("advice.txt"));
+                acc.close();
+                input = new Scanner(new FileInputStream("advice.txt"));
+                System.out.println("File successfully created.");
+            }
+            catch (FileNotFoundException d)
+            {
+                System.out.println("I'm sorry, \"advice.txt\" exists, but it cannot be opened. Exiting system now.");
+                System.exit(0);
+            }
+        }
+        while (input.hasNextLine())
+        {
+            System.out.println(input.nextLine());
+        }
+        input.close();
+        try
+        {
+            output = new PrintWriter(new FileOutputStream("advice.txt", true));
+        }
+        catch (FileNotFoundException e)
+        { 
+            System.out.println("I'm sorry, \"advice.txt\" could not be edited. Exiting system now.");
+            System.exit(0);
+        }
+        System.out.println("This marks the end of the document.");
+        System.out.println("You can add more advices here. Just type and you'll add it up! Press the Enter/Return key twice when you're done and the system will exit.");
+        System.out.println("");
+        boolean deadtoggle = true;
+        boolean toggle = true;
+        String theNextLine = "";
+        Scanner writeDown = new Scanner(System.in);
+        while (deadtoggle)
+        {
+            theNextLine = writeDown.nextLine();
+            output.println(theNextLine);
+            if (theNextLine.equals(""))
+            {
+                toggle = false;
+            }
+            else
+            {
+                toggle = true;
+            }
+            if (!toggle && theNextLine.equals(""))
+            {
+                deadtoggle = false;
+            }
+            else
+            {
+                
+            }
+        }
+        output.close();
+        System.exit(0);
+    }
+    private static String Reverse(String x)
+    {
+        String reverse = "";
+        for(int i = x.length() - 1; i >= 0; i--)
+        {
+            reverse = reverse + x.charAt(i);
+        }
+        return reverse;
+    }
+    public static void Lab6b()
+    {
+        Scanner putin = null;
+        PrintWriter putout = null;
+        String next_Line = "";
+        int count = 0;
+        int palincount = 0;
+        try
+        {
+            putin = new Scanner(new FileInputStream("words.txt"));
+            putout = new PrintWriter(new FileOutputStream("palindrome.txt"), false);
+        }
+        catch (FileNotFoundException e)
+        {
+            System.out.println("I'm sorry, but the file \"words.txt\" or the file \"palindrome.txt\" could not be opened. The system will close.");
+            System.exit(0);
+        }
+        while (putin.hasNextLine())
+        {
+            next_Line = putin.nextLine();
+            count = count + 1;
+            if (next_Line.equalsIgnoreCase(Reverse(next_Line)))
+            {
+                putout.println(next_Line);
+                palincount = palincount + 1;
+            }
+            else
+            {
+            }
+        }
+        System.out.println("There are "+palincount+" palindromes from "+count+" words.");
+        System.out.println("All the palindromes are now in the \"palindrome.txt\" file.");
+        putin.close();
+        putout.close();
+        System.exit(0);
+    }
+    public static void Lab6c()
+    {
+        int start;
+        Random gen = new Random();
+        start = gen.nextInt(10);
+        System.out.println("Your starting number is "+start+".");
+        System.out.println("Enter \'a\' to increase the counter, \'s\' to decrease the counter, \'d\' to set the counter to 0, \'r\' to show the counter and \'f\' to exit the program.");
+        Scanner key = new Scanner(System.in);
+        int counter = start;
+        boolean toggle = true;
+        boolean toogle = false;
+        String function = "";
+        boolean togel = function.equalsIgnoreCase("a")||function.equalsIgnoreCase("s")||function.equalsIgnoreCase("d")||function.equalsIgnoreCase("f")||function.equalsIgnoreCase("r");
+        while (toggle)
+        {
+            do
+            {
+                if(!togel&&toogle)
+                {
+                    System.out.println("Hey, your input is invalid. Please enter a, s, d, f, or r only.");
+                }
+                while (!key.hasNextLine())
+                {
+                    System.out.println("Your input is invalid. Please enter a, s, d, f, or r only.");
+                    key.next();
+                }
+                function = key.nextLine();
+                toogle = true;
+            } while (togel);
+            if (function.equalsIgnoreCase("a"))
+            {
+                counter = counter + 1;
+                System.out.println("Counter increased.");
+            }
+            else if (function.equalsIgnoreCase("s"))
+            {
+                if (counter > 0)
+                {
+                    counter = counter - 1;
+                    System.out.println("Counter decreased.");
+                }
+                else(
+                
+            }
+            else if (function.equalsIgnoreCase("d"))
+            {
+                System.out.println("Your current counter is now set to 0.");
+                counter = 0;
+            }
+            else if (function.equalsIgnoreCase("f"))
+            {
+                toggle = false;
+            }
+            else
+            {
+                System.out.println("Your counter is now at "+counter+".");
+            }
+        }
+        key.close();
+        System.exit(0);
+    }
+}
+
+    

@@ -1,0 +1,1916 @@
+
+
+import java.awt.*;
+import java.applet.Applet;
+import javax.swing.*;
+import java.awt.event.*;
+import java.util.Vector;
+import java.util.Collections;
+import java.util.Random;
+import java.io.*;
+import java.util.StringTokenizer;
+import java.util.Enumeration;
+import java.io.BufferedWriter;
+
+
+public class Gui extends JApplet implements ActionListener
+
+{
+float meja1 = 0.4f;
+float meja1old = meja1;
+float meja2 = 0.2f; 
+float ALPHA;
+
+int starting_vertex = 0 ;   
+float     MejnaUtez = 0.5f;
+     private static final int MegaBytes = 10241024;
+ private int iter=1;
+ public Vector<ExtendVer> clusterOutside = new Vector();
+ public Color color[]= 
+ { Color.white,Color.red, Color.orange, Color.green, Color.pink, Color.yellow, Color.magenta,  Color.lightGray,
+     new Color(140,255,140),  new Color(184, 160, 66),new Color(160,160,255), new Color(255, 255, 112),new Color(255, 140, 255),new Color(255, 255, 50),new Color(255, 255, 0), new Color(10, 30, 60), Color.orange, 
+   Color.yellow, new Color(20, 20, 30), Color.pink,  Color.lightGray, Color.red,  new Color(200,200,200),new Color(255, 255, 200),new Color(255, 255, 150),new Color(255, 255, 100),new Color(255, 255, 50),
+new Color(255, 255, 0), new Color(255, 255, 0), new Color(255, 255, 0), new Color(255, 255, 0),new Color(255, 255, 0),Color.gray,Color.orange,Color.blue,new Color(142,229,238), new Color(5, 255, 100), Color.orange, new Color(220,229,238),  new Color(255, 255, 110),new Color(255, 255, 200), new Color(255, 255, 150),new Color(255, 255, 100),new Color(255, 255, 50),new Color(50, 25, 100), Color.orange,new Color(0, 255, 255),
+  Color.green,new Color(185,211,238), Color.orange, Color.green, Color.pink,new Color(142,229,238), Color.yellow, Color.pink, Color.lightGray, Color.yellow,};
+  private int speedofRun = SPDEFAULT;
+  private boolean isAlgWork = false;
+  private static final Color BGDEFAULT = Color.red;
+  private static final int DEMOINDEX = 0;
+  private static final int MYGRAPHINDEX = 1;
+   public int thisGraph = DEMOINDEX;
+  private static final int NEWGRAPHS = 10;
+ public BasicGraph gArray[] = new BasicGraph[NEWGRAPHS];
+  private Button ButtonClear;
+  private Button ButtonCluster;
+  private Button ButtonCustom;
+  private Button BottonRunToFinish;
+  private Button ButtonStop;
+  public  Button ButtonLoad;
+  private  JComboBox filename;
+  private  JTextField zz,zz1;
+  private TextArea  content;
+  private boolean stop= false;
+
+  public Button buttonDelEdge;
+  public Button buttonOK;
+  public Button buttonCancel;
+  public TextField fillInEdgeCAP;
+  public Button buttonDelVer;
+
+  protected GraphPanel canvaslet;
+  private Panel bPanel;
+  private Panel stPanel;
+
+  private Label stLargestFlow;
+
+
+  private static final int WDDEFAULT = 800;
+  private static final int HGTDEFAULT = 600;
+  private static final int MINIMUMHEIGHT = 600;
+  private static final int MINIMUMWIDTH = 800;
+  private static final int SPDEFAULT = 1;
+  private static final int SPAUSE = 1000;
+private static final double treshold=0.9;
+  public int currentVX,currentVY;         
+  public ExtendVer currentVer=new ExtendVer() ;
+  
+  public int numberOfIterations = 0;
+  
+  
+  
+
+  public void Gui()
+    {
+    }
+     
+    
+     public void initGraph()
+    {  
+      /*init tgraph of vertices*/
+        thisGraph=thisGraph+1;        gArray[thisGraph] = CreateNewGraph();}  
+        
+      public void initScreen()
+       { canvaslet.defineThisGraph(gArray[thisGraph]);
+        if (gArray[thisGraph].nVer() <150 )canvaslet.reDraw();
+        ButtonClear.setEnabled(true);}
+    
+ 
+    public void init()
+    {   /*init the user interface*/
+        super.init();
+        thisGraph=thisGraph+1;
+        gArray[thisGraph] = CreateNewGraph();
+    
+        canvaslet = new GraphPanel(this, gArray[thisGraph]);
+        bPanel = new Panel();
+
+        ButtonCluster  = new Button("   Cluster    ");   
+        BottonRunToFinish = new Button(" Run till Finish ");
+        ButtonCustom      = new Button("      Custom      ");
+        ButtonStop        = new Button("      Stop       ");
+        ButtonClear       = new Button("      Clear       ");
+        ButtonLoad        = new Button("      Load     ");
+        String[] s = {"friendships.txt", "karate.txt", "dolphin.txt", "polbooks.txt", "cond-mat-2003.txt", "lesmiserables.txt", "net-word.txt", "example1.txt", "net-2cliques.txt", "sunset.txt","Ldemo.txt","exampleIEEETDC.txt", "football.txt","foldoc.txt","polblogs.txt","5cliques.txt","ringcliques.txt", "football.txt","ecoli.txt", "CA-Gr-Qc.txt"};
+       filename = new JComboBox(s);
+        bPanel.add(filename);
+        zz= new JTextField(5);
+        JLabel z=new JLabel("Threshold of inclusion in community:");
+        bPanel.add(z);bPanel.add(zz);
+          zz.setText("0");
+          zz1= new JTextField(5); JLabel z1=new JLabel("ALPHA:");
+          bPanel.add(z1);bPanel.add(zz1);
+          zz1.setText("1");
+       
+        content = new TextArea(5,20);
+        bPanel. add(content);
+        bPanel.add(ButtonLoad);
+        bPanel.setLayout(new FlowLayout());
+        bPanel.add(ButtonCluster);
+      
+
+        ButtonStop.setEnabled(false);
+        ButtonLoad.setEnabled(true);
+        ButtonClear.setEnabled(true);
+
+        stPanel = new Panel();
+
+        buttonDelEdge    = new Button("Remove Edge");
+        buttonOK         = new Button("     OK    ");
+        buttonCancel     = new Button("   Cancel  ");
+        fillInEdgeCAP    = new TextField(" ", 1000);
+        buttonDelVer     = new Button("Remove Vertex");
+
+        stPanel.setLayout(new GridLayout(6, 1000));
+        stLargestFlow = new Label(gArray[thisGraph].strGraph);
+        stPanel.add(stLargestFlow);
+        stPanel.add(fillInEdgeCAP);
+        stPanel.add(buttonOK);
+        stPanel.add(buttonCancel);
+        stPanel.add(buttonDelEdge);
+        stPanel.add(buttonDelVer);
+
+        buttonOK.setEnabled(false);
+        buttonCancel.setEnabled(false);
+        buttonDelEdge.setEnabled(false);
+        buttonDelVer.setEnabled(false);
+        fillInEdgeCAP.setEnabled(false);
+       
+        setLayout(new BorderLayout());
+        add("South", stPanel);
+        add("Center", canvaslet);
+      
+        add("North", bPanel);
+        resize(WDDEFAULT, HGTDEFAULT);
+        setBackground(Color.red);
+        ButtonCluster.addActionListener(this);
+        buttonOK.addActionListener(this);
+        fillInEdgeCAP.addActionListener(this);
+        ButtonLoad.addActionListener(this);
+        buttonCancel.addActionListener(this);
+        buttonDelEdge.addActionListener(this);
+        buttonDelVer.addActionListener(this);
+        ButtonClear.addActionListener(this);
+        ButtonStop.addActionListener(this);
+        ButtonCustom.addActionListener(this);
+        BottonRunToFinish.addActionListener(this);
+        
+        
+     
+    }
+
+    /* Handle reponse to all user operations */
+    public void actionPerformed(ActionEvent e)
+    {
+      int oldFlow = 0;
+
+      if (e.getSource().equals(ButtonCluster))
+        handleEventCluster();
+      if (e.getSource() == buttonOK || e.getSource()==fillInEdgeCAP)
+        handleEventOKorFillEdge();
+      if (e.getSource().equals(ButtonLoad))
+        handleEventLoad(currentVer);
+      if (e.getSource() == buttonCancel)
+        handleEventCancel();
+      if (e.getSource() == buttonDelEdge)
+        handleEventDELEDGE();
+      if (e.getSource() == buttonDelVer)
+        handleEventDelVer();
+      if (e.getSource().equals(ButtonClear) && !isAlgWork)
+        handleEventClear();
+      if (e.getSource().equals(ButtonStop))
+        handleEventStop();
+      if (e.getSource().equals(ButtonCustom) && !isAlgWork)
+        handleEventCustom();
+      if (e.getSource().equals(BottonRunToFinish)) {
+        handleEventRunToFinish();
+        ButtonLoad.setEnabled(true);
+      }
+
+    }
+
+  
+        /*construct the demo*/
+   public static BasicGraph Demo()
+      {
+        BasicGraph demo = new BasicGraph();
+        ExtendVer sink = (ExtendVer) demo.obtainSink();
+        ExtendVer source = (ExtendVer) demo.returnSource();
+        Point sinkPos = new Point(100,200); 
+        Point sourcePos =new Point(1570,300);
+        int diff =-1500;  
+       int diffy = 700;
+       int p=-1;
+       int konst=400;
+   
+       
+ 
+ ExtendVer v1 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"1" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v1);
+ ExtendVer v2 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"2" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v2);
+ ExtendVer v3 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"3" ); diff=diff-800 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v3);
+ ExtendVer v4 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"4" ); diff=diff-800 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v4);
+ ExtendVer v5 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"5" ); diff=diff-800 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v5);
+ ExtendVer v6 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"6" ); diff=diff-800 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v6);
+ ExtendVer v7 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"7" ); diff=diff-800 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v7);
+ ExtendVer v8 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"8" ); diff=diff-800 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v8);
+ ExtendVer v9 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"9" ); diff=diff-800 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v9);
+ ExtendVer v10 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"10" ); diff=diff-800 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v10);
+ ExtendVer v11 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"11" ); diff=diff-800 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v11);
+ ExtendVer v12 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"12" ); diff=diff-800 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v12);
+ ExtendVer v13 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"13" ); diff=diff-800 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v13);
+ ExtendVer v14 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"14" ); diff=diff-800 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v14);
+ ExtendVer v15 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"15" ); diff=diff-800 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v15);
+ ExtendVer v16 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"16" ); diff=diff-800 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v16);
+ ExtendVer v17 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"17" ); diff=diff-800 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v17);
+ ExtendVer v18 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"18" ); diff=diff-800 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v18);
+ ExtendVer v19 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"19" ); diff=diff-800 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v19);
+ ExtendVer v20 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"20" ); diff=diff-800 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v20);
+ExtendVer v21 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"21" ); diff=diff-800 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v21);
+ ExtendVer v22 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"22" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v22);
+ ExtendVer v23 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"23" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v23);
+ ExtendVer v24 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"24" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v24);
+ ExtendVer v25 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"25" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v25);
+ ExtendVer v26 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"26" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v26);
+ ExtendVer v27 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"27" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v27);
+ ExtendVer v28 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"28" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v28);
+ ExtendVer v29 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"29" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v29);
+ ExtendVer v30 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"30" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v30);
+ ExtendVer v31 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"31" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v31);
+ ExtendVer v32 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"32" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v32);
+  ExtendVer v33 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"33" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v33);
+ ExtendVer v34 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"34" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+demo.increaseVer(v34);
+ ExtendVer v35 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"35" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v35);
+ ExtendVer v36 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"36" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v36);
+ ExtendVer v37 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"37" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v37);
+ ExtendVer v38 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"38" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v38);
+ ExtendVer v39 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"39" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v39);
+ExtendVer v40 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"40" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v40);
+ ExtendVer v41 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"41" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v41);
+ ExtendVer v42 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"42" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v42);
+  ExtendVer v43 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"43" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v43);
+ ExtendVer v44 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"44" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+demo.increaseVer(v44);
+ ExtendVer v45 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"45" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v45);
+ ExtendVer v46 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"46" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v46);
+ ExtendVer v47 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"47" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v47);
+ ExtendVer v48 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"48" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v48);
+ ExtendVer v49 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"49" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v49);
+ExtendVer v50 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"50" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v50);
+ ExtendVer v51 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"51" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v51);
+ ExtendVer v52 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"52" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v52);
+  ExtendVer v53 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"53" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v53);
+ ExtendVer v54 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"54" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+demo.increaseVer(v54);
+ ExtendVer v55 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"55" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v55);
+ ExtendVer v56 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"56" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v56);
+ ExtendVer v57 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"57" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v57);
+ ExtendVer v58 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"58" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v58);
+ ExtendVer v59 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"59" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v59);
+ExtendVer v60 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"60" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v60);
+ ExtendVer v61 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"61" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v61);
+ ExtendVer v62 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"62" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v62);
+  ExtendVer v63 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"63" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v63);
+ ExtendVer v64 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"64" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+demo.increaseVer(v64);
+ ExtendVer v65 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"65" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v65);
+ ExtendVer v66 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"66" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v66);
+ ExtendVer v67 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"67" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v67);
+ ExtendVer v68 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"68" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v68);
+ ExtendVer v69 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"69" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v69);
+ExtendVer v70 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"70" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v70);
+ ExtendVer v71 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"71" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v71);
+ ExtendVer v72 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"72" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v72);
+  ExtendVer v73 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"73" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v73);
+ ExtendVer v74 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"74" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+demo.increaseVer(v74);
+ ExtendVer v75 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"75" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v75);
+ ExtendVer v76 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"76" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v76);
+ ExtendVer v77 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"77" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v77);
+ ExtendVer v78 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"78" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v78);
+ ExtendVer v79 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"79" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v79);
+ExtendVer v80 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"80" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v80);
+ ExtendVer v81 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"81" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v81);
+ ExtendVer v82 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"82" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v82);
+  ExtendVer v83 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"83" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v83);
+ ExtendVer v84 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"84" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+demo.increaseVer(v84);
+ ExtendVer v85 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"85" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v85);
+ ExtendVer v86 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,"86" ); diff=diff-400 *p;diffy=diffy-20; p*=-1; 
+ demo.increaseVer(v86);
+ 
+ ExtendEdge e10 = new ExtendEdge(v11, v1, 1);  demo.increaseEdge(e10);
+ ExtendEdge e13 = new ExtendEdge(v12, v1, 1);  demo.increaseEdge(e13);
+ ExtendEdge e14 = new ExtendEdge(v13, v2, 1);  demo.increaseEdge(e14);
+ 
+ ExtendEdge e16 = new ExtendEdge(v13, v2, 1);  demo.increaseEdge(e16);
+ ExtendEdge e17 = new ExtendEdge(v14, v2, 1);  demo.increaseEdge(e17);
+ ExtendEdge e18 = new ExtendEdge(v15, v3, 1);  demo.increaseEdge(e18);
+ ExtendEdge e19 = new ExtendEdge(v16, v3, 1);  demo.increaseEdge(e19);
+ ExtendEdge e20 = new ExtendEdge(v17, v3, 1);  demo.increaseEdge(e20);
+ ExtendEdge e21 = new ExtendEdge(v18, v4, 1);  demo.increaseEdge(e21);
+ ExtendEdge e22 = new ExtendEdge(v18, v5, 1);  demo.increaseEdge(e22);
+ ExtendEdge e23 = new ExtendEdge(v19, v5, 1);  demo.increaseEdge(e23);
+ ExtendEdge e24 = new ExtendEdge(v20, v5, 1);  demo.increaseEdge(e24);
+ ExtendEdge e25 = new ExtendEdge(v21, v6, 1);  demo.increaseEdge(e25);
+ ExtendEdge e26 = new ExtendEdge(v22, v6, 1);  demo.increaseEdge(e26);
+ ExtendEdge e27 = new ExtendEdge(v23, v6, 1);  demo.increaseEdge(e27);
+ ExtendEdge e28 = new ExtendEdge(v24, v7, 1);  demo.increaseEdge(e28);
+ ExtendEdge e29 = new ExtendEdge(v25, v8, 1);  demo.increaseEdge(e29);
+ ExtendEdge e30 = new ExtendEdge(v29, v11, 1);  demo.increaseEdge(e30);
+
+ ExtendEdge e32 = new ExtendEdge(v30, v11, 1);  demo.increaseEdge(e32);
+ ExtendEdge e33 = new ExtendEdge(v31, v11, 1);  demo.increaseEdge(e33);
+ ExtendEdge e34 = new ExtendEdge(v32, v11, 1);  demo.increaseEdge(e34);
+ ExtendEdge e35 = new ExtendEdge(v74, v11, 1);  demo.increaseEdge(e35);
+ ExtendEdge e36 = new ExtendEdge(v76, v11, 1);  demo.increaseEdge(e36);
+ ExtendEdge e37 = new ExtendEdge(v33, v12, 1);  demo.increaseEdge(e37);
+ ExtendEdge e38 = new ExtendEdge(v72, v12, 1);  demo.increaseEdge(e38);
+ ExtendEdge e39 = new ExtendEdge(v76, v12, 1);  demo.increaseEdge(e39);
+ ExtendEdge e40 = new ExtendEdge(v34, v13, 1);  demo.increaseEdge(e40);
+ ExtendEdge e41 = new ExtendEdge(v76, v13, 1);  demo.increaseEdge(e41);
+ ExtendEdge e42 = new ExtendEdge(v34, v14, 1);  demo.increaseEdge(e42);
+ ExtendEdge e43 = new ExtendEdge(v35, v14, 1);  demo.increaseEdge(e43);
+ ExtendEdge e44 = new ExtendEdge(v36, v14, 1);  demo.increaseEdge(e44);
+ ExtendEdge e45 = new ExtendEdge(v37, v14, 1);  demo.increaseEdge(e45);
+ ExtendEdge e46 = new ExtendEdge(v38, v14, 1);  demo.increaseEdge(e46);
+ExtendEdge e47 = new ExtendEdge(v73, v14, 1);  demo.increaseEdge(e47);
+ExtendEdge e50 = new ExtendEdge(v76, v14, 1);  demo.increaseEdge(e50);
+ ExtendEdge e51 = new ExtendEdge(v39, v15, 1);  demo.increaseEdge(e51);
+ ExtendEdge e52 = new ExtendEdge(v40, v15, 1);  demo.increaseEdge(e52);
+ ExtendEdge e53 = new ExtendEdge(v41, v15, 1);  demo.increaseEdge(e53);
+ ExtendEdge e54 = new ExtendEdge(v42, v15, 1);  demo.increaseEdge(e54);
+ ExtendEdge e55 = new ExtendEdge(v43, v15, 1);  demo.increaseEdge(e55);
+ ExtendEdge e56 = new ExtendEdge(v76, v15, 1);  demo.increaseEdge(e56);
+ ExtendEdge e57 = new ExtendEdge(v44, v16, 1);  demo.increaseEdge(e57);
+ ExtendEdge e58 = new ExtendEdge(v45, v16, 1);  demo.increaseEdge(e58);
+ ExtendEdge e59 = new ExtendEdge(v75, v16, 1);  demo.increaseEdge(e59);
+ExtendEdge e60 = new ExtendEdge(v86, v16, 1);  demo.increaseEdge(e60);
+ ExtendEdge e61 = new ExtendEdge(v46, v17, 1);  demo.increaseEdge(e61);
+ ExtendEdge e62 = new ExtendEdge(v47, v17, 1);  demo.increaseEdge(e62);
+ ExtendEdge e63 = new ExtendEdge(v48, v18, 1);  demo.increaseEdge(e63);
+ ExtendEdge e64 = new ExtendEdge(v49, v18, 1);  demo.increaseEdge(e64);
+ ExtendEdge e65 = new ExtendEdge(v50, v18, 1);  demo.increaseEdge(e65);
+ ExtendEdge e66 = new ExtendEdge(v51, v18, 1);  demo.increaseEdge(e66);
+ExtendEdge e67 = new ExtendEdge(v52, v18, 1);  demo.increaseEdge(e67);
+ExtendEdge e68 = new ExtendEdge(v53, v18, 1);  demo.increaseEdge(e68);
+ExtendEdge e69 = new ExtendEdge(v54, v18, 1);  demo.increaseEdge(e69);
+ExtendEdge e70 = new ExtendEdge(v74, v18, 1);  demo.increaseEdge(e70);
+ExtendEdge e71 = new ExtendEdge(v76, v18, 1);  demo.increaseEdge(e71);
+ExtendEdge e72 = new ExtendEdge(v54, v19, 1);  demo.increaseEdge(e72);
+ExtendEdge e73 = new ExtendEdge(v55, v19, 1);  demo.increaseEdge(e73);
+ExtendEdge e74 = new ExtendEdge(v56, v19, 1);  demo.increaseEdge(e74);
+ExtendEdge e75 = new ExtendEdge(v57, v19, 1);  demo.increaseEdge(e75);
+ExtendEdge e76 = new ExtendEdge(v58, v19, 1);  demo.increaseEdge(e76);
+ExtendEdge e77 = new ExtendEdge(v76, v19, 1);  demo.increaseEdge(e77);
+ExtendEdge e78 = new ExtendEdge(v77, v19, 1);  demo.increaseEdge(e78);
+ExtendEdge e79 = new ExtendEdge(v86, v19, 1);  demo.increaseEdge(e79);
+ExtendEdge e80 = new ExtendEdge(v86, v20, 1);  demo.increaseEdge(e80);
+
+ExtendEdge e81 = new ExtendEdge(v76, v21, 1);  demo.increaseEdge(e81);
+ExtendEdge e82 = new ExtendEdge(v86, v21, 1);  demo.increaseEdge(e82);
+ExtendEdge e83 = new ExtendEdge(v59, v22, 1);  demo.increaseEdge(e83);
+ExtendEdge e84 = new ExtendEdge(v60, v22, 1);  demo.increaseEdge(e84);
+ExtendEdge e85 = new ExtendEdge(v78, v22, 1);  demo.increaseEdge(e85);
+ExtendEdge e86 = new ExtendEdge(v79, v22, 1);  demo.increaseEdge(e86);
+ExtendEdge e87 = new ExtendEdge(v85, v22, 1);  demo.increaseEdge(e87);
+ExtendEdge e88 = new ExtendEdge(v61, v23, 1);  demo.increaseEdge(e88);
+ExtendEdge e89 = new ExtendEdge(v62, v23, 1);  demo.increaseEdge(e89);
+ExtendEdge e90 = new ExtendEdge(v63, v23, 1);  demo.increaseEdge(e90);
+ExtendEdge e91 = new ExtendEdge(v76, v23, 1);  demo.increaseEdge(e91);
+ExtendEdge e92 = new ExtendEdge(v77, v19, 1);  demo.increaseEdge(e92);
+ExtendEdge e93 = new ExtendEdge(v86, v19, 1);  demo.increaseEdge(e93);
+ExtendEdge e94 = new ExtendEdge(v86, v20, 1);  demo.increaseEdge(e94);
+
+ExtendEdge e95 = new ExtendEdge(v76, v21, 1);  demo.increaseEdge(e95);
+ExtendEdge e96 = new ExtendEdge(v86, v21, 1);  demo.increaseEdge(e96);
+ExtendEdge e97 = new ExtendEdge(v59, v22, 1);  demo.increaseEdge(e97);
+ExtendEdge e98 = new ExtendEdge(v60, v22, 1);  demo.increaseEdge(e98);
+ExtendEdge e99 = new ExtendEdge(v78, v22, 1);  demo.increaseEdge(e99);
+ExtendEdge e100 = new ExtendEdge(v79, v22, 1);  demo.increaseEdge(e100);
+ExtendEdge e101 = new ExtendEdge(v85, v22, 1);  demo.increaseEdge(e101);
+ExtendEdge e102 = new ExtendEdge(v61, v23, 1);  demo.increaseEdge(e102);
+ExtendEdge e103 = new ExtendEdge(v62, v23, 1);  demo.increaseEdge(e103);
+ExtendEdge e104 = new ExtendEdge(v63, v23, 1);  demo.increaseEdge(e104);
+ExtendEdge e105 = new ExtendEdge(v76, v23, 1);  demo.increaseEdge(e105);
+ExtendEdge e106 = new ExtendEdge(v64, v24, 1);  demo.increaseEdge(e106);
+ExtendEdge e107 = new ExtendEdge(v80, v24, 1);  demo.increaseEdge(e107);
+ExtendEdge e108 = new ExtendEdge(v86, v24, 1);  demo.increaseEdge(e108);
+ExtendEdge e109 = new ExtendEdge(v65, v25, 1);  demo.increaseEdge(e109);
+ExtendEdge e110 = new ExtendEdge(v66, v25, 1);  demo.increaseEdge(e110);
+ExtendEdge e111 = new ExtendEdge(v67, v25, 1);  demo.increaseEdge(e111);
+ExtendEdge e112 = new ExtendEdge(v81, v25, 1);  demo.increaseEdge(e112);
+ExtendEdge e113 = new ExtendEdge(v82, v25, 1);  demo.increaseEdge(e113);
+ExtendEdge e114 = new ExtendEdge(v86, v25, 1);  demo.increaseEdge(e114);
+ExtendEdge e115 = new ExtendEdge(v76, v30, 1);  demo.increaseEdge(e115);
+ExtendEdge e116 = new ExtendEdge(v76, v31, 1);  demo.increaseEdge(e116);
+ExtendEdge e117 = new ExtendEdge(v72, v33, 1);  demo.increaseEdge(e117);
+ExtendEdge e118 = new ExtendEdge(v74, v33, 1);  demo.increaseEdge(e118);
+ExtendEdge e119 = new ExtendEdge(v76, v33, 1);  demo.increaseEdge(e119);
+
+ExtendEdge e120 = new ExtendEdge(v73, v37, 1);  demo.increaseEdge(e120);
+ExtendEdge e121 = new ExtendEdge(v75, v44, 1);  demo.increaseEdge(e121);
+ExtendEdge e122 = new ExtendEdge(v75, v45, 1);  demo.increaseEdge(e122);
+ExtendEdge e123 = new ExtendEdge(v86, v45, 1);  demo.increaseEdge(e123);
+ExtendEdge e124 = new ExtendEdge(v74, v48, 1);  demo.increaseEdge(e124);
+ExtendEdge e125 = new ExtendEdge(v76, v48, 1);  demo.increaseEdge(e125);
+
+ExtendEdge e126 = new ExtendEdge(v74, v50, 1);  demo.increaseEdge(e126);
+ExtendEdge e127 = new ExtendEdge(v76, v52, 1);  demo.increaseEdge(e127);
+ExtendEdge e128 = new ExtendEdge(v74, v54, 1);  demo.increaseEdge(e128);
+ExtendEdge e129 = new ExtendEdge(v76, v54, 1);  demo.increaseEdge(e129);
+ExtendEdge e130 = new ExtendEdge(v76, v55, 1);  demo.increaseEdge(e130);
+ExtendEdge e131 = new ExtendEdge(v76, v57, 1);  demo.increaseEdge(e131);
+ExtendEdge e132 = new ExtendEdge(v77, v58, 1);  demo.increaseEdge(e132);
+ExtendEdge e133 = new ExtendEdge(v86, v58, 1);  demo.increaseEdge(e133);
+ExtendEdge e134 = new ExtendEdge(v78, v59, 1);  demo.increaseEdge(e134);
+ExtendEdge e135 = new ExtendEdge(v79, v59, 1);  demo.increaseEdge(e135);
+ExtendEdge e136 = new ExtendEdge(v85, v59, 1);  demo.increaseEdge(e136);
+ExtendEdge e137 = new ExtendEdge(v80, v64, 1);  demo.increaseEdge(e137);
+ExtendEdge e138 = new ExtendEdge(v81, v65, 1);  demo.increaseEdge(e138);
+ExtendEdge e139 = new ExtendEdge(v82, v66, 1);  demo.increaseEdge(e139);
+ExtendEdge e140 = new ExtendEdge(v85, v78, 1);  demo.increaseEdge(e140);
+ExtendEdge e141 = new ExtendEdge(v86, v80, 1);  demo.increaseEdge(e141);
+ExtendEdge e142 = new ExtendEdge(v86, v81, 1);  demo.increaseEdge(e142);
+ExtendEdge e143 = new ExtendEdge(v86, v82, 1);  demo.increaseEdge(e143);
+
+
+   return demo;
+      }
+    /*  
+      
+protected BasicGraph Demo()
+      {
+        BasicGraph demo;
+     
+CreateNewGraph();
+        ExtendVer sink = (ExtendVer) demo.obtainSink();
+        ExtendVer source = (ExtendVer) demo.returnSource();
+        Point sinkPos = sink.position();
+        Point sourcePos = source.position();
+        int diff = sinkPos.x - sourcePos.x;
+
+        ExtendVer v1 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - 120);
+        ExtendVer v2 = new ExtendVer(sourcePos.x + diffy, sinkPos.y);
+        ExtendVer v3 = new ExtendVer(sourcePos.x + diffy, sinkPos.y + 120);
+        ExtendVer v4 = new ExtendVer(sourcePos.x + 2 * diffy, sinkPos.y - 120);
+        ExtendVer v5 = new ExtendVer(sourcePos.x + 2 * diffy, sinkPos.y);
+        ExtendVer v6 = new ExtendVer(sourcePos.x + 2 * diffy, sinkPos.y + 120);
+        ExtendVer v7 = new ExtendVer(sourcePos.x + 3 * diffy, sinkPos.y - 120);
+        ExtendVer v8 = new ExtendVer(sourcePos.x + 3 * diffy, sinkPos.y);
+        ExtendVer v9 = new ExtendVer(sourcePos.x + 3 * diffy, sinkPos.y + 120);
+        ExtendVer v10 = new ExtendVer(sourcePos.x + 4 * diffy, sinkPos.y - 120);
+        ExtendVer v11 = new ExtendVer(sourcePos.x + 4 * diffy, sinkPos.y);
+        ExtendVer v12 = new ExtendVer(sourcePos.x + 4 * diffy, sinkPos.y + 120);
+
+        demo.increaseVer(v1);
+        demo.increaseVer(v2);
+        demo.increaseVer(v3);
+        demo.increaseVer(v4);
+        demo.increaseVer(v5);
+        demo.increaseVer(v6);
+        demo.increaseVer(v7);
+        demo.increaseVer(v8);
+        demo.increaseVer(v9);
+        demo.increaseVer(v10);
+        demo.increaseVer(v11);
+        demo.increaseVer(v12);
+
+        ExtendEdge e1 = new ExtendEdge(source, v1, 10);
+        ExtendEdge e2 = new ExtendEdge(source, v2, 9);
+        ExtendEdge e3 = new ExtendEdge(source, v3, 9);
+        ExtendEdge e4 = new ExtendEdge(v1, v2, 8);
+        ExtendEdge e5 = new ExtendEdge(v1, v4, 9);
+        ExtendEdge e6 = new ExtendEdge(v1, v5, 4);
+        ExtendEdge e7 = new ExtendEdge(v2, v3, 9);
+        ExtendEdge e8 = new ExtendEdge(v2, v5, 8);
+        ExtendEdge e9 = new ExtendEdge(v2, v6, 5);
+        ExtendEdge e10 = new ExtendEdge(v3, v6, 6);
+        ExtendEdge e11 = new ExtendEdge(v4, v7, 8);
+        ExtendEdge e12 = new ExtendEdge(v5, v4, 1);
+        ExtendEdge e13 = new ExtendEdge(v5, v7, 10);
+        ExtendEdge e14 = new ExtendEdge(v5, v8, 9);
+        ExtendEdge e15 = new ExtendEdge(v5, v9, 2);
+        ExtendEdge e16 = new ExtendEdge(v6, v5, 1);
+        ExtendEdge e17 = new ExtendEdge(v6, v9, 7);
+        ExtendEdge e18 = new ExtendEdge(v7, v10, 10);
+        ExtendEdge e19 = new ExtendEdge(v8, v7, 1);
+        ExtendEdge e20 = new ExtendEdge(v7, v11, 3);
+        ExtendEdge e21 = new ExtendEdge(v8, v11, 4);
+        ExtendEdge e22 = new ExtendEdge(v8, v12, 5);
+        ExtendEdge e23 = new ExtendEdge(v9, v8, 1);
+        ExtendEdge e24 = new ExtendEdge(v9, v12, 3);
+        ExtendEdge e25 = new ExtendEdge(v10, v11, 2);
+        ExtendEdge e26 = new ExtendEdge(v10, sink, 5);
+        ExtendEdge e27 = new ExtendEdge(v11, v12, 12);
+        ExtendEdge e28 = new ExtendEdge(v11, sink, 8);
+        ExtendEdge e29 = new ExtendEdge(v12, sink, 12);
+    ExtendEdge e30 = new ExtendEdge(v3, v5, 2);
+    ExtendEdge e31 = new ExtendEdge(v8, v10, 6);
+
+        demo.increaseEdge(e1);
+        demo.increaseEdge(e2);
+        demo.increaseEdge(e3);
+        demo.increaseEdge(e4);
+        demo.increaseEdge(e5);
+        demo.increaseEdge(e6);
+        demo.increaseEdge(e7);
+        demo.increaseEdge(e8);
+        demo.increaseEdge(e9);
+        demo.increaseEdge(e10);
+        demo.increaseEdge(e11);
+        demo.increaseEdge(e12);
+        demo.increaseEdge(e13);
+        demo.increaseEdge(e14);
+        demo.increaseEdge(e15);
+        demo.increaseEdge(e16);
+        demo.increaseEdge(e17);
+        demo.increaseEdge(e18);
+        demo.increaseEdge(e19);
+        demo.increaseEdge(e20);
+        demo.increaseEdge(e21);
+        demo.increaseEdge(e22);
+        demo.increaseEdge(e23);
+        demo.increaseEdge(e24);
+        demo.increaseEdge(e25);
+        demo.increaseEdge(e26);
+        demo.increaseEdge(e27);
+        demo.increaseEdge(e28);
+        demo.increaseEdge(e29);
+        demo.increaseEdge(e30);
+        demo.increaseEdge(e31);
+
+        return demo;
+      }*/
+      
+      public BasicGraph CreateNewGraph()
+      {
+        BasicGraph newGraph = new BasicGraph();
+        Dimension d;
+
+        if (canvaslet != null)
+        {
+          d = canvaslet.getSize();
+
+        }
+        else
+        {
+        }
+        return newGraph;
+      }
+
+      public void refresh(Graphics g)
+      {
+        if (getSize().width < MINIMUMWIDTH || getSize().height < MINIMUMHEIGHT)
+          resize(MINIMUMWIDTH, MINIMUMHEIGHT);
+        super.update(g);
+      }
+
+      public void handleEventLoad(ExtendVer tmpV)
+      { 
+          
+       int vertices_edges=0;   
+       int steviloDimenzij = 0;
+        Point sinkPos = new Point(100,400); 
+        Point sourcePos =new Point(1480,200);
+       int diff = -100;  
+       int diffy = 100;
+       int p=-1;
+       
+       thisGraph = MYGRAPHINDEX;
+       ButtonCustom.setLabel(" DEMO ");
+       gArray[thisGraph].clear(); 
+       
+        try {
+             BufferedReader aReader  = new BufferedReader (new FileReader((String)filename.getSelectedItem()));
+              int[] d= new int[2]; 
+             String s,s1,x,y, nameS= " ";
+              int name=0; int stevec=1;
+               if ( (filename.getSelectedItem().equals("CA-Gr-Qc.txt")))
+                 for(int t=1; t<5243;t++)
+                           { ExtendVer v1 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff, Integer.toString(t) ); 
+                             diff=diff-400*p; diffy=diffy-15; p*=-1; 
+                             gArray[thisGraph].increaseVer(v1);
+                            }
+               
+              while ((s= aReader.readLine())!= null)
+              {   content.setText(s);
+                  stevec++; 
+                  s1= s.replace(',', ' ');
+                 StringTokenizer st = new StringTokenizer(s1);
+                nameS = st.nextToken();
+               fillInEdgeCAP.setText( fillInEdgeCAP.getText()+"nameS"+nameS);
+                if (nameS.equals("*vertices")) { vertices_edges=1;}
+                else {  
+                    if(nameS.equals("*edges")){ vertices_edges=2; }
+                    else  {
+                        if (vertices_edges==1)
+                        {    
+                         /*for  (int i=0; i<steviloDimenzij; i++)
+                         { x=st.nextToken(); d[i]= Integer.parseInt(x);  } */
+                         if    (st.countTokens()<2) 
+                            { ExtendVer v1 = new ExtendVer(sourcePos.x + diffy, sinkPos.y - diff,nameS ); 
+                             diff=diff-400*p; diffy=diffy-15; p*=-1; 
+                             gArray[thisGraph].increaseVer(v1);
+                            }
+                       
+                         if ((st.countTokens() >1) )
+                         {x=st.nextToken(); d[0]= Integer.parseInt(x); 
+                          x=st.nextToken(); d[1]= Integer.parseInt(x); 
+                          if (st.hasMoreTokens()) x=st.nextToken();
+                          fillInEdgeCAP.setText( fillInEdgeCAP.getText()+"nameS"+nameS+d[0]+d[1]);
+                          ExtendVer  v1 = new ExtendVer(d[0],d[1],nameS); 
+                          gArray[thisGraph].increaseVer(v1);  }
+                        }
+                        else if (vertices_edges==2) 
+                        {  int a= Integer.valueOf(nameS);  
+                           int b= Integer.parseInt(st.nextToken());
+                           ExtendEdge e143 = new ExtendEdge(gArray[thisGraph].returnVer(a-1), gArray[thisGraph].returnVer(b-1),1); 
+                           gArray[thisGraph].increaseEdge(e143);
+                            fillInEdgeCAP.setText( "edgenameS"+nameS);
+                            if ( (filename.getSelectedItem().equals("net-word.txt"))
+                             ||(filename.getSelectedItem().equals("net-2cliques.txt")) )
+                            while(st.hasMoreTokens()) 
+                               {b = Integer.parseInt(st.nextToken());
+                                e143 = new ExtendEdge(gArray[thisGraph].returnVer(a-1), gArray[thisGraph].returnVer(b-1),1); 
+                               gArray[thisGraph].increaseEdge(e143);
+                                }
+                        }
+                                            
+                    } 
+                 } 
+                 }  
+               aReader.close();   } 
+          catch(Exception e) {
+          fillInEdgeCAP.setText("napaka"+e.getMessage());                
+            }
+          
+        
+          fillInEdgeCAP.setText( "vertices-edges"+ gArray[thisGraph].nVer()+" "+gArray[thisGraph].nEdge()+"..");
+             if (gArray[thisGraph].nVer() <150 )canvaslet.reDraw();
+          /*if (!alg.isOver())
+        {
+            alg = new ComputeMaxFlow(gArray[thisGraph]);
+            alg.runUntilFinish();
+        }
+            
+        int temp = gArray[thisGraph].LargestEdgeFlow();
+        int t = alg.thisFlow();
+
+        ExtendVer src = (ExtendVer)gArray[thisGraph].source;
+        ExtendVer sink = (ExtendVer)gArray[thisGraph].obtainSink();
+        for(int i=0; i < gArray[thisGraph].nVer(); i++) {
+          ExtendVer v =(ExtendVer)gArray[thisGraph].vers.elementAt(i);
+          v.changeColor(Color.red);
+        }
+        Vector vec = new Vector();
+        vec.add(src);
+        minCut(src,sink,vec);
+        
+        ButtonMinCut.setEnabled(false);
+        buttonDelVer.setEnabled(false);
+
+        canvaslet.();
+      */
+
+    long freeMemory = Runtime.getRuntime().freeMemory()/MegaBytes;
+              long totalMemory = Runtime.getRuntime().totalMemory()/MegaBytes;
+              long maxMemory = Runtime.getRuntime().maxMemory()/MegaBytes;
+
+fillInEdgeCAP.setText( fillInEdgeCAP.getText()+" free "+ freeMemory+"total "+totalMemory+"max "+maxMemory);
+
+    } 
+
+      public void minCut(ExtendVer v, ExtendVer sink, Vector vec) {
+
+        ExtendVer ptr = v;
+        int nOut = ptr.outEdge.size();
+        int nIn = ptr.inEdge.size();
+        int numEdge = ptr.inEdge.size()+ptr.outEdge.size();
+        ptr.changeColor(Color.orange);
+        Vector tmpVec = new Vector();
+
+        for (int j =0; j < nOut; j++) {
+          SuperEdge edge = (SuperEdge)(v.obtainEdgeOut(j));
+          int cap = edge.obtainCap();
+          int flow = edge.obtainFlow();
+          int res = edge.resCap();
+          
+          if (edge.resCap() > 0) {
+            ptr = (ExtendVer)edge.obtainVerDestiny();
+             addElement(ptr,tmpVec,vec);
+          }
+        }
+
+        for (int i =0; i < nIn; i++) {
+          SuperEdge edge = (SuperEdge)(v.obtainEdgeIn(i));
+          if (!isExistInVec((ExtendVer)edge.obtainVerOrigin(),vec)) {
+              int f = edge.flow;
+            if (Math.abs(edge.flow) > 0 && edge.flow >0 ) { 
+              ptr = (ExtendVer)edge.obtainVerOrigin();
+              addElement(ptr,tmpVec,vec);
+            }
+          }
+        }
+
+        for (int k =0; k < tmpVec.size(); k++) {
+          minCut((ExtendVer)(tmpVec.elementAt(k)),sink,vec);
+        }
+
+      }
+
+      public boolean isExistInVec(ExtendVer v,Vector vec) {
+        boolean isExist = false;
+        for(int i=0; i < vec.size(); i++) {
+          ExtendVer tmpV = (ExtendVer)vec.elementAt(i);
+          if((tmpV.center.x == v.center.x) && (tmpV.center.y == v.center.y)) {
+            isExist = true;
+            break;
+          } else isExist = false;
+        }
+        return isExist;
+      }
+
+
+      public void addElement(ExtendVer v, Vector tmpVec,Vector vec) {
+        boolean isExist = false;
+        for(int i=0; i < vec.size(); i++) {
+          ExtendVer tmpV = (ExtendVer)vec.elementAt(i);
+          if((tmpV.center.x == v.center.x) && (tmpV.center.y == v.center.y)) {
+            isExist = true;
+            break;
+          } else isExist = false;
+        }
+        if(!isExist) {
+    
+          tmpVec.add(v);
+          vec.add(v);
+        }
+      }
+
+      
+      
+
+      public boolean handleEventCancel()
+      {  gArray[thisGraph].clear(); 
+        buttonOK.setEnabled(false);
+        buttonCancel.setEnabled(false);
+        buttonDelEdge.setEnabled(false);
+        fillInEdgeCAP.setText(" ");
+        fillInEdgeCAP.setEnabled(false);
+        canvaslet.reDraw();
+        return true;
+      }
+
+      public boolean handleEventDELEDGE()
+      {
+        ExtendEdge edge = canvaslet.edgeHeld;
+        gArray[thisGraph].removeEdge(edge);
+
+        buttonOK.setEnabled(false);
+        buttonCancel.setEnabled(false);
+        buttonDelEdge.setEnabled(false);
+        buttonDelVer.setEnabled(false);
+        fillInEdgeCAP.setText(" ");
+        fillInEdgeCAP.setEnabled(false);
+
+        canvaslet.reDraw();
+        return true;
+      }
+
+      public boolean handleEventOKorFillEdge()
+      {
+        int inputVal;
+        ExtendEdge edge = canvaslet.edgeHeld;
+
+        String input = fillInEdgeCAP.getText();
+        if (input != null)
+        {
+          try
+          {
+            inputVal = Integer.parseInt(input);
+          }
+          catch (NumberFormatException except)
+          {
+            inputVal = edge.obtainCap();
+          }
+          if (inputVal > 0)
+          {
+            edge.defineCap(inputVal);
+            buttonOK.setEnabled(false);
+            buttonCancel.setEnabled(false);
+            buttonDelEdge.setEnabled(false);
+            buttonDelVer.setEnabled(false);
+            fillInEdgeCAP.setText(" ");
+            fillInEdgeCAP.setEnabled(false);
+             if (gArray[thisGraph].nVer() <150 )canvaslet.reDraw();
+          }
+        }
+        return true;
+      }
+
+
+      public void handleEventDelVer()
+      {
+        ExtendVer tmpVertex;
+        int vertexNum = gArray[thisGraph].nVer();
+
+        for (int i = 0; i < vertexNum; i++)
+        {
+          tmpVertex = (ExtendVer) gArray[thisGraph].returnVer(i);
+          if (tmpVertex.isInside(currentVX, currentVY))
+          {
+            gArray[thisGraph].removeVertex(tmpVertex);
+            canvaslet.verHeld = null;
+            break;
+          }
+        }
+
+        buttonOK.setEnabled(false);
+        buttonCancel.setEnabled(false);
+        buttonDelEdge.setEnabled(false);
+        buttonDelVer.setEnabled(false);
+        fillInEdgeCAP.setText(" ");
+        fillInEdgeCAP.setEnabled(false);
+        canvaslet.reDraw();
+      }
+
+
+      public boolean handleEventClear ()
+      {
+       if (gArray[thisGraph].isModified == false)
+        {
+          gArray[thisGraph].largestEdge = 0;
+          canvaslet.defineMaxEdgeFlow(0);
+          gArray[thisGraph].isModified = true;
+          gArray[thisGraph].strGraph = gArray[thisGraph].INITIALSTATUS;
+          stLargestFlow.setText(gArray[thisGraph].strGraph);
+        }
+        if (thisGraph == MYGRAPHINDEX)
+          gArray[thisGraph] = CreateNewGraph();
+        else
+          gArray[thisGraph] = Demo();
+        canvaslet.defineThisGraph(gArray[thisGraph]);
+         if (gArray[thisGraph].nVer() <150 )canvaslet.reDraw();
+        
+        ButtonStop.setEnabled(false);
+        ButtonLoad.setEnabled(true);
+        ButtonClear.setEnabled(true);
+        ButtonCluster.setEnabled(true);
+        return true;
+      }
+
+
+      public void handleEventStop()
+      {
+        stop = true;
+        canvaslet.AugPathMarking(false);
+        gArray[thisGraph].strGraph = "";
+
+        for(int i=0; i < gArray[thisGraph].nVer(); i++) {
+          ExtendVer v =(ExtendVer)gArray[thisGraph].vers.elementAt(i);
+          v.changeColor(Color.gray);
+        }
+
+        stLargestFlow.setText(gArray[thisGraph].strGraph);
+        isAlgWork = false;
+        BottonRunToFinish.setEnabled(true);
+        ButtonCustom.setEnabled(true);
+        ButtonCluster.setEnabled(true);
+        canvaslet.setEnabled(true);
+         if (gArray[thisGraph].nVer() <150 )canvaslet.reDraw();
+      }
+
+      public boolean handleEventCustom()
+      {
+        if (thisGraph == MYGRAPHINDEX)
+        {
+          thisGraph = DEMOINDEX;
+          ButtonCustom.setLabel("Custom");
+        }
+        else
+        {
+          thisGraph = MYGRAPHINDEX;
+          ButtonCustom.setLabel(" DEMO ");
+        }
+        canvaslet.defineMaxEdgeFlow(gArray[thisGraph].largestEdge);
+        canvaslet.defineThisGraph(gArray[thisGraph]);
+        stLargestFlow.setText(gArray[thisGraph].strGraph);
+         if (gArray[thisGraph].nVer() <150 )canvaslet.reDraw();
+           ButtonClear.setEnabled(true);
+        return true;
+      }
+
+      public boolean handleEventRunToFinish()
+      {
+      /*  int oldFlow = 0;
+
+        ButtonCluster.setEnabled(false);
+        ButtonCustom.setEnabled(false);
+        ButtonStop.setEnabled(false);
+        ButtonClear.setEnabled(false);
+
+        if (isAlgWork == false)
+        {
+          alg = new ComputeMaxFlow(gArray[thisGraph]);
+          alg.runUntilFinish();
+          int temp = gArray[thisGraph].LargestEdgeFlow();
+          canvaslet.defineMaxEdgeFlow(temp);
+          int ta = alg.thisFlow();
+          gArray[thisGraph].largestEdge = temp;
+          alg.init();
+          canvaslet.();
+          isAlgWork = true;
+          canvaslet.setEnabled(false);
+          gArray[thisGraph].isModified = false;
+        }
+        int stepsToRun = speedofRun;
+        stepsToRun = Integer.MAX_VALUE;
+        canvaslet.AugPathMarking(true);
+        oldFlow = alg.thisFlow();
+        Thread waitThread = new Thread();
+        do {
+          alg.stepsRun(1);
+          canvaslet.();
+          if (stepsToRun > 1)
+            try {
+              waitThread.sleep(1000);
+            }
+            catch (InterruptedException except) {}
+          stepsToRun--;
+        }
+        while (!alg.isOver() && stepsToRun > 0);
+
+        if (alg.isOver())
+        {
+          isAlgWork = false;
+          canvaslet.setEnabled(true);
+          canvaslet.AugPathMarking(false);
+          int ta = alg.thisFlow();
+          gArray[thisGraph].strGraph = "Maximal Flow: " +
+              (new Integer(alg.thisFlow())).toString();
+          ButtonCluster.setEnabled(true);
+          ButtonCustom.setEnabled(true);
+          ButtonStop.setEnabled(true);
+          ButtonClear.setEnabled(true);
+          stLargestFlow.setAlignment(1);
+          stLargestFlow.setText(gArray[thisGraph].strGraph);
+        }
+        else {
+          gArray[thisGraph].strGraph = "Flow Growth = " +
+              (new Integer(alg.thisFlow() - oldFlow)).toString();
+          stLargestFlow.setAlignment(1);
+          stLargestFlow.setText(gArray[thisGraph].strGraph);
+        }
+        canvaslet.();
+      */  return true;
+      }
+      
+      
+public boolean handleEventCluster()      
+      {
+       int oldFlow = 0;
+      double notranja_pov=0f, vse_pov=0f;
+       double mod=0f;
+       int iter=1;
+        BottonRunToFinish.setEnabled(false);
+        ButtonCustom.setEnabled(false);
+        ButtonStop.setEnabled(true);
+        ButtonClear.setEnabled(false);
+        String s=" "; s=zz1.getText();
+        ALPHA = Float.parseFloat(s);
+         s=" "; s=zz.getText();
+         meja1 = Float.parseFloat(s);
+        fillInEdgeCAP.setText(fillInEdgeCAP.getText()+ "GRUCATI ZACNEM: ni sv" + s );
+         fillInEdgeCAP.setText(fillInEdgeCAP.getText()+ ALPHA +"je ALPHA" ); 
+        starting_vertex = -1; 
+         if  (starting_vertex==-1) s="0";       
+                 fillInEdgeCAP.setText(" ");
+         
+          initCluster();                    
+            if (gArray[thisGraph].nVer() <150 )canvaslet.reDraw();
+          
+            int k=1;
+       
+        ExtendVer v= new ExtendVer();
+             
+        {
+          {   for (int iii=0; iii< clusterOutside.size(); iii++)
+               { fillInEdgeCAP.setText( iii+"?SV"+ ((ExtendVer)clusterOutside.elementAt(iii)).mName+"gruca"+((ExtendVer)clusterOutside.elementAt(iii)).gruca );
+                               
+                  if(((ExtendVer)clusterOutside.elementAt(iii)).flag == 0)
+                     if(((ExtendVer)clusterOutside.elementAt(iii)).mName == ((ExtendVer)clusterOutside.elementAt(iii)).mNameFirst)
+                     { starting_vertex= iii;
+                     
+                       cspCluster(k); k++;}
+               }
+          }
+         /* else 
+          {   fillInEdgeCAP.setText(" iter"+ iter+"::" );  
+                for (int iii=0; iii< clusterOutside.size(); iii++)
+               {  ((ExtendVer) clusterOutside.elementAt(iii)).changeColor(color[0],0);
+               
+                  ((ExtendVer) clusterOutside.elementAt(iii)).mName = ((ExtendVer) clusterOutside.elementAt(iii)).mNameFirst;
+                }  
+              if (gArray[thisGraph].nVer() <150 ) canvaslet.reDraw();
+              
+              for (int ij=1; ij< k; ij++) 
+                 {max_uu=0;
+                      for (int iii=0; iii < clusterOutside.size(); iii++)
+                            {  v= ((ExtendVer)clusterOutside.elementAt(iii));
+                                if(((ExtendVer)clusterOutside.elementAt(iii)).gruca== ij )
+                               { fillInEdgeCAP.setText(fillInEdgeCAP.getText()+((ExtendVer)clusterOutside.elementAt(iii)).mName+" li:"+((ExtendVer)clusterOutside.elementAt(iii)).koncni_li+"; " );
+                                                                 if(((ExtendVer)clusterOutside.elementAt(iii)).koncni_li > max_uu)
+                                    {
+                                      starting_vertex= iii;
+                                      max_uu=((ExtendVer)clusterOutside.elementAt(iii)).koncni_li; }
+                               }
+                            }
+                             fillInEdgeCAP.setText( fillInEdgeCAP.getText()+" gruca"+ ij +"  "+ ((ExtendVer)clusterOutside.elementAt(starting_vertex)).mName );
+                             for(int ggg=1;ggg<100; ggg++)for(int gg=1; gg < 1000000000; gg++);
+                             
+                             
+                        if( max_uu != 0) cspCluster(ij);
+                    }
+            }   */
+        } 
+          
+         fillInEdgeCAP.setText( gArray[thisGraph].nVer() + "elemntov v gruci in iteracij je  "+numberOfIterations);  
+          
+         
+          /* for (int j=0; j< gArray[thisGraph].nVer(); j++)
+            {     if (gArray[thisGraph].returnVer(j).gruca != 1) 
+                  {gArray[thisGraph].returnVer(j).gruca = 2;
+                   gArray[thisGraph].returnVer(j).mName="33";
+                   if (gArray[thisGraph].nVer() < 150) 
+                             gArray[thisGraph].returnVer(j).changeColor(color[Integer.parseInt(((gArray[thisGraph].returnVer(j)).mName).substring(((gArray[thisGraph].returnVer(j)).mName).length()-1,((gArray[thisGraph].returnVer(j)).mName).length()))],2);
+                   }
+            }
+          */
+           
+       
+       
+          
+          ExtendVer v2 = new ExtendVer();
+          ExtendEdge e = new ExtendEdge();
+          ExtendVer v1 = new ExtendVer();
+           double MinMaxCut=0.0;
+           double  Coverage=0.0;
+          int stGruc = 0;
+          double  zunanja_pov=0.0f;
+          double  ac = 0.0f;
+          int ni;
+          for (int j=0; j< gArray[thisGraph].nVer(); j++)
+              if (gArray[thisGraph].returnVer(j).gruca > stGruc)
+              stGruc=gArray[thisGraph].returnVer(j).gruca;
+          notranja_pov=0.0; vse_pov=0.0; zunanja_pov=0.0f;  MinMaxCut=0.0;  Coverage=0.0;
+           for(int j=1; j<=stGruc; j++) 
+               { fillInEdgeCAP.setText( "izracun modularnosti za št gruc:"+j );
+                   for (int jj=0; jj < gArray[thisGraph].nEdge(); jj++) 
+                      {    e = (ExtendEdge)gArray[thisGraph].obtainEdge(jj);   
+                           v1 = (ExtendVer) e.obtainVerOrigin();
+                          v2 = (ExtendVer) e.obtainVerDestiny();
+                         if   ((v1.gruca==j) || (v2.gruca==j))
+                           { 
+                              if((v1.mName).equals(v2.mName))
+                                    notranja_pov = notranja_pov + 1.0;
+                             else {zunanja_pov = zunanja_pov + 1.0; v1.zZunanjoPovezavo =1; v2.zZunanjoPovezavo =1;
+                                    ni = 1;  for (int  jk = 0; jk < v1.sosedneGruce.size(); jk++) if (ni==1) if ((Integer)(v1.sosedneGruce).elementAt(jk) == v2.gruca) ni=0;
+                                    if (ni==1)  {v1.sosedneGruce.addElement(v2.gruca);}
+                                    ni = 1;  for (int jk=0; jk< v2.sosedneGruce.size(); jk++) if (ni==1) if ((Integer) v2.sosedneGruce.elementAt(jk)== v1.gruca) ni=0;
+                                    if (ni==1) { v2.sosedneGruce.addElement(v1.gruca);}
+                         }}       
+                  }
+                       vse_pov=notranja_pov+zunanja_pov;
+                   if (notranja_pov > 0.0)
+                    { mod += (notranja_pov/(2.0*gArray[thisGraph].nEdge()) - 
+                      Math.pow(vse_pov/(2*gArray[thisGraph].nEdge()),2.0));
+                      MinMaxCut += zunanja_pov/notranja_pov;
+                      Coverage += notranja_pov;
+                    } 
+                     
+                 Coverage =Coverage/gArray[thisGraph].nEdge();
+                
+               }    
+               int steviloVozlisceGruce = 0;
+               int stevilozZunanjoPovezavo = 0;
+                for (int j=0; j< gArray[thisGraph].nVer(); j++)
+                   {if (gArray[thisGraph].returnVer(j).zZunanjoPovezavo == 1)
+                       stevilozZunanjoPovezavo ++;
+                    steviloVozlisceGruce += gArray[thisGraph].returnVer(j).sosedneGruce.size();
+                   }
+                     
+               fillInEdgeCAP.setText(fillInEdgeCAP.getText()+ " mod"+ mod + " MinMaxCut"+ MinMaxCut+ " Coverage"+ Coverage) ;
+                 fillInEdgeCAP.setText(" ");
+                
+        for(int j=1; j<=stGruc; j++) 
+           { 
+            
+             
+                 
+                zunanja_pov=0.0f;
+                notranja_pov=0.0f;
+                for (int jj=0; jj < gArray[thisGraph].nEdge(); jj++) 
+                 {    e = (ExtendEdge)gArray[thisGraph].obtainEdge(jj);   
+                           v1 = (ExtendVer) e.obtainVerOrigin();
+                          v2 = (ExtendVer) e.obtainVerDestiny();
+                         if   ((v1.gruca==j) || (v2.gruca==j))
+                           { 
+                               if((v1.mName).equals(v2.mName))
+                                 notranja_pov = notranja_pov + 1.0;
+                                else
+                                  { 
+                                      String segments[] = v2.mName.split(", ");
+                                      int niVecGruc=0;
+                                      for (int ss=1; ss< segments.length - 1; ss++)
+                                      if((v1.mName).equals(segments[ss])) niVecGruc=1;
+                                      if (niVecGruc == 1)
+                                        { notranja_pov = notranja_pov + 1.0;}
+                                       else
+                                         {
+                                         zunanja_pov = zunanja_pov + 1.0; v1.zZunanjoPovezavo =1; v2.zZunanjoPovezavo =1;
+                                         ni = 1;  for (int  jk = 0; jk < v1.sosedneGruce.size(); jk++) if (ni==1) if ((Integer)(v1.sosedneGruce).elementAt(jk) == v2.gruca) ni=0;
+                                         if (ni==1)  {v1.sosedneGruce.addElement(v2.gruca);}
+                                         ni = 1;  for (int jk=0; jk< v2.sosedneGruce.size(); jk++) if (ni==1) if ((Integer) v2.sosedneGruce.elementAt(jk)== v1.gruca) ni=0;
+                                         if (ni==1) { v2.sosedneGruce.addElement(v1.gruca);}
+                                        }
+                                  }       
+                         }
+                   }    
+              /* int steviloVozlisceGruce = 0;
+               int stevilozZunanjoPovezavo = 0;
+                for (int j=0; j< gArray[thisGraph].nVer(); j++)
+                   {if (gArray[thisGraph].returnVer(j).zZunanjoPovezavo == 1)
+                       stevilozZunanjoPovezavo ++;
+                    steviloVozlisceGruce += gArray[thisGraph].returnVer(j).sosedneGruce.size();
+                   }*/
+                    
+                  int stElementovGruce = 0;
+                   vse_pov=0.0f;
+                   for (int jj=0; jj< gArray[thisGraph].nVer(); jj++)
+                     { if (gArray[thisGraph].returnVer(jj).gruca == j)
+                        {vse_pov = vse_pov + (gArray[thisGraph].returnVer(jj)).stSosedov;
+                        stElementovGruce++;
+                        }
+                     }
+                 
+                   if (notranja_pov >0)
+                      if (stElementovGruce > 3)
+                       { 
+                          ac += (float) stElementovGruce * ((zunanja_pov )/vse_pov); 
+                          fillInEdgeCAP.setText(fillInEdgeCAP.getText()+"G"+ j+":"+"stEl:"+stElementovGruce + "zun:"+zunanja_pov+"vse:"+ vse_pov + "ac:"+ (float) stElementovGruce * ((zunanja_pov)/vse_pov) +"   ");  
+                      } 
+                        
+             
+        }
+      fillInEdgeCAP.setText("AC="+ac/gArray[thisGraph].nVer());
+        /*  V VIŠJI NIVO
+            if (gArray[thisGraph].nVer() <100 ) for (int ii=0; ii< 100; ii++)
+                for (int iii=0; iii< 1000000000; iii++)   k=k+1;
+          boolean isci;
+          initGraph();
+   
+         
+          
+          for(int jj=0; jj<gArray[thisGraph-1].nVer(); jj++) 
+          {  isci = true;
+             v=(ExtendVer) gArray[thisGraph-1].returnVer(jj);
+             for (int j=0; j< gArray[thisGraph].nVer(); j++)
+              {if(isci)
+               { v2= (ExtendVer)gArray[thisGraph].returnVer(j);
+                if((v.mName).equals(v2.mName))
+                 isci=false;
+                }
+            }
+            
+             if (isci) 
+                 { fillInEdgeCAP.setText(fillInEdgeCAP.getText()+ "c"+v.mName ); 
+                     ExtendVer v1 = new ExtendVer();
+                  v1=v; 
+                  gArray[thisGraph].increaseVer(v1);
+                 }             
+           }
+             ExtendEdge e = new ExtendEdge();
+             ExtendVer v1 = new ExtendVer();
+                
+            
+            for (int jj=0; jj<gArray[thisGraph-1].nEdge(); jj++) 
+                { e = (ExtendEdge)gArray[thisGraph-1].obtainEdge(jj);   
+                  v1 = (ExtendVer) e.obtainVerOrigin();
+                  v2 = (ExtendVer) e.obtainVerDestiny();
+                  if((v1.mName).equals(v2.mName))
+                     isci=false;
+                  else 
+                  { 
+                      for(int jv=0; jv < gArray[thisGraph].nVer(); jv++)
+                         {  v=(ExtendVer) gArray[thisGraph].returnVer(jv);
+                            if ((v1.mName).equals(v.mName))v1=v;
+                            if ((v2.mName).equals(v.mName))v2=v;
+                         }
+                      ExtendEdge ee = new ExtendEdge(v1,v2,1);
+                      ee.u1=e.u1;
+                      ee.u2=e.u2;
+                      gArray[thisGraph].increaseEdge(ee);
+                    }
+                }
+           */
+          for (int j=0; j< gArray[thisGraph].nVer(); j++)
+             {notranja_pov=0.0; vse_pov=0.0;
+              for(int jj=0; jj<gArray[thisGraph-1].nVer(); jj++) 
+                 for(int jjj=0; jjj<gArray[thisGraph-1].returnVer(jj).stSosedov; jjj++)                       
+                 { if (gArray[thisGraph-1].returnVer(jj).mName.equals(gArray[thisGraph].returnVer(j).mName))
+                    { if (gArray[thisGraph-1].returnVer(jj).sosed. elementAt(jjj).mName.equals(gArray[thisGraph].returnVer(j).mName))
+                          notranja_pov=notranja_pov+1.0;
+                          vse_pov=vse_pov+1.0;
+                      }
+                      {/* če ne daj novo povezavo v gArray[thisGraph]
+                      ExtendEdge ee = new ExtendEdge();
+                      ee.
+                      gArray[thisGraph].increaseEdge(ee); */
+                    }
+                    }
+              {mod += (notranja_pov/(2.0*gArray[thisGraph-1].nEdge()) - 
+                      Math.pow(vse_pov/(2*gArray[thisGraph-1].nEdge()),2.0)); 
+                 stGruc++;
+            }}   
+        fillInEdgeCAP.setText(fillInEdgeCAP.getText()+ "modularity "+ mod+ " st gruc "+ gArray[thisGraph].nVer() );
+       
+      
+        /*3 izpis gruč na datoteko:
+        try{
+            new java.io.FilePermission("a.txt", "write");
+
+        PrintWriter datoteka = new PrintWriter(new FileWriter("aGRUCE"+thisGraph+".txt"), true); 
+           datoteka.println((String)filename.getSelectedItem());           
+
+        for(int jj=0; jj<gArray[thisGraph].nVer(); jj++) 
+          {  
+            datoteka.println(jj+" GRUCA: ");
+              datoteka.println(jj+" GRUCA: ");
+              for(int j=0; j<gArray[thisGraph-1].nVer(); j++)
+              {  v=(ExtendVer) gArray[thisGraph-1].returnVer(j);
+                 if (gArray[thisGraph].returnVer(jj).mName.equals(v.mName))
+                  {  datoteka.println(v.mNameFirst+"obdelujem ");              
+                int vecji=0;
+                int enak_velik=0;
+                 float t1;
+                   float t2;
+                for (int sj=0; sj<v.stSosedov;sj++)
+                 {   
+                   v1 = (ExtendVer) (v.rob.elementAt(sj)).obtainVerOrigin();
+                   if (v1.equals(v))
+                     {t1=v.rob.elementAt(sj).u1; t2=v.rob.elementAt(sj).u2;} 
+                   else {t2=v.rob.elementAt(sj).u1; t1=v.rob.elementAt(sj).u2;}
+                   if ((  t1 < t2 ) && (t2 > 0.5f)){ vecji=vecji+1; }
+                   if ((float) Math.abs(t1-t2) < t2 * 0.25f) enak_velik= enak_velik+1;
+                   datoteka.print(v.mNameFirst+" "+v1.mNameFirst+" "+ ":  t1  "+t1+"  t2  "+t2+" ");
+                   }  
+                  if (vecji > (7*v.stSosedov/12))   datoteka.print("s"+v.stSosedov); 
+                  else if (enak_velik> (7*v.stSosedov/12))  datoteka.print("c"+v.stSosedov); 
+                  else datoteka.print("enak_velik"+enak_velik+" vecji"+vecji+"od"+v.stSosedov);
+                  datoteka.println();
+                } 
+                } 
+           } 
+          
+         datoteka.close(); 
+        }
+         catch(Exception ee) {
+         fillInEdgeCAP.setText( "napaka"+  ee.getMessage());
+         }
+         
+        fillInEdgeCAP.setText(fillInEdgeCAP.getText()+ " dat" );
+        */
+           if (gArray[thisGraph].nVer() <100 )
+        initScreen();
+        fillInEdgeCAP.setText(thisGraph+"nivo");
+           if (gArray[thisGraph].nVer() <150 )canvaslet.reDraw();
+        MejnaUtez=(float) (MejnaUtez/2.0f);
+        if (gArray[thisGraph-1].nVer() > 1) handleEventCluster()  ;
+        
+      /* int stepsToRun = speedofRun;
+          canvaslet.AugPathMarking(true);
+          Thread waitThread = new Thread();
+        */
+        /* mif (!stop) {
+        do {
+          alg.stepsRun(1);
+          canvaslet.reDraw();
+          if (stepsToRun > 1)
+            try {
+              waitThread.sleep(1000);
+            }
+            catch (InterruptedException except) {}
+          stepsToRun--;
+        }
+
+        while (!alg.isOver() && stepsToRun > 0);
+*/
+
+  /*    
+       {
+          isAlgWork = false;
+          canvaslet.setEnabled(true);
+          canv**aslet.AugPathMarking(false);
+          BottonRunToFinish.setEnabled(false);
+          stLargestFlow.setAlignment(1);
+          stLargestFlow.setText(gArray[thisGraph].strGraph);
+          ButtonCluster.setEnabled(false);
+          ButtonMinCut.setEnabled(true);
+          ButtonClear.setEnabled(true);
+        }
+        else
+        {  
+          stLargestFlow.setAlignment(1);
+          stLargestFlow.setText(gArray[thisGraph].strGraph);
+
+        }
+        canvaslet.reDraw();
+       */
+      ButtonClear.setEnabled(true);
+      
+      return true;
+    }
+    
+public void initCluster()
+{
+  
+ExtendVer v= new ExtendVer();
+ExtendVer cv= new ExtendVer();
+ExtendVer v0= new ExtendVer();
+ExtendVer v1= new ExtendVer();
+ExtendVer v2= new ExtendVer();
+ExtendEdge ee= new ExtendEdge();
+    int j,i; int p=1;
+    int POOL=10;
+    int currentVertex;
+    float raz;
+    int r=0, konec=0;
+     fillInEdgeCAP.setText(fillInEdgeCAP.getText() +","); 
+     i = gArray[thisGraph].nVer();
+     Vector zaporedjeVozlisc = new Vector(i);
+     Random generator = new Random();
+     
+     
+         for (j=0; j<i; j++)
+          { konec=0;
+             while (konec==0)
+                  { r = generator.nextInt(i);
+                    konec=1;
+                    
+                     for(int zap=0;zap < zaporedjeVozlisc.size(); zap++) 
+                       if (r == zaporedjeVozlisc.elementAt(zap))
+                         konec=0;
+                   }
+            v = (ExtendVer) gArray[thisGraph].returnVer(j);
+            zaporedjeVozlisc.addElement(r);
+            v.mNameFirst = v.mName;
+         
+           clusterOutside.add(v); 
+            v.stSosedov=0;
+            v.gruca=0;
+            v.flag=0;
+            
+         }
+       
+         
+        
+         
+            if (gArray[thisGraph].nEdge()==0)
+              {for (int jj=0; jj < clusterOutside.size(); jj++)
+                { 
+                currentVertex=jj;
+                 v0 = (ExtendVer) clusterOutside.elementAt(currentVertex);
+                raz = euclideanDistance(v.center,v0.center); 
+                 konec=1;
+                if (v.mName==v0.mName) konec=0;
+                for (int jjj=0; jjj < p; jjj++)
+                    {if ((konec==1) &&((v.razdalja[jjj] >= raz) || (v.razdalja[jjj]==0)))
+                        {v.sosed.add(jjj, v0); 
+                            v.stSosedov +=1; 
+                            v.razdalja[jjj]=raz; 
+                       
+                         konec=0;}  } }
+                        }
+           
+             else
+             {i=gArray[thisGraph].nEdge();
+             for (int je=0; je<i; je++)                         
+                { ee = (ExtendEdge)gArray[thisGraph].obtainEdge(je);                         
+                  v1 = (ExtendVer) ee.obtainVerOrigin();
+                  v2 = (ExtendVer) ee.obtainVerDestiny();
+                  v1.sosed.add(v1.stSosedov,v2);
+                  v2.sosed.add(v2.stSosedov,v1);
+                  v1.rob.add(v1.stSosedov, ee);
+                  v2.rob.add(v2.stSosedov, ee);
+                  v1.stSosedov += 1;                                                    
+                  v2.stSosedov += 1;
+                 }
+                
+ 
+            } 
+           
+            sortVertices(clusterOutside);
+  
+            fillInEdgeCAP.setText( "konec init"); 
+           
+              
+   try{
+      
+new java.io.FilePermission("a.txt", "write");
+PrintWriter datoteka = new PrintWriter(new FileWriter("autezi"+thisGraph+".txt"), true);                        
+          int skupni_sosed;float uu=0;
+          if ( thisGraph<2)
+          for (j=0; j < clusterOutside.size(); j++)       
+          {v= (ExtendVer) clusterOutside.elementAt(j);
+
+                uu=0.0f;
+                for (int sj=0; sj < v.stSosedov; sj++)   
+                {skupni_sosed=0;
+                   for (int s1j=0; s1j< (v.sosed.elementAt(sj)).stSosedov; s1j++) 
+                   { for (int svj=0; svj < v.stSosedov; svj++)
+                      if ((v.sosed.elementAt(svj)).equals( (v.sosed.elementAt(sj).sosed.elementAt(s1j))))
+                       {  skupni_sosed = skupni_sosed + 1;}
+ 
+                    }skupni_sosed = skupni_sosed +1;
+                  v.stSkupSosedov.add(sj,(float)skupni_sosed);
+                  
+                    
+datoteka.println(v.mName+"-"+v.sosed.elementAt(sj).mName+":"+ v.stSkupSosedov.elementAt(sj)+"/"+ (v.stSosedov));
+uu += v.rob.elementAt(sj).u1;
+
+ 
+                 v1 = (ExtendVer) (v.rob.elementAt(sj)).obtainVerOrigin();
+              
+                 if (v1.equals(v))
+                   (v.rob.elementAt(sj)).u1= (float)( (float)v.stSkupSosedov.elementAt(sj));    
+                 else
+                  (v.rob.elementAt(sj)).u2= (float)( (float)v.stSkupSosedov.elementAt(sj));    
+                }
+                v.utez=uu;
+           
+             } 
+   datoteka.close(); 
+
+        }
+         catch(Exception eeee) {
+ fillInEdgeCAP.setText( "napaka"+  eeee.getMessage());
+         }                  
+                          
+                         
+          fillInEdgeCAP.setText( "init! "); 
+              
+     }
+    
+
+
+    /***************************************************************
+     * fillInEdgeCAP.setText(fillInEdgeCAP.getText()+" konec ");
+     *  canvaslet.reDraw();
+     */
+   
+  public  void cspCluster(int k)
+{  
+
+ExtendVer v= new ExtendVer();                     
+ExtendVer v1= new ExtendVer(); 
+ExtendVer v2= new ExtendVer(); 
+ExtendVer sosed= new ExtendVer(); 
+ExtendEdge ee= new ExtendEdge();
+int dalje=0; 
+
+float raz=0.0f; 
+
+int numVer= gArray[thisGraph].nVer();    
+int currentVertex;
+int spremembe=1;
+float  maxstevilososdeov=0.0f;
+float u;
+int  steviloVGruci;
+int  steviloVOkolici;
+int  noLinkGruce;
+int  noLinkOkolice;
+float utezGruce=0.0f;
+float utezOkolice=0.0f;
+steviloVGruci=0;
+ Vector cluster = new Vector(200);
+ Vector clusterN = new Vector(200);
+fillInEdgeCAP.setText( fillInEdgeCAP.getText()+  "S:"+starting_vertex+":");
+
+utezGruce=0.0f;
+ utezOkolice=0.0f;
+ noLinkOkolice=0;
+ noLinkGruce=0;
+ int okolica=0;
+ 
+  float ui=0.0f;
+  float max_uu=0.0f;
+
+         try
+         {
+           steviloVOkolici=0;
+        int max_stSosedov;
+        max_stSosedov=0;   
+          v1 = (ExtendVer) clusterOutside.elementAt(starting_vertex);
+          for (int jjj=0; jjj < v.stSosedov; jjj++)
+          {  if ((v1.sosed.elementAt(jjj)).gruca != k) 
+                 if ((v1.sosed.elementAt(jjj)).flag == 0) 
+                     if ((v1.sosed.elementAt(jjj)).mName != v1.mName)
+                       if  ((v1.sosed.elementAt(jjj)).stSosedov > max_stSosedov)
+                           {  max_stSosedov = (v1.sosed.elementAt(jjj)).stSosedov;
+                              starting_vertex = jjj; 
+                           } 
+            }  
+             v1 = (ExtendVer) (v1.sosed.elementAt(starting_vertex));
+           cluster.add(v1); v1.gruca=k;           
+          fillInEdgeCAP.setText("G.name-center:" +v1.mName+"gruca" + v1.gruca); 
+          steviloVGruci=1;
+          v1.changeColor(color[Integer.parseInt((v1.mName).substring((v1.mName).length()-1,(v1.mName).length()))],k);
+          v1.changeColor(color[k],k);
+  float uu,u1;  
+  spremembe=1;
+    while (spremembe>0)       
+    {spremembe=0;            
+           for (int j=0; j<cluster.size(); j++)         
+             {v= (ExtendVer) cluster.elementAt(j);     
+                 for (int jjj=0; jjj < v.stSosedov; jjj++)
+                   {  if ((v.sosed.elementAt(jjj)).gruca != k) 
+                           if ((v.sosed.elementAt(jjj)).flag != -1) 
+                            if ((v.sosed.elementAt(jjj)).flag != 8) if ((v.sosed.elementAt(jjj)).mName != v1.mName) 
+                               {clusterN.add(v.sosed.elementAt(jjj));
+                                v.sosed.elementAt(jjj).flag = -1;
+                               v2 = (ExtendVer) (v.rob.elementAt(jjj)).obtainVerOrigin();
+              
+                                     if ((v2.mName).equals(v.sosed.elementAt(jjj).mName)) 
+                                        {uu=(v.rob.elementAt(jjj)).u1;
+                                         u=(v.rob.elementAt(jjj)).u2;}
+                   
+                                     else
+                                        {uu=(v.rob.elementAt(jjj)).u2;
+                                         u=(v.rob.elementAt(jjj)).u1;}
+                
+                   
+                                    if (((uu /(float)(v.sosed.elementAt(jjj)).stSosedov) > meja1)
+                                   &&((u/(float)(v.stSosedov) > meja2)))
+                                     { if (!((v.sosed.elementAt(jjj).mName).equals(v1.mName))) 
+                                         v.sosed.elementAt(jjj).flag=8; 
+                                        }
+                                        
+                              }
+               
+                } 
+              }
+         
+             if (gArray[thisGraph].nVer() <150 )canvaslet.reDraw();
+             float f;
+             int spremembe1 =1;
+                
+                while (spremembe1 >0)
+                { spremembe1=0;
+                    for (int j=0; j<clusterN.size(); j++)  
+                    { v= (ExtendVer) clusterN.elementAt(j);   
+    
+                        v.koncni_li=0.0f; 
+                        v.lo=0.0f;
+                        v.noli=0;
+                        if (v.flag > -99)
+                        for (int jjj=0; jjj < v.stSosedov; jjj++)    
+                        {
+              
+                            v2 = (ExtendVer) (v.rob.elementAt(jjj)).obtainVerOrigin();
+                            if ((v2.mName).equals(v.mName)) 
+                            { uu=(v.rob.elementAt(jjj)).u2; }
+                            else
+                            {uu=(v.rob.elementAt(jjj)).u1;   }
+                            if (((v.sosed.elementAt(jjj)).mName).equals(v1.mName)) 
+                            {   v.koncni_li=v.koncni_li+uu;}
+                                else {if (((v.sosed.elementAt(jjj)).flag)==8)  
+                                    {  
+                                       v.koncni_li=v.koncni_li+uu;
+                                       v.noli=v.noli+1;
+                                    }  
+                             
+                                    else  v.lo=v.lo+uu;}     
+                                    }
+                        }   
+     
+                  
+
+                            utezGruce=0.0f;
+                            utezOkolice=0.0f;
+                            noLinkOkolice=0;
+                            noLinkGruce=0;
+                            okolica=0;
+                            ExtendVer vv;
+                            ui=0.0f;
+                            for (int ij=0; ij<cluster.size(); ij++)
+                            {  vv= (ExtendVer) cluster.elementAt(ij); 
+                                
+    
+                                okolica=0;
+                                for (int jjj=0; jjj < vv.stSosedov; jjj++)
+                                {   
+                                    v2 = (ExtendVer) (vv.rob.elementAt(jjj)).obtainVerOrigin();
+                                    if ((v2.mName).equals(v.mName)) 
+                                    { uu=(vv.rob.elementAt(jjj)).u2; }
+                                    else
+                                    {uu=(vv.rob.elementAt(jjj)).u1; }
+                                   if (((vv.sosed.elementAt(jjj)).mName).equals(v1.mName)) 
+                                    {  utezGruce+= uu; 
+                                       
+                                       noLinkGruce++;}
+                                       else  
+                                       { 
+                                           /*  if (((vv.sosed.elementAt(jjj)).flag)==8)  
+                                            * { f=0; 
+                                            *     
+                                            *     utezGruce+= uu; 
+                                            *     li=li+uu;
+                                            *     noLinkGruce++;}
+                                            *     else */
+                             
+                                            { utezOkolice += uu;
+                                                okolica=1;                                        
+                                                noLinkOkolice++;}
+                                    } 
+                                }
+                              } 
+       
+                              if (okolica==1)steviloVOkolici++; 
+                             
+                               float n=(float)cluster.size();
+                               
+                                for (int jjj=0; jjj <clusterN.size(); jjj++) 
+                                {float max=0.0f;
+                                 
+                                    for (int j=0; j <clusterN.size(); j++)  
+                                    {  v= (ExtendVer) clusterN.elementAt(j);
+                                       if (v.koncni_li >  max )
+                                       max=v.koncni_li;
+                                   }
+                                   for (int j=0; j<clusterN.size(); j++)  
+                                   {   v= (ExtendVer) clusterN.elementAt(j);
+                                       
+                                       {
+ 
+                                         if( v.flag > -99)  
+                                         if (v.lo > 0.0f)
+                                         if (v.koncni_li < ALPHA * v.lo)  {    
+                                             v.flag = -99; } 
+                                    
+                              
+                                            
+                                              
+                                            
+                                        }
+                                    }
+                                }
+  
+
+                 } 
+ 
+                 if (gArray[thisGraph].nVer() < 150) canvaslet.reDraw(); 
+    
+                 for (int jjj=0; jjj<clusterN.size(); jjj++)    
+                 { v= (ExtendVer) clusterN.elementAt(jjj); 
+                     
+                     if ( v.flag == -99) { v.flag=0; }
+                     else  
+                     {v.flag=0;v.gruca = k;
+                         cluster.add(v); 
+                         spremembe++;
+                         if (v.mName.equals(v.mNameFirst)) v.mName=v1.mName;
+                         else v.mName=v.mName+","+v1.mName;
+                         steviloVGruci++;
+                         if (gArray[thisGraph].nVer() < 150) 
+                            v.changeColor(color[k],k);
+                      } 
+                }
+                clusterN.removeAllElements();numberOfIterations++; fillInEdgeCAP.setText(fillInEdgeCAP.getText()+numberOfIterations); 
+                for (int jjj=0; jjj<clusterN.size(); jjj++)  v.flag=0;
+                if (gArray[thisGraph].nVer() < 150) canvaslet.reDraw(); 
+
+      
+
+
+
+     
+                /* če gruča ne izpolnjuje pogoja avg density/2 na vozlišče  < ALPHA     
+                 * if (spremembe <1)
+                 * {if (((   (float) utezGruce /(float)2.0f  -(float)utezOkolice )/(float) steviloVGruci) < (float)MEJA)
+                 *     {if ( meja1 > 0.0f) {   fillInEdgeCAP.setText(v.mNameFirst+" spremembe"+spremembe);    for(int gg=1; gg<1000000000;gg++);meja1 = meja1 - 0.1f; spremembe++;}}
+                 *  }
+                    */
+       
+    }
+    float sli,slo;
+    max_uu=0.0f;
+             fillInEdgeCAP.setText("k"+k );
+             for (int iii=0; iii<clusterOutside.size(); iii++)  
+                {   v= (ExtendVer) clusterOutside.elementAt(iii);   
+    
+                        sli=0.0f; 
+                        slo=0.0f;
+                        
+                        if (v.flag == k)
+                        for (int jjj=0; jjj < v.stSosedov; jjj++)    
+                        {
+              
+                            v2 = (ExtendVer) (v.rob.elementAt(jjj)).obtainVerOrigin();
+                            if ((v2.mName).equals(v.mName)) 
+                              { uu=(v.rob.elementAt(jjj)).u2; }
+                            else
+                              {  uu=(v.rob.elementAt(jjj)).u1;   }
+                            if (((v.sosed.elementAt(jjj)).mName).equals(v1.mName)) 
+                                   sli = sli + uu;  
+                            else   slo = slo + uu;
+                                
+                         }     
+                       if (v.flag == k)
+                       {  if ( sli> max_uu) max_uu = sli;  starting_vertex = iii;
+                          ((ExtendVer) clusterOutside.elementAt(iii)).koncni_li = sli;
+                          ((ExtendVer) clusterOutside.elementAt(iii)).lo = slo;
+                          fillInEdgeCAP.setText(fillInEdgeCAP.getText()+";"+v.mNameFirst+ " li "+((ExtendVer) clusterOutside.elementAt(iii)).koncni_li );
+                        }
+                       
+                  }
+     if (iter<1)
+     {  for (int iii=0; iii<clusterOutside.size(); iii++)
+         {   if (((ExtendVer) clusterOutside.elementAt(iii)).flag == k)
+              {   ((ExtendVer) clusterOutside.elementAt(iii)).changeColor(color[0],0);
+                  ((ExtendVer) clusterOutside.elementAt(iii)).mName = ((ExtendVer) clusterOutside.elementAt(iii)).mNameFirst;
+              }
+
+        }
+            fillInEdgeCAP.setText(fillInEdgeCAP.getText()+"iter"+ iter + " starting vertex "+ clusterOutside.elementAt(starting_vertex).mNameFirst);
+             for(int ggg=1; ggg<10;ggg++)  for(int gg=1; gg<100000000;gg++); iter++;
+             cspCluster(k);
+     }
+    else{ iter=1;
+                try 
+                {new java.io.FilePermission("a.txt", "write");
+                    PrintWriter datoteka = new PrintWriter(new FileWriter("GRUCEPOVRSTI"+thisGraph+".txt",true));  
+        
+                    datoteka.print((String)filename.getSelectedItem()+"meja"+ALPHA+"meja1:meja2"+meja1+":"+meja2);
+                    datoteka.print(" G:"+ clusterOutside.elementAt(starting_vertex).mName+" z št elementov:"+steviloVGruci);
+                    datoteka.println();
+                    for (int j=0; j <cluster.size(); j++) 
+                     {v= (ExtendVer) cluster.elementAt(j); datoteka.print(v.mNameFirst+",");}
+     
+     
+  
+    
+                    float vse= (((float) utezGruce /(float)2.0f  -(float)utezOkolice )/(float) steviloVGruci) -(float)ALPHA;
+                 
+                    datoteka.println("="+ cluster.size()+" uG:"+utezGruce+" uO:"+utezOkolice+"noLinkGruce"+noLinkGruce+"noLinkOkolice"+noLinkOkolice+
+                    " no vozlišča Gruce"+steviloVGruci+  "vo Okolice"+  steviloVOkolici+" vse"+vse);      
+                    datoteka.close();
+                }        
+                catch(Exception eeee) { fillInEdgeCAP.setText( "napaka"+  eeee.getMessage());}
+                fillInEdgeCAP.setText( " G"+clusterOutside.elementAt(starting_vertex).mName+"z"+steviloVGruci+"size "+ cluster.size()+" uG:"+utezGruce+" uO: "+utezOkolice );    
+                if (gArray[thisGraph].nVer() <150) canvaslet.reDraw();           
+            
+            } 
+        }   
+            catch {ArrayIndexOutOfBoundsException e)
+                {
+                    fillInEdgeCAP.setText( " Caught ArrayIndexOutOfBoundsException"+ e.getMessage());
+                }
+   } 
+       
+public float  euclideanDistance(Point v1, Point v2)
+   {return ((v1.x-v2.x)*(v1.x-v2.x)+(v1.y-v2.y)*(v1.y-v2.y));
+    }  
+    
+    
+    
+ protected static void sortVertices (Vector v) 
+ { Vector v1= new Vector();
+   ExtendVer ver1=null;
+   float x=0;
+   int najvecji=0;
+  
+  do
+  {x=0; najvecji=0;
+  for (int i=0; i < v.size(); i++)
+    {ver1 = (ExtendVer) v.elementAt(i);
+       if (ver1.stSosedov >= x) {x = ver1.stSosedov; najvecji=i;}
+       
+    }
+   
+   
+    ver1 = (ExtendVer) v.elementAt(najvecji);
+    v.removeElementAt(najvecji);
+    v1.add(ver1);
+  } while (v.size()>0);
+ 
+  for (int i=0; i < v1.size(); i++)
+    {ver1 = (ExtendVer) v1.elementAt(i);
+     v.add(ver1);
+    
+      
+    } 
+  }
+ };
+
+
+
+

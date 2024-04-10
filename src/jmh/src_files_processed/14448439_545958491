@@ -1,0 +1,232 @@
+import java.io.*;
+public class verifica
+{
+    static int n_sq;
+    static InputStreamReader leggi=new InputStreamReader(System.in);
+    static BufferedReader input=new BufferedReader (leggi); 
+    public void main()throws Exception
+    {
+        int choise;
+        String name_sq[];
+        float p1_sq[];
+        float p2_sq[];
+        float p3_sq[];
+        float p4_sq[];
+        float ptot_sq[];
+        boolean uscita;
+
+        System.out.print("Inserisci il numero delle squadre: ");
+        n_sq= Integer.parseInt(input.readLine());
+        p1_sq = new float[n_sq];
+        p2_sq = new float[n_sq];
+        p3_sq = new float[n_sq];
+        p4_sq = new float[n_sq];
+        ptot_sq = new float[n_sq];
+        name_sq =  new String[n_sq];
+       
+        for(int i=0;i<n_sq;i++)
+        {
+            System.out.print("inserisci nome "+(i+1)+"^squadra: ");
+            name_sq[i]=input.readLine();
+            p1_sq[i]=0;
+            p2_sq[i]=0;
+            p3_sq[i]=0;
+            p4_sq[i]=0;
+            ptot_sq[i]=0;      
+        }
+        uscita=false;
+        do
+        {
+          vedi_tabellone(name_sq, p1_sq, p2_sq, p3_sq, p4_sq, ptot_sq); 
+          visualizza_menu();  
+          System.out.print("scelta effetuata: ");
+          choise= chiedi_scelta();
+          switch(choise)
+          {
+              case 1:
+                inserimento_punteggio(name_sq, p1_sq,p2_sq,p3_sq,p4_sq,ptot_sq);
+                break;
+              case 2:
+               ordinamento_classifica (name_sq, p1_sq,p2_sq,p3_sq,p4_sq,ptot_sq);
+               break;
+              case 3:
+               uscita=conferma_uscita(uscita);
+               break;
+              default:
+                System.out.print("Scelta non corretta");
+          }
+        }while(!uscita);
+    }  
+    
+    public void vedi_tabellone(String name_sq [], float p1_sq[], float p2_sq[], float p3_sq[], float p4_sq[], float ptot_sq[]) throws Exception
+    {
+        System.out.println("tabellone: ");
+        System.out.println("nome squadra    punti 1°   punti 2°    punti 3°  punti 4°  punti tot");
+        for (int i=0;i<n_sq;i++)
+        {
+            System.out.println(name_sq[i]+"   "+p1_sq[i]+"    "+p2_sq[i]+"    "+p3_sq[i]+"    "+p4_sq[i]+"    "+ptot_sq[i]+"    ");
+        }
+    
+    }
+    
+   public int chiedi_scelta()throws Exception 
+    {   
+        int choise;
+        System.out.print("Inserisca scelta: ");
+        choise=Integer.parseInt(input.readLine());
+        return choise;
+    }
+    
+    public void visualizza_menu() throws Exception
+    {
+        System.out.println("Menu");
+        System.out.println("1 inserimento punteggio");
+        System.out.println("2 ordinamento classifica");
+        System.out.println("3 uscita");
+    }
+    
+    public void inserimento_punteggio( String[] name_sq, float[] p1_sq, float[] p2_sq, float[] p3_sq, float[] p4_sq, float ptot_sq[]) throws Exception
+    {
+        String nome;
+        int pos_nome;
+        int prova;
+        float punti;
+        System.out.print("Inserisci il nome della squadra");
+        nome=input.readLine();
+        pos_nome= cerca_nome(name_sq,nome);
+        if(pos_nome == (-1))
+        {
+            System.out.println("Il nome non esiste");
+        }
+        else
+        {
+            do
+            {    
+                System.out.println("inserisci prova: ");
+                prova=Integer.parseInt(input.readLine());
+            }while((prova<1)||(prova>4)); 
+            do
+            {    
+                System.out.println("inserisci i punti: ");
+                punti=Float.parseFloat(input.readLine());
+            }while((punti<0)||(punti>10));
+            switch(prova)
+            {
+                case 1:
+                    p1_sq[pos_nome]=punti;
+                    break;
+                case 2:
+                    p2_sq[pos_nome]=punti;
+                    break;
+                case 3:
+                    p3_sq[pos_nome]=punti;
+                    break;
+                case 4:
+                    p4_sq[pos_nome]=punti;
+                    break;
+            }
+            
+            ptot_sq[pos_nome]= p1_sq[pos_nome]+p2_sq[pos_nome]+p3_sq[pos_nome]+p4_sq[pos_nome];
+            
+        }
+    }   
+    
+     public int cerca_nome( String[] name_sq, String nome) throws Exception 
+    {
+         int pos;
+         pos= -1;
+         boolean trovato=false;
+        for(int i=0; (i<n_sq)&&(!trovato); i++)
+        {
+            if (nome.equals(name_sq[i]))
+            {
+                 pos=i;
+                 trovato=true;
+            }
+        }
+        return pos;
+    } 
+  
+    public boolean conferma_uscita(boolean uscita)throws Exception
+    {
+      String strin;
+      char primo_char;
+      do
+      {
+       System.out.println("Sei sicuro di voler uscire? [s/n]");
+       strin=input.readLine();
+       primo_char=strin.charAt(0);
+      }
+      while((strin.length()>1)||(primo_char!='s')&&(primo_char!='n')&&(primo_char!='S')&&(primo_char!='N'));
+      if((primo_char=='S')||(primo_char=='s'))
+      {
+          uscita=true;
+      }
+      return uscita;
+    }
+    
+    public void ordinamento_classifica (String[] nomi, float[] p1, float[] p2, float[] p3, float[] p4, float[] ptot)throws Exception
+    {
+        for(int i=0; i<(n_sq-1); i++)
+        {
+            for(int j=0; j<(n_sq-1); j++)
+            {
+                if(ptot[j]<ptot[j+1])
+                {
+                 scambio(nomi,p1,p2,p3,p4,ptot,j,j+1);   
+                }
+            }
+        }
+    } 
+ 
+  
+    public void ordinamento_classifica (String[] nomi, float[] p1, float[] p2, float[] p3, float[] p4, float[] ptot)throws Exception
+    {
+        int conta;
+        do
+        {
+            conta=0;
+            for(int i=0; i<(n_sq-(i+1)); i++)
+            {
+              for(int j=0; j<(n_sq-(j+1)); j++)
+              {
+                if(ptot[j]<ptot[j+1])
+                {
+                 scambio(nomi,p1,p2,p3,p4,ptot,j);
+                 conta++;
+                }
+              }
+            }
+        }while (conta==0);
+    }
+            
+   public void scambio (String[]nomi, float[] p1, float[] p2, float[] p3, float[] p4, float[] ptot, int j) throws Exception
+    {
+        String maxnom;
+        float max1;
+        float max2;
+        float max3;
+        float max4;
+        float maxtot;
+        
+        maxnom=nomi[j+1];
+        nomi[j+1]=nomi[j];
+        nomi[j]=maxnom;
+        max1=p1[j+1];
+        p1[j+1]=p1[j];
+        p1[j]=max1;
+        max2=p2[j+1];
+        p2[j+1]=p2[j];
+        p2[j]=max2;
+        max3=p3[j+1];
+        p3[j+1]=p3[j];
+        p3[j]=max3;
+        max4=pr4[j+1];
+        pr4[j+1]=pr4[j];
+        pr4[j]=max4;
+        maxtot=prtot[j+1];
+        prtot[j+1]=prtot[j];
+        prtot[j]=maxtot;
+    }
+ }
+}

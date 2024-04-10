@@ -1,0 +1,66 @@
+/*
+ * #######(####,####)
+ * #######(##### ###)
+ * #########(###### #)
+ * ############(###### ####)
+ * ##############()
+ * 
+ * ####
+ *    ####
+ *    ###  <####> <####>
+ *    ######<####>
+ *    #######
+
+
+
+*/
+import java.io.*;
+public class Main{
+    static Magazin magazin=new Magazin();
+    static BufferedReader cons;
+    static ObjectOutputStream out;
+    public static void main(String[]args)throws IOException{
+        cons =new BufferedReader(new InputStreamReader(System.in));
+        String line="";
+        while(true){
+            System.out.println("Comanda:");
+            line=cons.readLine();
+            String[] v=line.split(" ");
+            if(v[0].equalsIgnoreCase("exit")){
+                System.out.println("bye bye");
+                System.exit(0);
+            }
+            if(v[0].equalsIgnoreCase("add")){
+                try{
+                String nume=v[1];
+                double pret=Double.parseDouble(v[2]);
+                Produs p=new  Produs(nume,pret);
+                Main.magazin.addProdus(p);
+                System.out.println("Produs adaugat");
+            }catch(Exception e){
+
+            System.out.println("nu mai pot fi adaugate produse");
+        }
+    
+        }
+         if(v[0].equalsIgnoreCase("remove")){
+             Main.magazin.removeProdus(v[1]);
+             System.out.println("produsul a fost sters");
+            
+             if(v[0].equalsIgnoreCase("afisare")){
+                 Main.magazin.afisareProduse();
+                 
+                }
+           if(v[0].equalsIgnoreCase("save")){
+               out=new ObjectOutputStream(
+               new FileOutputStream(v[1])
+               );
+               out.writeObject(Main.magazin);
+               out.close();
+               System.out.println("salvare efectuata");
+            }
+
+
+
+        }
+

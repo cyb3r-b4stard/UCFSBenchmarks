@@ -1,0 +1,131 @@
+
+import java.lang.NumberFormatException;
+import java.lang.StringIndexOutOfBoundsException;
+import java.io.*;
+public class Test {
+    String inputData = "";
+    boolean result = false;
+
+    String prefix = ""; 
+    String noPrefixNoSuffix = "";
+
+    public Test() {
+        System.out.print("Is it an integer literal?\n");
+
+
+        FromFile scan = new FromFile(); 
+        try {
+            inputData = scan.scan(); 
+
+        } catch (IOException e) {
+            System.out.print("empty");
+        }
+
+    }
+
+    public void start() {
+
+        System.out.print("\n" + this.isLiteral(inputData)); 
+    }
+
+    public boolean isLiteral(String testData) {
+
+        String noWhite = testData.trim(); 
+
+        try { 
+            prefix = noWhite.substring(0, 2); 
+        } catch (StringIndexOutOfBoundsException a) { 
+            try { int num = Integer.parseInt(noWhite, 10); 
+                System.out.print(num + "\n"); 
+                return true;
+            } catch (NumberFormatException b) {
+                return false;
+            }}
+
+        String suffix = noWhite.substring(noWhite.length() - 1, noWhite.length()); 
+        String noPrefix = noWhite.substring(2, noWhite.length()); 
+        String noSuffix = noWhite.substring(0, noWhite.length() - 1); 
+        
+        
+         
+        
+
+        if (prefix.equals ("0x") || prefix.equals("0X")) {
+            noPrefixNoSuffix = noWhite.substring(2, noWhite.length() - 1); 
+            try {
+                
+                if (suffix.equals("L")) {
+
+                    long num = Long.parseLong(noPrefixNoSuffix, 16);
+                    System.out.print(num + " = " + prefix + noPrefix + "\n"); 
+                    return true;
+                }
+
+                int num = Integer.parseInt(noPrefix, 16); 
+                System.out.print(num + " = " + prefix + noPrefix + "\n"); 
+                return true;
+            } catch (NumberFormatException b) {
+
+                return false;
+
+            }
+
+        }
+
+        if (prefix.equals ("0b") || prefix.equals("0B"))
+        noPrefixNoSuffix = noWhite.substring(2, noWhite.length() - 1); 
+            try {
+
+                if (suffix.equals("L")) {
+
+                    long num = Long.parseLong(noPrefixNoSuffix, 2);
+                    System.out.print(num + " = " + prefix + noPrefix + "\n"); 
+                    return true;
+                }
+
+                int num = Integer.parseInt(noPrefix, 2);
+                System.out.print(num + " = " + prefix + noPrefix + "\n"); 
+                return true;
+            } catch (NumberFormatException c) {
+
+                return false;
+
+        }
+
+        prefix = noWhite.substring(0, 1); 
+        noPrefix = noWhite.substring(1, noWhite.length()); 
+
+        if (prefix.equals ("0"))
+        noPrefixNoSuffix = noWhite.substring(2, noWhite.length() - 1); 
+            try {
+                if (suffix.equals("L")) {
+
+                    long num = Long.parseLong(noPrefixNoSuffix, 8);
+                    System.out.print(num + " = " + prefix + noPrefix + "\n"); 
+                    return true;
+                }
+                int num = Integer.parseInt(noPrefix, 8);
+                System.out.print(num + " = " + prefix + noPrefix + "\n"); 
+                return true;
+            } catch (NumberFormatException c) {
+                return false;
+        } else {
+            try {
+                if (suffix.equals("L")) {
+
+                    long num = Long.parseLong(noSuffix, 10);
+                    System.out.print(num + " = " + prefix + noPrefix + "\n"); 
+
+                    return true;
+                }
+                int num = Integer.parseInt(noWhite, 10);
+                System.out.print(num + "\n"); 
+                return true;
+            } catch (NumberFormatException c) {
+                return false;
+            }
+
+        }
+
+    }
+}

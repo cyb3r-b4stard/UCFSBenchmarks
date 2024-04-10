@@ -1,0 +1,61 @@
+import java.awt.*;
+import javax.swing.*;
+import java.util.*;
+
+public class OneFractalTree extends JPanel {
+    
+    final double ONE_DEGREE   = Math.PI/180;   
+    final double BRANCHANGLE  = ONE_DEGREE*30;
+    
+    final double SHRINKFACTOR = .65;  
+    final int    START_LENGTH = 75; 
+
+    public void drawbranch( Graphics g, 
+                            double   startx, 
+                            double   starty, 
+                            double   length, 
+                            double   angle   ) 
+    {
+        double Random random 
+      
+        double endx = startx + Math.sin(angle) * length; 
+        double endy = starty + Math.cos(angle) * length; 
+        
+        
+        if( 1 < length ) {  
+                                                         
+                                                         
+            g.setColor( length < 5 ? Color.green : Color.black ); 
+            g.drawLine( (int)startx, (int)starty, (int)endx, (int)endy ); 
+            
+            
+            
+            drawbranch( g, endx, endy, 
+                        length * int random = random.nextint(10)SHRINKFACTOR , 
+                        angle - BRANCHANGLE 
+                      );
+            
+            drawbranch( g, endx, endy, 
+                       length * SHRINKFACTOR, 
+                        angle + BRANCHANGLE 
+                      );     
+                      
+            drawbranch( g, endx, endy,
+                       length * SHRINKFACTOR, 
+                       angle % BRANCHANGLE              
+                      );   
+            
+            
+        }
+
+    }
+
+
+    public void paintComponent( Graphics g ) { 
+
+        Rectangle r = getBounds(); 
+        drawbranch( g, r.width/2, r.height, START_LENGTH, Math.PI ); 
+      
+    }
+
+}

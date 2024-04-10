@@ -1,0 +1,547 @@
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+public class FIGUR {
+    GAME g1;
+    public STEIN[][] steine;
+    int x, y;
+    boolean bewegt = false;
+
+    public FIGUR()
+    {
+        g1 = new GAME();
+    }
+
+    public FIGUR(int x, int y)
+    {
+        steine = new STEIN[3][3];
+        
+        this.x =x;
+        this.y =y;
+        
+        generiere();
+        
+
+    }
+    
+    
+    
+    public FIGUR(int x, int y, STEIN[][] a)
+    {
+        steine = a;
+        this.x = x;
+        this.y = y;
+        einfügen();
+    }
+    
+    
+    
+    public void drehenr()
+    {
+        asdg:for(int i = 2; i >= 0; i--)
+        {
+            for(int j = 0; j < 3; j++)
+            {
+                if(steine[i][j] != null)
+                {
+
+                    int x1= int y1 = 0;
+                    
+                    asd: for(int o = 0; o < 20; o++)
+                    {
+                        asdf :for(int b = 0; b < 17; b++)
+                        {
+                            if(GAME.steine[o][b] == steine[i][j])
+                            {
+                                x1 = b;
+                                y1 = o;
+                                break asd;
+
+                            }
+                        }
+                    }
+                    
+
+                    
+                    GAME.steine[y1][x1] = null;
+
+                }
+            }
+        }
+        STEIN[][] neuesArray = new STEIN[3][3];
+        for (int i=0; i<3; i++) {
+            for (int j=0; j<3; j++) {
+                neuesArray[i][j] = steine[3-j-1][i];
+            }
+        }
+        steine = neuesArray;
+        FIGUR f1 = new FIGUR(x,y,steine);
+        GAME.initialisiere();
+    }
+    
+    public void einfügen()
+    {
+        for(int i = 0; i < 3; i ++)
+        {
+            for(int j = 0; j < 3; j++)
+            {
+               try{
+                   steine[i][j].x = x+j*30;
+                   steine[i][j].y = y+i*30;
+                   GAME.steine[(steine[i][j].y-50)/30][(steine[i][j].x-100)/30] =     steine[i][j];
+                }catch(NullPointerException e)
+                {
+                    continue;
+                }
+            }
+        }
+    }
+    
+
+    public void generiere()
+    {
+        int Nummer = (int)(Math.random()*7)+1;
+        int farbnr = (int)(Math.random()*7)+1;
+        switch(Nummer)
+        {
+            case 1:
+            steine[1][0] = new STEIN(farbnr,x,y+30);
+            steine[1][0].figur = this;
+            steine[1][1] = new STEIN(farbnr,x+30,y+30);
+            steine[1][1].figur = this;
+            steine[1][2] = new STEIN(farbnr,x+60,y+30);
+            steine[1][2].figur = this;
+            break;
+            case 2:
+            steine[0][0] = new STEIN(farbnr,x,y);
+            steine[0][0].figur = this;
+            steine[1][0] = new STEIN(farbnr,x,y+30);
+            steine[1][0].figur = this;
+            steine[1][1] = new STEIN(farbnr,x+30,y+30);
+            steine[1][1].figur = this;
+            steine[1][2] = new STEIN(farbnr,x+60,y+30);
+            steine[1][2].figur = this;
+            break;
+            case 3:
+            steine[0][2] = new STEIN(farbnr,x+60,y);
+            steine[0][2].figur = this;
+            steine[1][0] = new STEIN(farbnr,x,y+30);
+            steine[1][0].figur = this;
+            steine[1][1] = new STEIN(farbnr,x+30,y+30);
+            steine[1][1].figur = this;
+            steine[1][2] = new STEIN(farbnr,x+60,y+30);
+            steine[1][2].figur = this;
+            break;
+            case 4:
+            steine[0][0] = new STEIN(farbnr,x,y);
+            steine[0][0].figur = this;
+            steine[1][1] = new STEIN(farbnr,x+30,y+30);
+            steine[1][1].figur = this;
+            steine[1][0] = new STEIN(farbnr,x,y+30);
+            steine[1][0].figur = this;
+            steine[0][1] = new STEIN(farbnr,x+30,y);
+            steine[0][1].figur = this;
+            break;
+            case 5:
+            steine[1][0] = new STEIN(farbnr,x,y+30);
+            steine[1][0].figur = this;
+            steine[1][1] = new STEIN(farbnr,x+30,y+30);
+            steine[1][1].figur = this;
+            steine[0][2] = new STEIN(farbnr,x+60,y);
+            steine[0][2].figur = this;
+            steine[0][1] = new STEIN(farbnr,x+30,y);
+            steine[0][1].figur = this;
+            break;
+            case 6:
+            steine[1][0] = new STEIN(farbnr,x,y+30);
+            steine[1][0].figur = this;
+            steine[1][1] = new STEIN(farbnr,x+30,y+30);
+            steine[1][1].figur = this;
+            steine[1][2] = new STEIN(farbnr,x+60,y+30);
+            steine[1][2].figur = this;
+            steine[0][1] = new STEIN(farbnr,x+30,y);
+            steine[0][1].figur = this;
+            break;
+            case 7:
+            steine[0][0] = new STEIN(farbnr,x,y);
+            steine[0][0].figur = this;
+            steine[1][1] = new STEIN(farbnr,x+30,y+30);
+            steine[1][1].figur = this;
+            steine[1][2] = new STEIN(farbnr,x+60,y+30);
+            steine[1][2].figur = this;
+            steine[0][1] = new STEIN(farbnr,x+30,y);
+            steine[0][1].figur = this;
+            break;
+            default: System.out.println(Nummer);
+            break;
+            
+        }
+        
+    }
+   
+    public  void zeichne()
+    {
+
+        for(int i = 0; i < 3; i++)
+        {
+            for(int j = 0; j <3; j++)
+            {
+                if(steine[i][j] != null)
+                {
+                    steine[i][j].zeichne();
+                }
+            }
+        }
+
+    }
+
+    public void rechts()
+    {
+        
+        if(rechtsbar())
+        {
+            x +=30;
+        GAME.z.loescheAlles();
+        asdg:for(int i = 2; i >= 0; i--)
+        {
+            for(int j = 2; j >= 0; j--)
+            {
+                if(steine[i][j] != null)
+                {
+
+                    int x1= 0;
+                    int y1 = 0;
+                    asd: for(int o = 0; o < 20; o++)
+                    {
+                        asdf :for(int b = 0; b < 17; b++)
+                        {
+                            if(GAME.steine[o][b] == steine[i][j])
+                            {
+                                x1 = b;
+                                y1 = o;
+                                break asd;
+
+                            }
+                        }
+                    }
+                    
+                    GAME.steine[y1][x1].x +=30;    
+                    GAME.steine[y1][x1+1] = GAME.steine[y1][x1];
+                    GAME.steine[y1][x1] = null;
+
+                }
+            }
+        }
+        g1.initialisiere();
+    }
+    }
+
+    public void links()
+    {
+        if(linksbar())
+        {
+            x -=30;
+        GAME.z.loescheAlles();
+        asdg:for(int i = 2; i >= 0; i--)
+        {
+            for(int j = 0; j < 3; j++)
+            {
+                if(steine[i][j] != null)
+                {
+
+                    int x1= 0;
+                    int y1 = 0;
+                    asd: for(int o = 0; o < 20; o++)
+                    {
+                        asdf :for(int b = 0; b < 17; b++)
+                        {
+                            if(GAME.steine[o][b] == steine[i][j])
+                            {
+                                x1 = b;
+                                y1 = o;
+                                break asd;
+
+                            }
+                        }
+                    }
+
+                    GAME.steine[y1][x1].x -=30;    
+                    GAME.steine[y1][x1-1] = GAME.steine[y1][x1];
+                    GAME.steine[y1][x1] = null;
+
+                }
+            }
+        }
+        g1.initialisiere();
+    }
+}
+
+    public boolean rechtsbar()
+    {
+        boolean flag = true;
+        asd: for(int i = 2; i >= 0;i--)
+        {
+            for(int j = breiter(); j >= 0; j--)
+            {
+                if(steine[i][j] != null)
+                {
+
+                    int x1= 0;
+                    int y1 = 0;
+                    for(int o = 0; o < 20; o++)
+                    {
+                        for(int b = 0; b < 17; b++)
+                        {
+                            if(GAME.steine[o][b] == steine[i][j])
+                            {
+                                x1 = b;
+                                y1 = o;
+                                break;
+                            }
+                        }
+                    }
+                    if(steine[i][j].x < 570)
+
+                        if(GAME.steine[y1][x1+1] == null)
+                        {
+                            flag = true;
+                        }
+                        else
+                        {
+                            if(GAME.steine[y1][x1].figur.equals(GAME.steine[y1][x1+1].figur))
+                            {
+                                flag = true;
+                            }else
+                            {
+                                flag = false;
+                                break asd;}
+                        }
+
+                    else
+                    {
+                        flag = false;
+                        break asd;
+                    }
+
+                }
+            }
+        }
+
+        return flag;
+    }
+
+    public boolean linksbar()
+    {
+        boolean flag = true;
+        asd: for(int i = 2; i >= 0;i--)
+        {
+            for(int j = 0; j < breitel(); j++)
+            {
+                if(steine[i][j] != null)
+                {
+
+                    int x1= 0;
+                    int y1 = 0;
+                    for(int o = 0; o < 20; o++)
+                    {
+                        for(int b = 0; b < 17; b++)
+                        {
+                            if(GAME.steine[o][b] == steine[i][j])
+                            {
+                                x1 = b;
+                                y1 = o;
+                                break;
+                            }
+                        }
+                    }
+                    if(steine[i][j].x > 100)
+
+                        if(GAME.steine[y1][x1-1] == null)
+                        {
+                            flag = true;
+                        }
+                        else
+                        {
+                            if(GAME.steine[y1][x1].figur.equals(GAME.steine[y1][x1-1].figur))
+                            {
+                                flag = true;
+                            }else
+                            {
+                                flag = false;
+                                break asd;}
+                        }
+
+                    else
+                    {
+                        flag = false;
+                        break asd;
+                    }
+
+                }
+            }
+        }
+
+        return flag;
+    }
+
+    public int breiter()
+    {
+        int max = 0;
+        for(int i = 2; i >= 0; i--)
+        {
+            for(int j = 0; j < 3; j++)
+            {
+                if(steine[i][j] != null)
+                {
+                    if(j > max)
+                    {
+                        max = j;
+                    }
+                }
+            }
+
+        }
+        return max;
+    }
+
+    public int breiteu()
+    {
+        int max = 0;
+        for(int i = 0; i <3; i++)
+        {
+            for(int j = 0; j < 3; j++)
+            {
+                if(steine[i][j] != null)
+                {
+                    if(i > max)
+                    {
+                        max = i;
+                    }
+                }
+            }
+
+        }
+        return max;
+    }
+
+    public int breitel()
+    {
+        int max = 0;
+        for(int i = 2; i >= 0; i--)
+        {
+            for(int j = 2; j >= 0; j--)
+            {
+                if(steine[i][j] != null)
+                {
+                    if(j > max)
+                    {
+                        max = j;
+                    }
+                }
+            }
+
+        }
+        return max;
+    }
+
+    public void runter()
+    {
+        while(bewegbar())
+        {
+            bewegen();
+        }
+        
+        g1.initialisiere();
+    }
+    public void bewegen()
+    {
+        
+        GAME.z.loescheAlles();
+        for(int i = 2; i >= 0; i--)
+        {
+            for(int j = 0; j < 3; j++)
+            {
+                if(steine[i][j] != null)
+                {
+                    
+                    steine[i][j].y += 30;
+                    int x1= 0;
+                    int y1 = 0;
+                    asd: for(int o = 0; o < 20; o++)
+                    {
+                        asdf :for(int b = 0; b < 17; b++)
+                        {
+                            if(GAME.steine[o][b] == steine[i][j])
+                            {
+                                x1 = b;
+                                y1 = o;
+                                break asd;
+
+                            }
+                        }
+                    }
+
+                    GAME.steine[y1+1][x1] = GAME.steine[y1][x1];
+                    GAME.steine[y1][x1] = null;
+
+                }
+            }
+        }
+        zeichne();
+    }
+
+    public boolean bewegbar()
+    {
+        boolean flag = true;
+        asd: for(int i = breiteu(); i >= 0;i--)
+        {
+            for(int j = 2; j >= 0; j--)
+            {
+                if(steine[i][j] != null)
+                {
+
+                    int x1= 0;
+                    int y1 = 0;
+                    for(int o = 0; o < 20; o++)
+                    {
+                        for(int b = 0; b < 17; b++)
+                        {
+                            if(GAME.steine[o][b] == steine[i][j])
+                            {
+                                x1 = b;
+                                y1 = o;
+                                break;
+                            }
+                        }
+                    }
+
+                    if(steine[i][j].y <600)
+
+                        if(GAME.steine[y1+1][x1] == null)
+                        {
+                            flag = true;
+                        }
+                        else
+                        {
+                            if(GAME.steine[y1][x1].figur.equals(GAME.steine[y1+1][x1].figur))
+                            {
+                                flag = true;
+                            }else
+                            {
+                                flag = false;
+                                break asd;}
+                        }
+
+                    else
+                    {
+                        flag = false;
+                        break asd;
+                    }
+
+                }
+            }
+        }
+
+        return flag;
+    }
+
+}

@@ -1,0 +1,94 @@
+import java.nio.*;
+import java.io.*;
+import gnu.io.*;
+import java.util.*;
+public class Antena implements SerialPortEventListener
+{
+    private String _name;
+    private CommPort _commPort;
+    private boolean _available=false;
+    private String[] _carAhaed= new String[4];
+    private SerialPort _serialPort;
+    private InputStream _input;
+    private OutputStream _output;
+    private int num=0;
+    private String str="";
+    public Antena(String name,String serialName)
+    {
+        _name=name;
+        try{
+            _commPort = CommPortIdentifier.getPortIdentifier(serialName).open("MixerInformation", 1000);
+            _serialPort = (SerialPort)_commPort;
+            _input = _serialPort.getInputStream();
+            _output = _serialPort.getOutputStream();
+            _available=true;
+        }
+        catch (PortInUseException e)
+        {
+            _available=false;
+        }
+        catch (NoSuchPortException e)
+        {
+            _available=false;
+        }
+        catch (Exception e)
+        {
+            _available=false;   
+        }
+
+        try
+        {
+            _serialPort.addEventListener(this);
+            _serialPort.notifyOnDataAvailable(true);
+        }
+        catch (TooManyListenersException e)
+        {
+            _available=false;
+        }
+
+    }
+
+    public void serialEvent(SerialPortEvent ev) {
+        if (ev.getEventType() == SerialPortEvent.DATA_AVAILABLE){
+            try
+            {
+                byte singleData = (byte)input.read();
+                if (singleData != NEW_LINE_ASCII)
+                {
+                    str+=(String)(new byte[] {singleData});
+                    show.jTextArea2.append(logText);
+
+                    if (input.available()==0)
+                        show.jTextArea2.append("\n");
+                }
+                else
+                {
+                   num=0;
+                }
+            }
+            catch (Exception e)
+            {
+                logText = "Failed to read data. (" + e.toString() + ")";
+                show.jTextArea2.append(logText + "\n");
+
+            }
+        }
+
+        public String getName()
+        {
+            return _name;
+        }
+
+        public boolean isAvailable()
+        {
+            return _available;
+        }
+
+        public String iscarAhade(int ant)
+        {
+            if ((ant>-1)&&(ant<4))
+                return _carAhaed[ant];
+            else 
+                return "anknown ant";
+        }
+    }

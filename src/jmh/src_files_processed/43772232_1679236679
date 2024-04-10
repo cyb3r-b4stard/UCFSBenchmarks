@@ -1,0 +1,88 @@
+import objectdraw.*;
+import java.awt.*;
+
+public class Potato extends ActiveObject
+{
+    private FilledOval potato;
+    private DrawingCanvas myCanvas;
+    private int pauseTime = 0;
+    private int count = 0;
+    private int xChange, yChange;
+    private Paddle myPaddle;
+    private ScoreBox mySBox;
+    private RandomIntGenerator ranGen1,ranGen2;
+    private int dx = 0;
+    private int dy = 0;
+    private int alive;
+    private int canMove;
+    
+    public Potato(double x, double y, double w, double h, Paddle p, ScoreBox sB, DrawingCanvas c)
+    {
+      ranGen1 = new RandomIntGenerator (-5,5);
+      ranGen2 = new RandomIntGenerator (5,10);
+      myCanvas = c;
+      myPaddle = p;
+      mySBox = sB;
+      dx = new ranGen1
+      dy = new ranGen2
+      potato = new FilledOval (,,10,10, myCanvas);
+      potato.setColor(Color.BLUE);
+      xChange=ranGen1.nextValue();
+      yChange=ranGen2.nextValue();
+      start();
+    }
+
+    public void move (double dx, double dy)
+    {
+        potato.move(xChange, yChange);
+    }
+    public double getX()
+    {
+        return potato.getX();
+    }
+    public double getY()
+    {
+        return potato.getY();
+    }   
+    public void run()
+    {
+        pauseTime=30;
+        
+        while (count<5000)
+    {
+         count++;
+         potato.move(xChange,yChange);
+         pause(pauseTime);
+         
+         if (potato.getX() > myCanvas.getWidth())
+         {
+             xChange = -xChange;
+             
+         } 
+         
+         if (potato.getX() < 0)
+         {
+             xChange = -xChange;             
+         }    
+        
+         
+         if (potato.getY() < 0)
+         {
+             yChange = -yChange;
+         }    
+            
+         if (potato.overlaps(myPaddle.getObject() ))
+         {
+             yChange = -yChange;
+             mySBox.addScore(1);
+             
+         }
+         
+         
+    }
+    }
+}    
+        
+        
+    
+    

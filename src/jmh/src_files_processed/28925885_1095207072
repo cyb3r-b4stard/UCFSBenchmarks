@@ -1,0 +1,158 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import java.io.*;
+import javax.imageio.ImageIO;
+import java.awt.Graphics;
+import javax.swing.filechooser.*;
+import java.util.Collections;
+import java.util.*;
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.awt.event.*;
+import java.io.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import java.io.*;
+import javax.imageio.ImageIO;
+import java.awt.Graphics;
+import javax.swing.filechooser.*;
+import java.util.Collections;
+import java.util.*;
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.awt.event.*;
+import java.io.*;
+import java.net.*;
+
+public class SnakeFrame extends JFrame implements ActionListener {
+    JPanel info;
+    JButton restartBT, startBT, stopBT, connectBT;
+    JComboBox playersCB;
+    JLabel errorLB, lb;
+    
+    GameField gf;
+    
+    BufferedReader reader;
+    PrintWriter writer;
+    
+    public static void main(String args[]) {
+        new SnakeFrame();
+    }
+    
+    public SnakeFrame() {
+        if(connect()) {
+            gf = new GameField(1, writer);
+            initFrame();
+        }
+    }
+        
+    public void initFrame() {
+        this.setVisible(true);
+        this.setContentPane(new JPanel(new BorderLayout()));
+        this.setLocation(400, 100);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setTitle("Snake - Client");
+        
+        this.getContentPane().add(gf, BorderLayout.CENTER); 
+            
+            
+        this.getContentPane().add(info = new JPanel(), BorderLayout.EAST);
+            info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
+            
+            info.add(lb = new JLabel("Snake")); 
+            
+            info.add(Box.createRigidArea(new Dimension(0,30)));
+            info.add(playersCB = new JComboBox(new String[]{"1", "2", "3", "4", "5"}));
+            info.add(restartBT = new JButton("Neues Spiel"));
+            restartBT.addActionListener(this);
+            
+            info.add(Box.createRigidArea(new Dimension(0,30)));
+            info.add(startBT = new JButton("Spiel starten"));
+            startBT.addActionListener(this);
+            info.add(stopBT = new JButton("Stop"));
+            stopBT.addActionListener(this);
+            
+            info.add(errorLB = new JLabel(""));
+        this.pack();
+    }
+    
+    public void actionPerformed(ActionEvent e) {
+        if(e.getSource() == restartBT) {
+            this.getContentPane().remove(gf); 
+            gf = new GameField(Integer.parseInt((String) playersCB.getSelectedItem()), writer);
+            this.getContentPane().add(gf, BorderLayout.CENTER);
+            this.pack();
+        } else if(e.getSource() == startBT) {
+            enalbeBT(false);
+            gf.startSnake();
+        } else if(e.getSource() == stopBT) {
+            gf.stopSnake();
+            enalbeBT(true);
+        } else if(e.getSource() == connectBT) {
+            connect();
+            gf.writer = writer;
+        }
+        gf.repaint();
+        this.repaint();
+    }
+    
+    public boolean connect() {
+        String ret = (String) JOptionPane.showInputDialog(this, "IP:Port:", "Snake - Connect", JOptionPane.PLAIN_MESSAGE, null, null, "192.168.178.20:6001"),
+                connData[] = (ret != null)?(ret.split(":")):(String(){});
+       
+        if(connData.length == 2) {
+            String ip = connData[0];
+            int port = Integer.parseInt(connData[1]);
+            
+            try {
+                Socket s = new Socket(ip, port);
+                
+                InputStreamReader streamReader = new InputStreamReader(s.getInputStream());
+                reader = new BufferedReader(streamReader);
+                
+                writer = new PrintWriter(s.getOutputStream());
+                
+                Thread readerThread = new Thread(new EingehendReader());
+                readerThread.start();
+                
+                return true;
+            } catch(IOException ex) {
+                System.out.println("Server nicht erreichbar!");
+                return false;
+            }
+        }
+        return false;
+    }
+    
+    public class EingehendReader implements Runnable {
+        public void run() {
+            String msg;
+            try {
+                while((msg = reader.readLine()) != null) {
+                    System.out.println("erhalten: " + msg);
+                    gf.moveSnake(Integer.parseInt(msg.substring(0, 2)), Integer.parseInt(msg.substring(2)));
+                }
+            } catch(Exception ex) {
+                System.out.println(ex);
+            }
+        }
+    }
+    
+    public void enalbeBT(boolean b) {
+        restartBT.setEnabled(b);
+    }
+    
+    public void error(String e) {
+        errorLB.setText("<html><font color='red'>" + e + "</font></html>");
+        this.pack();
+    }
+    
+    public void info(String e) {
+        errorLB.setText("<html><font color='green'>" + e + "</font></html>");
+        this.pack();
+    }
+}

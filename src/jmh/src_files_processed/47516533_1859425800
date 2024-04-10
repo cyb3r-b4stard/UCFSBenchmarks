@@ -1,0 +1,276 @@
+import java.util.HashMap;
+import java.util.Stack;
+import java.io.File;
+import java.util.Scanner; 
+import java.io.*;
+import java.io.FileNotFoundException;
+import java.*
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class GameEngine
+{
+    private Parser aParser;
+    private UserInterface gui;
+    public HashMap<String, Room> aRooms;
+    private Player aPlayer;
+    /**
+     * Constructor for objects of class GameEngine
+     */
+    public GameEngine()
+    {
+        aPlayer = new Player("Player");
+        aParser = new Parser();
+        aRooms = new HashMap<String, Room>();
+        createRooms();
+    }
+    /**
+     * Setter pour mettre en place l'interface graphique du jeu. Affiche le message de bienvenu
+     */
+    public void setGUI(UserInterface userInterface)
+    {
+        gui = userInterface;
+        printWelcome();
+    }
+
+    /**
+     * Affiche le message de bienvenu.
+     */
+    private void printWelcome()
+    {
+        gui.println("Bienvenue dans un dimanche de merde.");
+        gui.println("Ecris 'aide' si tu as besoin d'aide.");
+        gui.println(" ");
+        gui.println(aPlayer.getCurrentRoom().getLongDescription());
+        gui.showImage(aPlayer.getCurrentRoom().getImageName());
+    }
+
+    /**
+     * Crée les différentes pièces
+     * Place les sorties possibles pour chaque pièce
+     * Place la pièce courante à vOutside
+     */
+    private void createRooms()
+    {
+        Room vSalon = new Room ("Le salon", "images/salon.gif");
+        Room vCuisine = new Room ("La cuisine", "images/cuisine.gif");
+        Room vChambre = new Room ("La chambre", "images/chambre.gif");
+        Room vToilettes = new Room ("Les toilettes", "images/toilettes.gif");
+        Room vBathroom = new Room ("La salle de bain", "images/bathroom.gif");
+        Room vEscalier = new Room ("La cage d'escalier", "images/escalier.gif");
+        Room vToit = new Room ("Le toit", "images/toit.gif");
+        Room vEntree = new Room ("L'entrée", "images/entree.gif");
+        Room vPharma = new Room ("La pharmacie", "images/pharmacie.gif");
+        Room vMagasin = new Room ("Le magasin", "images/magasin.gif");
+
+        Item vCle = new Item (2, "une superbe clé à molette de la marque Facom");
+        Item vCaillou = new Item (1, "une petit caillou rocailleux");
+        Item vDoliprane = new Item (1, "une boite de doliprane en poudre");
+        Item vLave = new Item (60, "un lave vaisselle");
+        Item vRat = new Item (1, "une petite boite de mort au rat");
+        Item vPq = new Item (1, "un rouleau de papier toilette à moitié utilisé");
+        Item vCouteau = new Item (2, "un couteau plein de beurre");
+        Item vFourchette = new Item (1, "une fourchette en inox inoxydable");
+        Item vSmecta = new Item (1, "une boite de smecta");
+        Item vCage = new Item (5, "une vieille cage pour chien ");
+        Item vGrosRat = new Item (2, "un gros rat sale");
+
+        vSalon.setItem("Cle", vCle);
+        vToit.setItem("Caillou", vCaillou);
+        vPharma.setItem("Doliprane", vDoliprane);
+        vCuisine.setItem("Machine", vLave);
+        vMagasin.setItem("Mort au rat", vRat);
+        vToilettes.setItem("PQ", vPq);
+        vCuisine.setItem("Couteau", vCouteau);
+        vCuisine.setItem("Fourchette", vFourchette);
+        vPharma.setItem("Smecta", vSmecta);
+        vEntree.setItem("Cage", vCage);
+        vChambre.setItem("Gros Rat", vGrosRat);
+
+        aRooms.put("Salon", vSalon);
+        aRooms.put("Cuisine", vCuisine);
+        aRooms.put("Chambre", vChambre);
+        aRooms.put("Toilettes", vToilettes);
+        aRooms.put("Salle de bain", vBathroom);
+        aRooms.put("Cage d'escalier", vEscalier);
+        aRooms.put("Toit", vToit);
+        aRooms.put("Entrée", vEntree);
+        aRooms.put("Pharmacie", vPharma);
+        aRooms.put("Magasin", vMagasin);
+
+        vSalon.setExit("nord", vCuisine);
+        vSalon.setExit("ouest", vToilettes);
+        vSalon.setExit("est", vEscalier);
+        vSalon.setExit("sud", vChambre);   
+        vCuisine.setExit("sud", vSalon);        
+        vChambre.setExit("nord", vSalon);
+        vChambre.setExit("ouest", vBathroom);        
+        vToilettes.setExit("est", vSalon);        
+        vBathroom.setExit("est", vChambre);
+        vEscalier.setExit("ouest", vSalon);
+        vEscalier.setExit("haut", vToit);
+        vEscalier.setExit("bas", vEntree);
+        vToit.setExit("bas", vEscalier);
+        vEntree.setExit("haut", vEscalier);
+        vEntree.setExit("est", vMagasin);
+        vEntree.setExit("sud", vPharma);
+        vPharma.setExit("nord", vEntree);
+        vMagasin.setExit("ouest", vEntree);
+
+        aPlayer.setCurrentRoom(vChambre);
+    }
+
+    /**
+     * Given a command, process (that is: execute) the command.
+     * If this command ends the game, true is returned, otherwise false is
+     * returned.
+     */
+    public void interpretCommand(String commandLine) 
+    {
+        gui.println(commandLine);
+        Command command = aParser.getCommand(commandLine);
+
+        if(command.isUnknown()) {
+            gui.println("Arrete de baragouiner");
+            return;
+        }
+
+        String commandWord = command.getCommandWord();
+        if (commandWord.equals("aide"))
+            printHelp();
+        else if (commandWord.equals("aller"))
+            goRoom(command);
+        else if (commandWord.equals("regarder"))
+            look();
+        else if (commandWord.equals("manger"))
+            if (!command.hasSecondWord()) {    
+                gui.println("Manger quoi ?");
+            }
+            else { eat(command.getSecondWord()); }
+        else if (commandWord.equals("retour"))
+            if (!command.hasSecondWord()) {    
+                back();
+            }
+            else { gui.println("Non négatif"); }
+        else if (commandWord.equals("quitter")) {
+            if(command.hasSecondWord())
+                gui.println("Quitter quoi ?");
+            else
+                endGame(); }
+        else if (commandWord.equals("test")) {
+            if (!command.hasSecondWord()) {
+                gui.println("tester quoi ?"); 
+            } 
+            else {
+                test(command.getSecondWord());
+            }
+        }
+    }   
+    
+    private void test(final String pFichier)
+    {
+        try {
+            Scanner vFichier = new Scanner( new File (pFichier));
+            int vI=1;
+            while (vFichier.hasNextLine()) {
+                String vLigne = vFichier.nextLine();
+                interpretCommand(vLigne);
+                vI++;
+            }
+        }
+        catch (final FileNotFoundException pFNFE) {
+            gui.println("Fichier :" + pFichier + " introuvable");
+        }
+        catch (final Exception pE) {
+            gui.println("Erreur :" + pE.getMessage());
+        }
+    }
+    
+    /**
+     * Affiche un texte d'aide.
+     */
+    private void printHelp()
+    {
+        gui.println("Tu es perdu, tu es seul.");
+        gui.println("Tu te fais chier");
+        gui.println(" ");
+        gui.print("Vos commandes sont : ");
+        gui.println(Parser.showCommands());
+    }
+
+    /**
+     * Déplace le personnage dans la direction demandée
+     * Affiche les nouvelles sorties possibles
+     */
+    private void goRoom(Command pCommand) 
+    {
+        if(!pCommand.hasSecondWord()) {
+            gui.println("Où ?");
+            return;
+        }
+        String direction = pCommand.getSecondWord();
+        Room nextRoom = aPlayer.getCurrentRoom().getExit(direction);
+        if (nextRoom == null) {
+            gui.println("Tu peux pas");
+        }
+        else {
+            aPlayer.walk(pCommand);
+            gui.println(aPlayer.getCurrentRoom().getLongDescription());
+        }
+        gui.showImage(aPlayer.getCurrentRoom().getImageName());
+    }
+
+    /**
+     * Déplace le personnage dans la pièce précédente
+     */
+    private void back()
+    {
+        if(aPlayer.getPreviousRoom().isEmpty()) {
+            gui.println("Non négatif");
+        }
+        else {   
+            aPlayer.goBackRoom();
+            gui.println(aPlayer.getCurrentRoom().getLongDescription());
+            gui.showImage(aPlayer.getCurrentRoom().getImageName());
+        } 
+    }
+
+    /**
+     * Termine le jeu, et affiche le message de fin
+     */
+    private void endGame()
+    {
+        gui.println("Merci a+.");
+        gui.enable(false);
+    }
+
+    /**
+     * Retourne la salle courante
+     * Ainsi que les sorties disponibles
+     * Et les affiche.
+     */
+    private void printLocationInfo()
+    {
+        gui.print("Vous êtes dans la salle " + aPlayer.getCurrentRoom().getLongDescription());
+        gui.println(" ");
+    }
+
+    /**
+     * Affiche la description de la pièce courante
+     */
+    private void look()
+    {
+        gui.println(aPlayer.getCurrentRoom().getLongDescription());
+    }
+
+    /**
+     * Affiche que vous avez mangé
+     */
+    private void eat(final String pFood)
+    {
+        gui.println("HUM MY BIG " + pFood.toUpperCase());
+    }
+}

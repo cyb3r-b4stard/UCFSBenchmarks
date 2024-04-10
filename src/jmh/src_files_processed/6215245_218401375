@@ -1,0 +1,279 @@
+import java.awt.*;
+import java.awt.event.*;
+
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.event.*;
+import javax.swing.border.*;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import java.io.*;
+
+/**
+
+ * @######: ######## ##########
+ * @####### ####.##.##
+ */
+public class UserInterface
+    implements ActionListener
+{
+    
+
+    private JFrame frame;
+    private JTextField display;
+    private JLabel status;
+    private JLabel filenameLabel;
+    
+    
+    private JButton addBookButton;
+    private JButton addOffprintButton;
+    private JButton searchButton;
+    private JButton clearButton;
+    
+    private JButton bookLoanButton;
+    private JButton offprintLoanButton;
+    private JButton bookReturnButton;
+    private JButton offprintReturnButton;
+    
+    private JTextField isbnField;
+    private JTextField titleField;
+    private JTextField publisherField;
+    private JTextField numberField;
+    
+    private JTextField returnField;
+    private JTextField borrowerField;
+    private JTextField chapterField;
+    private JTextField hourField;
+    
+    private ArrayList<Book> books;
+    private ArrayList<Offprint> offprints;
+    /**
+     * Constructor
+     * 
+     */
+    public UserInterface()
+    {
+
+
+       books = new ArrayList<Book>();
+       makeFrame();
+       frame.setVisible(true);
+    }
+
+    public void addBook(Book isbnField, Book titleField, Book publisherField)
+    {
+       
+        books.add(isbnField);
+        books.add(titleField);
+        books.add(publisherField);
+    }
+   
+   
+   
+    private void addOffprint(Offprint isbnField,Offprint titleField,Offprint publisherField)
+    {
+        offprints.add(isbnField);
+        offprints.add(titleField);
+        offprints.add(publisherField);
+    }
+    private void search()
+    {
+        System.out.println("search TEST");        
+    }
+    private void clear()
+    {
+        isbnField.setText(" ");
+        titleField.setText(" ");
+        publisherField.setText(" ");
+        numberField.setText(" ");
+        returnField.setText(" ");
+        borrowerField.setText(" ");
+        chapterField.setText(" ");
+        hourField.setText(" ");
+    }
+    
+
+    private void bookLoan()
+    {
+        System.out.println("Book Loan TEST");
+    }
+    private void offprintLoan()
+    {
+        double amountBorroweNumber = getBorrowerNumber();
+    }
+    private void bookReturn()
+    {
+        System.out.println("Book return TEST");
+    }
+    private void offprintReturn()
+    {
+        
+        System.out.println("Offprint Return TEST");
+    }
+   
+    
+    public double getBorrowerNumber()
+    {
+        double amountBorrowerNumber = 0;
+        try {
+            amountBorrowerNumber
+            =Double.parseDouble(borrowerField.getText());
+            if (amountBorrowerNumber <= 0)  {
+                JOptionPane.showMessageDialog (frame,
+                "Please, type number greater than 0");
+            }
+        }
+        catch(NumberFormatException exception){
+            JOptionPane.showMessageDialog (frame,
+            "Please, type only numbers");
+        }
+        return amountBorrowerNumber;
+    }
+    
+    /**
+     * Make the frame for the user interface.
+     */
+    private void makeFrame()
+    {
+        frame = new JFrame("Library");     
+        
+
+
+        Container contentPane = frame.getContentPane();
+
+        contentPane.setLayout(new GridLayout(6, 4)).        .setBackground(new Color (255, 228, 225));;
+        
+            JLabel label1 = new JLabel("ISBN:");
+            contentPane.add(label1);
+            JLabel label2 = new JLabel("Title:");
+            contentPane.add(label2);
+            JLabel label3 = new JLabel("Publisher:");
+            contentPane.add(label3);
+            JLabel label4 = new JLabel("Item Number:");
+            contentPane.add(label4);
+
+            
+            isbnField = new JTextField(15);
+            isbnField.setBackground(new Color(255, 255, 255));
+            contentPane.add(isbnField);
+            
+            titleField = new JTextField(15);
+            contentPane.add(titleField);
+            
+            publisherField = new JTextField(15);
+            contentPane.add(publisherField);
+            
+            numberField = new JTextField(15);
+            contentPane.add(numberField);
+            
+          
+            addBookButton = new JButton ("Add Book");
+            addBookButton.setBackground(new Color(250, 235, 215));
+            contentPane.add(addBookButton);
+            addBookButton.addActionListener(this);
+            
+            addOffprintButton = new JButton ("Add Offprint");
+            contentPane.add(addOffprintButton);
+            addOffprintButton.addActionListener(this);
+            
+            searchButton = new JButton ("Search for a Book");
+            contentPane.add(searchButton);
+            searchButton.addActionListener(this);
+            
+            clearButton = new JButton ("Clear");
+            contentPane.add(clearButton);
+            clearButton.addActionListener(this);
+            
+            
+            JLabel label5 = new JLabel("Return Date:");
+            contentPane.add(label5);
+            JLabel label6 = new JLabel("Borrower Number:");
+            contentPane.add(label6);
+            JLabel label7 = new JLabel("Chapter:");
+            contentPane.add(label7);
+            JLabel label8 = new JLabel("Current Hour:");
+            contentPane.add(label8);
+            
+            
+            returnField = new JTextField(15);
+            contentPane.add(returnField);
+            
+            borrowerField = new JTextField(15);
+            contentPane.add(borrowerField);
+            
+            chapterField = new JTextField(15);
+            contentPane.add(chapterField);
+            
+            hourField = new JTextField(15);
+            contentPane.add(hourField);
+            
+    
+            bookLoanButton = new JButton ("Book Loan");
+            contentPane.add(bookLoanButton);
+            bookLoanButton.addActionListener(this);
+            
+            offprintLoanButton = new JButton ("Offprint Loan");
+            contentPane.add(offprintLoanButton);
+            offprintLoanButton.addActionListener(this);
+            
+            bookReturnButton = new JButton ("Book Return");
+            contentPane.add(bookReturnButton);
+            bookReturnButton.addActionListener(this);
+            
+            offprintReturnButton = new JButton ("Offprint Return");
+            contentPane.add(offprintReturnButton);
+            offprintReturnButton.addActionListener(this);
+            
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    /**
+     * Find which button triggered the event and call the appropriate method.
+     * 
+     * An interface action has been performed.
+     * Find out what it was and handle it.
+     * @param event The event that has occured.
+     */
+    public void actionPerformed(ActionEvent event)
+    {
+       String command = event.getActionCommand();
+        if (command.equals("Add Book"))
+        {
+            
+        }
+        if (command.equals("Add Offprint"))
+        {
+        }
+        if (command.equals("Search for a Book"))
+        {
+            search();
+        }
+        if (command.equals("Clear"))
+        {
+            clear();
+        }
+        
+        if (command.equals("Book Loan"))
+        {
+            bookLoan();
+        }
+        if (command.equals("Offprint Loan"))
+        {
+            offprintLoan();
+        }
+        if (command.equals("Book Return"))
+        {
+            bookReturn();
+        }
+        if (command.equals("Offprint Return"))
+        {
+            offprintReturn();
+        }
+       
+    }
+
+}

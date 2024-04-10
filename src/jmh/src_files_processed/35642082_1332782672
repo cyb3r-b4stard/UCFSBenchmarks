@@ -1,0 +1,98 @@
+import java.util.Scanner;
+import java.util.Collections;
+import java.util.List;
+import java.util.Arrays;
+
+/**
+ * ###### #### ###### ##### ## # ##### ######
+ * ## ########## ########### ####### #### ########
+ * 
+ */
+public class Chatter
+{
+    private Scanner scanner;
+    private String phrase;
+    /**
+     * Constructor for objects of class Chatter
+     */
+    public Chatter(String phrase)
+    {
+       scanner = new Scanner(System.in);
+       this.phrase = phrase;
+    }
+
+    public void run()
+    {
+        write("As a wise person once said, \"" + phrase + "\"");
+        hitAnyKey();
+        
+        write("That phrase is " + phrase.length() + " characters long");
+        hitAnyKey();
+        
+        char[] letters = {'e','a','o','x'};
+        for(int i = 0; i < letters.length; i++)
+        {
+            char letter = letters[i];
+            int count = countAndReport(letter);
+            if(count>0) {
+                write("It contains " + count + " instances of the letter " + letter);
+                hitAnyKey();
+            }
+            else {
+                write("It doesn't contain any of the letter " + letter + ", which is a shame.");
+                hitAnyKey();
+            }
+        }
+        
+        write("Just for fun I'm going to write the phrase 50 times.");
+        hitAnyKey();
+        for(int i = 0; i < 50; i++)
+        {
+            write(phrase);
+        }
+        hitAnyKey();
+        
+        write("And the phrase backwards is \"" + reverse(phrase) + "\".");
+        hitAnyKey();
+        
+        write("Or, word by word, \"" + reverseWords(phrase) + "\".");
+        hitAnyKey()
+       
+    }
+    
+    public int countAndReport(char c)
+    {
+        int count = 0;
+        for (int i=0; i < phrase.length(); i++)
+        {
+            if (phrase.charAt(i) == c)
+            {
+             count++;
+            }
+        }
+        return count;
+
+    }
+    
+    public String reverse(String str)
+    {
+        return new StringBuilder(str).reverse().toString();
+    }
+    
+    public String reverseWords(String str)
+    {
+        List<String> strList = Arrays.asList(str.split(" "));
+        Collections.reverse(strList);
+        String revStr = strList.toArray().toString();
+        return str;
+    }
+    
+    public void write(String str)
+    {
+        System.out.println(str);
+    }
+
+    public void hitAnyKey(){   
+        scanner.nextLine();
+    }
+}

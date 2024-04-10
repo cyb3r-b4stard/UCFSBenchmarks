@@ -1,0 +1,879 @@
+/*****************************************************
+ * ###### #######
+ * 
+ * ## ###### ######
+ *****************************************************/
+import java.awt.*;
+import java.util.*;
+import java.lang.System;
+import java.awt.event.*;
+
+public class PhaserWarrior extends Game {
+    static int FRAMERATE = 60;
+    static int SCREENWIDTH = 800;
+    static int SCREENHEIGHT = 600;
+
+    final int BULLET_SPEED = 4;
+
+    final int STATE_NORMAL = 0;
+    final int STATE_COLLIDED = 1;
+    final int STATE_EXPLODING = 2;
+
+    final int SPRITE_PLAYER = 1;
+    final int SPRITE_WALK = 2;
+    final int SPRITE_TREE = 10;
+    final int SPRITE_BUSH = 11;
+    final int SPRITE_LAKE = 12;
+    final int SPRITE_BULLET = 100;
+
+    final int GAME_MENU = 0;
+    final int GAME_RUNNING = 1;
+    final int GAME_OVER = 2;
+
+    boolean showBounds = false;
+    boolean collisionTesting = true;
+
+    ImageEntity background;
+    ImageEntity bulletImage;
+    ImageEntity[] greenery = new ImageEntity[4];
+    ImageEntity[] lakeParts = new ImageEntity[13];
+    ImageEntity[] playerImage = new ImageEntity[8];
+    ImageEntity[] playerWalkUp = new ImageEntity[8];
+    ImageEntity[] playerWalkDown = new ImageEntity[8];
+    ImageEntity[] playerWalkLeft = new ImageEntity[9];
+    ImageEntity[] playerWalkRight = new ImageEntity[9];
+    ImageEntity[] healthBar = new ImageEntity[9];
+    ImageEntity[] shieldBar = new ImageEntity[5];
+
+    int walkframe = 0;
+    int walkframe2 = 0;
+
+    int health = 8;
+    int shield = 4;
+    int firepower = 1;
+    int bulletDirection = 0;
+    int Screen_NUM_X;
+    int Screen_NUM_Y;
+    int gameState = GAME_MENU;
+    int playerx = 100;
+    int playery = 425;
+    int treex, treey, bushx, bushy;
+    int bushValue = 1;
+    int lakeValue = 0;
+
+    Random rand = new Random();
+
+    long collisionTimer = 0;
+
+    boolean keyLeft, keyRight, keyUp, keyDown, keyLeftRelease, keyRightRelease, 
+    keyUpRelease, keyDownRelease, keyFire, keyShield;
+
+    SoundClip shoot = new SoundClip();
+
+    /*****************************************************
+     * constructor
+     *****************************************************/
+    public PhaserWarrior() {
+        super(FRAMERATE, SCREENWIDTH, SCREENHEIGHT);
+    }
+
+    /*****************************************************
+     * gameStartup event passed by game engine
+     *****************************************************/
+    void gameStartup() {
+        shoot.load("phaserShot.wav");
+
+        for(int n = 0; n<9; n++) {
+            healthBar[n] = new ImageEntity(this);
+            String fn = "health" + (n) + ".png";
+            healthBar[n].load(fn);
+        }
+
+        for(int n = 0; n<5; n++) {
+            shieldBar[n] = new ImageEntity(this);
+            String fn = "shield" + (n) + ".png";
+            shieldBar[n].load(fn);
+        }
+
+        greenery[0] = new ImageEntity(this);
+        greenery[0].load("tree.png");
+        for(int n = 1; n<4; n++) {
+            greenery[n] = new ImageEntity(this);
+            String fn = "bush" + (n) + ".png";
+            greenery[n].load(fn);
+        }
+
+        for(int n = 0; n<13; n++) {
+            lakeParts[n] = new ImageEntity(this);
+            String fn = "lake" + (n) + ".png";
+            lakeParts[n].load(fn);
+        }
+
+        background = new ImageEntity(this);
+        background.load("grassBackground.png");
+
+        playerImage[0] = new ImageEntity(this);
+        playerImage[0].load("playerUpStill.png");
+        playerImage[1] = new ImageEntity(this);
+        playerImage[1].load("playerDownStill.png");
+        playerImage[2] = new ImageEntity(this);
+        playerImage[2].load("playerLeftStill.png");
+        playerImage[3] = new ImageEntity(this);
+        playerImage[3].load("playerRightStill.png");
+        playerImage[4] = new ImageEntity(this);
+        playerImage[4].load("playerUpShield.png");
+        playerImage[5] = new ImageEntity(this);
+        playerImage[5].load("playerDownShield.png");
+        playerImage[6] = new ImageEntity(this);
+        playerImage[6].load("playerLeftShield.png");
+        playerImage[7] = new ImageEntity(this);
+        playerImage[7].load("playerRightShield.png");
+
+        for(int n = 0; n<8; n++) {
+            playerWalkUp[n] = new ImageEntity(this);
+            String fn = "playerUpMove" + (n) + ".png";
+            playerWalkUp[n].load(fn);
+        }
+
+        for(int n = 0; n<8; n++) {
+            playerWalkDown[n] = new ImageEntity(this);
+            String fn = "playerDownMove" + (n) + ".png";
+            playerWalkDown[n].load(fn);
+        }
+
+        for(int n = 0; n<9; n++) {
+            playerWalkLeft[n] = new ImageEntity(this);
+            String fn = "playerLeftMove" + (n) + ".png";
+            playerWalkLeft[n].load(fn);
+        }
+
+        for(int n = 0; n<9; n++) {
+            playerWalkRight[n] = new ImageEntity(this);
+            String fn = "playerRightMove" + (n) + ".png";
+            playerWalkRight[n].load(fn);
+        }
+
+        AnimatedSprite player = new AnimatedSprite(this, graphics());
+        player.setSpriteType(SPRITE_PLAYER);
+        player.setImage(playerImage[0].getImage());
+        player.setFrameWidth(player.imageWidth());
+        player.setFrameHeight(player.imageHeight());
+        player.setPosition(new Point2D(100, 425));
+        player.setAlive(true);
+
+        player.setState(STATE_NORMAL);
+        sprites().add(player);
+
+        bulletImage = new ImageEntity(this);
+        bulletImage.load("phaserbullet.png");
+
+
+        pauseGame();
+    }
+
+    private void resetGame() {
+
+        /*AnimatedSprite player = (AnimatedSprite) sprites().get(0);
+
+        sprites().clear();
+
+        player.setPosition(new Point2D(playerx, playery));
+        player.setAlive(true);
+        player.setState(STATE_EXPLODING);
+        collisionTimer = System.currentTimeMillis();
+        player.setVelocity(new Point2D(0, 0));
+        sprites().add(player);*/
+
+        playerx = 100;
+        playery = 425;
+        Screen_NUM_X = 1;
+        Screen_NUM_Y = 1;
+
+        health = 8;
+        shield = 4;
+    }
+
+    private void screenTransition() {
+
+        AnimatedSprite player = (AnimatedSprite) sprites().get(0);
+        sprites().clear();
+
+        player.setPosition(new Point2D(playerx, playery));
+        player.setAlive(true);
+        player.setState(STATE_NORMAL);
+        player.setVelocity(new Point2D(0, 0));
+        sprites().add(player);
+        if (Screen_NUM_X == 1 && Screen_NUM_Y == 1) {
+            for(treex = 40; treex < 681; treex += 80) {
+                treey = 0;
+                createTree();
+            }
+            for(treex = 0; treex < 1000; treex += 720) {
+                treey = 60;
+                createTree();
+                treey = 110;
+                createTree();
+                treey = 160;
+                createTree();
+            }
+            for(treey = 210; treey < 360; treey += 50) {
+                treex = 0;
+                createTree();
+            }
+            for(treex = 0; treex < 1000; treex += 720) {
+                treey = 360;
+                createTree();
+                treey = 410;
+                createTree();
+                treey = 460;
+                createTree();
+            }
+            bushy = 550;
+            bushValue = 1;
+            bushx = 0;
+            createBush();
+            bushx = 150;
+            createBush();
+            bushx = 300;
+            createBush();
+            bushx = 500;
+            createBush();
+            bushx = 650;
+            createBush();
+            bushValue = 2;
+            bushx = 50;
+            createBush();
+            bushx = 200;
+            createBush();
+            bushx = 350;
+            createBush();
+            bushx = 400;
+            createBush();
+            bushx = 550;
+            createBush();
+            bushx = 700;
+            createBush();
+            bushValue = 3;
+            bushx = 100;
+            createBush();
+            bushx = 250;
+            createBush();
+            bushx = 450;
+            createBush();
+            bushx = 600;
+            createBush();
+            bushx = 750;
+            createBush();
+        }
+        if (Screen_NUM_X == 2 && Screen_NUM_Y == 1) {
+            for(treex = 0;treex < 1000; treex += 80) {
+                treey = 500;
+                createTree();
+            }
+        }
+    }
+
+    /*****************************************************
+     * gameTimedUpdate event passed by game engine
+     *****************************************************/
+    void gameTimedUpdate() {
+        checkInput();
+
+        /*if (!gamePaused() && sprites().size() == 1) {
+        resetGame();
+        gameState = GAME_OVER;
+        }*/
+    }
+
+    /*****************************************************
+     * gameRefreshScreen event passed by game engine
+     *****************************************************/
+    void gameRefreshScreen() {
+        Graphics2D g2d = graphics();
+
+        if (gameState == GAME_MENU) {
+            g2d.setFont(new Font("Verdana", Font.BOLD, 36));
+            g2d.setColor(Color.BLACK);
+            g2d.drawString("PHASER WARRIOR", 252, 202);
+            g2d.setColor(new Color(200,30,30));
+            g2d.drawString("PHASER WARRIOR", 250, 200);
+
+            g2d.setFont(new Font("Ariel", Font.BOLD, 24));
+            g2d.setColor(Color.ORANGE);
+            g2d.drawString("Press ENTER to start", 280, 570);
+        }
+        else if (gameState == GAME_RUNNING) {
+            g2d.drawImage(background.getImage(),0,0,SCREENWIDTH ,SCREENHEIGHT ,this);
+
+            if(health==9)
+                g2d.drawImage(healthBar[8].getImage(), SCREENWIDTH - 175, 100, this);
+            g2d.drawImage(healthBar[health].getImage(), SCREENWIDTH - 175, 100, this);
+            g2d.drawImage(shieldBar[shield].getImage(), SCREENWIDTH - 125, 100, this);
+        }
+        else if (gameState == GAME_OVER) {
+            g2d.drawImage(healthBar[health].getImage(), SCREENWIDTH - 175, 100, this);
+        }
+    }
+
+    /*****************************************************
+     * gameShutdown event passed by game engine
+     *****************************************************/
+    void gameShutdown() {
+        shoot.stop();
+    }
+
+    /*****************************************************
+     * spriteUpdate event passed by game engine
+     *****************************************************/
+    public void spriteUpdate(AnimatedSprite sprite) {
+        switch(sprite.spriteType()) {
+            case SPRITE_PLAYER:
+            warp(sprite);
+            break;
+        }
+    }
+
+    /*****************************************************
+     * spriteDraw event passed by game engine
+     * called by the game class after each sprite is drawn
+     * to give you a chance to manipulate the sprite
+     *****************************************************/
+    public void spriteDraw(AnimatedSprite sprite) {
+        if (showBounds) {
+            if (sprite.collided())
+                sprite.drawBounds(Color.RED);
+            else
+                sprite.drawBounds(Color.BLUE);
+        }
+    }
+
+    /*****************************************************
+     * spriteDying event passed by game engine
+     * called after a sprite's age reaches its lifespan
+     * at which point it will be killed off, and then removed from
+     * the linked list. you can cancel the purging process here.
+     *****************************************************/
+    public void spriteDying(AnimatedSprite sprite) {
+    }
+
+    /*****************************************************
+     * spriteCollision event passed by game engine
+     *****************************************************/
+    public void spriteCollision(AnimatedSprite spr1, AnimatedSprite spr2) {
+        if (!collisionTesting) return;
+
+        switch(spr1.spriteType()) {
+            case SPRITE_BULLET:
+            if (isFoliage(spr2.spriteType())) {
+                spr1.setAlive(false);
+            }
+            break;
+            case SPRITE_PLAYER:
+            if (isFoliage(spr2.spriteType())) {
+                AnimatedSprite player = new AnimatedSprite(this, graphics());
+                if (bulletDirection == 0) {
+                    playerx = player.center().X() - 3;
+                    playery = player.center().Y();
+                    screenTransition();
+                }else if (bulletDirection == 1) {
+                    playerx = player.center().X() - 3;
+                    playery = player.center().Y();
+                    screenTransition();
+                }else if (bulletDirection == 2) {
+                    playerx = player.center().X() - 3;
+                    playery = player.center().Y();
+                    screenTransition();
+                }else if (bulletDirection == 3) {
+                    playerx = player.center().X() - 3;
+                    playery = player.center().Y();
+                    screenTransition();
+                }else
+            }
+            break;
+        }
+    }
+
+    /*****************************************************
+     * gameKeyDown event passed by game engine
+     *****************************************************/
+    public void gameKeyDown(int keyCode) {
+        switch(keyCode) {
+            case KeyEvent.VK_LEFT:
+            keyLeftRelease = false;
+            keyRightRelease = false;
+            keyUpRelease = false;
+            keyDownRelease = false;
+            keyLeft = true;
+            break;
+            case KeyEvent.VK_RIGHT:
+            keyLeftRelease = false;
+            keyRightRelease = false;
+            keyUpRelease = false;
+            keyDownRelease = false;
+            keyRight = true;
+            break;
+            case KeyEvent.VK_UP:
+            keyLeftRelease = false;
+            keyRightRelease = false;
+            keyUpRelease = false;
+            keyDownRelease = false;
+            keyUp = true;
+            break;
+            case KeyEvent.VK_DOWN:
+            keyLeftRelease = false;
+            keyRightRelease = false;
+            keyUpRelease = false;
+            keyDownRelease = false;
+            keyDown = true;
+            break;
+            case KeyEvent.VK_CONTROL:
+            keyFire = true;
+            break;
+            case KeyEvent.VK_B:
+            showBounds = !showBounds;
+            break;
+            case KeyEvent.VK_ENTER:
+            if (gameState == GAME_MENU) {
+                resetGame();
+                screenTransition();
+                resumeGame();
+                gameState = GAME_RUNNING;
+            }
+            else if (gameState == GAME_OVER) {
+                resetGame();
+                screenTransition();
+                resumeGame();
+                gameState = GAME_RUNNING;
+            }
+            break;
+        }
+    }
+
+    /*****************************************************
+     * gameKeyUp event passed by game engine
+     *****************************************************/
+    public void gameKeyUp(int keyCode) {
+        switch(keyCode) {
+            case KeyEvent.VK_LEFT:
+            keyLeft = false;
+            keyLeftRelease = true;
+            break;
+            case KeyEvent.VK_RIGHT:
+            keyRight = false;
+            keyRightRelease = true;
+            break;
+            case KeyEvent.VK_UP:
+            keyUp = false;
+            keyUpRelease = true;
+            break;
+            case KeyEvent.VK_DOWN:
+            keyDown = false;
+            keyDownRelease = true;
+            break;
+            case KeyEvent.VK_CONTROL:
+            keyFire = false;
+            fireBullet();
+            break;
+            case KeyEvent.VK_W:
+            if(shield>0){
+                shield--;
+            }else
+                health--;
+            if (health == 0)
+                gameState = GAME_OVER;
+            break;
+        }
+    }
+
+    /*****************************************************
+     * mouse events passed by game engine
+     * the game is not currently using mouse input
+     *****************************************************/
+    public void gameMouseDown() { }
+
+    public void gameMouseUp() { }
+
+    public void gameMouseMove() { }
+
+    /*****************************************************
+     * create tree
+     *****************************************************/
+    public void createTree() {
+        AnimatedSprite tree = new AnimatedSprite(this, graphics());
+        tree.setAlive(true);
+        tree.setSpriteType(SPRITE_TREE);
+
+        tree.setImage(greenery[0].getImage());
+
+        tree.setPosition(new Point2D(treex, treey));
+
+        sprites().add(tree);
+    }
+
+    /*****************************************************
+     * create bush left
+     *****************************************************/
+    public void createBush() {
+        AnimatedSprite bush = new AnimatedSprite(this, graphics());
+        bush.setAlive(true);
+        bush.setSpriteType(SPRITE_BUSH);
+
+        bush.setImage(greenery[bushValue].getImage());
+
+        bush.setPosition(new Point2D(bushx, bushy));
+
+        sprites().add(bush);
+    }
+
+    /*****************************************************
+     * create tree
+     *****************************************************/
+    public void createLake() {
+        AnimatedSprite tree = new AnimatedSprite(this, graphics());
+        tree.setAlive(true);
+        tree.setSpriteType(SPRITE_LAKE);
+
+        tree.setImage(greenery[2].getImage());
+
+        int x = rand.nextInt(SCREENWIDTH-128);
+        int y = rand.nextInt(SCREENHEIGHT-128);
+        tree.setPosition(new Point2D(x, y));
+
+        sprites().add(tree);
+    }
+
+    /*****************************************************
+     * returns true if passed sprite type is an asteroid type
+     *****************************************************/
+    private boolean isFoliage(int spriteType) {
+        switch(spriteType) {
+            case SPRITE_TREE:
+            case SPRITE_BUSH:
+            case SPRITE_LAKE:
+            return true;
+            default:
+            return false;
+        }
+    }
+
+    /*****************************************************
+     * process keys that have been pressed
+     *****************************************************/
+    public void checkInput() {
+        if (gameState != GAME_RUNNING) return;
+
+        AnimatedSprite player = (AnimatedSprite)sprites().get(0);
+        if (keyUp) {
+            if(walkframe2<=2){
+                player.setImage(playerWalkUp[0].getImage());
+                walkframe2++;
+            }else if(walkframe2<=5){
+                player.setImage(playerWalkUp[1].getImage());
+                walkframe2++;
+            }else if(walkframe2<=8){
+                player.setImage(playerWalkUp[2].getImage());
+                walkframe2++;
+            }else if(walkframe2<=11){
+                player.setImage(playerWalkUp[3].getImage());
+                walkframe2++;
+            }else if(walkframe2<=14){
+                player.setImage(playerWalkUp[4].getImage());
+                walkframe2++;
+            }else if(walkframe2<=17){
+                player.setImage(playerWalkUp[5].getImage());
+                walkframe2++;
+            }else if(walkframe2<=20){
+                player.setImage(playerWalkUp[6].getImage());
+                walkframe2++;
+            }else if(walkframe2<=22){
+                player.setImage(playerWalkUp[7].getImage());
+                walkframe2++;
+            }else if(walkframe2<=23){
+                player.setImage(playerWalkUp[7].getImage());
+                walkframe2=0;
+            }
+            double velx = player.velocity().X();
+            player.setVelocity(new Point2D(0, -2));
+            bulletDirection = 0;
+        }else if(keyUpRelease) {
+            player.setImage(playerImage[0].getImage());
+            double velx = player.velocity().X();
+            player.setVelocity(new Point2D(0, 0));
+        }else if (keyDown) {
+            if(walkframe2<=2){
+                player.setImage(playerWalkDown[0].getImage());
+                walkframe2++;
+            }else if(walkframe2<=5){
+                player.setImage(playerWalkDown[1].getImage());
+                walkframe2++;
+            }else if(walkframe2<=8){
+                player.setImage(playerWalkDown[2].getImage());
+                walkframe2++;
+            }else if(walkframe2<=11){
+                player.setImage(playerWalkDown[3].getImage());
+                walkframe2++;
+            }else if(walkframe2<=14){
+                player.setImage(playerWalkDown[4].getImage());
+                walkframe2++;
+            }else if(walkframe2<=17){
+                player.setImage(playerWalkDown[5].getImage());
+                walkframe2++;
+            }else if(walkframe2<=20){
+                player.setImage(playerWalkDown[6].getImage());
+                walkframe2++;
+            }else if(walkframe2<=22){
+                player.setImage(playerWalkDown[7].getImage());
+                walkframe2++;
+            }else if(walkframe2<=23){
+                player.setImage(playerWalkDown[7].getImage());
+                walkframe2=0;
+            }
+            double velx = player.velocity().X();
+            player.setVelocity(new Point2D(0, 2));
+            bulletDirection = 1;
+        }else if(keyDownRelease) {
+            player.setImage(playerImage[1].getImage());
+            double velx = player.velocity().X();
+            player.setVelocity(new Point2D(0, 0));
+        }else if (keyLeft) {
+            if(walkframe<=2){
+                player.setImage(playerWalkLeft[0].getImage());
+                walkframe++;
+            }else if(walkframe<=5){
+                player.setImage(playerWalkLeft[1].getImage());
+                walkframe++;
+            }else if(walkframe<=8){
+                player.setImage(playerWalkLeft[2].getImage());
+                walkframe++;
+            }else if(walkframe<=11){
+                player.setImage(playerWalkLeft[3].getImage());
+                walkframe++;
+            }else if(walkframe<=14){
+                player.setImage(playerWalkLeft[4].getImage());
+                walkframe++;
+            }else if(walkframe<=17){
+                player.setImage(playerWalkLeft[5].getImage());
+                walkframe++;
+            }else if(walkframe<=20){
+                player.setImage(playerWalkLeft[6].getImage());
+                walkframe++;
+            }else if(walkframe<=23){
+                player.setImage(playerWalkLeft[7].getImage());
+                walkframe++;
+            }else if(walkframe<=25){
+                player.setImage(playerWalkLeft[8].getImage());
+                walkframe++;
+            }else if(walkframe<=26){
+                player.setImage(playerWalkLeft[8].getImage());
+                walkframe = 0;
+            }
+            double velx = player.velocity().X();
+            player.setVelocity(new Point2D(-2, 0));
+            bulletDirection = 2;
+        }else if(keyLeftRelease) {
+            player.setImage(playerImage[2].getImage());
+            double velx = player.velocity().X();
+            player.setVelocity(new Point2D(0, 0));
+        }else if (keyRight) {
+            if(walkframe<=2){
+                player.setImage(playerWalkRight[0].getImage());
+                walkframe++;
+            }else if(walkframe<=5){
+                player.setImage(playerWalkRight[1].getImage());
+                walkframe++;
+            }else if(walkframe<=8){
+                player.setImage(playerWalkRight[2].getImage());
+                walkframe++;
+            }else if(walkframe<=11){
+                player.setImage(playerWalkRight[3].getImage());
+                walkframe++;
+            }else if(walkframe<=14){
+                player.setImage(playerWalkRight[4].getImage());
+                walkframe++;
+            }else if(walkframe<=17){
+                player.setImage(playerWalkRight[5].getImage());
+                walkframe++;
+            }else if(walkframe<=20){
+                player.setImage(playerWalkRight[6].getImage());
+                walkframe++;
+            }else if(walkframe<=23){
+                player.setImage(playerWalkRight[7].getImage());
+                walkframe++;
+            }else if(walkframe<=25){
+                player.setImage(playerWalkRight[8].getImage());
+                walkframe++;
+            }else if(walkframe<=26){
+                player.setImage(playerWalkRight[8].getImage());
+                walkframe = 0;
+            }
+            double velx = player.velocity().X();
+            player.setVelocity(new Point2D(2, 0));
+            bulletDirection = 3;
+        }else if(keyRightRelease) {
+            player.setImage(playerImage[3].getImage());
+            double velx = player.velocity().X();
+            player.setVelocity(new Point2D(0, 0));
+        }
+    }
+
+    /*****************************************************
+     * fire a bullet from the ship's position and orientation
+     *****************************************************/
+    public void fireBullet() {
+        AnimatedSprite[] bullets = new AnimatedSprite[6];
+
+        switch(firepower) {
+            case 1:
+            bullets[0] = stockBullet();
+            sprites().add(bullets[0]);
+            break;
+
+            case 2:
+            bullets[0] = stockBullet();
+            adjustDirection(bullets[0], -4);
+            sprites().add(bullets[0]);
+
+            bullets[1] = stockBullet();
+            adjustDirection(bullets[1], 4);
+            sprites().add(bullets[1]);
+
+            break;
+
+            case 3:
+            bullets[0] = stockBullet();
+            adjustDirection(bullets[0], -4);
+            sprites().add(bullets[0]);
+
+            bullets[1] = stockBullet();
+            sprites().add(bullets[1]);
+
+            bullets[2] = stockBullet();
+            adjustDirection(bullets[2], 4);
+            sprites().add(bullets[2]);
+
+            break;
+
+            case 4:
+            bullets[0] = stockBullet();
+            adjustDirection(bullets[0], -5);
+            sprites().add(bullets[0]);
+
+            bullets[1] = stockBullet();
+            adjustDirection(bullets[1], 5);
+            sprites().add(bullets[1]);
+
+            bullets[2] = stockBullet();
+            adjustDirection(bullets[2], -10);
+            sprites().add(bullets[2]);
+
+            bullets[3] = stockBullet();
+            adjustDirection(bullets[3], 10);
+            sprites().add(bullets[3]);
+
+            break;
+
+            case 5:
+            bullets[0] = stockBullet();
+            adjustDirection(bullets[0], -6);
+            sprites().add(bullets[0]);
+
+            bullets[1] = stockBullet();
+            adjustDirection(bullets[1], 6);
+            sprites().add(bullets[1]);
+
+            bullets[2] = stockBullet();
+            adjustDirection(bullets[2], -15);
+            sprites().add(bullets[2]);
+
+            bullets[3] = stockBullet();
+            adjustDirection(bullets[3], 15);
+            sprites().add(bullets[3]);
+
+            bullets[4] = stockBullet();
+            adjustDirection(bullets[4], -60);
+            sprites().add(bullets[4]);
+
+            bullets[5] = stockBullet();
+            adjustDirection(bullets[5], 60);
+            sprites().add(bullets[5]);
+            break;
+        }
+
+        shoot.play();
+    }
+
+    private void adjustDirection(AnimatedSprite sprite, double angle) {
+    }
+
+    private AnimatedSprite stockBullet() {
+        AnimatedSprite player = (AnimatedSprite)sprites().get(0);
+
+        double x = 0;
+        double y = 0;
+
+        AnimatedSprite bul = new AnimatedSprite(this, graphics());
+        bul.setAlive(true);
+        bul.setImage(bulletImage.getImage());
+        bul.setSpriteType(SPRITE_BULLET);
+        bul.setLifespan(90);
+        if(bulletDirection==0){
+            bul.setFaceAngle(0);
+            bul.setMoveAngle(270);
+            x = player.center().X() - bul.imageWidth()/2 + 12;
+            y = player.center().Y() - bul.imageHeight()/2 - 8;
+        }else if(bulletDirection==1){
+            bul.setFaceAngle(180);
+            bul.setMoveAngle(90);
+            x = player.center().X() - bul.imageWidth()/2 - 12;
+            y = player.center().Y() - bul.imageHeight()/2 + 8;
+        }else if(bulletDirection==2){
+            bul.setFaceAngle(270);
+            bul.setMoveAngle(180);
+            x = player.center().X() - bul.imageWidth()/2 - 15;
+            y = player.center().Y() - bul.imageHeight()/2 + 5;
+        }else if(bulletDirection==3){
+            bul.setFaceAngle(90);
+            bul.setMoveAngle(0);
+            x = player.center().X() - bul.imageWidth()/2 + 15;
+            y = player.center().Y() - bul.imageHeight()/2 + 5;
+        }
+        double angle = bul.moveAngle();
+        double svx = calcAngleMoveX(angle) * BULLET_SPEED;
+        double svy = calcAngleMoveY(angle) * BULLET_SPEED;
+        bul.setVelocity(new Point2D(svx, svy));
+        bul.setPosition(new Point2D(x,y));
+
+        return bul;
+    }
+
+    /*****************************************************
+     * cause sprite to warp around the edges of the screen
+     *****************************************************/
+    public void warp(AnimatedSprite spr) {
+        int w = spr.frameWidth()-1;
+        int h = spr.frameHeight()-1;
+
+        if (spr.position().X() < 0-w){
+            playerx = SCREENWIDTH;
+            playery = SCREENHEIGHT/2;
+            Screen_NUM_X--;
+            screenTransition();
+        }else if (spr.position().X() > SCREENWIDTH){
+            playerx = 0-w;
+            playery = SCREENHEIGHT/2;
+            Screen_NUM_X++;
+            screenTransition();
+        }
+        if (spr.position().Y() < 0-h){
+            playery = SCREENHEIGHT;
+            playerx = SCREENWIDTH/2;
+            Screen_NUM_Y--;
+            screenTransition();
+        }else if (spr.position().Y() > SCREENHEIGHT){
+            playery = 0-h;
+            playerx = SCREENWIDTH/2;
+            Screen_NUM_Y++;
+            screenTransition();
+        }
+    }
+}

@@ -1,0 +1,256 @@
+import java.util.*;
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class LinkedList<UniversalDataType>
+{  
+    Node<UniversalDataType> front;
+    Node<UniversalDataType> back;
+    
+    Node<UniversalDataType> secondToLast;
+    
+    int counter = 0;
+   
+    public LinkedList() {
+        this.front = null;
+        this.back = null;
+        
+    }
+    
+    public void add(UniversalDataType e) {
+        if (this.front == null) {
+            this.front = new Node<UniversalDataType>(e, null);
+            this.back = this.front;
+        }
+        else  {
+           this.back.setNext(new Node<UniversalDataType>(e, null));
+           this.secondToLast = this.back;
+           this.back = this.back.getNext();
+        }
+        
+        counter++;
+    }
+   
+    
+    public void print(){
+        Node<UniversalDataType> current = this.front;
+        
+        System.out.print("(");
+        while(current != null) {
+            System.out.print(current.getData() + " ");
+            current = current.getNext();
+        }
+        System.out.print(")");
+        System.out.println();
+    }
+
+    
+    public void clear(){
+        if(this.front != null) {
+            this.front = null;
+        }
+        
+        counter = 0;
+    }
+    
+    public boolean isEmpty() {
+        if (this.front == null) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+ 
+    public int contains(UniversalDataType e){
+        
+        int count = 0;
+       Node<UniversalDataType> currentNode = this.front;
+
+       while ((currentNode.getData() != e) && currentNode.getData() != null){
+           if (currentNode.getNext() != null) {
+               currentNode = currentNode.getNext();
+               count++;
+            }
+           else if(currentNode.getNext() == null) {
+               count = -1;
+           }
+       }
+       
+
+       
+       
+       for (int i = 0; i <= counter; i++){
+           if (currentNode == this.front.getNext()) {
+               return count;
+           }
+           else {
+               currentNode = currentNode.getNext();
+               count++;
+           }
+       }
+       
+       
+
+       return count;
+      }
+
+    
+    
+    
+    public UniversalDataType get(int index) {
+      UniversalDataType valueOfIndex = null; 
+        
+      Node<UniversalDataType> current = this.front;
+
+       for (int i = 0; i <= index; i++){
+           if(current.getNext() != null) {
+               if (i == index) {
+                   valueOfIndex = current.getData(); 
+               }
+               current = current.getNext();
+           }
+       }
+              
+      return valueOfIndex;
+      
+    }
+   
+    
+    void set(int index, UniversalDataType e) {
+        
+       UniversalDataType replacement = e;
+        
+       Node<UniversalDataType> current = this.front;
+       
+       for (int i = 0; i < index; i++){
+           if(current != null) {
+               current = current.getNext();
+           }
+       }
+       
+      
+       
+  
+       if(counter >= index) {
+           current.setData(e);
+       }
+       
+       
+       
+    }
+    
+    
+    void addFirst(UniversalDataType e) {
+        Node<UniversalDataType> first = new Node<UniversalDataType>(e, this.front);
+        
+        this.front = first;
+        
+        counter++;
+    }
+    
+    
+    public int size(){
+        return counter;
+    } 
+    
+    
+    
+    void removeFirst() {
+      if (this.front == null) {
+          return;
+        }
+      else {
+          if (this.front == this.back) {
+              this.front = null;
+              this.back = null;
+          }
+          else {
+              this.front = this.front.getNext();
+          }
+      }
+      counter--;
+    }
+    
+    
+    
+    void removeLast(){
+        
+      if (this.front != null) {
+
+          Node<UniversalDataType> currentNode = this.front;
+          
+          if (counter == 1) {
+            this.front = null;
+          }
+          else {
+              while (currentNode.getNext().getNext() != null) {     
+                  currentNode = currentNode.getNext();
+              }
+              currentNode.setNext(null);
+          }
+      }
+     
+     /*
+     this.secondToLast.setNext(null);
+     this.back = this.secondToLast;
+     */
+     
+     
+     counter--;
+    }
+    
+    
+    
+    void removeMiddle(int index) {
+    
+      Node<UniversalDataType> middle = this.front;
+     
+     
+      for (int i = 0; i < index - 1; i++) {
+          if (middle.getNext() != null {
+              middle = middle.getNext();
+          }
+      }
+       
+      if (index > 0 && index + 1 < counter) {
+          middle.setNext(middle.getNext().getNext());
+      }
+      
+      if (index == 0){
+          if (this.front == null) {
+              return;
+            }
+            else {
+                if (this.front == this.back) {
+                    this.front = null;
+                    this.back = null;
+                }
+                else {
+                    this.front = this.front.getNext();
+                }
+            }
+      }
+      else if (index + 1 == counter) {
+          if (counter == 1) {
+              this.front = null;
+          }
+          else {
+              while (middle.getNext().getNext() != null) {     
+                  middle = middle.getNext();
+              }
+              
+              middle.setNext(null);
+          }
+      }
+      
+      counter--;
+    }
+}
+    
+    
+   

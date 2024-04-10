@@ -1,0 +1,124 @@
+import java.util.Set;
+import java.util.HashMap;
+import java.util.ArrayList;
+/**
+ * ##### #### - # #### ## ## ######### ####.
+ *
+ * #### ##### ## #### ## ### "##### ## ####" ###########. 
+ * "##### ## ####" ## # #### ######, #### ##### ######### ####.  
+ *
+ * # "####" ########## ### ######## ## ### ####### ## ### ####.  ## ## 
+ * ######### ## ##### ##### ### #####.  ### #### ######## ####, ### #### 
+ * ###### # ######### ## ### ########### ####.
+ * 
+ * @######  ####### ####### ### ##### #. ######
+ * @####### ####.##.##
+ */
+
+public class Room 
+{
+    private String description;
+    private HashMap<String, HashMap<Room, Lock>> exits; 
+    private HashMap<String, Item> items;
+    
+    /**
+     * Create a room described "description". Initially, it has
+     * no exits. "description" is something like "a kitchen" or
+     * "an open court yard".
+     * @param description The room's description.
+     */
+    public Room(String description) 
+    {
+        this.description = description;
+        exits = new HashMap<String, <Room, Lock>>();
+        items = new HashMap<String, Item>();
+    }
+
+    /**
+     * Define an exit from this room.
+     * @param direction The direction of the exit.
+     * @param neighbor  The room to which the exit leads.
+     */
+    public void setExit(String direction, HashMap<Room, Lock> room) 
+    {
+        exits.put(direction, room);
+    }
+    
+    public String getRoomString()
+    {
+        return description;
+    }
+    
+    public void addItem(String name, Item item)
+    {
+        items.put(name, item);
+    }
+
+    /**
+     * @return The short description of the room
+     * (the one that was defined in the constructor).
+     */
+    public String getShortDescription()
+    {
+        return "You are " + description;
+    }
+
+    /**
+     * Return a description of the room in the form:
+     *     You are in the kitchen.
+     *     Exits: north west
+     * @return A long description of this room
+     */
+    public String getLongDescription()
+    {
+        return "You are " + description + ".\n You can exit: " + getExitString() + ".\n You can pick up: " + getItemsDescription() ;
+    }
+
+    /**
+     * Return a string describing the room's exits, for example
+     * "Exits: north west".
+     * @return Details of the room's exits.
+     */
+    public String getExitString()
+    {
+        String returnString = "";
+        Set<String> keys = exits.keySet();
+        for(String exit : keys) {
+            returnString += " " + exit;
+        }
+        return returnString;
+    }
+
+    /**
+     * Return the room that is reached if we go from this room in direction
+     * "direction". If there is no room in that direction, return null.
+     * @param direction The exit's direction.
+     * @return The room in the given direction.
+     */
+    public HashMap getExit(String direction) 
+    {
+        return exits.get(direction);
+    }
+    
+    public HashMap<String, Item> getItems()
+    {
+        return items;
+    }
+    
+    public Item getItem(String itemName)
+    {
+        return items.get(itemName);
+    }
+    
+    public String getItemsDescription()
+    {
+        String returnString = "";
+        Set<String> keys = items.keySet();
+        for(String item : keys) {
+            returnString += " " + item;
+        }
+        return returnString;
+    }
+}
+    
+

@@ -1,0 +1,28 @@
+import java.util.HashMap;
+import java.util.ArrayList;
+
+public class BidStatistics implements LotListener
+{
+    private HashMap<Lot,ArrayList<Bid>> stats;
+    
+    public BidStatistics()
+    {
+        stats = new HashMap<Lot,ArrayList<Bid>>();
+    }
+    
+    public void collectBidInfo(Lot lot, Bid bid)
+    {
+        stats.putIfAbsent(lot, new ArrayList<Bid>());
+        stats.get(lot).add(bid);
+    }
+    
+    public void printReport()
+    {
+        stats.forEach((k,v) -> System.out.println("Number of bidders " + v.size() + " highest bid: " + k.getHighestBid()));
+    }
+    
+    public void bidUpdate(Lot lot, Bid bid)
+    {
+        this.collectBidInfo(lot, bid);
+    }
+}

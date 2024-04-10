@@ -1,0 +1,95 @@
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * #### ###### ####### ##### ###### ############ ###
+ * 
+ * @######  ######### ######### ## ##### ########
+ * @####### # ### ####
+ */
+public class ShoppingList {
+
+    private ArrayList<Article> list;
+
+    public ShoppingList (){
+        this.list = new ArrayList<Article>();
+    }
+
+    public List getList(){
+        return this.list;
+    }
+
+    public void add(Article art){
+        boolean continuer = true;
+        Iterator<Article> iterator = this.list.iterator();
+        while( iterator.hasNext() && continuer){
+            Article a =  iterator.next();
+            if(a.equals(art)){
+                continuer = false;
+                a.setAmount(a.getAmount()+1);
+            }
+        }
+
+        if(continuer)
+            this.list.add((Article)art.clone());
+
+    }
+
+    public Article getMinPriceArticle(){
+        Article artMoinsChere = null;
+        Iterator<Article> iterator = this.list.iterator();
+        if (!this.list.isEmpty()) {
+            artMoinsChere = (Article)this.list.get(0).clone();
+            while (iterator.hasNext()) {
+                Article a = iterator.next();
+                if (artMoinsChere.getUnitPrice() > a.getUnitPrice())
+                    artMoinsChere = (Article)a.clone();
+            }
+        }
+        return artMoinsChere;
+    }
+
+    public double getPrice(){
+        double coutTotal = 0.0;
+        Iterator<Article> iterator = this.list.iterator();
+        if (!this.list.isEmpty()) {
+            while (iterator.hasNext()) {
+                Article a = iterator.next();
+                coutTotal += (a.getUnitPrice()*a.getAmount());
+            }
+        }
+        return coutTotal;
+    }
+
+    public int getArticlesCount(){
+        int nbArticle = 0;
+        for(Article a : this.list){
+            nbArticle += a.getAmount();
+        }
+        return nbArticle;
+    }
+
+    public boolean removeAll(String chaine){
+        boolean suppr = false;
+        Iterator<Article> iterator = this.list.iterator();
+        while (iterator.hasNext()){
+            Article a = iterator.next();
+            if (chaine.equals(a.getDescription())){
+                iterator.remove();
+                suppr = true;
+            }
+        }
+        return suppr;
+    }
+
+    @Override
+    public String toString(){
+        String chaine = "[ ";
+        for (Article a : this.list){
+            chaine += a.toString; 
+        }
+        return cha
+    }
+}

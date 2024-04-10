@@ -1,0 +1,80 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.PrintWriter;
+import javax.swing.JOptionPane;
+
+public class ReportQueries {
+    SqlDriver sql= new SqlDriver();
+    /**
+     * Constructor for objects of class reports
+     */
+    public ReportQueries() throws Exception
+    {
+        sql.connectToDb();
+    }
+
+    /**
+     * This method imports csv files via powershell and CMD ... complcated only works on windows but it is better than taking an hour to parse it on a SWA Machine
+     */
+    public void importcsv(String path, String tblName) throws Exception
+    {
+
+        PrintWriter writer = new PrintWriter("U:/Materials/Intern Project Tracker/Projects/ROPOICT/sqlimport.txt", "UTF-8");
+        writer.println(".open \"U:/Materials/Intern\\ Project\\ Tracker/Projects/ROPOICT/ROPOICT.db\"");
+        if (tblName.equals("ICT")){
+        }else{
+        }
+        writer.println(".separator \",\"");
+        writer.println("");
+        writer.println(".import " + path + " " + tblName);
+        writer.close();
+        Runtime.getRuntime().exec("powershell -command  \"cd 'U:/Materials/Intern Project Tracker/Projects/ROPOICT'\"; start-process import.bat");
+        sql.update("DELET TOP (1) FROM " + tblName);
+
+    }       
+    private String dayofWeek(String date)
+    {
+            String [] weekArr = {"Sunday","Monday","tuesday","Wednesday","Thursday","Friday","Saturay"};
+            int [] MonthArr = {31,28,31,30,31,30,31,31,30,31,30,31};
+            String parsed = date.substring(0,(date.indexOf("/"))) + "~" +  date.substring(date.indexOf("/")+1,date.length());
+            int month = Integer.parseInt(parsed.substring(0,parsed.indexOf("~")));
+            int day =Integer.parseInt(parsed.substring(parsed.indexOf("~")+1,parsed.indexOf("/")));
+            int year =  Integer.parseInt(20+parsed.substring(parsed.indexOf("/")+1,parsed.length()));
+            if (year %4 ==0){
+                MonthArr[1]=29;
+            }
+            int elDate = 35981+year+day;
+            for (int i=0; i < month;i++){
+               elDate +=  MonthArr[i];
+            }
+            return weekArr[elDate%7]
+    }
+    public void roposbo(String[] stores) throws Exception
+    {
+  
+       String [] dateArr = {"12/7/01","12/7/02"};
+         for (String date: dateArr)
+         {  
+
+           System.out.println((day+month+year+(year/4)+21)%7);
+            System.out.println(date);
+            for (int i = 0; i  < stores.length;i++)
+            {   
+                sql.update("DELETE from ROPOSBO Where Date = '"+ date +"' and LOC = '"+stores[i]+"'");
+                sql.update("insert into ROPOSBO  select '" + stores[i] + "' as location, '"+ date +"' as Date, count(*) as ro_po_sbo, count(*)*(select sum(QTY_CV) FROM ROPO WHERE P_STA_TO = '"+stores[i]+"' and P_DEPT_TO = 'STOR' And P_DTE_CLS like '%"+date+"%') as QTY FROM ROPO WHERE P_STA_TO = '" +stores[i]+ "' and P_DEPT_TO = 'STOR' And P_DTE_CLS like '%"+date+"%'");
+            }
+        }
+    }
+
+    private String toDateArr() throws Exception
+    {
+        String [] arr=  sql.toString("Select Distinct P_DTE_CLS From ROPO  Order by P_DTE_CLS ASC").split(",");
+        String split ="";
+        for (int i  = 0; i < arr.length; i++)
+        {
+            split=split+arr[i].substring(0,arr[i].indexOf(" "))+",";        
+        }     
+        return split.substring(0,(split.length()-1));
+    }
+
+}

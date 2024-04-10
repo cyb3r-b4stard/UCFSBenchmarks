@@ -1,0 +1,73 @@
+
+/**
+ * ##### # ########### ## ##### ########## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+import java.util.ArrayList;
+public class Sachovnica 
+{
+    private ArrayList<Stvorec> aPolicka;
+    private Kruh aPandrlak;
+    private int aRiadok;
+    private int aStlpec;
+    private int aVyska;
+    private int aSirka;
+  
+    public Sachovnica(int paSirka, int paVyska)
+    {
+      aPolicka = new ArrayList<Stvorec>();     
+        int parne= paVyska % 2;
+        for (int riadok= 0; riadok<paVyska; riadok++) {
+            for (int stlpec =0; stlpec < paSirka; stlpec ++){
+                Stvorec policko = new Stvorec();
+                policko.zmenStranu(30);
+                policko.posunVodorovne(31 * stlpec-60);
+                policko.posunZvisle(31 * riadok-50);
+                if ((riadok + stlpec) % 2==parne) {
+                    policko.zmenFarbu("white");
+                } else {
+                    policko.zmenFarbu("black");
+                }
+                aPolicka.add(policko);
+        }
+    }  
+aVyska=paVyska;
+aSirka=paSirka;
+
+aPandrlak = new Kruh();
+aPandrlak.zmenPriemer(20);
+aPandrlak.posunVodorovne((paSirka-1) * 31+5-20);
+aPandrlak.posunZvisle(5-60);
+aPandrlak.zmenFarbu("green");
+}
+public void zobraz()
+{
+    for(Stvorec policko: aPolicka) {
+        policko.zobraz();
+    }
+    aPandrlak.zobraz();
+}
+
+public void skry()
+{
+    for(Stvorec policko: aPolicka) {
+        policko.skry();
+    }
+    aPandrlak.skry();       
+}
+
+public void posunPandrlaka(int paRiadok, int paStlpec)
+{
+   int posunX = (aVyska-paRiadok);
+   int posunY = (aSirka-paStlpec);
+   
+   aPandrlak.pomalyPosunZvisle((posunY)*31)  aPandrlak.pomalyPosunVodorovne((posunX)*(-31));
+   
+   aVyska=paRiadok;
+   aSirka=paStlpec;
+   
+   
+}
+   }

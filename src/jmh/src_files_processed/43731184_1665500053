@@ -1,0 +1,64 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class PolylinePanel extends JPanel
+{
+    private int [] x_coords = new int[1000];
+    private int [] y_coords = new int[1000];
+    private int pointCount = 0;
+    private boolean addMode = true;
+
+    public PolylinePanel()
+    {
+        addKeyListener(new keyboardListener());
+        addMouseListener(new PointListener());
+        setPreferredSize(new Dimension(600,500));
+        setBackground(Color.BLUE);
+        setFocusable(true);
+    }
+
+    public void paintComponent(Graphics page)
+    {
+        super.paintComponent(page);
+        page.drawPolyline(x_coords, y_coords, pointCount);
+    }
+    private class PointListener implements MouseListener
+    {
+        public void mousePressed (MouseEvent event)
+        {
+            Point p = event.getPoint();
+        }
+
+        public void mouseClicked (MouseEvent event){}
+
+        public void mouseRealeased (MouseEvent event){}
+
+        public void mouseEntered (MouseEvent event){}
+
+        public void mouseExited (MouseEvent event){}
+
+        if (addMode)
+        {
+            x_coords[pointCount] = (int)p.getX(); 
+            y_coords[pointCount] = (int)p.getY();
+            pointCount++;
+            repaint();
+        }
+        else
+        {
+            int xDiff = x_coords[0] - (int)p.getX();
+            int yDiff = y_coords[0] - (int)p.getY();
+            for(int n =0; n < pointCount; n++)
+            {
+             
+					x_coords[n] -= xDiff;
+					y_coords[n] -= yDiff;
+            }
+        }
+
+        private class keyboardListener implements KeyListener
+        {
+
+        }
+    }

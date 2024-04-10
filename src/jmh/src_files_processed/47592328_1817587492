@@ -1,0 +1,89 @@
+import sacco.objects.Score;
+import java.util.ArrayList;
+public class Season
+{
+   private ArrayList<Score> scoreList;
+   private String teamName;
+
+   public Season(String team, ArrayList<Score> scores)
+   {
+      scoreList = scores;
+      teamName = team;
+   }
+
+   public ArrayList<Score> getScores()
+   {
+      return scoreList;
+   }
+
+   public boolean isWin(Score s)
+   {  
+       boolean wins = false;
+       if(teamName == s.homeName())
+       {
+           if(s.homePoints() > s.awayPoints())
+           {
+               wins = true;
+           }
+       }
+       else
+       {
+           if(s.awayPoints() > s.homePoints())
+           {
+               wins = true;
+           }
+       }
+       return wins;
+   }
+
+   public Score winLossRecord()
+   {  
+       int wins = 0;
+       int losses = 0;
+       for(int i = 0; i < scoreList.size(); i++)
+       {
+           if(isWin(scoreList[i])
+           {
+               wins++;
+           }
+           else
+           {
+               losses++;
+           }
+       }
+       Score record = new Score("Losses" , losses , "Wins" , wins);
+       return record;
+   }
+
+   public ArrayList<Score> awayGames()
+   {   /* To be implemented by you  */ }
+
+   public Score lastHomeGame()
+   {   /* To be implemented by you  */ }
+
+   public String toString()
+   {
+       String str = "";
+
+       for(Score s: scoreList)
+       {
+           if(isWin(s))
+               str+="W "+s+"\n";
+           else
+               str+="L "+s+"\n";
+       }
+
+       str+="\nWin-Loss: "+this.winLossRecord();
+       str+="\nAway Games: "+this.awayGames();
+       str+="\nLast Home Game: "+this.lastHomeGame();
+
+       return str;
+    }
+    
+    public static void main()
+    {
+        String teamName = "Scripps Ranch Falcons";
+        Season s = new Season(teamName,Score.listFactory(teamName));
+        System.out.println(s);
+    }
+}

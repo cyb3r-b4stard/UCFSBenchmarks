@@ -1,0 +1,161 @@
+import java.util.Iterator;
+import java.util.ArrayList;
+
+/**
+ * ### ##### ##### ## ### ########## ### ####### ###### ## #####
+ * ######:  ### 
+ * ####### ##### ##, ####
+ */
+public class Store 
+{
+    private ArrayList<Item> items;
+    private Item thisItem;
+    private Movie thisMovie;
+    private Game thisGame;
+    private Classic thisClassic;
+
+    private int thisKey;
+    private String name;
+    private String director;
+    private String platform;
+    private int renterID;
+    private int price;
+    private int dueDate;
+    private int currentDate;
+
+    private String gameType;
+    private int releaseDate;
+
+    private ReadFile reader;
+
+    /**
+     * Constructs the empty store. .
+     */
+    public Store() 
+    {
+        items = new ArrayList<Item>(); 
+        currentDate = 20150323; 
+
+        readFromMovieFile();
+        readFromGameFile();
+    }
+
+    /**
+     * Read initial movie info from file.
+     */
+    private void readFromMovieFile() 
+    {
+        reader = new ReadFile("MoviesData.txt");
+        reader.readInputLine();
+        reader.setSeparator(",");
+
+        while(! reader.eof())
+        {
+            thisKey = reader.getIntField(1);
+            name = reader.getStringField(2);
+            director = reader.getStringField(3);
+            price = reader.getIntField(4);
+            renterID = reader.getIntField(5);
+            dueDate = reader.getIntField(6);
+            thisMovie = new Movie(thisKey, name, director, price, renterID, dueDate);
+            items.add(thisMovie);
+
+            reader.readInputLine();
+        }
+    }
+
+    /**
+     * Read initial game info from file.
+     */
+    private void readFromGameFile() 
+    {
+        reader = new ReadFile("GamesData.txt");
+        reader.readInputLine();
+        reader.setSeparator(",");
+
+        while(! reader.eof())
+        {
+            thisKey = reader.getIntField(1);
+            name = reader.getStringField(2);
+            platform = reader.getStringField(3);
+            price = reader.getIntField(4);
+            renterID = reader.getIntField(5);
+            dueDate = reader.getIntField(6);
+            gameType = reader.getStringField(7);
+            releaseDate = reader.getIntField(8);
+
+            if(gameType.equals("C")
+            {
+                thisClassic = new Classic(thisKey, name, platform, price, renterID, dueDate, gameType, releaseDate);
+                items.add(thisGame);
+            }
+            else
+            {
+                thisGame = new Game(thisKey, name, platform, price, renterID, dueDate, gameType);
+                items.add(thisGame);
+            }
+
+            reader.readInputLine();
+        }
+    }
+
+    /*
+     * List all movies and games in the system
+     */
+    public void listAllItems()
+    {
+        System.out.println();
+        System.out.println("List Of All Items");
+        System.out.println("Type  Key           Name                 Renter ID     Due Date     Other");
+
+        int index = 0;
+        while(index < items.size())
+        {
+            thisItem = items.get(index);
+            thisItem.print();         
+            System.out.println();     
+            index ++;
+        }
+    }
+
+    /**
+     * allows checking out an item, given a customerID and an itemID.
+     * Cycles through items to find the right one, (error message if not found)
+     * Checks that not rented.  Calls checkoutItem method and gets new duedate back.
+     * Prints out the CustomerID, the ItemID, and the dueDate
+     */
+    public void checkoutItem(int custID, int itemID)
+    {
+        int index = 0;
+        while(index < items.size())        
+        {                                  
+            Item thisItem = items.get(index);
+            if(thisItem.getKey()==itemID)  
+            {                              
+                if(gameType != "C")
+                {
+                    int suggestedDueDate = currentDate + 5;
+                    int newDueDate = thisItem.chargeOut(custID,suggestedDueDate);
+                    if(newDueDate > 0)         
+                    {                          
+                        System.out.println("Customer "+custID+" has checked out item# "+
+                            itemID+", "+thisItem.getName()+ "\nDuedate is "+newDueDate);
+                        return;     
+                    }
+                    else                
+                    {                   
+                        System.out.println("Item could not be rented.");
+                        return;         
+                    }
+                }
+                else
+                {
+                    System.out.println("Classic Games are no longer available for Rental");
+                    System.out.println("They can, however, be purchased");
+                }
+            }                    
+            index ++;
+        }                        
+        System.out.println("ItemID ("+itemID+") not found.");
+    }
+}

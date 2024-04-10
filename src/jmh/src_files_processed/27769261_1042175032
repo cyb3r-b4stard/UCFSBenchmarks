@@ -1,0 +1,124 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+
+public class GUI extends JFrame
+{
+	Container con;
+	String aText;
+	String bText;
+	String cText;
+	String dText;
+	JPanel textPanel;
+	JPanel fieldPanel;
+	JPanel buttonPanel;
+	JPanel displayPanel;
+    JTextArea displayText;
+	JLabel nameLabel;
+	JTextField nameText;
+	JLabel addressLabel;
+	JTextField addressText;
+	JLabel currentLabel;
+	JTextField currentText;
+	JLabel limitLabel;
+	JTextField limitText;
+	JButton setTextButton;
+	JButton getTextButton;
+	public GUI ()
+{
+    super("Create a new account");
+    con = getContentPane();
+    
+    textPanel = new JPanel();
+    fieldPanel = new JPanel();
+    buttonPanel= new JPanel();
+    displayPanel= new JPanel();
+    nameLabel= new JLabel ("Full name:");
+    addressLabel= new JLabel ("Address:");
+    currentLabel= new JLabel ("Current balance:");
+    limitLabel= new JLabel ("Credit limit:");
+    nameLabel.setBorder(LineBorder.createBlackLineBorder());
+    addressLabel.setBorder(LineBorder.createBlackLineBorder());
+    currentLabel.setBorder(LineBorder.createBlackLineBorder());
+    limitLabel.setBorder(LineBorder.createBlackLineBorder());
+    nameText = new JTextField(20);
+    displayText = new JTextArea();
+    displayText.setEditable(false);
+    addressText = new JTextField(20);
+    currentText = new JTextField (20);
+    limitText = new JTextField (20);
+    getTextButton = new JButton ("Submit");
+    setTextButton = new JButton ("New");
+
+    GridLayout textGrid = new GridLayout(4,1);
+    GridLayout fieldGrid = new GridLayout(4,1);
+    GridLayout buttonGrid = new GridLayout(1,2);
+    GridLayout displayGrid = new GridLayout(1,1);
+    GridLayout frameGrid= new GridLayout(2,1);
+    
+    con.setLayout(frameGrid);
+    textPanel.setLayout(textGrid);
+    fieldPanel.setLayout(fieldGrid);
+    buttonPanel.setLayout(buttonGrid);
+    displayPanel.setLayout(displayGrid);
+        
+    textPanel.add(nameLabel);
+    fieldPanel.add(nameText);
+    textPanel.add(addressLabel);
+    fieldPanel.add(addressText);
+    textPanel.add(currentLabel);
+    fieldPanel.add(currentText);
+    textPanel.add(limitLabel);
+    fieldPanel.add(limitText);
+    buttonPanel.add(getTextButton);
+    buttonPanel.add(setTextButton);
+    displayPanel.add(displayText);
+    
+    con.add(textPanel);
+    con.add(fieldPanel);
+    con.add(buttonPanel);
+    con.add(displayPanel);
+    
+    getTextButton.addActionListener(new ActionListener()
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            aText = nameText.getText();
+            bText = addressText.getText();
+            cText = currentText.getText();
+            int amount = Integer.parseInt(cText);
+            dText = limitText.getText();
+            int amount2 = Integer.parseInt(dText);
+            displayText.setText("Account holder's name: "+aText+"\nAccount holder's address: "+bText+"\nCurrent amount: "+cText+"\nCredit limit: "+dText);
+        }
+    });
+    
+    setTextButton.addActionListener(new ActionListener()
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+           aText = nameText.getText();
+           bText = addressText.getText();
+           cText = currentText.getText();
+           int amount = Integer.parseInt(cText);
+           dText = limitText.getText();
+           int amount2 = Integer.parseInt(dText);
+           Account accountOne = new Account (0,amount,amount2,aText,bText);
+           Account accountOne.showData()
+        }
+    });
+        
+    pack();
+    setLocation (210,150);
+    setSize (400,300);
+    setVisible (true);
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+}
+
+public static void main(String [] args)
+{
+    GUI myLogin = new GUI();
+}
+}            
+    

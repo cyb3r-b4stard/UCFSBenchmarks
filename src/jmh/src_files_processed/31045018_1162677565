@@ -1,0 +1,104 @@
+/* ###### ## ###### # ######## ###-#.
+ * ######## ########: ###### ######### ### #### ######## ###. */
+
+
+/*******************************************************************************
+ * ######## ##### ### ########### ...
+ *
+ * @######    ##### ######
+ * @#######   #.##.###
+ */
+
+import java.util.Random;
+
+public class Hra implements IHra
+{
+    private int hadaneCislo;
+    private int pocetPokusu;
+    private boolean konecHry;
+    
+    
+    private void inicializace {
+        konecHry = false;
+        pocetPokusu = 0;
+        Random generator = new Random();
+        hadaneCislo = generator.nextInt(100);        
+    }
+    /***************************************************************************
+     *  Konstruktor ....
+     */
+    public Hra() {
+        this.inicializace();
+        return hadaneCislo;
+    }
+    
+    
+    /***************************************************************************
+     *  Konstruktor ....
+     */
+    public Hra(int hadaneCislo)
+    {
+        this.hadaneCislo = hadaneCislo;
+        pocetPokusu = 0;
+    }
+    
+    public int novaHra()
+    {
+        konecHry = false;
+        pocetPokusu = 0;
+        Random generator = new Random();
+        hadaneCislo = generator.nextInt(100);        
+    }
+
+    /**
+     * Metoda  pro předání tipu od hráče. Metoda vrací text, který hráči řekne,
+     * zda jeho tip je menší nebo menší než hádané číslo,
+     * případně že uhodl nebo je jeho tip mimo interval 0-99
+     *
+     * @param tip - tipované číslo
+     * @return odpoveď počítače např. "Hádané číslo je menší než tvůj tip"
+     */
+    public String pokus(int tip)
+    {
+        String odpoved = "";
+        if(tip >= 0 && tip <= 99)
+        {
+            pocetPokusu++;
+            if(tip > hadaneCislo)
+            {
+                odpoved = "Hádané číslo je menší";
+            }else if(tip < hadaneCislo){
+                odpoved = "Hádané číslo je větší";
+            }else if(tip == hadaneCislo){
+                odpoved = "Well played";
+                konecHry = true;
+            }
+        }else{
+            odpoved = "Číslo mimo interval 0-99";
+        }
+        return odpoved;
+    }
+
+    /**
+     * metoda vrací kolikrát již hráč zadal svůj tip (pokusy mimo interval se nepočítají)
+     *
+     * @return počet pokusů
+     */
+    public int pocetPokusu()
+    {
+        
+        return pocetPokusu;
+    }
+
+    /**
+     * Metoda, která říká zda hra již skončila.
+     *
+     * @return true v případě, že hráč již číslo uhodl
+     */
+    public boolean konecHry()
+    {
+       return konecHry;
+    }
+
+
+}

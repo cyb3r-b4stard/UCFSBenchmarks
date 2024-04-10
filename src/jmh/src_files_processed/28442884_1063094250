@@ -1,0 +1,693 @@
+import javax.swing.*;
+import java.awt.event.*;
+import java.awt.*;
+
+public class TicTacToe 
+{
+    JButton[]buttons = new JButton[9];
+    JFrame frame = new JFrame("Tic Tac Toe");
+    JPanel panel = new JPanel();  
+    JButton neustart = new JButton("Neustart");
+    JButton anzeige = new JButton();
+    int spielzug = 0;
+    int random;
+    boolean winO;
+    boolean XDreiVerh;
+    boolean inEcke;
+    boolean hilfEcke = false;
+    boolean inGegenEcke = false;
+    boolean hilf;
+    public void init()
+    {
+        frame.setSize(630,580);
+        panel.setLayout(null);
+        for (int n=0; n<9; n++)  
+        {
+            buttons[n] = new JButton();            
+            panel.add(buttons[n]);           
+        }
+        buttons[0].setBounds(50,50,80,80);
+        buttons[1].setBounds(140,50,80,80);
+        buttons[2].setBounds(230,50,80,80);
+        buttons[3].setBounds(50,140,80,80);
+        buttons[4].setBounds(140,140,80,80);
+        buttons[5].setBounds(230,140,80,80);        
+        buttons[6].setBounds(50,230,80,80);
+        buttons[7].setBounds(140,230,80,80);
+        buttons[8].setBounds(230,230,80,80);  
+        
+        neustart.setBounds(400,140,160,80);
+        anzeige.setBounds(50,400,260,80);
+        anzeige.setEnabled(false);
+        
+        panel.add(neustart);
+        panel.add(anzeige);
+        frame.setLocationRelativeTo(null);
+        frame.add(panel);
+        frame.setVisible(true);   
+    }    
+    
+    public int random(int unten, int oben) 
+    {        
+		return (int)(Math.random()*(oben-unten)+unten);	
+    }
+    
+    public TicTacToe()
+    {       
+        init();
+        ButtonsAction();
+    }
+    public static void main(String[] args)
+    {
+        TicTacToe t = new TicTacToe();
+    }     
+    public void changeButtonX(int a)
+    {
+        if(buttons[a].getText().isEmpty())
+        {
+            buttons[a].setText("X");
+            buttons[a].setEnabled(false);
+            spielzug++;
+        }
+    }
+    public void changeButtonO(int b)
+    {
+        if(buttons[b].getText().isEmpty())
+        {
+            buttons[b].setText("O");
+            buttons[b].setEnabled(false);
+            spielzug++;
+        }
+    }
+    public void disableAll()
+    {
+        for(int n=0; n<9; n++)
+        {
+            buttons[n].setEnabled(false);
+        }
+    }
+    public void reset()
+    {
+        for(int n=0; n<9; n++)
+        {
+            buttons[n].setText("");
+            buttons[n].setEnabled(true);
+        }
+        spielzug = 0;
+    }    
+    
+    public void Unentschieden()
+    {
+        if(spielzug == 9)
+        {
+            neustart.setEnabled(true);
+            anzeige.setText("Unentschieden");
+        }        
+    }
+    
+    public void computerZug()
+    {
+        if(XDreiVerh == false && winO == false && hilfEcke == false)
+        {
+            if(buttons[4].getText().isEmpty())
+            {
+                changeButtonO(4);
+            }
+            else if(hilf == false && winO == false)
+            {
+                inGegenEcke();
+                if(inGegenEcke == false && winO == false)
+                {
+                    setzInEcke();
+                    if(inEcke == false && winO == false)
+                    {
+                        zufallZug();
+                    }
+                }
+            }
+        }
+        hilf = false;
+        inGegenEcke = false;
+        inEcke = false;
+    }
+
+    
+    public void ButtonsAction()
+    {        
+        buttons[0].addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                changeButtonX(0);
+                OkannGewinnen();
+                if(spielzug ==1)
+                {
+                    hilfEcke = true;
+                }
+                if(spielzug == 3 && hilfEcke == true && buttons[8].getText().equals("X"))
+                {
+                    changeButtonO(2);
+                    hilfEcke = false;
+                }
+                if(winO == false)
+                {
+                    VerhinderDreiX();
+                }
+                computerZug();
+                
+                Unentschieden();
+            }
+        });
+        
+        buttons[1].addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                changeButtonX(1);
+                OkannGewinnen();
+                if(winO == false)
+                {
+                    VerhinderDreiX();
+                }
+                computerZug();
+                
+                
+                Unentschieden();
+            }
+        });
+        
+        buttons[2].addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                changeButtonX(2);
+                OkannGewinnen();
+                if(spielzug ==1)
+                {
+                    hilfEcke = true;
+                }                
+                if(spielzug == 3 && hilfEcke == true && buttons[6].getText().equals("X"))
+                {
+                    changeButtonO(5);
+                    hilfEcke = false;
+                }
+                if(winO == false)
+                {
+                    VerhinderDreiX();
+                }
+                computerZug();
+                
+                
+                Unentschieden();
+            }
+        });
+        
+        buttons[3].addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                changeButtonX(3);
+                OkannGewinnen();
+                if(winO == false)
+                {
+                    VerhinderDreiX();
+                }
+                computerZug();
+                
+                
+                Unentschieden();
+            }
+        });
+        
+        buttons[4].addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                changeButtonX(4);
+                OkannGewinnen();                
+                if(spielzug == 1)
+                {
+                    changeButtonO(0);
+                    hilf = true;
+                }
+                if(winO == false)
+                {
+                    VerhinderDreiX();
+                }
+                computerZug();
+                
+                
+                Unentschieden();
+            }
+        });
+        
+        buttons[5].addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                changeButtonX(5);
+                OkannGewinnen();
+                if(winO == false)
+                {
+                    VerhinderDreiX();
+                }
+                computerZug();
+                
+                
+                Unentschieden();
+            }
+        });
+        
+        buttons[6].addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                changeButtonX(6);
+                OkannGewinnen();
+                if(spielzug ==1)
+                {
+                    hilfEcke == true;
+                }
+                if(spielzug == 3 && hilfEcke == true && buttons[2].getText().equals("X"))
+                {
+                    changeButtonO(3);
+                    hilfEcke = false;
+                }
+                if(winO == false)
+                {
+                    VerhinderDreiX();
+                }
+                computerZug();
+                
+                
+                Unentschieden();
+            }
+        });
+        
+        buttons[7].addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                changeButtonX(7);
+                OkannGewinnen();
+                if(winO == false)
+                {
+                    VerhinderDreiX();
+                }
+                computerZug();
+                
+                
+                Unentschieden();
+            }
+        });
+        
+        buttons[8].addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                changeButtonX(8);
+                OkannGewinnen();  
+                if(spielzug ==1)
+                {
+                    hilfEcke == true;
+                }
+                if(spielzug == 3 && hilfEcke == true && buttons[0].getText().equals("X"))
+                {
+                    changeButtonO(7);
+                    hilfEcke = false;
+                }
+                if(spielzug == 3 && buttons[4].getText().equals("X") && buttons[0].getText().equals("O"))
+                {
+                    changeButtonO(6);
+                    hilf = true;
+                }
+                if(winO == false)
+                {
+                    VerhinderDreiX();
+                }
+                computerZug();
+                
+                
+                Unentschieden();
+            }
+        });
+        
+        neustart.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                reset();
+                anzeige.setText("");
+            }
+        });
+    }
+    
+     public void OkannGewinnen()
+    {
+        winO = false;
+        if(buttons[0].getText().equals("O")&&buttons[1].getText().equals("O") && buttons[2].getText().isEmpty())                
+        {          
+                changeButtonO(2);
+                winO = true;
+        } 
+        if(buttons[3].getText().equals("O")&&buttons[4].getText().equals("O") && buttons[5].getText().isEmpty())                
+        {          
+                changeButtonO(5);
+                winO = true;
+        }   
+        if(buttons[6].getText().equals("O")&&buttons[7].getText().equals("O") && buttons[8].getText().isEmpty())                
+        {          
+                changeButtonO(8);
+                winO = true;
+        }             
+        if(buttons[1].getText().equals("O")&&buttons[2].getText().equals("O") && buttons[0].getText().isEmpty())                
+        {          
+                changeButtonO(0);
+                winO = true;
+        } 
+        if(buttons[4].getText().equals("O")&&buttons[5].getText().equals("O") && buttons[3].getText().isEmpty())                
+        {          
+                changeButtonO(3);
+                winO = true;
+        }   
+        if(buttons[7].getText().equals("O")&&buttons[8].getText().equals("O") && buttons[6].getText().isEmpty())                
+        {          
+                changeButtonO(6);
+                winO = true;
+        }                 
+        if(buttons[0].getText().equals("O")&&buttons[3].getText().equals("O") && buttons[6].getText().isEmpty())                
+        {          
+                changeButtonO(6);
+                winO = true;
+        }   
+        if(buttons[1].getText().equals("O")&&buttons[4].getText().equals("O") && buttons[7].getText().isEmpty())                
+        {          
+                changeButtonO(7);
+                winO = true;
+        }   
+        if(buttons[2].getText().equals("O")&&buttons[5].getText().equals("O") && buttons[8].getText().isEmpty())                
+        {          
+                changeButtonO(8);
+                winO = true;
+        }           
+        if(buttons[3].getText().equals("O")&&buttons[6].getText().equals("O") && buttons[0].getText().isEmpty())                
+        {          
+                changeButtonO(0);
+                winO = true;
+        }   
+        if(buttons[4].getText().equals("O")&&buttons[7].getText().equals("O") && buttons[1].getText().isEmpty())                
+        {          
+                changeButtonO(1);
+                winO = true;
+        }   
+        if(buttons[5].getText().equals("O")&&buttons[8].getText().equals("O") && buttons[2].getText().isEmpty())                
+        {          
+                changeButtonO(2);
+                winO = true;
+        }           
+        if(buttons[0].getText().equals("O")&&buttons[4].getText().equals("O") && buttons[8].getText().isEmpty())                
+        {          
+                changeButtonO(8);
+                winO = true;
+        }   
+        if(buttons[8].getText().equals("O")&&buttons[4].getText().equals("O") && buttons[0].getText().isEmpty())                
+        {          
+                changeButtonO(0);
+                winO = true;
+        }   
+        if(buttons[2].getText().equals("O")&&buttons[4].getText().equals("O") && buttons[6].getText().isEmpty())                
+        {          
+                changeButtonO(6);
+                winO = true;
+        }  
+        if(buttons[6].getText().equals("O")&&buttons[4].getText().equals("O") && buttons[2].getText().isEmpty())                
+        {          
+                changeButtonO(2);
+                winO = true;
+        }           
+        if(buttons[0].getText().equals("O")&&buttons[2].getText().equals("O") && buttons[1].getText().isEmpty())                
+        {          
+                changeButtonO(1);
+                winO = true;
+        }   
+        if(buttons[3].getText().equals("O")&&buttons[5].getText().equals("O") && buttons[4].getText().isEmpty())                
+        {          
+                changeButtonO(4);
+                winO = true;
+        }   
+        if(buttons[6].getText().equals("O")&&buttons[8].getText().equals("O") && buttons[7].getText().isEmpty())                
+        {          
+                changeButtonO(7);
+                winO = true;
+        }   
+        if(buttons[0].getText().equals("O")&&buttons[6].getText().equals("O") && buttons[3].getText().isEmpty())                
+        {          
+                changeButtonO(3);
+                winO = true;
+        }         
+        if(buttons[1].getText().equals("O")&&buttons[7].getText().equals("O") && buttons[4].getText().isEmpty())                
+        {          
+                changeButtonO(4);
+                winO = true;
+        }   
+        if(buttons[2].getText().equals("O")&&buttons[8].getText().equals("O") && buttons[5].getText().isEmpty())                
+        {          
+                changeButtonO(5);
+                winO = true;
+        }        
+        if(buttons[0].getText().equals("O")&&buttons[8].getText().equals("O") && buttons[4].getText().isEmpty())                
+        {          
+                changeButtonO(4);
+                winO = true;
+        }   
+        if(buttons[2].getText().equals("O")&&buttons[6].getText().equals("O") && buttons[4].getText().isEmpty())                
+        {          
+                changeButtonO(4);
+                winO = true;
+        }        
+        
+        if(winO == true)        
+        {
+            neustart.setEnabled(true);
+            disableAll();
+            anzeige.setText("Der Computer hat gewonnen");
+        }
+    }
+    
+    public void VerhinderDreiX()
+    {
+        XDreiVerh = false;
+        if(buttons[0].getText().equals("X")&&buttons[1].getText().equals("X") && buttons[2].getText().isEmpty())
+        {
+            changeButtonO(2);    
+            XDreiVerh = true;                   
+        }      
+        else if(buttons[3].getText().equals("X")&&buttons[4].getText().equals("X") && buttons[5].getText().isEmpty())
+        {
+            changeButtonO(5);    
+            XDreiVerh = true; 
+        }        
+        else if(buttons[6].getText().equals("X")&&buttons[7].getText().equals("X") && buttons[8].getText().isEmpty())
+        {
+            changeButtonO(8);    
+            XDreiVerh = true; 
+        }        
+        else if(buttons[1].getText().equals("X")&&buttons[2].getText().equals("X") && buttons[0].getText().isEmpty())
+        {
+            changeButtonO(0);    
+            XDreiVerh = true; 
+        }
+        else if(buttons[4].getText().equals("X")&&buttons[5].getText().equals("X") && buttons[3].getText().isEmpty())
+        {
+            changeButtonO(3);    
+            XDreiVerh = true; 
+        }
+        else if(buttons[7].getText().equals("X")&&buttons[8].getText().equals("X") && buttons[6].getText().isEmpty())
+        {
+            changeButtonO(6);    
+            XDreiVerh = true; 
+        }        
+        else if(buttons[0].getText().equals("X")&&buttons[3].getText().equals("X") && buttons[6].getText().isEmpty())
+        {
+            changeButtonO(6);    
+            XDreiVerh = true; 
+        }
+        else if(buttons[1].getText().equals("X")&&buttons[4].getText().equals("X") && buttons[7].getText().isEmpty())
+        {
+            changeButtonO(7);    
+            XDreiVerh = true; 
+        }
+        else if(buttons[2].getText().equals("X")&&buttons[5].getText().equals("X") && buttons[8].getText().isEmpty())
+        {
+            changeButtonO(8);    
+            XDreiVerh = true; 
+        }        
+        else if(buttons[3].getText().equals("X")&&buttons[6].getText().equals("X") && buttons[0].getText().isEmpty())
+        {
+            changeButtonO(0);    
+            XDreiVerh = true; 
+        }
+        else if(buttons[4].getText().equals("X")&&buttons[7].getText().equals("X") && buttons[1].getText().isEmpty())
+        {
+            changeButtonO(1);    
+            XDreiVerh = true; 
+        }
+        else if(buttons[5].getText().equals("X")&&buttons[8].getText().equals("X") && buttons[2].getText().isEmpty())
+        {
+            changeButtonO(2);    
+            XDreiVerh = true; 
+        }        
+        else if(buttons[0].getText().equals("X")&&buttons[4].getText().equals("X") && buttons[8].getText().isEmpty())
+        {
+            changeButtonO(8);    
+            XDreiVerh = true; 
+        }
+        else if(buttons[8].getText().equals("X")&&buttons[4].getText().equals("X") && buttons[0].getText().isEmpty())
+        {
+            changeButtonO(0);    
+            XDreiVerh = true; 
+        }        
+        else if(buttons[2].getText().equals("X")&&buttons[4].getText().equals("X") && buttons[6].getText().isEmpty())
+        {
+            changeButtonO(6);    
+            XDreiVerh = true; 
+        }
+        else if(buttons[6].getText().equals("X")&&buttons[4].getText().equals("X") && buttons[2].getText().isEmpty())
+        {
+            changeButtonO(2);    
+            XDreiVerh = true; 
+        }        
+        else if(buttons[0].getText().equals("X")&&buttons[6].getText().equals("X") && buttons[3].getText().isEmpty())
+        {
+            changeButtonO(3);    
+            XDreiVerh = true; 
+        }
+        else if(buttons[1].getText().equals("X")&&buttons[7].getText().equals("X") && buttons[4].getText().isEmpty())
+        {
+            changeButtonO(4);    
+            XDreiVerh = true; 
+        }        
+        else if(buttons[2].getText().equals("X")&&buttons[8].getText().equals("X") && buttons[5].getText().isEmpty())
+        {
+            changeButtonO(5);    
+            XDreiVerh = true; 
+        }        
+        else if(buttons[0].getText().equals("X")&&buttons[2].getText().equals("X") && buttons[1].getText().isEmpty())
+        {
+            changeButtonO(1);    
+            XDreiVerh = true; 
+        }
+        else if(buttons[3].getText().equals("X")&&buttons[5].getText().equals("X") && buttons[4].getText().isEmpty())
+        {
+            changeButtonO(4);    
+            XDreiVerh = true; 
+        }
+        else if(buttons[6].getText().equals("X")&&buttons[8].getText().equals("X") && buttons[7].getText().isEmpty())
+        {
+            changeButtonO(7);    
+            XDreiVerh = true; 
+        }     
+        else if(buttons[0].getText().equals("X")&&buttons[8].getText().equals("X") && buttons[4].getText().isEmpty())
+        {
+            changeButtonO(4);    
+            XDreiVerh = true; 
+        }   
+        else if(buttons[6].getText().equals("X")&&buttons[2].getText().equals("X") && buttons[4].getText().isEmpty())
+        {
+            changeButtonO(4);    
+            XDreiVerh = true; 
+        }   
+    }    
+    
+    public void zufallZug()
+    {
+            if(buttons[0].getText().isEmpty())
+        {
+            changeButtonO(0);
+        }
+        else if(buttons[1].getText().isEmpty())
+        {
+            changeButtonO(1);
+        }
+        else if(buttons[2].getText().isEmpty())
+        {
+            changeButtonO(2);
+        }
+        else if(buttons[3].getText().isEmpty())
+        {
+            changeButtonO(3);
+        }
+        else if(buttons[4].getText().isEmpty())
+        {
+            changeButtonO(4);
+        }
+        else if(buttons[5].getText().isEmpty())
+        {
+            changeButtonO(5);
+        }
+        else if(buttons[6].getText().isEmpty())
+        {
+            changeButtonO(6);
+        }
+        else if(buttons[7].getText().isEmpty())
+        {
+            changeButtonO(7);
+        }
+        else if(buttons[8].getText().isEmpty())
+        {
+            changeButtonO(8);
+        }
+    }
+    
+    public void setzInEcke()
+    {
+        if(buttons[0].getText().isEmpty())
+        {
+           changeButtonO(0);
+           inEcke = true;
+        }
+        else if(buttons[2].getText().isEmpty())
+        {
+           changeButtonO(2);
+           inEcke = true;
+        }
+        else if(buttons[6].getText().isEmpty())
+        {
+           changeButtonO(6);
+           inEcke = true;
+        }
+        else if(buttons[8].getText().isEmpty())
+        {
+           changeButtonO(8);
+           inEcke = true;
+        }      
+    }      
+    
+    public void inGegenEcke()
+    {
+        if(buttons[0].getText().equals("X") && buttons[8].getText().isEmpty())
+        {
+            changeButtonO(8);
+            inGegenEcke = true;
+        }
+        else if (buttons[8].getText().equals("X") && buttons[0].getText().isEmpty())
+        {
+            changeButtonO(0);
+            inGegenEcke = true;         
+        }
+        else if (buttons[2].getText().equals("X") && buttons[6].getText().isEmpty())
+        {
+            changeButtonO(6);
+            inGegenEcke = true;         
+        }
+        else if (buttons[6].getText().equals("X") && buttons[2].getText().isEmpty())
+        {
+            changeButtonO(2);
+            inGegenEcke = true;         
+        }
+    }
+    }
+    
+     
+ 
+

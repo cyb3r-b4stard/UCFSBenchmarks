@@ -1,0 +1,116 @@
+
+/**
+ * #### ##### ######## ########### ##### ### ### ########.
+ * 
+ * @###### ####### ##
+ * @####### #/#/##
+ */
+public class StudentData
+{
+    private String firstName, lastName;
+    private double[] testScores;
+    private char grade;
+    
+    public StudentData(String firstName, String lastName, double[] testScores)
+    {
+        if(firstName.length() == 0)
+        {
+            throw new RuntimeException("First Name cannot be empty.");
+        }
+        else
+        {
+            this.firstName = firstName;
+        }
+        if(lastName.length() == 0)
+        {
+            throw new RuntimeException("Last Name cannot be empty.");
+        }
+        else
+        {
+            this.lastName = lastName;
+        }
+        this.testScores = testScores;
+        grade = courseGrade(testScores);
+    }
+    public void setFirstName(String s)
+    {
+        firstName = s;
+    }
+    public String getFirstName()
+    {
+        return firstName;
+    }
+    public void setLastName(String s)
+    {
+        lastName = s;
+    }
+    public String getLastName()
+    {
+        return lastName;
+    }
+    public void setTestScore(double d, int position)
+    {
+        testScores[position] = d;
+    }
+    public double getTestScore(int position)
+    {
+        return testScores[position];
+    }
+    public void setGrade(char c)
+    {
+        grade = c;
+    }
+    public char getGrade()
+    {
+        return grade;
+    }
+    public char courseGrade(double[] list)
+    {
+        double sum = 0;
+        double average;
+        if(list.length == 0)
+        {
+            String s = "Error: No Test Grades";
+            throw new IllegalArgumentException(s);
+        }
+        else
+        {
+            for(int i = 0; i < list.length; i++)
+            {
+                sum += list[i];
+            }
+            average = sum / (double)list.length;
+        }
+        if(90 <= average)
+        {
+            return 'a';
+        }
+        else if(80 <= average && average < 90)
+        {
+            return 'b';
+        }
+        else if(70 <= average && average < 80)
+        {
+            return 'c';
+        }
+        else if(60 <= average && average < 70)
+        {
+            return 'd';
+        }
+        else
+        {
+            return 'f';
+        }
+    }
+    public String toString()
+    {
+        String list = "";
+        for(int i = 0; i < testScores.length; i++)
+        {
+            list + testScores[i] + " ";
+        }
+        return String.format("   %-8s", firstName) + String.format(" %-8s", lastName) + 
+            list + String.format("  %1C", grade);
+    }
+    
+}

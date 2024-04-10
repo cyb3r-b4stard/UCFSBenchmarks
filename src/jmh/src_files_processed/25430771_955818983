@@ -1,0 +1,202 @@
+import java.util.Scanner;
+/**
+ * ##### ########## ##.
+ *
+ * ## ## #####, <##### ######## >, #### ########### ########## ## ## ### #### ### # ####
+ * ### ###### ## ######## #### ### ##### ####### ## ### #####.
+ *
+ *  ##### #######:##########@#####.###
+ *  #####:######
+ *  ####### # ##### ##:#####
+ *  ###### ####:#####
+ *  ###### ## #### #### #### ## #### ##########:#
+ *
+ * ####### #### ###### ### ###### ## #### ####### ####.
+ */
+
+public class ConnectFour {
+    public static void main(String[] args) {
+        intro();
+        Scanner key = new Scanner(System.in);
+        String [] firstPart = firstLine();
+        String playerOne = nameOne(key);
+        String playerTwo = nameTwo(key);
+        String [] [] gameBoard = createBoard();
+        printBoard(gameBoard,firstPart);
+        playGame(playerOne,playerTwo,gameBoard,key,firstPart);
+    }
+
+
+    public static void intro() {
+        System.out.println("This program allows two people to play the");
+        System.out.println("game of Connect four. Each player takes turns");
+        System.out.println("dropping a checker in one of the open columns");
+        System.out.println("on the board. The columns are numbered 1 to 7.");
+        System.out.println("The first player to get four checkers in a row");
+        System.out.println("horizontally, vertically, or diagonally wins");
+        System.out.println("the game. If no player gets fours in a row and");
+        System.out.println("and all spots are taken the game is a draw.");
+        System.out.println("Player one's checkers will appear as r's and");
+        System.out.println("player two's checkers will appear as b's.");
+        System.out.println("Open spaces on the board will appear as .'s.\n");
+    }
+
+    public static String nameOne(Scanner key) {
+        System.out.print("Player 1 enter your name: ");
+        String firstPlayer = key.nextLine();
+        System.out.println();
+        return firstPlayer;
+    }
+
+    public static String nameTwo(Scanner key) {
+        System.out.print("Player 2 enter your name: ");
+        String secondPlayer = key.nextLine();
+        System.out.println();
+        return secondPlayer;
+    }
+
+    public static String[] firstLine () {
+        String [] line = {"1 ","2 ","3 ","4 ","5 ","6 ","7 " , " column numbers" };
+        return line;
+    }
+
+    public static String [] [] createBoard () {
+        int rows = 6;
+        int columns = 7;
+        String [][] board = new String [rows][columns];
+        for (int r = 0; r<rows; r++) {
+            for (int c = 0; c<columns; c++) {
+                board[r][c] = ". " ;
+            }
+        }
+        return board;
+    }
+
+    public static void printBoard (String [] [] gameBoard, String [] firstPart) {
+        System.out.println("Current Board");
+        for (int i = 0; i<firstPart.length; i++) {
+            System.out.print(firstPart[i]);
+        }
+        System.out.println();
+        for (int r = 0; r<gameBoard.length; r++) {
+            for (int c = 0; c<gameBoard[r].length; c++) {
+                System.out.print(gameBoard[r][c]);
+            }
+            System.out.println();
+        }
+    }
+
+    public static void firstMove (String playerOne,Scanner key) {
+        System.out.println();
+        System.out.println(playerOne + " it is your turn.");
+        System.out.println("Your pieces are the r's.");
+        System.out.print(playerOne + ", enter the column to drop your checker: "); 
+    }
+
+    public static void secondMove (String playerTwo,Scanner key) {
+        System.out.println();
+        System.out.println(playerTwo + " it is your turn.");
+        System.out.println("Your pieces are the b's.");
+        System.out.print(playerTwo + ", enter the column to drop your checker: ");
+    }
+
+    public static void playGame(String playerOne, String playerTwo, String [] [] gameBoard,Scanner key,String [] firstPart) {
+        int row = gameBoard.length;
+        boolean game = true;
+        String player = playerOne;
+        int turn = 0;
+        String checker = "";
+        while (game) {
+            if (turn % 2 == 0) {
+                firstMove(playerOne,key);
+                player = playerOne;
+                checker = "r ";
+            }else {
+                secondMove(playerTwo,key);
+                player = playerTwo;
+                checker = "b ";
+            }
+            System.out.println();
+            int answer = key.nextInt();
+            condition(answer,playerOne,key);
+            dropChecker(gameBoard,answer,checker);
+            System.out.println("Current Board");
+            printBoard(gameBoard,firstPart);
+            System.out.println();
+            game = check(gameBoard,answer-1,player,checker);
+            turn++;
+        }
+    }
+
+    public static void condition (int answer,String playerOne,Scanner key) {
+        while (answer < 1 || answer > 7) {
+            System.out.println(answer + " is not a valid column.");
+            System.out.print(playerOne + ", enter the column to drop your checker: "); 
+            answer = key.nextInt();
+            System.out.println();
+        }
+    }
+
+    public static void dropChecker (String [][] gameBoard, int answer,String checker) {
+        boolean stackLetter = true;
+        int i = gameBoard.length-1;
+        while (stackLetter) {
+            if (gameBoard[i][answer-1].equals(". ")) {
+                gameBoard[i][answer-1] = checker;
+                stackLetter = false;
+            }
+            i--;
+        }  
+    }
+
+    public static boolean checkVertical (String [][] gameBoard,int answer,String playerOne,String checker) {
+        int num = 0; 
+        boolean game = true;
+        int c = answer;
+        for (int r = 0 ; r<gameBoard.length; r++) {
+            if (gameBoard[r][c].equals(checker)) {
+                num++;
+            }
+            if (num == 4) {
+                game = false;
+            }
+        }
+        return game;
+    }
+
+    public static boolean checkHorizontal (String [][] gameBoard,int answer,String playerOne, String checker) {
+        boolean game = true;
+        int c = answer;
+        for (int r = 0 ; r<gameBoard.length; r++) {
+            int num = 0; 
+            if(gameBoard[r][c].equals(checker) && gameBoard[r][c].equals(gameBoard[r][c+1]) && gameBoard[r][c+1].equals(gameBoard[r][c+2]) && gameBoard[r][c+2].equals(gameBoard[r][c+3]   ) {
+                num++;
+            }
+            if (num >= 4) {
+                game = false;
+
+            }
+            System.out.println(num);
+        }
+        return game;
+    }
+
+    public static boolean check(String [][] gameBoard,int answer,String playerOne,String checker) {
+        boolean game = true;
+        if (!checkVertical(gameBoard,answer,playerOne,checker) || !checkHorizontal(gameBoard,answer,playerOne,checker)) {
+            game = false;
+        }
+        return game;
+    }
+
+    public static int getInt(Scanner key, String prompt) {
+        while(!key.hasNextInt()) {
+            String notAnInt = key.nextLine();
+            System.out.println(notAnInt + " is not an integer.");
+            System.out.print(prompt);
+        }
+        int result = key.nextInt();
+        key.nextLine();
+        return result;
+    }
+}

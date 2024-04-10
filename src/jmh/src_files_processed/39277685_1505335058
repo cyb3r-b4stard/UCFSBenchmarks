@@ -1,0 +1,99 @@
+import game.*;
+import java.awt.Graphics2D;
+import java.awt.*;
+import java.applet.*;
+import java.util.*; 
+import java.awt.event.KeyEvent;
+
+import java.awt.geom.Area;
+
+public class man extends Sprite
+{
+    int xVelocity;
+    int yVelocity;
+    int x = 0;
+    
+    int xOffset = -50;
+    int yOffset = 50;
+    
+    Application app;
+    
+    public man(Application app)
+    {
+        bounds = new Rectangle(50,100);
+        this.app = app;
+        xVelocity = 0;
+        yVelocity = 0;
+    }
+    public void update()
+    {
+        if (x >= 10)
+        {
+            yVelocity += 1;
+            x = 0;
+        }
+        x++;d
+        bounds.x += xVelocity;
+        bounds.y += yVelocity;
+        
+        for(Sprite s : app.getSprites())
+        {
+            if(s instanceof ground && this.bounds.intersects(s.getBounds()))
+            {
+                yVelocity = -5;
+            }
+        }
+        
+    }
+    public void drawSprite(Graphics2D g) 
+    {
+        g.setColor(Color.black);
+        
+        g.drawOval(bounds.x+75+xOffset,bounds.y-50+yOffset,25,25);
+        
+        g.drawLine(bounds.x+87+xOffset,bounds.y-25+yOffset,bounds.x+87+xOffset,bounds.y+yOffset);
+        g.drawLine(bounds.x+87+xOffset,bounds.y-25+yOffset,bounds.x+75+xOffset,bounds.y+yOffset);
+        g.drawLine(bounds.x+87+xOffset,bounds.y-25+yOffset,bounds.x+100+xOffset,bounds.y+yOffset);
+        g.drawLine(bounds.x+87+xOffset,bounds.y+yOffset,bounds.x+75+xOffset,bounds.y+25+yOffset);
+        g.drawLine(bounds.x+87+xOffset,bounds.y+yOffset,bounds.x+100+xOffset,bounds.y+25+yOffset);
+        
+        g.drawString(bounds.x+" "+bounds.y, bounds.x, bounds.y);
+        g.drawString(bounds.width+" "+bounds.height, bounds.x, bounds.y+30);
+        g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+    }  
+    @Override
+    public void onKeyPress(int keyCode)
+    {
+        if(keyCode == KeyEvent.VK_W){
+            yVelocity = -4;
+        }
+        else if(keyCode == KeyEvent.VK_S){
+            yVelocity = 4;
+        }
+        
+        if(keyCode == KeyEvent.VK_A){
+            xVelocity = -4;
+        }
+        else if(keyCode == KeyEvent.VK_D){
+            xVelocity = 4;
+        }
+    }
+
+    @Override
+    public void onKeyRelease(int keyCode)
+    {
+        if(keyCode == KeyEvent.VK_W){
+            yVelocity = 0;
+        }
+        if(keyCode == KeyEvent.VK_S){
+            yVelocity = 0;
+        }
+        
+        if(keyCode == KeyEvent.VK_A){
+            xVelocity = 0;
+        }
+        if(keyCode == KeyEvent.VK_D){
+            xVelocity = 0;
+        }
+    }
+}

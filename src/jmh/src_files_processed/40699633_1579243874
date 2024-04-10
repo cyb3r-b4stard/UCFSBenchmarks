@@ -1,0 +1,93 @@
+import java.awt.*;
+import objectdraw.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.event.*;
+/**
+ * ########## ##### ### ### ############ ####
+ * 
+ * #### ######## 
+ * ##/##
+ */
+public class Concentration extends WindowController implements ActionListener
+{
+    private JButton cheatButton;
+    private CardCollection deck;
+    private Card clicked;
+    private Card firstCard;
+    private Card secondCard;
+
+    private static final int SPACE = 5;
+    private static final int CARDSIZE = 50;
+    private static final int TOTAL_CARDS = 36;
+
+    public void begin(){
+        char[] symbolCollection;
+        symbolCollection = new char[TOTAL_CARDS];
+        char symbol = 'a';
+        
+        for(int num=0; num<TOTAL_CARDS; num++){
+            symbolCollection[num] = char
+           
+            
+        }
+        
+        deck = new CardCollection(TOTAL_CARDS);
+        int count = 0;
+        double left;
+        double top = SPACE;
+        
+        for(int row=0; row<6; row++){
+            left = SPACE;
+            for(int column=0; column<6; column++){
+                deck.AddCard(count, symbolCollection[count], left, top, canvas);
+                left = left + SPACE + CARDSIZE;
+                count++; 
+                if (count%2 == 0){
+                    symbol++;
+            }
+            }
+            top = top + SPACE + CARDSIZE;
+        }
+
+        JPanel buttonPanel;
+        cheatButton = new JButton("Cheat");
+        cheatButton.addActionListener(this);
+        buttonPanel = new JPanel();
+        buttonPanel.add(cheatButton);
+        add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    public void onMouseClick(Location point){
+        clicked = deck.getCardAt(point);
+        if (firstCard == null){
+            firstCard = clicked;
+                firstCard.showSymbol();
+        }
+        else if (secondCard == null){
+            if(!firstCard.contains(point)){
+                secondCard = clicked;
+                    secondCard.showSymbol();
+            }
+        }
+        else{
+            if(!(firstCard.getSymbol() == secondCard.getSymbol())){
+                firstCard.hideSymbol();
+                secondCard.hideSymbol();
+            }
+            else{
+                deck.removeCard(firstCard);
+                deck.removeCard(secondCard);
+            }
+            firstCard = null;
+            secondCard = null;
+        }
+        clicked = null;
+    }
+
+    public void actionPerformed(ActionEvent event){
+        if (event.getSource()==cheatButton){
+            deck.FlipAll();
+        }
+    }
+}

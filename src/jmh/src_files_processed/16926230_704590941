@@ -1,0 +1,209 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+/**
+ * #### ##### ### ###### #### ##### ###### ####### ### ####### 
+ * ### #### ## ######. 
+ * 
+ * @###### ####### ########
+ * @####### ##### ##, ####
+ */
+public class Tetris implements ArrowListener
+{
+    private MyBoundedGrid<Block> board; 
+    private BlockDisplay display;
+    private Tetrad t;
+    private boolean isDone = false; 
+    /**
+     * Constructor for objects of class Tetris
+     */
+    public Tetris()
+    {
+        board = new MyBoundedGrid<Block>(20, 10); 
+        display = new BlockDisplay(board);
+        display.setArrowListener(this); 
+        t = new Tetrad(board);
+        display.setTitle("Tetris");
+
+        display.showBlocks();
+        play();
+    }
+
+    /**
+     * Rotates the block 90 degrees clockwise
+     * if up arrow is pressed. 
+     */
+    public void upPressed()
+    {
+        t.rotate();
+        display.showBlocks(); 
+    }
+
+    /**
+     * Moves the block one down if down arrow
+     * is pressed.
+     */
+
+    public void downPressed()
+    {
+        t.translate(1, 0);
+        display.showBlocks(); 
+    }
+
+    /**
+     * Moves the block one left if left arrow
+     * is pressed. 
+     */
+    public void leftPressed()
+    {
+        t.translate(0, -1); 
+        display.showBlocks(); 
+    }
+
+    /**
+     * Moves the block one right if right arrow
+     * is pressed. 
+     */
+    public void rightPressed()
+    {
+        t.translate(0, 1); 
+        display.showBlocks(); 
+    }
+
+    /**
+     * Continuously pauses for 1 second, then moves Tetrad t down 
+     * and redraws the display. If t can no longer move, creates a 
+     * new tetrad and clears completed rows. 
+     */
+    public void play()
+    {
+        try
+        {
+            Thread.sleep(1000);
+        }
+        catch(InterruptedException e)
+        {
+        }
+        if (t.translate(1,0))
+        {
+            display.showBlocks();
+        }
+        else
+        {
+            Location [] lok = t.getLocations(); 
+            for (int i = 0; i<4; i++)
+            {
+                if (lok[i].getRow() == 0)
+                {
+                    isDone = true; 
+                }
+            }
+            t = new Tetrad(board); 
+            clearCompletedRows();
+        }
+    }
+
+    /**
+     * Checks to see if an entire row (horizontally) 
+     * is completed. Returns true if row is completed,
+     * otherwise returns false. 
+     * 
+     * precondition:  0 <= row < number of rows
+     * postcondition: Returns true if every cell in the
+     *                given row is occupied;
+     *                returns false otherwise.
+     */
+    private boolean isCompletedRow(int row)
+    {
+        for (int c = 0; c<board.getNumCols(); c++)
+        {
+            Location loc = new Location (row, c);
+            if (board.get(loc) == null)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Removes each block from a completed row. 
+     * 
+     * postcondition: All completed rows have been cleared.
+     */
+    private void clearCompletedRows()
+    {
+        for (int r = 0; r < board.getNumRows(); r++)
+        {
+            if (isCompletedRow(r))
+            {
+                clearRow(r); 
+            }
+
+        }
+        display.showBlocks();
+    }
+
+    /**
+     * Removes every block in the given row and moves
+     * the blocks above it down one row. 
+     * 
+     * precondition:  0 <= row < number of rows;
+     *                given row is full of blocks
+     * postcondition: Every block in the given row has been
+     *                removed, and every block above row
+     *                has been moved down one row.
+     */
+    private void clearRow(int row)
+    {
+        for (int c = 0; c<board.getNumCols(); c++)
+        {
+            Location loc = new Location (row, c); 
+            board.get(loc).removeSelfFromGrid();
+        }
+        for (int r=row-1; r>=0; r--)
+        {
+            for (int c = 0; c<board.getNumCols(); c++)
+            {
+                Location loc = new Location (r, c); 
+                Block block = board.get(loc); 
+                if(block!=null)
+                {
+                    Location newLoc = new Location (r+1, c); 
+                    if (board.isValid(newLoc))
+                    {
+                        if (board.get(newLoc)==null)
+                        {
+                            block.moveTo(newLoc);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Oversees the entire game
+     * @return true if game is over, otherwise
+     * false. 
+     * 
+     */
+    public boolean isGameOver()
+    {
+        play();
+        isDone;
+    }
+
+    /**
+     * The main method for the Tetris game
+     * @param args information passed via the command line
+     */
+    public static void main(String[] args)
+    {
+        Tetris tetris = new Tetris(); 
+        boolean done = false; 
+        while (!done)
+        {
+            done = tetris.playGame();
+        }
+    }
+}

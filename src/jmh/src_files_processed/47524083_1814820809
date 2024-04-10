@@ -1,0 +1,76 @@
+import java.util.ArrayList;
+import java.util.Random;
+/**
+ * ##### # ########### ## ##### ############## ####.
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class RoomRandomizer
+{
+    private ArrayList<Room>() rooms;
+    private Room startRoom;
+    private Random randomRoom;
+
+    /**
+     * Constructor for objects of class RoomRandomizer
+     */
+    public RoomRandomizer()
+    {
+
+        Room forest, darkCave, bossLair, swordRoom, clearing, torchShop;
+
+        forest = new Room("in a forest");
+        darkCave = new Room("in a dark cave, you cant see");
+        bossLair = new Room("in a dragon's lair");
+        swordRoom = new Room("by a rock, with a sword in it");
+        clearing = new Room("in a clearing in the forest");
+        torchShop = new Room("a shop giving away free torches");
+        transporterRoom = new Room("in a wierd glowing place", this);
+        
+        swordRoom.addItem(new Item("sword", "A large sword for slaying dragons", 3));
+        torchShop.addItem(new Item("torch", "Bright torch, great for lightning caves", 1));
+        clearing.addItem(new Item("cookie", "A magic cookie, will make you stronk", 0));
+
+        forest.setExits("north", darkCave);
+        forest.setExits("east", swordRoom);
+        forest.setExits("west", clearing);
+        darkCave.setExits("north", bossLair);
+        darkCave.setExits("south", forest);
+        bossLair.setExits("south", darkCave);
+        swordRoom.setExits("west", forest);
+        clearing.setExits("east", forest);
+        clearing.setExits("south", torchShop);
+        torchShop.setExits("north", clearing);
+        
+        startRoom = forest;
+        
+        rooms = new ArrayList();
+        rooms.add(forest);
+        rooms.add(darkCave);
+        rooms.add(bossLair);
+        rooms.add(swordRoom);
+        rooms.add(clearing);
+        rooms.add(torchShop);
+        
+        randomRoom = new Random();
+
+        
+    }
+
+    /**
+     * return start room
+     */
+    public Room getStartRoom()
+    {
+        return startRoom;
+    }
+    
+    /**
+     * Return random room, excluding transporter room
+     */
+    public Room getRandomRoom()
+    {
+       return (Room)rooms.get(random.nextInt(rooms.size()));
+    }
+}

@@ -1,0 +1,90 @@
+import java.awt.*;
+import java.awt.event.*;
+import java.applet.Applet;
+import javax.swing.*;
+
+public class CollisionProject extends Applet implements ActionListener
+{
+    private int x;
+    private int y;
+    private int yinc;
+    private int xinc;
+    private int x1;
+    private int y1;
+    private int yinc1;
+    private int xinc1;
+    private Timer timer;
+    private Image image;
+    private Image image1;
+     /**
+     *This is always called before the first 
+     * time that the start method is called.
+     */
+    public void init()
+    { 
+      x=0;
+      y=0;
+      x1=400;
+      y1=400;
+      xinc1=-2;
+      yinc1=7;
+      xinc=-3;
+      yinc=5;
+      timer=new Timer(10,this);
+      timer.start();
+      image=getImage(getDocumentBase(), "spartan.jpeg");
+      image1=getImage(getDocumentBase(), "assyrian.jpeg");
+    }
+    public void actionPerformed(ActionEvent ae){
+        repaint();
+    }
+    /**
+     * Paint method for applet.
+     * 
+     * @param  g   the Graphics object for this applet
+     */
+    public void paint(Graphics g)
+    {
+        g.drawImage(image1,x,y,150,150,this);
+        x-=xinc;
+        y+=yinc;
+        if(x<=0  || x>=350){
+            xinc*=-1;
+        }
+        if(y<=0 || y>=350){
+            yinc*=-1;
+        }
+        
+        g.drawImage(image,x1,y1,100,100,this);
+        x1+=xinc1;
+        y1-=yinc1;
+        if(x1<=0){ 
+            xinc1*=-1;
+        }
+        if(x1>=400){
+            xinc1*=-1;
+        }
+        if(y1<=0 ){
+            yinc1*=-1;
+        }
+        if(y1>=400){
+           yinc1*=-1;
+        }
+        
+        if(x+150>x1 && y>=y1 && y<=y1+100 ){  
+            xinc*=-1; 
+            xinc1*=-1;
+            
+            
+        }
+            
+        }
+ 
+    }
+        
+    
+    
+    
+   
+        
+}

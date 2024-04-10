@@ -1,0 +1,158 @@
+import java.io.*;
+/**
+ * ###### ####_#
+ * 
+ * @###### (### ####)
+ * @####### (#### ############## #### ### #####)
+ */
+
+public class Aufg_B.java
+{
+    public static void main( String args[] ) {
+        JConsole fenster = new JConsole("Aufg_B");
+
+        while (true) {
+
+            String datei;
+
+            do {
+                datei = fenster.readFilename("k:/data/xxx.txt ");
+            }
+            while (datei == null);
+
+            double m[][]; 
+            try {
+                m = fenster.readArray(datei);
+            }
+            catch (IOException fehler) {
+                fenster.println(fehler);
+                continue; 
+            }
+            if (m == null) {
+                fenster.println("FEHLER: Array ist leer.");
+                continue;
+            }
+
+            int z = m.length; 
+            int s = m[0].length; 
+
+            fenster.println("Zeilenanzahl : " + z);
+            fenster.println("Spaltenanzahl: " + s);
+
+            if (z/4 != s-1) {
+                fenster.println("Fehler: keine 2 quadr. Matrizen in der Datei gefunden\n");
+                continue;
+            }
+
+            int n = s-1; 
+            Tools.matr_ausg(m,fenster);
+
+            double a[][] = new double [n][n];
+            double b[][] = new double [n][n];
+            double c[][] = new double [n][n];
+            double d[][] = new double [n][n];
+            double y[] = new double [n];
+
+            for(int i=0; i<n; i++){
+                for(int j=0; j<n; j++){ 
+                    a[i][j]=m[i][j];
+                    b[i][j]=m[i+n][j];
+                    c[i][j]=m[i+n+n][j];
+                    d[i][j]=m[i+n+n+n][j];
+                }
+                y[i]=m[i+3*n][n]; 
+            }
+            fenster.println("Vektor y ist gleich ");
+            Tools.vek_ausg(y,fenster);
+            fenster.println("Matrix a ist gleich ");
+            Tools.matr_ausg(a,fenster);
+            fenster.println("Matrix b ist gleich ");
+            Tools.matr_ausg(b,fenster);
+            fenster.println("Matrix c ist gleich ");
+            Tools.matr_ausg(c,fenster);
+            fenster.println("Matrix d ist gleich ");
+            Tools.matr_ausg(d,fenster);
+
+            double at[][] = new double [n][n];
+            for(int i=0; i<n; i++){
+                for(int j=0; j<n; j++){
+                    at[i][j] = a[j][i];
+                }
+            }
+            fenster.println("Transponierte Matrix at ist gleich ");
+            Tools.matr_ausg(at,fenster);
+            double ct[][] = new double [n][n];
+            double dt[][] = new double [n][n];
+
+            ct= Tools.Trans(c);
+            dt= Tools.Trans(d);
+            fenster.println("Transponierte Matrix ct ist gleich ");
+            Tools.matr_ausg(ct,fenster);
+            fenster.println("Transponierte Matrix dt ist gleich ");
+            Tools.matr_ausg(dt,fenster);
+
+            double z4, z5, z6;
+
+            do{
+                z4 =fenster.readDouble("Positives z4 eingeben: "); 
+            } while (z4<0 || z4 >9);
+            do{
+                z5 =fenster.readDouble("Positives z4 eingeben: "); 
+            } while (z5<0 || z5 >9);
+            do{
+                z6 =fenster.readDouble("Positives z4 eingeben: "); 
+            } while (z6<0 || z6 >9);
+
+            double h1[][] = new double [n][n];
+            h1 = Tools.matr_sub(dt,d);
+            h1 = Tools.matr_mal_zahl(h1,1.0/(z4+4));
+            double links[] = new double[n];
+            links = Tools.matr_mal_vek(h1,y);
+            fenster.println("Linke Seite ist gleich ");
+            Tools.vek_ausg(links,fenster);
+
+            double h2[][] = new double [n][n];
+            double h3[][] = new double [n][n];
+            h2 = Tools.matr_mal_zahl(ct,2.0/(z5+5));
+            
+            h3 = Tools.matr_mult(at,b);
+            h3 = Tools.matr_mult(c,h3);
+            h3 = Tools.matr_mal_zahl(h3,1.0/(z6+6));
+            
+            double R[][] = new double [n][n];
+            R= Tools.matr_sub(h2,h3);
+            
+            fenster.println("Rechte Seite ist gleich ");
+            Tools.matr_ausg(R,fenster);
+
+            double x[] = new double [n];
+
+            if(Math.abs(Gauss.det(R))<1E-7){
+                fenster.println("LGS nicht lösbar, da det(a)= 0 ");
+                continue;
+            }
+
+            for(int i=0;i<n;i++){
+                x[i] = Tools.deti(R,links,i)/Gauss.det(R);
+                fenster.println(x[i],7,3);
+            }
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        } 
+    } 
+}

@@ -1,0 +1,99 @@
+import java.util.Date;
+import java.util.ArrayList;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+import java.io.File;
+
+
+public class Main {
+    private static enum UniversityMemberClassification {
+        INSTRUCTOR,
+        STUDENT,
+        NONE
+    }
+
+    /* Create the ArrayList of UniversityMember instances. */
+    private static ArrayList<UniversityMember> uMembers;
+
+    public static void main(String[] args) {
+        try {
+            uMembers = loadFromFile("universityMembers.txt");
+            
+            displayUniversityMembers(UniversityMemberClassification.INSTRUCTOR);
+            displayUniversityMembers(UniversityMemberClassification.STUDENT);
+            displayUniversityMembers(UniversityMemberClassification.NONE);
+
+        } 
+        catch (FileNotFoundException e) {
+            System.err.println( e.getMessage() );
+
+            /* Since we have a file error, let's just quit the program. */
+            System.exit(1);
+        }
+    }
+
+    private static ArrayList<UniversityMember> loadFromFile(String filename) throws FileNotFoundException {
+        ArrayList<UniversityMember> uMembers = new ArrayList<>();
+
+        try ( Scanner fin = new Scanner( new File(filename) ); ) {
+            String line;
+            String[] fields;
+            int courseCount;
+            String course;
+            Instructor instructor;
+            Student student;
+
+            while ( fin.hasNext() ) {
+                /* Instructor or Student */
+                line = fin.nextLine();
+                fields = line.split(",");
+
+                /* Instantiate appropriate object type */
+                if ( fields[0].equals("i") ) {
+                    instructor = new Instructor( fields[1], fields[2], new Date() );
+
+                    /* Course count */
+                    courseCount = Integer.parseInt( fin.nextLine() );
+
+                    /* Courses */
+                    for (int i = 1; i <= courseCount; i++) {
+                        course = fin.nextLine();
+
+                        instructor.addCourse(course);
+                    }
+                    uMembers.add(instructor);
+
+                } else {
+                   student = new Student(fields[1], fields[2], new Date());
+                    
+                    /* Course count */
+                    courseCount = Integer.parseInt( fin.nextLine() );
+
+                    /* Courses */
+                    for (int i = 1; i <= courseCount; i++) {
+                        course = fin.nextLine();
+
+                        student.addCourse(course);
+                    }
+
+                    uMembers.add(student);
+                }
+            }
+        }
+
+        return uMembers;
+    }
+
+    private static void displayUniversityMembers(UniversityMemberClassification classification) {
+       
+        
+        switch(classification instanceOf uMembers){
+         case (Instructor):
+         
+        
+        break;
+       
+        }
+
+    }
+}

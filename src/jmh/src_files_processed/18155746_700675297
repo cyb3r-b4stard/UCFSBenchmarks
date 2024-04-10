@@ -1,0 +1,111 @@
+import java.util.HashMap; 
+import java.util.Set;
+import java.util.Iterator;
+
+/**
+ * ###### ### ######## ### ###### ## ###.
+ * ######## ###### ### ############ ### ### ###### (###### ########, ######## ######## ### ###### ### ####
+ * ### ####### ### ######...)
+ * 
+ */
+public class Room
+{
+    private String aDescription;
+    private HashMap<String, Room> aExits; 
+    private String aImage;
+    private ItemList aRoomItemList;
+
+    /**
+     * Constructeur des salles. Initialise une description de la salle et une image qui lui est associée.
+     */
+    public Room (final String pDescription, final String pImage)
+    {
+        this.aDescription = pDescription;
+        this.aImage = pImage;
+        aExits = new HashMap<String, Room>();
+        aItems = new HashMap<String, Item>();
+        aRoomItemList = new ItemList;
+    } 
+    
+    
+    /**
+     * Retourne une pièce derrière une sortie vers la direction donnée (en paramètre).
+     */public Room getExit (String pDirection)
+    {
+
+           return aExits.get(pDirection);
+    }
+    
+    /**
+     * Retourne la description de la pièce actuelle (avec objets présents, et sorties possibles).
+     */public String getLongDescription()
+    {
+        if (!aItems.isEmpty())
+        {return aDescription + "\n" + getItemString() + "\n" + getExitString();}
+        else {return aDescription + "\n" + getItemString() + "Aucun" + "\n" + getExitString();}
+    }
+    
+    /**
+     * Retourne l'image de la pièce actuelle.
+     */public String getImageName ()
+    {
+        return aImage;
+        
+    }
+    
+    /**
+     * Retourne une chaîne de caractère qui liste les sorties de la pièce actuelle.
+     */public String getExitString()
+    
+    {
+        String vReturnString = "Sorties : ";
+        Set<String> vKeys = aExits.keySet();
+        for(String vExit : vKeys)
+        {
+            vReturnString += vExit + " ";
+        }
+        return vReturnString;
+    }
+    
+    public Item getItem (String pItem)
+    {
+        Item vItem = getRoomItem(pItem);
+        return vItem;
+        
+    }
+    
+    /**
+     * Retourne une chaîne de caractère qui liste les objets présents dans la pièce actuelle.
+     */public String getItemString()
+    {
+        String vReturnString = "Objets présents : ";
+        Set<String> vKeys = aItems.keySet();
+        for(String vItems : vKeys)
+        {
+            vReturnString += vItems + " ";
+        }
+        return vReturnString;
+    }
+    
+    public void setExit (final String pDirection, final Room pNeighbor)
+    {
+        aExits.put(pDirection, pNeighbor);
+    }
+    
+    public void addItem (final String pItemDescription, final Item pItem)
+    {
+        aItems.put(pItemDescription, pItem);
+    }
+    
+    public void removeItem (final String pItem)
+    {
+        aItems.remove(pItem);
+           
+    }
+    
+    public boolean isThereItem()
+    {
+        boolean vVoid = aItems.isEmpty();
+        return vVoid;
+    }
+} 

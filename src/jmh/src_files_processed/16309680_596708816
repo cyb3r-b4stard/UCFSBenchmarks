@@ -1,0 +1,108 @@
+import java.util.*;
+import java.io.*;
+
+public class Store
+{
+    private List <Item> myStore;
+    
+
+    public Store(String fName){
+        loadFile(fName);
+        myStore = new ArrayList<Item>();
+    }
+
+    public Store(){
+        loadFile("file50.txt");
+        myStore = new ArrayList<Item>();
+    }
+
+    private void loadFile(String inFileName)
+    { 
+        File ej = new File(inFileName);
+        Scanner fun = new Scanner(ej);
+        try
+        {
+            while(fun.hasNextInt())
+            {
+                int id = fun.nextInt();
+                int inv = fun.nextInt();
+                Item hiej = new Item(id,inv);
+                myStore.add(hiej);
+            }
+        }
+        catch(Exception e)
+        {System.out.print("Error: " + e.getMessage());
+        }
+    }
+
+    public void displayStore(){
+        System.out.println(toString());
+    }
+
+    public String toString(){
+        String str = "";
+        for(int i = 0; i<myStore.size(); i++)
+        {
+            str+=i+1;
+            str+=myStore.get(i).getId();
+            str+=myStore.get(i).getInv();
+
+
+        } 
+    }
+
+    public void sort(){
+        mergeSort(myStore, myStore.get(0), myStore.get(49);
+
+    }	
+    private void merge(List <Item> a, int first, int mid, int last){
+        int index1 = first;
+        int index2 = mid+1;
+        List<Item> copy = new ArrayList<Item>(list);
+        for(int i = first; i <=last;  i++)
+        {
+            if(index1 > mid)
+            {
+                list.set(i, copy.get(index2));
+                index2++;
+            }
+            else if (index2 > last)
+            {
+                list.set(i, copy.get(index1));
+                index1++;
+            }
+            else if (copy.get(index1).compareTo(copy.get(index2))<0)
+            {
+                list.set(i, copy.get(index1));
+                index1++;
+            }
+            else
+            {
+                list.set(i, copy.get(index2));
+                index2++;
+            }
+        }
+    }
+
+    private void mergeSort(List <Item> a, int first, int last){ 
+        if (first == last)
+        {
+        }
+        else if (last - first == 1)
+        {
+            if(a.get(first).compareTo(a.get(last))>0)
+            {
+                Comparable temp = a.get(first);
+                a.set(first, a.get(last));
+                a.set(last, temp);
+            }
+        }
+        else
+        {
+            int mid = (first + last)/2;
+            mergeSort(a, first, mid);
+            mergeSort(a, mid + 1, last);
+            merge(a, first, mid, last);
+        } 
+    }
+}

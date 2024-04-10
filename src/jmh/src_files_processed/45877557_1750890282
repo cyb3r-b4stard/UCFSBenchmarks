@@ -1,0 +1,197 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+
+/**
+ * ### ##### ######## ####### ######## ## ##### ### ############ #### ## ######## ## #######.
+ * 
+ * @###### #### ##
+ * @####### ####.##.##
+ */
+public class Database
+{
+
+    private ArrayList<Student>studentList;
+
+    private ArrayList<Staff> staffList;
+    private ArrayList<Course> courses;
+    private final int MAX_COURSES = 8;
+
+    /**
+     * Construct an empty Database.
+     */
+    public Database()
+    {
+
+        studentList = new ArrayList<Student>();
+        staffList = new ArrayList<Staff>(); 
+        courses = new ArrayList<Course>();
+    }
+
+    /**
+     * Add a new staff.
+     * @param st The staff to be added.
+     */
+    public void addStaff(Staff s)
+    {
+        staffList.add(s);
+    }
+
+    /**
+     * Add a new course.
+     * @param c The course to be added.
+     */
+    public void addCourse(Course c)
+    {
+        courses.add(c);        
+    }
+
+    /**
+     * Add a new student.
+     * @param s The student to be added.
+     */
+    public void addStudent(Student s)
+    {
+        studentList.add(s);
+    }
+
+    /**
+     * Print details of all staff in the database.
+     */
+    public void printAllStaff()
+    {
+        System.out.println("List of all staff:");
+        for (Staff st: staffList) {
+            st.print();
+        }
+        System.out.println();
+    }
+
+    /**
+     * Print details of all courses in the database.
+     */
+    public void printAllCourses()
+    {
+        System.out.println("List of all courses:");
+        for (Course c: courses) {
+            c.print();
+        }
+        System.out.println();
+    }
+
+    /**
+     * Print details of all students in the database.
+     */
+    public void printAllStudents()
+    {
+        System.out.println("List of all students:");
+        for (Student s: studentList) {
+            s.print();
+        }
+
+        System.out.println();
+    }
+
+    /**
+     * Registrate an undergradute student on a course.
+     * @param u The given undergradute student.
+     * @param c The given course.
+     */
+    public void registration(Student s, Course c)
+    {
+        if (!(studentList.contains(s))){
+            System.out.println("Sorry the Student has not been registered onto the course");
+
+        }else if(!( courses.contains(c))){
+            System.out.println("Sorry the course has not been registered onto the course");
+
+        }else{ 
+            if (s instanceof UG){
+                UG u = (UG)s;
+                u.registerOn(c); 
+
+            }
+            else { System.out.println("Sorry only undergraduates can register onto the course");
+            }
+
+
+        }
+    }
+
+    /**
+     * checks if course is valid
+     * returns boolean value
+     */
+    public boolean checkCourseID(String courseID)
+    {
+        for (Course c : courses){
+            if (c.getCID().contains(courseID)){
+                return true ;
+
+            }
+
+        }
+        return false;
+    }
+
+    /**
+     * 
+     */
+    public void printStudentID(String courseID)
+    {
+        int counter = 0;
+        
+        if (checkCourseID(courseID)){
+            for(Student s: studentList){
+                if (s instanceof UG){
+                    UG u =(UG) s;
+                    for(String c: u.getCourseIDs()){
+                        if (c.equals(courseID)){
+                            System.out.println("Student ID " + s.getSID());
+                            counter++;
+                            
+                        }
+                    } 
+                }
+            }System.out.println("Total number of students on the course " + counter);
+        }else{
+            System.out.println("Sorry this course is not valid");
+        }
+    }
+    
+    /**
+     * prints out staff ID
+     * prints IDs and name students supervised by that staff 
+     * student and staff share similar course 
+     */
+    public void printStaffStudents(String staffID)
+    {
+        System.out.println("Staff " + staffID);
+        for (Student s: studentList){
+        if (s instanceof PG){
+            PG p =(PG) s;
+            if (p.getSupervisor().getID().equals(staffID){
+                System.out.println("StudentID " + p.getSID() + " Student name " + p.getName());
+            }
+        }
+    }
+    }
+
+    /**
+     * Print the details of all undergraduate students who have registered on at lease one course.
+     */
+    public void printAllRegistration()
+    {
+        System.out.println("List of all student registrations:");
+        for (Student s: studentList) {
+            if (s instanceof UG){
+                UG ug =(UG)s;
+
+                if (ug.getCourseIDs().size() > 0) {
+                    ug.print();
+                }
+            }
+        }
+        System.out.println();
+    }
+    
+}

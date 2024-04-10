@@ -1,0 +1,107 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
+/**
+ * ##### #########
+ * 
+ * @###### (#### ####) 
+ * @####### (# ####### ###### ## # ####)
+ */
+public class NgramModel
+{
+    private HashMap<String,Integer> ngram; 
+    private int alphabetSize;
+    private int numWords;
+    
+    /** 
+     * Create an n-gram frequency model for an input string
+     * ngrams at the end of the string wrap to the front
+     * e.g. "abbbbc" includes "bca" and "cab" in its 3-grams
+     * @param int n size of n-grams to create
+     * @param String inp input string to be modelled
+     */
+    public NgramModel(int n, String inp) 
+    {
+        ArrayList<Character> alphabet = new ArrayList<Character>();
+        for (int i = 0; i < inp.length(); i++) {
+            if (!alphabet.contains(inp.charAt(i))) {
+                alphabet.add(inp.charAt(i));
+            }
+        }
+        this.alphabetSize = alphabet.size();
+        final k = n;    
+        this.ngram = new HashMap<String,Integer>();
+        if (n > inp.length()) {
+            this.numWords = 0;
+        } else {
+            String inpExtended = inp + inp.substring(0, n - 1);
+            
+            this.numWords = 0;
+            for (int i = 0; i < inp.length(); i++) {
+                String currentString = inpExtended.substring(i, i+n);
+                this.numWords += 1;
+                if (this.ngram.containsKey(currentString)) {
+                    this.ngram.put(currentString, this.ngram.get(currentString) + 1);
+                } else {
+                    this.ngram.put(currentString, 1);
+                    
+                }
+            }
+        }
+    }
+
+
+    /** 
+     * default constructor generates model for ngrams of size 1
+     */
+    public NgramModel(String inp) 
+    {
+        this(1,inp);
+    }
+
+     /**
+     * @return HashMap<String,Integer> the ngram dictionary with word frequencies
+     */
+    public HashMap<String,Integer> getDictionary() {
+        return this.ngram;
+    }
+
+    /**
+     * @return int the size of the alphabet of a given input
+     */
+    public int getAlphabetSize() {
+        return this.alphabetSize;
+    }
+
+    /**
+     * @return int the total number of ngram words counted in the model
+     */
+    public int getNumWords() {
+        return this.numWords;
+    }
+
+    /**
+     * Make list of all words with frequency at least freq
+     * @param freq int lower frequency limit for returned words
+     * @return ArrayList all words with frequency more than freq
+     */
+    public ArrayList<String> getTopWords(int freq) {
+        ArrayList<String> topWords = new ArrayList<String>();
+        for(String word : this.ngram.keySet()) { 
+            if (this.ngram.get(word) >= freq) {
+                topWords.add(word); 
+            }
+        }
+        return topWords;
+    }
+
+    /**
+     * @return String representation of the ngram model
+     */
+    public String toString()
+    {
+        System.out.print(ngram.toString());
+        return "this is an order " + k + "Ngram frequency model." ;
+    }
+
+}

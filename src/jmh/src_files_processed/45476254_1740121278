@@ -1,0 +1,174 @@
+import java.util.*;
+enum Puesto
+{
+    Administrativo, Tecnico, Ingeniero, Comercial, Ejecutivomedio, Altoejecutivo;
+}
+
+enum Estado
+{
+    Activo, Despedido;
+}
+
+public class Empleado
+{
+    String nombre;
+    String apellido;
+    Puesto puesto;
+    Estado estado;
+    double sueldoBase;
+
+    Empleado(String nombre,String apellido, Puesto puesto, Estado estado, double sueldoBase)
+    {
+        this.nombre=nombre;
+        this.apellido=apellido;
+        this.puesto=puesto;
+        this.estado=estado;
+        this.sueldoBase=sueldoBase;
+    }
+
+    Empleado()
+    {
+        Scanner sc=new Scanner(System.in);
+        int tipoPuesto, tipoEstado, años;
+        System.out.println("Introduce nombre ");
+        this.nombre=sc.nextLine();
+        System.out.println("Introduce apellido ");
+        this.apellido=sc.nextLine();
+        System.out.println("Introduce Puesto: 1: Administrativo, 2: Técnico, 3: Ingeniero, 4: Comercial, 5: Ejecutivo Medio, 6: Alto ejecutivo ");
+        tipoPuesto=Integer.parseInt(sc.nextLine());
+        switch(tipoPuesto)
+        {
+            case 1: this.puesto=Puesto.Administrativo; break;
+            case 2: this.puesto=Puesto.Tecnico; break;
+            case 3: this.puesto=Puesto.Ingeniero; break;
+            case 4: this.puesto=Puesto.Comercial; break;
+            case 5: this.puesto=Puesto.Ejecutivomedio; break;
+            case 6: this.puesto=Puesto.Altoejecutivo; break;
+        }
+        System.out.println("Introduce Estado: 1:Activo, 2:Despedido ");
+        tipoEstado=Integer.parseInt(sc.nextLine());
+        switch(tipoEstado)
+        {
+            case 1: this.estado=Estado.Activo;
+            case 2: this.estado=Estado.Despedido;
+        }
+        System.out.println("Introduce su sueldo base ");
+        this.sueldoBase=Double.parseDouble(sc.nextLine());
+
+        System.out.println("Introduce el número de años trabajados ");
+        años=Integer.parseInt(sc.nextLine());
+    }
+
+    public void setNombre(String Nombre)
+    {
+        this.nombre=nombre;
+    }
+
+    public void setPuesto(Puesto puesto)
+    {
+        this.puesto=puesto;
+    }
+
+    public void setEstado(Estado estado)
+    {
+        this.estado=estado;
+    }
+
+    public void setSueldoBase(double sueldoBase)
+    {
+        this.sueldoBase=sueldoBase;
+    }
+
+    String getNombre()
+    {
+        return nombre;
+    }
+
+    Puesto getPuesto()
+    {
+        return puesto;
+    }
+
+    Estado getEstado()
+    {
+        return estado;
+    }
+
+    double getSueldoBase()
+    {
+        return sueldoBase;
+    }
+
+    public void modificarSueldo(double modificador)
+    {
+        this.sueldoBase=sueldoBase+modificador;
+    }
+
+    double calcularFiniquito(int años)
+    {
+        this.estado=Estado.Despedido;
+        double finiquito=0, porcentaje=0;
+        Scanner sc=new Scanner(System.in);
+
+        switch(this.puesto)
+        {
+            case Administrativo: porcentaje=0.002; break;
+            case Tecnico: porcentaje=0.005; break;
+            case Ingeniero: porcentaje=0.01; break;
+            case Comercial: porcentaje=0.021; break;
+            case Ejecutivomedio: porcentaje=0.036; break;
+        }
+        finiquito=this.sueldoBase*porcentaje*años;
+        System.out.println("El finiquito es de "+finiquito);
+        return finiquito;
+
+    }
+
+    public void visualizarDatos()
+    {
+        int productividad;
+        double complDestino=0.0035*this.sueldoBase;
+        double cotSeg=62.70;
+
+        System.out.println("Apellidos y Nombre: "+this.nombre+" "+this.apellido);
+
+        System.out.println("Categoría o puesto de trabajo: "+this.puesto);
+
+        System.out.println("------------------------------------------------");
+        System.out.println("CONCEPTOS\t  DEDUCCIONES\t\t ABONOS");
+        System.out.println("------------------------------------------------");
+        System.out.println("Sueldo Base\t\t\t "+this.sueldoBase);
+
+        System.out.println("Complementos de destino\t\t\t +"+complDestino);
+
+        if(this.puesto==Puesto.Tecnico || this.puesto==Puesto.Ingeniero)
+        {
+            productividad=250;
+            System.out.println("Productividad\t\t\t "+productividad);
+        }
+        else
+        {
+            productividad=0;
+            System.out.println("Productividad\t\t\t"+productividad);
+        }
+        System.out.println("Cotización Seguro\t +"+cotSeg);
+        double sumairpf=this.sueldoBase+complDestino+productividad;
+        double irpf;
+
+        if(this.puesto==Puesto.Altoejecutivo)
+        {
+            irpf=sumairpf*0.18;
+            System.out.println("IRPF\t "+irpf;
+        }
+        else
+        {
+            irpf=sumairpf*0,17;
+            System.out.println("IRPF\t "+irpf;
+        }
+        System.out.println("------------------------------------------------------");
+        double suma=sumairpf-cotSeg-irpf;
+        System.out.println("SUMA\t\t\t "+suma);
+    }
+}
+
+        

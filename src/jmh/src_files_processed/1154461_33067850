@@ -1,0 +1,110 @@
+import kareltherobot.*;
+
+public class SorterBot extends BetterTurnerRobot
+{
+    public SorterBot(int st, int ave, Direction dir, int beeps)
+    {
+        super(st, ave, dir, beeps);
+    }
+
+    private void pickAndPlace()
+    {
+        while( nextToABeeper() )
+        {
+            move();
+        }
+        turnAround();
+        nextRow();
+        while( frontIsClear() )
+        {
+            if( nextToABeeper() )
+            {
+                pickBeeper();
+            }
+            move();
+        }
+        if( ! frontIsClear() )
+        {
+            if( nextToABeeper() )
+            {
+                pickBeeper();
+            }
+            turnLeft();
+        }
+        while( frontIsClear() )
+        {
+            move();
+        }
+        turnLeft();
+        while( nextToABeeper() )
+        {
+            move();
+        }
+        beginPlacing();
+        /while( frontIsClear() )
+        {
+            move();
+        }
+        turnLeft();
+        while( frontIsClear() )
+        {
+            while( anyBeepersInBeeperBag() )
+            {
+                putBeeper();
+                move();
+            }
+            move();
+        }
+        turnLeft();
+        while( frontIsClear() )
+        {
+            move();
+        }
+        nextRow();
+    }
+    
+    private void nextRow()
+    {
+        move();
+        turnRight();
+        move();
+        turnLeft();
+    }
+    
+    private void repeatRow()
+    {
+        turnLeft();
+        move();
+        turnLeft();
+    }
+    
+    public void sortThemAll()
+    {
+        pickAndPlace();
+        pickAndPlace();
+        pickAndPlace();
+        pickAndPlace();
+    }
+    
+    private void beginPlacing()
+    {
+        if ( ! nextToABeeper() )
+        {
+            turnAround();
+            nextRow();
+        }
+    }
+}
+
+
+/*
+ *         while( anyBeepersInBeeperBag() )
+        {
+            putBeeper();
+            move();
+        }
+        while ( frontIsClear() )
+        {
+            move();
+        }
+ */

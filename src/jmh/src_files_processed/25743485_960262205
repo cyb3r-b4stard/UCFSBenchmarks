@@ -1,0 +1,78 @@
+
+import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+/**
+ * ### #### ##### ##########.
+ *
+ * @######  (#### ####)
+ * @####### (# ####### ###### ## # ####)
+ */
+public class RecordTest
+{
+    /**
+     * Default constructor for test class RecordTest
+     */
+    public RecordTest()
+    {
+    }
+
+    /**
+     * Sets up the test fixture.
+     *
+     * Called before every test case method.
+     */
+    @Before
+    public void setUp()
+    {
+    }
+
+    /**
+     * Tears down the test fixture.
+     *
+     * Called after every test case method.
+     */
+    @After
+    public void tearDown()
+    {
+    }
+
+    @Test
+    public void testFields() throws IllegalIDException
+    {
+        Record record1 = new Record("Led Zeppelin", "Kashmir", "6E9FC953", "");
+        assertEquals("", record1.getDetails());
+        assertEquals("6E9FC953", record1.getID());
+    }
+
+    @Test
+    public void testSetPrice() throws IllegalIDException, NegativePriceException
+    {
+        Record record1 = new Record("Led Zeppelin", "Kashmir", "6E9FC953", "");
+        record1.setPrice(5000);
+        assertEquals(5000, record1.getPrice());
+    }
+
+    @Test
+    public void testCompare() throws IllegalIDException
+    {
+        Record record1 = new Record("Led Zeppelin", "Kashmir", "6E9FC953", "");
+        assertTrue(record1.compare("Led Zeppelin", "Kashmir", ""));
+    }
+
+    @Test (expected=IllegalIDException.class)
+    public void testIllegalIDException() throws IllegalIDException
+    {
+        String [] illegalIDs= {"4444", "ABCDABCD88", "X"};
+        for (String i : illegalIDs)
+        {
+            try {
+            Record record1 = new Record("Led Zeppelin", "Kashmir", i, "");
+        }
+        catch (IllegalIDException e){
+            System.out.println("Caught exception");
+        }
+    }
+}

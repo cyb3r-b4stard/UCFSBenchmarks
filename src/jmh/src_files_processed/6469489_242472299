@@ -1,0 +1,188 @@
+x
+/**
+ * class for the driver.
+ * 
+ * @author (Dixon, Andrew) 
+ * @version (7 April, 2014)
+ */
+
+import java.util.Scanner;
+
+public class WordSearch     
+{
+    Scanner in = new Scanner(System.in);    
+    public char[][] array;                  
+    String input = "default";               
+    static boolean flagOne = false;         
+
+    public WordSearch(char[][] inArray)     
+    {
+        array = inArray;                    
+
+    }
+
+    public void play()                      
+    {
+        while (!input.equals("end"))                        
+        {
+            for (int i = 0; i < array.length; i++)          
+            {
+                for (int j = 0; j < array[i].length; j++)   
+                {
+                    System.out.print(array[i][j] + " ");    
+                }
+                System.out.println();                       
+            }
+
+            System.out.println();
+            System.out.println("What word do you want to search for? (Type end to quit)");
+            input = in.nextLine();      
+            flagOne = false;            
+
+            if(!input.equals("end"))    
+            {
+
+                for (int i = 0; i < array.length; i++)          
+                {
+                    for (int j = 0; j <array[i].length; j++)    
+                    {
+                        if (array[i][j] == input.charAt(0))     
+                        {
+                            searchRight(i,j);       
+                            searchDown(i,j);        
+                            searchDiaUp(i,j);       
+                            searchDiaDown(i,j);     
+                        }
+                    }
+                }
+                if (flagOne != true)        
+                {
+                    System.out.println(input + " was not found :( ");                     
+                }
+                System.out.println();
+            }
+        }
+    }
+
+    public void searchRight (int i, int j)       
+    {
+        boolean flag = true;        
+        int originalJ = j + 1;      
+
+        for (int x = 0; x < input.length() && flag == true; x++) 
+        {
+            if (input.charAt(x) == array[i][j] && j < array[i].length - 1) 
+            {
+                j++; 
+            }
+            else
+            {
+                flag = false;  
+            }
+
+        }
+
+        if (flag == true)       
+        {
+            System.out.print(input + " was found horizontally at row " + (i + 1) + " and column "); 
+            System.out.println( (originalJ) + "!"); 
+            flagOne = true;     
+
+        }
+
+    }
+
+    
+    
+    
+    
+    
+    public void searchDown(int i, int j)        
+    {
+        boolean flag = true;        
+        int originalI = i + 1;
+
+        for (int x = 0; x < input.length() && flag == true; x++)
+        {
+            if (input.charAt(x) == array[i][j] && i < array.length -1)
+            {
+                i++;
+            }
+            else
+            {
+                flag = false;  
+            }
+
+        }
+
+        if (flag == true)
+        {
+            System.out.print(input + " was found vertically at row " + (originalI) + " and column ");
+            System.out.println( (j + 1) + "!");
+            flagOne = true;
+
+        }
+
+    }
+
+    public void searchDiaUp(int i, int j)       
+    {
+        boolean flag = true;
+        int originalI = i + 1;
+        int originalJ = j + 1;
+
+        for (int x = 0; x < input.length() && flag == true; x++)
+        {
+            if (input.charAt(x) == array[i][j] && j < array[i].length -1 && i > 0)
+            {
+                j++;        
+                i = i-1;    
+            }
+            else
+            {
+                flag = false;  
+            }
+
+        }
+
+        if (flag == true)
+        {
+            System.out.print(input + " was found diagonally going up at row " + (originalI) + " and column ");
+            System.out.println( (originalJ) + "!");
+            flagOne = true;
+
+        }
+
+    }
+
+    public void searchDiaDown(int i, int j)     
+    {
+        boolean flag = true;
+        int originalI = i + 1;
+        int originalJ = j + 1;
+
+        for (int x = 0; x < input.length() && flag == true; x++)
+        {
+            if (input.charAt(x) == array[i][j] && j < array[i].length -1 && i < array.length -1)
+            {
+                j++;        
+                i++;
+            }
+            else
+            {
+                flag = false;  
+            }
+
+        }
+
+        if (flag == true)
+        {
+            System.out.print(input + " was found diagonally going down at row " + (originalI) + " and column ");
+            System.out.println( (originalJ) + "!");
+            flagOne = true;
+
+        }
+
+    }
+
+}

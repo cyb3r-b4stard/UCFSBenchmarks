@@ -1,0 +1,32 @@
+package question3;
+import question2.Beverage;
+import question2.CondimentDecorator;
+import java.lang.reflect.*;
+
+public class IrishWhisky extends CondimentDecorator{
+
+
+    public IrishWhisky(Beverage beverage) {
+        super(beverage);
+    }
+
+    public String getDescription() {  
+        Beverage sup = super.beverage;
+        while (sup != null ) {
+            if (sup instanceof IrishWhisky)
+                return super.getDescription();
+            sup = this.sup.super.beverage;
+        }
+        return  super.getDescription() + ", Irish Whisky";
+    }
+
+    public double cost() {
+        Class<?> sup = super.beverage.getClass();
+        while ( sup != null) {
+            if ( sup  == IrishWhisky.class)
+                    return super.cost();
+            sup = sup.getSuperclass();
+        }
+        return super.cost() + 1.0;  
+    }
+}

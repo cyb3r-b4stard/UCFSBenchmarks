@@ -1,0 +1,216 @@
+
+
+public class Firma
+{
+    private int ilPrac;
+    private int ileEtatow;
+    private Pracownik[] prac;
+    public Firma(int ilPrac, int ileEtatow)
+    {
+        this.ilPrac=ilPrac;
+        this.ileEtatow=ileEtatow;
+        prac= new Pracownik [ileEtatow];
+    }
+    public Firma(int ileEtatow){
+        this.ileEtatow=ileEtatow;
+        this.ilPrac=0;
+        prac=new Pracownik[ileEtatow];
+    }
+    public Pracownik znajdz(String nazwisko)
+    {
+        Pracownik p=null;
+        for(int i=0; i<prac.length; i++){
+            if(prac[i].getNazwisko().equals(nazwisko))
+                p= prac[i];
+        }
+        return p;
+    }
+    public boolean czyUrzednik(String nazwisko){
+        boolean czy=false;
+        for(int i=0; i<prac.length; i++){
+            if(prac[i] instanceof Urzednik&& prac[i].getNazwisko().equals(nazwisko))
+                czy=true;
+        }
+        return czy;
+    }
+    public void wpiszNaListeUrzednika(String nazwisko, double wymiarEtatu, double procPremii){
+        if(prac.length<=ilPrac)
+            System.out.println("Tablica pelna.");
+        else{
+            for(int i=0; i<prac.length; i++){
+                if(prac[i]!=null&& prac[i].getNazwisko().equals(nazwisko)){
+                    System.out.println("Pracownik o tym nazwisku juz istnieje!");
+                    break;
+                }
+                else{
+                    prac[ilPrac++]= new Urzednik(nazwisko,wymiarEtatu, procPremii);
+                    break;
+                }
+            }
+        }
+    }
+    public void wpiszNaListeRobotnika (String nazwisko, double wymiarEtatu, double ilGodz, double stawkaGodz){
+        if(prac.length<=ilPrac)
+            System.out.println("Tablica pelna.");
+        else{
+            for(int i=0; i<prac.length; i++){
+                if(prac[i]!=null&& prac[i].getNazwisko().equals(nazwisko)){
+                    System.out.println("Pracownik o tym nazwisku juz istnieje!");
+                    break;
+                }
+                else{
+                    prac[ilPrac++]= new Robotnik(nazwisko, wymiarEtatu, ilGodz, stawkaGodz);
+                    break;
+                }
+            }
+        }
+    }
+    public void usunZListy(String nazwisko){
+        int dl=prac.length;
+        for(int i=0; i<dl; i++){
+            if(prac[i].getNazwisko().equals(nazwisko)){
+                if(i==dl-1)
+                    dl-=1;
+                else{
+                    prac[i]=prac[dl-1];
+                    dl-=1;
+                    break;
+                }  
+            }
+        }
+        Pracownik temp[]=new Pracownik[dl];
+        for(int i=0; i<temp.length;i++)
+            temp[i]=prac[i];
+        prac=temp;
+    }
+    public int iluUrzednikow(){
+        int c=0;
+        for(int i=0; i<prac.length; i++){
+            if(prac[i] instanceof Urzednik)
+                c++;
+        }
+        return c;
+    }
+    public int iluRobotnikow(){
+        int c=0;
+        for(int i=0; i<prac.length; i++){
+            if(prac[i] instanceof Robotnik)
+                c++;
+        }
+        return c;
+    }
+    public double wyplatyUrzednikow(){
+        double s=0;
+        for(int i=0; i<prac.length; i++){
+            if(prac[i] instanceof Urzednik)
+                s+= prac[i].wyplata();
+        }
+        return s;
+    }
+    public double wyplatyRobotnikow(){
+        double s=0;
+        for(int i=0; i<prac.length; i++){
+            if(prac[i] instanceof Robotnik)
+                s+= prac[i].wyplata();
+        }
+        return s;
+    }
+    public void listaUrzednikow(){
+        System.out.println("Lista urzednikow.");
+        System.out.println("Lp \t nazwisko \t grupa \t etat");
+        int nr=1;
+        for(int i=0; i<prac.length; i++){
+            if(prac[i] instanceof Urzednik)
+                System.out.println((nr++)+"\t"+prac[i].toString());
+        }
+    }
+    public void listaRobotnikow(){
+       System.out.println("Lista robotnikow.");
+       System.out.println("Lp \t nazwisko \t grupa \t etat");
+       int nr=1;
+       for(int i=0; i<prac.length; i++){
+            if(prac[i] instanceof Robotnik)
+                System.out.println((nr++)+"\t"+prac[i].toString());
+       }
+    }
+    public void listaPracownikow(){
+        System.out.println("Lista pracownikow");
+        System.out.println("Lp \t nazwisko \t grupa \t etat");
+        int nr=1;
+        for(int i=0; i<prac.length;i++){
+            String grupa="";
+            if(prac[i] instanceof Robotnik){
+                grupa="Robotnik";
+                System.out.println((nr++)+"\t"+prac[i].toString());
+            }
+            else if(prac[i] instanceof Urzednik){
+                grupa="Urzednik";
+                System.out.println((nr++)+"\t"+prac[i].toString());
+            }
+            else{}
+    }
+    public void listaPlacUrzednik(){
+        System.out.println("Lp \t nazwisko \t grupa \t etat \t placa");
+        int nr=1;
+        for(int i=0; i<prac.length; i++){
+            if(prac[i] instanceof Urzednik)
+                System.out.println((nr++)+"\t"+prac[i].toString()+"\t"+prac[i].wyplata());
+        }
+    }
+    public void listaPlacRobotnik(){
+        System.out.println("Lp \t nazwisko \t grupa \t etat \t placa");
+        int nr=1;
+        for(int i=0; i<prac.length; i++){
+            if(prac[i] instanceof Robotnik)
+                System.out.println((nr++)+"\t"+prac[i].toString()+"\t"+prac[i].wyplata());
+        }
+    }
+    public void listaPlacPracownikow(){
+        System.out.println("Lista plac pracownikow");
+        System.out.println("Lp \t nazwisko \t grupa \t etat \t placa");
+        String grupa="";
+        int nr=1;
+        for(int i=0; i<prac.length;i++){
+            if(prac[i] instanceof Robotnik){
+                grupa="Robotnik";
+                System.out.println((nr++)+"\t"+prac[i].toString()+"\t"+prac[i].wyplata());
+            }
+            else if(prac[i] instanceof Urzednik){
+                grupa="Urzednik";
+                System.out.println((nr++)+"\t"+prac[i].toString()+"\t"+prac[i].wyplata());
+            }
+            else{}
+        }
+    }
+    public void listaPlacPrac2(){
+        System.out.println("Lista plac pracownikow");
+        System.out.println("Lp \t nazwisko \t grupa \t etat \t placa");
+        int nr=1;
+        String grupa="Robotnik";
+        for(int i=0; i<prac.length;i++){
+            if(prac[i] instanceof Urzednik){
+                grupa="Urzednik";
+            }
+            System.out.println((nr++)+"\t"+prac[i].toString()+"\t"+prac[i].wyplata());
+        }
+       
+    }
+    public static void main(){
+        Firma f=new Firma(6);
+        f.wpiszNaListeUrzednika("Nowak",1.0,5);
+        f.wpiszNaListeUrzednika("Stec",0.5,15);
+        f.wpiszNaListeUrzednika("Konrad",0.75,0);
+        f.wpiszNaListeRobotnika("Korman",0.25,300,2);
+        f.wpiszNaListeRobotnika("Misztal",1.0,170,10);
+        f.listaUrzednikow();
+        f.listaRobotnikow();
+        f.listaPracownikow();
+        f.listaPlacUrzednik();
+        f.listaPlacRobotnik();
+        f.listaPlacPracownikow();
+        f.usunZListy("Stec");
+        f.listaPracownikow(); 
+        f.listaPlacPracownikow();
+    }
+}
+}

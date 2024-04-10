@@ -1,0 +1,319 @@
+
+import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import java.util.ArrayList;
+
+/**
+ * ### #### ##### #########.
+ *
+ * @######  ######## ###
+ * @####### # ### ####
+ */
+public class RouteTest
+{
+
+    /**
+     * Default constructor for test class RouteTest
+     */
+    public RouteTest()
+    {
+    }
+
+    /**
+     * Sets up the test fixture.
+     *
+     * Called before every test case method.
+     */
+    @Before
+    public void setUp()
+    {
+
+    }
+
+    /**
+     * Tears down the test fixture.
+     *
+     * Called after every test case method.
+     */
+    @After
+    public void tearDown()
+    {
+    }
+
+    /**
+     * Method test1: controleert constructor van knooppunt
+     *
+     *
+     */
+     
+
+    @Test
+    public void test1()
+    {
+        Knooppunt leuven1 = new Knooppunt(33);
+        leuven1.setCafé("Industrie");
+        assertEquals(33, leuven1.getNummer());
+        assertEquals("Industrie", leuven1.getCafé());
+    }
+    
+
+    /**
+     * Method test2: controleert constructor van route
+     */
+     
+
+    @Test
+    public void test2()
+    {
+        Knooppunt leuven1 = new Knooppunt(33);
+        Route route1 = new Route("Romdom Leuven",leuven1);
+        assertEquals(leuven1, route1.geefLaatsteKnooppunt());
+    }
+    
+
+    /**
+     * Method test3: 
+     * voeg aansluitende knooppunten 
+     * en overeenkomstige afstanden tot die knooppunten toe aan een knooppunt; 
+     * dit zijn de verschillende paden die van hieruit vertrekken
+     */
+     
+
+    @Test
+    public void test3()
+    {
+        Knooppunt leuven1 = new Knooppunt(33);
+        Knooppunt leuven2 = new Knooppunt(73);
+        Knooppunt leuven3 = new Knooppunt(80);
+        Knooppunt leuven4 = new Knooppunt(93);
+        assertEquals(true,leuven1.voegAansluitendeKnooppuntToe(leuven2, 2.0));
+        assertEquals(true,leuven1.voegAansluitendeKnooppuntToe(leuven3, 1.7));
+        assertEquals(true,leuven1.voegAansluitendeKnooppuntToe(leuven4, 2.0));
+        assertEquals(3,leuven1.getAantalAansluitendeKnooppunten());
+    }
+    */
+
+    /**
+     * Method test4: 
+     * voeg geen foute aansluitende knooppunten toe aan bestaand knooppunt
+     
+
+    @Test
+    public void test4()
+    {
+        Knooppunt leuven1 = new Knooppunt(33);
+        Knooppunt leuven2 = new Knooppunt(73);
+        Knooppunt leuven3 = new Knooppunt(80);
+        Knooppunt leuven4 = new Knooppunt(93);
+        assertEquals(true,leuven1.voegAansluitendeKnooppuntToe(leuven2, 2.0));
+        assertEquals(false,leuven1.voegAansluitendeKnooppuntToe(leuven1, 0));
+        assertEquals(false,leuven1.voegAansluitendeKnooppuntToe(leuven2, 2.0));
+    }
+    
+    */
+
+    /**
+     * Method test5: knooppunt aan route toevoegen en laatste knooppunt wissen
+     * 
+     
+
+    @Test
+    public void test5()
+    {
+        Knooppunt leuven1 = new Knooppunt(33);
+        Knooppunt leuven2 = new Knooppunt(73);
+        Knooppunt leuven3 = new Knooppunt(80);
+
+        leuven1.voegAansluitendeKnooppuntToe(leuven2, 2.0);
+        leuven1.voegAansluitendeKnooppuntToe(leuven3, 1.7);
+
+        Route route1 = new Route("Romdom Leuven",leuven1);
+        route1.voegKnooppuntToe(leuven2);
+        assertEquals(true, route1.laatsteKnooppuntwissen());
+        assertEquals(true, route1.laatsteKnooppuntwissen());
+        assertEquals(false, route1.laatsteKnooppuntwissen());
+    }
+    */
+
+    /**
+     * Method test6: 
+     * voeg zelfde knooppunt geen 2 keer na elkaar toe aan route
+     
+
+    @Test
+    public void test6()
+    {
+        Knooppunt leuven1 = new Knooppunt(33);
+        Knooppunt leuven2 = new Knooppunt(73);
+        leuven1.voegAansluitendeKnooppuntToe(leuven2, 2.0);
+        Route route1 = new Route("Romdom Leuven",leuven1);
+        assertEquals(true, route1.voegKnooppuntToe(leuven2) );
+        assertEquals(false, route1.voegKnooppuntToe(leuven2) );
+    }
+    */
+
+    /**
+     * Method test7: 
+     * voeg knooppunt toe aan route, wat niet aansluit op vorig knooppunt
+     
+
+    @Test
+    public void test7()
+    {
+        Knooppunt leuven1 = new Knooppunt(33);
+        Knooppunt leuven2 = new Knooppunt(73);
+        Knooppunt leuven3 = new Knooppunt(80);
+
+        leuven1.voegAansluitendeKnooppuntToe(leuven2, 2.0);
+        leuven1.voegAansluitendeKnooppuntToe(leuven3, 1.7);
+        Route route1 = new Route("Romdom Leuven",leuven1);
+        route1.voegKnooppuntToe(leuven2);
+        assertEquals(false, route1.voegKnooppuntToe(leuven3) );
+    }
+    */
+
+    /**
+     * Method test8: is er een café op de route?
+     
+
+    @Test
+    public void test8()
+    {
+        Knooppunt leuven1 = new Knooppunt(33);
+        Knooppunt leuven2 = new Knooppunt(73);
+        leuven2.setCafé("Abdijmolen");
+        leuven1.voegAansluitendeKnooppuntToe(leuven2, 2.0);
+        Route route1 = new Route("Romdom Leuven",leuven1);
+        route1.voegKnooppuntToe(leuven2);
+        assertEquals(true,route1.heeftCafé());
+        route1.laatsteKnooppuntwissen();
+        assertEquals(false,route1.heeftCafé());
+    }
+    */
+   
+    /**
+     * Method test9: 
+     * bereken totale lengte van route
+     
+
+    @Test
+    public void test9()
+    {
+        Knooppunt leuven1 = new Knooppunt(33);
+        Knooppunt leuven2 = new Knooppunt(73);
+        Knooppunt leuven3 = new Knooppunt(80);
+        Knooppunt leuven4 = new Knooppunt(93);
+        leuven1.voegAansluitendeKnooppuntToe(leuven2, 2.0);
+        leuven1.voegAansluitendeKnooppuntToe(leuven3, 1.7);
+        leuven1.voegAansluitendeKnooppuntToe(leuven4, 2.0);
+        Route route1 = new Route("Romdom Leuven",leuven1);
+        assertEquals( 0.0,route1.totaleAfstand(),0.05);
+        assertEquals(true, route1.voegKnooppuntToe(leuven2) );
+        assertEquals( 2.0,route1.totaleAfstand(),0.05);
+    }
+    */
+
+    /**
+     * Method test10: controleert of we een random knooppunt aan de route kunnen toevoegen
+     * uit de lijst van aansluitende knooppunten
+     
+
+    @Test
+    public void test10()
+    {
+        Knooppunt leuven1 = new Knooppunt(33);
+        Knooppunt leuven2 = new Knooppunt(73);
+        Knooppunt leuven3 = new Knooppunt(80);
+        leuven1.voegAansluitendeKnooppuntToe(leuven2, 2.0);
+        leuven1.voegAansluitendeKnooppuntToe(leuven3, 1.7);
+        Route route1 = new Route("Romdom Leuven",leuven1);
+        assertEquals(true,route1.voegRandomKnooppuntToe());
+    }  
+    */
+   
+    /**
+     * Method test11: toonOverzicht, check ook het terminal window.
+     
+
+
+    @Test
+    public void test11()
+    {
+        Knooppunt leuven1 = new Knooppunt(33);
+        Knooppunt leuven2 = new Knooppunt(73);
+        leuven2.setCafé("Abdijmolen");
+        Knooppunt leuven3 = new Knooppunt(80);
+        leuven1.voegAansluitendeKnooppuntToe(leuven2, 2.0);
+        leuven2.voegAansluitendeKnooppuntToe(leuven3, 1.7);
+        Route route1 = new Route("Romdom Leuven",leuven1);
+        route1.voegKnooppuntToe(leuven2);
+        route1.voegKnooppuntToe(leuven3);
+        route1.toonOverzicht();
+        assertEquals(true,leuven2.toString().contains("Abdijmolen"));
+    } 
+    */
+
+    /**
+     * Method test12: Knooppunten wissen 
+     
+
+
+    @Test
+    public void test12()
+    {
+        Knooppunt leuven1 = new Knooppunt(33);
+        Knooppunt leuven2 = new Knooppunt(73);
+        leuven2.setCafé("Abdijmolen");
+        Knooppunt leuven3 = new Knooppunt(80);
+        Knooppunt leuven4 = new Knooppunt(81);
+        Knooppunt leuven5 = new Knooppunt(12);
+        leuven1.voegAansluitendeKnooppuntToe(leuven2, 2.0);
+        leuven2.voegAansluitendeKnooppuntToe(leuven3, 1.7);
+        leuven3.voegAansluitendeKnooppuntToe(leuven4, 5.7);
+        leuven4.voegAansluitendeKnooppuntToe(leuven5, 12.2);
+        Route route1 = new Route("Romdom Leuven",leuven1);
+        route1.voegKnooppuntToe(leuven2);
+        route1.voegKnooppuntToe(leuven3);
+        route1.voegKnooppuntToe(leuven4);
+        route1.voegKnooppuntToe(leuven5);
+        ArrayList<Knooppunt> res = route1.wisKPmetNrTussen(70, 80);
+        assertEquals(2,res.size());
+    } 
+    */
+
+    /**
+     * Method test13: controlleert of je één lus uit de route kan wissen, indien die voorkomt,
+     * maar natuurlijke niet de volledige route, als het een rondrit is.
+
+    @Test
+    public void test13()
+    {
+    Knooppunt leuven1 = new Knooppunt(1);
+    Knooppunt leuven2 = new Knooppunt(3);
+    Knooppunt leuven3 = new Knooppunt(5);
+    Knooppunt leuven4 = new Knooppunt(23);
+    Knooppunt leuven5 = new Knooppunt(3);
+    Knooppunt leuven6 = new Knooppunt(7);
+    Knooppunt leuven7 = new Knooppunt(32);
+    leuven1.voegAansluitendeKnooppuntToe(leuven2, 2.0);
+    leuven2.voegAansluitendeKnooppuntToe(leuven3, 1.7);
+    leuven3.voegAansluitendeKnooppuntToe(leuven4, 5.7);
+    leuven4.voegAansluitendeKnooppuntToe(leuven5, 12.2);
+    leuven5.voegAansluitendeKnooppuntToe(leuven6, 5.7);
+    leuven6.voegAansluitendeKnooppuntToe(leuven7, 12.2);
+    Route route1 = new Route("Romdom Leuven",leuven1);
+    route1.voegKnooppuntToe(leuven2);
+    route1.voegKnooppuntToe(leuven3);
+    route1.voegKnooppuntToe(leuven4);
+    route1.voegKnooppuntToe(leuven5);
+    route1.voegKnooppuntToe(leuven6);
+    route1.voegKnooppuntToe(leuven7);
+    route1.wisLus();
+    ArrayList<Knooppunt> res = route1.wisKPmetNrTussen(70, 80);
+    assertEquals(4,res.size());
+    }
+     */
+
+}
