@@ -4,19 +4,6 @@ import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import kotlinx.cli.default
 import kotlinx.cli.required
-import org.antlr.Java8Lexer
-import org.antlr.v4.runtime.CharStreams
-import org.antlr.v4.runtime.CommonTokenStream
-import org.srcgll.input.LinearInput
-import org.srcgll.input.LinearInputLabel
-import org.srcgll.lexer.*
-import org.srcgll.rsm.symbol.Terminal
-import org.srcgll.sppf.writeSppfToDot
-import org.srcgll.rsm.writeRsmToDot
-import org.srcgll.sppf.node.SppfNode
-import java.io.File
-import java.io.IOException
-import java.io.StringReader
 
 enum class RecoveryMode {
     ON, OFF,

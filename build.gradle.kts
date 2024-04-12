@@ -13,10 +13,11 @@ repositories {
 
 dependencies {
   testImplementation(kotlin("test"))
+
   testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
   implementation("java_cup:java_cup:0.9e")
   implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.5")
-  implementation("org.antlr:antlr4:4.13.1")
+  implementation("org.antlr:antlr4:4.7.2")
   implementation("io.usethesource:capsule:0.6.3")
   implementation("com.fasterxml.jackson.core:jackson-core:2.14.0")
   implementation("com.fasterxml.jackson.core:jackson-databind:2.14.0")

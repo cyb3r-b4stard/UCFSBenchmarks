@@ -1,27 +1,10 @@
 package jmh.kotlin
 
-import org.antlr.Java8Lexer
-import org.antlr.Java8Parser
-import org.antlr.v4.runtime.CharStreams
-import org.antlr.v4.runtime.CommonTokenStream
-import kotlinx.cli.ArgParser
-import kotlinx.cli.ArgType
-import kotlinx.cli.default
-import kotlinx.cli.required
-import org.srcgll.Gll
-import org.srcgll.ReachabilityMode
-import org.srcgll.RecoveryMode
 import org.srcgll.input.LinearInput
 import org.srcgll.input.LinearInputLabel
 import org.srcgll.lexer.*
-import org.srcgll.rsm.readRsmFromTxt
 import org.srcgll.rsm.symbol.Terminal
-import org.srcgll.sppf.node.SppfNode
-import org.srcgll.sppf.writeSppfToDot
-import java.io.File
 import java.io.StringReader
-import kotlin.system.measureNanoTime
-import kotlin.time.measureTime
 
 fun getResultPath(
     pathToOutput: String,

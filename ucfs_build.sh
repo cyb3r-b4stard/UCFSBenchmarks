@@ -1,5 +1,5 @@
 #!/bin/bash
-
+shopt -s expand_aliases
 cd src/main/kotlin/org/srcgll/lexer
 
 printf "\n\nGENERATE LEXER FILE\n"
