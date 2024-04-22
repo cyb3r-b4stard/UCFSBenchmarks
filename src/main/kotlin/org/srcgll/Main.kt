@@ -14,7 +14,7 @@ enum class ReachabilityMode {
 }
 
 fun main(args: Array<String>) {
-    val parser = ArgParser("srcgll")
+    val parser = ArgParser("ucfs")
 
     val recoveryMode by parser.option(
         ArgType.Choice<RecoveryMode>(), fullName = "recovery", description = "Recovery mode"

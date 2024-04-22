@@ -40,6 +40,10 @@ or
 
 `./ucfs_bench.sh`
 
+## Logging
+
+Logs are stored in build/libs/Benchmarks.log
+
 ## Results
 
 After executing all benchmarks, results file will be located in the `/build` folder

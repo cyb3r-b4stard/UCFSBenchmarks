@@ -13,8 +13,9 @@ repositories {
 
 dependencies {
   testImplementation(kotlin("test"))
-
   testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+  implementation(kotlin("reflect"))
+  implementation("io.klogging:klogging-jvm:0.5.11")
   implementation("java_cup:java_cup:0.9e")
   implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.5")
   implementation("org.antlr:antlr4:4.7.2")
@@ -23,7 +24,6 @@ dependencies {
   implementation("com.fasterxml.jackson.core:jackson-databind:2.14.0")
   implementation("com.google.guava:guava-testlib:23.0")
   implementation("info.picocli:picocli:4.7.0")
-  implementation(kotlin("reflect"))
   jmhImplementation("org.openjdk.jmh:jmh-core:1.36")
   jmhImplementation("org.openjdk.jmh:jmh-generator-annprocess:1.36")
   jmhImplementation("org.openjdk.jmh:jmh-generator-bytecode:1.36")

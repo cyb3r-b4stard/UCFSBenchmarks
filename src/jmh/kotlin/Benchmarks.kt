@@ -1,5 +1,3 @@
-package jmh.kotlin
-
 import org.srcgll.input.LinearInput
 import org.srcgll.input.LinearInputLabel
 import org.srcgll.lexer.*
